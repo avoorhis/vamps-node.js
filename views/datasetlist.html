@@ -1,0 +1,25 @@
+<html>
+<head>
+	<title><%- title %></title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<script type="text/javascript" src="/javascripts/global.js"></script>
+</head>
+<body>
+<div>
+<a href="./">Home</a></li>
+</div>
+<h1>Dataset List</h1>
+
+  
+<% rows = JSON.parse(rows) %>
+
+  <ul>
+    <% JSON.parse(rows).forEach(function(row){ %>
+      <li><%= row %></li>
+    <% }) %>
+  </ul>
+
+
+	
+</body>
+</html>
