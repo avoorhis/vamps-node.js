@@ -11,14 +11,20 @@
 <h1>Dataset List</h1>
 
   
-<% rows = JSON.parse(rows) %>
+<% datasets_by_project_all = JSON.parse(rows) %>
+<%= datasets_by_project_all %>
+<% for(var project in datasets_by_project_all) { %>
+	
+	<p> <%- project %>
+	<br>
+	<% for(dataset in datasets_by_project_all[project]) { %>
+		&nbsp;&nbsp;
+		<%- datasets_by_project_all[project][dataset] %>
+		<br>
+<% }} %>
 
-  <ul>
-    <% JSON.parse(rows).forEach(function(row){ %>
-      <li><%= row %></li>
-    <% }) %>
-  </ul>
 
+ 
 
 	
 </body>
