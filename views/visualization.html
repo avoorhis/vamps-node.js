@@ -1,0 +1,55 @@
+<html>
+<head>
+	<title><%- title %></title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
+	<script type="text/javascript" src="/javascripts/global.js"></script>
+	<script type="text/javascript" src="/javascripts/visualization.js"></script>
+</head>
+<body>
+<div>
+<a href="./">Home</a></li>
+</div>
+
+<h1>Community Visualization</h1>
+
+  
+<% datasets_by_project_all = JSON.parse(rows) %>
+
+<div id='projects'>
+<ul>
+<% for(var project in datasets_by_project_all) { %>
+    <% pid = datasets_by_project_all[project][0].pid %>
+	<li>
+    <label class="project-select" >
+      <a href='#'  id="" onclick="toggle_selected_datasets('<%= pid %>','<%= project %>'); return false;" ><img alt='plus' src='images/tree_plus.gif' /></a>
+	
+      <input type='checkbox' id='<%= project %>+"--pj-id"' name='project_ids[]' onclick="open_datasets()" \>
+	  <%= project %>
+	</label>
+	
+	<ul>
+	  <% project_dataset_div = pid+'_ds_div' %>
+      <div id='<%= project_dataset_div %>' class='display_none'> 
+	  <% for(item in datasets_by_project_all[project]) { %>
+	    <% dataset = datasets_by_project_all[project][item].dataset %>
+	    <% did = datasets_by_project_all[project][item].did %>
+		<li>
+        <label class="dataset-select" >
+            
+            <input type='checkbox' id='<%= did %>' onclick="check_project('<%= pid %>','<%= project %>')" \>
+		  <%= dataset %>
+		</label>	
+	    </li>
+	    
+	  <% } %>
+	  </div>
+	</ul>
+	</li>
+<% } %>
+</ul>
+</div>
+
+	
+</body>
+</html>
