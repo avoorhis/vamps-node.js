@@ -1,7 +1,7 @@
 body {
   padding: 30px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  
+  background: #F8F8F8;
 }
 
 h2 {
@@ -11,7 +11,12 @@ h2 {
 a {
   color: #00B7FF;
 }
-
+#header {
+    background:url('../images/helix100_6.png');
+    
+    width:620px
+    height:200px;
+}
 #wrapper {
 	padding-left:312px;
 	position:relative;

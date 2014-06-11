@@ -4,8 +4,13 @@
     display:none;
 }
 
-
+#projects {
+    border: 1px solid gray;
+    width: 350px;
+    height: 600px;
+    overflow:auto;
+}
 #projects ul li {
-    padding-left: 2em;
+    
     list-style-type: none;
 }

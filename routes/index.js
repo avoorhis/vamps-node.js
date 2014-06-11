@@ -49,28 +49,80 @@ router.post('/adduser', function(req, res) {
 
 /* GET Datasetlist page. */
 router.get('/visualization', function(req, res) {
-    
+// {
+//     2: {'pname': "BPC_MRB_C", 'datasets':[
+//         {"id":244,"ds":"dataset244"}
+//     ]},
+//     6: {'pname':"SLM_NIH_Bv4v5", 'datasets':[
+//         {"id":3,"dname":"1St_121_Stockton"},
+//         {"id":4,"dname":"1St_120_Richmond"},
+//         {"id":5,"dname":"1St_152_Metro_North"},
+//         {"id":6,"dname":"1St_114_Hardinsburg"},
+//         {"id":19,"dname":"1St_127_Pendleton"}
+//     ]}
+// }    
     var db = req.db;
-    var collection = db.query('SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)', function (err, rows, fields){
+    var q0 = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id) where project != 'SLM_NIH_Bv4v5'"
+    var collection = db.query(q0, function (err, rows, fields){
     	if(err)	{
 			throw err;
 		}else{
-			datasets_by_project_all = new Object();
-			//datasets_by_project_all = [];
+			var datasetsByProjectAll = {};
+			var projects = []
+			var datasets_list = []
+			var already_have_project
+			datasetsByProjectAll.projects = projects
 			for(n=0;n<rows.length;n++){
 				//console.log(rows[n].dataset)
 				//console.log(rows[n].project)
-				if(rows[n].project in datasets_by_project_all){
-					datasets_by_project_all[rows[n].project].push({'pid':rows[n].pid,'did':rows[n].did,'dataset':rows[n].dataset})
-				}else{
-					datasets_by_project_all[rows[n].project] = [{'pid':rows[n].pid,'did':rows[n].did,'dataset':rows[n].dataset}]
+				pname   = rows[n].project
+				pid     = rows[n].pid
+				did     = rows[n].did
+				dname   = rows[n].dataset
+				dataset = {
+				    "did"   : did,
+				    "dname" : dname
+				    }
+				project = {
+				    "pid"   : pid,
+				    "pname" : pname
+				    }
+				 
+				already_have_project = false
+				for (var i=0; i<datasetsByProjectAll.projects.length; i++) {
+				    if (datasetsByProjectAll.projects[i].pid == pid) {
+				        // here we add our dataset to datasetsByProjectAll.projects[i].datasets.push(dataset)
+				        datasetsByProjectAll.projects[i].datasets.push(dataset)
+				        already_have_project = true
+				    }
 				}
+				if(!already_have_project){
+				    // add this dataset to it -- first one	
+				    project.datasets = [dataset]
+				    datasetsByProjectAll.projects.push(project)
+				}	
+
 			}
-			console.log( JSON.stringify(datasets_by_project_all) );
-			res.render('visualization',{ title: 'Show Datasets!', rows: JSON.stringify(datasets_by_project_all) })
+			if(IsJsonString(JSON.stringify(datasetsByProjectAll))){
+			    console.log('TRUE')
+			}else{
+			    console.log('FALSE')
+			}
+			console.log(JSON.stringify(datasetsByProjectAll));
+			//console.log( JSON.stringify(datasets_by_project_all) );
+			res.render('visualization',{ title: 'Show Datasets!', rows: JSON.stringify(datasetsByProjectAll) })
 		}
 		
     });  
 });
 
 module.exports = router;
+
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
