@@ -1,16 +1,51 @@
 /*=== Visualization === */
 .display_none{
-/*    hidden*/
+  /*    hidden*/
     display:none;
 }
+#output_selection_div_id {
+    border: 1px solid grey;
+    list-style-type: none;
+    width:50%;
+    padding:5px;
+    text-align:left;
+}
+#output_selection_div_id ul li {
+    
+    list-style-type: none;
+    display:inline;
 
+    text-align:left;
+    
+    
+}
 #projects {
     border: 1px solid gray;
     width: 350px;
-    height: 600px;
+    height: 500px;
     overflow:auto;
+    font-size: small;
 }
 #projects ul li {
     
     list-style-type: none;
+    
+}
+#projects ul .project-select {
+    margin-left:-30px;
+}
+#projects ul .dataset-select {
+    margin-left:-30px;
+}
+#simpleTaxa {
+    border: 1px solid gray;
+    width: 350px;
+    height: 500px;
+    overflow:auto;
+    padding-left:-30px;
+    font-size: small;
+}
+#simpleTaxa ul li {
+    list-style-type: none;
+    margin-left:-30px;
 }
