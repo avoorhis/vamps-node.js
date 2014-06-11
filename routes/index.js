@@ -48,25 +48,26 @@ router.post('/adduser', function(req, res) {
 });
 
 /* GET Datasetlist page. */
-router.get('/datasetlist', function(req, res) {
+router.get('/visualization', function(req, res) {
     
     var db = req.db;
-    var collection = db.query('SELECT project,dataset FROM datasets JOIN projects on (projects.id=project_id)', function (err, rows, fields){
+    var collection = db.query('SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)', function (err, rows, fields){
     	if(err)	{
 			throw err;
 		}else{
 			datasets_by_project_all = new Object();
+			//datasets_by_project_all = [];
 			for(n=0;n<rows.length;n++){
 				//console.log(rows[n].dataset)
 				//console.log(rows[n].project)
 				if(rows[n].project in datasets_by_project_all){
-					datasets_by_project_all[rows[n].project].push(rows[n].dataset)
+					datasets_by_project_all[rows[n].project].push({'pid':rows[n].pid,'did':rows[n].did,'dataset':rows[n].dataset})
 				}else{
-					datasets_by_project_all[rows[n].project] = [rows[n].dataset]
+					datasets_by_project_all[rows[n].project] = [{'pid':rows[n].pid,'did':rows[n].did,'dataset':rows[n].dataset}]
 				}
 			}
-			console.log( Object.keys(datasets_by_project_all).length );
-			res.render('datasetlist',{ title: 'Show Datasets!', rows: JSON.stringify(datasets_by_project_all) })
+			console.log( JSON.stringify(datasets_by_project_all) );
+			res.render('visualization',{ title: 'Show Datasets!', rows: JSON.stringify(datasets_by_project_all) })
 		}
 		
     });  
