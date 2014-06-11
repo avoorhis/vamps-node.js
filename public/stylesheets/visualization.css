@@ -1,0 +1,11 @@
+/*=== Visualization === */
+.display_none{
+/*    hidden*/
+    display:none;
+}
+
+
+#projects ul li {
+    padding-left: 2em;
+    list-style-type: none;
+}
