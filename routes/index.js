@@ -62,7 +62,7 @@ router.get('/visualization', function(req, res) {
 //     ]}
 // }    
     var db = req.db;
-    var q0 = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id) where project != 'SLM_NIH_Bv4v5'"
+    var q0 = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)"
     var collection = db.query(q0, function (err, rows, fields){
     	if(err)	{
 			throw err;

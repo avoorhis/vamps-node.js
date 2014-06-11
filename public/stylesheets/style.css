@@ -17,6 +17,9 @@ a {
     width:620px
     height:200px;
 }
+.content {
+    margin-left: 210px;  /* the menu is float left 200px */
+}
 #wrapper {
 	padding-left:312px;
 	position:relative;
@@ -63,3 +66,29 @@ fieldset {
 	padding:0; margin:0;
 }
 
+/* CSSTerm.com Simple CSS menu */
+
+.main_menu ul {
+    float:left;
+    margin: 0; 
+    padding: 0;
+    width:200px;
+    list-style-type: none;
+}
+
+.main_menu ul li a {
+    text-decoration: none;
+    color: white; 
+    padding: 10.5px 11px;
+    background-color: #005555;
+    display:block;
+}
+ 
+.main_menu ul li a:visited {
+    color: white;
+}
+ 
+.main_menu ul li a:hover, .main_menu ul li .current {
+    color: white;
+    background-color: #5FD367;
+}
