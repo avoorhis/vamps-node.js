@@ -1,0 +1,34 @@
+  <ul>
+  <% for(i in datasets_by_project_all.projects) { %> 
+    
+    <% pid = datasets_by_project_all.projects[i].pid %>
+    <% pname = datasets_by_project_all.projects[i].pname %>
+	<li>
+    <label class="project-select" >
+      <a href='#'  id="<%= pname + "_toggle" %>" onclick="toggle_selected_datasets('<%= pid %>','<%= pname %>'); return false;" >
+        <img alt='plus' src='images/tree_plus.gif' /></a>
+      <input type='checkbox' id='<%= pname + "--pj-id" %>' name='project_ids[]' onclick="open_datasets('<%= pid %>','<%= pname %>')" \>
+	  <%= pname %>
+	</label>
+	
+	<ul>
+	  
+      <div id='<%= pid+"_ds_div" %>' class='display_none'> 
+	  <% for(k in datasets_by_project_all.projects[i].datasets) { %>
+	    <% dname = datasets_by_project_all.projects[i].datasets[k].dname %>
+	    <% did = datasets_by_project_all.projects[i].datasets[k].did %>
+		<li>
+        <label class="dataset-select" >
+            <input type='checkbox' id='<%= did %>' name='dataset_ids[]' onclick="set_check_project('<%= pid %>','<%= pname %>')" \>
+		  <%= dname %>
+		</label>	
+	    </li>
+	    
+	  <% } %>
+	  </div>
+	</ul>
+
+	</li>
+
+  <% } %>
+  </ul>

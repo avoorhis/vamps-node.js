@@ -62,8 +62,8 @@ router.get('/visualization', function(req, res) {
 //     ]}
 // }    
     var db = req.db;
-    var q0 = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)"
-    var collection = db.query(q0, function (err, rows, fields){
+    var qDatasets = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)"
+    var collection = db.query(qDatasets, function (err, rows, fields){
     	if(err)	{
 			throw err;
 		}else{
@@ -101,7 +101,6 @@ router.get('/visualization', function(req, res) {
 				    project.datasets = [dataset]
 				    datasetsByProjectAll.projects.push(project)
 				}	
-
 			}
 			if(IsJsonString(JSON.stringify(datasetsByProjectAll))){
 			    console.log('TRUE')
@@ -110,10 +109,22 @@ router.get('/visualization', function(req, res) {
 			}
 			console.log(JSON.stringify(datasetsByProjectAll));
 			//console.log( JSON.stringify(datasets_by_project_all) );
-			res.render('visualization',{ title: 'Show Datasets!', rows: JSON.stringify(datasetsByProjectAll) })
+			var simpleTaxonomy = {"domains":[{'id':1,'name':"Archaea"},
+			                                {'id':2,'name':"Bacteria"},
+			                                {'id':5,'name':"Eukarya"},
+			                                {'id':3,'name':"Organelle"},
+			                                {'id':4,'name':"Unknown"}]}
+			res.render('visualization',{    title   : 'Show Datasets!', 
+			                                rows    : JSON.stringify(datasetsByProjectAll),
+			                                taxonomy: JSON.stringify(simpleTaxonomy)
+			                        })
 		}
 		
     });  
+    
+  
+   
+    
 });
 
 module.exports = router;
