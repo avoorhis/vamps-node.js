@@ -47,7 +47,7 @@ router.post('/adduser', function(req, res) {
     });
 });
 
-/* GET Datasetlist page. */
+/* GET visualization page. */
 router.get('/visualization', function(req, res) {
 // {
 //     2: {'pname': "BPC_MRB_C", 'datasets':[
@@ -102,22 +102,31 @@ router.get('/visualization', function(req, res) {
 				    datasetsByProjectAll.projects.push(project)
 				}	
 			}
-			if(IsJsonString(JSON.stringify(datasetsByProjectAll))){
-			    console.log('TRUE')
-			}else{
-			    console.log('FALSE')
-			}
-			console.log(JSON.stringify(datasetsByProjectAll));
+			
+			
 			//console.log( JSON.stringify(datasets_by_project_all) );
-			var simpleTaxonomy = {"domains":[{'id':1,'name':"Archaea"},
-			                                {'id':2,'name':"Bacteria"},
-			                                {'id':5,'name':"Eukarya"},
-			                                {'id':3,'name':"Organelle"},
-			                                {'id':4,'name':"Unknown"}]}
+			var simpleTaxonomy = {"domains":[ {'id':1,'name':"Archaea"},
+			                                  {'id':2,'name':"Bacteria"},
+			                                  {'id':5,'name':"Eukarya"},
+			                                  {'id':3,'name':"Organelle"},
+			                                  {'id':4,'name':"Unknown"}
+			                                ]}
+			                                
+			var unitSelect = {"units":[ 
+							{'id' : 'tax_silva116_simple',	'name' : "Taxonomy Silva116 Simple Selection"},
+			                {'id' : 'tax_silva116_custom',	'name' : "Taxonomy Silva116 Custom Selection"},
+			                {'id' : 'tax_gg_simple',			'name' : "Taxonomy Greengenes Simple Selection"},
+			                {'id' : 'tax_gg_custom',			'name' : "Taxonomy Greengenes Custom Selection"},
+			                {'id' : 'tax_rdp',				'name' : "Taxonomy RDP Selection"},
+			                {'id' : 'otus',					'name' : "OTU Selection"},
+			                {'id' : 'med_nodes',				'name' : "MED Nodes Selection"}
+			                           ]}  
+			console.log(JSON.stringify(unitSelect));                                                             
 			res.render('visualization',{    title   : 'Show Datasets!', 
 			                                rows    : JSON.stringify(datasetsByProjectAll),
-			                                taxonomy: JSON.stringify(simpleTaxonomy)
-			                        })
+			                                taxonomy: JSON.stringify(simpleTaxonomy),
+			                                units	: JSON.stringify(unitSelect)
+			                            })
 		}
 		
     });  
