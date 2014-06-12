@@ -37,6 +37,10 @@
 #projects ul .dataset-select {
     margin-left:-30px;
 }
+.project-select a {
+	text-decoration: none;
+	color: navy; 
+}
 #simpleTaxa {
     border: 1px solid gray;
     width: 350px;
