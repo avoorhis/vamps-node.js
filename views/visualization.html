@@ -18,45 +18,40 @@
 <div class='content'>  
 <% datasets_by_project_all = JSON.parse(rows) %>
 <% simpleTaxonomy = JSON.parse(taxonomy) %>
+<% unitSelections = JSON.parse(units) %>
 
 <form id='' class='' method='POST' action='visualization_ajax.html'>
-<div id='output_selection_div_id' class=''>
-    <p class='standard'>
-    1) Select the datasets and/or customized dataset combinations you would like to analyze from the list on the left. <br>
-2) Choose Simple or Custom taxonomy, and select the domains and taxonomic depth for your analysis. <br>
-3) Choose normalization (to maximum or frequency) for the data comparison. Default is unnormalized. <br>
-4) Select the analysis from the series below. <br>
-    </p>
-    <ul>
-    <li><input type='checkbox' id='' name='tax_depth' value='heatmap'  \> Heatmap</li>
-    <li><input type='checkbox' id='' name='tax_depth' value='taxtable'  \> Counts (taxonomy) Table</li>
-    <li><input type='checkbox' id='' name='tax_depth' value='barcharts'   \> Bar Charts</li>
-    <li><input type='checkbox' id='' name='tax_depth' value='dendrograms'   \> Dendrograms</li>
-    <li><input type='checkbox' id='' name='tax_depth' value='alphadiversity'   \> Alpha Diversity</li>
-    </ul>
-    <input type='submit' id='' name='tax_depth' value='Start'   \>
-</div>
+	<% include visualization_controls.html %>  <!-- contains SUBMIT button -->
+	<table border='1'><tr>
+	<td>
+	  Project Selection
+	</td><td>
 
-<table border='1'><tr>
-<td>Project Selection
-</td><td>
-
-</td><td>
-Taxa Selection
-</td>
-</tr>
-<tr>
-<td>
-  <div id='projects'>
-    <% include project_list.html %>
-  </div>
-</td>
-<td><=></td>
-<td>
-  <div id='simpleTaxa'>
-    <% include simple_taxa.html %>
-  </div>
-</td></tr></table>
+	</td><td>
+	  Units:
+	  <select>
+		<% for(i in unitSelections.units) { %>
+			<% value  = unitSelections.units[i].id %>
+			<% name = unitSelections.units[i].name %>
+			
+			<option value='<%= value %>'><%= name %></option>
+		
+		<% } %>
+	  </select>
+	</td>
+	</tr>
+	<tr>
+	<td>
+	  <div id='projects'>
+		<% include project_list.html %>
+	  </div>
+	</td>
+	<td><=></td>
+	<td>
+	  <div id='simpleTaxa'>
+		<% include simple_taxa.html %>
+	  </div>
+	</td></tr></table>
 </form>
 </div>	
 </body>
