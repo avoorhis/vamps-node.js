@@ -38,11 +38,13 @@ function toggle_simple_taxa()
   boxes = document.getElementsByClassName('simple_taxa_ckbx');
   if(boxes[0].checked == false){
       for (i = 0; i < boxes.length; i++){
-          boxes[i].checked = true      
+          boxes[i].checked = true  
+          document.getElementById('toggle_taxa_btn').checked = true    
       }
   }else{
       for (i = 0; i < boxes.length; i++){
           boxes[i].checked = false
+          document.getElementById('toggle_taxa_btn').checked = false
       } 
   }
   
