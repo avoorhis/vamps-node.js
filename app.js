@@ -8,7 +8,7 @@ var db = require('mysql');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var datasets = require('./routes/datasets');
-
+var visuals = require('./routes/visualization');
 var app = express();
 
 var connection = db.createConnection({
@@ -40,6 +40,7 @@ app.use(function(req,res,next){
 app.use('/', routes);
 app.use('/users', users);
 app.use('/datasets', datasets);
+app.use('/visuals', visuals);
 
 
 
