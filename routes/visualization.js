@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET datasets listing. */
+/* GET users listing. */
 router.get('/', function(req, res) {
-  res.send('respond with a dataset resource');
+  res.send('respond with a visualization resource');
 });
 
 module.exports = router;
