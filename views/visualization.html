@@ -13,14 +13,14 @@
 </div>
 <div id='header' class='header'></div>
 <div id='title'>Community Visualization</div>
-<div id='subtitle'></div>
+<div id='subtitle'>Data Selection Page</div>
 
 <div class='content'>  
 <% datasets_by_project_all = JSON.parse(rows) %>
 <% simpleTaxonomy = JSON.parse(taxonomy) %>
 <% unitSelections = JSON.parse(units) %>
-
-<form id='' class='' method='POST' action='visualization_ajax.html'>
+<!-- autocomplete="off" clears the checkboxes on page refresh -->
+<form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
 	<% include visualization_controls.html %>  <!-- contains SUBMIT button -->
 	<table border='1'><tr>
 	<td>
