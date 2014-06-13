@@ -33,16 +33,21 @@ function toggle_selected_datasets(pid, project)
   }
 
 }
-function toggle_simple_taxa(req)
+function toggle_simple_taxa()
 {
   boxes = document.getElementsByClassName('simple_taxa_ckbx');
-  for (i = 0; i < boxes.length; i++){
-      if(req=='none'){
-            boxes[i].checked = false
-      }else{
-            boxes[i].checked = true
+  if(boxes[0].checked == false){
+      for (i = 0; i < boxes.length; i++){
+          boxes[i].checked = true      
       }
+  }else{
+      for (i = 0; i < boxes.length; i++){
+          boxes[i].checked = false
+      } 
   }
+  
+  
+  
   
 }
 // function toggleAll(name)
