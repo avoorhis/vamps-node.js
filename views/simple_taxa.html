@@ -3,8 +3,7 @@
     
   </li>
   <span class='small_font' >
-    <input type='radio' id='' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa(this.value)"  \> Check All
-    <input type='radio' id='' name='taxa_ckbx_toggle' value='none' onclick="toggle_simple_taxa(this.value)"  \> Uncheck All
+    <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa()"  \> Toggle Taxa
   </span>
   <% for(i in simpleTaxonomy.domains) { %> 
     <% domain = simpleTaxonomy.domains[i].name %>
