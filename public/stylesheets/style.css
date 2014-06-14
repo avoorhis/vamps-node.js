@@ -17,6 +17,7 @@ a {
     position:relative;
     top:0px;
     height:100px;
+    border: 1px solid gray;
     z-index:-1;
 }
 .content {

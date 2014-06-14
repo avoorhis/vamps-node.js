@@ -15,7 +15,7 @@ function toggle_selected_datasets(pid, project)
     ds_div.style.display = 'none'
     document.getElementById(project+'--pj-id').checked = false
     // change image to plus.png
-    toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' />"
+    toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />"
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
         cbs[i].checked=false        
@@ -24,7 +24,7 @@ function toggle_selected_datasets(pid, project)
   }else{
     ds_div.style.display = 'inline'
     document.getElementById(project+'--pj-id').checked = true
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' />"
+    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />"
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
         cbs[i].checked=true        
@@ -33,16 +33,23 @@ function toggle_selected_datasets(pid, project)
   }
 
 }
-function toggle_simple_taxa(req)
+function toggle_simple_taxa()
 {
   boxes = document.getElementsByClassName('simple_taxa_ckbx');
-  for (i = 0; i < boxes.length; i++){
-      if(req=='none'){
-            boxes[i].checked = false
-      }else{
-            boxes[i].checked = true
+  if(boxes[0].checked == false){
+      for (i = 0; i < boxes.length; i++){
+          boxes[i].checked = true  
+          document.getElementById('toggle_taxa_btn').checked = true    
       }
+  }else{
+      for (i = 0; i < boxes.length; i++){
+          boxes[i].checked = false
+          document.getElementById('toggle_taxa_btn').checked = false
+      } 
   }
+  
+  
+  
   
 }
 // function toggleAll(name)
@@ -184,7 +191,7 @@ function open_datasets(pid, project)
     // check project
     ds_div.style.display = 'inline'
     document.getElementById(project+'--pj-id').checked = true
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' />"
+    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />"
     // now set all the ds checkboxes to 'checked'
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
