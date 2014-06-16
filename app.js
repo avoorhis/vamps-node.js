@@ -8,6 +8,7 @@ var db = require('mysql');
 var connection = require('./config/database-dev');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var userlist = require('./routes/userlist');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visualization');
 var app = express();
@@ -34,6 +35,7 @@ app.use(function(req,res,next){
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/userlist', userlist);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 
