@@ -1,5 +1,6 @@
-Start this with
+VAMPS rendition using Node.js (javascript)
 
+Start this with
 > npm start
 
 # to refresh anew via git
@@ -9,3 +10,6 @@ git reset --hard HEAD
 # the server is already running
 events.js:72
         throw er; // Unhandled 'error' event
+
+# test using mocha
+> mocha

@@ -5,19 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var db = require('mysql');
+var connection = require('./database');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visualization');
 var app = express();
 
-var connection = db.createConnection({
-  host     : 'localhost',
-  user     : 'ruby',
-  password : 'ruby',
-  database : 'vamps_rails'
-});
-connection.connect();
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
