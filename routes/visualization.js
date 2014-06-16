@@ -67,7 +67,7 @@ router.get('/', function(req, res) {
 			
 			                                
 
-			console.log(JSON.stringify(unitSelect));                                                             
+			console.log(JSON.stringify(config.unitSelect));                                                             
 			res.render('visualization',{    title   : 'Show Datasets!', 
 			                                rows    : JSON.stringify(datasetsByProjectAll),
 			                                taxonomy: JSON.stringify(config.simpleTaxonomy),
