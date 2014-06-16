@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+config = require('../config/config')
 /* GET users listing. */
 //router.get('/', function(req, res) {
  // res.send('respond with a visualization resource');
@@ -64,28 +64,14 @@ router.get('/', function(req, res) {
 			}
 			
 			
-			//console.log( JSON.stringify(datasets_by_project_all) );
-			var simpleTaxonomy = {"domains":[ {'id':1,'name':"Archaea"},
-			                                  {'id':2,'name':"Bacteria"},
-			                                  {'id':5,'name':"Eukarya"},
-			                                  {'id':3,'name':"Organelle"},
-			                                  {'id':4,'name':"Unknown"}
-			                                ]}
+			
 			                                
-			var unitSelect = {"units":[ 
-							{'id' : 'tax_silva116_simple',	'name' : "Taxonomy Silva116 Simple Selection"},
-			                {'id' : 'tax_silva116_custom',	'name' : "Taxonomy Silva116 Custom Selection"},
-			                {'id' : 'tax_gg_simple',			'name' : "Taxonomy Greengenes Simple Selection"},
-			                {'id' : 'tax_gg_custom',			'name' : "Taxonomy Greengenes Custom Selection"},
-			                {'id' : 'tax_rdp',				'name' : "Taxonomy RDP Selection"},
-			                {'id' : 'otus',					'name' : "OTU Selection"},
-			                {'id' : 'med_nodes',				'name' : "MED Nodes Selection"}
-			                           ]}  
+
 			console.log(JSON.stringify(unitSelect));                                                             
 			res.render('visualization',{    title   : 'Show Datasets!', 
 			                                rows    : JSON.stringify(datasetsByProjectAll),
-			                                taxonomy: JSON.stringify(simpleTaxonomy),
-			                                units	: JSON.stringify(unitSelect)
+			                                taxonomy: JSON.stringify(config.simpleTaxonomy),
+			                                units	: JSON.stringify(config.unitSelect)
 			                            })
 		}
 		
