@@ -4,7 +4,7 @@ var connection = db.createConnection({
   host     : 'localhost',
   user     : 'ruby',
   password : 'ruby',
-  database : 'vamps_rails'
+  database : 'vamps_js_testing'
 });
 connection.connect();
 module.exports = connection;
