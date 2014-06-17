@@ -1,0 +1,35 @@
+<html>
+<head>
+	<title>TITLE</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<script type="text/javascript" src="/javascripts/global.js"></script>
+</head>
+<body>
+<div id='main_menu' class='main_menu'>
+    <% include main_menu.html %>
+</div>
+<div id='header' class='header'></div>
+<div id='title'>VAMPS Projects Listing</div>
+<div id='subtitle'></div>
+
+<div class='content'>  
+<% project_rows = rows %>
+<div id='project_list_div'>
+  <ul>
+	<% for(i in project_rows) { %>
+			
+		<li value='<%= project_rows[i].username %>'>
+			<%= project_rows[i].project %>
+			<%= ' -- ' %>
+			<%= project_rows[i].title %>
+			<%= project_rows[i].project_description %>
+		</li>
+		
+	<% } %>
+  </ul>
+</div>
+</div>
+
+
+</body>
+</html>
