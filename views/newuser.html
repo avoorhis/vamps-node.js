@@ -1,8 +1,29 @@
-extends layout
+<html>
+<head>
+	<title>TITLE</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<script type="text/javascript" src="/javascripts/global.js"></script>
+</head>
+<body>
+<div id='main_menu' class='main_menu'>
+    <% include main_menu.html %>
+</div>
+<div id='header' class='header'></div>
+<div id='title'>Add User</div>
+<div id='subtitle'></div>
 
-block content
-    h1= title
-    form#formAddUser(name="adduser",method="post",action="/adduser")
-        input#inputUserName(type="text", placeholder="username", name="username")
-        input#inputUserEmail(type="text", placeholder="useremail", name="useremail")
-        button#btnSubmit(type="submit") submit
+<div class='content'>  
+
+<form id='' name='' method='POST' action='adduser'>
+  <ul>
+	<li> <input id='username' 			name='username' 		type="text" \> Username</li>
+	<li> <input id='userfirstname' 		name='userfirstname' 	type="text" \> First Name</li>
+	<li> <input id='userlastname' 		name='userlastname' 	type="text" \> Last name</li>
+	<li> <input id='useremail' 			name='useremail' 		type="text" \> Email</li>
+	<li> <input id='userinstitution' 	name='userinstitution' 	type="text" \> Institution</li>
+	<li> <input id='' 	type="submit" value='Enter'\></li>
+  </ul>
+</form>
+</div>
+</body>
+</html>
