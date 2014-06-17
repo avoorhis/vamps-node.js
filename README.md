@@ -18,3 +18,5 @@ events.js:72
 
 # test using mocha
 > mocha
+
+# MySQL db schema is included in root dir as: db_schema.sql
