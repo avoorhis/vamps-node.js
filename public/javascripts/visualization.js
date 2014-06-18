@@ -1,7 +1,6 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
-
-
+selected_datasets=[]
 //
 // TOGGLE_SELECTED_DATASETS
 //
@@ -31,8 +30,8 @@ function toggle_selected_datasets(pid, project)
       }
     }
   }
-
 }
+
 function toggle_simple_taxa()
 {
   boxes = document.getElementsByClassName('simple_taxa_ckbx');
@@ -46,19 +45,20 @@ function toggle_simple_taxa()
           boxes[i].checked = false
           document.getElementById('toggle_taxa_btn').checked = false
       } 
-  }
-  
-  
-  
-  
+  }  
 }
-function load_visualization_items(rows,units){
+
+function load_visualization_items_p1(rows){
   load_project_select(rows)
+}
+function load_visualization_items_p2(bodyItems,units){
+  show_selected_datasets(bodyItems)
   load_unit_select(units)
 }
+
 function load_unit_select(unitSelections){
     rows = JSON.parse(unitSelections)
-   html = "Units:"
+    html = "Units:"
     html += "<select>"
     for(i in rows.units) {
        value  = rows.units[i].id
@@ -68,6 +68,23 @@ function load_unit_select(unitSelections){
     html += "</select>"
     var div = document.getElementById('units_select_div').innerHTML = html
 }
+
+function show_selected_datasets(bodyItems){
+    
+  body = JSON.parse(bodyItems)
+  html = '<ul>'
+  for(i in body.dataset_ids){
+    //alert(i)
+    html += "<li>"
+    html += i
+    html += "</li>"
+  }
+  html += '</ul>'
+  //alert(html)
+  var div = document.getElementById('show_selected_datasets_div').innerHTML = html
+
+}
+
 function load_project_select(datasets_by_project_all){
   //alert('in load')
   rows = JSON.parse(datasets_by_project_all)
@@ -75,23 +92,26 @@ function load_project_select(datasets_by_project_all){
   for(i in rows.projects){
     pname = rows.projects[i].pname
     pid   = rows.projects[i].pid 
+    
     html += "<li>"
     html += "<label class='project-select' >"
-    html += "  <a href='#'  id='"+pname+"_toggle'"                
+    html += "  <a href='#'  id='"+ pname +"_toggle'"                
     html += "        onclick=\"toggle_selected_datasets('"+ pid +"','"+ pname +"'); return false;\" >"
     html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
-    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]'" 
+    
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids["+pname+"]'" 
     html += "        onclick=\"open_datasets('"+ pid +"','"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
     html += "</label>"
     html += "<ul>"
-    html += "<div id='"+ pid+"_ds_div' class='display_none'>"
+    html += "<div id='"+ pid +"_ds_div' class='display_none'>"
     for(k in rows.projects[i].datasets) {
       dname = rows.projects[i].datasets[k].dname
       did = rows.projects[i].datasets[k].did
+      pd = pname+'--'+dname
       html += "<li>"
       html += "<label class='dataset-select' >"
-      html += "   <input type='checkbox' id='"+ did +"' name='dataset_ids[]'"
+      html += "   <input type='checkbox' id='"+ did +"' name='dataset_ids["+pd+"]'"
       html += "      onclick=\"set_check_project('"+ pid +"','"+ pname +"')\" \>"
       html += dname
       html += "</label>"

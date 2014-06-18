@@ -6,39 +6,32 @@
 	<script type="text/javascript" src="/javascripts/global.js"></script>
 	<script type="text/javascript" src="/javascripts/visualization.js"></script>
 </head>
-<body onload="load_main_menu();load_visualization_items('<%= rows %>','<%= units %>');">
+<body onload="load_main_menu();load_visualization_items_p1('<%= rows %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='title'>Community Visualization</div>
 
-<div id='subtitle'>Data Selection Page</div>
-
+<div id='subtitle'>Dataset Selection Page</div>
 
 <div class='content'>  
-<% simpleTaxonomy = JSON.parse(taxonomy) %>
-<% unitSelections = JSON.parse(units) %>
 <!-- autocomplete="off" clears the checkboxes on page refresh -->
-<form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
-	<% include visualization_controls.html %>  <!-- contains SUBMIT button -->
-	<table border='1'><tr>
+<form id='' class='' method='POST' action='visuals/unit_selection' autocomplete="off">
+  
+  <table border='1'><tr>
 	<td>
-	  Project Selection
-	</td><td>
-
-	</td><td>
-		<div id='units_select_div'></div>
+	  	Dataset Selection
+	</td>
+	<td>
+		<input type='submit' value='Next: Unit Selection'>
 	</td>
 	</tr>
 	<tr>
 	<td>
 	  <div id='projects_select_div'></div>
 	</td>
-	<td><=></td>
-	<td>
-	  <div id='simpleTaxa'>
-		<% include taxa_simple.html %>
-	  </div>
-	</td></tr></table>
+	</tr>
+  </table>
+  <input type='hidden' id='' value='SeCrEt' name='my_hidden_var' />
 </form>
 </div>	
 </body>
