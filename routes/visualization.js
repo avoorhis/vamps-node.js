@@ -22,7 +22,9 @@ router.get('/', function(req, res) {
 //     ]}
 // }    
     var db = req.db;
-    var qDatasets = "SELECT project, projects.id as pid, dataset, datasets.id as did FROM datasets JOIN projects on (projects.id=project_id)"
+    var qDatasets = "SELECT project, projects.id as pid, dataset, datasets.id as did"
+    qDatasets    += " FROM datasets"
+    qDatasets    += " JOIN projects ON (projects.id=project_id)"
     var collection = db.query(qDatasets, function (err, rows, fields){
     	if(err)	{
 			throw err;
