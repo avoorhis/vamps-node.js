@@ -12,20 +12,7 @@
 
 <div class='content'>  
 <% project_rows = rows %>
-<div id='project_list_div' class='general_table' >
-  <ul>
-	<% for(i in project_rows) { %>
-		<% link = '/projects/project/:id' %>	
-		<li value='<%= project_rows[i].username %>'>
-			<a href='<%= link %>'><%= project_rows[i].project %></a>
-			<%= ' -- ' %>
-			<%= project_rows[i].title %>
-			<%= project_rows[i].project_description %>
-		</li>
-		
-	<% } %>
-  </ul>
-</div>
+<div id='project_list_div' class='general_table' ></div>
 </div>
 
 
