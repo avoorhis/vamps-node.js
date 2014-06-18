@@ -4,20 +4,17 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
-<body>
-<div id='main_menu' class='main_menu'>
-    <% include main_menu.html %>
-</div>
+<body onload="load_main_menu();">
 <div id='header' class='header'></div>
+<div id='main_menu' class='main_menu'></div>
 <div id='title'>VAMPS User List</div>
 <div id='subtitle'></div>
 
 <div class='content'>  
 <% user_rows = rows %>
-
+<div id='user_list_div' class='general_table' >
   <ul>
 	<% for(i in user_rows) { %>
-			
 		<li value='<%= user_rows[i].username %>'>
 			<%= user_rows[i].username %>
 			<%= ' -- ' %>
@@ -27,6 +24,7 @@
 		
 	<% } %>
   </ul>
+</div>
 </div>
 
 
