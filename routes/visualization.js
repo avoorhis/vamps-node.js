@@ -1,12 +1,30 @@
 var express = require('express');
 var router = express.Router();
 config = require('../config/config')
+var app = express();
+
 /* GET users listing. */
 //router.get('/', function(req, res) {
  // res.send('respond with a visualization resource');
 //});
 
-
+router.post('/unit_selection', function(req, res) {
+	console.log("Got response: " + res.statusCode);
+	console.log(req.body);
+	var datasets = req.body.dataset_ids
+	console.log(datasets);
+	if(!datasets){
+		console.log("no data")
+		//alert('no data')
+		res.redirect(req.get('referer'))
+	}else{
+		res.render('unit_selection', { 	title: 'Unit Selection', 
+									body: JSON.stringify(req.body),
+									taxonomy: JSON.stringify(config.simpleTaxonomy),
+			                        units	: JSON.stringify(config.unitSelect)
+								})
+	}
+});
 /* GET visualization page. */
 router.get('/', function(req, res) {
 // {
@@ -15,8 +33,6 @@ router.get('/', function(req, res) {
 //     ]},
 //     6: {'pname':"SLM_NIH_Bv4v5", 'datasets':[
 //         {"id":3,"dname":"1St_121_Stockton"},
-//         {"id":4,"dname":"1St_120_Richmond"},
-//         {"id":5,"dname":"1St_152_Metro_North"},
 //         {"id":6,"dname":"1St_114_Hardinsburg"},
 //         {"id":19,"dname":"1St_127_Pendleton"}
 //     ]}
@@ -69,12 +85,10 @@ router.get('/', function(req, res) {
 			
 			                                
 
-			console.log(JSON.stringify(config.unitSelect));                                                             
-			res.render('visualization',{    title   : 'Show Datasets!', 
-			                                rows    : JSON.stringify(datasetsByProjectAll),
-			                                taxonomy: JSON.stringify(config.simpleTaxonomy),
-			                                units	: JSON.stringify(config.unitSelect)
-			                            })
+			//console.log(JSON.stringify(datasetsByProjectAll));                                                             
+			res.render('dataset_selection',{ title   : 'Show Datasets!', 
+			                                 rows    : JSON.stringify(datasetsByProjectAll)			                                
+			                            	})
 		}
 		
     });  
