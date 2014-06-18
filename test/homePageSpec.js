@@ -1,7 +1,7 @@
 var async = require('async'),
   request = require('supertest'),
-  should = require('should'),
-  app = require('../app')
+  should  = require('should'),
+  app 	  = require('../app')
   
 
 // 1.1 Home Page Requirements:
@@ -19,4 +19,6 @@ describe('HomePage', function(){
 	  done();
     });
   });
+
+
 });
