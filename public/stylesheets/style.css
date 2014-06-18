@@ -42,6 +42,15 @@ a {
 .bold_font {
    font-weight:bold;
 }
+.general_table{
+    border:1px solid green;
+    
+}
+.general_table ul {
+       
+    text-align:left;
+    list-style-type: none;
+}
 
 /* CSSTerm.com Simple CSS menu */
 

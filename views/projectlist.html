@@ -4,22 +4,20 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
-<body>
-<div id='main_menu' class='main_menu'>
-    <% include main_menu.html %>
-</div>
+<body onload="load_main_menu(); load_projectslist('<%= JSON.stringify(rows) %>');">
 <div id='header' class='header'></div>
+<div id='main_menu' class='main_menu'></div>
 <div id='title'>VAMPS Projects Listing</div>
 <div id='subtitle'></div>
 
 <div class='content'>  
 <% project_rows = rows %>
-<div id='project_list_div'>
+<div id='project_list_div' class='general_table' >
   <ul>
 	<% for(i in project_rows) { %>
-			
+		<% link = '/projects/project/:id' %>	
 		<li value='<%= project_rows[i].username %>'>
-			<%= project_rows[i].project %>
+			<a href='<%= link %>'><%= project_rows[i].project %></a>
 			<%= ' -- ' %>
 			<%= project_rows[i].title %>
 			<%= project_rows[i].project_description %>

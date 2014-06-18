@@ -52,6 +52,60 @@ function toggle_simple_taxa()
   
   
 }
+function load_visualization_items(rows,units){
+  load_project_select(rows)
+  load_unit_select(units)
+}
+function load_unit_select(unitSelections){
+    rows = JSON.parse(unitSelections)
+   html = "Units:"
+    html += "<select>"
+    for(i in rows.units) {
+       value  = rows.units[i].id
+       name   = rows.units[i].name
+       html += "<option value='"+ value+"'>"+name+"</option>"
+    }
+    html += "</select>"
+    var div = document.getElementById('units_select_div').innerHTML = html
+}
+function load_project_select(datasets_by_project_all){
+  //alert('in load')
+  rows = JSON.parse(datasets_by_project_all)
+  html = '<ul>'
+  for(i in rows.projects){
+    pname = rows.projects[i].pname
+    pid   = rows.projects[i].pid 
+    html += "<li>"
+    html += "<label class='project-select' >"
+    html += "  <a href='#'  id='"+pname+"_toggle'"                
+    html += "        onclick=\"toggle_selected_datasets('"+ pid +"','"+ pname +"'); return false;\" >"
+    html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]'" 
+    html += "        onclick=\"open_datasets('"+ pid +"','"+ pname +"')\" \>"
+    html += "<a href=''>"+ pname +"</a>"
+    html += "</label>"
+    html += "<ul>"
+    html += "<div id='"+ pid+"_ds_div' class='display_none'>"
+    for(k in rows.projects[i].datasets) {
+      dname = rows.projects[i].datasets[k].dname
+      did = rows.projects[i].datasets[k].did
+      html += "<li>"
+      html += "<label class='dataset-select' >"
+      html += "   <input type='checkbox' id='"+ did +"' name='dataset_ids[]'"
+      html += "      onclick=\"set_check_project('"+ pid +"','"+ pname +"')\" \>"
+      html += dname
+      html += "</label>"
+      html += "</li>"
+    } 
+    html += "</div>"
+    html += "</ul>"
+    html += "</li>"
+    
+  }
+  html += "</ul>"
+  //alert(html)
+  var div = document.getElementById('projects_select_div').innerHTML = html
+}
 // function toggleAll(name)
 // {
 //   boxes = document.getElementsByClassName(name);

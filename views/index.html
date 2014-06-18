@@ -5,12 +5,9 @@
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	<script type="text/javascript" src="javascripts/global.js"></script>
 </head>
-<body>
-<div id='main_menu' class='main_menu'>
-    <% include main_menu.html %>
-</div>
-
-<div id='header' class='header'> </div>
+<body onload="load_main_menu();">
+<div id='header' class='header'></div>
+<div id='main_menu' class='main_menu'></div>
 <div id='title'  class=''>VAMPS (Node.js)</div>
 <div id='subtitle'  class=''>The Visualization and Analysis 
     of Microbial Population Structures
