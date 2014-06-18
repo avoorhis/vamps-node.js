@@ -16,7 +16,9 @@ git reset --hard HEAD
 events.js:72
         throw er; // Unhandled 'error' event
 
-# test using mocha
+## test using mocha
+> make test
+OR
 > mocha
 
 # MySQL db schema is included in root dir as: db_schema.sql
