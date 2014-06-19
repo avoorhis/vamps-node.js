@@ -15,14 +15,14 @@
 
 <div class='content'>  
 <!-- autocomplete="off" clears the checkboxes on page refresh -->
-<form id='' class='' method='POST' action='visuals/unit_selection' autocomplete="off">
+<form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='visuals/unit_selection' autocomplete="off">
   
   <table border='1'><tr>
 	<td>
 	  	Dataset Selection
 	</td>
 	<td>
-		<input type='submit' value='Next: Unit Selection'>
+		<input type='button' value='Next: Unit Selection' onclick='check_for_no_datasets(this.form);return false'>
 	</td>
 	</tr>
 	<tr>

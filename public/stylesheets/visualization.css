@@ -41,6 +41,10 @@
 	text-decoration: none;
 	color: navy; 
 }
+#show_selected_datasets_div {
+    height: 300px;
+    overflow: auto;
+}
 #simpleTaxa {
     border: 1px solid gray;
     width: 350px;
