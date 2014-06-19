@@ -9,13 +9,13 @@ config.simpleTaxonomy = {"domains":[ {'id':1,'name':"Archaea"},
                                 ]}
 
 config.unitSelect = {"units":[ 
-				{'id' : 'tax_silva116_simple',	'name' : "Taxonomy Silva116 Simple Selection"},
-                {'id' : 'tax_silva116_custom',	'name' : "Taxonomy Silva116 Custom Selection"},
-                {'id' : 'tax_gg_simple',		'name' : "Taxonomy Greengenes Simple Selection"},
-                {'id' : 'tax_gg_custom',		'name' : "Taxonomy Greengenes Custom Selection"},
-                {'id' : 'tax_rdp',				'name' : "Taxonomy RDP Selection"},
-                {'id' : 'otus',					'name' : "OTU Selection"},
-                {'id' : 'med_nodes',			'name' : "MED Nodes Selection"}
+				{'id' : 'tax_silva116_simple',	'name' : "Taxonomy Silva116 Simple"},
+                {'id' : 'tax_silva116_custom',	'name' : "Taxonomy Silva116 Custom"},
+                {'id' : 'tax_gg_simple',		'name' : "Taxonomy Greengenes Simple"},
+                {'id' : 'tax_gg_custom',		'name' : "Taxonomy Greengenes Custom"},
+                {'id' : 'tax_rdp',				'name' : "Taxonomy RDP"},
+                {'id' : 'otus',					'name' : "OTUs"},
+                {'id' : 'med_nodes',			'name' : "MED Nodes"}
                            ]}  
 
 module.exports = config;                                

@@ -1,3 +1,4 @@
+
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 selected_datasets=[]
@@ -58,7 +59,7 @@ function load_visualization_items_p2(bodyItems,units){
 
 function load_unit_select(unitSelections){
     rows = JSON.parse(unitSelections)
-    html = "Units:"
+    html = ""
     html += "<select>"
     for(i in rows.units) {
        value  = rows.units[i].id
@@ -76,7 +77,7 @@ function show_selected_datasets(bodyItems){
   for(i in body.dataset_ids){
     //alert(i)
     html += "<li>"
-    html += i
+    html += body.dataset_ids[i]
     html += "</li>"
   }
   html += '</ul>'
@@ -99,7 +100,7 @@ function load_project_select(datasets_by_project_all){
     html += "        onclick=\"toggle_selected_datasets('"+ pid +"','"+ pname +"'); return false;\" >"
     html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
     
-    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids["+pname+"]'" 
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'" 
     html += "        onclick=\"open_datasets('"+ pid +"','"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
     html += "</label>"
@@ -110,8 +111,8 @@ function load_project_select(datasets_by_project_all){
       did = rows.projects[i].datasets[k].did
       pd = pname+'--'+dname
       html += "<li>"
-      html += "<label class='dataset-select' >"
-      html += "   <input type='checkbox' id='"+ did +"' name='dataset_ids["+pd+"]'"
+      html += "<label class='dataset-select' name='xx' >"
+      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pd +"'"
       html += "      onclick=\"set_check_project('"+ pid +"','"+ pname +"')\" \>"
       html += dname
       html += "</label>"
@@ -120,9 +121,11 @@ function load_project_select(datasets_by_project_all){
     html += "</div>"
     html += "</ul>"
     html += "</li>"
+
     
   }
   html += "</ul>"
+  //html += "<input type='hidden' id='' value='OtherSeCrEt' name='my_hidden_var2' />"
   //alert(html)
   var div = document.getElementById('projects_select_div').innerHTML = html
 }
@@ -298,5 +301,22 @@ function set_check_project(pid, project)
   }
 }
 
+function check_for_no_datasets(thisform){
+  
+  var x = thisform["dataset_ids[]"];
+  gotone = false
+  for (var i=0; i<x.length; i++)
+  {
+      if(x[i].checked == true){
+        gotone = true
+      }
+  }
+  if(gotone){
+    thisform.submit();
+  }else{
+    alert('You must select some datasets')
+    return;
+  }
+}
 
 
