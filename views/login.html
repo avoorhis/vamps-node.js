@@ -1,0 +1,35 @@
+<html>
+<head>
+	<title>TITLE</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<script type="text/javascript" src="/javascripts/global.js"></script>
+</head>
+<body onload="load_main_menu();">
+<div id='header' class='header'></div>
+<div id='main_menu' class='main_menu'></div>
+<div id='title'  class=''>VAMPS Login</div>
+<div id='subtitle'  class=''></div>
+<div class='content'> 
+<% if (message.length > 0) { %>
+		<div class="alert alert-danger"><%= message %></div>
+<% } %>
+<form action="/login" method="post">
+    <div>
+        <label>Username:</label>
+        <input type="text" id='username' name="username"/>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" id='password' name="password"/>
+    </div>
+    <div>
+        <input type="submit" value="Log In"/>
+    </div>
+</form>
+<hr>
+<p>Need an account? <a href="/users/signup">Signup</a></p>
+<p>Or go <a href="/">home</a>.</p>
+
+</div>
+</body>
+</html>

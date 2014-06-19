@@ -1,4 +1,4 @@
-
+// global.js
 
 
 function load_main_menu(){
@@ -10,7 +10,7 @@ function load_main_menu(){
 	html += "    <li><a href='/visuals'>Community Visualization</a></li>"
 	html += "    <li><a href='/projects'>Project List</a></li>"
 	html += "    <li><a href='/users'>User List</a></li>"
-	html += "    <li><a href='/users/newuser'>User Administration</a></li>"
+	html += "    <li><a href='/users/profile'>User Administration</a></li>"
 	html += "    <li><a href='#'>Upload Data</a></li>"
 	html += "    <li><a href='#'>Export Data</a></li>"
 	html += "    <li><a href='#'>Search</a></li>"
@@ -22,17 +22,3 @@ function load_main_menu(){
 	var div = document.getElementById('main_menu').innerHTML = html
 }
 
-function load_projectslist(rows)
-{
-	rows = JSON.parse(rows)
-	
-	var html = '<ul>'
-	for(i in rows){
-		html += "<li><a href='/projects/:id'>"+rows[i].project+"</a>"
-		html += ' -- '+rows[i].title
-		html += ' '+rows[i].project_description
-	}
-	html += '</ul>'
-	var div = document.getElementById('project_list_div').innerHTML = html
-
-}
