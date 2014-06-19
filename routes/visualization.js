@@ -11,19 +11,13 @@ var app = express();
 router.post('/unit_selection', function(req, res) {
 	console.log("Got response: " + res.statusCode);
 	console.log(req.body);
-	var datasets = req.body.dataset_ids
-	console.log(datasets);
-	if(!datasets){
-		console.log("no data")
-		//alert('no data')
-		res.redirect(req.get('referer'))
-	}else{
-		res.render('unit_selection', { 	title: 'Unit Selection', 
+	// dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
+	res.render('unit_selection', { 	title: 'Unit Selection', 
 									body: JSON.stringify(req.body),
 									taxonomy: JSON.stringify(config.simpleTaxonomy),
 			                        units	: JSON.stringify(config.unitSelect)
 								})
-	}
+	
 });
 /* GET visualization page. */
 router.get('/', function(req, res) {
