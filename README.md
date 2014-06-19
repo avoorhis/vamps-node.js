@@ -22,3 +22,9 @@ OR
 > mocha
 
 # MySQL db schema is included in root dir as: db_schema.sql
+
+
+# TODO TODO
+# Testing!
+# projects/:id via REST
+# user login and auth
