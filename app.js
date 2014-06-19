@@ -1,9 +1,12 @@
 var express = require('express');
+var session      = require('express-session')
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var passport = require('passport');
+var flash    = require('connect-flash');
 var db = require('mysql');
 var connection = require('./config/database-dev');
 var routes = require('./routes/index');
@@ -11,8 +14,9 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visualization');
-var app = express();
 
+var app = express();
+require('./config/passport')(passport,connection); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +31,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// required for passport
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
@@ -55,6 +66,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
+    console.log('ENV: Development')
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error.ejs', {
@@ -63,7 +75,9 @@ if (app.get('env') === 'development') {
         });
     });
 }
-
+if (app.get('env') === 'production') {
+    console.log('ENV: Production')
+}
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
