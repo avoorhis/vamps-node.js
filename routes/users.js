@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
 			throw err;
 		}else{
 
-	    	res.render('user_admin/index', { "rows" : rows  });
+	    	res.render('user_admin/index', { "rows" : rows, "user": get_user(req)  });
     	}
     });
     
@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
-    res.render('user_admin/login', { message: req.flash('loginMessage') })
+    res.render('user_admin/login', { message: req.flash('loginMessage'), "user": get_user(req) })
 });
 
 router.post('/login',
@@ -44,7 +44,7 @@ router.post('/login',
 router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('user_admin/signup', { message: req.flash('signupMessage') });
+        res.render('user_admin/signup', { message: req.flash('signupMessage'), "user": get_user(req) });
 });
 
 // process the signup form
@@ -73,6 +73,8 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
+module.exports = router;
+
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
@@ -84,7 +86,11 @@ function isLoggedIn(req, res, next) {
     res.redirect('/');
 }
 
+// 
+function get_user(req){
+    if(!req.user || req.user==undefined)
+        return ''
+    return req.user         
+}
 
 
-
-module.exports = router;
