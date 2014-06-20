@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
     	if(err)	{
 			throw err;
 		}else{
-	    	res.render('projectlist', { "rows" : rows  });
+	    	res.render('projects/index', { "rows" : rows  });
     	}
     });
     
@@ -25,7 +25,7 @@ router.get('/project/:id', function(req, res) {
     	if(err)	{
 			throw err;
 		}else{
-	    	res.render('projectlist', { "rows" : rows  });
+	    	res.render('projects/index', { "rows" : rows  });
     	}
     });
     

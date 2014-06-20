@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-config = require('../config/config')
+var config = require('../config/config')
+var helpers = require('./helpers')
 var app = express();
 
 /* GET users listing. */
@@ -12,7 +13,7 @@ router.post('/unit_selection', function(req, res) {
 	console.log("Got response: " + res.statusCode);
 	console.log(req.body);
 	// dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
-	res.render('unit_selection', { 	title: 'Unit Selection', 
+	res.render('visuals/unit_selection', { 	title: 'Unit Selection', 
 									body: JSON.stringify(req.body),
 									taxonomy: JSON.stringify(config.simpleTaxonomy),
 			                        units	: JSON.stringify(config.unitSelect)
@@ -20,7 +21,7 @@ router.post('/unit_selection', function(req, res) {
 	
 });
 /* GET visualization page. */
-router.get('/', function(req, res) {
+router.get('/', isLoggedIn, function(req, res) {
 // {
 //     2: {'pname': "BPC_MRB_C", 'datasets':[
 //         {"id":244,"ds":"dataset244"}
@@ -80,7 +81,7 @@ router.get('/', function(req, res) {
 			                                
 
 			//console.log(JSON.stringify(datasetsByProjectAll));                                                             
-			res.render('dataset_selection',{ title   : 'Show Datasets!', 
+			res.render('visuals/index',{ title   : 'Show Datasets!', 
 			                                 rows    : JSON.stringify(datasetsByProjectAll)			                                
 			                            	})
 		}
@@ -95,6 +96,15 @@ router.get('/', function(req, res) {
 
 module.exports = router;
 
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on 
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+}
 function IsJsonString(str) {
     try {
         JSON.parse(str);
@@ -103,3 +113,4 @@ function IsJsonString(str) {
     }
     return true;
 }
+
