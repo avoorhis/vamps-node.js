@@ -1,8 +1,9 @@
 // config/passport.js
 // load all the things we need
-//var LocalLoginStrategy = require('passport-local').Strategy;
-//var LocalSignupStrategy = require('passport-local').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
+//var bcrypt        = require('bcrypt-nodejs');
+var crypto = require('crypto')
+var cipher = crypto.createCipher('aes-256-cbc', 'salt');
 //var mysql = require('mysql');
  
 //var connection = require('./database-dev');
@@ -10,7 +11,7 @@ var LocalStrategy = require('passport-local').Strategy;
 //connection.query('USE vidyawxx_build2');    
      
 // expose this function to our app using module.exports
-module.exports = function(passport,connection) {
+module.exports = function(passport, connection) {
      
     // =========================================================================
     // passport session setup ==================================================
@@ -50,23 +51,24 @@ module.exports = function(passport,connection) {
                 console.log(rows);
                 console.log("above row object");
                 if (err)
-                    return done(err);
+                    //return done(err);
+                    return done(null, false, { message: err });
                 if (rows.length) {
                     return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
                 } else {
      
-                    // if there is no user with that email
+                    // if there is no user with that username
                     // create the user
-                    var newUserMysql = new Object();
-                    newUserMysql.username = username;
-                    newUserMysql.password = password; // use the generateHash function in our user model
-                    newUserMysql.firstname = req.body.userfirstname;
-                    newUserMysql.lastname = req.body.userlastname;
-                    newUserMysql.email = req.body.useremail;
-                    newUserMysql.institution = req.body.userinstitution;
+                    var newUserMysql        = new Object();
+                    newUserMysql.username   = username;
+                    newUserMysql.password   = generateHash(password); // use the generateHash function in our user model
+                    newUserMysql.firstname  = req.body.userfirstname;
+                    newUserMysql.lastname   = req.body.userlastname;
+                    newUserMysql.email      = req.body.useremail;
+                    newUserMysql.institution= req.body.userinstitution;
 
                     var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name,last_name,email,institution )"
-                    insertQuery +=    " VALUES ('" + username +"','"+ password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
+                    insertQuery +=    " VALUES ('" + username +"','"+ newUserMysql.password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
                     
 
                     console.log(insertQuery);
@@ -84,7 +86,7 @@ module.exports = function(passport,connection) {
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
      
-    passport.use('local', new LocalStrategy({
+    passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password
         usernameField : 'username',
         passwordField : 'password',
@@ -94,18 +96,47 @@ module.exports = function(passport,connection) {
      
         connection.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
             if (err)
-                return done(err);
+                //return done(err);
+                return done(null, false, { message: err });
             if (!rows.length) {
                 return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
             }
             // if the user is found but the password is wrong
-            if (!( rows[0].password == password))
-                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+            
+            //if (!( rows[0].password == password))
+            if( validatePassword(password, rows[0].encrypted_password) )
+                return done(null, rows[0], req.flash('loginMessage', 'Success!')); 
+
+            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
             // all is well, return successful user
-            return done(null, rows[0]); 
+            
         });
      
      
     }));
  
 };
+
+function generateHash(password) {
+    //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    cipher.update(password, 'utf8', 'base64');
+    return cipher.final('base64');
+}
+function validatePassword(entered_pw, database_pw) {
+    if(generateHash(entered_pw) === database_pw){
+        console.log('Match!')
+        return true
+    }
+    console.log('No-Match!')
+    return false
+    
+}
+// from:  http://scotch.io/tutorials/javascript/easy-node-authentication-setup-and-local
+//userSchema.methods.generateHash = function(password) {
+//    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+//};
+
+// checking if password is valid
+//userSchema.methods.validPassword = function(password) {
+//    return bcrypt.compareSync(password, this.local.password);
+//};
