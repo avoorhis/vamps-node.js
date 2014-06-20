@@ -1,4 +1,5 @@
-# VAMPS rendition using Node.js (javascript)
+VAMPS rendition using Node.js (javascript)
+=========
 
 # to run this program first install Node.js (http://nodejs.org/)
 # look in package.json to see required modules
