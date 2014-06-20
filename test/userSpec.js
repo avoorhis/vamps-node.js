@@ -11,15 +11,15 @@ describe('User API',function(){
     
 //  });
 
-  it('GET /users should return 200',function(done){
+  it('GET /user_admin should return 200',function(done){
     request(app)
       .get('/users')
       .expect(200,done);
   });
 
-  it('GET /users/newuser should return 200',function(done){
+  it('GET /user_admin/login should return 200',function(done){
     request(app)
-      .get('/users/newuser')
+      .get('/users/login')
       .expect(200,done);
   });
 
