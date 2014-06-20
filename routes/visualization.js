@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var config = require('../config/config')
-var helpers = require('./helpers')
+//var helpers = require('./helpers')
 var app = express();
 
 /* GET users listing. */
@@ -16,7 +16,8 @@ router.post('/unit_selection', function(req, res) {
 	res.render('visuals/unit_selection', { 	title: 'Unit Selection', 
 									body: JSON.stringify(req.body),
 									taxonomy: JSON.stringify(config.simpleTaxonomy),
-			                        units	: JSON.stringify(config.unitSelect)
+			                        units	: JSON.stringify(config.unitSelect),
+			                        "user": get_user(req)
 								})
 	
 });
@@ -82,7 +83,8 @@ router.get('/', isLoggedIn, function(req, res) {
 
 			//console.log(JSON.stringify(datasetsByProjectAll));                                                             
 			res.render('visuals/index',{ title   : 'Show Datasets!', 
-			                                 rows    : JSON.stringify(datasetsByProjectAll)			                                
+			                             rows    : JSON.stringify(datasetsByProjectAll)	,
+			                             "user": get_user(req)		                                
 			                            	})
 		}
 		
@@ -112,5 +114,10 @@ function IsJsonString(str) {
         return false;
     }
     return true;
+}
+function get_user(req){
+	if(!req.user || req.user==undefined)
+		return ''
+  	return req.user  	 	
 }
 
