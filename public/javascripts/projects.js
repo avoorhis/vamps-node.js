@@ -6,7 +6,7 @@ function load_projectslist(rows)
 	
 	var html = '<ul>'
 	for(i in rows){
-		html += "<li><a href='/projects/:id'>"+rows[i].project+"</a>"
+		html += "<li><a href='/projects/"+rows[i].id+"'>"+rows[i].project+"</a>"
 		html += ' -- '+rows[i].title
 		html += ' '+rows[i].project_description
 	}

@@ -3,7 +3,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 //var bcrypt        = require('bcrypt-nodejs');
 var crypto = require('crypto')
-var cipher = crypto.createCipher('aes-256-cbc', 'salt');
+
 //var mysql = require('mysql');
  
 //var connection = require('./database-dev');
@@ -66,6 +66,7 @@ module.exports = function(passport, connection) {
                     newUserMysql.lastname   = req.body.userlastname;
                     newUserMysql.email      = req.body.useremail;
                     newUserMysql.institution= req.body.userinstitution;
+                    newUserMysql.security_level= 50;  //reg user
 
                     var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name,last_name,email,institution )"
                     insertQuery +=    " VALUES ('" + username +"','"+ newUserMysql.password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
@@ -115,22 +116,25 @@ module.exports = function(passport, connection) {
      
     }));
  
-};
 
-function generateHash(password) {
-    //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-    cipher.update(password, 'utf8', 'base64');
-    return cipher.final('base64');
-}
-function validatePassword(entered_pw, database_pw) {
-    if(generateHash(entered_pw) === database_pw){
-        console.log('Match!')
-        return true
+
+    function generateHash(password) {
+        //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+        var cipher = crypto.createCipher('aes-256-cbc', 'salt');
+        cipher.update(password, 'utf8', 'base64');
+        return cipher.final('base64');
     }
-    console.log('No-Match!')
-    return false
-    
-}
+    function validatePassword(entered_pw, database_pw) {
+        if(generateHash(entered_pw) === database_pw){
+            console.log('Match!')
+            return true
+        }
+        console.log('No-Match!')
+        return false
+        
+    }
+
+};
 // from:  http://scotch.io/tutorials/javascript/easy-node-authentication-setup-and-local
 //userSchema.methods.generateHash = function(password) {
 //    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
