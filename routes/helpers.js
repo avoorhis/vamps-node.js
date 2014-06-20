@@ -3,21 +3,10 @@ var router = express.Router();
 
 // route middleware to make sure a user is logged in
 
-module.isLoggedIn = function(req, res, next) {
 
-    // if user is authenticated in the session, carry on 
-    if (req.isAuthenticated())
-        return next();
-
-    // if they aren't redirect them to the home page
-    res.redirect('/');
+function get_user(req){
+    if(!req.user || req.user==undefined)
+        return ''
+    return req.user         
 }
-function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
-
+module.exports = isLoggedIn;
