@@ -6,5 +6,5 @@ var connection = db.createConnection({
   password : 'ruby',
   database : 'vamps_js_development'
 });
-connection.connect();
+
 module.exports = connection;
