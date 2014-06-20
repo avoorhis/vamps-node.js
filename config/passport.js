@@ -11,7 +11,7 @@ var crypto = require('crypto')
 //connection.query('USE vidyawxx_build2');    
      
 // expose this function to our app using module.exports
-module.exports = function(passport, connection) {
+module.exports = function(passport, db) {
      
     // =========================================================================
     // passport session setup ==================================================
@@ -26,7 +26,7 @@ module.exports = function(passport, connection) {
      
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-        connection.query("select * from users where id = "+id,function(err,rows){   
+        db.query("select * from users where id = "+id,function(err,rows){   
             done(err, rows[0]);
         });
     });
@@ -45,40 +45,7 @@ module.exports = function(passport, connection) {
     },
     function(req, username, password, done) {
         console.log(req.body.userfirstname)
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        connection.query("select * from users where username = '"+username+"'",function(err,rows){
-                console.log(rows);
-                console.log("above row object");
-                if (err)
-                    //return done(err);
-                    return done(null, false, { message: err });
-                if (rows.length) {
-                    return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
-                } else {
-     
-                    // if there is no user with that username
-                    // create the user
-                    var newUserMysql        = new Object();
-                    newUserMysql.username   = username;
-                    newUserMysql.password   = generateHash(password); // use the generateHash function in our user model
-                    newUserMysql.firstname  = req.body.userfirstname;
-                    newUserMysql.lastname   = req.body.userlastname;
-                    newUserMysql.email      = req.body.useremail;
-                    newUserMysql.institution= req.body.userinstitution;
-                    newUserMysql.security_level= 50;  //reg user
-
-                    var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name,last_name,email,institution )"
-                    insertQuery +=    " VALUES ('" + username +"','"+ newUserMysql.password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
-                    
-
-                    console.log(insertQuery);
-                    connection.query(insertQuery,function(err,rows){
-                        newUserMysql.id = rows.insertId;
-                        return done(null, newUserMysql);
-                    }); 
-                }   
-        });
+        return signup_user(req, username, password, done, db);
     }));
      
     // =========================================================================
@@ -94,53 +61,88 @@ module.exports = function(passport, connection) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with email and password from our form
-     
-        connection.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
+        return login_auth_user(req, username, password, done, db);    
+    }));
+ 
+};
+/////////////////////////
+/////////////////////////
+
+function generateHash(password) {
+    //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    var cipher = crypto.createCipher('aes-256-cbc', 'salt');
+    cipher.update(password, 'utf8', 'base64');
+    return cipher.final('base64');
+}
+function validatePassword(entered_pw, database_pw) {
+    if(generateHash(entered_pw) === database_pw){
+        console.log('Match!')
+        return true
+    }
+    console.log('No-Match!')
+    return false
+    
+}
+
+function login_auth_user(req, username, password, done, db){
+        
+    db.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
+        if (err)
+            //return done(err);
+            return done(null, false, { message: err });
+        if (!rows.length) {
+            return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+        }
+        // if the user is found but the password is wrong
+        
+        //if (!( rows[0].password == password))
+        if( validatePassword(password, rows[0].encrypted_password) )
+            return done(null, rows[0], req.flash('loginMessage', 'Success!')); 
+
+        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+        // all is well, return successful user
+        
+    });
+ 
+}
+function signup_user(req, username, password, done, db){
+     // find a user whose email is the same as the forms email
+    // we are checking to see if the user trying to login already exists
+    db.query("select * from users where username = '"+username+"'",function(err,rows){
+            console.log(rows);
+            console.log("above row object");
             if (err)
                 //return done(err);
                 return done(null, false, { message: err });
-            if (!rows.length) {
-                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
-            }
-            // if the user is found but the password is wrong
-            
-            //if (!( rows[0].password == password))
-            if( validatePassword(password, rows[0].encrypted_password) )
-                return done(null, rows[0], req.flash('loginMessage', 'Success!')); 
-
-            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
-            // all is well, return successful user
-            
-        });
-     
-     
-    }));
+            if (rows.length) {
+                return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+            } else {
  
+                // if there is no user with that username
+                // create the user
+                var newUserMysql        = new Object();
+                newUserMysql.username   = username;
+                newUserMysql.password   = generateHash(password); // use the generateHash function in our user model
+                newUserMysql.firstname  = req.body.userfirstname;
+                newUserMysql.lastname   = req.body.userlastname;
+                newUserMysql.email      = req.body.useremail;
+                newUserMysql.institution= req.body.userinstitution;
+                newUserMysql.security_level= 50;  //reg user
+
+                var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name,last_name,email,institution )"
+                insertQuery +=    " VALUES ('" + username +"','"+ newUserMysql.password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
+                
+
+                console.log(insertQuery);
+                db.query(insertQuery,function(err,rows){
+                    newUserMysql.id = rows.insertId;
+                    return done(null, newUserMysql);
+                }); 
+            }   
+    });
+ 
+}
 
 
-    function generateHash(password) {
-        //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-        var cipher = crypto.createCipher('aes-256-cbc', 'salt');
-        cipher.update(password, 'utf8', 'base64');
-        return cipher.final('base64');
-    }
-    function validatePassword(entered_pw, database_pw) {
-        if(generateHash(entered_pw) === database_pw){
-            console.log('Match!')
-            return true
-        }
-        console.log('No-Match!')
-        return false
-        
-    }
 
-};
-// from:  http://scotch.io/tutorials/javascript/easy-node-authentication-setup-and-local
-//userSchema.methods.generateHash = function(password) {
-//    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-//};
 
-// checking if password is valid
-//userSchema.methods.validPassword = function(password) {
-//    return bcrypt.compareSync(password, this.local.password);
-//};
