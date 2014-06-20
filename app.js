@@ -31,13 +31,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 // required for passport
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
@@ -45,12 +43,12 @@ app.use(function(req,res,next){
     next();
 });
 
-
+app.use('/', routes);
 app.use('/users', users);
 app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
-app.use('/', routes);
+
 
 
 
