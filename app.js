@@ -9,6 +9,7 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var db = require('mysql');
 var connection = require('./config/database-dev');
+connection.connect();
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
@@ -32,7 +33,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // required for passport
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ secret: 'keyboard cat' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
