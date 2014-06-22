@@ -1,3 +1,6 @@
+// userSpec.js
+// test pages: login,signup,profile,index
+
 var async = require('async'),
   request = require('supertest'),
   should  = require('should'),

@@ -33,7 +33,9 @@ function toggle_selected_datasets(pid, project)
     }
   }
 }
-
+//
+// TOGGLE_SIMPLE_TAXA
+//
 function toggle_simple_taxa()
 {
   boxes = document.getElementsByClassName('simple_taxa_ckbx');
@@ -49,10 +51,15 @@ function toggle_simple_taxa()
       } 
   }  
 }
-
+//
+// LOAD_VISUALIZATION_ITEMS Page 1
+//
 function load_visualization_items_p1(rows){
   load_project_select(rows)
 }
+//
+// LOAD_VISUALIZATION_ITEMS Page 2
+//
 function load_visualization_items_p2(bodyItems,units){
   show_selected_datasets(bodyItems)
   load_unit_select(units)
@@ -130,32 +137,12 @@ function load_project_select(datasets_by_project_all){
   //alert(html)
   var div = document.getElementById('projects_select_div').innerHTML = html
 }
-// function toggleAll(name)
-// {
-//   boxes = document.getElementsByClassName(name);
-//   for (i = 0; i < boxes.length; i++)
-//     if (!boxes[i].disabled)
-//    		{	boxes[i].checked = !boxes[i].checked ; }
-// }
-// 
-// function toggleTaxSelection()
-// {
-//     custom_div = document.getElementById('custom_taxonomy_selector')
-//     basic_div = document.getElementById('basic_taxonomy_selector')
-//     if(custom_div.style.display=='none'){
-//         custom_div.style.display='block';        
-//         basic_div.style.display='none';
-//        
-//     }else{
-//         custom_div.style.display='none';
-//         basic_div.style.display='block';
-//     }
-//     
-//   
-//   
-// }
-// function getDatasets(form)
-// {
+//
+// LOAD_VISUALIZATION_ITEMS Page 1
+//
+
+
+
 
 // 	checked_datasets = json_project_tree.getAllCheckedBranches()
   	
@@ -301,7 +288,9 @@ function set_check_project(pid, project)
     document.getElementById(project+'--pj-id').checked = false
   }
 }
-
+//
+// CHECK_FOR_NO_DATASET
+//
 function check_for_no_datasets(thisform){
   
   var x = thisform["dataset_ids[]"];
