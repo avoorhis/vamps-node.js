@@ -1,3 +1,6 @@
+// homePageSpec.js
+// test specific page items such as specfic text or links
+
 var async = require('async'),
   request = require('supertest'),
   should  = require('should'),
