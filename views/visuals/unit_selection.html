@@ -5,6 +5,8 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
 	<script type="text/javascript" src="/javascripts/global.js"></script>
 	<script type="text/javascript" src="/javascripts/visualization.js"></script>
+	<script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
+	<script type="text/javascript" src="config/constants.js"></script>
 </head>
 <body onload="load_main_menu('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= body %>','<%= units %>');">
 <div id='header' class='header'></div>
@@ -20,25 +22,50 @@
 <form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
 	
 	<table border='1'><tr>
-
+	
 	<td>
-		Your Selected Datasets:
+	  <div id='units_select_choices_div'></div>
 	</td>
 	<td>
-		<input type='submit' value='Next: Get Graphics'>
 		
 	</td>
+
 	</tr>
 	<tr>
-	<td>
-		<div id='show_selected_datasets_div' class='general_table' ></div>
+
+	<td class='small_font'>
+		<div id='units_select_div'></div>
 	</td>
-	<td>
-		Select Units
-	  <div id='units_select_div'></div>
-	  <div id='output_selection_div'>//OutPut Selection Here//</div>
-	</td></tr></table>
+
+	<td class='td_top'>
+		<table border='1'>
+			<tr>
+				<td class='small_font'>
+					
+					<div id='show_selected_datasets_div' class='' ></div>
+					
+				</td>
+			</tr>
+			<tr>
+				<td class='small_font'>
+					<div id='show_visuals_output_choices' class='' ></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type='submit' value='Next: Get Graphics'>
+				</td>
+			</tr>
+		</table>
+	
+	</td>
+
+	
+
+	</tr></table>
 </form>
+
+	 
 </div>	
 </body>
 </html>

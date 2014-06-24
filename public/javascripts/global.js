@@ -6,7 +6,7 @@ function load_main_menu(user){
 	html += "<div class='main_menu'>"
 	html += "  <ul>"
 	html += "    <li><a href='/'>VAMPS Home</a></li>"
-	html += "    <li><a href='/helloworld'>Hello World Page</a></li>"
+	html += "    <li><a href='/helloworld'>Hello! Page</a></li>"
 	html += "    <li><a href='/visuals'>Community Visualization</a></li>"
 	html += "    <li><a href='/projects'>Project List</a></li>"
 	html += "    <li><a href='/users'>User List</a></li>"
