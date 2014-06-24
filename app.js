@@ -14,8 +14,9 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
-var visuals = require('./routes/visualization');
+var visuals = require('./routes/visuals/visualization');
 
+C = require('./config/constants')
 var app = express();
 require('./config/passport')(passport,connection); // pass passport for configuration
 
@@ -89,3 +90,4 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
