@@ -1,5 +1,13 @@
+REPORTER = nyan
 TESTS = test/*.js
 test:
-	mocha --timeout 5000 --reporter nyan $(TESTS)
+	./node_modules/.bin/mocha --timeout 5000 --reporter $(REPORTER) $(TESTS)
 
-.PHONY: test
+test-w:
+	@NODE_ENV=test ./node_modules/.bin/mocha \
+	--reporter $(REPORTER) \
+	--growl \
+	--watch
+	$(TESTS)
+
+.PHONY: test test-w
