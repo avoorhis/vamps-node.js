@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
     	if(err)	{
 			throw err;
 		}else{
-	    	res.render('projects/index', { "rows" : rows, "user": get_user(req)  });
+	    	res.render('projects/index', { "rows" : rows, "user": req.user  || ''  });
     	}
     });
     
@@ -31,10 +31,6 @@ router.get('/:id', function(req, res) {
     
 });
 
-function get_user(req){
-    if(!req.user || req.user==undefined)
-        return ''
-    return req.user         
-}
+
 
 module.exports = router;
