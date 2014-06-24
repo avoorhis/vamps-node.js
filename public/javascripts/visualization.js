@@ -2,7 +2,9 @@
 
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
-selected_datasets=[]
+selected_datasets=[];
+
+
 //
 // TOGGLE_SELECTED_DATASETS
 //
@@ -63,37 +65,86 @@ function load_visualization_items_p1(rows){
 function load_visualization_items_p2(bodyItems,units){
   show_selected_datasets(bodyItems)
   load_unit_select(units)
+  show_visuals_output_choices()
 }
-
+//
+//   SHOW VISUALS OUTPUT CHOICES
+//
+function show_visuals_output_choices(){
+    html = 'heatmap,barcharts,coutsTable....'
+    var div = document.getElementById('show_visuals_output_choices').innerHTML = html
+}
+//
+//  LOAD UNIT SELECT
+//
 function load_unit_select(unitSelections){
     rows = JSON.parse(unitSelections)
+    
     html = ""
-    html += "<select>"
+    html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>"
+    html += "<option value='none'>Choose Units</option>"
     for(i in rows.units) {
-       value  = rows.units[i].id
-       name   = rows.units[i].name
-       html += "<option value='"+ value+"'>"+name+"</option>"
-    }
+        file_id  = rows.units[i].id
+        name   = rows.units[i].name
+        file = rows.units[i].file
+        html += "<option value='"+ file_id +"'>"+ name +"</option>"
+     }
     html += "</select>"
-    var div = document.getElementById('units_select_div').innerHTML = html
+    var div = document.getElementById('units_select_choices_div').innerHTML = html
 }
-
+//
+// GET REQUESTED UNITS SELECTION BOX
+//
+function get_requested_units_selection_box(file_id){
+  
+  html=''
+  // case functions are in unit_selectors.js
+  switch(file_id){
+    case 'tax_silva116_simple':
+      html = get_taxa_sil106_simple();
+      break;
+    case 'tax_silva116_custom':
+      html = get_taxa_sil106_custom();
+      break;
+    case 'tax_gg_simple':
+      html = get_taxa_gg_simple();
+      break;
+    case 'tax_gg_custom':
+      html = get_taxa_gg_custom();
+      break;
+    case 'med_nodes':
+      html = get_med_nodes();
+      break;
+    default:
+      html = 'Select Another';
+  }
+  var div = document.getElementById('units_select_div').innerHTML = html
+ 
+}
+//
+//  SHOW SELECTED DATASETS
+//
 function show_selected_datasets(bodyItems){
     
   body = JSON.parse(bodyItems)
-  html = '<ul>'
+  html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;"
+  html += "<select>"
+
   for(i in body.dataset_ids){
     //alert(i)
-    html += "<li>"
+    html += "<option>"
     html += body.dataset_ids[i]
-    html += "</li>"
+    html += "</option>"
   }
-  html += '</ul>'
+  html += '</select>'
+  html += '<br>To change these <a href="/visuals">GoBack</a> to the previous page.'
   //alert(html)
   var div = document.getElementById('show_selected_datasets_div').innerHTML = html
 
 }
-
+//
+//  LOAD PROJECT SELECT
+//
 function load_project_select(datasets_by_project_all){
   //alert('in load')
   rows = JSON.parse(datasets_by_project_all)
@@ -228,6 +279,10 @@ function load_project_select(datasets_by_project_all){
 // })
 //     
 // }
+
+//
+//  OPEN DATASETS
+//
 function open_datasets(pid, project)
 {
   
@@ -235,7 +290,6 @@ function open_datasets(pid, project)
   ds_div = document.getElementById(pid+'_ds_div');
   cbs = ds_div.getElementsByTagName('input')
   toggle = document.getElementById(project+'_toggle')
-  // if closed it will open
   if(ds_div.style.display == 'inline'){
     
     // uncheck project
@@ -278,9 +332,7 @@ function set_check_project(pid, project)
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
-
-    }
-              
+    }       
   }
   if(have_acheck){
     document.getElementById(project+'--pj-id').checked = true

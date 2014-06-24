@@ -28,8 +28,11 @@ Test using mocha
 
 MySQL db schema is included in root dir as: db_schema.sql
 
+Install nodemon to keep from restarting server after changes
+sudo npm install nodemon -g
+Then run as: nodemon bin/www 
 
 TODO TODO
 	* Testing!
-	* projects/:id via REST
-	* user login and auth
+	* DONE:   projects/:id via REST
+	* DONE:   user login and auth
