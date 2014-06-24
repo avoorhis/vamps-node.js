@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config/config')
+//var config = require('../config/config')
 //var helpers = require('./helpers')
 var app = express();
 
@@ -84,7 +84,7 @@ router.get('/', isLoggedIn, function(req, res) {
 			//console.log(JSON.stringify(datasetsByProjectAll));                                                             
 			res.render('visuals/index',{ title   : 'Show Datasets!', 
 			                             rows    : JSON.stringify(datasetsByProjectAll)	,
-			                             "user": get_user(req)		                                
+			                             "user": req.user  || ''		                                
 			                            	})
 		}
 		
@@ -115,9 +115,5 @@ function IsJsonString(str) {
     }
     return true;
 }
-function get_user(req){
-	if(!req.user || req.user==undefined)
-		return ''
-  	return req.user  	 	
-}
+
 
