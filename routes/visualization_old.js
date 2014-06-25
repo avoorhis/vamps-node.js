@@ -17,7 +17,7 @@ router.post('/unit_selection', function(req, res) {
 									body: JSON.stringify(req.body),
 									taxonomy: JSON.stringify(config.simpleTaxonomy),
 			                        units	: JSON.stringify(config.unitSelect),
-			                        "user": get_user(req)
+			                        "user": req.user || ''
 								})
 	
 });

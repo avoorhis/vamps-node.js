@@ -17,7 +17,7 @@ function get_taxa_sil106_simple(){
     html += "  <li>";
     html += "  <label class='taxa-select'>";
     html += "    <input type='checkbox' class='simple_taxa_ckbx' checked='checked' id='"+domain+"' name='' onclick=\"open_datasets()\" \>"
-    html += domain;
+    html +=    domain;
     html += "  </label>";
     html += "  </li>";
   };
@@ -41,17 +41,17 @@ function get_taxa_sil106_simple(){
 }
 ////////////////////////////////////
 function get_taxa_sil106_custom(){
-  return '<h2>not written yet-1</h2>'
+  return '<br><h2>not written yet-1</h2>'
 }
  
 function get_taxa_gg_simple(){
-  return '<h2>not written yet-2</h2>'
+  return '<br><h2>not written yet-2</h2>'
 }
     
 function get_taxa_gg_custom(){
-  return '<h2>not written yet-3</h2>'
+  return '<br><h2>not written yet-3</h2>'
 }
 function get_med_nodes(){
-  return '<h2>not written yet-4</h2>'
+  return '<br><h2>not written yet-4</h2>'
 }
 

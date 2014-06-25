@@ -62,9 +62,9 @@ function load_visualization_items_p1(rows){
 //
 // LOAD_VISUALIZATION_ITEMS Page 2
 //
-function load_visualization_items_p2(bodyItems,units){
+function load_visualization_items_p2(bodyItems,constants){
   show_selected_datasets(bodyItems)
-  load_unit_select(units)
+  load_unit_select(constants)
   show_visuals_output_choices()
 }
 //
@@ -77,16 +77,16 @@ function show_visuals_output_choices(){
 //
 //  LOAD UNIT SELECT
 //
-function load_unit_select(unitSelections){
-    rows = JSON.parse(unitSelections)
-    
+function load_unit_select(constants){
+    C = JSON.parse(constants)
+    rows = C.UNITSELECT.units
     html = ""
     html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>"
     html += "<option value='none'>Choose Units</option>"
-    for(i in rows.units) {
-        file_id  = rows.units[i].id
-        name   = rows.units[i].name
-        file = rows.units[i].file
+    for(i in rows) {
+        file_id  = rows[i].id
+        name   = rows[i].name
+        file = rows[i].file
         html += "<option value='"+ file_id +"'>"+ name +"</option>"
      }
     html += "</select>"
