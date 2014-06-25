@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
     	if(err)	{
 			throw err;
 		}else{
-	    	res.render('projects/index', { "rows" : rows, "user": req.user  || ''  });
+	    	res.render('projects/index', { "rows" : rows, "user": req.user  });
     	}
     });
     
@@ -21,11 +21,11 @@ router.get('/:id', function(req, res) {
     var db = req.db;
     var qSelect = "SELECT id,project,title,project_description from projects where id='"+ req.params.id +"'"
     console.log(qSelect)
-    var collection = db.query(qSelect, function (err, rows, fields){
+    var collection = db.query(qSelect, function (err, row, fields){
     	if(err)	{
 			throw err;
 		}else{
-	    	res.render('projects/profile', { "rows" : rows, "user": get_user(req)  });
+	    	res.render('projects/profile', { project: row, user: req.user  });
     	}
     });
     
