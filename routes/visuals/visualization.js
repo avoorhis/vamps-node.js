@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var C = require('../../config/constants')
+//var C = require('../../config/constants')
 //var helpers = require('./helpers')
 var app = express();
 
@@ -9,12 +9,12 @@ var app = express();
 router.post('/unit_selection',  function(req, res) {
 	console.log("Got response: " + res.statusCode);
 	console.log(req.body);
+	console.log(JSON.stringify(req.C));
 	// dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
 	res.render('visuals/unit_selection', { 	title: 'Unit Selection', 
 									body: JSON.stringify(req.body),
-									taxonomy: JSON.stringify(C.simpleTaxonomy),
-			                        units	: JSON.stringify(C.unitSelect),
-			                        "user": req.user  || ''
+									constants: JSON.stringify(req.C),
+			                        "user": req.user
 								})
 	
 });
@@ -82,7 +82,7 @@ router.get('/',  function(req, res) {
 			//console.log(JSON.stringify(datasetsByProjectAll));                                                             
 			res.render('visuals/index',{ title   : 'Show Datasets!', 
 			                             rows    : JSON.stringify(datasetsByProjectAll)	,
-			                             "user": req.user  || ''		                                
+			                             "user": req.user		                                
 			                            	})
 		}
 		
