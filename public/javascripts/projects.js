@@ -14,3 +14,14 @@ function load_projectslist(rows)
 	var div = document.getElementById('project_list_div').innerHTML = html
 
 }
+
+function load_project(p){
+	project = JSON.parse(p)
+	var html = '<ul> '
+	html += '<li>'+project[0].id+'</li>'
+	html += '<li>'+project[0].project+'</li>'
+	html += '<li>'+project[0].title+'</li>'
+	html += '<li>'+project[0].project_description+'</li>'
+	html += '</ul>'
+	var div = document.getElementById('project_info_div').innerHTML = html
+}
