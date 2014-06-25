@@ -15,8 +15,7 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visuals/visualization');
-
-C = require('./config/constants')
+var C = require('./config/constants')
 var app = express();
 require('./config/passport')(passport,connection); // pass passport for configuration
 
@@ -42,6 +41,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 // Make our db accessible to our router
 app.use(function(req,res,next){
     req.db = connection;
+    req.C = C;
     next();
 });
 

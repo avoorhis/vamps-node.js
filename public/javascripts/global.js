@@ -1,7 +1,7 @@
 // global.js
 
 
-function load_main_menu(user){
+function initialize(user){
 	html = ''
 	html += "<div class='main_menu'>"
 	html += "  <ul>"
@@ -23,17 +23,17 @@ function load_main_menu(user){
 
 	// login report
 	html = ''
- 	user = JSON.parse(user)
- 	if(user) {
+ 	if(user === 'undefined') {
+ 		html += "(not logged in)"
+    	html += " (<a href='/users/login'  class='btn btn-default'><span class='fa fa-user'></span>login</a> or"
+    	html += "<a href='/users/signup' class='btn btn-default'><span class='fa fa-user'></span> register</a>)"
+	}else{
+    	user = JSON.parse(user) 
  		html += "(Logged in as: "+user.username+")"
     	if(user.security_level == 1){
          	html += "(admin)"
     	}
     	html += "<a href='/users/logout' class='btn btn-default btn-sm'> logout</a>"
-	}else{
-    	html += "(not logged in)"
-    	html += " (<a href='/users/login'  class='btn btn-default'><span class='fa fa-user'></span>login</a> or"
-    	html += "<a href='/users/signup' class='btn btn-default'><span class='fa fa-user'></span> register</a>)"
 	}
 	document.getElementById('login_link').innerHTML = html
 

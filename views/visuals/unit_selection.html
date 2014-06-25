@@ -8,7 +8,7 @@
 	<script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
 	<script type="text/javascript" src="config/constants.js"></script>
 </head>
-<body onload="load_main_menu('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= body %>','<%= units %>');">
+<body onload="initialize('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= body %>','<%= constants %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='login_link' class=''></div>
@@ -33,7 +33,7 @@
 	</tr>
 	<tr>
 
-	<td class='small_font'>
+	<td class='small_font general_table'>
 		<div id='units_select_div'></div>
 	</td>
 

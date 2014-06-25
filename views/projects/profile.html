@@ -3,9 +3,10 @@
 	<title>TITLE</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<script type="text/javascript" src="/javascripts/global.js"></script>
+	<script type="text/javascript" src="/javascripts/projects.js"></script>
 </head>
 
-<body onload="load_main_menu('<%= JSON.stringify( user ) %>');">
+<body onload="initialize('<%= JSON.stringify( user ) %>');load_project('<%= JSON.stringify( project ) %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='login_link' class=''></div>
@@ -15,24 +16,8 @@
 <div class="page-header text-center">
 		<h1><span class="fa fa-anchor"></span>Project Profile</h1>
 </div>
-	<!-- LOCAL INFORMATION -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3><span class="fa fa-user"></span></h3>
-
-					<p>
-						
-						<strong>ID</strong>: <%= rows[0].id %><br>
-						<strong>Name</strong>: <%= rows[0].project %><br>
-						<strong>Title</strong>: <%= rows[0].title %><br>
-						<strong>Description</strong>: <%= rows[0].project_description %><br>
-						
-					
-					</p>
-
-			</div>
-		</div>
-
+	<!-- PROJECT INFORMATION -->
+	<div id='project_info_div'></div>
 </div>
 </body>
 </html>
