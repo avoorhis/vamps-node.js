@@ -4,7 +4,7 @@
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
-<body onload="load_main_menu();">
+<body onload="initialize('<%= JSON.stringify( user ) %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='title'  class=''>VAMPS Login</div>
