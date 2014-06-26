@@ -1,10 +1,10 @@
 <html>
 <head>
-	<title><%- title %></title>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
-	<script type="text/javascript" src="/javascripts/global.js"></script>
-	<script type="text/javascript" src="/javascripts/visualization.js"></script>
+  <title><%- title %></title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
+  <script type="text/javascript" src="/javascripts/global.js"></script>
+  <script type="text/javascript" src="/javascripts/visualization.js"></script>
 </head>
 <body onload="initialize('<%= JSON.stringify( user ) %>');load_visualization_items_p1('<%= rows %>');">
 <div id='header' class='header'></div>
@@ -20,21 +20,21 @@
 <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='visuals/unit_selection' autocomplete="off">
   
   <table border='1'><tr>
-	<td>
-	  	Dataset Selection
-	</td>
-	<td>
-		<input type='button' value='Next: Unit Selection' onclick='check_for_no_datasets(this.form);return false'>
-	</td>
-	</tr>
-	<tr>
-	<td>
-	  <div id='projects_select_div'></div>
-	</td>
-	</tr>
+  <td>
+      Dataset Selection
+  </td>
+  <td>
+    <input type='button' value='Next: Unit Selection' onclick='check_for_no_datasets(this.form);return false'>
+  </td>
+  </tr>
+  <tr>
+  <td>
+    <div id='projects_select_div'></div>
+  </td>
+  </tr>
   </table>
   <input type='hidden' id='' value='SeCrEt' name='my_hidden_var' />
 </form>
-</div>	
+</div>  
 </body>
 </html>
