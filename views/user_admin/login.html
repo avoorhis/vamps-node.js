@@ -1,17 +1,17 @@
 <html>
 <head>
-	<title>TITLE</title>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<script type="text/javascript" src="/javascripts/global.js"></script>
+  <title>TITLE</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
 <body onload="initialize('<%= JSON.stringify( user ) %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='title'  class=''>VAMPS Login</div>
 <div id='subtitle'  class=''></div>
-<div class='content'> 
+<div class='content'>  
 <% if (message.length > 0) { %>
-		<div class="alert alert-danger"><%= message %></div>
+    <div class="alert alert-danger"><%= message %></div>
 <% } %>
 <form action="/users/login" method="post">
     <div>
