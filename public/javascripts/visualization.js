@@ -353,7 +353,7 @@ function check_for_no_datasets(thisform){
   var gotone = false;
   for (var i=0; i<x.length; i++)
   {
-      if (x[i].checked){
+      if (x[i].checked) {
         gotone = true;
       }
   }
@@ -383,7 +383,7 @@ function toggle_selected_datasets(pid, project)
   var cbs = ds_div.getElementsByTagName('input');
   var toggle = document.getElementById(project+'_toggle');
   var i;
-  if (ds_div.style.display === 'inline'){
+  if (ds_div.style.display === 'inline') {
     ds_div.style.display = 'none';
     document.getElementById(project+'--pj-id').checked = false;
     // change image to plus.png
