@@ -11,8 +11,8 @@ var passport = require('passport');
 /* GET User List (index) page. */
 router.get('/', function(req, res) {
     var db = req.db;
-    var qSelect = "SELECT * from users"
-    console.log(qSelect)
+    var qSelect = "SELECT * from users";
+    console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
       if(err)  {
       throw err;
@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
-    res.render('user_admin/login', { message: req.flash('loginMessage'), "user": req.user })
+    res.render('user_admin/login', { message: req.flash('loginMessage'), "user": req.user });
 });
 
 router.post('/login',
@@ -79,9 +79,9 @@ module.exports = router;
 function isLoggedIn(req, res, next) {
 
     // if user is authenticated in the session, carry on  
-    if (req.isAuthenticated())
-        return next();
-
+    if (req.isAuthenticated()) {
+      return next();
+    }
     // if they aren't redirect them to the home page
     res.redirect('/');
 }
