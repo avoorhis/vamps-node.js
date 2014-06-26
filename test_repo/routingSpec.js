@@ -5,10 +5,10 @@ var async = require('async'),
   request = require('supertest'),
   should  = require('should'),
   superagent  = require('superagent'),
-  app     = require('../app')
+  app     = require('../app');
 
-describe('express rest api server', function(){
-  var id
+describe('express rest api server', function() {
+  var id;
 
   // it('post object', function(done){
   //   superagent.post('http://localhost:3000')
@@ -80,4 +80,4 @@ describe('express rest api server', function(){
   //       done()
   //     })
   // })  
-})
+});
