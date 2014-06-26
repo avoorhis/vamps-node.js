@@ -1,8 +1,8 @@
 <html>
 <head>
-	<title>TITLE</title>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<script type="text/javascript" src="/javascripts/global.js"></script>
+  <title>TITLE</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
 
 <body onload="initialize('<%= JSON.stringify( user ) %>');">
@@ -11,29 +11,29 @@
 <div id='login_link' class=''></div>
 <div id='title'  class=''>VAMPS</div>
 <div id='subtitle'  class=''></div>
-<div class='content'> 
+<div class='content'>  
 <div class="page-header text-center">
-		<h1><span class="fa fa-anchor"></span>Profile Page</h1>
+    <h1><span class="fa fa-anchor"></span>Profile Page</h1>
 </div>
-	<!-- USER INFORMATION -->
-		<div class="col-sm-6">
-			<div class="well">
-				<h3><span class="fa fa-user"></span></h3>
+  <!-- USER INFORMATION -->
+    <div class="col-sm-6">
+      <div class="well">
+        <h3><span class="fa fa-user"></span></h3>
 
-					<p>
-						
-						<strong>UserID</strong>: <%= user.id %><br>
-						<strong>username</strong>: <%= user.username %><br>
-						<strong>First Name</strong>: <%= user.first_name %><br>
-						<strong>Last Name</strong>: <%= user.last_name %><br>
-						<strong>Email</strong>: <%= user.email %><br>
-						<strong>Institution</strong>: <%= user.institution %><br>
-						<strong>Security Level</strong>: <%= user.security_level %><br>
-					
-					</p>
+          <p>
+  
+            <strong>UserID</strong>: <%= user.id %><br>
+            <strong>username</strong>: <%= user.username %><br>
+            <strong>First Name</strong>: <%= user.first_name %><br>
+            <strong>Last Name</strong>: <%= user.last_name %><br>
+            <strong>Email</strong>: <%= user.email %><br>
+            <strong>Institution</strong>: <%= user.institution %><br>
+            <strong>Security Level</strong>: <%= user.security_level %><br>
+  
+          </p>
 
-			</div>
-		</div>
+      </div>
+    </div>
 
 </div>
 </body>
