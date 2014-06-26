@@ -11,13 +11,13 @@
     text-align:left;
 }
 #output_selection_div_id ul li {
-    
+  
     list-style-type: none;
     display:inline;
 
     text-align:left;
-    
-    
+  
+  
 }
 #projects_select_div {
     border: 1px solid gray;
@@ -27,9 +27,9 @@
     font-size: small;
 }
 #projects_select_div ul li {
-    
+  
     list-style-type: none;
-    
+  
 }
 #projects_select_div ul .project-select {
     margin-left:-30px;
@@ -38,8 +38,8 @@
     margin-left:-30px;
 }
 .project-select a {
-	text-decoration: none;
-	color: navy; 
+  text-decoration: none;
+  color: navy;  
 }
 #units_select_div {
     height:450px;
