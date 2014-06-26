@@ -8,10 +8,10 @@ router.get('/', function(req, res) {
     var qSelect = "SELECT id,project,title,project_description from projects";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
-      if (err)  {
+      if (err) {
       throw err;
     } else {
-        res.render('projects/index', { "rows" : rows, "user": req.user  });
+        res.render('projects/index', { "rows" : rows, "user": req.user });
       }
     });
   
@@ -25,7 +25,7 @@ router.get('/:id', function(req, res) {
       if (err)  {
       throw err;
     } else {
-        res.render('projects/profile', { project: row, user: req.user  });
+        res.render('projects/profile', { project: row, user: req.user });
       }
     });
   
