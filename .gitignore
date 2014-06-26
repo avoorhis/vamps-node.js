@@ -1,5 +1,6 @@
 *.sql.gz
 db.sql
+config/*
 
 # eclipse
 .jshintrc
