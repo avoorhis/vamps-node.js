@@ -17,7 +17,7 @@ before( function connectDB(done) {
      db.query("insert into mocha_test_table (user_name) VALUES('XXnameXX')",function(err, rows){
         if (err) {
            throw err;
-         }else{
+         } else {
            console.log('tsec');
          }
   
