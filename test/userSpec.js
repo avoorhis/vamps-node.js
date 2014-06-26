@@ -7,8 +7,8 @@ var db = require('../config/database-test');
 var mysql = require('mysql');
 var app = require('../app')
   , http = require('./http');
-var async = require('async')
-var request= require('supertest')
+var async = require('async');
+var request= require('supertest');
 //var should = require('should')
 //var app    = require('../app')
 // https://github.com/jedwood/api-testing-with-node
@@ -34,7 +34,7 @@ var request= require('supertest')
 
 
 //});
-describe('User API',function(){
+describe('User API', function() {
 
   before(function(done){
     http.createServer(app,done);
