@@ -1,5 +1,5 @@
 var express = require('express');
-var session      = require('express-session')
+var session      = require('express-session');
 var path = require('path');
 var favicon = require('static-favicon');
 var logger = require('morgan');
@@ -15,7 +15,7 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visuals/visualization');
-var C = require('./config/constants')
+var C = require('./config/constants');
 var app = express();
 require('./config/passport')(passport,connection); // pass passport for configuration
 
