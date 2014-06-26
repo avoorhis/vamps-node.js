@@ -7,8 +7,8 @@ var mysql = require('mysql');
 var async = require('async'),
   request = require('supertest'),
   should  = require('should'),
-  app     = require('../app')
-var User = {}
+  app     = require('../app');
+var User = {};
 var db = require('../config/database-test');
 
 describe('Req 1: Landing page functionality', function(){
@@ -59,7 +59,7 @@ describe('User Account', function() {
    });
 
    after(function(done) {
-     db.end()
+     db.end();
      done();
    });
 
@@ -83,8 +83,8 @@ describe('User Account', function() {
     done();
    });
    it('Saves User to DB',function(done){
-      user = MySQLUser
-      var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name, last_name, email, institution )"
+      var user = MySQLUser;
+      var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name, last_name, email, institution )";
       insertQuery +=    " VALUES ('" + user.username +"','"+ user.password +"','"+ user.firstname +"','"+ user.lastname +"','"+ user.email +"','"+ user.institution +"')";
   
       console.log(insertQuery);
@@ -103,8 +103,7 @@ describe('User Account', function() {
    it('Finds A User By Username', function(done) {
       Account.findOne({ username: '12345' }, function(err, account) {
         account.username.should.eql('12345');
-        console.log("   username: ", account.username)
-  
+        console.log("   username: ", account.username);
       });
       done();
    });
