@@ -12,7 +12,7 @@ function get_taxa_sil106_simple(){
   html += "<span class='small_font' >";
   html += "  <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick=\"toggle_simple_taxa()\"  \> Toggle Domains";
   html += "</span>";
-  for (var i in domains) {  
+  for (var i in domains) {
     var domain = domains[i];
     html += "  <li>";
     html += "  <label class='taxa-select'>";
@@ -20,7 +20,7 @@ function get_taxa_sil106_simple(){
     html +=    domain;
     html += "  </label>";
     html += "  </li>";
-  };
+  }
   html += "  <br>";
   html += "  <li><span class='bold_font'>Include NAs:</span><br><span class='small_font'>(taxonomy not available)</span></li>";
   html += "  <li><input type='radio' id='' name='include_nas' value='no' > Do Not Include NAs</li>";

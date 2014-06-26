@@ -61,7 +61,7 @@ module.exports = function(passport, db) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with email and password from our form
-        return login_auth_user(req, username, password, done, db);  
+        return login_auth_user(req, username, password, done, db);
     }));
   
 };
@@ -75,12 +75,12 @@ function generateHash(password) {
     return cipher.final('base64');
 }
 function validatePassword(entered_pw, database_pw) {
-    if(generateHash(entered_pw) === database_pw){
+    if (generateHash(entered_pw) === database_pw){
         console.log('Match!');
         return true;
     }
     console.log('No-Match!');
-    return false;  
+    return false;
 }
 
 function login_auth_user(req, username, password, done, db){
@@ -96,7 +96,7 @@ function login_auth_user(req, username, password, done, db){
         // if the user is found but the password is wrong
   
         //if (!( rows[0].password == password))
-        if( validatePassword(password, rows[0].encrypted_password) )
+        if ( validatePassword(password, rows[0].encrypted_password) )
             { return done(null, rows[0], req.flash('loginMessage', 'Success!')); }
 
         // create the loginMessage and save it to session as flashdata
