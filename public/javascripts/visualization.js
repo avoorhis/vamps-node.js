@@ -2,7 +2,7 @@
 
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
-selected_datasets=[];
+var selected_datasets = [];
 
 
 //
@@ -11,9 +11,9 @@ selected_datasets=[];
 function toggle_selected_datasets(pid, project)
 {
 
-  ds_div = document.getElementById(pid+'_ds_div');
-  cbs = ds_div.getElementsByTagName('input');
-  toggle = document.getElementById(project+'_toggle');
+  var ds_div = document.getElementById(pid+'_ds_div');
+  var cbs = ds_div.getElementsByTagName('input');
+  var toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display === 'inline'){
     ds_div.style.display = 'none';
     document.getElementById(project+'--pj-id').checked = false;
@@ -21,16 +21,16 @@ function toggle_selected_datasets(pid, project)
     toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />";
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type === 'checkbox') {
-        cbs[i].checked=false;  
+        cbs[i].checked=false;
       }
     }
   } else {
-    ds_div.style.display = 'inline'
-    document.getElementById(project+'--pj-id').checked = true
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />"
-    for(var i=0; i < cbs.length; i++) {
-      if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=true  
+    ds_div.style.display = 'inline';
+    document.getElementById(project+'--pj-id').checked = true;
+    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
+    for(var n=0; n < cbs.length; n++) {
+      if(cbs[n].type === 'checkbox') {
+        cbs[n].checked=true  ;
       }
     }
   }
@@ -40,49 +40,49 @@ function toggle_selected_datasets(pid, project)
 //
 function toggle_simple_taxa()
 {
-  boxes = document.getElementsByClassName('simple_taxa_ckbx');
-  if(boxes[0].checked == false){
-      for (i = 0; i < boxes.length; i++){
-          boxes[i].checked = true  
-          document.getElementById('toggle_taxa_btn').checked = true  
+  var boxes = document.getElementsByClassName('simple_taxa_ckbx');
+  if (boxes[0].checked === false){
+      for (var i = 0; i < boxes.length; i++){
+          boxes[i].checked = true;
+          document.getElementById('toggle_taxa_btn').checked = true;
       }
   }else{
-      for (i = 0; i < boxes.length; i++){
-          boxes[i].checked = false
-          document.getElementById('toggle_taxa_btn').checked = false
-      }  
-  }  
+      for (var n = 0; n < boxes.length; n++){
+          boxes[n].checked = false;
+          document.getElementById('toggle_taxa_btn').checked = false;
+      }
+  }
 }
 //
 // LOAD_VISUALIZATION_ITEMS Page 1
 //
 function load_visualization_items_p1(rows){
-  load_project_select(rows)
+  load_project_select(rows);
 }
 //
 // LOAD_VISUALIZATION_ITEMS Page 2
 //
 function load_visualization_items_p2(bodyItems,constants){
-  show_selected_datasets(bodyItems)
-  load_unit_select(constants)
-  show_visuals_output_choices()
+  show_selected_datasets(bodyItems);
+  load_unit_select(constants);
+  show_visuals_output_choices();
 }
 //
 //   SHOW VISUALS OUTPUT CHOICES
 //
 function show_visuals_output_choices(){
-    html = 'heatmap,barcharts,coutsTable....'
-    var div = document.getElementById('show_visuals_output_choices').innerHTML = html
+    var html = 'heatmap,barcharts,coutsTable....';
+    var div = document.getElementById('show_visuals_output_choices').innerHTML = html;
 }
 //
 //  LOAD UNIT SELECT
 //
 function load_unit_select(constants){
-    C = JSON.parse(constants)
-    rows = C.UNITSELECT.units
-    html = ""
-    html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>"
-    html += "<option value='none'>Choose Units</option>"
+    var C = JSON.parse(constants);
+    var rows = C.UNITSELECT.units;
+    var html = "";
+    html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>";
+    html += "<option value='none'>Choose Units</option>";
     for(i in rows) {
         file_id  = rows[i].id
         name   = rows[i].name
@@ -96,7 +96,7 @@ function load_unit_select(constants){
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box(file_id){
-  
+
   html=''
   // case functions are in unit_selectors.js
   switch(file_id){
@@ -119,13 +119,13 @@ function get_requested_units_selection_box(file_id){
       html = 'Select Another';
   }
   var div = document.getElementById('units_select_div').innerHTML = html
-  
+
 }
 //
 //  SHOW SELECTED DATASETS
 //
 function show_selected_datasets(bodyItems){
-  
+
   body = JSON.parse(bodyItems)
   html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;"
   html += "<select>"
@@ -151,15 +151,15 @@ function load_project_select(datasets_by_project_all){
   html = '<ul>'
   for (var i in rows.projects){
     pname = rows.projects[i].pname
-    pid   = rows.projects[i].pid  
-  
+    pid   = rows.projects[i].pid
+
     html += "<li>"
     html += "<label class='project-select' >"
-    html += "  <a href='#'  id='"+ pname +"_toggle'"  
+    html += "  <a href='#'  id='"+ pname +"_toggle'"
     html += "        onclick=\"toggle_selected_datasets('"+ pid +"','"+ pname +"'); return false;\" >"
     html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
-  
-    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'"  
+
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'"
     html += "        onclick=\"open_datasets('"+ pid +"','"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
     html += "</label>"
@@ -176,12 +176,12 @@ function load_project_select(datasets_by_project_all){
       html += dname
       html += "</label>"
       html += "</li>"
-    }  
+    }
     html += "</div>"
     html += "</ul>"
     html += "</li>"
 
-  
+
   }
   html += "</ul>";
   //html += "<input type='hidden' id='' value='OtherSeCrEt' name='my_hidden_var2' />"
@@ -196,16 +196,16 @@ function load_project_select(datasets_by_project_all){
 
 
 //   checked_datasets = json_project_tree.getAllCheckedBranches()
-  
+
 //     if(checked_datasets==''){
 //       alert("Select some datasets.")
 //       return
 //     }
 
-//   var hiddenField1 = document.createElement("input");  
+//   var hiddenField1 = document.createElement("input");
 //   hiddenField1.setAttribute("type", 'hidden');
 //   hiddenField1.setAttribute("name", "datasets");
-//   hiddenField1.setAttribute("value", checked_datasets);  
+//   hiddenField1.setAttribute("value", checked_datasets);
 //   form.appendChild(hiddenField1);
 
 //     $(form).submit();
@@ -216,7 +216,7 @@ function load_project_select(datasets_by_project_all){
 //
 // function check_for_selected_datasets(form)
 // {
-  
+
 //   cbs = document.getElementsByName(project+'--ds-ids[]')
 //   alert(cbs)
 //   have_acheck = false
@@ -224,7 +224,7 @@ function load_project_select(datasets_by_project_all){
 //     if(cbs[i].checked){
 //       have_acheck = true
 //     }
-  
+
 //   }
 //   if(have_acheck){
 //     alert('submitting')
@@ -246,10 +246,10 @@ function load_project_select(datasets_by_project_all){
 // function toggle_lower_taxa(rank,id,name)
 // {
 //     alert('toggle_lower_taxa id='+id)
-//  
+//
 //     if(rank==0){
 //         // get list phylum level for this name
-//         // select distinct phylum from taxonomies  
+//         // select distinct phylum from taxonomies
 //         // JOIN phylums on phylum_id=phylums.id
 //         // where domain_id='id'
 //         // Phylum.joins("JOIN taxonomies ON phylum_id = phylums.id").where("domain_id=3").distinct
@@ -271,13 +271,13 @@ function load_project_select(datasets_by_project_all){
 // params = 'rank='+rank
 // params += '&id='+id
 // params += '&name='+name
-//  
+//
 // $.ajax({
 //   url: "/visualization_controller/show_hide_subitem",
 //   data: params,
 //   dataType: 'script'
 // })
-//  
+//
 // }
 
 //
@@ -285,28 +285,28 @@ function load_project_select(datasets_by_project_all){
 //
 function open_datasets(pid, project)
 {
-  
+
   //alert('in open')
   ds_div = document.getElementById(pid+'_ds_div');
   cbs = ds_div.getElementsByTagName('input');
   toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
-  
+
     // uncheck project
-    if(cbs[0].checked == true) {  
+    if(cbs[0].checked == true) {
       document.getElementById(project+'--pj-id').checked = false
-      for(var i=0; i < cbs.length; i++) {  
-        cbs[i].checked=false  
+      for(var i=0; i < cbs.length; i++) {
+        cbs[i].checked=false
       }
     }else{
       document.getElementById(project+'--pj-id').checked = true
-      for(var i=0; i < cbs.length; i++) {  
-        cbs[i].checked=true  
+      for(var i=0; i < cbs.length; i++) {
+        cbs[i].checked=true
       }
     }
-  
+
   }else{
-  
+
     // check project
     ds_div.style.display = 'inline'
     document.getElementById(project+'--pj-id').checked = true
@@ -314,11 +314,11 @@ function open_datasets(pid, project)
     // now set all the ds checkboxes to 'checked'
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=true  
+        cbs[i].checked=true
       }
     }
   }
-  
+
 
 }
 //
@@ -332,7 +332,7 @@ function set_check_project(pid, project)
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
-    }  
+    }
   }
   if(have_acheck){
     document.getElementById(project+'--pj-id').checked = true
@@ -344,7 +344,7 @@ function set_check_project(pid, project)
 // CHECK_FOR_NO_DATASET
 //
 function check_for_no_datasets(thisform){
-  
+
   var x = thisform["dataset_ids[]"];
   gotone = false
   for (var i=0; i<x.length; i++)
