@@ -8,9 +8,9 @@ router.get('/', function(req, res) {
     var qSelect = "SELECT id,project,title,project_description from projects";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
-      if(err)  {
+      if (err)  {
       throw err;
-    }else{
+    } else {
         res.render('projects/index', { "rows" : rows, "user": req.user  });
       }
     });
@@ -22,9 +22,9 @@ router.get('/:id', function(req, res) {
     var qSelect = "SELECT id,project,title,project_description from projects where id='"+ req.params.id +"'";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, row, fields){
-      if(err)  {
+      if (err)  {
       throw err;
-    }else{
+    } else {
         res.render('projects/profile', { project: row, user: req.user  });
       }
     });
