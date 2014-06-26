@@ -5,8 +5,8 @@
 //var utils = require('./utils');
 var db = require('../config/database-test');
 var mysql = require('mysql');
-var app = require('../app')
-  , http = require('./http');
+var app = require('../app'),
+    http = require('./http');
 var async = require('async');
 var request= require('supertest');
 //var should = require('should')
