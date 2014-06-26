@@ -7,12 +7,12 @@ function get_taxa_sil106_simple(){
   domains = ['Archaea','Bacteria','Eukarya','Organelle','Unknown'];
   html ="<ul>";
   html += "<li class='bold_font'>Domains to Include:";
-    
+  
   html += "</li>";
   html += "<span class='small_font' >";
   html += "  <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick=\"toggle_simple_taxa()\"  \> Toggle Domains"
   html += "</span>";
-  for(i in domains) { 
+  for(i in domains) {  
     domain = domains[i];
     html += "  <li>";
     html += "  <label class='taxa-select'>";
@@ -43,11 +43,11 @@ function get_taxa_sil106_simple(){
 function get_taxa_sil106_custom(){
   return '<br><h2>not written yet-1</h2>'
 }
- 
+  
 function get_taxa_gg_simple(){
   return '<br><h2>not written yet-2</h2>'
 }
-    
+  
 function get_taxa_gg_custom(){
   return '<br><h2>not written yet-3</h2>'
 }

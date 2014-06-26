@@ -12,25 +12,25 @@ function toggle_selected_datasets(pid, project)
 {
 
   ds_div = document.getElementById(pid+'_ds_div');
-  cbs = ds_div.getElementsByTagName('input')
-  toggle = document.getElementById(project+'_toggle')
-  if(ds_div.style.display == 'inline'){
-    ds_div.style.display = 'none'
-    document.getElementById(project+'--pj-id').checked = false
+  cbs = ds_div.getElementsByTagName('input');
+  toggle = document.getElementById(project+'_toggle');
+  if(ds_div.style.display === 'inline'){
+    ds_div.style.display = 'none';
+    document.getElementById(project+'--pj-id').checked = false;
     // change image to plus.png
-    toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />"
+    toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />";
     for(var i=0; i < cbs.length; i++) {
-      if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=false        
+      if(cbs[i].type === 'checkbox') {
+        cbs[i].checked=false;  
       }
     }
-  }else{
+  } else {
     ds_div.style.display = 'inline'
     document.getElementById(project+'--pj-id').checked = true
     toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />"
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=true        
+        cbs[i].checked=true  
       }
     }
   }
@@ -44,13 +44,13 @@ function toggle_simple_taxa()
   if(boxes[0].checked == false){
       for (i = 0; i < boxes.length; i++){
           boxes[i].checked = true  
-          document.getElementById('toggle_taxa_btn').checked = true    
+          document.getElementById('toggle_taxa_btn').checked = true  
       }
   }else{
       for (i = 0; i < boxes.length; i++){
           boxes[i].checked = false
           document.getElementById('toggle_taxa_btn').checked = false
-      } 
+      }  
   }  
 }
 //
@@ -119,13 +119,13 @@ function get_requested_units_selection_box(file_id){
       html = 'Select Another';
   }
   var div = document.getElementById('units_select_div').innerHTML = html
- 
+  
 }
 //
 //  SHOW SELECTED DATASETS
 //
 function show_selected_datasets(bodyItems){
-    
+  
   body = JSON.parse(bodyItems)
   html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;"
   html += "<select>"
@@ -149,17 +149,17 @@ function load_project_select(datasets_by_project_all){
   //alert('in load')
   rows = JSON.parse(datasets_by_project_all)
   html = '<ul>'
-  for(i in rows.projects){
+  for (var i in rows.projects){
     pname = rows.projects[i].pname
-    pid   = rows.projects[i].pid 
-    
+    pid   = rows.projects[i].pid  
+  
     html += "<li>"
     html += "<label class='project-select' >"
-    html += "  <a href='#'  id='"+ pname +"_toggle'"                
+    html += "  <a href='#'  id='"+ pname +"_toggle'"  
     html += "        onclick=\"toggle_selected_datasets('"+ pid +"','"+ pname +"'); return false;\" >"
     html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
-    
-    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'" 
+  
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'"  
     html += "        onclick=\"open_datasets('"+ pid +"','"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
     html += "</label>"
@@ -176,17 +176,17 @@ function load_project_select(datasets_by_project_all){
       html += dname
       html += "</label>"
       html += "</li>"
-    } 
+    }  
     html += "</div>"
     html += "</ul>"
     html += "</li>"
 
-    
+  
   }
-  html += "</ul>"
+  html += "</ul>";
   //html += "<input type='hidden' id='' value='OtherSeCrEt' name='my_hidden_var2' />"
   //alert(html)
-  var div = document.getElementById('projects_select_div').innerHTML = html
+  var div = document.getElementById('projects_select_div').innerHTML = html;
 }
 //
 // LOAD_VISUALIZATION_ITEMS Page 1
@@ -195,20 +195,20 @@ function load_project_select(datasets_by_project_all){
 
 
 
-// 	checked_datasets = json_project_tree.getAllCheckedBranches()
-  	
-//   	if(checked_datasets==''){
-//   		alert("Select some datasets.")
-//   		return
-//   	}
+//   checked_datasets = json_project_tree.getAllCheckedBranches()
+  
+//     if(checked_datasets==''){
+//       alert("Select some datasets.")
+//       return
+//     }
 
-//   var hiddenField1 = document.createElement("input"); 
-// 	hiddenField1.setAttribute("type", 'hidden');
-// 	hiddenField1.setAttribute("name", "datasets");
-// 	hiddenField1.setAttribute("value", checked_datasets);	
-// 	form.appendChild(hiddenField1);
+//   var hiddenField1 = document.createElement("input");  
+//   hiddenField1.setAttribute("type", 'hidden');
+//   hiddenField1.setAttribute("name", "datasets");
+//   hiddenField1.setAttribute("value", checked_datasets);  
+//   form.appendChild(hiddenField1);
 
-//   	$(form).submit();
+//     $(form).submit();
 // }
 
 //
@@ -224,7 +224,7 @@ function load_project_select(datasets_by_project_all){
 //     if(cbs[i].checked){
 //       have_acheck = true
 //     }
-              
+  
 //   }
 //   if(have_acheck){
 //     alert('submitting')
@@ -246,10 +246,10 @@ function load_project_select(datasets_by_project_all){
 // function toggle_lower_taxa(rank,id,name)
 // {
 //     alert('toggle_lower_taxa id='+id)
-//     
+//  
 //     if(rank==0){
 //         // get list phylum level for this name
-//         // select distinct phylum from taxonomies 
+//         // select distinct phylum from taxonomies  
 //         // JOIN phylums on phylum_id=phylums.id
 //         // where domain_id='id'
 //         // Phylum.joins("JOIN taxonomies ON phylum_id = phylums.id").where("domain_id=3").distinct
@@ -271,13 +271,13 @@ function load_project_select(datasets_by_project_all){
 // params = 'rank='+rank
 // params += '&id='+id
 // params += '&name='+name
-// 
+//  
 // $.ajax({
 //   url: "/visualization_controller/show_hide_subitem",
 //   data: params,
 //   dataType: 'script'
 // })
-//     
+//  
 // }
 
 //
@@ -288,25 +288,25 @@ function open_datasets(pid, project)
   
   //alert('in open')
   ds_div = document.getElementById(pid+'_ds_div');
-  cbs = ds_div.getElementsByTagName('input')
-  toggle = document.getElementById(project+'_toggle')
+  cbs = ds_div.getElementsByTagName('input');
+  toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
-    
+  
     // uncheck project
     if(cbs[0].checked == true) {  
       document.getElementById(project+'--pj-id').checked = false
-      for(var i=0; i < cbs.length; i++) { 
-        cbs[i].checked=false        
+      for(var i=0; i < cbs.length; i++) {  
+        cbs[i].checked=false  
       }
     }else{
       document.getElementById(project+'--pj-id').checked = true
-      for(var i=0; i < cbs.length; i++) { 
-        cbs[i].checked=true        
+      for(var i=0; i < cbs.length; i++) {  
+        cbs[i].checked=true  
       }
     }
-    
+  
   }else{
-   
+  
     // check project
     ds_div.style.display = 'inline'
     document.getElementById(project+'--pj-id').checked = true
@@ -314,7 +314,7 @@ function open_datasets(pid, project)
     // now set all the ds checkboxes to 'checked'
     for(var i=0; i < cbs.length; i++) {
       if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=true        
+        cbs[i].checked=true  
       }
     }
   }
@@ -332,7 +332,7 @@ function set_check_project(pid, project)
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
-    }       
+    }  
   }
   if(have_acheck){
     document.getElementById(project+'--pj-id').checked = true
