@@ -1,5 +1,6 @@
 *.sql.gz
-npm-debug.log
+db.sql
+
 # eclipse
 .jshintrc
 .npmignore
