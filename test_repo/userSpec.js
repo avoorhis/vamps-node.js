@@ -4,7 +4,7 @@
 var async = require('async'),
   request = require('supertest'),
   should  = require('should'),
-  app     = require('../app')
+  app     = require('../app');
 // https://github.com/jedwood/api-testing-with-node
 
 

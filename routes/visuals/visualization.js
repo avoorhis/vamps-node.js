@@ -11,12 +11,12 @@ router.post('/unit_selection',  function(req, res) {
   console.log(req.body);
   console.log(JSON.stringify(req.C));
   // dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
-  res.render('visuals/unit_selection', {   title: 'Unit Selection',  
+  res.render('visuals/unit_selection', {   title: 'Unit Selection',
                   body: JSON.stringify(req.body),
                   constants: JSON.stringify(req.C),
                               "user": req.user
-                })
-  
+                });
+
 });
 /* GET visualization page. */
 router.get('/',  function(req, res) {
@@ -30,6 +30,7 @@ router.get('/',  function(req, res) {
 //         {"id":6,"dname":"1St_114_Hardinsburg"},
 //         {"id":19,"dname":"1St_127_Pendleton"}
 //     ]}
+
 // }  
 
 
@@ -88,11 +89,7 @@ router.get('/',  function(req, res) {
                                     })
     
   
-    
-  
-  
-  
-  
+
 });
 
 
@@ -100,13 +97,14 @@ module.exports = router;
 
 function isLoggedIn(req, res, next) {
 
-    // if user is authenticated in the session, carry on  
-    if (req.isAuthenticated())
-        return next();
-
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated()) {
+      return next();
+    }
     // if they aren't redirect them to the home page
     res.redirect('/');
 }
+
 function IsJsonString(str) {
     try {
         JSON.parse(str);
