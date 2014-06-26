@@ -36,16 +36,16 @@ router.get('/',  function(req, res) {
     qDatasets    += " FROM datasets";
     qDatasets    += " JOIN projects ON (projects.id=project_id)";
     var collection = db.query(qDatasets, function (err, rows, fields){
-      if(err)  {
+      if (err)  {
       throw err;
-    }else{
+    } else {
       var datasetsByProjectAll = {};
       var projects = [];
       var datasets_list = [];
       var already_have_project;
       datasetsByProjectAll.projects = projects;
       var n;
-      for(n=0; n<rows.length; n++){
+      for (n=0; n<rows.length; n++) {
         //console.log(rows[n].dataset)
         //console.log(rows[n].project)
         var pname   = rows[n].project;
@@ -76,24 +76,14 @@ router.get('/',  function(req, res) {
         }
       }
 
-
-
-
-
       //console.log(JSON.stringify(datasetsByProjectAll));
       res.render('visuals/index',{ title   : 'Show Datasets!',
-                                   rows    : JSON.stringify(datasetsByProjectAll)  ,
+                                   rows    : JSON.stringify(datasetsByProjectAll),
                                    "user": req.user
                                     });
     }
-
     });
-
-
-
-
 });
-
 
 module.exports = router;
 
