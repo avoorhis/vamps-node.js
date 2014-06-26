@@ -10,7 +10,7 @@ var mysql = require('mysql');
 // ensure the NODE_ENV is set to 'test'
 // this is helpful when you would like to change behavior when testing
 //process.env.NODE_ENV = 'test';
-console.log('in utils.js')
+console.log('in utils.js');
 before( function connectDB(done) {
      //db.connect();
      console.dir(arguments);
@@ -18,7 +18,7 @@ before( function connectDB(done) {
         if (err) {
            throw err;
          }else{
-           console.log('tsec')
+           console.log('tsec');
          }
   
     });
