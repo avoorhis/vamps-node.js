@@ -1,11 +1,11 @@
   <ul>
   <li class='bold_font'>Domains to Include:
-    
+  
   </li>
   <span class='small_font' >
     <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa()"  \> Toggle Domains
   </span>
-  <% for(i in simpleTaxonomy.domains) { %> 
+  <% for(i in simpleTaxonomy.domains) { %>  
     <% domain = simpleTaxonomy.domains[i].name %>
     <% id = simpleTaxonomy.domains[i].id %>
     <li>
@@ -29,6 +29,6 @@
     <li><input type='radio' id='' name='tax_depth' value='genus'   \> Genus</li>
     <li><input type='radio' id='' name='tax_depth' value='species' \> Species</li>
     <li><input type='radio' id='' name='tax_depth' value='strain'  \> Strain</li>
-    
+  
   </ul>
   
