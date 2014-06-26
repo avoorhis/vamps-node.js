@@ -1,8 +1,8 @@
 <html>
 <head>
-	<title>TITLE</title>
-	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<script type="text/javascript" src="/javascripts/global.js"></script>
+  <title>TITLE</title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <script type="text/javascript" src="/javascripts/global.js"></script>
 </head>
 <body onload="initialize('<%= JSON.stringify( user ) %>');">
 <div id='header' class='header'></div>
@@ -15,15 +15,15 @@
 <% user_rows = rows %>
 <div id='user_list_div' class='general_table' >
   <ul>
-	<% for(i in user_rows) { %>
-		<li value='<%= user_rows[i].username %>'>
-			<%= user_rows[i].username %>
-			<%= ' -- ' %>
-			<%= user_rows[i].first_name %>
-			<%= user_rows[i].last_name %>
-		</li>
-		
-	<% } %>
+  <% for(i in user_rows) { %>
+    <li value='<%= user_rows[i].username %>'>
+      <%= user_rows[i].username %>
+      <%= ' -- ' %>
+      <%= user_rows[i].first_name %>
+      <%= user_rows[i].last_name %>
+    </li>
+  
+  <% } %>
   </ul>
 </div>
 </div>

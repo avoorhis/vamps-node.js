@@ -20,11 +20,11 @@ before( function connectDB(done) {
          }else{
            console.log('tsec')
          }
-    
+  
     });
      done();
- 
- 
+  
+  
  // function clearDB() {
  //   for (var i in db.query('select * from users')) {
  //     console.log(i)
@@ -32,9 +32,9 @@ before( function connectDB(done) {
  //   return done();
  // }
 
- 
- 
-     
-   
- 
+  
+  
+  
+  
+  
 });

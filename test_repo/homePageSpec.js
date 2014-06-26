@@ -4,7 +4,7 @@
 var async = require('async'),
   request = require('supertest'),
   should  = require('should'),
-  app 	  = require('../app')
+  app     = require('../app')
   
 
 // 1.1 Home Page Requirements:
@@ -14,12 +14,12 @@ var async = require('async'),
 describe('HomePage', function(){
   
   it('1.1 Text of home page', function(done){
-	request(app)
-	.get('/')
-	.expect(200)
-	.end(function (err, res) {
-	  res.text.should.include('Visualization');
-	  done();
+  request(app)
+  .get('/')
+  .expect(200)
+  .end(function (err, res) {
+    res.text.should.include('Visualization');
+    done();
     });
   });
 
