@@ -16,9 +16,10 @@ beforeEach(function (done) {
      db.connect();
      done();
  }
+ function remove_func() {}
  function clearDB() {
    for (var i in mongoose.connection.collections) {
-     mongoose.connection.collections[i].remove(function() {});
+     mongoose.connection.collections[i].remove(remove_func());
    }
    return done();
  }
