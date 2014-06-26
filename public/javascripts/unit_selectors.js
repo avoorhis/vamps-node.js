@@ -4,19 +4,19 @@
 
 function get_taxa_sil106_simple(){
   
-  domains = ['Archaea','Bacteria','Eukarya','Organelle','Unknown'];
-  html ="<ul>";
+  var domains = ['Archaea','Bacteria','Eukarya','Organelle','Unknown'];
+  var html = "<ul>";
   html += "<li class='bold_font'>Domains to Include:";
   
   html += "</li>";
   html += "<span class='small_font' >";
-  html += "  <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick=\"toggle_simple_taxa()\"  \> Toggle Domains"
+  html += "  <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick=\"toggle_simple_taxa()\"  \> Toggle Domains";
   html += "</span>";
-  for(i in domains) {  
-    domain = domains[i];
+  for (var i in domains) {  
+    var domain = domains[i];
     html += "  <li>";
     html += "  <label class='taxa-select'>";
-    html += "    <input type='checkbox' class='simple_taxa_ckbx' checked='checked' id='"+domain+"' name='' onclick=\"open_datasets()\" \>"
+    html += "    <input type='checkbox' class='simple_taxa_ckbx' checked='checked' id='"+domain+"' name='' onclick=\"open_datasets()\" \>";
     html +=    domain;
     html += "  </label>";
     html += "  </li>";
@@ -36,22 +36,22 @@ function get_taxa_sil106_simple(){
   html += "  <li><input type='radio' id='' name='tax_depth' value='species' > Species</li>";
   html += "  <li><input type='radio' id='' name='tax_depth' value='strain'  > Strain</li>";
   html += "</ul>";
-  return html
+  return html;
 
 }
 ////////////////////////////////////
 function get_taxa_sil106_custom(){
-  return '<br><h2>not written yet-1</h2>'
+  return '<br><h2>not written yet-1</h2>';
 }
   
 function get_taxa_gg_simple(){
-  return '<br><h2>not written yet-2</h2>'
+  return '<br><h2>not written yet-2</h2>';
 }
   
 function get_taxa_gg_custom(){
-  return '<br><h2>not written yet-3</h2>'
+  return '<br><h2>not written yet-3</h2>';
 }
 function get_med_nodes(){
-  return '<br><h2>not written yet-4</h2>'
+  return '<br><h2>not written yet-4</h2>';
 }
 

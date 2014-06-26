@@ -8,29 +8,29 @@ var selected_datasets = [];
 //
 // TOGGLE_SELECTED_DATASETS
 //
-function toggle_selected_datasets(project)
+function toggle_selected_datasets(pid, project)
 {
 
-  var ds_div = document.getElementById(project+'_ds_div');
+  var ds_div = document.getElementById(pid+'_ds_div');
   var cbs = ds_div.getElementsByTagName('input');
   var toggle = document.getElementById(project+'_toggle');
-  if(ds_div.style.display === 'inline'){
+  if (ds_div.style.display === 'inline'){
     ds_div.style.display = 'none';
     document.getElementById(project+'--pj-id').checked = false;
     // change image to plus.png
     toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />";
-    for(var i=0; i < cbs.length; i++) {
-      if(cbs[i].type === 'checkbox') {
-        cbs[i].checked=false;
+    for (var i=0; i < cbs.length; i++) {
+      if (cbs[i].type === 'checkbox') {
+        cbs[i].checked = false;
       }
     }
   } else {
     ds_div.style.display = 'inline';
     document.getElementById(project+'--pj-id').checked = true;
     toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
-    for(var n=0; n < cbs.length; n++) {
-      if(cbs[n].type === 'checkbox') {
-        cbs[n].checked=true  ;
+    for (var n=0; n < cbs.length; n++) {
+      if (cbs[n].type === 'checkbox') {
+        cbs[n].checked = true  ;
       }
     }
   }
@@ -46,7 +46,7 @@ function toggle_simple_taxa()
           boxes[i].checked = true;
           document.getElementById('toggle_taxa_btn').checked = true;
       }
-  }else{
+  } else {
       for (var n = 0; n < boxes.length; n++){
           boxes[n].checked = false;
           document.getElementById('toggle_taxa_btn').checked = false;
@@ -83,21 +83,21 @@ function load_unit_select(constants){
     var html = "";
     html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>";
     html += "<option value='none'>Choose Units</option>";
-    for(i in rows) {
-        file_id  = rows[i].id
-        name   = rows[i].name
-        file = rows[i].file
-        html += "<option value='"+ file_id +"'>"+ name +"</option>"
+    for (var i in rows) {
+      var file_id  = rows[i].id;
+      var name = rows[i].name;
+      var file = rows[i].file;
+      html += "<option value='"+ file_id +"'>"+ name +"</option>";
      }
-    html += "</select>"
-    var div = document.getElementById('units_select_choices_div').innerHTML = html
+    html += "</select>";
+    var div = document.getElementById('units_select_choices_div').innerHTML = html;
 }
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box(file_id){
 
-  html=''
+  var html = '';
   // case functions are in unit_selectors.js
   switch(file_id){
     case 'tax_silva116_simple':
@@ -118,7 +118,7 @@ function get_requested_units_selection_box(file_id){
     default:
       html = 'Select Another';
   }
-  var div = document.getElementById('units_select_div').innerHTML = html
+  var div = document.getElementById('units_select_div').innerHTML = html;
 
 }
 //
@@ -126,20 +126,20 @@ function get_requested_units_selection_box(file_id){
 //
 function show_selected_datasets(bodyItems){
 
-  body = JSON.parse(bodyItems)
-  html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;"
-  html += "<select>"
+  var body = JSON.parse(bodyItems);
+  var html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;";
+  html += "<select>";
 
-  for(i in body.dataset_ids){
+  for (var i in body.dataset_ids){
     //alert(i)
-    html += "<option>"
-    html += body.dataset_ids[i]
-    html += "</option>"
+    html += "<option>";
+    html += body.dataset_ids[i];
+    html += "</option>";
   }
-  html += '</select>'
-  html += '<br>To change these <a href="/visuals">GoBack</a> to the previous page.'
-  //alert(html)
-  var div = document.getElementById('show_selected_datasets_div').innerHTML = html
+  html += '</select>';
+  html += '<br>To change these <a href="/visuals">GoBack</a> to the previous page.';
+  //alert(html);
+  var div = document.getElementById('show_selected_datasets_div').innerHTML = html;
 
 }
 //
@@ -147,6 +147,7 @@ function show_selected_datasets(bodyItems){
 //
 function load_project_selection(projects){
   //alert('in load')
+
   rows = JSON.parse(projects)
   html = '<ul>'
   for (i in rows.projects){
@@ -180,7 +181,6 @@ function load_project_selection(projects){
     html += "</ul>"
     html += "</li>"
 
-
   }
   html += "</ul>";
   //html += "<input type='hidden' id='' value='OtherSeCrEt' name='my_hidden_var2' />"
@@ -194,90 +194,6 @@ function load_project_selection(projects){
 
 
 
-//   checked_datasets = json_project_tree.getAllCheckedBranches()
-
-//     if(checked_datasets==''){
-//       alert("Select some datasets.")
-//       return
-//     }
-
-//   var hiddenField1 = document.createElement("input");
-//   hiddenField1.setAttribute("type", 'hidden');
-//   hiddenField1.setAttribute("name", "datasets");
-//   hiddenField1.setAttribute("value", checked_datasets);
-//   form.appendChild(hiddenField1);
-
-//     $(form).submit();
-// }
-
-//
-// CHECK_FOR_SELECTED_DATASETS
-//
-// function check_for_selected_datasets(form)
-// {
-
-//   cbs = document.getElementsByName(project+'--ds-ids[]')
-//   alert(cbs)
-//   have_acheck = false
-//   for(var i=0; i < cbs.length; i++) {
-//     if(cbs[i].checked){
-//       have_acheck = true
-//     }
-
-//   }
-//   if(have_acheck){
-//     alert('submitting')
-//     $(form).submit();
-//   }else{
-//     alert('Select some data!')
-//     return;
-//   }
-//   return;
-// }
-//
-// OPEN_DATASETS
-//
-
-// function open_this_taxon(rank,id,name)
-// {
-//     alert('open_this_taxon rank='+rank+' name='+name)
-// }
-// function toggle_lower_taxa(rank,id,name)
-// {
-//     alert('toggle_lower_taxa id='+id)
-//
-//     if(rank==0){
-//         // get list phylum level for this name
-//         // select distinct phylum from taxonomies
-//         // JOIN phylums on phylum_id=phylums.id
-//         // where domain_id='id'
-//         // Phylum.joins("JOIN taxonomies ON phylum_id = phylums.id").where("domain_id=3").distinct
-//     }else if(rank==1){
-//         // Klass.joins("JOIN taxonomies ON klass_id = klasses.id").where("phylum_id=3").distinct
-//     }else if(rank==2){
-//         // Order.joins("JOIN taxonomies ON order_id = orders.id").where("klass_id=3").distinct
-//     }else if(rank==3){
-//         // Family.joins("JOIN taxonomies ON family_id = families.id").where("order_id=3").distinct
-//     }else if(rank==4){
-//         // Genus.joins("JOIN taxonomies ON genus_id = genus.id").where("family_id=3").distinct
-//     }else if(rank==5){
-//         // Species.joins("JOIN taxonomies ON species_id = species.id").where("genus_id=3").distinct
-//     }else if(rank==6){
-//         // Strain.joins("JOIN taxonomies ON strain_id = strain.id").where("species_id=3").distinct
-//     }else{
-//         // ERROR
-//     }
-// params = 'rank='+rank
-// params += '&id='+id
-// params += '&name='+name
-//
-// $.ajax({
-//   url: "/visualization_controller/show_hide_subitem",
-//   data: params,
-//   dataType: 'script'
-// })
-//
-// }
 
 //
 //  OPEN DATASETS
@@ -286,34 +202,35 @@ function open_datasets(project)
 {
 
   //alert('in open')
+
   ds_div = document.getElementById(project+'_ds_div');
   cbs = ds_div.getElementsByTagName('input');
   toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
 
     // uncheck project
-    if(cbs[0].checked == true) {
-      document.getElementById(project+'--pj-id').checked = false
-      for(var i=0; i < cbs.length; i++) {
-        cbs[i].checked=false
+    if (cbs[0].checked) {
+      document.getElementById(project+'--pj-id').checked = false;
+      for (var i=0; i < cbs.length; i++) {
+        cbs[i].checked = false;
       }
-    }else{
-      document.getElementById(project+'--pj-id').checked = true
-      for(var i=0; i < cbs.length; i++) {
-        cbs[i].checked=true
+    } else {
+      document.getElementById(project+'--pj-id').checked = true;
+      for (var i=0; i < cbs.length; i++) {
+        cbs[i].checked = true;
       }
     }
 
-  }else{
+  } else {
 
     // check project
-    ds_div.style.display = 'inline'
-    document.getElementById(project+'--pj-id').checked = true
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />"
+    ds_div.style.display = 'inline';
+    document.getElementById(project+'--pj-id').checked = true;
+    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
     // now set all the ds checkboxes to 'checked'
-    for(var i=0; i < cbs.length; i++) {
-      if(cbs[i].type == 'checkbox') {
-        cbs[i].checked=true
+    for (var i=0; i < cbs.length; i++) {
+      if (cbs[i].type === 'checkbox') {
+        cbs[i].checked = true;
       }
     }
   }
@@ -325,18 +242,20 @@ function open_datasets(project)
 //
 function set_check_project(project)
 {
+
   ds_div = document.getElementById(project+'_ds_div');
   cbs = ds_div.getElementsByTagName('input')
   have_acheck = false
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
+
     }
   }
-  if(have_acheck){
-    document.getElementById(project+'--pj-id').checked = true
-  }else{
-    document.getElementById(project+'--pj-id').checked = false
+  if (have_acheck){
+    document.getElementById(project+'--pj-id').checked = true;
+  } else {
+    document.getElementById(project+'--pj-id').checked = false;
   }
 }
 //
@@ -345,17 +264,17 @@ function set_check_project(project)
 function check_for_no_datasets(thisform){
 
   var x = thisform["dataset_ids[]"];
-  gotone = false
+  gotone = false;
   for (var i=0; i<x.length; i++)
   {
-      if(x[i].checked == true){
-        gotone = true
+      if (x[i].checked) {
+        gotone = true;
       }
   }
-  if(gotone){
+  if (gotone){
     thisform.submit();
-  }else{
-    alert('You must select some datasets')
+  } else {
+    alert('You must select some datasets');
     return;
   }
 }
