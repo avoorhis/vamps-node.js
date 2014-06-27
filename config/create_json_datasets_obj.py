@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-##!/usr/local/www/vamps/software/python/bin/python
-##!/usr/bin/env python
-##!/usr/local/epd_python/bin/python
-##!/bioware/python/bin/python
-##!/usr/bin/env python
-##!/usr/local/www/vamps/software/python/bin/python
-###!/usr/bin/env python
 
 # -*- coding: utf-8 -*-
 
@@ -20,22 +13,14 @@
 # Please read the COPYING file.
 #
 
+
 import os
 from stat import * # ST_SIZE etc
 import sys
-import shutil
-import types
-import random
-import csv
-from time import sleep
-
 import MySQLdb
-#from apps.ConMySQL import Conn
 import time
 
 
-
-        
 def create_json_obj(args):
     sql = "SELECT project, datasets.id as did, dataset, sum(seq_count) as ds_count"
     sql += " FROM datasets "
@@ -66,12 +51,14 @@ def create_json_obj(args):
         else:
             project_hash[project] = [{ 'did':did,'dname':dataset,'count':count }]
         
-    #print project_hash
-    
+    return project_hash
+#
+#
+#
+def write_file(project_hash): 
+
     out_file_name = 'all_datasets'+time.strftime("%Y%m%d_%H%M%S")+'.js'
     fp = open(out_file_name,'w')
-    
-    
     
     # These items should be in all metadata so I remove them explicitly then
     # add them back at the front
@@ -94,7 +81,7 @@ def create_json_obj(args):
         fp.write("    { name: '"+p+"', datasets:\r")
         fp.write('      [\r')
         for info in project_hash[p]:
-            # {'did':'85', 'dname':'16_Bedford_Hills',          'ds_count':'489'},
+            # {'did':'85', 'dname':'16_Bedford_Hills', 'ds_count':'489'},
             fp.write("        {'did':'"+str(info['did'])+"', 'dname':'"+info['dname']+"', 'ds_count':'"+str(info['count'])+"'},\r")
            
         fp.write('      ]},\r')   
@@ -103,7 +90,10 @@ def create_json_obj(args):
     fp.write('module.exports = datasets;\r')  
     fp.close()
     print '\nDone writing to '+out_file_name
-        
+    print '\nIt should be copied to config/all_datasets.js'
+    print 'for incorporation into VAMPS project/dataset selection.'
+    print   
+     
 if __name__ == '__main__':
     import argparse
     
@@ -114,7 +104,7 @@ if __name__ == '__main__':
     
     myusage = """usage: metadataDB2Table.py [options]
          
-         Load user sequences into the database
+         Create JSON object of all projects/datasets in New VAMPS
          
          where
             
@@ -126,7 +116,7 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)
                                                 
-    parser.add_argument("-site",                required=False,  action="store",   dest = "site", default='localhost',
+    parser.add_argument("-site", required=False,  action="store",   dest = "site", default='localhost',
                                                     help="")  
                                                                                  
                                          
@@ -144,5 +134,6 @@ if __name__ == '__main__':
     args.db=MySQLdb.connect(user=db_user, passwd=db_pass,host=db_host, db=db_name)
     #c = obj.get_cursor()
     
-    create_json_obj(args)
+    project_dataset_hash = create_json_obj(args)
+    write_file(project_dataset_hash)
         
