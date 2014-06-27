@@ -10,7 +10,7 @@ var selected_datasets = [];
 //
 // TOGGLE_SELECTED_DATASETS
 //
-function toggle_selected_datasets(pid, project)
+function toggle_selected_datasets(project)
 {
 
   var ds_div = document.getElementById(pid+'_ds_div');
