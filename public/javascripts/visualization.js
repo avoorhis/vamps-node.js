@@ -67,8 +67,9 @@ function load_visualization_items_p1(rows){
 //
 // LOAD_VISUALIZATION_ITEMS Page 2
 //
-function load_visualization_items_p2(bodyItems,constants){
-  show_selected_datasets(bodyItems);
+function load_visualization_items_p2(selection_obj,constants){
+  //alert(selection_obj.getTotalSequenceCount())  // This doesn't seem to work
+  show_selected_datasets(selection_obj);
   load_unit_select(constants);
   show_visuals_output_choices();
 }
@@ -129,16 +130,16 @@ function get_requested_units_selection_box(file_id){
 //
 //  SHOW SELECTED DATASETS
 //
-function show_selected_datasets(bodyItems){
+function show_selected_datasets(selection_obj){
 
-  var body = JSON.parse(bodyItems);
+  
+  var items = JSON.parse(selection_obj);
   var html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;";
   html += "<select>";
 
-  for (var i in body.dataset_ids){
-    //alert(i)
+  for (var i in items.dataset_names){
     html += "<option>";
-    html += body.dataset_ids[i];
+    html += items.dataset_names[i];
     html += "</option>";
   }
   html += '</select>';
@@ -158,7 +159,7 @@ function load_project_select(projects){
   for (i in rows.projects){
     pname   = rows.projects[i].name
     datasets = rows.projects[i].datasets
-    ds_count = rows.projects[i].count
+    
     html += "<li>"
     html += "<label class='project-select' >"
     html += "  <a href='#'  id='"+ pname +"_toggle'"
@@ -173,10 +174,12 @@ function load_project_select(projects){
     for(k in datasets) {
       dname = datasets[k].dname
       did = datasets[k].did
+      ds_count = datasets[k].ds_count
       pd = pname+'--'+dname
+      pass_value = did+'--'+pname+'--'+dname+'--'+ds_count
       html += "<li>"
       html += "<label class='dataset-select' name='xx' >"
-      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ did +"'"
+      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pass_value +"'"
       html += "      onclick=\"set_check_project('"+ pname +"')\" \>"
       html += dname
       html += "</label>"
