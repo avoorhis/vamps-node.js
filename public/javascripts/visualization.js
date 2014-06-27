@@ -68,7 +68,10 @@ function load_visualization_items_p1(rows){
 // LOAD_VISUALIZATION_ITEMS Page 2
 //
 function load_visualization_items_p2(selection_obj,constants){
-  //alert(selection_obj.getTotalSequenceCount())  // This doesn't seem to work
+  
+  var items = JSON.parse(selection_obj);
+  //alert(items.getNumberOfDatasets())  // This doesn't seem to work
+  
   show_selected_datasets(selection_obj);
   load_unit_select(constants);
   show_visuals_output_choices();
