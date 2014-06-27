@@ -15,7 +15,7 @@ var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
 var visuals = require('./routes/visuals/visualization');
-var C = require('./config/constants');
+var C = require('./public/constants');
 var app = express();
 require('./config/passport')(passport,connection); // pass passport for configuration
 
