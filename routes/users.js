@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
       throw err;
     } else {
 
-        res.render('user_admin/index', { "rows" : rows, "user": req.user  });
+        res.render('user_admin/index', { rows : rows, user: req.user  });
       }
     });
   
@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
-    res.render('user_admin/login', { message: req.flash('loginMessage'), "user": req.user });
+    res.render('user_admin/login', { message: req.flash('loginMessage'), user: req.user });
 });
 
 router.post('/login',
@@ -44,7 +44,7 @@ router.post('/login',
 router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('user_admin/signup', { message: req.flash('signupMessage'), "user": req.user });
+        res.render('user_admin/signup', { message: req.flash('signupMessage'), user: req.user });
 });
 
 // process the signup form
