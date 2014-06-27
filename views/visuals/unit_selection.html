@@ -3,11 +3,9 @@
   <title><%- title %></title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
-  <script type="text/javascript" src="/javascripts/global.js"></script>
-  <script type="text/javascript" src="/javascripts/visualization.js"></script>
-  <script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="initialize('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= body %>','<%= constants %>');">
+<body onload="initialize('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= selection_obj %>','<%= constants %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'></div>
 <div id='login_link' class=''></div>
@@ -15,56 +13,64 @@
 <div id='subtitle'>Units Selection Page</div>
 
 
-<div class='content'>  
+<div class='container_12'>  
+  <div class="grid_3">
+    &nbsp;
+  </div>
+  <div class="grid_9"> 
 
-<!-- autocomplete="off" clears the checkboxes on page refresh -->
-<form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
-  
-  <table border='1'><tr>
-  
-  <td>
-    <div id='units_select_choices_div'></div>
-  </td>
-  <td>
-  
-  </td>
+    <!-- autocomplete="off" clears the checkboxes on page refresh -->
+    <form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
+      
+      <table border='1'><tr>
+      
+      <td>
+        <div id='units_select_choices_div'></div>
+      </td>
+      <td>
+      
+      </td>
 
-  </tr>
-  <tr>
-
-  <td class='small_font general_table'>
-    <div id='units_select_div'></div>
-  </td>
-
-  <td class='td_top'>
-    <table border='1'>
-      <tr>
-        <td class='small_font'>
-  
-          <div id='show_selected_datasets_div' class='' ></div>
-  
-        </td>
       </tr>
       <tr>
-        <td class='small_font'>
-          <div id='show_visuals_output_choices' class='' ></div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type='submit' value='Next: Get Graphics'>
-        </td>
-      </tr>
-    </table>
-  
-  </td>
 
-  
+      <td class='small_font general_table'>
+        <div id='units_select_div'></div>
+      </td>
 
-  </tr></table>
-</form>
+      <td class='td_top'>
+        <table border='1'>
+          <tr>
+            <td class='small_font'>
+      
+              <div id='show_selected_datasets_div' class='' ></div>
+      
+            </td>
+          </tr>
+          <tr>
+            <td class='small_font'>
+              <div id='show_visuals_output_choices' class='' ></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type='submit' value='Next: Get Graphics'>
+            </td>
+          </tr>
+        </table>
+      
+      </td>
 
-  
-</div>  
+      
+
+      </tr></table>
+    </form>
+
+  </div>  <!-- end grid_9 -->
+</div>    <!-- end container_12 -->  
+</div> 
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/visualization.js"></script>
+<script type="text/javascript" src="/javascripts/unit_selectors.js"></script> 
 </body>
 </html>
