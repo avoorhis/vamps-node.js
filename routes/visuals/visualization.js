@@ -20,30 +20,16 @@ router.post('/unit_selection',  function(req, res) {
 });
 /* GET visualization page. */
 router.get('/',  function(req, res) {
-//router.get('/', isLoggedIn, function(req, res) {
-// {
-//     2: {'pname': "BPC_MRB_C", 'datasets':[
-//         {"id":244,"ds":"dataset244"}
-//     ]},
-//     6: {'pname':"SLM_NIH_Bv4v5", 'datasets':[
-//         {"id":3,"dname":"1St_121_Stockton"},
-//         {"id":6,"dname":"1St_114_Hardinsburg"},
-//         {"id":19,"dname":"1St_127_Pendleton"}
-//     ]}
-
   
-  
-  	projects = Datasets.ALL
-
-    console.log(JSON.stringify(projects));  
+  	projects_datasets = Datasets.ALL
+  	// could this projects_datasets list be filtered/limited here
+  	// depending on user selected input or user access permissions?
+    console.log(JSON.stringify(projects_datasets));  
     res.render('visuals/index',{ title   : 'Show Datasets!',  
-                                   rows    : JSON.stringify(projects)  ,
+                                   rows    : JSON.stringify(projects_datasets)  ,
                                    "user": req.user  
                                     })
     
-  
-
-
 });
 
 module.exports = router;
