@@ -1,3 +1,5 @@
+
+
 // visualization.js
 
 // Place all the behaviors and hooks related to the matching controller here.
@@ -14,12 +16,14 @@ function toggle_selected_datasets(pid, project)
   var ds_div = document.getElementById(pid+'_ds_div');
   var cbs = ds_div.getElementsByTagName('input');
   var toggle = document.getElementById(project+'_toggle');
+  var i;
+  
   if (ds_div.style.display === 'inline'){
     ds_div.style.display = 'none';
     document.getElementById(project+'--pj-id').checked = false;
     // change image to plus.png
     toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />";
-    for (var i=0; i < cbs.length; i++) {
+    for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = false;
       }
@@ -28,9 +32,9 @@ function toggle_selected_datasets(pid, project)
     ds_div.style.display = 'inline';
     document.getElementById(project+'--pj-id').checked = true;
     toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
-    for (var n=0; n < cbs.length; n++) {
-      if (cbs[n].type === 'checkbox') {
-        cbs[n].checked = true  ;
+    for (i=0; i < cbs.length; i++) {
+      if (cbs[i].type === 'checkbox') {
+        cbs[i].checked = true  ;
       }
     }
   }
@@ -41,23 +45,24 @@ function toggle_selected_datasets(pid, project)
 function toggle_simple_taxa()
 {
   var boxes = document.getElementsByClassName('simple_taxa_ckbx');
-  if (boxes[0].checked === false){
-      for (var i = 0; i < boxes.length; i++){
+  var i;
+  if (boxes[0].checked === false) {
+      for (i = 0; i < boxes.length; i++) {
           boxes[i].checked = true;
           document.getElementById('toggle_taxa_btn').checked = true;
       }
   } else {
-      for (var n = 0; n < boxes.length; n++){
-          boxes[n].checked = false;
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = false;
           document.getElementById('toggle_taxa_btn').checked = false;
-      }
+    }
   }
 }
 //
 // LOAD_VISUALIZATION_ITEMS Page 1
 //
 function load_visualization_items_p1(rows){
-  load_project_selection(rows);
+  load_project_select(rows);
 }
 //
 // LOAD_VISUALIZATION_ITEMS Page 2
@@ -145,9 +150,9 @@ function show_selected_datasets(bodyItems){
 //
 //  LOAD PROJECT SELECT
 //
-function load_project_selection(projects){
+function load_project_select(datasets_by_project_all){
   //alert('in load')
-
+ 
   rows = JSON.parse(projects)
   html = '<ul>'
   for (i in rows.projects){
@@ -203,20 +208,22 @@ function open_datasets(project)
 
   //alert('in open')
 
+
   ds_div = document.getElementById(project+'_ds_div');
   cbs = ds_div.getElementsByTagName('input');
   toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
 
+
     // uncheck project
     if (cbs[0].checked) {
       document.getElementById(project+'--pj-id').checked = false;
-      for (var i=0; i < cbs.length; i++) {
+      for (i=0; i < cbs.length; i++) {
         cbs[i].checked = false;
       }
     } else {
       document.getElementById(project+'--pj-id').checked = true;
-      for (var i=0; i < cbs.length; i++) {
+      for (i=0; i < cbs.length; i++) {
         cbs[i].checked = true;
       }
     }
@@ -228,7 +235,7 @@ function open_datasets(project)
     document.getElementById(project+'--pj-id').checked = true;
     toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
     // now set all the ds checkboxes to 'checked'
-    for (var i=0; i < cbs.length; i++) {
+    for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = true;
       }
