@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
       if (err) {
       throw err;
     } else {
-        res.render('projects/index', { "rows" : rows, "user": req.user });
+        res.render('projects/index', { "rows" : rows, user: req.user });
       }
     });
   
