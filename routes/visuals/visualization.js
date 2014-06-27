@@ -31,53 +31,6 @@ router.get('/',  function(req, res) {
 //         {"id":19,"dname":"1St_127_Pendleton"}
 //     ]}
 
-// }  
-
-
-    // var db = req.db;
-    // var qDatasets = "SELECT project, projects.id as pid, dataset, datasets.id as did"
-    // qDatasets    += " FROM datasets"
-    // qDatasets    += " JOIN projects ON (projects.id=project_id)"
-    // var collection = db.query(qDatasets, function (err, rows, fields){
-    //   if(err)  {
-    //   throw err;
-    // }else{
-    //   var datasetsByProjectAll = {};
-    //   var projects = []
-    //   var datasets_list = []
-    //   var already_have_project
-    //   datasetsByProjectAll.projects = projects
-    //   for(n=0;n<rows.length;n++){
-    //     //console.log(rows[n].dataset)
-    //     //console.log(rows[n].project)
-    //     pname   = rows[n].project
-    //     pid     = rows[n].pid
-    //     did     = rows[n].did
-    //     dname   = rows[n].dataset
-    //     dataset = {
-    //         "did"   : did,
-    //         "dname" : dname
-    //         }
-    //     project = {
-    //         "pid"   : pid,
-    //         "pname" : pname
-    //         }
-  
-    //     already_have_project = false
-    //     for (var i=0; i<datasetsByProjectAll.projects.length; i++) {
-    //         if (datasetsByProjectAll.projects[i].pid == pid) {
-    //             // here we add our dataset to datasetsByProjectAll.projects[i].datasets.push(dataset)
-    //             datasetsByProjectAll.projects[i].datasets.push(dataset)
-    //             already_have_project = true
-    //         }
-    //     }
-    //     if(!already_have_project){
-    //         // add this dataset to it -- first one  
-    //         project.datasets = [dataset]
-    //         datasetsByProjectAll.projects.push(project)
-    //     }  
-    //   }
-  
   
   
   	projects = Datasets.ALL
@@ -90,8 +43,8 @@ router.get('/',  function(req, res) {
     
   
 
-});
 
+});
 
 module.exports = router;
 
