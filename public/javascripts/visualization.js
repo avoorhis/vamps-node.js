@@ -13,7 +13,7 @@ var selected_datasets = [];
 function toggle_selected_datasets(project)
 {
 
-  var ds_div = document.getElementById(pid+'_ds_div');
+  var ds_div = document.getElementById(project+'_ds_div');
   var cbs = ds_div.getElementsByTagName('input');
   var toggle = document.getElementById(project+'_toggle');
   var i;
@@ -150,7 +150,7 @@ function show_selected_datasets(bodyItems){
 //
 //  LOAD PROJECT SELECT
 //
-function load_project_select(datasets_by_project_all){
+function load_project_select(projects){
   //alert('in load')
  
   rows = JSON.parse(projects)
