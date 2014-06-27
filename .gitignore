@@ -1,6 +1,7 @@
 *.sql.gz
 db.sql
-config/*
+config/
+node_modules/
 
 # eclipse
 .jshintrc
