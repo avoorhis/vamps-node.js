@@ -13,18 +13,19 @@ var EventEmitter = require('events').EventEmitter
 , addr;
   
 exports.createServer = function(app,fn){
-	if (server){ return fn(); }
-
-	server = app;
-	server.listen(0, function(){
-	//addr = server.address();
-	fn();
-	});
-};
+if(server){ return fn(); }
+  
+server = app;
+server.listen(0, function(){
+//addr = server.address();
+fn();
+});
+  
+}
   
 exports.request = function() {
 return new Request();
-};
+}
   
 function Request() {
 var self = this;
@@ -62,7 +63,7 @@ return this;
   
 Request.prototype.expect = function(body, fn){
 this.end(function(res){
-if ('number' === typeof body) {
+if ('number' == typeof body) {
 res.statusCode.should.equal(body);
 } else if (body instanceof RegExp) {
 res.body.should.match(body);
@@ -89,11 +90,11 @@ req.write(chunk);
 req.on('response', function(res){
 var buf = '';
 res.setEncoding('utf8');
-res.on('data', function(chunk){ buf += chunk; });
+res.on('data', function(chunk){ buf += chunk });
 res.on('end', function(){
-  res.body = buf;
-  fn(res);
-  });
+res.body = buf;
+fn(res);
+});
 });
   
 req.end();
