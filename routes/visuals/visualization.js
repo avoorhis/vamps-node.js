@@ -43,7 +43,7 @@ router.post('/unit_selection',  function(req, res) {
     
   var qSelectSeqID = "SELECT seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
   qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
-  qSelectSeqID +=    "  WHERE dataset_id in ("+dataset_accumulator.dataset_ids+")";
+  qSelectSeqID +=    "  WHERE dataset_id in (" + dataset_accumulator.dataset_ids + ")";
   console.log(qSelectSeqID);
   //console.log(dataset_accumulator.getTotalSequenceCount());
   db.query(qSelectSeqID, function(err, rows, fields){
@@ -81,7 +81,7 @@ router.get('/',  function(req, res) {
     // console.log(JSON.stringify(projects_datasets));  
     res.render('visuals/index',{ title   : 'Show Datasets!',  
                                    rows    : JSON.stringify(projects_datasets)  ,
-                                   "user": req.user  
+                                   user: req.user  
                                     })
     
 });
