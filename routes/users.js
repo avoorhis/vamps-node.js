@@ -14,9 +14,9 @@ router.get('/', function(req, res) {
     var qSelect = "SELECT * from users";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
-      if(err)  {
+      if (err)  {
       throw err;
-    }else{
+    } else {
 
         res.render('user_admin/index', { "rows" : rows, "user": req.user  });
       }
@@ -48,7 +48,7 @@ router.get('/signup', function(req, res) {
 });
 
 // process the signup form
-router.post('/signup',  
+router.post('/signup',
     passport.authenticate('local-signup', { successRedirect : '/users/profile', // redirect to the secure profile section
                                     failureRedirect : 'signup', // redirect back to the signup page if there is an error
                                     failureFlash : true // allow flash messages

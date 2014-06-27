@@ -38,15 +38,15 @@ router.get('/', isLoggedIn, function(req, res) {
     qDatasets    += " FROM datasets";
     qDatasets    += " JOIN projects ON (projects.id=project_id)";
     var collection = db.query(qDatasets, function (err, rows, fields){
-      if(err)  {
+      if (err)  {
       throw err;
-    }else{
+    } else {
       var datasetsByProjectAll = {};
       var projects = [];
       var datasets_list = [];
       var already_have_project;
       datasetsByProjectAll.projects = projects;
-      for(var n=0; n<rows.length; n++){
+      for (var n=0; n<rows.length; n++){
         //console.log(rows[n].dataset)
         //console.log(rows[n].project)
         var pname   = rows[n].project;
@@ -70,7 +70,7 @@ router.get('/', isLoggedIn, function(req, res) {
                 already_have_project = true;
             }
         }
-        if(!already_have_project){
+        if (!already_have_project){
             // add this dataset to it -- first one
             project.datasets = [dataset];
             datasetsByProjectAll.projects.push(project);
