@@ -2,7 +2,7 @@
 
 
 
-function get_taxa_sil106_simple(){
+function get_taxa_sil108_simple(){
   
   var domains = ['Archaea','Bacteria','Eukarya','Organelle','Unknown'];
   var html = "<ul>";
@@ -40,7 +40,7 @@ function get_taxa_sil106_simple(){
 
 }
 ////////////////////////////////////
-function get_taxa_sil106_custom(){
+function get_taxa_sil108_custom(){
   return '<br><h2>not written yet-1</h2>';
 }
   
