@@ -105,11 +105,11 @@ function get_requested_units_selection_box(file_id){
   var html = '';
   // case functions are in unit_selectors.js
   switch(file_id){
-    case 'tax_silva116_simple':
-      html = get_taxa_sil106_simple();
+    case 'tax_silva108_simple':
+      html = get_taxa_sil108_simple();
       break;
-    case 'tax_silva116_custom':
-      html = get_taxa_sil106_custom();
+    case 'tax_silva108_custom':
+      html = get_taxa_sil108_custom();
       break;
     case 'tax_gg_simple':
       html = get_taxa_gg_simple();
@@ -164,7 +164,7 @@ function load_project_select(projects){
     html += "  <a href='#'  id='"+ pname +"_toggle'"
     html += "        onclick=\"toggle_selected_datasets('"+ pname +"'); return false;\" >"
     html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
-    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_ids[]' value='"+ pname + "'"
+    html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_names[]' value='"+ pname + "'"
     html += "        onclick=\"open_datasets('"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
     html += "</label>"
@@ -176,7 +176,7 @@ function load_project_select(projects){
       pd = pname+'--'+dname
       html += "<li>"
       html += "<label class='dataset-select' name='xx' >"
-      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pd +"'"
+      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ did +"'"
       html += "      onclick=\"set_check_project('"+ pname +"')\" \>"
       html += dname
       html += "</label>"
