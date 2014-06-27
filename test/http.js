@@ -13,7 +13,7 @@ var EventEmitter = require('events').EventEmitter
 , addr;
   
 exports.createServer = function(app,fn){
-	if(server){ return fn(); }
+	if (server){ return fn(); }
 
 	server = app;
 	server.listen(0, function(){
