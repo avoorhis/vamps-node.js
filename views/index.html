@@ -1,4 +1,3 @@
-
 <html>
 <head>
   <title>VAMPS</title>
@@ -8,7 +7,9 @@
 <body onload="initialize('<%= JSON.stringify( user ) %>');">
 <div id='header' class='header'></div>
 
-<div id='main_menu' class='main_menu'></div>
+<div id='main_menu' class='main_menu'>
+  <% include main_menu.html %>
+</div>
 <div id='login_link' class=''></div>
 <div id='title'  class=''>VAMPS (Node.js)</div>
 <div id='subtitle'  class=''>The Visualization and Analysis  
@@ -22,9 +23,9 @@
   <div class="grid_9">
     <p>content
     <ul>
-    <li>line
-    <li>line
-    <li>line
+      <li>line</li>
+      <li>line</li>
+      <li>line</li>
     </ul>
     </p>
   </div>  <!-- end grid_9 -->
