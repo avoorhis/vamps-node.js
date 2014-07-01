@@ -33,20 +33,23 @@ router.post('/unit_selection',  function(req, res) {
   //console.log(req.body);
   // dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
   //console.log(req.body);
-  var sql_id_list = []
+  var id_count_list    = {}
+  id_count_list.ids    = []
+  id_count_list.names  = []
   for(var n in req.body.dataset_ids){
   	items = req.body.dataset_ids[n].split('--')
-    sql_id_list.push(items[0])
+    id_count_list.ids.push(items[0])
+    id_count_list.names.push(items[1]+'--'+items[2])
   	//dataset_accumulator.dataset_ids.push(items[0])
   	//dataset_accumulator.dataset_names.push(items[1]+'--'+items[2])
   	//dataset_accumulator.ds_counts.push(items[3])
 
   }
-  //console.log(dataset_ids);
+  //console.log(id_count_list);
     
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
   qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
-  qSelectSeqID +=    "  WHERE dataset_id in (" + sql_id_list + ")";
+  qSelectSeqID +=    "  WHERE dataset_id in (" + id_count_list.ids + ")";
   console.log(qSelectSeqID);
   //console.log(dataset_accumulator.getTotalSequenceCount());
   
@@ -86,13 +89,13 @@ router.post('/unit_selection',  function(req, res) {
 
     for(id in dsets){
       dataset_accumulator.dataset_ids.push(id)
+      //dataset_accumulator.ds_counts.push(id)
       dataset_accumulator.seq_ids.push(dsets[id].seq_ids)
       dataset_accumulator.seq_freqs.push(dsets[id].seq_counts)
       for(u in dsets[id].unit_assoc) {
         dataset_accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u])
       }
-      //console.log(dsets[id]);
-
+      
     }
 
     console.log(dataset_accumulator);
@@ -104,7 +107,7 @@ router.post('/unit_selection',  function(req, res) {
     //console.log(dataset_accumulator.unit_assoc['otu_id'][2]);
 
   	res.render('visuals/unit_selection', {   title: 'Unit Selection',
-                   //body         : JSON.stringify(req.body),
+                   id_count_list: JSON.stringify(id_count_list),
                    selection_obj: JSON.stringify(dataset_accumulator),
                    constants    : JSON.stringify(req.C),
                    user         : req.user
