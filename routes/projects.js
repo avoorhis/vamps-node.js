@@ -3,7 +3,7 @@ var router = express.Router();
 
 // These are all under /projects
 /* GET New User page. */
-router.get('/', function(req, res) {
+router.get('/index_projects', function(req, res) {
     var db = req.db;
     var qSelect = "SELECT id,project,title,project_description from projects";
     console.log(qSelect);
@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
       if (err) {
       throw err;
     } else {
-        res.render('projects/index', { "rows" : rows, user: req.user });
+        res.render('projects/index_projects', { "rows" : rows, user: req.user });
       }
     });
   
