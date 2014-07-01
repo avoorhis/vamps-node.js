@@ -10,6 +10,13 @@ describe('Landing page functionality', function(){
     this.timeout(5000);
     async.series([
       function (cb) {
+        connection.query('CREATE TABLE IF NOT EXISTS mocha_test_table(user_name varchar(10),'+
+				  'email varchar(10),fname varchar(10),lname varchar(10));',function(err){
+            done();
+          });
+      },
+
+      function (cb) {
         connection.query('INSERT INTO mocha_test_table '+
           'VALUE("TEST","TEST","","");',function(err){
             done();
@@ -46,6 +53,7 @@ describe('Landing page functionality', function(){
 
 describe('Login page functionality', function(){
   before(function (done) {
+	
     this.timeout(5000);
     async.series([
       function (cb) {
