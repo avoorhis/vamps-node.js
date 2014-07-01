@@ -67,12 +67,12 @@ function load_visualization_items_p1(rows){
 //
 // LOAD_VISUALIZATION_ITEMS Page 2
 //
-function load_visualization_items_p2(selection_obj,constants){
+function load_visualization_items_p2(selection_obj,constants,id_count_list){
   
-  var items = JSON.parse(selection_obj);
+  var items = JSON.parse(id_count_list);
   //alert(items.getNumberOfDatasets())  // This doesn't seem to work
 
-  show_selected_datasets(selection_obj);
+  show_selected_datasets(id_count_list);
   load_unit_select(constants);
   show_visuals_output_choices();
 }
@@ -133,16 +133,16 @@ function get_requested_units_selection_box(file_id){
 //
 //  SHOW SELECTED DATASETS
 //
-function show_selected_datasets(selection_obj){
+function show_selected_datasets(id_count_list){
 
   
-  var items = JSON.parse(selection_obj);
+  var items = JSON.parse(id_count_list);
   var html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;";
   html += "<select>";
 
-  for (var i in items.dataset_names){
+  for (var i in items.names){
     html += "<option>";
-    html += items.dataset_names[i];
+    html += items.names[i];
     html += "</option>";
   }
   html += '</select>';
