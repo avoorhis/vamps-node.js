@@ -9,7 +9,7 @@ var passport = require('passport');
 
 // These are all under /user
 /* GET User List (index) page. */
-router.get('/', function(req, res) {
+router.get('/index_users', function(req, res) {
     var db = req.db;
     var qSelect = "SELECT * from users";
     console.log(qSelect);
@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
       throw err;
     } else {
 
-        res.render('user_admin/index', { rows : rows, user: req.user  });
+        res.render('user_admin/index_users', { rows : rows, user: req.user  });
       }
     });
   
