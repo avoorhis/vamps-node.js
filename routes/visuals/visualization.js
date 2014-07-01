@@ -33,43 +33,82 @@ router.post('/unit_selection',  function(req, res) {
   //console.log(req.body);
   // dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
   //console.log(req.body);
-
+  var sql_id_list = []
   for(var n in req.body.dataset_ids){
   	items = req.body.dataset_ids[n].split('--')
-  	dataset_accumulator.dataset_ids.push(items[0])
-  	dataset_accumulator.dataset_names.push(items[1]+'--'+items[2])
-  	dataset_accumulator.ds_counts.push(items[3])
+    sql_id_list.push(items[0])
+  	//dataset_accumulator.dataset_ids.push(items[0])
+  	//dataset_accumulator.dataset_names.push(items[1]+'--'+items[2])
+  	//dataset_accumulator.ds_counts.push(items[3])
 
   }
   //console.log(dataset_ids);
     
-  var qSelectSeqID = "SELECT seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
+  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
   qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
-  qSelectSeqID +=    "  WHERE dataset_id in (" + dataset_accumulator.dataset_ids + ")";
+  qSelectSeqID +=    "  WHERE dataset_id in (" + sql_id_list + ")";
   console.log(qSelectSeqID);
   //console.log(dataset_accumulator.getTotalSequenceCount());
+  
+  
   db.query(qSelectSeqID, function(err, rows, fields){
   	if(err)	{
   		throw err;
   	}else{
-  		// here get taxonomy_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
+  		
+      var dsets = {}
+      // here get taxonomy_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
   		// and keep them in the same order as the sequence_ids
   		for(var k in rows){
-  			dataset_accumulator.seq_ids.push(rows[k].sequence_id);
-  			dataset_accumulator.seq_counts.push(rows[k].seq_count);
-  			for(u in available_units){
-  				dataset_accumulator.unit_assoc[available_units[u]].push(rows[k][available_units[u]])
-  			}
+
+        if(rows[k].dataset_id in dsets){
+          dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id)
+          dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count)
+          for(u in available_units){
+            dsets[rows[k].dataset_id].unit_assoc[available_units[u]].push(rows[k][available_units[u]])
+          }
+        }else{
+          dsets[rows[k].dataset_id] = {}
+          dsets[rows[k].dataset_id].seq_ids = [rows[k].sequence_id]
+          dsets[rows[k].dataset_id].seq_counts = [rows[k].seq_count]
+          dsets[rows[k].dataset_id].unit_assoc = {}
+          for(u in available_units){
+            dsets[rows[k].dataset_id].unit_assoc[available_units[u]] = [rows[k][available_units[u]]]
+          }
+          
+        }
+
   		}
   		
   	}
-  	console.log(dataset_accumulator);
+    //dataset_accumulator.datasets=[]
+    //console.log(dsets);
+
+    for(id in dsets){
+      dataset_accumulator.dataset_ids.push(id)
+      dataset_accumulator.seq_ids.push(dsets[id].seq_ids)
+      dataset_accumulator.seq_freqs.push(dsets[id].seq_counts)
+      for(u in dsets[id].unit_assoc) {
+        dataset_accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u])
+      }
+      //console.log(dsets[id]);
+
+    }
+
+    console.log(dataset_accumulator);
+    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][0]);
+    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][1]);
+    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][2]);
+    //console.log(dataset_accumulator.unit_assoc['otu_id'][0]);
+    //console.log(dataset_accumulator.unit_assoc['otu_id'][1]);
+    //console.log(dataset_accumulator.unit_assoc['otu_id'][2]);
+
   	res.render('visuals/unit_selection', {   title: 'Unit Selection',
-                  //body         : JSON.stringify(req.body),
-                  selection_obj: JSON.stringify(dataset_accumulator),
-                  constants    : JSON.stringify(req.C),
-                  user         : req.user
-                });
+                   //body         : JSON.stringify(req.body),
+                   selection_obj: JSON.stringify(dataset_accumulator),
+                   constants    : JSON.stringify(req.C),
+                   user         : req.user
+                 });
   });
   
   
