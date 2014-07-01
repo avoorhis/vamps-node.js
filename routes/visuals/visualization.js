@@ -12,6 +12,7 @@ router.post('/unit_selection',  function(req, res) {
   var db = req.db;
   
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
+  
   for(var i in available_units){
   	dataset_accumulator.unit_assoc[available_units[i]]=[]
   }
@@ -38,6 +39,7 @@ router.post('/unit_selection',  function(req, res) {
   	dataset_accumulator.dataset_ids.push(items[0])
   	dataset_accumulator.dataset_names.push(items[1]+'--'+items[2])
   	dataset_accumulator.ds_counts.push(items[3])
+
   }
   //console.log(dataset_ids);
     
@@ -72,14 +74,16 @@ router.post('/unit_selection',  function(req, res) {
   
   
 });
-/* GET visualization page. */
-router.get('/',  function(req, res) {
+/* 
+ * GET visualization page. 
+ */
+router.get('/index_visuals',  function(req, res) {
   
   	projects_datasets = all_datasets.ALL
   	// could this projects_datasets list be filtered/limited here
   	// depending on user selected input or user access permissions?
     // console.log(JSON.stringify(projects_datasets));  
-    res.render('visuals/index',{ title   : 'Show Datasets!',  
+    res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
                                    rows    : JSON.stringify(projects_datasets)  ,
                                    user: req.user  
                                     })
