@@ -7,7 +7,17 @@ var async = require('async'),
 
 describe('Landing page functionality', function(){
   before(function (done) {
+	
     this.timeout(5000);
+
+    // var user = new User({
+    //   email    : "TEST@user.com",
+    //   firstName: "TEST",
+    //   lastName : "TEST",
+    //   password : "TEST"
+    // });
+    // user.save(done);
+
     async.series([
       function (cb) {
         connection.query('CREATE TABLE IF NOT EXISTS mocha_test_table(user_name varchar(10),'+
@@ -22,6 +32,13 @@ describe('Landing page functionality', function(){
             done();
           });
       },
+
+      function (cb) {
+        connection.query('INSERT INTO users (username, encrypted_password, first_name, last_name, email, institution) VALUES ("TEST","7kT94LYj7y5RnJVb34jrJw==","TEST","TEST","TEST","TEST")',function(err){
+            done();
+          });
+      },
+
       function (cb) {
         connection.query('SELECT * FROM mocha_test_table WHERE user_name="TEST"'+
           ' AND email="TEST";',function(err,results){
@@ -31,6 +48,7 @@ describe('Landing page functionality', function(){
       }
     ], done);
   });
+
   it('Text of landing page', function(done){
     request(app)
       .get('/')
@@ -69,7 +87,7 @@ describe('Login page functionality', function(){
 
   it('Text on login page', function(done){
     request(app)
-      .get('/login')
+      .get('/users/login')
       .expect(200)
       .end(function (err, res) {
         res.text.should.include('Login');
@@ -77,26 +95,63 @@ describe('Login page functionality', function(){
       });
   });
 
-  it('Able to login with user/email “TEST”/”TEST”', function(done){
+/**
+    it('should redirect to /', function (done) {
+	    request(app)
+	      .post('/users/login')
+	      .field('TEST', 'TEST@user.com')
+	      .field('TEST', 'TEST')
+	      .expect('Location','/')
+	      .end(done)
+    });
+*/
+
+	  it('Able to login with user "TEST"', function(done){
+	    request(app)
+	      .post('/users/login')
+	      .expect(302)
+	      .send({ Username: 'TEST', Password: 'TEST'})
+	      .end(function (err, res) {
+					// it('Able to login with user "TEST"; part 2', function(done){
+					// 	request(app).get("/");
+					// 	res.text.should.include('Login');
+					// 	done();
+					// });
+					console.log("err: ");	  
+					console.log(err);	  
+						
+					// 		
+					// console.log("res.text: ");
+					// console.log(res.text);
+					// console.log("res.text ends ----- ");
+	        res.text.should.include('Logged in as:');
+	        done();
+	      });
+	  });
+
+/**
+  it('Able to login with user/email "TEST"/"TEST"', function(done){
     request(app)
-      .post('/login')
+      .post('/users/login')
       .expect(200)
       .send({ user_name: 'TEST', email: 'TEST'})
       .end(function (err, res) {
-        res.text.should.include('Form');
+				console.log(res.text);
+        res.text.should.include('Logged in as:');
         done();
       });
   });
+*/
 
-  it('Not be able to login with user/email not “TEST”/”TEST”', function(done){
+  it('Not be able to login with user/email not "TEST"/"TEST"', function(done){
     request(app)
-      .post('/login')
+      .post('/users/login')
       .expect(200)
       .send({ user_name: 'TEST1', email: 'TEST1'})
       .end(function (err, res) {
-        res.text.should.not.include('Form');
+        res.text.should.not.include('Logged in as:');
           console.log('here');
-        it('Not be able to login with user/email not “TEST”/”TEST”', function(done){
+        it('Not be able to login with user/email not "TEST"/"TEST"', function(done){
           res.text.should.include('Login');
           done();
         });
@@ -122,7 +177,7 @@ describe('Form page functionality', function(){
 
   it('Text on form page', function(done){
     request(app)
-      .post('/login')
+      .post('/users/login')
       .expect(200)
       .send({ user_name: 'TEST', email: 'TEST'})
       .end(function (err, res) {
