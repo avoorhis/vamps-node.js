@@ -6,10 +6,10 @@
   <script type="text/javascript" src="/javascripts/projects.js"></script>
 </head>
 
-<body onload="initialize('<%= JSON.stringify( user ) %>');load_project('<%= JSON.stringify( project ) %>');">
+<body onload="load_project('<%= JSON.stringify( project ) %>');">
 <div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'></div>
-<div id='login_link' class=''></div>
+<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
+<div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
 <div id='title'  class=''>VAMPS</div>
 <div id='subtitle'  class=''></div>
 <div class='content'>  

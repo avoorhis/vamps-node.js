@@ -1,0 +1,11 @@
+<% if (user === undefined) { %>
+    <div>(not logged in)
+    (<a href='/users/login'  >login</a> or
+    <a href='/users/signup' >register</a>)</div>
+<% } else { %>
+    <div>(Logged in as: <%= user.username %>)
+    <% if (user.security_level === 1) { %>
+      (admin)
+    <% } %>
+    <a href='/users/logout'> logout</a></div>
+<% } %>
