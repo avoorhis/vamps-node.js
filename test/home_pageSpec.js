@@ -95,41 +95,42 @@ describe('Login page functionality', function(){
       });
   });
 
-	  it('Able to login with user "TEST"', function(done){
-	    request(app)
-	      .post('/users/login')
-	      .expect(302)
-	      .send({ username: 'TEST', password: 'TEST'})
-	      .end(function (err, res) {
-	         should.not.exist(err);
-	         // confirm the redirect
-	         res.header.location.should.include('/');
-	        done();
-	      });
-	  });
-
-  it('Not be able to login with user/email not "TEST"/"TEST"', function(done){
+  it('Able to login with user "TEST"', function(done){
     request(app)
       .post('/users/login')
-      .expect(200)
-      .send({ user_name: 'TEST1', email: 'TEST1'})
+      .expect(302)
+      .send({ username: 'TEST', password: 'TEST'})
       .end(function (err, res) {
-        res.text.should.not.include('Logged in as:');
-          console.log('here');
-        it('Not be able to login with user/email not "TEST"/"TEST"', function(done){
-          res.text.should.include('Login');
-          done();
-        });
+        should.not.exist(err);
+        // confirm the redirect
+        res.header.location.should.include('/');
+				res.header.location.should.not.include('login');
         done();
       });
   });
 
+  it('should redirect to "/users/login" if authentication fails', function (done) {
+    request(app)
+      .post('/users/login')
+      .expect(302)
+      .send({ username: 'TEST1', password: 'TEST1'})
+      .end(function (err, res) {
+        res.header.location.should.not.include('/');
+	      res.header.location.should.include('login');
+        // console.log("res.header.location: ");
+        // console.log(res.header.location);
+        done();
+      });
+  });
 
 /* How to check if I was checked in? */
 	it('should log the user out', function (done) {
 	  request(app)
-	    .get('/logout')
+	    .get('/users/logout')
 	    .end(function (err, res) {
+        res.header.location.should.include('/');
+	      res.header.location.should.not.include('login');
+
 	      if (err) return done(err);
 	      request(app)
 	        .get('/')
@@ -142,7 +143,6 @@ describe('Login page functionality', function(){
 	        });
 	    });
 	});
-
 });
 
 describe('Form page functionality', function(){
@@ -163,7 +163,7 @@ describe('Form page functionality', function(){
     request(app)
       .post('/users/login')
       .expect(200)
-      // .send({ user_name: 'TEST', email: 'TEST'})
+      // .send({ username: 'TEST', email: 'TEST'})
       .send({ username: 'TEST', password: 'TEST'})
       .end(function (err, res) {
         res.text.should.include('Form');
@@ -183,7 +183,7 @@ describe('Form page functionality', function(){
     request(app)
       .post('/form')
       .expect(200)
-      .send({ user_name: 'TEST', email: 'TEST', fname: 'TEST1', lname: 'TEST1'})
+      .send({ username: 'TEST', email: 'TEST', fname: 'TEST1', lname: 'TEST1'})
       .end(function (err, res) {
         it('Need to be able to see entry in the database', function(done){
           connection.query(
