@@ -22,7 +22,7 @@ function toggle_selected_datasets(project)
     ds_div.style.display = 'none';
     document.getElementById(project+'--pj-id').checked = false;
     // change image to plus.png
-    toggle.innerHTML = "<img alt='plus' src='images/tree_plus.gif' width='10' />";
+    toggle.innerHTML = "<img alt='plus' src='/images/tree_plus.gif' width='10' />";
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = false;
@@ -31,7 +31,7 @@ function toggle_selected_datasets(project)
   } else {
     ds_div.style.display = 'inline';
     document.getElementById(project+'--pj-id').checked = true;
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
+    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif' width='10' />";
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = true  ;
@@ -71,7 +71,7 @@ function load_visualization_items_p2(selection_obj,constants){
   
   var items = JSON.parse(selection_obj);
   //alert(items.getNumberOfDatasets())  // This doesn't seem to work
-  
+
   show_selected_datasets(selection_obj);
   load_unit_select(constants);
   show_visuals_output_choices();
@@ -146,7 +146,7 @@ function show_selected_datasets(selection_obj){
     html += "</option>";
   }
   html += '</select>';
-  html += '<br>To change these <a href="/visuals">GoBack</a> to the previous page.';
+  html += '<br>To change these <a href="/visuals/index_visuals">GoBack</a> to the previous page.';
   //alert(html);
   var div = document.getElementById('show_selected_datasets_div').innerHTML = html;
 
@@ -167,7 +167,7 @@ function load_project_select(projects){
     html += "<label class='project-select' >"
     html += "  <a href='#'  id='"+ pname +"_toggle'"
     html += "        onclick=\"toggle_selected_datasets('"+ pname +"'); return false;\" >"
-    html += "  <img alt='plus' src='images/tree_plus.gif' width='10'/></a>"
+    html += "  <img alt='plus' src='/images/tree_plus.gif' width='10'/></a>"
     html += "  <input type='checkbox' id='"+ pname + "--pj-id' name='project_names[]' value='"+ pname + "'"
     html += "        onclick=\"open_datasets('"+ pname +"')\" \>"
     html += "<a href=''>"+ pname +"</a>"
@@ -179,10 +179,10 @@ function load_project_select(projects){
       did = datasets[k].did
       ds_count = datasets[k].ds_count
       pd = pname+'--'+dname
-      pass_value = did+'--'+pname+'--'+dname+'--'+ds_count
+      pass_thru_value = did+'--'+pname+'--'+dname+'--'+ds_count
       html += "<li>"
       html += "<label class='dataset-select' name='xx' >"
-      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pass_value +"'"
+      html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pass_thru_value +"'"
       html += "      onclick=\"set_check_project('"+ pname +"')\" \>"
       html += dname
       html += "</label>"
@@ -239,7 +239,7 @@ function open_datasets(project)
     // check project
     ds_div.style.display = 'inline';
     document.getElementById(project+'--pj-id').checked = true;
-    toggle.innerHTML = "<img alt='minus' src='images/tree_minus.gif' width='10' />";
+    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif' width='10' />";
     // now set all the ds checkboxes to 'checked'
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {

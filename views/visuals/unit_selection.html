@@ -5,10 +5,10 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="initialize('<%= JSON.stringify( user ) %>');load_visualization_items_p2('<%= selection_obj %>','<%= constants %>');">
+<body onload="load_visualization_items_p2('<%= selection_obj %>','<%= constants %>');">
 <div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'></div>
-<div id='login_link' class=''></div>
+<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
+<div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
 <div id='title'>Community Visualization</div>
 <div id='subtitle'>Units Selection Page</div>
 
