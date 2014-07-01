@@ -12,6 +12,4 @@ router.get('/helloworld', function(req, res) {
     res.render('helloworld', { title: 'Hello, World!' });
 });
 
-
-
 module.exports = router;
