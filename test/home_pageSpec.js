@@ -90,58 +90,23 @@ describe('Login page functionality', function(){
       .get('/users/login')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('Login');
+        res.text.should.include('Username');
         done();
       });
   });
-
-/**
-    it('should redirect to /', function (done) {
-	    request(app)
-	      .post('/users/login')
-	      .field('TEST', 'TEST@user.com')
-	      .field('TEST', 'TEST')
-	      .expect('Location','/')
-	      .end(done)
-    });
-*/
 
 	  it('Able to login with user "TEST"', function(done){
 	    request(app)
 	      .post('/users/login')
 	      .expect(302)
-	      .send({ Username: 'TEST', Password: 'TEST'})
+	      .send({ username: 'TEST', password: 'TEST'})
 	      .end(function (err, res) {
-					// it('Able to login with user "TEST"; part 2', function(done){
-					// 	request(app).get("/");
-					// 	res.text.should.include('Login');
-					// 	done();
-					// });
-					console.log("err: ");	  
-					console.log(err);	  
-						
-					// 		
-					// console.log("res.text: ");
-					// console.log(res.text);
-					// console.log("res.text ends ----- ");
-	        res.text.should.include('Logged in as:');
+	         should.not.exist(err);
+	         // confirm the redirect
+	         res.header.location.should.include('/');
 	        done();
 	      });
 	  });
-
-/**
-  it('Able to login with user/email "TEST"/"TEST"', function(done){
-    request(app)
-      .post('/users/login')
-      .expect(200)
-      .send({ user_name: 'TEST', email: 'TEST'})
-      .end(function (err, res) {
-				console.log(res.text);
-        res.text.should.include('Logged in as:');
-        done();
-      });
-  });
-*/
 
   it('Not be able to login with user/email not "TEST"/"TEST"', function(done){
     request(app)
@@ -158,6 +123,25 @@ describe('Login page functionality', function(){
         done();
       });
   });
+
+
+/* How to check if I was checked in? */
+	it('should log the user out', function (done) {
+	  request(app)
+	    .get('/logout')
+	    .end(function (err, res) {
+	      if (err) return done(err);
+	      request(app)
+	        .get('/')
+	        .end(function (err, res) {
+	          if (err) return done(err);
+	          res.text.should.not.include('Logged in as:');
+	          res.text.should.include('login');
+	          res.text.should.include('register');
+	          done();
+	        });
+	    });
+	});
 
 });
 
@@ -179,7 +163,8 @@ describe('Form page functionality', function(){
     request(app)
       .post('/users/login')
       .expect(200)
-      .send({ user_name: 'TEST', email: 'TEST'})
+      // .send({ user_name: 'TEST', email: 'TEST'})
+      .send({ username: 'TEST', password: 'TEST'})
       .end(function (err, res) {
         res.text.should.include('Form');
         it('Need to be able to see the text for input box', function(done){
@@ -222,3 +207,4 @@ describe('Form page functionality', function(){
       });
     });
 });
+
