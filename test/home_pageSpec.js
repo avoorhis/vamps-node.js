@@ -114,4 +114,15 @@ describe('Home page functionality', function(){
         done();
       });
   });
+
+  it('Link to the login page', function(done){
+    request(app)
+      .get('/helloworld')
+      .expect(200)
+      .end(function (err, res) {
+        res.text.should.include('Hello!');
+        done();
+      });
+  });
+
 });
