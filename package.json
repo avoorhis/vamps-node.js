@@ -22,6 +22,9 @@
     "passport": "*",
     "passport-local": "*",
     "connect-flash": "*",
+    "zombie": "~2.0.0-alpha31",   
+    "istanbul": "latest",
+    "nodemon": "latest",
     "bcrypt-nodejs" : "latest"
   }
 }
