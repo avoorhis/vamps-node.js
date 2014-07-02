@@ -64,93 +64,49 @@ function toggle_simple_taxa()
 function load_visualization_items_p1(rows){
   load_project_select(rows);
 }
-//
-// LOAD_VISUALIZATION_ITEMS Page 2
-//
-function load_visualization_items_p2(selection_obj,constants,id_count_list){
-  
-  var items = JSON.parse(id_count_list);
-  //alert(items.getNumberOfDatasets())  // This doesn't seem to work
 
-  show_selected_datasets(id_count_list);
-  load_unit_select(constants);
-  show_visuals_output_choices();
-}
-//
-//   SHOW VISUALS OUTPUT CHOICES
-//
-function show_visuals_output_choices(){
-    var html = 'heatmap,barcharts,coutsTable....';
-    var div = document.getElementById('show_visuals_output_choices').innerHTML = html;
-}
-//
-//  LOAD UNIT SELECT
-//
-function load_unit_select(constants){
-    var C = JSON.parse(constants);
-    var rows = C.UNITSELECT.units;
-    var html = "";
-    html += "<select onchange='get_requested_units_selection_box(this.value);return false;'>";
-    html += "<option value='none'>Choose Units</option>";
-    for (var i in rows) {
-      var file_id  = rows[i].id;
-      var name = rows[i].name;
-      var file = rows[i].file;
-      html += "<option value='"+ file_id +"'>"+ name +"</option>";
-     }
-    html += "</select>";
-    var div = document.getElementById('units_select_choices_div').innerHTML = html;
-}
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box(file_id){
 
-  var html = '';
+  var file = '';
   // case functions are in unit_selectors.js
-  switch(file_id){
-    case 'tax_silva108_simple':
-      html = get_taxa_sil108_simple();
-      break;
-    case 'tax_silva108_custom':
-      html = get_taxa_sil108_custom();
-      break;
-    case 'tax_gg_simple':
-      html = get_taxa_gg_simple();
-      break;
-    case 'tax_gg_custom':
-      html = get_taxa_gg_custom();
-      break;
-    case 'med_nodes':
-      html = get_med_nodes();
-      break;
-    default:
-      html = 'Select Another';
-  }
-  var div = document.getElementById('units_select_div').innerHTML = html;
-
-}
-//
-//  SHOW SELECTED DATASETS
-//
-function show_selected_datasets(id_count_list){
-
   
-  var items = JSON.parse(id_count_list);
-  var html = "Here are your selected datasets:<br>&nbsp;&nbsp;&nbsp;&nbsp;";
-  html += "<select>";
+  var partial_name = '/visuals/partials/'+file_id;
 
-  for (var i in items.names){
-    html += "<option>";
-    html += items.names[i];
-    html += "</option>";
+  // switch(file_id){
+  //   case 'tax_silva108_simple':
+  //     file = '/visuals/partials/'+file_id
+  //     break;
+  //   case 'tax_silva108_custom':
+  //     get_taxa_silva108_custom();
+  //     break;
+  //   case 'tax_gg_simple':
+  //     get_taxa_gg_simple();
+  //     break;
+  //   case 'tax_gg_custom':
+  //     get_taxa_gg_custom();
+  //     break;
+  //   case 'med_nodes':
+  //     get_med_nodes();
+  //     break;
+  //   default:
+  //     document.getElementById('units_select_div').innerHTML = 'Select Another';
+  // }
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET",partial_name, true);
+  xmlhttp.onreadystatechange=function(){
+         if (xmlhttp.readyState==4 && xmlhttp.status==200){
+           string=xmlhttp.responseText;
+           //alert(string)
+           var div = document.getElementById('units_select_div').innerHTML = string;
+         }
   }
-  html += '</select>';
-  html += '<br>To change these <a href="/visuals/index_visuals">GoBack</a> to the previous page.';
-  //alert(html);
-  var div = document.getElementById('show_selected_datasets_div').innerHTML = html;
+  xmlhttp.send();
 
 }
+
 //
 //  LOAD PROJECT SELECT
 //
