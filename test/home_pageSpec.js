@@ -1,14 +1,6 @@
-var async = require('async'),
-    request = require('supertest'),
-    should = require('should'),
-    app = require('../app'),
-    connection = require('../config/database-test');
-
-
 describe('Home page functionality', function(){
-  before(function (done) {
-    this.timeout(5000);
-		require('insert_user_into_db');
+  // before(function (done) {
+  //   this.timeout(5000);
 		
 
 		// connection.query("CREATE TABLE IF NOT EXISTS users (\
@@ -94,7 +86,7 @@ describe('Home page functionality', function(){
     ], done);
 */
 
-  });
+  // });
 
   it('Text of home page', function(done){
     request(app)
