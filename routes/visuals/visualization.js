@@ -5,6 +5,20 @@ var dataset_accumulator = require('../../public/classes/dataset_accumulator')
 //var helpers = require('./helpers')
 var app = express();
 
+/* 
+ * GET visualization page. 
+ */
+router.post('/next_page',  function(req, res) {
+  
+    
+    // could this projects_datasets list be filtered/limited here
+    // depending on user selected input or user access permissions?
+    // console.log(JSON.stringify(projects_datasets));  
+    res.render('visuals/next_page',{ title   : 'NEXT PAGE!', 
+                                  body: JSON.stringify(req.body), 
+                                   user: req.user  
+                                    })
+});
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
@@ -43,7 +57,7 @@ router.post('/unit_selection',  function(req, res) {
   	}else{
   		
       
-      // here get taxonomy_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
+      // here get tax_silva108_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
   		// and keep them in the same order as the sequence_ids
   		for(var k in rows){
 
@@ -81,7 +95,7 @@ router.post('/unit_selection',  function(req, res) {
     
     //console.log(dsets);
 
-    console.log(dataset_accumulator);
+    console.log(JSON.stringify(dataset_accumulator, undefined, 2)); // prints with indentation
     //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][0]);
     //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][1]);
     //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][2]);
@@ -113,6 +127,28 @@ router.get('/index_visuals',  function(req, res) {
                                    user: req.user  
                                     })
     
+});
+
+/*
+*   PARTIALS
+*/
+router.get('/partials/tax_silva108_simple',  function(req, res) {
+    res.render('visuals/partials/tax_silva108_simple',{})
+});
+router.get('/partials/tax_silva108_custom',  function(req, res) {
+    res.render('visuals/partials/tax_silva108_custom',{})
+});
+router.get('/partials/tax_gg_custom',  function(req, res) {
+    res.render('visuals/partials/tax_gg_custom',{})
+});
+router.get('/partials/tax_gg_simple',  function(req, res) {
+    res.render('visuals/partials/tax_gg_simple',{})
+});
+router.get('/partials/otus',  function(req, res) {
+    res.render('visuals/partials/otus',{})
+});
+router.get('/partials/med_nodes',  function(req, res) {
+    res.render('visuals/partials/med_nodes',{})
 });
 
 module.exports = router;
