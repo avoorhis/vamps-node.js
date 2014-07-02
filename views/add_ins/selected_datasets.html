@@ -1,0 +1,11 @@
+<% var items = JSON.parse(id_count_list) %>
+These are your selected datasets:<br>
+ <select>
+
+ <% for (var i in items.names){ %>
+    <option>
+    	<%= items.names[i] %>
+    </option>
+ <% } %>
+ </select>
+ <br>To change these <a href="/visuals/index_visuals">GoBack</a> to the previous page.
