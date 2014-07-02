@@ -4,6 +4,21 @@ var async = require('async'),
     app = require('../app'),
     connection = require('../config/database-test');
 
+describe('Users page functionality', function(){
+	
+  it('Text on login page', function(done){
+    request(app)
+      .get('/users/index_users')
+      .expect(200)
+      .end(function (err, res) {
+        res.text.should.include('Username');
+        done();
+      });
+  });
+
+
+});
+
 describe('Login page functionality', function(){
   before(function (done) {
 	
