@@ -161,7 +161,7 @@ describe('Login page functionality', function(){
     request(app)
       .post('/users/login')
       .expect(302)
-      .send({ username: 'TEST1', password: 'TEST1'})
+      .send({ username: 'NO User', password: ''})
       .end(function (err, res) {
         res.header.location.should.not.include('/');
 	      res.header.location.should.include('login');
