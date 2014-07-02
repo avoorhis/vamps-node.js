@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="load_visualization_items_p2('<%= selection_obj %>','<%= constants %>','<%= id_count_list %>');">
+<body onload="">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
 <div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
@@ -20,22 +20,27 @@
   <div class="grid_9"> 
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
-    <form id='' class='' method='POST' action='visualization_ajax.html' autocomplete="off">
+    <form id='' class='' method='POST' action='/visuals/next_page' autocomplete="off">
       
       <table border='1'><tr>
       
       <td>
-        <div id='units_select_choices_div'></div>
+        <div id='units_select_choices_div'>
+          <% include ../add_ins/unit_selection_choices.html %>
+        </div>
       </td>
       <td>
-      
+        <input type='submit' value='Next: Get Graphics'>
       </td>
 
       </tr>
       <tr>
 
       <td class='small_font general_table'>
-        <div id='units_select_div'></div>
+        <div id='units_select_div'>
+          <!-- Start with default: taxa_silva108_simple-->
+          <% include partials/tax_silva108_simple.html %>
+        </div>
       </td>
 
       <td class='td_top'>
@@ -43,20 +48,29 @@
           <tr>
             <td class='small_font'>
       
-              <div id='show_selected_datasets_div' class='' ></div>
+              <div id='show_selected_datasets_div' class='' >
+                <% include ../add_ins/selected_datasets.html %>
+              </div>
       
             </td>
           </tr>
+
           <tr>
             <td class='small_font'>
-              <div id='show_visuals_output_choices' class='' ></div>
+              <div id='show_normalization_div' class='general_table' >
+                <% include ../add_ins/normalization_choices.html %>
+              </div>
             </td>
           </tr>
+
           <tr>
-            <td>
-              <input type='submit' value='Next: Get Graphics'>
+            <td class='small_font'>
+              <div id='visuals_output_choices_div' class='general_table' >
+                <% include ../add_ins/visual_output_choices.html %>
+              </div>
             </td>
           </tr>
+          
         </table>
       
       </td>
@@ -64,6 +78,7 @@
       
 
       </tr></table>
+      <input type='hidden' value='<%= selection_obj %>' name='selection_obj'/>
     </form>
 
   </div>  <!-- end grid_9 -->
