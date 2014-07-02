@@ -50,7 +50,7 @@ router.post('/unit_selection',  function(req, res) {
 	      if(rows[k].dataset_id in dsets){
 	        dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
 	        dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count);
-	        for(u in available_units) {
+	        for(var u in available_units) {
 	          dsets[rows[k].dataset_id].unit_assoc[available_units[u]].push(rows[k][available_units[u]]);
 	        }
 	      }else{
@@ -58,7 +58,7 @@ router.post('/unit_selection',  function(req, res) {
 	        dsets[rows[k].dataset_id].seq_ids = [rows[k].sequence_id];
 	        dsets[rows[k].dataset_id].seq_counts = [rows[k].seq_count];
 	        dsets[rows[k].dataset_id].unit_assoc = {};
-	        for(u in available_units) {
+	        for(var u in available_units) {
 	          dsets[rows[k].dataset_id].unit_assoc[available_units[u]] = [rows[k][available_units[u]]];
 	        }
 
@@ -66,12 +66,12 @@ router.post('/unit_selection',  function(req, res) {
 
   		}
 
-  		for(id in dsets){
+  		for(var id in dsets){
 	      dataset_accumulator.dataset_ids.push(id);
 	      //dataset_accumulator.ds_counts.push(id)
 	      dataset_accumulator.seq_ids.push(dsets[id].seq_ids);
 	      dataset_accumulator.seq_freqs.push(dsets[id].seq_counts);
-	      for(u in dsets[id].unit_assoc) {
+	      for(var u in dsets[id].unit_assoc) {
 	        dataset_accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
 	      }
       
