@@ -5,10 +5,12 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var passport = require('passport');
 var flash = require('connect-flash');
+var passport = require('passport');
 var db = require('mysql');
-var connection = require('./config/database-dev');
+// without var declaration connection is global
+// needed for DATASETS initialization
+connection = require('./config/database-dev');
 connection.connect();
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -35,9 +37,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // required for passport
 app.use(session({ secret: 'keyboard cat' })); // session secret
+app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+
 
 // Make our db accessible to our router
 app.use(function(req, res, next){
