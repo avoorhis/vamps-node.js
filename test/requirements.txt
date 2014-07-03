@@ -12,19 +12,20 @@ Requirement 2: Login page functionality
 2.3 Need to not be able to login with user/password not "TEST"/"TEST".
 2.3.1 If logging in with user/password not "TEST"/"TEST", redirect to the login page.
 
-Requirement 3: Register page functionality
-3.1 Need to see text on the register page ("/users/signup").
-3.1.1 Need to be able to see the text for the input box. (Username
+Requirement 3: Register page functionality ("/users/signup")
+*) The register page should show a register form
+(Username
  Password
  First Name
  Last name
  Email
  Institution)
-3.1.2 Need to be able to see all the previous inputs listed.
-3.2 Need to be able enter userfirstname / userlastname / useremail / userinstitution values.
-3.2.1 Need to be able to see entry in the database.
-3.2.2 Need to be able to see entry on the page.
-3.3 Succsessful registration should redirect to users/profile
-3.3.1 users/profile should have "Profile Page" and all user info + UserID
-3.4 Need to see the link to the login page.
-3.5 If the username exists should see a message and redirect back to "/users/signup"
+*) The register page should refuse empty submissions
+*) The register page should refuse partial submissions
+*) The register page should keep values on partial submissions
+*) The register page should refuse invalid emails
+*) The register page should accept complete submissions (userfirstname / userlastname / useremail / userinstitution)
+*) The register page succsessful registration should redirect to users/profile
+*) The profile page (users/profile) should have "Profile Page" and all user info + UserID
+*) The register page should give a message and redirect back to "/users/signup" if the username exists
+*) The register page should have the link to the login page.
