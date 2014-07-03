@@ -42,14 +42,19 @@ a {
 .bold_font {
    font-weight:bold;
 }
+.normal_weight {
+   font-weight:normal;
+}
 .general_table{
-    border:1px solid green;
-  
+    border:1px solid black;
+    padding:3px;
 }
 .general_table ul {
-  
     text-align:left;
     list-style-type: none;
+}
+.single_border {
+    border-collapse:collapse;
 }
 .td_top {
 vertical-align:top;
