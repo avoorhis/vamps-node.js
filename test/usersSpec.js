@@ -40,7 +40,9 @@ describe('Login page functionality', function(){
       .get('/users/login')
       .expect(200)
       .end(function (err, res) {
+        res.text.should.include('VAMPS Login');
         res.text.should.include('Username');
+        res.text.should.include('Password');
         done();
       });
   });
