@@ -1,3 +1,9 @@
+var async = require('async'),
+    request = require('supertest'),
+    should = require('should'),
+    app = require('../app'),
+    connection = require('../config/database-test');
+
 describe('Home page functionality', function(){
   // before(function (done) {
   //   this.timeout(5000);
