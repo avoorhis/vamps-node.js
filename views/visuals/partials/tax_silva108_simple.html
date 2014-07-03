@@ -1,16 +1,21 @@
-<% domains = ['Archaea','Bacteria','Eukarya','Organelle','Unknown']; %>
+
+<% if(typeof doms === 'undefined') { %>
+<%   var domains = JSON.parse(constants).DOMAINS.domains; %>
+<% } else { %>
+<%   domains = doms.domains %>
+<% } %>
+<% console.log(domains) %>
   <ul>
   <li class='bold_font'>Domains to Include:
-  
+    <span class='small_font normal_weight' >
+      <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa()"  \> Toggle Domains
+    </span>
   </li>
-  <span class='small_font' >
-    <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa()"  \> Toggle Domains
-  </span>
   <% for (i in domains) { %>  
-    <% domain = domains[i] %>
+    <% domain = domains[i].name %>
     <li>
     <label class='taxa-select'>
-      <input type='checkbox' class='simple_taxa_ckbx' checked='checked' id='<%= domain %>' name='' onclick="open_datasets()" \>
+      <input type='checkbox' class='simple_taxa_ckbx' checked='checked' value='<%= domain %>' name='domain[]' \>
       <%= domain %>
     </label>
     </li>
@@ -21,8 +26,8 @@
     <li><input type='radio' id='' checked='checked' name='include_nas' value='yes'   \> Include NAs</li>
     <br>
     <li class='bold_font'>Taxonomic Depth:</li>
-    <li><input type='radio' id='' name='tax_depth' value='domain'  \> Domainxx</li>
-    <li><input type='radio' id='' checked='checked' name='tax_depth' value='phylum'  \> Phylum</li>
+    <li><input type='radio' id='' name='tax_depth' value='domain'  \> Domain</li>
+    <li><input type='radio' id='' name='tax_depth' value='phylum' checked='checked'  \> Phylum</li>
     <li><input type='radio' id='' name='tax_depth' value='class'   \> Class</li>
     <li><input type='radio' id='' name='tax_depth' value='order'   \> Order</li>
     <li><input type='radio' id='' name='tax_depth' value='family'  \> Family</li>

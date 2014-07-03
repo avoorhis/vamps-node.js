@@ -5,13 +5,12 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="">
+<body onload="show_post_array('<%= body %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
 <div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
 <div id='title'>Community Visualization</div>
 <div id='subtitle'>Units Selection Page</div>
-
 
 <div class='container_12'>  
   <div class="grid_3">
@@ -20,17 +19,17 @@
   <div class="grid_9"> 
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
-    <form id='' class='' method='POST' action='/visuals/next_page' autocomplete="off">
+    <form id='' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
       
-      <table border='1'><tr>
+      <table class='single_border' border='1'><tr>
       
       <td>
         <div id='units_select_choices_div'>
-          <% include ../add_ins/unit_selection_choices.html %>
+          <% include partials/unit_selection_choices.html %>
         </div>
       </td>
       <td>
-        <input type='submit' value='Next: Get Graphics'>
+        <input type='button' value='Next: Get Graphics' onclick='check_viz_selection_pg2(this.form);return false;'>
       </td>
 
       </tr>
@@ -44,12 +43,12 @@
       </td>
 
       <td class='td_top'>
-        <table border='1'>
+        <table class='single_border' border='0'>
           <tr>
             <td class='small_font'>
       
-              <div id='show_selected_datasets_div' class='' >
-                <% include ../add_ins/selected_datasets.html %>
+              <div id='show_selected_datasets_div' class='general_table' >
+                <% include partials/selected_datasets.html %>
               </div>
       
             </td>
@@ -58,7 +57,7 @@
           <tr>
             <td class='small_font'>
               <div id='show_normalization_div' class='general_table' >
-                <% include ../add_ins/normalization_choices.html %>
+                <% include partials/normalization_choices.html %>
               </div>
             </td>
           </tr>
@@ -66,7 +65,7 @@
           <tr>
             <td class='small_font'>
               <div id='visuals_output_choices_div' class='general_table' >
-                <% include ../add_ins/visual_output_choices.html %>
+                <% include partials/visual_output_choices.html %>
               </div>
             </td>
           </tr>
@@ -84,6 +83,7 @@
   </div>  <!-- end grid_9 -->
 </div>    <!-- end container_12 -->  
 </div> 
+<div id='DEBUG_div'></div>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/visualization.js"></script>
 <script type="text/javascript" src="/javascripts/unit_selectors.js"></script> 

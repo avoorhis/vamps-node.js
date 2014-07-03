@@ -68,38 +68,21 @@ function load_visualization_items_p1(rows){
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
-function get_requested_units_selection_box(file_id){
+function get_requested_units_selection_box(file_id) {
 
   var file = '';
+  
   // case functions are in unit_selectors.js
   
   var partial_name = '/visuals/partials/'+file_id;
 
-  // switch(file_id){
-  //   case 'tax_silva108_simple':
-  //     file = '/visuals/partials/'+file_id
-  //     break;
-  //   case 'tax_silva108_custom':
-  //     get_taxa_silva108_custom();
-  //     break;
-  //   case 'tax_gg_simple':
-  //     get_taxa_gg_simple();
-  //     break;
-  //   case 'tax_gg_custom':
-  //     get_taxa_gg_custom();
-  //     break;
-  //   case 'med_nodes':
-  //     get_med_nodes();
-  //     break;
-  //   default:
-  //     document.getElementById('units_select_div').innerHTML = 'Select Another';
-  // }
+  
   xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET",partial_name, true);
   xmlhttp.onreadystatechange=function(){
          if (xmlhttp.readyState==4 && xmlhttp.status==200){
            string=xmlhttp.responseText;
-           //alert(string)
+           //alert(partial_name)
            var div = document.getElementById('units_select_div').innerHTML = string;
          }
   }
@@ -118,7 +101,7 @@ function load_project_select(projects){
   for (i in rows.projects){
     pname   = rows.projects[i].name
     datasets = rows.projects[i].datasets
-    
+   // alert(i)
     html += "<li>"
     html += "<label class='project-select' >"
     html += "  <a href='#'  id='"+ pname +"_toggle'"
@@ -133,9 +116,8 @@ function load_project_select(projects){
     for(k in datasets) {
       dname = datasets[k].dname
       did = datasets[k].did
-      ds_count = datasets[k].ds_count
       pd = pname+'--'+dname
-      pass_thru_value = did+'--'+pname+'--'+dname+'--'+ds_count
+      pass_thru_value = did+'--'+pname+'--'+dname
       html += "<li>"
       html += "<label class='dataset-select' name='xx' >"
       html += "   <input type='checkbox' id='"+ pd +"' name='dataset_ids[]' value='"+ pass_thru_value +"'"
@@ -228,12 +210,12 @@ function set_check_project(project)
   }
 }
 //
-// CHECK_FOR_NO_DATASET
+// CHECK_VIZ Page 1
 //
-function check_for_no_datasets(thisform){
+function check_viz_selection_pg1(thisform) {
 
   var x = thisform["dataset_ids[]"];
-  gotone = false;
+  var gotone = false;
   for (var i=0; i<x.length; i++)
   {
       if (x[i].checked) {
@@ -247,5 +229,35 @@ function check_for_no_datasets(thisform){
     return;
   }
 }
+//
+// CHECK_VIZ Page 2
+//
+function check_viz_selection_pg2(thisform) {
+
+  var x = thisform["visuals[]"];
+  var gotone = false;
+  for (var i=0; i<x.length; i++)
+  {
+      if (x[i].checked) {
+        gotone = true;
+      }
+  }
+  if (gotone){
+    thisform.submit();
+  } else {
+    alert('You must select a display output');
+    return;
+  }
+  // what else do we check here?
+  // check for NO unit_associations: unit_assoc":{"tax_silva108_id":[],"tax_gg_id":[],"med_node_id":[],"otu_id":[]}}
+
+}
+
+
+
+
+
+
+
 
 
