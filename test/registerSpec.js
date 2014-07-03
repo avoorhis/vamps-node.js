@@ -1,13 +1,13 @@
-// var async = require('async'),
-//     request = require('supertest'),
-//     should = require('should'),
-//     app = require('../app'),
-//     connection = require('../config/database-test');
+var async = require('async'),
+    request = require('supertest'),
+    should = require('should'),
+    app = require('../app'),
+    connection = require('../config/database-test');
 
-process.env.NODE_ENV = 'test';
-var app = require('../app'),
-		connection = require('../config/database-test');
-var Browser = require('zombie');
+// process.env.NODE_ENV = 'test';
+// var app = require('../app'),
+// 		connection = require('../config/database-test');
+// var Browser = require('zombie');
 
 describe('Form page functionality', function(){
 
@@ -19,7 +19,19 @@ describe('Form page functionality', function(){
 	//  Last name
 	//  Email
 	//  Institution)
-	it('The register page should show a register form');
+	it('The register page should show a register form', function(done){
+	    request(app)
+	      .get('/users/login')
+	      .expect(200)
+	      .end(function (err, res) {
+	        res.text.should.include('VAMPS Login');
+	        res.text.should.include('Username');
+	        res.text.should.include('Password');
+	        done();
+	      });
+	  })
+	
+	
 	it('The register page should refuse empty submissions');
 	it('The register page should refuse partial submissions');
 	it('The register page should keep values on partial submissions');
