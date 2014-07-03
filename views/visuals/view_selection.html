@@ -1,0 +1,58 @@
+<html>
+<head>
+  <title><%- title %></title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
+</head>
+<body onload="show_post_array('<%= body %>');">
+<div id='header' class='header'></div>
+<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
+<div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
+
+<div id='title'>Community Visualization</div>
+
+<div id='subtitle'>Display Output Page</div>
+
+<div class='container_12'>  
+  <div class="grid_3">&nbsp;</div>
+  <div class="grid_9">
+    <table border='1'>
+      <tr>
+        <th>Input Values</th>
+        <th>Things to do here</th>
+        <th>Selected Visuals (click to view)</th>
+        
+      </tr>
+      <tr>
+        <td>
+          <div id='show_what_is_chosen_div'>
+          </div>
+        </td>    
+        <td>
+          <div id='show_download_buttons_div'>
+            <input type='button', id='' name='' value='Download Fasta File' /><br>
+            <input type='button', id='' name='' value='Download Counts Matrix' />
+          </div>
+        </td>
+        <td>
+          <div id='show_visuals_links_div'>
+            <% b = JSON.parse(body) %>
+          	<% for(var i in b.visuals) { %>
+              <a href='#'><%= b.visuals[i] %></a><br>
+            <% } %>
+          </div>
+        </td>
+          
+      </tr>
+
+
+    </table>
+    <a href="#" onclick='javascript:history.go(-1);return false;'>GoBack</a> to the previous page.
+  </div>  <!-- end grid_9 -->
+</div>    <!-- end container_12 -->  
+<div id='DEBUG_div'></div>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+
+</body>
+</html>
