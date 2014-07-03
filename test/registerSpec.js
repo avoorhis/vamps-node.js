@@ -11,6 +11,19 @@ var async = require('async'),
 
 describe('Form page functionality', function(){
 
+	  before(function (done) {
+		    this.timeout(5000);
+				connection.query('DELETE FROM vamps_js_testing.users WHERE username = "TEST_new"', function (err, result) {
+				  if (err) throw err;
+				  console.log('deleted ' + result.affectedRows + ' rows');
+				});
+				connection.query('DELETE FROM vamps_js_development.users WHERE username = "TEST_new"', function (err, result) {
+				  if (err) throw err;
+				  console.log('deleted ' + result.affectedRows + ' rows');
+				});
+				done();
+		});
+
 
 
 	// (Username
@@ -21,10 +34,10 @@ describe('Form page functionality', function(){
 	//  Institution)
 	it('The register page should show a register form', function(done){
 	    request(app)
-	      .get('/users/login')
+	      .get('/users/signup')
 	      .expect(200)
 	      .end(function (err, res) {
-	        res.text.should.include('VAMPS Login');
+	        res.text.should.include('Add User');
 	        res.text.should.include('Username');
 	        res.text.should.include('Password');
 	        done();
@@ -37,7 +50,41 @@ describe('Form page functionality', function(){
 	it('The register page should keep values on partial submissions');
 	it('The register page should refuse invalid emails');
 	it('The register page should accept complete submissions (userfirstname / userlastname / useremail / userinstitution)');
-	it('The register page succsessful registration should redirect to users/profile');
+	
+	it('The register page successful registration should redirect to users/profile', function(done){
+    request(app)
+      .post('/users/signup')
+      .expect(302)
+			.send('username=TEST_new')
+			.send('password=TEST_new')
+			.send('userfirstname=TEST_new')
+			.send('userlastname=TEST_new')
+			.send('useremail=TEST_new')
+			.send('userinstitution=TEST_new')
+      .end(function (err, res) {
+        should.not.exist(err);
+        // confirm the redirect
+        res.header.location.should.include('profile');
+				res.header.location.should.not.include('signup');
+        done();
+      });
+  });
+
+	it('The register page registration failure should redirect to signup', function(done){
+      request(app)
+	      .post('/users/signup')
+	      .expect(302)
+	      .send({ username: 'TEST-wrong', password: ''})
+	      .end(function (err, res) {
+	        should.not.exist(err);
+	        // confirm the redirect
+	        res.header.location.should.include('signup');
+					res.header.location.should.not.include('profile');
+	        done();
+	      });
+	  });
+	
+
 	it('The profile page (users/profile) should have "Profile Page" and all user info + UserID');
 	it('The register page should give a message and redirect back to "/users/signup" if the username exists');
 	it('The register page should have the link to the login page.');
