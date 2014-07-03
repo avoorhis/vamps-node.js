@@ -1,10 +1,10 @@
-before(function() {
-	var async = require('async'),
-	    request = require('supertest'),
-	    should = require('should'),
-	    app = require('../app'),
-	    connection = require('../config/database-test');
+var async = require('async'),
+    request = require('supertest'),
+    should = require('should'),
+    app = require('../app'),
+    connection = require('../config/database-test');
 
+before(function() {
 	connection.query("CREATE TABLE IF NOT EXISTS users (\
 	  id int(11) NOT NULL AUTO_INCREMENT,\
 	  username varchar(20) DEFAULT NULL,\
