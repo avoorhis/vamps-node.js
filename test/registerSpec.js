@@ -13,14 +13,18 @@ describe('Form page functionality', function(){
 
 	  before(function (done) {
 		    this.timeout(5000);
-				connection.query('DELETE FROM vamps_js_testing.users WHERE username = "TEST_new"', function (err, result) {
-				  if (err) throw err;
-				  console.log('deleted ' + result.affectedRows + ' rows');
-				});
-				connection.query('DELETE FROM vamps_js_development.users WHERE username = "TEST_new"', function (err, result) {
-				  if (err) throw err;
-				  console.log('deleted ' + result.affectedRows + ' rows');
-				});
+				connection.query('DELETE FROM vamps_js_testing.users WHERE username = "TEST_new"',
+					function (err, result) {
+					  if (err) throw err;
+					  console.log('deleted ' + result.affectedRows + ' rows');
+					}
+				);
+				connection.query('DELETE FROM vamps_js_development.users WHERE username = "TEST_new"',
+					function (err, result) {
+					  if (err) throw err;
+					  console.log('deleted ' + result.affectedRows + ' rows');
+					}
+				);
 				done();
 		});
 
@@ -46,6 +50,7 @@ describe('Form page functionality', function(){
 	
 	
 	it('The register page should refuse empty submissions');
+	it('The register page should refuse not unique submissions');
 	it('The register page should refuse partial submissions');
 	it('The register page should keep values on partial submissions');
 	it('The register page should refuse invalid emails');
