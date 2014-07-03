@@ -1,7 +1,7 @@
-<%    var C = JSON.parse(constants); %>
-<%    var rows = C.UNITSELECT.units; %>
+
+<%    var rows = JSON.parse(constants).UNITSELECT.units; %>
 Units Selection:
-    <select onchange='get_requested_units_selection_box(this.value);return false;'>
+    <select onchange="get_requested_units_selection_box(this.value);return false;">
     
 <%    for (var i in rows) { %>
 <%      var file_id  = rows[i].id; %>
