@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var all_datasets = require('../../config/all_datasets')
+//var all_datasets = require('../../config/all_datasets')
 
 //var helpers = require('./helpers')
 var app = express();
@@ -41,16 +41,13 @@ router.post('/view_selection',  function(req, res) {
 router.post('/unit_selection',  function(req, res) {
   var db = req.db;
   var dsets = {};
-  //var dataset_accumulator = {};
   var dataset_accumulator = {
     dataset_ids : [],
     seq_ids     : [],
     seq_freqs  : [],
     unit_assoc: {}
   };
-  //dataset_accumulator = require('../../public/classes/dataset_accumulator');
-  console.log("dataset_accumulator");
-  console.log(dataset_accumulator);
+  
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
   
   for(var i in available_units){
@@ -68,14 +65,13 @@ router.post('/unit_selection',  function(req, res) {
     chosen_id_name_hash.ids.push(items[0]);
     chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
   }
-  //console.log(id_count_list);
+  
     
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
   qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
   console.log(qSelectSeqID);
-  //console.log(dataset_accumulator.getTotalSequenceCount());
-  
+    
   
   db.query(qSelectSeqID, function(err, rows, fields){
   	if(err)	{
@@ -119,7 +115,7 @@ router.post('/unit_selection',  function(req, res) {
   		
   	}
     
-    console.log(dataset_accumulator);
+    //console.log(dataset_accumulator);
     
     //console.log(JSON.stringify(dataset_accumulator, undefined, 2)); // prints with indentation
     //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][0]);
@@ -145,18 +141,19 @@ router.post('/unit_selection',  function(req, res) {
  */
 router.get('/index_visuals',  function(req, res) {
   
-  	projects_datasets = all_datasets.ALL
-    //console.log(JSON.stringify(DATASETS,null,4));
-    //console.log(JSON.stringify(projects_datasets,null,4));
-  	// could this projects_datasets list be filtered/limited here
-  	// depending on user selected input or user access permissions?
-    // console.log(JSON.stringify(projects_datasets));  
-    res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
-                                   rows    : JSON.stringify(projects_datasets),
-                                   constants    : JSON.stringify(req.C),
-                                   user: req.user  
-                                    });
-    
+      res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
+                                 rows    : JSON.stringify(global.DATASETS),
+                                 constants    : JSON.stringify(req.C),
+                                 user: req.user  
+                                  });    
+});
+
+/*
+ *  VISUALS PAGES
+ */
+router.get('/counts_table',  function(req, res) {
+    console.log('in counts table route');
+    res.render('visuals/counts_table',{});
 });
 
 /*
@@ -184,6 +181,8 @@ router.get('/partials/otus',  function(req, res) {
 router.get('/partials/med_nodes',  function(req, res) {
     res.render('visuals/partials/med_nodes',{});
 });
+
+
 
 module.exports = router;
 
