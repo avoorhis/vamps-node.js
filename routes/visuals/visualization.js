@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var all_datasets = require('../../config/all_datasets')
-var dataset_accumulator = require('../../public/classes/dataset_accumulator')
+
 //var helpers = require('./helpers')
 var app = express();
 
@@ -41,6 +41,16 @@ router.post('/view_selection',  function(req, res) {
 router.post('/unit_selection',  function(req, res) {
   var db = req.db;
   var dsets = {};
+  //var dataset_accumulator = {};
+  var dataset_accumulator = {
+    dataset_ids : [],
+    seq_ids     : [],
+    seq_freqs  : [],
+    unit_assoc: {}
+  };
+  //dataset_accumulator = require('../../public/classes/dataset_accumulator');
+  console.log("dataset_accumulator");
+  console.log(dataset_accumulator);
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
   
   for(var i in available_units){
@@ -109,7 +119,7 @@ router.post('/unit_selection',  function(req, res) {
   		
   	}
     
-    //console.log(dsets);
+    console.log(dataset_accumulator);
     
     //console.log(JSON.stringify(dataset_accumulator, undefined, 2)); // prints with indentation
     //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][0]);
