@@ -16,6 +16,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
+//var ALL_DATASETS = require('./routes/load_all_datasets2')(connection);
 var visuals = require('./routes/visuals/visualization');
 var C = require('./public/constants');
 var app = express();

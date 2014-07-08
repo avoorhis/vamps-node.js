@@ -7,18 +7,29 @@
 </head>
 <body onload="load_visualization_items_p1('<%= rows %>');">
 <div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div id='login_link' class=''><%=  include ../add_ins/login_line.html %></div>
+<div id='' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
+<div id='' class='login_link'><%=  include ../add_ins/login_line.html %></div>
 
-<div id='title'>Community Visualization</div>
 
-<div id='subtitle'>Dataset Selection Page</div>
+
+
+
+<div class='title'>Community Visualization</div>
+
+<div class='subtitle'>Dataset Selection Page</div>
 
 <div class='container_12'>  
   <div class="grid_3">
     &nbsp;
   </div>
+
+
+
   <div class="grid_9"> 
+
+
+
+
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
     <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
       
@@ -37,7 +48,14 @@
       </tr>
       </table>
     </form>
+
+
+
+
   </div>  <!-- end grid_9 -->
+
+
+
 </div>    <!-- end container_12 -->
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
