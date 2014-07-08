@@ -19,9 +19,9 @@
   <div class="grid_9">
     <table border='1'>
       <tr>
-        <th>Input Values</th>
+        <th>Input Items</th>
         <th>Things to do here</th>
-        <th>Selected Visuals (click to view)</th>
+        <th>Selected Visuals (click to view<br>-- images load in a separate window)</th>
         
       </tr>
       <tr>
@@ -39,8 +39,10 @@
           <div id='show_visuals_links_div'>
             <% b = JSON.parse(body) %>
           	<% for(var i in b.visuals) { %>
-            <% link = b.visuals[i] + '.html' %>
-              <a href='<%= link %>'><%= b.visuals[i] %></a><br>
+                <% link = b.visuals[i]  %>
+
+                <a href='<%= link %>' target='_blank'><%= b.visuals[i] %></a><br>
+                
             <% } %>
           </div>
         </td>
