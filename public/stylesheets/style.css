@@ -25,14 +25,14 @@ a {
     font: 11px "Lucida Grande", Helvetica, Arial, sans-serif;
     text-align:center;
 }
-#title {
+.title {
     font-size:x-large;
     font-weight:bold;
     text-align:center;
     margin:.5em 0 .5em 0
 }
 
-#subtitle {
+.subtitle {
     font-size:medium;
     text-align:center;
 }
