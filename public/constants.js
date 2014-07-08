@@ -17,7 +17,10 @@ config.UNITSELECT = {"units":[
     {id : 'otus',					      file:'unit_selectors/otus.html', name : "OTUs"},
     {id : 'med_nodes',			    file:'unit_selectors/med_nodes.html', name : "MED Nodes"}
                            ]}  
+
+
 // This List MUST match the fields in sequence_uniq_infos
 config.AVAILABLE_UNITS = ['tax_silva108_id', 'tax_gg_id', 'med_node_id', 'otu_id'];
+
 
 module.exports = config;                                

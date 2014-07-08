@@ -7,8 +7,8 @@
 <body onload="initialize('<%= JSON.stringify( user ) %>');">
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div id='title'  class=''>VAMPS Login</div>
-<div id='subtitle'  class=''></div>
+<div class='title'  >VAMPS Login</div>
+<div class='subtitle' ></div>
 <div class='content'>  
 <% if (message.length > 0) { %>
     <div class="alert alert-danger"><%= message %></div>
