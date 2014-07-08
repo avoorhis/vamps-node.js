@@ -6,18 +6,26 @@
   
 </head>
 
-<body onload="">
+<body onload="show_post_array('<%= body %>');">
 <div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'></div>
-<div class='login_link' ></div>
+<div class='main_menu' ><%=  include ../add_ins/main_menu.html %></div>
+<div class='login_link' ><%=  include ../add_ins/login_line.html %></div>
 <div class='title'  >VAMPS Counts Table</div>
 <div class='subtitle'  ></div>
 <div class='container_12'>  
   <div class="grid_3">&nbsp;</div>
   <div class="grid_9">
-  	Put Content Here
+  	<% obj = JSON.parse(body) %>
+    <li><%= obj.post_values %>
+    <li><%= obj.post_values %>
+  	
+    <% for( p in obj.post_values ) { %>
+  	 <%= obj.post_values[p] %><br>
+  	<% } %>
   </div>  <!-- end grid_9 -->
 </div>    <!-- end container_12 -->  
 <script type="text/javascript" src="/javascripts/global.js"></script>
+
 </body>
 </html>
+<div id='DEBUG_div'></div>
