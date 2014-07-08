@@ -17,17 +17,14 @@ router.post('/view_selection',  function(req, res) {
     
     // Get matrix data here
     // What is the SQL?
-
+    // The visuals have been selected so now we need to create them
+    // so they can be shown fast when selected
     for(var k in req.body.visuals) {
-      
-      if(k === 'counttable'){
-        var q0 = 'SELECT .... '
-
-      }
-      if(k === 'heatmap'){ links.heatmap = ''}
-      if(k === 'barcharts'){links.barcharts = ''}
-      if(k === 'dendrogram'){links.dendrogram = ''}
-      if(k === 'alphadiversity'){links.alphadiversity = ''}
+      if(req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_countstable(req.body);}
+      //if(req.body.visuals[k] === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
+      //if(k === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
+      //if(k === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
+      //if(k === 'alphadiversity'){links.alphadiversity = ''; create_alphadiversity(req.body);}
 
     }
     res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
@@ -39,9 +36,36 @@ router.post('/view_selection',  function(req, res) {
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
 router.post('/unit_selection',  function(req, res) {
+  // This page (unit_selection) comes after the datasets have been selected
+  // it should only be reached by POST from the previous index_visuals page.
+  // It should be protected by the isLoggedIn function (below). 
+  // Currently I have removed the isLoggedIn function from the function call
+  // because the program is easier to test without it (you don't have to be logged in)
+  // This function call will look like this when in place:
+  //            router.post('/unit_selection', isLoggedIn, function(req, res) {
+  // The logic here is from the selected datasets to create an object that
+  // holds the datasetIDs in a certain order. The object also holds the sequence_ids,sequence_counts
+  // for each dataset in the same order. The associated unitIDs are also in the object in the same order>
+  // {
+  //  dataset_ids:["122","136","162"],
+  //  seq_ids: [ [1002,1004,1005], [1002,1004,1005], [1002,1005,1007] ],
+  //  seq_freqs: [ [94,4,178], [32,1,89], [625,1024,2] ],
+  //  unit_assoc: {
+  //          "tax_silva108_id": [ [214,82,214], [214,82,214], [214,214,137] ], 
+  //          "tax_gg_id":[ [null,null,null], [null,null,null], [null,null,null] ],
+  //          "med_node_id":[ [null,null,null], [null,null,null], [null,null,null] ], 
+  //          "otu_id":[ [null,null,null], [null,null,null], [null,null,null] ]
+  //          } 
+  // }
+  // I use the GLOBAL keyword below to make two objects global variables:
+  // chosen_id_name_hash  <-- contains the ids and names of the chosen datasets
+  // dataset_accumulator  <-- this is the main object containg the IDs
+  // TESTING:
+  
+
   var db = req.db;
   var dsets = {};
-  var dataset_accumulator = {
+  var accumulator = {
     dataset_ids : [],
     seq_ids     : [],
     seq_freqs  : [],
@@ -51,7 +75,7 @@ router.post('/unit_selection',  function(req, res) {
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
   
   for(var i in available_units){
-  	dataset_accumulator.unit_assoc[available_units[i]]=[];
+  	accumulator.unit_assoc[available_units[i]]=[];
   }
   
 
@@ -103,27 +127,21 @@ router.post('/unit_selection',  function(req, res) {
   		}
 
   		for(var id in dsets){
-	      dataset_accumulator.dataset_ids.push(id);
+	      accumulator.dataset_ids.push(id);
 	      //dataset_accumulator.ds_counts.push(id)
-	      dataset_accumulator.seq_ids.push(dsets[id].seq_ids);
-	      dataset_accumulator.seq_freqs.push(dsets[id].seq_counts);
+	      accumulator.seq_ids.push(dsets[id].seq_ids);
+	      accumulator.seq_freqs.push(dsets[id].seq_counts);
 	      for(var u in dsets[id].unit_assoc) {
-	        dataset_accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
+	        accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
 	      }
       
     	}
   		
   	}
-    
+    GLOBAL.dataset_accumulator = accumulator;
+    GLOBAL.chosen_id_name_hash=chosen_id_name_hash;
     //console.log(dataset_accumulator);
     
-    //console.log(JSON.stringify(dataset_accumulator, undefined, 2)); // prints with indentation
-    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][0]);
-    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][1]);
-    //console.log(dataset_accumulator.unit_assoc['taxonomy_id'][2]);
-    //console.log(dataset_accumulator.unit_assoc['otu_id'][0]);
-    //console.log(dataset_accumulator.unit_assoc['otu_id'][1]);
-    //console.log(dataset_accumulator.unit_assoc['otu_id'][2]);
 
   	res.render('visuals/unit_selection', {   title: 'Unit Selection',
                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
@@ -140,9 +158,18 @@ router.post('/unit_selection',  function(req, res) {
  * GET visualization page. 
  */
 router.get('/index_visuals',  function(req, res) {
-  
-      res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
-                                 rows    : JSON.stringify(global.DATASETS),
+  // This page is arrived at using GET from the Main Menu
+  // It will be protected usind the isLoggedIn function (below)
+  // TESTING: 
+  //      Should show the closed project list on initialize
+  //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
+  //        should work to open the project (show and check the datasets) when either the plus image is clicked or the
+  //        checkbox is selected. Clicking the minus image should deselect the datasets and close the dataset list.
+  //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
+  //      Clicking the submit button when no datasets have been selected should result in an alert box and a
+  //      return to the page.
+  res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
+                                 rows    : JSON.stringify(DATASETS),
                                  constants    : JSON.stringify(req.C),
                                  user: req.user  
                                   });    
@@ -151,13 +178,24 @@ router.get('/index_visuals',  function(req, res) {
 /*
  *  VISUALS PAGES
  */
-router.get('/counts_table',  function(req, res) {
-    console.log('in counts table route');
-    res.render('visuals/counts_table',{});
-});
+// router.get('/counts_table',  function(req, res) {
+//     res.render('visuals/counts_table', {
+//       body         : JSON.stringify(req.body), 
+//       user: req.user 
+//     });
+// });
+// router.get('/heatmap',  function(req, res) {
+//     res.render('visuals/heatmap', {
+//       body         : JSON.stringify(req.body), 
+//       user: req.user 
+//     });
+// });
 
 /*
 *   PARTIALS
+*      These six partials all belong to the unit_selection page
+*      and are shown via ajax depending on user selection in combo box
+*       on that page.  AAV
 */
 router.get('/partials/tax_silva108_simple',  function(req, res) {
     res.render('visuals/partials/tax_silva108_simple',{
@@ -209,5 +247,77 @@ function IsJsonString(str) {
     }
     return true;
 }
+//
+//
+//
+function create_countstable(b) {
+  // Intend to create (write) counts_table page here
+  // That has a timestamp appeneded to the file name
+  // so that it is unique to the user.
+  // The page should be purged when? -- after a certain length of time
+  // or when the user leaves the page.
+  // Also I am having trouble understanding how this page (with a unique name)
+  // will be seen by the router.   AAV
 
+  console.log(b)
+  var ms = +new Date  // millisecs since the epoch
+  var page = 'user_pages/counts_table'+ms+'.html'
+  // taxa_ckbx_toggle: 'all',
+  // domain: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+  // include_nas: 'yes',
+  // tax_depth: 'phylum',
+  // unit_choice: 'taxa_silva108_simple',
+  // normalization: 'no',
+  // visuals: [ 'counts_table' ],
+  // selection_obj: '{
+  //  "dataset_ids":["41","127"],
+  //  "seq_ids":[[1001,1002,1004,1005],[1002,1003,1004,1005,1007]],
+  //  "seq_freqs":[[2,53,4,101],[137,1,2,240,1]],
+  //  "unit_assoc":{
+  //    "tax_silva108_id":[[96,214,82,214],[214,84,82,214,137]],
+  //    "tax_gg_id":[[null,null,null,null],[null,null,null,null,null]],
+  //    "med_node_id":[[null,null,null,null],[null,null,null,null,null]],
+  //    "otu_id":[[null,null,null,null],[null,null,null,null,null]]}}' }
+  //console.log(chosen_id_name_hash)
+  var obj         = JSON.parse(b.selection_obj);
+  var dataset_ids = obj.dataset_ids;
+  var units       = b.unit_choice
+  var matrix      = '';
+  var q0          = ""
+  
+    console.log(obj)
+    console.log(units)
+    console.log(dataset_ids)
+    console.log(chosen_id_name_hash)
+  for(n in dataset_ids) {
+    console.log(dataset_ids[n])
+    console.log(chosen_id_name_hash.names[dataset_ids[n]].index)
+  }
+  for(n in dataset_ids) {
+  //   if(b[n] === 'selection_obj'){
+  //    console.log(b[n])
+  //  }
+  //  q0 = ""
+  }
+
+}
+//
+//
+//
+function create_heatmap(b) {
+  console.log('in create_hetamap')
+  console.log(b)
+}
+//
+//
+//
+function create_alphadiversity() {
+
+}
+//
+//
+//
+function create_barcharts() {
+
+}
 
