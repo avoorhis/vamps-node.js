@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="load_visualization_items_p1('<%= rows %>');">
+<body onload="load_project_select('<%= rows %>');">
 <div id='header' class='header'></div>
 <div id='' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
 <div id='' class='login_link'><%=  include ../add_ins/login_line.html %></div>
@@ -60,5 +60,6 @@
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/visualization.js"></script>
+<script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 </body>
 </html>
