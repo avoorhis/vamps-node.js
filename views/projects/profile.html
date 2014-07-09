@@ -2,11 +2,9 @@
 <head>
   <title>TITLE</title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <script type="text/javascript" src="/javascripts/global.js"></script>
-  <script type="text/javascript" src="/javascripts/projects.js"></script>
 </head>
 
-<body onload="load_project('<%= JSON.stringify( project ) %>');">
+<body>
 <div id='header' class='header'></div>
 <div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
 <div class='login_link'><%=  include ../add_ins/login_line.html %></div>
@@ -17,7 +15,10 @@
     <h1><span class="fa fa-anchor"></span>Project Profile</h1>
 </div>
   <!-- PROJECT INFORMATION -->
-  <div id='project_info_div'></div>
+  <div id='project_info_div'>
+  <% include project_profile %>
+    
+  </div>
 </div>
 </body>
 </html>
