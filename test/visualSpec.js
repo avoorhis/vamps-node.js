@@ -59,10 +59,10 @@ describe('projects pages', function(){
       .expect(200)
       .end(function (err, res) {
         res.text.should.include('VAMPS Projects Listing');
-        res.text.should.include('<a href="/projects/2"');
+        res.text.should.include('/projects/2');
         done();
       });
-		});
+		});		
 		
 		it('The index_projects page should show all projects');
 		it('The index_projects page should show logged in user');
