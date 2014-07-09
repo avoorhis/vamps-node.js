@@ -21,15 +21,31 @@
       <tr>
         <th>Input Items</th>
         <th>Things to do here</th>
-        <th>Selected Visuals (click to view<br>-- images load in a separate window)</th>
+        <th>Selected Visuals<br><span class='small_font'>(pages load in a separate window)</span></th>
         
       </tr>
       <tr>
         <td>
           <div id='show_what_is_chosen_div'>
-            <div id='show_selected_datasets_div' class='general_table' >
-                <% include partials/show_selected_datasets.html %>
-              </div>
+            <table>
+              <tr>
+                <td class='small_font'>
+                  <div id='show_selected_datasets_div' class='general_table' >
+                    <% include partials/show_selected_datasets.html %>
+                  </div><hr>
+                </td>
+              </tr>
+              <tr>
+                <td class='small_font'>
+                  Normalization:<hr>
+                </td>
+              </tr>
+              <tr>
+                <td class='small_font'>
+                  Units Selected:
+                </td>
+              </tr>
+            </table>
           </div>
         </td>    
         <td>
