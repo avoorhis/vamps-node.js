@@ -48,7 +48,7 @@
             <td class='small_font'>
       
               <div id='show_selected_datasets_div' class='general_table' >
-                <% include partials/selected_datasets.html %>
+                <% include partials/show_selected_datasets.html %>
               </div>
       
             </td>
@@ -57,7 +57,7 @@
           <tr>
             <td class='small_font'>
               <div id='show_normalization_div' class='general_table' >
-                <% include partials/normalization_choices.html %>
+                <% include partials/show_normalization_choices.html %>
               </div>
             </td>
           </tr>
@@ -65,7 +65,7 @@
           <tr>
             <td class='small_font'>
               <div id='visuals_output_choices_div' class='general_table' >
-                <% include partials/visual_output_choices.html %>
+                <% include partials/show_visual_output_choices.html %>
               </div>
             </td>
           </tr>
@@ -77,7 +77,8 @@
       
 
       </tr></table>
-      <input type='hidden' value='<%= selection_obj %>' name='selection_obj'/>
+      <input type='hidden' value='<%= chosen_id_name_hash %>' name='chosen_id_name_hash'  >
+      <input type='hidden' value='<%= selection_obj %>'       name='selection_obj'/>
     </form>
 
   </div>  <!-- end grid_9 -->
