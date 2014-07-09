@@ -1,0 +1,9 @@
+<ul>
+<% for (var i = 0; i < all_projects.length; i++) {%>
+    <% var obj = all_projects[i];%>
+    <br/>
+    <li><a href='/projects/<%= obj.id%>'> <%= obj.project %> </a>
+    -- <%= obj.title %>; <%= obj.project_description %>
+<% }%>
+</ul>
+
