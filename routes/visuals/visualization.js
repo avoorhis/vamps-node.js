@@ -26,16 +26,18 @@ router.post('/view_selection',  function(req, res) {
   // TESTING:
   //    There should be one or more datasets shown in list
   //    There should be one or more visual choices shown.
+  //    
   
-
+  // NORMALIZATION:
+  if(req.body.normalization === 'max' || req.body.normalization === 'freq') {
+    req.body.selection_obj = normalize_counts(req.body.normalization, req.body.selection_obj);
+  }
   console.log('START BODY>> in route/visualization.js /view_selection');
   console.log(req.body);
   console.log('<<END BODY');
   var links = {};
   
-  if(req.body.normalization === 'max' || req.body.normalization === 'freq') {
-    selection_obj = normalize_counts(req.body.normalization, req.body.selection_obj);
-  }
+  
   // Get matrix data here
   // What is the SQL?
   // The visuals have been selected so now we need to create them
@@ -78,8 +80,10 @@ router.post('/unit_selection',  function(req, res) {
   //          "otu_id":[ [null,null,null], [null,null,null], [null,null,null] ]
   //          } 
   // }
-  // I use the GLOBAL keyword below to make this object global variables:
+  // I use the GLOBAL keyword below to make this object a global variable:
   // dataset_accumulator  <-- this is the main object containg the IDs
+  // Question: can I attach this to the post variable (req.body) or do I need it as GLOBAL?
+  //        Currently it is both
   // TESTING:
   //    There should be one or more datasets shown in list
   //    The Submit button should return with an alert error if no display checkboxes are checked
@@ -351,6 +355,46 @@ function create_barcharts() {
 //
 function normalize_counts(norm_type, obj) {
   console.log('in normalization: '+norm_type)
+  // get max dataset count
+  selection_obj = JSON.parse(obj);
+  max_count = get_max_dataset_count(selection_obj);
+  //selection_obj.max_ds_count = max_count;
+  
+  new_obj = [];
+  for(n in selection_obj.seq_freqs) {
+    var sum=0;
+    for (var i = selection_obj.seq_freqs[n].length; i--;) {
+      sum += selection_obj.seq_freqs[n][i];
+    }
+    temp = [];
+    for (var i in selection_obj.seq_freqs[n]) {
+      
+      if(norm_type==='max') {
+        temp.push( parseInt((selection_obj.seq_freqs[n][i] * max_count) / sum) )
+      }else{
+        temp.push( parseFloat((selection_obj.seq_freqs[n][i] / sum).toFixed(8)) )
+      }
 
+    }
+    new_obj.push(temp);
+  }
+  
+  selection_obj.seq_freqs = new_obj;
+  return JSON.stringify(selection_obj);
+}
+
+function get_max_dataset_count(obj) {
+  // Gets the maximum dataset count from the 'seq_freqs' in selection_obj
+  var max_count = 0;
+  for(n in selection_obj.seq_freqs) {
+    var sum=0;
+    for (var i = selection_obj.seq_freqs[n].length; i--;) {
+      sum += selection_obj.seq_freqs[n][i];
+    }
+    if(sum > max_count) {
+      max_count = sum;
+    }
+  }
+  return max_count;
 }
 
