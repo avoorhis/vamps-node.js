@@ -5,13 +5,13 @@ var router = express.Router();
 /* GET New User page. */
 router.get('/index_projects', function(req, res) {
     var db = req.db;
-    var qSelect = "SELECT id,project,title,project_description from projects";
+    var qSelect = "SELECT id, project, title, project_description from projects";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
       if (err) {
       throw err;
     } else {
-        res.render('projects/index_projects', { "rows" : rows, user: req.user });
+        res.render('projects/index_projects', { "all_projects" : rows, user: req.user });
       }
     });
   
@@ -19,7 +19,7 @@ router.get('/index_projects', function(req, res) {
 
 router.get('/:id', function(req, res) {
     var db = req.db;
-    var qSelect = "SELECT id,project,title,project_description from projects where id='"+ req.params.id +"'";
+    var qSelect = "SELECT id, project, title, project_description from projects where id = '" + req.params.id +"'";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, row, fields){
       if (err)  {
@@ -30,7 +30,5 @@ router.get('/:id', function(req, res) {
     });
   
 });
-
-
 
 module.exports = router;
