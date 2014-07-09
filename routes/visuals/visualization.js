@@ -10,27 +10,48 @@ var app = express();
  * GET visualization page. 
  */
 router.post('/view_selection',  function(req, res) {
-    // here we need to list the links to the selected visualization out pages:
-    // heatmap, tax_table
-    console.log(req.body)
-    var links = {}
-    
-    // Get matrix data here
-    // What is the SQL?
-    // The visuals have been selected so now we need to create them
-    // so they can be shown fast when selected
-    for(var k in req.body.visuals) {
-      if(req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_countstable(req.body);}
-      //if(req.body.visuals[k] === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
-      //if(k === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
-      //if(k === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
-      //if(k === 'alphadiversity'){links.alphadiversity = ''; create_alphadiversity(req.body);}
+  // This page (view_selection) comes after the datasets and units have been selected
+  //    in the previous two pages.
+  // It should be protected with isLoggedIn like /unit_selection below.
+  // The function call will look like this when isLoggedIn is in place:
+  //            router.post('/view_selection', isLoggedIn, function(req, res) {
+  // This page is where the user will choose to view his/her selected visuals.
+  // The left side will show a synopsis of what choices the user has made:
+  //    datasets, normalization, units and any specifics such as tax rank, domain, NAs ....
+  // The middle section will have a list of buttons allowing download of files
+  // And the right side will have links to the previously selected visuals.
+  // Before this page is rendered the visuals should have been created using the functions called below.
+  // The visual pages will be created in a public directory and each page will have a random number or timestamp
+  //    attached so the page is private and can be deleted later.
+  // TESTING:
+  //    There should be one or more datasets shown in list
+  //    There should be one or more visual choices shown.
+  
 
-    }
-    res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
+  console.log('START BODY>> in route/visualization.js /view_selection');
+  console.log(req.body);
+  console.log('<<END BODY');
+  var links = {};
+  
+  if(req.body.normalization === 'max' || req.body.normalization === 'freq') {
+    selection_obj = normalize_counts(req.body.normalization, req.body.selection_obj);
+  }
+  // Get matrix data here
+  // What is the SQL?
+  // The visuals have been selected so now we need to create them
+  // so they can be shown fast when selected
+  for(var k in req.body.visuals) {
+    if(req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.body);}
+    //if(req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
+    //if(req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
+    //if(req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
+    //if(req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alphadiversity(req.body);}
+
+  }
+  res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
                                   body: JSON.stringify(req.body), 
                                    user: req.user  
-                                    })
+              });
 });
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
@@ -57,12 +78,19 @@ router.post('/unit_selection',  function(req, res) {
   //          "otu_id":[ [null,null,null], [null,null,null], [null,null,null] ]
   //          } 
   // }
-  // I use the GLOBAL keyword below to make two objects global variables:
-  // chosen_id_name_hash  <-- contains the ids and names of the chosen datasets
+  // I use the GLOBAL keyword below to make this object global variables:
   // dataset_accumulator  <-- this is the main object containg the IDs
   // TESTING:
-  
-
+  //    There should be one or more datasets shown in list
+  //    The Submit button should return with an alert error if no display checkboxes are checked
+  //    There should be a 'default' Units Selection present (This point is debatable -- the other option
+  //        would be leave blank and force the user to select). I chose Silva108--Simple Taxonomy as default.
+  //    The 'Display Output' section should list the items from public/constants.js
+  //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
+  //        checked by default.
+  console.log('START BODY>> in route/visualization.js /unit_selection');
+  console.log(req.body);
+  console.log('<<END BODY');
   var db = req.db;
   var dsets = {};
   var accumulator = {
@@ -139,7 +167,6 @@ router.post('/unit_selection',  function(req, res) {
   		
   	}
     GLOBAL.dataset_accumulator = accumulator;
-    GLOBAL.chosen_id_name_hash=chosen_id_name_hash;
     //console.log(dataset_accumulator);
     
 
@@ -250,7 +277,7 @@ function IsJsonString(str) {
 //
 //
 //
-function create_countstable(b) {
+function create_counts_table(b) {
   // Intend to create (write) counts_table page here
   // That has a timestamp appeneded to the file name
   // so that it is unique to the user.
@@ -259,7 +286,7 @@ function create_countstable(b) {
   // Also I am having trouble understanding how this page (with a unique name)
   // will be seen by the router.   AAV
 
-  console.log(b)
+  //console.log(b)
   var ms = +new Date  // millisecs since the epoch
   var page = 'user_pages/counts_table'+ms+'.html'
   // taxa_ckbx_toggle: 'all',
@@ -267,6 +294,7 @@ function create_countstable(b) {
   // include_nas: 'yes',
   // tax_depth: 'phylum',
   // unit_choice: 'taxa_silva108_simple',
+  // datasets: '{"ids":["135","126","122"],"names":["SLM_NIH_Bv4v5--01_Boonville","SLM_NIH_Bv4v5--02_Spencer","SLM_NIH_Bv4v5--03_Junction_City_East"]}',
   // normalization: 'no',
   // visuals: [ 'counts_table' ],
   // selection_obj: '{
@@ -285,13 +313,11 @@ function create_countstable(b) {
   var matrix      = '';
   var q0          = ""
   
-    console.log(obj)
-    console.log(units)
-    console.log(dataset_ids)
-    console.log(chosen_id_name_hash)
+   // console.log(obj)
+   // console.log(units)
+   // console.log(dataset_ids)
   for(n in dataset_ids) {
-    console.log(dataset_ids[n])
-    console.log(chosen_id_name_hash.names[dataset_ids[n]].index)
+    //console.log(dataset_ids[n])
   }
   for(n in dataset_ids) {
   //   if(b[n] === 'selection_obj'){
@@ -318,6 +344,13 @@ function create_alphadiversity() {
 //
 //
 function create_barcharts() {
+
+}
+//
+// NORMALIZATION
+//
+function normalize_counts(norm_type, obj) {
+  console.log('in normalization: '+norm_type)
 
 }
 
