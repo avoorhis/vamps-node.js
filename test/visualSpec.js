@@ -50,5 +50,41 @@ describe('visualization functionality', function(){
 	//       });
 	//   });
 
+})
+
+describe('projects pages', function(){
+	it('Text on index_projects page', function(done){
+    request(app)
+    	.get('/projects/index_projects')
+      .expect(200)
+      .end(function (err, res) {
+        res.text.should.include('VAMPS Projects Listing');
+        res.text.should.include('<a href="/projects/2"');
+        done();
+      });
+		});
+		
+		it('The index_projects page should show all projects');
+		it('The index_projects page should show logged in user');
+		
+		it('Text on projects/2 page', function(done){
+	    request(app)
+	    	.get('/projects/2')
+	      .expect(200)
+	      .end(function (err, res) {
+	        res.text.should.include('Project Profile');
+	        res.text.should.include('<li>2</li>');
+	        done();
+	      });
+			});
+		
+		
+})
+// var myCode = require('../routes/visuals/visualization.js')
+
+describe('functions tests', function(){
+    it ('isLoggedIn should redirect to "/" if user not logged in');
+    it ('isLoggedIn should show the page? if user logged in');
+    it ('IsJsonString should parse str');
 
 })
