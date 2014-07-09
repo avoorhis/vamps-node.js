@@ -199,7 +199,7 @@ router.get('/index_visuals',  function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  res.render('visuals/index_visuals',{ title   : 'Show Datasets!',  
+  res.render('visuals/index_visuals', { title   : 'Show Datasets!',  
                                  rows    : JSON.stringify(DATASETS),
                                  constants    : JSON.stringify(req.C),
                                  user: req.user  
