@@ -1,7 +1,8 @@
 // visualization.js
 
-var check_all = function( ) {
-	$('.dataset_check').prop('checked', true);
+var check_all = function(clicked, checked) {
+	$('.dataset_check').prop('checked', checked);
+	clicked.siblings('input').prop('checked', checked);
 }
 
 var toggle_plus_img = function(my_img, display) {
@@ -21,11 +22,18 @@ $(document).ready(function () {
 	    e.preventDefault();
 			var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
 			datasets_per_pr.toggle();
-			toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
-			check_all();
-			$(this).siblings('input').prop('checked', true);
-			// $(':checkbox[name=dataset_ids\[\]]').prop('checked', this.checked);
-	    
+			var my_img = $(this).children();
+			// toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
+			$(this).children()
+			if (datasets_per_pr.css('display') == 'block') {
+				my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
+				check_all($(this), true);	    							
+			}
+			else {
+				my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+				check_all($(this), false);	    							
+			}
+			
 	    return false;
 	});
 	
