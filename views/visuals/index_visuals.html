@@ -5,14 +5,10 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
 </head>
-<body onload="load_project_select('<%= rows %>');">
+<body>
 <div id='header' class='header'></div>
 <div id='' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
 <div id='' class='login_link'><%=  include ../add_ins/login_line.html %></div>
-
-
-
-
 
 <div class='title'>Community Visualization</div>
 
@@ -23,44 +19,32 @@
     &nbsp;
   </div>
 
-
-
   <div class="grid_9"> 
-
-
-
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
     <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
       
-      <table border='1'><tr>
-      <td>
-          Dataset Selection
-      </td>
-      <td>
-        <input type='button' value='Next: Unit Selection' onclick='check_viz_selection_pg1(this.form);return false;'>
-      </td>
-      </tr>
-      <tr>
-      <td>
-        <div id='projects_select_div'></div>
-      </td>
-      </tr>
+      <table border='1'>
+        <tr>
+          <td>
+              Dataset Selection
+          </td>
+          <td>
+            <input type='button' value='Next: Unit Selection' onclick='check_viz_selection_pg1(this.form);return false;'>
+          </td>
+          </tr>
+          <tr>
+          <td>
+            <div id='projects_select_div'><% include all_projects_datasets_list.html %></div>
+          </td>
+        </tr>
       </table>
     </form>
-
-
-
-
   </div>  <!-- end grid_9 -->
-
-
-
 </div>    <!-- end container_12 -->
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script src="http://code.jquery.com/jquery-2.0.0.js"></script>
 <script type="text/javascript" src="/javascripts/visualization.js"></script>
-<script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 </body>
 </html>
