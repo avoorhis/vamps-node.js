@@ -3,8 +3,7 @@
 var express = require('express');
 var router = express.Router();
 
-// don't think this will work as you are unable to
-// do multiple instantiations.
+
 var DATASET = {
 	var id,
 	var full_name,
