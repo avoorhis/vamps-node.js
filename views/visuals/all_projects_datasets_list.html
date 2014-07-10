@@ -6,7 +6,7 @@
     <li>
       <label class='project-select'>
         <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
-          <img alt='plus' src='/images/tree_plus.gif' width='10'/>
+          <img alt='plus' src='/images/tree_plus.gif'/>
         </a>
         <input type='checkbox' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
         <a href=''><%= pname %></a>
@@ -23,7 +23,7 @@
             
             <li>
               <label class='dataset-select' name='xx' >
-                 <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' value='<%= pass_thru_value %>'/>
+                 <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= pass_thru_value %>'/>
                  <%= dname %>
               </label>
             </li>            
