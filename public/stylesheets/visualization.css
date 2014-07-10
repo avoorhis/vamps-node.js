@@ -1,5 +1,6 @@
 /*=== Visualization === */
-.display_none{
+
+.display_none, .datasets_per_pr {
   /*    hidden*/
     display:none;
 }
