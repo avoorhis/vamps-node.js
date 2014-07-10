@@ -1,5 +1,18 @@
 // visualization.js
 
+var check_all = function( ) {
+	$('.dataset_check').prop('checked', true);
+}
+
+var toggle_plus_img = function(my_img, display) {
+	if (display == 'block') {
+		my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
+	}
+	else {
+		my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+	}
+};
+
 $(document).ready(function () {
 	// alert("HERE");
   
@@ -8,13 +21,10 @@ $(document).ready(function () {
 	    e.preventDefault();
 			var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
 			datasets_per_pr.toggle();
-			var my_img = $(this).children();
-			if (datasets_per_pr.css('display') == 'block') {
-				my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
-			}
-			else {
-				my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
-			}
+			toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
+			check_all();
+			$(this).siblings('input').prop('checked', true);
+			// $(':checkbox[name=dataset_ids\[\]]').prop('checked', this.checked);
 	    
 	    return false;
 	});
