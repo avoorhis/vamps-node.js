@@ -8,6 +8,9 @@
 //
 function toggle_simple_taxa()
 {
+  // page: unit_selection
+  // units: taxonomy
+  // toggles domain checkboxes on/off
   var boxes = document.getElementsByClassName('simple_taxa_ckbx');
   var i;
   if (boxes[0].checked === false) {
@@ -28,14 +31,11 @@ function toggle_simple_taxa()
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box(file_id) {
-
-  var file = '';
+  // Using ajax it will show the requested units module
   
-  // case functions are in unit_selectors.js
-  
+  var file = '';    
   var partial_name = '/visuals/partials/'+file_id;
 
-  
   xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET",partial_name, true);
   xmlhttp.onreadystatechange=function(){
@@ -54,7 +54,8 @@ function get_requested_units_selection_box(file_id) {
 // CHECK_VIZ Page 1
 //
 function check_viz_selection_pg1(thisform) {
-
+  // simple function to check if user has not selected any datasets.
+  // alerts and returns if not.
   var x = thisform["dataset_ids[]"];
   var gotone = false;
   for (var i=0; i<x.length; i++)
@@ -74,7 +75,8 @@ function check_viz_selection_pg1(thisform) {
 // CHECK_VIZ Page 2
 //
 function check_viz_selection_pg2(thisform) {
-
+  // simple function to check if user has not selected any visuals.
+  // alerts and returns if not.
   var x = thisform["visuals[]"];
   var gotone = false;
   for (var i=0; i<x.length; i++)

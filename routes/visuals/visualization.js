@@ -47,7 +47,7 @@ router.post('/view_selection',  function(req, res) {
     //if(req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
     //if(req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
     //if(req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
-    //if(req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alphadiversity(req.body);}
+    //if(req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
   }
   res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
@@ -234,9 +234,82 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
     });
 });
 router.get('/partials/tax_silva108_custom',  function(req, res) {
-    res.render('visuals/partials/tax_silva108_custom',{
-      doms: req.C.DOMAINS
+  var db = req.db;
+  // This query should be run only once and the results stored in memory
+  // The GLOBAL keyword allows this
+  if(typeof tax_silva108_custom_rows === 'undefined'){
+    var tax_query = "SELECT domain,phylum,klass,orderx,family,species,strain from taxonomies as t";
+    tax_query +=    " JOIN domains  as dom on (t.domain_id=dom.id)"
+    tax_query +=    " JOIN phylums  as phy on (t.phylum_id=phy.id)"
+    tax_query +=    " JOIN klasses  as kla on (t.klass_id=kla.id)"
+    tax_query +=    " JOIN orders   as ord on (t.order_id=ord.id)"
+    tax_query +=    " JOIN families as fam on (t.family_id=fam.id)"
+    tax_query +=    " JOIN species  as spe on (t.species_id=spe.id)"
+    tax_query +=    " JOIN strains  as str on (t.strain_id=str.id)"
+    console.log('running custom tax query')
+    db.query(tax_query, function(err, rows, fields){
+      if(err) {
+        throw err;
+      }else{
+          tax_silva108_custom_rows = {};
+          tax_silva108_custom_rows.domains={};
+          tax_silva108_custom_rows.domains.phyla={};
+          // tax_silva108_custom_rows.klasses=[];
+          // tax_silva108_custom_rows.orders=[];
+          // tax_silva108_custom_rows.families=[];
+          // tax_silva108_custom_rows.genera=[];
+          // tax_silva108_custom_rows.species=[];
+          // tax_silva108_custom_rows.strains=[];
+          for(var k in rows){
+            //console.log(rows[k])
+            domain = rows[k].domain;
+            phylum = rows[k].phylum;
+            klass  = rows[k].klass;
+            order  = rows[k].order;
+            family = rows[k].family;
+            genus  = rows[k].genus;
+            specie= rows[k].species;
+            strain = rows[k].strain;
+            
+
+            if(tax_silva108_custom_rows.domains.indexOf(domain) < 0) {
+              tax_silva108_custom_rows.domains.push(domain);
+            }else{
+              if(tax_silva108_custom_rows.domains.phyla.indexOf(phylum) < 0) {
+                tax_silva108_custom_rows.domains.phyla.push(phylum);
+              }else{
+                
+              }
+            }
+
+            if(tax_silva108_custom_rows.phyla.indexOf(phylum) < 0) {
+//              tax_silva108_custom_rows.phyla[phylum] = {domain:domain};
+            }
+            if(tax_silva108_custom_rows.klasses.indexOf(klass) < 0) {
+//              tax_silva108_custom_rows.klasses[klass]  = {domain:domain,phylum:phylum};
+            }
+ //           tax_silva108_custom_rows.orders[order]   = {domain:domain,phylum:phylum,klass:klass};
+ //           tax_silva108_custom_rows.families[family]= {domain:domain,phylum:phylum,klass:klass,order:order};
+ //           tax_silva108_custom_rows.genera[genus]   = {domain:domain,phylum:phylum,klass:klass,order:order,family:family};
+            if(specie != ''){
+ //             tax_silva108_custom_rows.species[specie] = {domain:domain,phylum:phylum,klass:klass,order:order,family:family,genus:genus};
+            }
+ //           tax_silva108_custom_rows.strains[strain] = {domain:domain,phylum:phylum,klass:klass,order:order,family:family,genus:genus,species:specie};
+          }
+          GLOBAL.tax_silva108_custom_rows = tax_silva108_custom_rows;
+          console.log(tax_silva108_custom_rows)
+          res.render('visuals/partials/tax_silva108_custom',{
+            rows: tax_silva108_custom_rows
+          });
+      }
     });
+  }else{
+    console.log('already have custom tax query')
+    res.render('visuals/partials/tax_silva108_custom',{
+            rows: tax_silva108_custom_rows
+    });
+  }
+  
 });
 router.get('/partials/tax_gg_custom',  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
@@ -279,7 +352,7 @@ function IsJsonString(str) {
     return true;
 }
 //
-//
+// COUNTS TABLE
 //
 function create_counts_table(b) {
   // Intend to create (write) counts_table page here
@@ -291,8 +364,8 @@ function create_counts_table(b) {
   // will be seen by the router.   AAV
 
   //console.log(b)
-  var ms = +new Date  // millisecs since the epoch
-  var page = 'user_pages/counts_table'+ms+'.html'
+  var ms = +new Date;  // millisecs since the epoch
+  var page = 'user_pages/counts_table'+ms+'.html';
   // taxa_ckbx_toggle: 'all',
   // domain: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
   // include_nas: 'yes',
@@ -313,39 +386,27 @@ function create_counts_table(b) {
   //console.log(chosen_id_name_hash)
   var obj         = JSON.parse(b.selection_obj);
   var dataset_ids = obj.dataset_ids;
-  var units       = b.unit_choice
+  var units       = b.unit_choice;
   var matrix      = '';
-  var q0          = ""
+  var q0          = "";
   
-   // console.log(obj)
-   // console.log(units)
-   // console.log(dataset_ids)
-  for(n in dataset_ids) {
-    //console.log(dataset_ids[n])
-  }
-  for(n in dataset_ids) {
-  //   if(b[n] === 'selection_obj'){
-  //    console.log(b[n])
-  //  }
-  //  q0 = ""
-  }
-
+   
 }
 //
-//
+// HEATMAP
 //
 function create_heatmap(b) {
   console.log('in create_hetamap')
   console.log(b)
 }
 //
+// ALPHA DIVERSITY
 //
-//
-function create_alphadiversity() {
+function create_alpha_diversity() {
 
 }
 //
-//
+//  BAR CHARTS
 //
 function create_barcharts() {
 
@@ -382,14 +443,16 @@ function normalize_counts(norm_type, obj) {
   selection_obj.seq_freqs = new_obj;
   return JSON.stringify(selection_obj);
 }
-
+//
+//  MAX DS COUNT
+//
 function get_max_dataset_count(obj) {
   // Gets the maximum dataset count from the 'seq_freqs' in selection_obj
   var max_count = 0;
-  for(n in selection_obj.seq_freqs) {
+  for(n in obj.seq_freqs) {
     var sum=0;
-    for (var i = selection_obj.seq_freqs[n].length; i--;) {
-      sum += selection_obj.seq_freqs[n][i];
+    for (var i = obj.seq_freqs[n].length; i--;) {
+      sum += obj.seq_freqs[n][i];
     }
     if(sum > max_count) {
       max_count = sum;
