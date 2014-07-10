@@ -1,15 +1,33 @@
 // visualization.js
 
 $(document).ready(function () {
+	// alert("HERE");
+  
 	$('.datasets_per_pr').addClass( "display_none" );
 	$('a.project_toggle').click(function(e){
 	    e.preventDefault();
-			$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
+			var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+			datasets_per_pr.toggle();
+	    // alert(datasets_per_pr.css('display'));
+			
+			if (datasets_per_pr.css('display') == 'block') {
+				$(this).children().attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
+			}
+			else {
+				$(this).children().attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+			}
+				
 			// alert($(this.parentNode).find( "img" ));
 			// $(this.parentNode).find( "img" ).css( "border", "3px double red" );
-			$(this.parentNode).find( "img" ).attr('src', '/images/tree_minus.gif').attr('alt', 'minus');
-	    
-			// alert($(this.parentNode).text());
+			// $(this.parentNode).find( "img" ).attr('src', '/images/tree_minus.gif').attr('alt', 'minus');
+	    // alert($(this.parentNode).css('display'));
+	    // alert(datasets_per_pr.css('display'));
+			
+			// alert($(this).children().attr('src'));
+			// /images/tree_plus.gif
+			// alert($(this).attr('class'));
+			// alert($(this).children('ul').className);
+			
 			// .innerHTML = "<img alt='minus' src='/images/tree_minus.gif' width='10' />";
 	    
 	    return false;
