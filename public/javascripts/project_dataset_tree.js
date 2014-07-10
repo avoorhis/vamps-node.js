@@ -45,7 +45,7 @@ function load_project_select(projects){
   for (i in rows.projects){
     pname   = rows.projects[i].name
     datasets = rows.projects[i].datasets
-   // alert(i)
+    
     html += "<li>"
     html += "<label class='project-select' >"
     html += "  <a href='#'  id='"+ pname +"_toggle'"
@@ -94,7 +94,6 @@ function open_datasets(project)
   toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
 
-
     // uncheck project
     if (cbs[0].checked) {
       document.getElementById(project+'--pj-id').checked = false;
@@ -136,7 +135,6 @@ function set_check_project(project)
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
-
     }
   }
   if (have_acheck){
