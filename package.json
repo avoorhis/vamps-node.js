@@ -25,6 +25,6 @@
     "zombie": "~2.0.0-alpha31",   
     "istanbul": "latest",
     "nodemon": "latest",
-    "bcrypt-nodejs" : "latest"
+    "bcrypt-nodejs": "latest"
   }
 }
