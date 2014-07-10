@@ -1,37 +1,22 @@
 // visualization.js
 
-var check_all = function(clicked, isChecked) {
-	$('.dataset_check').prop('checked', isChecked);
-	clicked.siblings('input').prop('checked', isChecked);
-	if(clicked.attr("type") == "checkbox") {
-		// alert(clicked.prop('checked'));
-		// alert(clicked.attr("data-type"));
-		
-		clicked.prop('checked', true);
-    
-	}
-	return false;
-	
-	// if ()
-}
-
 var toggle_checking_all = function(clicked) {
-	$(clicked.parentNode.parentNode).find('input').prop('checked', function(idx, oldProp) {
-	            return !oldProp;
-	        });
+	$(clicked.parentNode.parentNode).find('input').prop('checked', 
+			function(idx, oldProp) {
+	    	return !oldProp;
+	    });
 	return false;
 };
 
-
 var toggle_datasets = function(clicked) {
 	// var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
-	$(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
+	$(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
 	return false;
 };
 
 var toggle_plus_img = function(clicked) {
 	var my_img = $(clicked).children();
-	if ($(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr').css('display') == 'block') {
+	if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'block') {
 		my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
 	}
 	else {
@@ -68,6 +53,27 @@ $(document).ready(function () {
 		
     return false;
 	});
+	
+	$('input.project_toggle').click(function(e){
+    e.preventDefault();
+		// alert($(this).siblings('a').find('img').attr('src')); /images/tree_plus.gif
+		if ($(this).siblings('a').find('img').attr('src') == "/images/tree_plus.gif") {
+			$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').show();		
+			$(this).siblings('a').find('img').attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
+			$(this.parentNode.parentNode).find('.datasets_per_pr').find("input").prop('checked', true);
+			$(this).prop('checked', true);
+		}
+		else {
+			$(this).prop('checked', true);
+		}
+		
+		
+		// toggle_checking_all(this);
+		// $(this).prop('checked', true);
+		// alert($(this).prop('checked'));
+    return false;
+	});
+	
 })
 
 //
