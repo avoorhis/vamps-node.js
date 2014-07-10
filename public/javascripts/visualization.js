@@ -4,9 +4,17 @@ $(document).ready(function () {
 	$('.datasets_per_pr').addClass( "display_none" );
 	$('a.project_toggle').click(function(e){
 	    e.preventDefault();
-	$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
+			$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
+			// alert($(this.parentNode).find( "img" ));
+			// $(this.parentNode).find( "img" ).css( "border", "3px double red" );
+			$(this.parentNode).find( "img" ).attr('src', '/images/tree_minus.gif').attr('alt', 'minus');
+	    
+			// alert($(this.parentNode).text());
+			// .innerHTML = "<img alt='minus' src='/images/tree_minus.gif' width='10' />";
+	    
 	    return false;
 	});
+	
 })
 
 //
