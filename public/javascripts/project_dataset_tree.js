@@ -1,5 +1,3 @@
-
-
 //
 // TOGGLE_SELECTED_DATASETS
 //
@@ -34,6 +32,9 @@ function toggle_selected_datasets(project)
   }
 }
 
+
+/**
+* HTML with ejs instead
 //
 //  LOAD PROJECT SELECT
 //
@@ -45,7 +46,7 @@ function load_project_select(projects){
   for (i in rows.projects){
     pname   = rows.projects[i].name
     datasets = rows.projects[i].datasets
-   // alert(i)
+    
     html += "<li>"
     html += "<label class='project-select' >"
     html += "  <a href='#'  id='"+ pname +"_toggle'"
@@ -80,6 +81,7 @@ function load_project_select(projects){
   //alert(html)
   var div = document.getElementById('projects_select_div').innerHTML = html;
 }
+*/
 
 //
 //  OPEN DATASETS
@@ -93,7 +95,6 @@ function open_datasets(project)
   cbs = ds_div.getElementsByTagName('input');
   toggle = document.getElementById(project+'_toggle');
   if(ds_div.style.display == 'inline'){
-
 
     // uncheck project
     if (cbs[0].checked) {
@@ -136,7 +137,6 @@ function set_check_project(project)
   for(var i=0; i < cbs.length; i++) {
     if(cbs[i].checked){
       have_acheck = true
-
     }
   }
   if (have_acheck){
@@ -145,6 +145,7 @@ function set_check_project(project)
     document.getElementById(project+'--pj-id').checked = false;
   }
 }
+
 
 
 
