@@ -1,7 +1,12 @@
-
-
 // visualization.js
 
+$(document).ready(function () {
+	$('a.project_toggle').click(function(e){
+	    e.preventDefault();
+	$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
+	    return false;
+	});
+})
 
 //
 // TOGGLE_SIMPLE_TAXA
