@@ -37,7 +37,8 @@
               </tr>
               <tr>
                 <td class='small_font'>
-                  Normalization:<hr>
+                  Normalization: <%= JSON.parse(body).normalization %>
+                  <hr>
                 </td>
               </tr>
               <tr>
@@ -59,9 +60,7 @@
             <% b = JSON.parse(body) %>
           	<% for(var i in b.visuals) { %>
                 <% link = b.visuals[i]  %>
-
                 <a href='<%= link %>' target='_blank'><%= b.visuals[i] %></a><br>
-
             <% } %>
           </div>
         </td>
