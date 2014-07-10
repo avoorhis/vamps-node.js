@@ -34,6 +34,9 @@ function toggle_selected_datasets(project)
   }
 }
 
+
+/**
+* HTML with ejs instead
 //
 //  LOAD PROJECT SELECT
 //
@@ -80,6 +83,7 @@ function load_project_select(projects){
   //alert(html)
   var div = document.getElementById('projects_select_div').innerHTML = html;
 }
+*/
 
 //
 //  OPEN DATASETS
