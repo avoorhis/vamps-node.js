@@ -1,7 +1,43 @@
-
-
 // visualization.js
 
+var check_all = function(clicked, checked) {
+	$('.dataset_check').prop('checked', checked);
+	clicked.siblings('input').prop('checked', checked);
+}
+
+var toggle_plus_img = function(my_img, display) {
+	if (display == 'block') {
+		my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
+	}
+	else {
+		my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+	}
+};
+
+$(document).ready(function () {
+	// alert("HERE");
+  
+	$('.datasets_per_pr').addClass( "display_none" );
+	$('a.project_toggle').click(function(e){
+	    e.preventDefault();
+			var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+			datasets_per_pr.toggle();
+			var my_img = $(this).children();
+			// toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
+			$(this).children()
+			if (datasets_per_pr.css('display') == 'block') {
+				my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
+				check_all($(this), true);	    							
+			}
+			else {
+				my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+				check_all($(this), false);	    							
+			}
+			
+	    return false;
+	});
+	
+})
 
 //
 // TOGGLE_SIMPLE_TAXA
