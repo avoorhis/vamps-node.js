@@ -1,9 +1,33 @@
 // visualization.js
 
-var check_all = function(clicked, checked) {
-	$('.dataset_check').prop('checked', checked);
-	clicked.siblings('input').prop('checked', checked);
+var check_all = function(clicked, isChecked) {
+	$('.dataset_check').prop('checked', isChecked);
+	clicked.siblings('input').prop('checked', isChecked);
+	if(clicked.attr("type") == "checkbox") {
+		// alert(clicked.prop('checked'));
+		// alert(clicked.attr("data-type"));
+		
+		clicked.prop('checked', true);
+    
+	}
+	return false;
+	
+	// if ()
 }
+
+var toggle_checking_all = function(clicked) {
+	$(clicked.parentNode.parentNode).find('input').prop('checked', function(idx, oldProp) {
+	            return !oldProp;
+	        });
+	return false;
+};
+
+
+var toggle_datasets = function(clicked) {
+	var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+	datasets_per_pr.toggle();
+	return false;
+};
 
 var toggle_plus_img = function(my_img, display) {
 	if (display == 'block') {
@@ -12,30 +36,42 @@ var toggle_plus_img = function(my_img, display) {
 	else {
 		my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
 	}
+	return false;	
 };
 
 $(document).ready(function () {
 	// alert("HERE");
-  
+ 
 	$('.datasets_per_pr').addClass( "display_none" );
 	$('a.project_toggle').click(function(e){
-	    e.preventDefault();
-			var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
-			datasets_per_pr.toggle();
-			var my_img = $(this).children();
-			// toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
-			$(this).children()
-			if (datasets_per_pr.css('display') == 'block') {
-				my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
-				check_all($(this), true);	    							
-			}
-			else {
-				my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
-				check_all($(this), false);	    							
-			}
-			
-	    return false;
+    e.preventDefault();
+		toggle_datasets(this);
+		toggle_checking_all(this);
+		
+		// var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+		// datasets_per_pr.toggle();
+		// var my_img = $(this).children();
+		// // toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
+		//     var $checkboxes = $(this).parent().find('input[type=checkbox]');
+		//     $checkboxes.prop('checked', $(this).is(':checked'));
+
+
+		// if (datasets_per_pr.css('display') == 'block') {
+		// 	my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
+		// 	check_all($(this), true);	    							
+		// }
+		// else {
+		// 	my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+		// 	check_all($(this), false);	    							
+		// }
+		
+    return false;
 	});
+	// $('input.project_box_toggle').click(function(e){
+	// 	
+	//     return false;
+	// });
+	
 	
 })
 
