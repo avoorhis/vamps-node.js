@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 //var all_datasets = require('../../config/all_datasets')
-
+var util = require('util');
 //var helpers = require('./helpers')
 var app = express();
 
@@ -233,10 +233,15 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
         doms: req.C.DOMAINS
     });
 });
+//
+//
+//
 router.get('/partials/tax_silva108_custom',  function(req, res) {
   var db = req.db;
   // This query should be run only once and the results stored in memory
   // The GLOBAL keyword allows this
+  // This taxonomy JSON object can be used for other taxonomies so eventually will be
+  // move from here ...
   if(typeof tax_silva108_custom_rows === 'undefined'){
     var tax_query = "SELECT domain,phylum,klass,orderx,family,species,strain from taxonomies as t";
     tax_query +=    " JOIN domains  as dom on (t.domain_id=dom.id)"
@@ -252,52 +257,83 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         throw err;
       }else{
           tax_silva108_custom_rows = {};
-          tax_silva108_custom_rows.domains={};
-          tax_silva108_custom_rows.domains.phyla={};
-          // tax_silva108_custom_rows.klasses=[];
-          // tax_silva108_custom_rows.orders=[];
-          // tax_silva108_custom_rows.families=[];
-          // tax_silva108_custom_rows.genera=[];
-          // tax_silva108_custom_rows.species=[];
-          // tax_silva108_custom_rows.strains=[];
+
           for(var k in rows){
             //console.log(rows[k])
             domain = rows[k].domain;
-            phylum = rows[k].phylum;
-            klass  = rows[k].klass;
-            order  = rows[k].order;
-            family = rows[k].family;
-            genus  = rows[k].genus;
-            specie= rows[k].species;
-            strain = rows[k].strain;
-            
+            phylum = rows[k].phylum  || 'phylum_NA';
+            klass  = rows[k].klass   || 'class_NA';
+            order  = rows[k].order   || 'order_NA';
+            family = rows[k].family  || 'family_NA';
+            genus  = rows[k].genus   || 'genus_NA';
+            species= rows[k].species || 'species_NA';
+            strain = rows[k].strain  || 'strain_NA';
 
-            if(tax_silva108_custom_rows.domains.indexOf(domain) < 0) {
-              tax_silva108_custom_rows.domains.push(domain);
-            }else{
-              if(tax_silva108_custom_rows.domains.phyla.indexOf(phylum) < 0) {
-                tax_silva108_custom_rows.domains.phyla.push(phylum);
+            if(domain in tax_silva108_custom_rows) {  
+              if(phylum in tax_silva108_custom_rows[domain]) {
+                if(klass in tax_silva108_custom_rows[domain][phylum]) {
+                  if(order in tax_silva108_custom_rows[domain][phylum][klass]) {
+                    if(family in tax_silva108_custom_rows[domain][phylum][klass][order]) {
+                      if(genus in tax_silva108_custom_rows[domain][phylum][klass][order][family]) {
+                        if(species in tax_silva108_custom_rows[domain][phylum][klass][order][family][genus]) {
+                          if(strain in tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species]) {
+                            // must be dup
+                          }else{
+                            tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                          }
+                        }else{
+                          tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                          tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                        }
+                      }else{
+                        tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+                        tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                        tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                      }
+                    }else{
+                      tax_silva108_custom_rows[domain][phylum][klass][order][family] = {};
+                      tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+                      tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                      tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                    }
+                  }else{
+                    tax_silva108_custom_rows[domain][phylum][klass][order] = {};
+                    tax_silva108_custom_rows[domain][phylum][klass][order][family] = {};
+                    tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+                    tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                    tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                  }
+                }else{
+                  tax_silva108_custom_rows[domain][phylum][klass] = {};
+                  tax_silva108_custom_rows[domain][phylum][klass][order] = {};
+                  tax_silva108_custom_rows[domain][phylum][klass][order][family] = {};
+                  tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+                  tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                  tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
+                }
               }else{
-                
+                tax_silva108_custom_rows[domain][phylum] = {};
+                tax_silva108_custom_rows[domain][phylum][klass] = {};
+                tax_silva108_custom_rows[domain][phylum][klass][order] = {};
+                tax_silva108_custom_rows[domain][phylum][klass][order][family] = {};
+                tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+                tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+                tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
               }
+            }else{
+              tax_silva108_custom_rows[domain] = {};
+              tax_silva108_custom_rows[domain][phylum] = {};
+              tax_silva108_custom_rows[domain][phylum][klass] = {};
+              tax_silva108_custom_rows[domain][phylum][klass][order] = {};
+              tax_silva108_custom_rows[domain][phylum][klass][order][family] = {};
+              tax_silva108_custom_rows[domain][phylum][klass][order][family][genus] = {};
+              tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species] = {};
+              tax_silva108_custom_rows[domain][phylum][klass][order][family][genus][species][strain] = 1;
             }
-
-            if(tax_silva108_custom_rows.phyla.indexOf(phylum) < 0) {
-//              tax_silva108_custom_rows.phyla[phylum] = {domain:domain};
-            }
-            if(tax_silva108_custom_rows.klasses.indexOf(klass) < 0) {
-//              tax_silva108_custom_rows.klasses[klass]  = {domain:domain,phylum:phylum};
-            }
- //           tax_silva108_custom_rows.orders[order]   = {domain:domain,phylum:phylum,klass:klass};
- //           tax_silva108_custom_rows.families[family]= {domain:domain,phylum:phylum,klass:klass,order:order};
- //           tax_silva108_custom_rows.genera[genus]   = {domain:domain,phylum:phylum,klass:klass,order:order,family:family};
-            if(specie != ''){
- //             tax_silva108_custom_rows.species[specie] = {domain:domain,phylum:phylum,klass:klass,order:order,family:family,genus:genus};
-            }
- //           tax_silva108_custom_rows.strains[strain] = {domain:domain,phylum:phylum,klass:klass,order:order,family:family,genus:genus,species:specie};
           }
           GLOBAL.tax_silva108_custom_rows = tax_silva108_custom_rows;
-          console.log(tax_silva108_custom_rows)
+          //console.log(util.inspect(tax_silva108_custom_rows, {showHidden: false, depth: null}));
+          
           res.render('visuals/partials/tax_silva108_custom',{
             rows: tax_silva108_custom_rows
           });
