@@ -1,0 +1,33 @@
+<ul>
+  <% all_pr_dat = JSON.parse(rows).projects %>
+  <% for (i in all_pr_dat) { %>
+    <% pname = all_pr_dat[i].name %>
+    <% datasets = all_pr_dat[i].datasets %>
+    <li>
+      <label class='project-select'>
+        <a href='#'  id='<%= pname %>_toggle'>
+          <img alt='plus' src='/images/tree_plus.gif' width='10'/>
+        </a>
+        <input type='checkbox' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
+        <a href=''><%= pname %></a>
+      </label>
+      <ul>
+        <div id='<%= pname %>_ds_div' class='display_none'>
+          <% for (k in datasets) { %>
+            <% did = datasets[k].did %>
+            <% dname = datasets[k].dname %>
+            <% pd = pname + '--' + dname %>
+            <% pass_thru_value = did + '--' + pname + '--' + dname %>
+            <!-- Andy, why do we need to send both dname and did? -->
+            
+            <li>
+              <label class='dataset-select' name='xx' >
+                 <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' value='<%= pass_thru_value %>'/>
+                 <%= dname %>
+              </label>
+            </li>            
+          <% } %>          
+        </div>
+      </ul>
+  <% }%>
+</ul>
