@@ -1,3 +1,9 @@
-<%   var domains = doms.domains; %>
+
+
 <h1>To Do 1</h1>
 <input type='hidden' value='taxa_silva108_custom' name='unit_choice' />
+<ul>
+<% for(i in rows) { %>
+	<li><%= rows[i].domain %><li>
+<% } %>
+</ul>
