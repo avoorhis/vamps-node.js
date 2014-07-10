@@ -24,8 +24,8 @@ var toggle_checking_all = function(clicked) {
 
 
 var toggle_datasets = function(clicked) {
-	var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
-	datasets_per_pr.toggle();
+	// var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+	$(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr').toggle();
 	return false;
 };
 
@@ -67,12 +67,6 @@ $(document).ready(function () {
 		
     return false;
 	});
-	// $('input.project_box_toggle').click(function(e){
-	// 	
-	//     return false;
-	// });
-	
-	
 })
 
 //
