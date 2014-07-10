@@ -1,9 +1,10 @@
 /*=== Visualization === */
 
-.display_none, .datasets_per_pr {
+.display_none {
   /*    hidden*/
     display:none;
 }
+
 #output_selection_div_id {
     border: 1px solid gray;
     list-style-type: none;
