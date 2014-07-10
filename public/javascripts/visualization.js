@@ -29,8 +29,9 @@ var toggle_datasets = function(clicked) {
 	return false;
 };
 
-var toggle_plus_img = function(my_img, display) {
-	if (display == 'block') {
+var toggle_plus_img = function(clicked) {
+	var my_img = $(clicked).children();
+	if ($(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr').css('display') == 'block') {
 		my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
 	}
 	else {
@@ -47,7 +48,7 @@ $(document).ready(function () {
     e.preventDefault();
 		toggle_datasets(this);
 		toggle_checking_all(this);
-		
+		toggle_plus_img(this);
 		// var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
 		// datasets_per_pr.toggle();
 		// var my_img = $(this).children();
