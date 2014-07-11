@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-//var all_datasets = require('../../config/all_datasets')
-var util = require('util');
 //var helpers = require('./helpers')
 var app = express();
 
@@ -33,27 +31,88 @@ router.post('/view_selection',  function(req, res) {
     req.body.selection_obj = normalize_counts(req.body.normalization, req.body.selection_obj);
   }
   console.log('START BODY>> in route/visualization.js /view_selection');
-  console.log(req.body);
+  //console.log(req.body);
   console.log('<<END BODY');
   var links = {};
+  var matrix = {};  // count matrix that can go directly into count table:
+  matrix.seq_ids = req.body.selection_obj.dataset_ids;
+  test_dataset_ids = ["3","4","5","6","7","8"]
+  test_unit_assoc_tax_silva108_id = [ [96,214,82,214,137],[96,214,82,214],[96,214,82,214,137],[96,214,82,214,137],[96,214,84,82,214,112,137],[96,214,82,214,112] ]
+  test_seq_freqs =                  [ [2,103,8,203,3],    [2,13,4,20],    [1,100,1,177,1],    [1,206,6,390,1],    [2,30,4,1,45,1,1],         [ 1,120,2,211,1] ]
+  //    seq_ids  : [id1,id2,id3...],
+  //    tax_id1 : [tct1,0,tid3...],
+  //    tax_id2 : [tct4,tct5,tct6...],
+  //    tax_id3 : [tct7,tct8,0...]
+  //    ....
+  //  }
   
-  
+  old_sid = 'x'
+  tids = [96,214,82,214,137];
+  vals = [2,103,8,203,3]
+
+  // for(i in tids) {
+  //   id = tids[i]
+  //   if(id in tmp){
+  //     tmp[id][0] += vals[i]
+  //   }else{  
+  //     tmp[id] = [vals[i]]
+  //   }
+  // }
+ counts = {}
+  for(n in test_unit_assoc_tax_silva108_id) {
+        
+        tmp = {};        
+        counts[test_dataset_ids[n]] = [];        
+        for(i in test_unit_assoc_tax_silva108_id[n]) {
+           
+            if(test_unit_assoc_tax_silva108_id[n][i] in tmp){                
+              tmp[ test_unit_assoc_tax_silva108_id[n][i] ] += test_seq_freqs[n][i];               
+            }else{              
+              tmp[ test_unit_assoc_tax_silva108_id[n][i] ] = test_seq_freqs[n][i];
+            }            
+        }
+        counts[test_dataset_ids[n] ].push(tmp)
+   }
+  //console.log(JSON.stringify(counts,null,4))
+//   { '82': 8, '96': 2, '137': 3, '214': 306 }
+// { '82': 4, '96': 2, '214': 33 }
+// { '82': 1, '96': 1, '137': 1, '214': 277 }
+// { '82': 6, '96': 1, '137': 1, '214': 596 }
+// { '82': 1, '84': 4, '96': 2, '112': 1, '137': 1, '214': 75 }
+// { '82': 2, '96': 1, '112': 1, '214': 331 }
+  tmp = {}
+  for(k in counts) {
+    did = counts[k];
+    
+    for(i in counts[k]){
+      console.log(counts[k][i])
+      for(n in counts[k][i]){
+        if(){
+
+        }else{
+          tmp[counts[k][i][n]] = ['x']
+        }
+      }
+    }
+
+  }
+  console.log(tmp)
   // Get matrix data here
   // What is the SQL?
   // The visuals have been selected so now we need to create them
   // so they can be shown fast when selected
   for(var k in req.body.visuals) {
-    if(req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.body);}
+    //if(req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
     //if(req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
     //if(req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
     //if(req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
     //if(req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
   }
-  res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
-                                  body: JSON.stringify(req.body), 
-                                   user: req.user  
-              });
+ // res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization', 
+  //                                body: JSON.stringify(req.body), 
+ //                                  user: req.user  
+ //             });
 });
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
@@ -200,7 +259,7 @@ router.get('/index_visuals',  function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   res.render('visuals/index_visuals', { title   : 'Show Datasets!',  
-                                 rows    : JSON.stringify(DATASETS),
+                                 rows    : JSON.stringify(ALL_DATASETS),
                                  constants    : JSON.stringify(req.C),
                                  user: req.user  
                                   });    
@@ -249,6 +308,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     tax_query +=    " JOIN klasses  as kla on (t.klass_id=kla.id)"
     tax_query +=    " JOIN orders   as ord on (t.order_id=ord.id)"
     tax_query +=    " JOIN families as fam on (t.family_id=fam.id)"
+    tax_query +=    " JOIN genera   as gen on (t.genus_id=gen.id)"
     tax_query +=    " JOIN species  as spe on (t.species_id=spe.id)"
     tax_query +=    " JOIN strains  as str on (t.strain_id=str.id)"
     console.log('running custom tax query')
@@ -390,18 +450,20 @@ function IsJsonString(str) {
 //
 // COUNTS TABLE
 //
-function create_counts_table(b) {
-  // Intend to create (write) counts_table page here
-  // That has a timestamp appeneded to the file name
+function create_counts_table(db,body) {
+  // Intend to create (write) counts_table page here.
+  // The page should have a timestamp and/or username appeneded to the file name
   // so that it is unique to the user.
   // The page should be purged when? -- after a certain length of time
   // or when the user leaves the page.
-  // Also I am having trouble understanding how this page (with a unique name)
-  // will be seen by the router.   AAV
+  // Also I am having trouble understanding how this page (with a dynamic/unique name)
+  // will be seen and accessed by the router.   AAV
 
   //console.log(b)
   var ms = +new Date;  // millisecs since the epoch
   var page = 'user_pages/counts_table'+ms+'.html';
+  var selection_obj         = JSON.parse(body.selection_obj);
+  
   // taxa_ckbx_toggle: 'all',
   // domain: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
   // include_nas: 'yes',
@@ -410,23 +472,125 @@ function create_counts_table(b) {
   // datasets: '{"ids":["135","126","122"],"names":["SLM_NIH_Bv4v5--01_Boonville","SLM_NIH_Bv4v5--02_Spencer","SLM_NIH_Bv4v5--03_Junction_City_East"]}',
   // normalization: 'no',
   // visuals: [ 'counts_table' ],
-  // selection_obj: '{
-  //  "dataset_ids":["41","127"],
-  //  "seq_ids":[[1001,1002,1004,1005],[1002,1003,1004,1005,1007]],
-  //  "seq_freqs":[[2,53,4,101],[137,1,2,240,1]],
-  //  "unit_assoc":{
-  //    "tax_silva108_id":[[96,214,82,214],[214,84,82,214,137]],
-  //    "tax_gg_id":[[null,null,null,null],[null,null,null,null,null]],
-  //    "med_node_id":[[null,null,null,null],[null,null,null,null,null]],
-  //    "otu_id":[[null,null,null,null],[null,null,null,null,null]]}}' }
+   test_chosen_id_names_hash = {ids:["127","41"],names:["BPC_MRB_C--dataset244","XX_power_data"]} // purposely put these ids in reverse for testing
+   test_selection_obj = {
+    dataset_ids : ["41","127"],
+    seq_ids     : [[1001,1002,1004,1005],[1002,1003,1004,1005,1007]],
+    seq_freqs   : [[2,53,4,101],[137,1,2,240,1]],
+    unit_assoc  : {
+      tax_silva108_id : [[96,214,82,214],[214,84,82,214,137]],
+   }};
+   console.log('TEST OBJ');
+   console.log(test_selection_obj);
   //console.log(chosen_id_name_hash)
-  var obj         = JSON.parse(b.selection_obj);
-  var dataset_ids = obj.dataset_ids;
-  var units       = b.unit_choice;
-  var matrix      = '';
-  var q0          = "";
   
-   
+  var dataset_ids = selection_obj.dataset_ids;
+  var units       = body.unit_choice;
+  
+    
+  var matrix = create_matrix(db,test_selection_obj,test_chosen_id_names_hash,'tax_silva108_simple');
+
+}
+//
+// C R E A T E  M A T R I X
+//
+function create_matrix(db,obj,ds_names,units) {
+  
+  // should matrix be a JSON object or a string?
+  // this matrix will be central to the visualizations: counts_table, bar_charts and any pie charts
+  var matrix      = {};
+  matrix.dset_names = [];
+  uitems = units.split('_');
+  if(uitems[0] === 'tax' && uitems[1] === 'silva108'){  //covers both simple and custom
+    uassoc = 'tax_silva108_id';
+  }
+  domains = ['Archaea', 'Bacteria', 'Eukarya', 'Organelle'];
+  tax_depth = 'species'
+  var fields = [];
+  var joins = '';
+  var and_domain_in = '';
+  if(tax_depth === 'domain') {
+    fields = ['domain'];
+    joins = " JOIN domains  as dom on (t.domain_id=dom.id)";
+  } else if(tax_depth === 'phylum') {
+    fields = ['domain','phylum'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+  } else if(tax_depth === 'class')  {
+    fields = ['domain','phylum','klass'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+  } else if(tax_depth === 'order')  {
+    fields = ['domain','phylum','klass','orderx'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
+  } else if(tax_depth === 'family') {
+    fields = ['domain','phylum','klass','orderx','family'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
+    joins += " JOIN families as fam on (t.family_id=fam.id)";
+  } else if(tax_depth === 'genus') {
+    fields = ['domain','phylum','klass','orderx','family','genus'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
+    joins += " JOIN families as fam on (t.family_id=fam.id)";
+    joins += " JOIN genera   as gen on (t.genus_id=gen.id)";
+  } else if(tax_depth === 'species') {
+    fields = ['domain','phylum','klass','orderx','family','genus','species'];
+    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
+    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
+    joins += " JOIN families as fam on (t.family_id=fam.id)";
+    joins += " JOIN genera   as gen on (t.genus_id=gen.id)";
+    joins += " JOIN species  as spe on (t.species_id=spe.id)";
+  };
+  for(index in obj.dataset_ids){
+    
+    did = obj.dataset_ids[index]; 
+    dname =  ds_names.names[ds_names.ids.indexOf(did)];
+    matrix.dset_names.push(dname);
+    // for any units:
+    //matrix = {
+    //  dset_names : [ds1,ds2,ds3]
+    //  u1 : [cnt1,cnt2,cnt3],
+    //  u2 : [cnt4,cnt5,cnt6],
+    //  u3 : [cnt7,cnt8,cnt9]
+    //}
+    if(domains.length < 5){
+      domains = domains.join("','");
+      and_domain_in = " AND domain in ('"+domains+"')";
+    }
+    //var tax_query = "SELECT id,taxonomy from taxonomies where taxonomy_id in (" + obj.unit_assoc[uassoc][index] + ")";
+    
+
+    var tax_query = "SELECT t.id, concat_ws(';',"+fields+") as tax from taxonomies as t";
+    tax_query     += joins;
+    tax_query     += " WHERE t.id in ("+obj.unit_assoc[uassoc][index] +")";
+    tax_query     += and_domain_in;
+    console.log(tax_query)
+    db.query(tax_query, function(err, rows, fields){
+      if(err) {
+        throw err;
+      }else{
+        for(r in rows){
+          console.log(rows[r])
+          tax_array[rows[r]]
+        }
+      }
+    });
+  }
+  
+
+
+
 }
 //
 // HEATMAP
