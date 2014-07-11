@@ -114,12 +114,10 @@ function get_requested_units_selection_box(file_id) {
   xmlhttp.onreadystatechange=function(){
          if (xmlhttp.readyState==4 && xmlhttp.status==200){
            string=xmlhttp.responseText;
-           //alert(partial_name)
            var div = document.getElementById('units_select_div').innerHTML = string;
          }
   }
   xmlhttp.send();
-
 }
 
 
