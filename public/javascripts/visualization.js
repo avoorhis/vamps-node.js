@@ -13,14 +13,13 @@ var toggle_datasets = function(clicked) {
   return false;
 };
 
-var minus_img  = function(my_img) {
+var minus_img = function(my_img) {
 	my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');        
 }
 
 var plus_img  = function(my_img) {
 	my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');        
 }
-
 
 var toggle_plus_img = function(clicked) {
   var my_img = $(clicked).children();
@@ -33,6 +32,12 @@ var toggle_plus_img = function(clicked) {
   return false;  
 };
 
+var uncheck_closed = function(parent_place) {
+	if (parent_place.find('.datasets_per_pr').css('display') == 'none') {
+		parent_place.find('input').prop('checked', false);	
+	}
+}
+
 $(document).ready(function () {
   // alert("HERE");
  	
@@ -44,11 +49,7 @@ $(document).ready(function () {
     toggle_datasets(this);
     toggle_checking_all(this);
     toggle_plus_img(this);
-		// The closed list always should be unchecked.
-    if ($(this.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'none') {
-			$(this.parentNode.parentNode).find('input').prop('checked', false);	
-		}
-    
+		uncheck_closed($(this.parentNode.parentNode));    
     return false;
   });
   
