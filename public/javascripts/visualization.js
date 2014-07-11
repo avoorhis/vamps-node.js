@@ -76,12 +76,8 @@ $(document).ready(function () {
 		if (!is_visible(datasets_per_pr)) {
 		  datasets_per_pr.show();        
 		  minus_img(checkbox.siblings('a').find('img'));
-		  datasets_per_pr.find('input').attr('checked', true);
 		}        
-		
-		if (is_visible(datasets_per_pr)) {
-			toggle_checking_datasets(checkbox, datasets_per_pr);
-		}
+		toggle_checking_datasets(checkbox, datasets_per_pr);
 	});  
 })
 
