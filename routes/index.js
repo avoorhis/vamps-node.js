@@ -2,10 +2,9 @@ var express = require('express');
 var router = express.Router();
 
 
-GLOBAL.DATASETS={}
 ds = require('./load_all_datasets')
-rs = ds.get_datasets(function(DATASETS){
-	GLOBAL.DATASETS = DATASETS
+rs = ds.get_datasets(function(ALL_DATASETS){
+	GLOBAL.ALL_DATASETS = ALL_DATASETS
 	
 	/* GET home page. */
 	router.get('/', function(req, res) {
