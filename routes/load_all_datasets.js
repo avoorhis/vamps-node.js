@@ -16,10 +16,10 @@ module.exports.get_datasets = function(callback){
 	  		throw err;
 		  }else{
 				var datasetsByProject = {}	
-				var DATASETS = {}
-	  		DATASETS.projects = []
+				var ALL_DATASETS = {}
+	  		ALL_DATASETS.projects = []
 				//datasetsByProject.projects = []
-				console.log('GETTING DATASETS FROM DB-3')
+				console.log('GETTING ALL DATASETS FROM DB-3')
 	  		for(i in rows){
 	  			project = rows[i].project
 	  			did = rows[i].did
@@ -41,11 +41,11 @@ module.exports.get_datasets = function(callback){
 	  				did = datasetsByProject[p][d].did
 	  				tmp.datasets.push({ did:did, dname:ds })
 	  			}
-	  			DATASETS.projects.push(tmp)
+	  			ALL_DATASETS.projects.push(tmp)
 	  		}
 	  		
 	  	}
-	  	callback(DATASETS);
+	  	callback(ALL_DATASETS);
 	});
 };
 
