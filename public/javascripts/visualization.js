@@ -1,79 +1,139 @@
 // visualization.js
 
 var toggle_checking_all = function(clicked) {
-	$(clicked.parentNode.parentNode).find('input').prop('checked', 
-			function(idx, oldProp) {
-	    	return !oldProp;
-	    });
-	return false;
+  $(clicked.parentNode.parentNode).find('input').prop('checked', 
+      function(idx, oldProp) {
+        return !oldProp;
+      });
+  return false;
 };
 
 var toggle_datasets = function(clicked) {
-	// var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
-	$(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
-	return false;
+  // var datasets_per_pr = $(clicked.parentNode.parentNode).children('ul').children('.datasets_per_pr');
+  $(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
+  return false;
 };
 
 var toggle_plus_img = function(clicked) {
-	var my_img = $(clicked).children();
-	if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'block') {
-		my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');				
-	}
-	else {
-		my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
-	}
-	return false;	
+  var my_img = $(clicked).children();
+  if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'block') {
+    my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');        
+  }
+  else {
+    my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+  }
+  return false;  
 };
 
 $(document).ready(function () {
-	// alert("HERE");
+  // alert("HERE");
  
-	$('.datasets_per_pr').addClass( "display_none" );
-	$('a.project_toggle').click(function(e){
-    e.preventDefault();
-		toggle_datasets(this);
-		toggle_checking_all(this);
-		toggle_plus_img(this);
+  $('.datasets_per_pr').addClass( "display_none" );
+  $('a.project_toggle').click(function(){
+    // e.preventDefault();
+    toggle_datasets(this);
+    toggle_checking_all(this);
+    toggle_plus_img(this);
 		// var datasets_per_pr = $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr');
-		// datasets_per_pr.toggle();
-		// var my_img = $(this).children();
-		// // toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
-		//     var $checkboxes = $(this).parent().find('input[type=checkbox]');
-		//     $checkboxes.prop('checked', $(this).is(':checked'));
+    // var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
+    if ($(this.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'none') {
+			// datasets_per_pr.find('input').prop('checked', false);	
+			$(this.parentNode.parentNode).find('input').prop('checked', false);	
+		}
+    
+		// alert($(this.parentNode.parentNode).find('input').prop('checked'));
+
+    // datasets_per_pr.toggle();
+    // var my_img = $(this).children();
+    // // toggle_plus_img($(this).children(), datasets_per_pr.css('display'));
+    //     var $checkboxes = $(this).parent().find('input[type=checkbox]');
+    //     $checkboxes.prop('checked', $(this).is(':checked'));
 
 
-		// if (datasets_per_pr.css('display') == 'block') {
-		// 	my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
-		// 	check_all($(this), true);	    							
-		// }
-		// else {
-		// 	my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
-		// 	check_all($(this), false);	    							
-		// }
-		
+    // if (datasets_per_pr.css('display') == 'block') {
+    //   my_img.attr('src', '/images/tree_minus.gif').attr('alt', 'minus');  
+    //   check_all($(this), true);                    
+    // }
+    // else {
+    //   my_img.attr('src', '/images/tree_plus.gif').attr('alt', 'plus');
+    //   check_all($(this), false);                    
+    // }
+    
     return false;
-	});
-	
-	$('input.project_toggle').click(function(e){
-    e.preventDefault();
-		// alert($(this).siblings('a').find('img').attr('src')); /images/tree_plus.gif
-		if ($(this).siblings('a').find('img').attr('src') == "/images/tree_plus.gif") {
-			$(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').show();		
-			$(this).siblings('a').find('img').attr('src', '/images/tree_minus.gif').attr('alt', 'minus');	
-			$(this.parentNode.parentNode).find('.datasets_per_pr').find("input").prop('checked', true);
-			$(this).prop('checked', true);
-		}
-		else {
-			$(this).prop('checked', true);
-		}
-		
-		
-		// toggle_checking_all(this);
-		// $(this).prop('checked', true);
-		// alert($(this).prop('checked'));
-    return false;
-	});
-	
+  });
+  
+  jQuery('input.project_toggle').click(function() {
+        // alert($(this.parentNode.parentNode).find('.datasets_per_pr').css('display'));
+        var checkbox = jQuery(this),
+            datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
+
+        if (datasets_per_pr.css('display') == 'none') {
+          datasets_per_pr.show();          
+          checkbox.siblings('a').find('img').attr('src', '/images/tree_minus.gif').attr('alt', 'minus');  
+          datasets_per_pr.find('input').attr('checked', true);
+        }        
+        if (datasets_per_pr.css('display') == 'block') {
+          if (checkbox.prop('checked')) {
+	          // alert(checkbox.prop('checked'));
+	          datasets_per_pr.find('input').prop('checked', true);	
+	// .prop('checked', 
+	// 					      function(idx, oldProp) {
+	// 					        return !oldProp;
+	// 					      })
+	// .attr('checked', false);	
+					}
+					else {
+	          // alert("NOT: checkbox.prop('checked')");
+	          datasets_per_pr.find('input').prop('checked', false);	
+	// .prop('checked', 
+	// 					      function(idx, oldProp) {
+	// 					        return !oldProp;
+	// 					      })
+	// .attr('checked', true);							
+					}
+					
+					
+        }
+
+        // datasets_per_pr.slideToggle('slow');
+					// alert(datasets_per_pr.find('input').prop('checked'));
+     });
+  
+  // $('input.project_toggle').click(function(e)// {
+  //     e.preventDefault();
+  //     // alert($(this).siblings('a').find('img').attr('src')); /images/tree_plus.gif
+  //     if ($(this).siblings('a').find('img').attr('src') == "/images/tree_plus.gif") {
+  //       $(this.parentNode.parentNode).children('ul').children('.datasets_per_pr').show();    
+  //       $(this).siblings('a').find('img').attr('src', '/images/tree_minus.gif').attr('alt', 'minus');  
+  //       // $(this.parentNode.parentNode).find('.datasets_per_pr').find("input").prop('checked', true);
+  //       // $(this).prop('checked', true);
+  //     }
+  //     // else {
+  //     //   $(this).prop('checked', true);
+  //     // }
+  //     
+  //     if (!$(this).is(':checked')) {
+  //       alert("!$(this).is(':checked')");
+  //     }
+  //     else
+  //     {
+  //       alert($(this).prop('checked'));
+  //     }
+  //     
+  //     toggle_checking_all(this);
+  //     if (!$(this).is(':checked')) {
+  //       alert("!$(this).is(':checked')");
+  //     }
+  //     else
+  //     {
+  //       alert($(this).prop('checked'));
+  //     }
+  //     
+  //     // $(this).prop('checked', true);
+  //     // alert($(this).prop('checked'));
+  //     return false;
+  //   });
+  
 })
 
 //
