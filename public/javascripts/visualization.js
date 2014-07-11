@@ -1,5 +1,12 @@
 // visualization.js
 
+var is_visible = function(div_to_check) {
+	if (div_to_check.css('display') == 'block') 
+	{	return true; }
+	else
+	{ return false; }
+}
+
 var toggle_checking_all = function(clicked) {
   $(clicked.parentNode.parentNode).find('input').prop('checked', 
      function(idx, oldProp) {
@@ -32,7 +39,7 @@ var plus_img  = function(my_img) {
 
 var toggle_plus_img = function(clicked) {
   var my_img = $(clicked).children();
-  if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').css('display') == 'block') {
+  if (is_visible($(clicked.parentNode.parentNode).find('.datasets_per_pr'))) {
     minus_img(my_img);
   }
   else {
@@ -42,7 +49,7 @@ var toggle_plus_img = function(clicked) {
 };
 
 var uncheck_closed = function(parent_place) {
-	if (parent_place.find('.datasets_per_pr').css('display') == 'none') {
+	if (!is_visible(parent_place.find('.datasets_per_pr'))) {
 		parent_place.find('input').prop('checked', false);	
 	}
 }
@@ -66,13 +73,13 @@ $(document).ready(function () {
 		var checkbox = $(this),
 			datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
 
-		if (datasets_per_pr.css('display') == 'none') {
+		if (!is_visible(datasets_per_pr)) {
 		  datasets_per_pr.show();        
 		  minus_img(checkbox.siblings('a').find('img'));
 		  datasets_per_pr.find('input').attr('checked', true);
 		}        
 		
-		if (datasets_per_pr.css('display') == 'block') {
+		if (is_visible(datasets_per_pr)) {
 			toggle_checking_datasets(checkbox, datasets_per_pr);
 		}
 	});  
