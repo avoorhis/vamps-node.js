@@ -8,6 +8,15 @@ var toggle_checking_all = function(clicked) {
   return false;
 };
 
+var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+  if (pr_checkbox.prop('checked')) {
+   datasets_per_pr.find('input').prop('checked', true);	
+	}
+	else {
+   datasets_per_pr.find('input').prop('checked', false);	
+	}
+};
+
 var toggle_datasets = function(clicked) {
   $(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
   return false;
@@ -62,13 +71,9 @@ $(document).ready(function () {
 		  minus_img(checkbox.siblings('a').find('img'));
 		  datasets_per_pr.find('input').attr('checked', true);
 		}        
+		
 		if (datasets_per_pr.css('display') == 'block') {
-		  if (checkbox.prop('checked')) {
-		   datasets_per_pr.find('input').prop('checked', true);	
-			}
-			else {
-		   datasets_per_pr.find('input').prop('checked', false);	
-			}
+			toggle_checking_datasets(checkbox, datasets_per_pr);
 		}
 	});  
 })
