@@ -1,25 +1,9 @@
-<html>
-<head>
-  <title><%- title %></title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
-</head>
-<body>
-<div id='header' class='header'></div>
-<div id='' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div id='' class='login_link'><%=  include ../add_ins/login_line.html %></div>
+<% include ../add_ins/begin.ejs %>
 
 <div class='title'>Community Visualization</div>
 
 <div class='subtitle'>Dataset Selection Page</div>
 
-<div class='container_12'>
-  <div class="grid_3">
-    &nbsp;
-  </div>
-
-  <div class="grid_9">
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
     <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
@@ -40,13 +24,7 @@
         </tr>
       </table>
     </form>
-  </div>  <!-- end grid_9 -->
-</div>    <!-- end container_12 -->
-
-<script type="text/javascript" src="/javascripts/global.js"></script>
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="/javascripts/visualization.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
-
-</body>
-</html>
+<% include ../add_ins/end.ejs %>
