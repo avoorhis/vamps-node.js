@@ -1,19 +1,4 @@
-<html>
-<head>
-  <title>TITLE</title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-</head>
-<!-- The projects list isn't dynamic, so should be just plain HTML,
-this way it could be cached and tested -->
-<body>
-<div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div id='' class='login_link'><%=  include ../add_ins/login_line.html %></div>
-<div class='title'>VAMPS Projects Listing</div>
-<div class='subtitle'></div>
-<div class='content'>
+<% include ../add_ins/begin.ejs %>
+  <div class='title'>VAMPS Projects Listing</div>
   <div id='project_list_div' class='general_table' ><% include all_projects_list %></div>
-</div>
-</body>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-</html>
+<% include ../add_ins/end.ejs %>
