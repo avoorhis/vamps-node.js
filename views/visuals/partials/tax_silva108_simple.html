@@ -1,6 +1,6 @@
 
 <h3>Silva(v108) Simple Taxonomy Selection</h3>
-<% if(typeof doms === 'undefined') { %>
+<% if (typeof doms === 'undefined') { %>
 <%   var domains = JSON.parse(constants).DOMAINS.domains; %>
 <% } else { %>
 <%   domains = doms.domains %>
@@ -12,7 +12,7 @@
       <input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle' checked='checked' value='all'  onclick="toggle_simple_taxa()"  \> Toggle Domains
     </span>
   </li>
-  <% for (i in domains) { %>  
+  <% for (i in domains) { %>
     <% domain = domains[i].name %>
     <li>
     <label class='taxa-select'>

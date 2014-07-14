@@ -11,18 +11,18 @@
 <div class='title'>VAMPS User List</div>
 <div class='subtitle'></div>
 
-<div class='content'>  
+<div class='content'>
 <% user_rows = rows %>
 <div id='user_list_div' class='general_table' >
   <ul>
-  <% for (i in user_rows) { %>
+  <% for (i=0; i < user_rows.length; i++) { %>
     <li value='<%= user_rows[i].username %>'>
       <%= user_rows[i].username %>
       <%= ' -- ' %>
       <%= user_rows[i].first_name %>
       <%= user_rows[i].last_name %>
     </li>
-  
+
   <% } %>
   </ul>
 </div>
