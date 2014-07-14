@@ -1,27 +1,11 @@
-<html>
-<head>
-  <title>TITLE</title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <script type="text/javascript" src="/javascripts/global.js"></script>
-</head>
-
-<body onload="initialize('<%= JSON.stringify( user ) %>');">
-<div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div class='login_link'></div>
-<div class='title'  class=''>VAMPS</div>
-<div class='subtitle'  class=''></div>
-<div class='content'>
-<div class="page-header text-center">
-    <h1><span class="fa fa-anchor"></span>Profile Page</h1>
-</div>
+<% include ../add_ins/begin.ejs %>
+<div class="title fa fa-anchor">Profile Page</div>
   <!-- USER INFORMATION -->
     <div class="col-sm-6">
       <div class="well">
         <h3><span class="fa fa-user"></span></h3>
 
           <p>
-
             <strong>UserID</strong>: <%= user.id %><br>
             <strong>username</strong>: <%= user.username %><br>
             <strong>First Name</strong>: <%= user.first_name %><br>
@@ -29,12 +13,9 @@
             <strong>Email</strong>: <%= user.email %><br>
             <strong>Institution</strong>: <%= user.institution %><br>
             <strong>Security Level</strong>: <%= user.security_level %><br>
-
           </p>
 
       </div>
     </div>
 
-</div>
-</body>
-</html>
+    <% include ../add_ins/end.ejs %>
