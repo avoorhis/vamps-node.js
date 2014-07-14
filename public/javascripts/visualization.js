@@ -29,19 +29,21 @@ function toggle_simple_taxa()
 //
 function get_requested_units_selection_box(file_id) {
   // Using ajax it will show the requested units module
-  
-  var file = '';    
+
+  var file = '';
   var partial_name = '/visuals/partials/'+file_id;
 
-  xmlhttp = new XMLHttpRequest();
+  var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET",partial_name, true);
-  xmlhttp.onreadystatechange=function(){
-         if (xmlhttp.readyState==4 && xmlhttp.status==200){
-           string=xmlhttp.responseText;
+  xmlhttp.onreadystatechange = function() {
+         if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+           var string = xmlhttp.responseText;
+           //alert(partial_name)
            var div = document.getElementById('units_select_div').innerHTML = string;
          }
-  }
+  };
   xmlhttp.send();
+
 }
 
 
