@@ -1,92 +1,62 @@
-<html>
-<head>
-  <title><%- title %></title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
-</head>
-<body onload="show_post_array('<%= body %>');">
-<div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div class='login_link' ><%=  include ../add_ins/login_line.html %></div>
-<div class='title'>Community Visualization</div>
-<div class='subtitle'>Units Selection Page</div>
+<% include ../add_ins/begin.ejs %>
+  <!-- <body onload="show_post_array('<%= body %>');"> -->
+  <div class='title'>Community Visualization</div>
+  <div class='subtitle'>Units Selection Page</div>
+      <!-- autocomplete="off" clears the checkboxes on page refresh -->
+      <form id='' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
 
-<div class='container_12'>
-  <div class="grid_3">
-    &nbsp;
-  </div>
-  <div class="grid_9">
-
-    <!-- autocomplete="off" clears the checkboxes on page refresh -->
-    <form id='' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
-
-      <table class='single_border' border='1'><tr>
-
-      <td>
-        <div id='units_select_choices_div'>
-          <% include partials/unit_selection_choices.html %>
-        </div>
-      </td>
-      <td>
-        <input type='button' value='Next: Get Graphics' onclick='check_viz_selection_pg2(this.form);return false;'>
-      </td>
-
-      </tr>
-      <tr>
-
-      <td class='small_font general_table'>
-        <div id='units_select_div'>
-          <!-- Start with default: taxa_silva108_simple-->
-          <% include partials/tax_silva108_simple.html %>
-        </div>
-      </td>
-
-      <td class='td_top'>
-        <table class='single_border' border='0'>
+        <table class='single_border' border='1'>
           <tr>
-            <td class='small_font'>
-              <div id='show_selected_datasets_div' class='general_table' >
-                <% include partials/show_selected_datasets.html %>
-              </div>
-
-            </td>
-          </tr>
-
-          <tr>
-            <td class='small_font'>
-              <div id='show_normalization_div' class='general_table' >
-                <% include partials/show_normalization_choices.html %>
+            <td>
+              <div id='units_select_choices_div'>
+                <% include partials/unit_selection_choices.html %>
               </div>
             </td>
-          </tr>
+            <td>
+              <input type='button' value='Next: Get Graphics' onclick='check_viz_selection_pg2(this.form);return false;'>
+            </td>
 
+          </tr>
           <tr>
-            <td class='small_font'>
-              <div id='visuals_output_choices_div' class='general_table' >
-                <% include partials/show_visual_output_choices.html %>
+            <td class='small_font general_table'>
+              <div id='units_select_div'>
+                <!-- Start with default: taxa_silva108_simple-->
+                <% include partials/tax_silva108_simple.html %>
               </div>
             </td>
+            <td class='td_top'>
+              <table class='single_border' border='0'>
+                <tr>
+                  <td class='small_font'>
+                    <div id='show_selected_datasets_div' class='general_table' >
+                      <% include partials/show_selected_datasets.html %>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class='small_font'>
+                    <div id='show_normalization_div' class='general_table' >
+                      <% include partials/show_normalization_choices.html %>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class='small_font'>
+                    <div id='visuals_output_choices_div' class='general_table' >
+                      <% include partials/show_visual_output_choices.html %>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
           </tr>
-
         </table>
-
-      </td>
-
-
-
-      </tr></table>
-      <input type='hidden' value='<%= chosen_id_name_hash %>' name='chosen_id_name_hash'  >
-      <input type='hidden' value='<%= selection_obj %>'       name='selection_obj'/>
-    </form>
-
-  </div>  <!-- end grid_9 -->
-</div>    <!-- end container_12 -->
-</div>
-<div id='DEBUG_div'></div>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/visualization.js"></script>
-<script type="text/javascript" src="/javascripts/taxonomy_tree.js"></script>
-<script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
-</body>
-</html>
+        <input type='hidden' value='<%= chosen_id_name_hash %>' name='chosen_id_name_hash'  >
+        <input type='hidden' value='<%= selection_obj %>'       name='selection_obj'/>
+      </form>
+  <div id='DEBUG_div'></div>
+  <script type="text/javascript" src="/javascripts/visualization.js"></script>
+  <script type="text/javascript" src="/javascripts/taxonomy_tree.js"></script>
+  <script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
+<% include ../add_ins/end.ejs %>
+  
