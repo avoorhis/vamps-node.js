@@ -3,7 +3,7 @@
   <title>VAMPS COUNTS TABLE</title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
   <link rel="stylesheet" type="text/css" href="stylesheets/960.css">
-  
+
 </head>
 
 <body onload="show_post_array('<%= body %>');">
@@ -12,18 +12,18 @@
 <div class='login_link' ><%=  include ../add_ins/login_line.html %></div>
 <div class='title'  >VAMPS Counts Table</div>
 <div class='subtitle'  ></div>
-<div class='container_12'>  
+<div class='container_12'>
   <div class="grid_3">&nbsp;</div>
   <div class="grid_9">
-  	<% obj = JSON.parse(body) %>
+    <% obj = JSON.parse(body) %>
     <li><%= obj.post_values %>
     <li><%= obj.post_values %>
-  	
-    <% for( p in obj.post_values ) { %>
-  	 <%= obj.post_values[p] %><br>
-  	<% } %>
+
+    <% for ( p in obj.post_values ) { %>
+     <%= obj.post_values[p] %><br>
+    <% } %>
   </div>  <!-- end grid_9 -->
-</div>    <!-- end container_12 -->  
+</div>    <!-- end container_12 -->
 <script type="text/javascript" src="/javascripts/global.js"></script>
 
 </body>
