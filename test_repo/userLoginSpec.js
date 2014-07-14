@@ -86,7 +86,7 @@ describe('User Account', function() {
       var user = MySQLUser;
       var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name, last_name, email, institution )";
       insertQuery +=    " VALUES ('" + user.username +"','"+ user.password +"','"+ user.firstname +"','"+ user.lastname +"','"+ user.email +"','"+ user.institution +"')";
-  
+
       console.log(insertQuery);
       db.query(insertQuery,function(err, rows){
           should.not.exist(err);
@@ -94,12 +94,12 @@ describe('User Account', function() {
           //(rows.insertId).should.be.a.Number;
 
           //rows.insertId.should.eql(1234);
-  
+
       });
       done();
-  
+
    });
-  
+
    it('Finds A User By Username', function(done) {
       Account.findOne({ username: '12345' }, function(err, account) {
         account.username.should.eql('12345');
@@ -108,6 +108,6 @@ describe('User Account', function() {
       done();
    });
 
-  
+
 
 });
