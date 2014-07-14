@@ -1,79 +1,58 @@
-<html>
-<head>
-  <title><%- title %></title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
-</head>
-<body onload="show_post_array('<%= body %>');">
-<div id='header' class='header'></div>
-<div id='main_menu' class='main_menu'><%=  include ../add_ins/main_menu.html %></div>
-<div class='login_link'><%=  include ../add_ins/login_line.html %></div>
+<% include ../add_ins/begin.ejs %>
+<!-- <body onload="show_post_array('<%= body %>');"> -->
+  <div class='title'>Community Visualization</div>
+  <div class='subtitle'>Display Output Page</div>
 
-<div class='title'>Community Visualization</div>
+      <table border='1'>
+        <tr>
+          <th>Input Items</th>
+          <th>Things to do here</th>
+          <th>Selected Visuals<br><span class='small_font'>(pages load in a separate window)</span></th>
 
-<div class='subtitle'>Display Output Page</div>
+        </tr>
+        <tr>
+          <td>
+            <div id='show_what_is_chosen_div'>
+              <table>
+                <tr>
+                  <td class='small_font'>
+                    <div id='show_selected_datasets_div' class='general_table' >
+                      <% include partials/show_selected_datasets.html %>
+                    </div><hr>
+                  </td>
+                </tr>
+                <tr>
+                  <td class='small_font'>
+                    Normalization: <%= JSON.parse(body).normalization %>
+                    <hr>
+                  </td>
+                </tr>
+                <tr>
+                  <td class='small_font'>
+                    Units Selected:
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td>
+            <div id='show_download_buttons_div'>
+              <input type='button', id='' name='' value='Download Fasta File' /><br>
+              <input type='button', id='' name='' value='Download Counts Matrix' />
+            </div>
+          </td>
+          <td>
+            <div id='show_visuals_links_div'>
+              <% b = JSON.parse(body) %>
+              <% for (var i in b.visuals) { %>
+                  <% link = b.visuals[i]  %>
+                  <a href='<%= link %>' target='_blank'><%= b.visuals[i] %></a><br>
+              <% } %>
+            </div>
+          </td>
 
-<div class='container_12'>
-  <div class="grid_3">&nbsp;</div>
-  <div class="grid_9">
-    <table border='1'>
-      <tr>
-        <th>Input Items</th>
-        <th>Things to do here</th>
-        <th>Selected Visuals<br><span class='small_font'>(pages load in a separate window)</span></th>
-
-      </tr>
-      <tr>
-        <td>
-          <div id='show_what_is_chosen_div'>
-            <table>
-              <tr>
-                <td class='small_font'>
-                  <div id='show_selected_datasets_div' class='general_table' >
-                    <% include partials/show_selected_datasets.html %>
-                  </div><hr>
-                </td>
-              </tr>
-              <tr>
-                <td class='small_font'>
-                  Normalization: <%= JSON.parse(body).normalization %>
-                  <hr>
-                </td>
-              </tr>
-              <tr>
-                <td class='small_font'>
-                  Units Selected:
-                </td>
-              </tr>
-            </table>
-          </div>
-        </td>
-        <td>
-          <div id='show_download_buttons_div'>
-            <input type='button', id='' name='' value='Download Fasta File' /><br>
-            <input type='button', id='' name='' value='Download Counts Matrix' />
-          </div>
-        </td>
-        <td>
-          <div id='show_visuals_links_div'>
-            <% b = JSON.parse(body) %>
-            <% for (var i in b.visuals) { %>
-                <% link = b.visuals[i]  %>
-                <a href='<%= link %>' target='_blank'><%= b.visuals[i] %></a><br>
-            <% } %>
-          </div>
-        </td>
-
-      </tr>
-
-
-    </table>
-    <a href="#" onclick='javascript:history.go(-1);return false;'>GoBack</a> to the previous page.
-  </div>  <!-- end grid_9 -->
-</div>    <!-- end container_12 -->
-<div id='DEBUG_div'></div>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-
-</body>
-</html>
+        </tr>
+      </table>
+      <a href="#" onclick='javascript:history.go(-1);return false;'>GoBack</a> to the previous page.
+  <div id='DEBUG_div'></div>
+<% include ../add_ins/end.ejs %>
