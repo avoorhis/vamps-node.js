@@ -12,7 +12,7 @@ a {
   color: #00B7FF;
 }
 #header {
-  
+
     background:#a8b6c0 url('../images/helix100_6.png') left no-repeat;
     position:relative;
     top:0px;
@@ -64,7 +64,7 @@ vertical-align:top;
 
 .main_menu ul {
     float:left;
-    margin: 0;  
+    margin: 0;
     padding: 0;
     width:200px;
     list-style-type: none;
@@ -72,16 +72,16 @@ vertical-align:top;
 
 .main_menu ul li a {
     text-decoration: none;
-    color: white;  
+    color: white;
     padding: 10.5px 11px;
     background-color: #005555;
     display:block;
 }
-  
+
 .main_menu ul li a:visited {
     color: white;
 }
-  
+
 .main_menu ul li a:hover, .main_menu ul li .current {
     color: black;
     background-color: #a8b6c0;
