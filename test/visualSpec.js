@@ -15,10 +15,57 @@ describe('visualization functionality', function(){
       });
   });
 
-	it('The index_visuals page should show project/datasets');
-	it('The index_visuals page should show logged in user');
+	it('The index_visuals page should show project/datasets', function(done){
+    request(app)
+      .get('/visuals/index_visuals')
+      .expect(200)
+      .end(function (err, res) {
+        res.text.should.include('SLM_NIH_v3');
+        res.text.should.include('7_Stockton');
+        done();
+      });
+  });
+  
+	it('The index_visuals page should show logged in user', function(done){
+  	request(app)
+      .post('/users/login')
+      .expect(302)
+      .send({ username: 'TEST', password: 'TEST'})
+      .end(function (err, res) {
+        should.not.exist(err);
+        // confirm the redirect
+        res.header.location.should.include('/');
+  			res.header.location.should.not.include('login');
+        done();
+      });
+    });
+  
+	// Logged in as
+	it('should log the user out', function (done) {
+	  request(app)
+    .post('/users/login')
+    .expect(302)
+    .send({ username: 'TEST', password: 'TEST'})
+		.get('/visuals/index_visuals')
+		.expect(200)
+    .end(function (err, res) {
+      should.not.exist(err);
+      res.text.should.include('(Logged in as: TEST)');
+      done();
+	      // request(app)
+	      //           .get('/visuals/index_visuals')
+	      //           .expect(200)
+          // .end(function (err, res) {
+          //   if (err) return done(err);
+          //   // res.text.should.not.include('Logged in as:');
+          //   res.text.should.include('(Logged in as: TEST)');
+          //   done();
+          // });
+	    });
+    });
 
-	it('Text on counts_table page');// , function(done){
+	it('Text on counts_table page');
+	// , function(done){
 	//     request(app)
 	//       .get('/visuals/counts_table')
 	//       .expect(200)
