@@ -1,12 +1,12 @@
 // taxonomy_tree.js
 
 function toggle_selected_taxa(level,name) {
-  
+
   var tax_div = document.getElementById(name+'_div');
   var cbs = tax_div.getElementsByTagName('input');
   var toggle = document.getElementById(name+'_toggle');
   var i;
-  
+
   if (tax_div.style.display === 'inline'){
     tax_div.style.display = 'none';
     document.getElementById(name+'--cbid').checked = false;
@@ -33,10 +33,11 @@ function open_taxa(name) {
 
   // Called from index_visuals: project--dataset tree
 
-  tax_div = document.getElementById(name+'_div');
-  cbs = tax_div.getElementsByTagName('input');
-  toggle = document.getElementById(name+'_toggle');
-  if(tax_div.style.display == 'inline'){
+  var tax_div = document.getElementById(name+'_div');
+  var cbs = tax_div.getElementsByTagName('input');
+  var toggle = document.getElementById(name+'_toggle');
+  var i;
+  if (tax_div.style.display === 'inline'){
 
 
     // uncheck project
@@ -67,22 +68,13 @@ function open_taxa(name) {
   }
 }
 
-function open_level(id, names,level) {
-	var x = JSON.parse(names);
-	alert(id)
-	for(i in x){
-		//alert(i)
-		var new_id = id+';'+i;
-		open_taxa(new_id);
-	}
-	
-	
-
+function open_level(id, names, level) {
+  var x = JSON.parse(names);
+  alert(id);
+  for (var i=0; i < x.length; i++) {
+    //alert(i)
+    var new_id = id+';'+i;
+    open_taxa(new_id);
+  }
 }
-
-
-
-
-
-
 
