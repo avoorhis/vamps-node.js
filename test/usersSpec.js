@@ -17,8 +17,41 @@ describe('Users page functionality', function(){
       });
   });
 
-
 });
+
+describe('Profile page functionality', function(){
+
+  it('Text on login page', function(done){
+    request(app)
+      .get('/users/profile')
+      .expect(302)
+      .send({ username: 'TEST', password: 'TEST'})
+      .end(function (err, res) {
+				console.log("res111");
+				console.log(res);
+		    // location: '/',
+    
+        // res.text.should.include('Profile Page');
+        // res.text.should.include('TEST');
+        done();
+      });
+  });
+
+//   it('Text on login page', function(done){
+//     request(app)
+//       .post('/user_admin/profile')
+//       .expect(200)
+//       .end(function (err, res) {
+//         // res.text.should.include('Profile Page');
+//         // res.text.should.include('TEST');
+// 				console.log("res111");
+// console.log(res);
+//         res.header.location.should.not.include('login');
+//         done();
+//       });
+//   });
+});
+
 
 describe('Login page functionality', function(){
   before(function (done) {
