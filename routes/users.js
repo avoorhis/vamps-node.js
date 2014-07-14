@@ -21,7 +21,7 @@ router.get('/index_users', function(req, res) {
         res.render('user_admin/index_users', { rows : rows, user: req.user  });
       }
     });
-  
+
 });
 // =====================================
 // LOGIN ===============================
@@ -78,7 +78,7 @@ module.exports = router;
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 
-    // if user is authenticated in the session, carry on  
+    // if user is authenticated in the session, carry on
     if (req.isAuthenticated()) {
       return next();
     }
