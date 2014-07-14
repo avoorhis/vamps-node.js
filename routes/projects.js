@@ -14,7 +14,7 @@ router.get('/index_projects', function(req, res) {
         res.render('projects/index_projects', { "all_projects" : rows, user: req.user });
       }
     });
-  
+
 });
 
 router.get('/:id', function(req, res) {
@@ -28,7 +28,7 @@ router.get('/:id', function(req, res) {
         res.render('projects/profile', { project: row, user: req.user });
       }
     });
-  
+
 });
 
 module.exports = router;
