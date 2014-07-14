@@ -5,7 +5,7 @@ var async = require('async'),
     connection = require('../config/database-test');
 
 describe('Users page functionality', function(){
-	
+
   it('Text on login page', function(done){
     request(app)
       .get('/users/index_users')
@@ -22,12 +22,12 @@ describe('Users page functionality', function(){
 
 describe('Login page functionality', function(){
   before(function (done) {
-	
+
     this.timeout(5000);
     async.series([
       function (cb) {
         connection.query('SELECT * FROM users WHERE username="TEST"'+
-							' AND email="TEST"',function(err,results){
+              ' AND email="TEST"',function(err,results){
             results.length.should.not.equal(0);
             done();
           });
@@ -56,7 +56,7 @@ describe('Login page functionality', function(){
         should.not.exist(err);
         // confirm the redirect
         res.header.location.should.include('/');
-				res.header.location.should.not.include('login');
+        res.header.location.should.not.include('login');
         done();
       });
   });
@@ -68,7 +68,7 @@ describe('Login page functionality', function(){
       .send({ username: 'NO User', password: ''})
       .end(function (err, res) {
         res.header.location.should.not.include('/');
-	      res.header.location.should.include('login');
+        res.header.location.should.include('login');
         // console.log("res.header.location: ");
         // console.log(res.header.location);
         done();
@@ -76,23 +76,23 @@ describe('Login page functionality', function(){
   });
 
 /* How to make sure if I was checked in? */
-	it('should log the user out', function (done) {
-	  request(app)
-	    .get('/users/logout')
-	    .end(function (err, res) {
+  it('should log the user out', function (done) {
+    request(app)
+      .get('/users/logout')
+      .end(function (err, res) {
         res.header.location.should.include('/');
-	      res.header.location.should.not.include('login');
+        res.header.location.should.not.include('login');
 
-	      if (err) return done(err);
-	      request(app)
-	        .get('/')
-	        .end(function (err, res) {
-	          if (err) return done(err);
-	          res.text.should.not.include('Logged in as:');
-	          res.text.should.include('login');
-	          res.text.should.include('register');
-	          done();
-	        });
-	    });
-	});
-})
+        if (err) return done(err);
+        request(app)
+          .get('/')
+          .end(function (err, res) {
+            if (err) return done(err);
+            res.text.should.not.include('Logged in as:');
+            res.text.should.include('login');
+            res.text.should.include('register');
+            done();
+          });
+      });
+  });
+});

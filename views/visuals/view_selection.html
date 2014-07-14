@@ -14,7 +14,7 @@
 
 <div class='subtitle'>Display Output Page</div>
 
-<div class='container_12'>  
+<div class='container_12'>
   <div class="grid_3">&nbsp;</div>
   <div class="grid_9">
     <table border='1'>
@@ -22,7 +22,7 @@
         <th>Input Items</th>
         <th>Things to do here</th>
         <th>Selected Visuals<br><span class='small_font'>(pages load in a separate window)</span></th>
-        
+
       </tr>
       <tr>
         <td>
@@ -48,7 +48,7 @@
               </tr>
             </table>
           </div>
-        </td>    
+        </td>
         <td>
           <div id='show_download_buttons_div'>
             <input type='button', id='' name='' value='Download Fasta File' /><br>
@@ -58,20 +58,20 @@
         <td>
           <div id='show_visuals_links_div'>
             <% b = JSON.parse(body) %>
-          	<% for(var i in b.visuals) { %>
+            <% for (var i in b.visuals) { %>
                 <% link = b.visuals[i]  %>
                 <a href='<%= link %>' target='_blank'><%= b.visuals[i] %></a><br>
             <% } %>
           </div>
         </td>
-          
+
       </tr>
 
 
     </table>
     <a href="#" onclick='javascript:history.go(-1);return false;'>GoBack</a> to the previous page.
   </div>  <!-- end grid_9 -->
-</div>    <!-- end container_12 -->  
+</div>    <!-- end container_12 -->
 <div id='DEBUG_div'></div>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 
