@@ -2,7 +2,7 @@
 
 
 
-// function get_taxa_silva108_simple(){ 
+// function get_taxa_silva108_simple(){
 //   xmlhttp = new XMLHttpRequest();
 //   xmlhttp.open("GET","/visuals/partials/taxa_silva108_simple", true);
 //   xmlhttp.onreadystatechange=function(){
@@ -13,7 +13,7 @@
 //          }
 //   }
 //   xmlhttp.send();
-  
+
 
 // }
 // ////////////////////////////////////
@@ -29,7 +29,7 @@
 //   }
 //   xmlhttp.send();
 // }
-  
+
 // function get_taxa_gg_simple(){
 //   xmlhttp = new XMLHttpRequest();
 //   xmlhttp.open("GET","/visuals/partials/taxa_gg_simple", true);
@@ -42,7 +42,7 @@
 //   }
 //   xmlhttp.send();
 // }
-  
+
 // function get_taxa_gg_custom(){
 //   xmlhttp = new XMLHttpRequest();
 //   xmlhttp.open("GET","/visuals/partials/taxa_gg_custom", true);

@@ -20,14 +20,14 @@
             <% pd = pname + '--' + dname %>
             <% pass_thru_value = did + '--' + pname + '--' + dname %>
             <!-- Andy, why do we need to send both dname and did? -->
-            
+
             <li>
               <label class='dataset-select' name='xx' >
                  <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= pass_thru_value %>'/>
                  <%= dname %>
               </label>
-            </li>            
-          <% } %>          
+            </li>
+          <% } %>
         </div>
       </ul>
   <% }%>
