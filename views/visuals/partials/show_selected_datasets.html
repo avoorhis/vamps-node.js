@@ -1,8 +1,8 @@
-<% if(typeof chosen_id_name_hash === 'undefined') { %>
-<% 		var items = JSON.parse(JSON.parse(body).chosen_id_name_hash) %>
+<% if (typeof chosen_id_name_hash === 'undefined') { %>
+<%     var items = JSON.parse(JSON.parse(body).chosen_id_name_hash) %>
 <% console.log(items) %>
-<% }else{ %>
-<% 		var items = JSON.parse(chosen_id_name_hash) %>
+<% } else { %>
+<%     var items = JSON.parse(chosen_id_name_hash) %>
 <% } %>
 
 
@@ -10,7 +10,7 @@ These are your selected datasets:<br>
 <div id='dataset_names_div' class='small_font'>
 <ul>
 <% for (var i in items.names){ %>
-    <li>	<%= parseInt(i)+1 %> - <%= items.names[i] %> </li>
+    <li>  <%= parseInt(i)+1 %> - <%= items.names[i] %> </li>
 <% } %>
 </ul>
 </div>

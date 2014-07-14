@@ -2,16 +2,16 @@
 <%    var rows = JSON.parse(constants).UNITSELECT.units; %>
 Units Selection:
     <select onchange="get_requested_units_selection_box(this.value);return false;">
-    
+
 <%    for (var i in rows) { %>
 <%      var file_id  = rows[i].id; %>
 <%      var name     = rows[i].name; %>
 <%      var file     = rows[i].file; %>
-<%      if(file_id === 'tax_silva108_simple') {  %>
+<%      if (file_id === 'tax_silva108_simple') {  %>
           <option selected value='<%= file_id %>'><%= name %></option>
-<%      }else{ %>
+<%      } else { %>
           <option value='<%= file_id %>'><%= name %></option>
 <%      } %>
 <%     }  %>
     </select>
-    
+
