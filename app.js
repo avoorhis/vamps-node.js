@@ -35,7 +35,10 @@ app.use(bodyParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
+app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
+app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
+// app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 app.use(session({ secret: 'keyboard cat' })); // session secret
 app.use(flash()); // use connect-flash for flash messages stored in session
