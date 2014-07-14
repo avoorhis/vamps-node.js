@@ -19,7 +19,7 @@ describe('express rest api server', function() {
   //       app(res.body[0]._id.length).to.eql(24)
   //       id = res.body[0]._id
   //       done()
-  //     })  
+  //     })
   // })
 
   // it('retrieves an object', function(done){
@@ -28,8 +28,8 @@ describe('express rest api server', function() {
   //       // console.log(res.body)
   //       app(e).to.eql(null)
   //       app(typeof res.body).to.eql('object')
-  //       app(res.body._id.length).to.eql(24)  
-  //       app(res.body._id).to.eql(id)  
+  //       app(res.body._id.length).to.eql(24)
+  //       app(res.body._id).to.eql(id)
   //       done()
   //     })
   // })
@@ -40,7 +40,7 @@ describe('express rest api server', function() {
   //       // console.log(res.body)
   //       app(e).to.eql(null)
   //       app(res.body.length).to.be.above(0)
-  //       app(res.body.map(function (item){return item._id})).to.contain(id)  
+  //       app(res.body.map(function (item){return item._id})).to.contain(id)
   //       done()
   //     })
   // })
@@ -53,7 +53,7 @@ describe('express rest api server', function() {
   //       // console.log(res.body)
   //       app(e).to.eql(null)
   //       app(typeof res.body).to.eql('object')
-  //       app(res.body.msg).to.eql('success')  
+  //       app(res.body.msg).to.eql('success')
   //       done()
   //     })
   // })
@@ -63,21 +63,21 @@ describe('express rest api server', function() {
   //       // console.log(res.body)
   //       app(e).to.eql(null)
   //       app(typeof res.body).to.eql('object')
-  //       app(res.body._id.length).to.eql(24)  
-  //       app(res.body._id).to.eql(id)  
-  //       app(res.body.name).to.eql('Peter')  
+  //       app(res.body._id.length).to.eql(24)
+  //       app(res.body._id).to.eql(id)
+  //       app(res.body.name).to.eql('Peter')
   //       done()
   //     })
-  // })  
-  
+  // })
+
   // it('removes an object', function(done){
   //   superagent.del('http://localhost:3000/collections/test/'+id)
   //     .end(function(e, res){
   //       // console.log(res.body)
   //       app(e).to.eql(null)
   //       app(typeof res.body).to.eql('object')
-  //       app(res.body.msg).to.eql('success')  
+  //       app(res.body.msg).to.eql('success')
   //       done()
   //     })
-  // })  
+  // })
 });
