@@ -3,6 +3,8 @@ var async = require('async'),
     should = require('should'),
     app = require('../app'),
     connection = require('../config/database-test');
+var express = require('express');
+var passport = require('passport');
 
 describe('Users page functionality', function(){
 
@@ -19,23 +21,120 @@ describe('Users page functionality', function(){
 
 });
 
-describe('Profile page functionality', function(){
 
-  it('Text on login page', function(done){
+
+describe('Profile page functionality', function(){
+	it('should return 200 when user is logged in', function(done) {
+
+    var app = express();
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(function(req, res, next) {
+      req.isAuthenticated = function() {
+        return true;
+      };
+      req.user = {};
+      next();
+    });
+    app.get('/', function(req, res){
+      if (!req.user || !req.isAuthenticated()){
+        return res.send(403);
+      }
+      res.send(200);
+			console.log("res112");
+			console.log(res);
+
+    });
+
     request(app)
       .get('/users/profile')
-      .expect(302)
-      .send({ username: 'TEST', password: 'TEST'})
+      .expect(200)
       .end(function (err, res) {
-				console.log("res111");
-				console.log(res);
-		    // location: '/',
+    				console.log("res111");
+    				console.log(res);
+    		    // location: '/',
     
         // res.text.should.include('Profile Page');
         // res.text.should.include('TEST');
         done();
       });
+      // .end(done);
+
   });
+	// before(function (done) 
+	// {
+	// 	var app = express();
+	//   app.use(passport.initialize());
+	//   app.use(passport.session());
+	//   app.use(function(req, res, next) {
+	//     req.isAuthenticated = function() {
+	//       return true;
+	//     };
+	//     req.user = {};
+	//     next();
+	//   });
+	// });
+
+  // it('Text on profile page', function(done) {
+  // 	  this.timeout(5000);
+  //   
+  // 		var app = express();
+  // 	  app.use(passport.initialize());
+  // 	  app.use(passport.session());
+  // 	  app.use(function(req, res, next) {
+  // 	    req.isAuthenticated = function() {
+  // 	      return true;
+  // 	    };
+  // 	    req.user = {};
+  // 	    next();
+  // 			console.log("res112");
+  // 				console.log(res);
+  // 		
+  // 	  });
+  // 	
+  // 		app.get('/user_admin/profile', function(req, res){
+  // 	    if (!req.user || !req.isAuthenticated()){
+  // 	      return res.send(403);
+  // 	    }
+  // 			// console.log("res112");
+  // 			// console.log(res);
+  // 	    res.send(200);
+  // 	  });
+  // 	  
+  // 	});
+
+
+  // it('Text on profile page', function(done){
+	  // request(app)
+	  //       .post('/users/login')
+	  //       .expect(302)
+	  //       .send({ username: 'TEST', password: 'TEST'})
+	  //       .end(function (err, res) {
+	  //         should.not.exist(err);
+	  //         // confirm the redirect
+	  //         res.header.location.should.include('/');
+	  //         res.header.location.should.not.include('login');
+	  //         done();
+	  //       });
+  
+	  // var app = express();
+	  //     app.use(passport.initialize());
+	  //     app.use(passport.session());
+	  //   
+    // request(app)
+    //   .get('/users/profile')
+    //   .expect(302)
+    //   .send({ username: 'TEST', password: 'TEST'})
+    //   .end(function (err, res) {
+    // 				console.log("res111");
+    // 				console.log(res);
+    // 		    // location: '/',
+    // 
+    //     // res.text.should.include('Profile Page');
+    //     // res.text.should.include('TEST');
+    //     done();
+    //   });
+  // });
 
 //   it('Text on login page', function(done){
 //     request(app)
@@ -128,4 +227,53 @@ describe('Login page functionality', function(){
           });
       });
   });
+
+/**
+* From https://github.com/jaredhanson/passport/issues/132
+*/
+
+  it('should return 403 when no user is logged in', function(done) {
+
+    var app = express();
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.get('/', function(req, res){
+      if (!req.user || !req.isAuthenticated()){
+        return res.send(403);
+      }
+      res.send(200);
+    });
+
+    request(app)
+      .get('/')
+      .expect(403)
+      .end(done);
+  });
+
+  it('should return 200 when user is logged in', function(done) {
+
+    var app = express();
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(function(req, res, next) {
+      req.isAuthenticated = function() {
+        return true;
+      };
+      req.user = {};
+      next();
+    });
+    app.get('/', function(req, res){
+      if (!req.user || !req.isAuthenticated()){
+        return res.send(403);
+      }
+      res.send(200);
+    });
+
+    request(app)
+      .get('/')
+      .expect(200)
+      .end(done);
+
+  });
+
 });
