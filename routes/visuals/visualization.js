@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-//var helpers = require('./helpers')
+var helpers = require('../helpers');
 var app = express();
 
 
@@ -126,7 +126,7 @@ router.post('/unit_selection',  function(req, res) {
   // Currently I have removed the isLoggedIn function from the function call
   // because the program is easier to test without it (you don't have to be logged in)
   // This function call will look like this when in place:
-  //            router.post('/unit_selection', isLoggedIn, function(req, res) {
+  //            router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   // The logic here is from the selected datasets to create an object that
   // holds the datasetIDs in a certain order. The object also holds the sequence_ids,sequence_counts
   // for each dataset in the same order. The associated unitIDs are also in the object in the same order>
@@ -252,7 +252,7 @@ router.post('/unit_selection',  function(req, res) {
  */
 router.get('/index_visuals',  function(req, res) {
   // This page is arrived at using GET from the Main Menu
-  // It will be protected usind the isLoggedIn function (below)
+  // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
   //      Should show the closed project list on initialize
   //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
@@ -428,20 +428,9 @@ router.get('/partials/med_nodes',  function(req, res) {
 
 module.exports = router;
 
-//
-//
-// F U N C T I O N S
-//
-//
-function isLoggedIn(req, res, next) {
-
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    // if they aren't redirect them to the home page
-    res.redirect('/');
-}
+/**
+* F U N C T I O N S
+*/
 
 function IsJsonString(str) {
     try {
@@ -451,6 +440,7 @@ function IsJsonString(str) {
     }
     return true;
 }
+
 //
 // COUNTS TABLE
 //
