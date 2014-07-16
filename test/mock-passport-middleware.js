@@ -1,5 +1,8 @@
+/**
+* http://stackoverflow.com/questions/17555703/how-to-setup-mocha-tests-with-node-js-and-passport
+*/
 // Fake user login with passport.
-app.mockPassportInitialize = function () {
+mockPassportInitialize = function () {
     var passport = require('passport');
     passport.initialize = function () {
         return function (req, res, next) {
