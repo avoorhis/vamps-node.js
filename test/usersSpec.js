@@ -14,6 +14,7 @@ describe('Users page functionality', function(){
       .get('/users/index_users')
       .expect(200)
       .end(function (err, res) {
+        should.not.exist(err);
         res.text.should.include('VAMPS User List');
         res.text.should.include('TEST');
         done();
@@ -39,53 +40,10 @@ describe('Profile page functionality', function(){
   });
 
   it('Text on profile page if logged in', function(done){
-    app.use(function(req, res){
-        req.user = {
-          id: 35,
-          username: 'TEST',
-          email: 'TEST',
-          institution: 'TEST',
-          first_name: 'TEST',
-          last_name: 'TEST',
-          active: 0,
-          security_level: 50,
-          encrypted_password: '7kT94LYj7y5RnJVb34jrJw==',
-          reset_password_token: null,
-          reset_password_sent_at: null,
-          remember_created_at: null,
-          sign_in_count: 0,
-          current_sign_in_at: null,
-          last_sign_in_at: null,
-          current_sign_in_ip: null,
-          last_sign_in_ip: null,
-          confirmation_token: null,
-          confirmed_at: null,
-          confirmation_sent_at: null,
-          unconfirmed_email: null };
-      });
-      app.use(function(req, res){
-        req.isAuthenticated = function() {
-          return true;
-        };
-      });
-    
-    app.get('/users/profile', function (req, res) {
-      console.log("== req ===");
-      console.log(req);
-      console.log("--- res ---");
-      console.log(res);
-      
-      var user = req.user;
-      console.log("--- user ---");
-      console.log(user);
-      // var tags = req.param('tags');
-      // var tagmode = req.param('tagmode');
-      // more route logic here ...
-    });
+    app = require('../helpers.js').prepApp(done);
     
     request(app)
-      .get('/profile', next())
-// , function(req, res) {
+      .get('/users/profile')
       .expect(200)
       .end(function (err, res) {
         console.log("===2===");
@@ -94,7 +52,7 @@ describe('Profile page functionality', function(){
         console.log("--- user1 ---");
         console.log(res.user);
         // res.helpers.isLoggedIn();
-        res.header.location.should.include('/users/profile');
+        // res.header.location.should.include('/users/profile');
         res.text.should.include('Profile Page');
         res.text.should.include('TEST');
         done();
