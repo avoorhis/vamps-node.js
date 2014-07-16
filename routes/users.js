@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var helpers = require('./helpers');
+
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
@@ -59,10 +61,11 @@ router.post('/signup',
 // =====================================
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
-router.get('/profile', isLoggedIn, function(req, res) {
+router.get('/profile', helpers.isLoggedIn, function(req, res) {
     res.render('user_admin/profile', {
         user : req.user // get the user out of session and pass to template
     });
+		console.log(req.user);
 });
 
 // =====================================
@@ -74,15 +77,3 @@ router.get('/logout', function(req, res) {
 });
 
 module.exports = router;
-
-// route middleware to make sure a user is logged in
-function isLoggedIn(req, res, next) {
-
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    // if they aren't redirect them to the home page
-    res.redirect('/');
-}
-
