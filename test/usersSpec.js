@@ -40,7 +40,7 @@ describe('Profile page functionality', function(){
   });
 
   it('Text on profile page if logged in', function(done){
-    app = require('../helpers.js').prepApp(done);
+    app = require('test/test_helpers.js').prepApp(done);
     
     request(app)
       .get('/users/profile')
