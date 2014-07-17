@@ -65,7 +65,7 @@ router.get('/profile', helpers.isLoggedIn, function(req, res) {
     res.render('user_admin/profile', {
         user : req.user // get the user out of session and pass to template
     });
-    console.log(req.user);
+		console.log(req.user);
 });
 
 // =====================================
