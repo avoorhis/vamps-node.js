@@ -8,9 +8,11 @@ module.exports = {
 
       // if user is authenticated in the session, carry on
       if (req.isAuthenticated()) {
+        console.log("Hurray! isLoggedIn.req.isAuthenticated");
         return next();
       }
       // if they aren't redirect them to the home page
+      console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
       res.redirect('/');
   }
 };
