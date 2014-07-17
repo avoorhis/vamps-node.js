@@ -45,7 +45,6 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
-
 // Make our db accessible to our router
 app.use(function(req, res, next){
     req.db = connection;
