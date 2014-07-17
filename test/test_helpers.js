@@ -1,10 +1,15 @@
+var express = require('express');
+var passport = require('passport');
+
 module.exports = {
-  console.log('In prepApp'); 
   prepApp: function (done) {
-    var app = getApp();
-    compound = app.compound;
-    compound.on('configure', function () { app.mockPassportInitialize(); });
-    compound.on('ready', function () { done(); });
+    // var app = getApp();
+    var app = express();
+    console.log(app);
+    // compound = app.compound;
+    app.use(mockPassportInitialize());
+    // app.on('configure', function () { app.mockPassportInitialize(); });
+    app.on('ready', function () { done(); });
     return app;
   }
 };
