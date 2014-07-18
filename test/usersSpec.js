@@ -23,28 +23,6 @@ describe('Users page functionality', function(){
 
 });
 
-
-describe('Profile page functionality', function(){
-  
-  it('Text on profile page if unlogged', function(done){
-    request(app)
-      .get('/users/profile')
-      .expect(302)
-      .end(function (err, res) {
-        res.header.location.should.include('/');
-        //   
-        // res.text.should.include('VAMPS Login');
-        // res.text.should.include('Username');
-        // res.text.should.include('Password');
-        done();
-      });
-  });
-
-  it('Text on profile page if logged in');
-    
-});
-
-
 describe('Login page functionality', function(){
   before(function (done) {
 
