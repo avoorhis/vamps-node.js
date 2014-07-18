@@ -37,10 +37,17 @@ describe('Profile page functionality', function(){
     passportStub.login({
       username: 'TEST'
     });
-    // res.header.location.should.include('/users/profile');
-    // res.text.should.include('Profile Page');
-    // res.text.should.include('TEST');
+
+    return req.get('/users/profile').expect(200)
+    // .end(done);
+    .end(function (err, res) {
+      // console.log("===2===");
+      // console.log(res);
+      // console.log("===22===");
+      res.text.should.include('Profile Page');
+      res.text.should.include('TEST');
+      done();
+    });
     
-    return req.get('/users/profile').expect(200).end(done);
   });
 });
