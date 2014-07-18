@@ -78,25 +78,78 @@ describe('Login page functionality', function(){
       });
   });
 
-/* How to make sure if I was checked in? */
+// /* How to make sure if I was checked in? */
+//   it('should log the user out', function (done) {
+//     request(app)
+//       .get('/users/logout')
+//       .expect(302)
+//       .end(function (err, res) {
+//         console.log("=== 55 ===");
+//         console.log(res);
+//         res.header.location.should.include('/');
+//         res.header.location.should.not.include('login');
+// 
+//         if (err) return done(err);
+//         // request(app)
+//         //   .get('/')
+//         //   .end(function (err, res) {
+//         //     if (err) return done(err);
+//         //     res.text.should.not.include('Logged in as:');
+//         //     res.text.should.include('login');
+//         //     res.text.should.include('register');
+//             done();
+//         //   });
+//       });
+//   });
+/* How to make sure I was checked in? */
   it('should log the user out', function (done) {
-    request(app)
-      .get('/users/logout')
-      .end(function (err, res) {
-        res.header.location.should.include('/');
-        res.header.location.should.not.include('login');
+    var passportStub = require('passport-stub');
+    passportStub.install(app);
+    
+    passportStub.login({
+      username: 'TEST', password: 'TEST'    
+    });
 
-        if (err) return done(err);
-        request(app)
-          .get('/')
-          .end(function (err, res) {
-            if (err) return done(err);
-            res.text.should.not.include('Logged in as:');
-            res.text.should.include('login');
-            res.text.should.include('register');
-            done();
-          });
-      });
+    request(app)
+      .get('/')
+      .end(function (err, res) {
+      console.log("===2===");
+      console.log(res);
+      console.log("===22===");
+      res.text.should.include('Logged in as: TEST');
+      
+      request(app)
+        .get('/users/logout')
+        .expect(302)
+        .end(function (err, res) {
+          console.log("=== 55 ===");
+          console.log(res);
+          res.header.location.should.include('/');
+          res.header.location.should.not.include('login');
+
+          if (err) return done(err);
+          
+          request(app)
+            .get('/')
+            .end(function (err, res) {
+            console.log("===1===");
+            console.log(res);
+            console.log("===11===");
+            res.text.should.not.include('Logged in as: TEST');
+          
+          // request(app)
+          //   .get('/')
+          //   .end(function (err, res) {
+          //     if (err) return done(err);
+          //     res.text.should.not.include('Logged in as:');
+          //     res.text.should.include('login');
+          //     res.text.should.include('register');
+            });
+        });
+        done();
+      
+    });
+    
   });
 
 /**
