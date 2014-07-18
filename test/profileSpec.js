@@ -30,24 +30,29 @@ describe('Profile page functionality', function(){
 // 
 // describe('GET /admin', function() {
   it('responds with 302 if not logged in', function(done) {
-    return req.get('/users/profile').expect(302).end(done);
+    req.get('/users/profile').expect(302)
+    .end(function (err, res) {
+        res.header.location.should.include('/');
+        done();
+      });
   });
   
   it('responds with 200 when logged in', function(done) {
     passportStub.login({
-      username: 'TEST'
+      username: 'TEST', password: 'TEST'    
     });
 
-    return req.get('/users/profile').expect(200)
-    // .end(done);
-    .end(function (err, res) {
-      // console.log("===2===");
-      // console.log(res);
-      // console.log("===22===");
-      res.text.should.include('Profile Page');
-      res.text.should.include('TEST');
-      done();
-    });
+    req.get('/users/profile')
+      .expect(200)
+      .end(function (err, res) {
+        // console.log("===2===");
+        // console.log(res);
+        // console.log("===22===");
+        res.text.should.include('Profile Page');
+        res.text.should.include('TEST');
+        done();
+      });
     
+    // passportStub.logout();
   });
 });
