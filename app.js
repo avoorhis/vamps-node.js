@@ -19,16 +19,17 @@ var datasets = require('./routes/datasets');
 //var ALL_DATASETS = require('./routes/load_all_datasets2')(connection);
 var visuals = require('./routes/visuals/visualization');
 var C = require('./public/constants');
+
 var app = express();
+app.set('appName', 'VAMPS');
 require('./config/passport')(passport, connection); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
-
 app.set('view engine', 'html');
-//app.set('view engine', 'jade');
 
+// MIDDLEWARE  <-- must be in correct order:
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser());
@@ -52,11 +53,28 @@ app.use(function(req, res, next){
     next();
 });
 
+// example of roll-your-own middleware:
+// GET: localhost:3000/?id=324
+// app.use(function (req, res,next) {
+//     console.log('START ');
+//     if (req.query.id){
+//         console.log('got id '+req.query.id);
+//         next();
+//     }else if (req.query.name){
+//         console.log('got name '+req.query.name);
+//         next();
+//     }else{
+//         next();
+//     }
+// });
+
+// ROUTES:
 app.use('/', routes);
 app.use('/users', users);
 app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
+
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -65,7 +83,7 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-/// error handlers
+/// error handlers <-- these middleware go after routes
 
 // development error handler
 // will print stacktrace
