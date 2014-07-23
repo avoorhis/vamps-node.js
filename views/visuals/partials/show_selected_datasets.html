@@ -1,8 +1,9 @@
 <% if (typeof chosen_id_name_hash === 'undefined') { %>
-<%     var items = JSON.parse(JSON.parse(body).chosen_id_name_hash) %>
-<% console.log(items) %>
+<%    var items = JSON.parse(body).chosen_id_name_hash %>
+
 <% } else { %>
-<%     var items = JSON.parse(chosen_id_name_hash) %>
+<%    var items = JSON.parse(chosen_id_name_hash) %>
+
 <% } %>
 
 

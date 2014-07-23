@@ -48,9 +48,10 @@ app.use(passport.session()); // persistent login sessions
 
 // Make our db accessible to our router
 app.use(function(req, res, next){
+    if(!connection) {return next(new Error('no db connection'))}
     req.db = connection;
     req.C = C;
-    next();
+    return next();
 });
 
 // example of roll-your-own middleware:
