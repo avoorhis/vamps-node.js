@@ -25,20 +25,46 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more datasets shown in list
   //    There should be one or more visual choices shown.
   //
-
+  //var body = JSON.parse(req.body);
+  //console.log(JSON.parse(req.body,null,2));
+  req.body.selection_obj       = JSON.parse(req.body.selection_obj);
+  req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
+  
   // NORMALIZATION:
-  if (req.body.normalization === 'max' || req.body.normalization === 'freq') {
-    req.body.selection_obj = normalize_counts(req.body.normalization, req.body.selection_obj);
+  var normalization       = req.body.normalization || 'none';
+  if (normalization === 'max' || normalization === 'freq') {
+    req.body.selection_obj.seq_freqs = normalize_counts(normalization, req.body.selection_obj);
   }
+
+  
+  var uitems = req.body.unit_choice.split('_');
+  var unit_name_query = '';
+  var unit_field;
+  if (uitems[0] === 'tax'){  // covers both simple and custom
+    unit_field = 'tax_silva108_id';
+    unit_name_query = get_taxonomy_query( req.db, uitems, req.body ) 
+  }else if(uitems[0] === 'otus') {
+    unit_field = 'otu_id';
+    unit_name_query = get_otus_query( req.db, uitems, req.body ) 
+  }else if(uitems[0] === 'med_nodes') {
+    unit_field = 'med_node_id';
+    unit_name_query = get_med_query( req.db, uitems, req.body ) 
+  }else{
+    //error
+  }
+  console.log(unit_name_query);
+  req.body.selection_obj.counts_matrix = fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
+  
+  
+  
+  
+  
   console.log('START BODY>> in route/visualization.js /view_selection');
-  //console.log(req.body);
+  console.log(JSON.stringify(req.body,null,3));
   console.log('<<END BODY');
   var links = {};
-  var matrix = {};  // count matrix that can go directly into count table:
-  matrix.seq_ids = req.body.selection_obj.dataset_ids;
-  var test_dataset_ids = ["3","4","5","6","7","8"];
-  var test_unit_assoc_tax_silva108_id = [ [96,214,82,214,137],[96,214,82,214],[96,214,82,214,137],[96,214,82,214,137],[96,214,84,82,214,112,137],[96,214,82,214,112] ];
-  var test_seq_freqs =                  [ [2,103,8,203,3],    [2,13,4,20],    [1,100,1,177,1],    [1,206,6,390,1],    [2,30,4,1,45,1,1],         [ 1,120,2,211,1] ];
+  
+ 
   //    seq_ids  : [id1,id2,id3...],
   //    tax_id1 : [tct1,0,tid3...],
   //    tax_id2 : [tct4,tct5,tct6...],
@@ -46,9 +72,9 @@ router.post('/view_selection',  function(req, res) {
   //    ....
   //  }
 
-  var old_sid = 'x';
-  var tids = [96,214,82,214,137];
-  var vals = [2,103,8,203,3];
+  //var old_sid = 'x';
+  //var tids = [96,214,82,214,137];
+  //var vals = [2,103,8,203,3];
 
   // for (i=0; i < tids.length; i++) {
   //   id = tids[i]
@@ -58,64 +84,35 @@ router.post('/view_selection',  function(req, res) {
   //     tmp[id] = [vals[i]]
   //   }
   // }
- var counts = {};
- var tmp;
- var i;
-  for (var n=0; n < test_unit_assoc_tax_silva108_id.length; n++) {
 
-        tmp = {};
-        counts[test_dataset_ids[n]] = [];
-        for (i=0; i < test_unit_assoc_tax_silva108_id[n].length; i++) {
-
-            if (test_unit_assoc_tax_silva108_id[n][i] in tmp){
-              tmp[ test_unit_assoc_tax_silva108_id[n][i] ] += test_seq_freqs[n][i];
-            } else {
-              tmp[ test_unit_assoc_tax_silva108_id[n][i] ] = test_seq_freqs[n][i];
-            }
-        }
-        counts[test_dataset_ids[n] ].push(tmp);
-   }
-  //console.log(JSON.stringify(counts,null,4))
-//   { '82': 8, '96': 2, '137': 3, '214': 306 }
-// { '82': 4, '96': 2, '214': 33 }
-// { '82': 1, '96': 1, '137': 1, '214': 277 }
-// { '82': 6, '96': 1, '137': 1, '214': 596 }
-// { '82': 1, '84': 4, '96': 2, '112': 1, '137': 1, '214': 75 }
-// { '82': 2, '96': 1, '112': 1, '214': 331 }
-  tmp = {};
-  for (var k=0; k < counts.length; k++) {
-    var did = counts[k];
-
-    for (i=0; i < counts[k].length; i++){
-      console.log(counts[k][i]);
-      for (n=0; n < counts[k][i].length; n++){
-        // if (){
-        //
-        // } else {
-          tmp[counts[k][i][n]] = ['x'];
-        // }
-      }
-    }
-
-  }
-  console.log(tmp);
   // Get matrix data here
   // What is the SQL?
   // The visuals have been selected so now we need to create them
   // so they can be shown fast when selected
-  for (k=0; k < req.body.visuals.length; k++) {
-    //if (req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
-    //if (req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
-    //if (req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
-    //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
-    //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
+  req.db.query(unit_name_query, function(err, rows, fields){
+    if (err) {
+      throw err;
+    } else {
+      matrix = output_matrix( 'to_console',  req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
+      console.log(matrix)
+      for (k=0; k < req.body.visuals.length; k++) {
+        if (req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
+        //if (req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
+        //if (req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
+        //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
+        //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
-  }
- // res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
-  //                                body: JSON.stringify(req.body),
- //                                  user: req.user
- //             });
+      }
+       res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
+                                        body: JSON.stringify(req.body),
+                                        user: req.user
+                   });
+
+    }
+  });
+ 
 });
+
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
@@ -154,7 +151,7 @@ router.post('/unit_selection',  function(req, res) {
   //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
   //        checked by default.
   console.log('START BODY>> in route/visualization.js /unit_selection');
-  console.log(req.body);
+  console.log(JSON.stringify(req.body));
   console.log('<<END BODY');
   var db = req.db;
   var dsets = {};
@@ -184,7 +181,7 @@ router.post('/unit_selection',  function(req, res) {
   }
 
 
-  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" from sequence_pdr_infos";
+  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_infos";
   qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
   console.log(qSelectSeqID);
@@ -200,7 +197,6 @@ router.post('/unit_selection',  function(req, res) {
       // and keep them in the same order as the sequence_ids
       var u;
       for (var k=0; k < rows.length; k++){
-
         if (rows[k].dataset_id in dsets){
           dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
           dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count);
@@ -219,13 +215,13 @@ router.post('/unit_selection',  function(req, res) {
         }
 
       }
-
-      for (var id=0; id < dsets.length; id++){
+    //console.log(dsets)
+      for (var id in dsets){
         accumulator.dataset_ids.push(id);
         //dataset_accumulator.ds_counts.push(id)
         accumulator.seq_ids.push(dsets[id].seq_ids);
         accumulator.seq_freqs.push(dsets[id].seq_counts);
-        for (u=0; u < dsets[id].unit_assoc.length; u++) {
+        for (var u in dsets[id].unit_assoc) {
           accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
         }
 
@@ -233,17 +229,17 @@ router.post('/unit_selection',  function(req, res) {
 
     }
     GLOBAL.dataset_accumulator = accumulator;
-    //console.log(dataset_accumulator);
+    console.log(JSON.stringify(accumulator,null,4));
 
 
-    res.render('visuals/unit_selection', {   title: 'Unit Selection',
-                   chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-                   selection_obj: JSON.stringify(dataset_accumulator),
-                   constants    : JSON.stringify(req.C),
-                   body         : JSON.stringify(req.body),
-                   user         : req.user
-                 });
-  });
+     res.render('visuals/unit_selection', {   title: 'Unit Selection',
+                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+                    selection_obj: JSON.stringify(dataset_accumulator),
+                    constants    : JSON.stringify(req.C),
+                    body         : JSON.stringify(req.body),
+                    user         : req.user
+                  });
+   });
 
 
 });
@@ -305,7 +301,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   // This taxonomy JSON object can be used for other taxonomies so eventually will be
   // move from here ...
   if (typeof tax_silva108_custom_rows === 'undefined'){
-    var tax_query = "SELECT domain,phylum,klass,orderx,family,species,strain from taxonomies as t";
+    var tax_query = "SELECT domain,phylum,klass,orderx,family,species,strain FROM taxonomies as t";
     tax_query +=    " JOIN domains  as dom on (t.domain_id=dom.id)";
     tax_query +=    " JOIN phylums  as phy on (t.phylum_id=phy.id)";
     tax_query +=    " JOIN klasses  as kla on (t.klass_id=kla.id)";
@@ -444,7 +440,7 @@ function IsJsonString(str) {
 //
 // COUNTS TABLE
 //
-function create_counts_table(db,body) {
+function create_counts_table( db, body ) {
   // Intend to create (write) counts_table page here.
   // The page should have a timestamp and/or username appeneded to the file name
   // so that it is unique to the user.
@@ -456,51 +452,153 @@ function create_counts_table(db,body) {
   //console.log(b)
   var ms = +new Date();  // millisecs since the epoch
   var page = 'user_pages/counts_table'+ms+'.html';
-  var selection_obj         = JSON.parse(body.selection_obj);
+  var selection_obj         = body.selection_obj;
 
-  // taxa_ckbx_toggle: 'all',
-  // domain: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
-  // include_nas: 'yes',
-  // tax_depth: 'phylum',
-  // unit_choice: 'taxa_silva108_simple',
-  // datasets: '{"ids":["135","126","122"],"names":["SLM_NIH_Bv4v5--01_Boonville","SLM_NIH_Bv4v5--02_Spencer","SLM_NIH_Bv4v5--03_Junction_City_East"]}',
-  // normalization: 'no',
-  // visuals: [ 'counts_table' ],
-   var test_chosen_id_names_hash = {ids:["127","41"],names:["BPC_MRB_C--dataset244","XX_power_data"]}; // purposely put these ids in reverse for testing
-   var test_selection_obj = {
-    dataset_ids : ["41","127"],
-    seq_ids     : [[1001,1002,1004,1005],[1002,1003,1004,1005,1007]],
-    seq_freqs   : [[2,53,4,101],[137,1,2,240,1]],
-    unit_assoc  : {
-      tax_silva108_id : [[96,214,82,214],[214,84,82,214,137]],
-   }};
-   console.log('TEST OBJ');
-   console.log(test_selection_obj);
-  //console.log(chosen_id_name_hash)
+  
 
   var dataset_ids = selection_obj.dataset_ids;
   var units       = body.unit_choice;
-
-
-  var matrix = create_matrix(db,test_selection_obj,test_chosen_id_names_hash,'tax_silva108_simple');
 
 }
 //
 // C R E A T E  M A T R I X
 //
-function create_matrix(db, obj, ds_names, units) {
+function fill_in_counts_matrix(selection_obj, field) {
+  //selection_obj = JSON.parse(selection_obj);
+  var matrix = {};  
+  
+  var dataset_ids = selection_obj.dataset_ids;
+  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
+  var seq_freqs   = selection_obj.seq_freqs;      
+        
+  //    seq_ids  : [id1,id2,id3...],
+  //    tax_id1 : [tct1,0,tid3...],
+  //    tax_id2 : [tct4,tct5,tct6...],
+  //    tax_id3 : [tct7,tct8,0...]
+  //    ....
+  //  }
 
-  // should matrix be a JSON object or a string?
-  // this matrix will be central to the visualizations: counts_table, bar_charts and any pie charts
-  var matrix = {};
-  matrix.dset_names = [];
-  var uitems = units.split('_');
-  var uassoc;
+  //var old_sid = 'x';
+  //var tids = [96,214,82,214,137];
+  //var vals = [2,103,8,203,3];
+
+  // for (i=0; i < tids.length; i++) {
+  //   id = tids[i]
+  //   if (id in tmp){
+  //     tmp[id][0] += vals[i]
+  //   } else {
+  //     tmp[id] = [vals[i]]
+  //   }
+  // }
+  var counts = {};
+  var unit_id_lookup = {};
+  var unit_ids = [];
+  var unit_id;
+  var tmp;
+  
+  for (var n=0; n < unit_assoc.length; n++) {
+
+        unit_ids = unit_assoc[n];
+        tmp = {};
+        counts[dataset_ids[n]] = {};
+        for (var i=0; i < unit_ids.length; i++) {
+            unit_id = unit_ids[i];
+            unit_id_lookup[unit_id]=1;
+            if (unit_id in tmp){
+              tmp[ unit_id ] += seq_freqs[n][i];
+            } else {
+              tmp[ unit_id ] = seq_freqs[n][i];
+            }
+        }
+        counts[ dataset_ids[n] ]=tmp;
+  }
+  //console.log(JSON.stringify(counts,null,4));
+ //console.log(unit_id_lookup);
+// { '82': 8, '96': 2, '137': 3, '214': 306 }
+// { '82': 4, '96': 2, '214': 33 }
+// { '82': 1, '96': 1, '137': 1, '214': 277 }
+// { '82': 6, '96': 1, '137': 1, '214': 596 }
+// { '82': 1, '84': 4, '96': 2, '112': 1, '137': 1, '214': 75 }
+// { '82': 2, '96': 1, '112': 1, '214': 331 }
+  //var mtx = "\t";
+  
+ 
+  for (var uid in unit_id_lookup) {  
+    matrix[uid]=[]  
+    
+    for (var did in counts) {
+      if(uid in counts[did]){
+        c = counts[did][uid];
+      }else{
+        c = 0;
+      }
+      matrix[uid].push(c);
+
+    }
+  }
+  return matrix;
+}
+//
+//
+//
+
+function output_matrix(to_loc, body, rows ) {
+  
+  // need chosen units, tax depth(if applicable), db
+  selection_obj = body.selection_obj
+  name_hash = body.chosen_id_name_hash
+  //console.log(name_hash);
+  
+
+  var matrix_with_names = {};
+  matrix_with_names.dataset_names = [];
+  matrix_with_names.unit_names = []
+  
+
+  var mtx = "\t";
+
+  for (var did in selection_obj.dataset_ids) {
+    
+    var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
+    mtx += name_hash.names[ index ] + "\t";
+    matrix_with_names.dataset_names.push(name_hash.names[ index ]);
+  }
+  mtx += "\n";
+  
+  for (var r=0; r < rows.length; r++){
+    //console.log(rows[r]);
+    id = rows[r].id;
+    name = rows[r].tax;
+    counts = selection_obj.counts_matrix[id];
+    mtx += name + "\t";
+    matrix_with_names.unit_names[name] = [];
+    for (var c in counts) {
+      mtx += counts[c].toString() + "\t";
+      matrix_with_names.unit_names[name].push(counts[c].toString());
+    }
+    mtx += "\n";
+  }
+  mtx += "\n";
+  //console.log(matrix_with_names);
+  
+  if(to_loc === 'to_console') {
+    console.log(mtx);
+  }else{
+    // to file
+  }
+  return matrix_with_names;
+  
+}
+function get_taxonomy_query( db, uitems, body ) {
+  console.log(body);
+  selection_obj = body.selection_obj;
+  //selection_obj = body.selection_obj;
+  
   if (uitems[0] === 'tax' && uitems[1] === 'silva108'){  //covers both simple and custom
     uassoc = 'tax_silva108_id';
   }
-  var domains = ['Archaea', 'Bacteria', 'Eukarya', 'Organelle'];
-  var tax_depth = 'species';
+  var domains = body.domain || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
+  var tax_depth = body.tax_depth || 'phylum';
   var fields = [];
   var joins = '';
   var and_domain_in = '';
@@ -509,87 +607,61 @@ function create_matrix(db, obj, ds_names, units) {
     joins = " JOIN domains  as dom on (t.domain_id=dom.id)";
   } else if (tax_depth === 'phylum') {
     fields = ['domain','phylum'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
   } else if (tax_depth === 'class')  {
     fields = ['domain','phylum','klass'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
   } else if (tax_depth === 'order')  {
     fields = ['domain','phylum','klass','orderx'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
-    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
+    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
   } else if (tax_depth === 'family') {
     fields = ['domain','phylum','klass','orderx','family'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
-    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
-    joins += " JOIN families as fam on (t.family_id=fam.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
+    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
+    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
   } else if (tax_depth === 'genus') {
     fields = ['domain','phylum','klass','orderx','family','genus'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
-    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
-    joins += " JOIN families as fam on (t.family_id=fam.id)";
-    joins += " JOIN genera   as gen on (t.genus_id=gen.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
+    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
+    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
+    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
   } else if (tax_depth === 'species') {
     fields = ['domain','phylum','klass','orderx','family','genus','species'];
-    joins =  " JOIN domains  as dom on (t.domain_id=dom.id)";
-    joins += " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    joins += " JOIN klasses  as kla on (t.klass_id=kla.id)";
-    joins += " JOIN orders   as ord on (t.order_id=ord.id)";
-    joins += " JOIN families as fam on (t.family_id=fam.id)";
-    joins += " JOIN genera   as gen on (t.genus_id=gen.id)";
-    joins += " JOIN species  as spe on (t.species_id=spe.id)";
+    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
+    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
+    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
+    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
+    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
+    joins += " JOIN species  as spe on ( t.species_id= spe.id )\n";
+  }
+    
+  if (domains.length < 5){
+    domains = domains.join("','");
+    and_domain_in = " AND domain in ('"+domains+"')";
   }
   
-  for (var index=0; index < obj.dataset_ids.length; index++) {
-
-    var did = obj.dataset_ids[index];
-    var dname =  ds_names.names[ds_names.ids.indexOf(did)];
-    matrix.dset_names.push(dname);
-    // for any units:
-    //matrix = {
-    //  dset_names : [ds1,ds2,ds3]
-    //  u1 : [cnt1,cnt2,cnt3],
-    //  u2 : [cnt4,cnt5,cnt6],
-    //  u3 : [cnt7,cnt8,cnt9]
-    //}
-    if (domains.length < 5){
-      domains = domains.join("','");
-      and_domain_in = " AND domain in ('"+domains+"')";
-    }
-    //var tax_query = "SELECT id,taxonomy from taxonomies where taxonomy_id in (" + obj.unit_assoc[uassoc][index] + ")";
-
-
-    var tax_query = "SELECT t.id, concat_ws(';',"+fields+") as tax from taxonomies as t";
-    tax_query     += joins;
-    tax_query     += " WHERE t.id in ("+obj.unit_assoc[uassoc][index] +")";
-    tax_query     += and_domain_in;
-    console.log(tax_query);
-//    TODO: Don't make functions within a loop
-    db.query(tax_query, function(err, rows, fields){
-      if (err) {
-        throw err;
-      } else {
-        for (var r=0; r < rows.length; r++){
-          console.log(rows[r]);
-//          todo: JSLint - Expected an assignment or function call and instead saw an expression
-          tax_array[rows[r]];
-        }
-      }
-    });
-  }
-
-
-
+  var tax_query = "SELECT distinct t.id, concat_ws(';',"+fields+") as tax FROM taxonomies as t\n";
+  tax_query     += joins;
+  tax_query     += " WHERE t.id in (" + selection_obj.unit_assoc[uassoc] + ")\n";
+  tax_query     += and_domain_in;
+  return tax_query;
 
 }
+
+
+
+//}
 //
 // HEATMAP
 //
@@ -612,34 +684,34 @@ function create_barcharts() {
 //
 // NORMALIZATION
 //
-function normalize_counts(norm_type, obj) {
-  console.log('in normalization: '+norm_type);
+function normalize_counts(norm_type, selection_obj) {
+  
   // get max dataset count
-  var selection_obj = JSON.parse(obj);
+  //var selection_obj = JSON.parse(obj);
   var max_count = get_max_dataset_count(selection_obj);
   //selection_obj.max_ds_count = max_count;
+  console.log('in normalization: '+norm_type+' max: '+max_count.toString());
 
   var new_obj = [];
   for (var n=0; n < selection_obj.seq_freqs.length; n++) {
     var sum=0;
-    for (var i = selection_obj.seq_freqs[n].length; i--;) {
+    for (var i = 0; i < selection_obj.seq_freqs[n].length; i++ ) {
       sum += selection_obj.seq_freqs[n][i];
     }
     var temp = [];
     for (i=0; i < selection_obj.seq_freqs[n].length; i++) {
 
       if (norm_type === 'max') {
-        temp.push( parseInt((selection_obj.seq_freqs[n][i] * max_count) / sum, 10) );
+        temp.push( parseInt(( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
       } else {
-        temp.push( parseFloat((selection_obj.seq_freqs[n][i] / sum).toFixed(8)) );
+        temp.push( parseFloat(( selection_obj.seq_freqs[n][i] / sum ).toFixed(8)) );
       }
 
     }
     new_obj.push(temp);
   }
 
-  selection_obj.seq_freqs = new_obj;
-  return JSON.stringify(selection_obj);
+  return new_obj;
 }
 //
 //  MAX DS COUNT
@@ -649,10 +721,11 @@ function get_max_dataset_count(obj) {
   var max_count = 0;
   for (var n=0; n < obj.seq_freqs.length; n++) {
     var sum=0;
-//    todo: Andy, could you please check logic here?
-    for (var i = obj.seq_freqs[n].length; i === 0; i--) {
-      sum += obj.seq_freqs[n][i];
+    for (var i = 0; i < obj.seq_freqs[n].length; i++) {  
+      sum += parseInt(obj.seq_freqs[n][i]);
+      //console.log(obj.seq_freqs[n][i]);
     }
+    
     if (sum > max_count) {
       max_count = sum;
     }
