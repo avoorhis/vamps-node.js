@@ -20,6 +20,9 @@ a {
     border: 1px solid gray;
     z-index:-1;
 }
+#footer {
+    font: 9px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
 .content {
     margin: 30px 0 0 230px;  /* the menu is float left 200px */
     font: 11px "Lucida Grande", Helvetica, Arial, sans-serif;
