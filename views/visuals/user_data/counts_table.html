@@ -1,0 +1,29 @@
+<% include ../../add_ins/begin.ejs %>
+<div class='title'  >VAMPS Counts Table</div>
+  
+  Normalization: <%= JSON.parse(JSON.parse(data).body ).normalization %><br>
+  Units: <%= JSON.parse(JSON.parse(data).body ).unit_choice %><br>
+  Tax Depth: <%= JSON.parse(JSON.parse(data).body ).tax_depth %><br>
+  Include NAs: <%= JSON.parse(JSON.parse(data).body ).include_nas %><br>
+  Domains: <%= JSON.parse(JSON.parse(data).body ).domains %>
+  <table id='' name='' border='1'>
+  <tr>
+   		<td></td>
+   		<% for(var i in matrix.dataset_names) { %>
+   			<th><%= matrix.dataset_names[i] %></th>
+   		<% } %>
+ 	</tr>
+
+	<% for(var uname in matrix.unit_names) { %>
+		<tr>
+			<td><%= uname %></td>
+			<% for(k in matrix.unit_names[uname]) { %>
+			<td><%= matrix.unit_names[uname][k] %></td>
+			<% } %>
+		</tr>
+	<% } %>
+
+	</table>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<% include ../../add_ins/end.ejs %>
+<div id='DEBUG_div'></div>
