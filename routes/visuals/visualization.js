@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var helpers = require('../helpers');
+var util = require('util');
+var url = require('url');
 var app = express();
 
 
@@ -31,7 +33,7 @@ router.post('/view_selection',  function(req, res) {
   req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   
   // NORMALIZATION:
-  var normalization       = req.body.normalization || 'none';
+  var normalization  = req.body.normalization || 'none';
   if (normalization === 'max' || normalization === 'freq') {
     req.body.selection_obj.seq_freqs = normalize_counts(normalization, req.body.selection_obj);
   }
@@ -86,30 +88,41 @@ router.post('/view_selection',  function(req, res) {
   // }
 
   // Get matrix data here
-  // What is the SQL?
   // The visuals have been selected so now we need to create them
   // so they can be shown fast when selected
   req.db.query(unit_name_query, function(err, rows, fields){
     if (err) {
       throw err;
     } else {
+      
       matrix = output_matrix( 'to_console',  req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
-      console.log(matrix)
-      for (k=0; k < req.body.visuals.length; k++) {
-        if (req.body.visuals[k] === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
+      //req.body.matrix = JSON.stringify(matrix);
+      var timestamp = +new Date();  // millisecs since the epoch!
+      
+      console.log(JSON.stringify(req.body,null,2));
+      console.warn(util.inspect(matrix));
+      //console.warn(util.inspect(matrix.dataset_names));
+      //console.warn(util.inspect(matrix.unit_names));
+      //for (k=0; k < req.body.visuals.length; k++) {
+        //if (req.body.visuals[k]  === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
         //if (req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
         //if (req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
         //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
         //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
-      }
-       res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
-                                        body: JSON.stringify(req.body),
-                                        user: req.user
+      //}
+      res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
+                                        body   : JSON.stringify(req.body),  
+                                        matrix : JSON.stringify(matrix),  
+                                        timestamp : timestamp,           // for creating unique files/pages                            
+                                        user   : req.user
                    });
-
     }
-  });
+    });
+      
+
+    
+ 
  
 });
 
@@ -228,6 +241,21 @@ router.post('/unit_selection',  function(req, res) {
       }
 
     }
+    // Adds dataset_ids that were selected but have no sequences
+    // not sure if this will be needed in production
+    for (var n=0; n < req.body.dataset_ids.length; n++){
+      var items = req.body.dataset_ids[n].split('--');
+      var did = items[0];
+      if(accumulator.dataset_ids.indexOf(did.toString()) === -1 || accumulator.dataset_ids.indexOf(did.toString()) === 'undefined'){
+        console.log('1 '+did)
+        accumulator.dataset_ids.push(did);
+        accumulator.seq_ids.push([]);
+        accumulator.seq_freqs.push([]);
+        for (u=0; u < available_units.length; u++) {
+          accumulator.unit_assoc[available_units[u]].push([]);
+        }
+      }
+    }
     GLOBAL.dataset_accumulator = accumulator;
     console.log(JSON.stringify(accumulator,null,4));
 
@@ -264,20 +292,49 @@ router.get('/index_visuals',  function(req, res) {
                                   });
 });
 
-/*
- *  VISUALS PAGES
- */
-// router.get('/counts_table',  function(req, res) {
-//     res.render('visuals/counts_table', {
-//       body         : JSON.stringify(req.body),
-//       user: req.user
-//     });
+//
+// USER_DATA VISUALS PAGES
+//
+// router.post('/user_data/counts_table',  function(req, res) {
+  
+//   res.render('visuals/user_data/counts_table', { title   : 'Counts',  
+//                                  data : JSON.stringify(req.body),                               
+//                                  user: req.user
+//            });
 // });
-// router.get('/heatmap',  function(req, res) {
-//     res.render('visuals/heatmap', {
-//       body         : JSON.stringify(req.body),
-//       user: req.user
-//     });
+// router.post('/user_data/heatmap',  function(req, res) {
+//   res.render('visuals/user_data/heatmap', { title   : 'Heatmap',
+//                                  user: req.user
+//                                   });
+// });
+// router.post('/user_data/barcharts',  function(req, res) {
+//   res.render('visuals/user_data/barcharts', { title   : 'BarCharts',
+//                                  user: req.user
+//                                   });
+// });
+router.get('/user_data/counts_table', function(req, res) {
+  console.log('in vis w/ timestamp')
+  console.log(req.params.timestamp)
+  console.log(req.url)
+  myurl = url.parse(req.url, true);
+  console.log(myurl)
+  res.render('visuals/user_data/counts_table2', {
+    title: req.params.title || 'default_title',
+    timestamp: myurl.query.ts || 'default_timestamp',
+    user: req.user
+
+  });
+});
+// router.get('/user_data/ctable/:title/:timestamp', function(req, res) {
+//   console.log('in vis w/ timestamp')
+//   console.log(req.params.timestamp)
+//   console.log(req.params.title)
+//   res.render('visuals/user_data/ctable', {
+//     title: req.params.title || 'default_title',
+//     timestamp: req.params.timestamp || 'default_timestamp',
+//     user: req.user
+
+//   });
 // });
 
 /*
@@ -287,7 +344,7 @@ router.get('/index_visuals',  function(req, res) {
 *       on that page.  AAV
 */
 router.get('/partials/tax_silva108_simple',  function(req, res) {
-    res.render('visuals/partials/tax_silva108_simple',{
+    res.render('visuals/partials/tax_silva108_simple', {
         doms: req.C.DOMAINS
     });
 });
@@ -450,11 +507,10 @@ function create_counts_table( db, body ) {
   // will be seen and accessed by the router.   AAV
 
   //console.log(b)
-  var ms = +new Date();  // millisecs since the epoch
-  var page = 'user_pages/counts_table'+ms+'.html';
+  var ms = +new Date();  // millisecs since the epoch!
+  //var page = 'user_pages/counts_table'+ms+'.html';
+  var page = 'user_data/counts_table'
   var selection_obj         = body.selection_obj;
-
-  
 
   var dataset_ids = selection_obj.dataset_ids;
   var units       = body.unit_choice;
@@ -574,7 +630,7 @@ function output_matrix(to_loc, body, rows ) {
     matrix_with_names.unit_names[name] = [];
     for (var c in counts) {
       mtx += counts[c].toString() + "\t";
-      matrix_with_names.unit_names[name].push(counts[c].toString());
+      matrix_with_names.unit_names[name].push(counts[c]);
     }
     mtx += "\n";
   }
@@ -589,6 +645,10 @@ function output_matrix(to_loc, body, rows ) {
   return matrix_with_names;
   
 }
+
+//
+//
+//
 function get_taxonomy_query( db, uitems, body ) {
   console.log(body);
   selection_obj = body.selection_obj;
@@ -653,7 +713,13 @@ function get_taxonomy_query( db, uitems, body ) {
   
   var tax_query = "SELECT distinct t.id, concat_ws(';',"+fields+") as tax FROM taxonomies as t\n";
   tax_query     += joins;
-  tax_query     += " WHERE t.id in (" + selection_obj.unit_assoc[uassoc] + ")\n";
+  
+  unit_id_array = []
+  for(var n in selection_obj.unit_assoc[uassoc]){
+    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
+
+  }
+  tax_query     += " WHERE t.id in (" + unit_id_array + ")\n";
   tax_query     += and_domain_in;
   return tax_query;
 
@@ -692,7 +758,7 @@ function normalize_counts(norm_type, selection_obj) {
   //selection_obj.max_ds_count = max_count;
   console.log('in normalization: '+norm_type+' max: '+max_count.toString());
 
-  var new_obj = [];
+  var new_counts_obj = [];
   for (var n=0; n < selection_obj.seq_freqs.length; n++) {
     var sum=0;
     for (var i = 0; i < selection_obj.seq_freqs[n].length; i++ ) {
@@ -702,16 +768,16 @@ function normalize_counts(norm_type, selection_obj) {
     for (i=0; i < selection_obj.seq_freqs[n].length; i++) {
 
       if (norm_type === 'max') {
-        temp.push( parseInt(( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
-      } else {
-        temp.push( parseFloat(( selection_obj.seq_freqs[n][i] / sum ).toFixed(8)) );
+        temp.push( parseInt( ( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
+      } else {  // freq
+        temp.push( parseFloat( ( selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
       }
 
     }
-    new_obj.push(temp);
+    new_counts_obj.push(temp);
   }
 
-  return new_obj;
+  return new_counts_obj;
 }
 //
 //  MAX DS COUNT

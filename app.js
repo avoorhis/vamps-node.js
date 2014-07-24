@@ -1,4 +1,5 @@
 var express = require('express');
+var router = express.Router();
 var session = require('express-session');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -76,6 +77,25 @@ app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 
+// for non-routing pages such as heatmap, counts and bar_charts
+app.get('/*', function(req, res, next){
+    console.warn(req.params)
+    console.warn(req.uri)
+    var url = req.params[0];
+    // I want to create a page like: counts_table_2014080_13452.html
+    // for each link
+    if(url === 'visuals/user_data/ctable.html') { // 
+        // Yay this is the File A... 
+        console.warn("The user file  has been requested")
+        router.get('/visuals/user_data/ctable.html',  function(req, res) {
+            console.warn('trying to open ctable.html')
+        });
+    } else {
+        // we don't care about any other file, let it download too        
+        console.warn("No Route Found")
+        next()
+    }
+});
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
