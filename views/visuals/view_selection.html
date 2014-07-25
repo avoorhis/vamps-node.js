@@ -43,16 +43,11 @@
           <td>
             <div id='show_visuals_links_div'>
               <% b = JSON.parse(body) %>
+              <% ts = timestamp %>
               <% for (var i in b.visuals) { %>
-                <% link = 'user_data/'+b.visuals[i]  %>
-                <form id='' name='<%= b.visuals[i] %>' action='<%= link %>' method='POST' target='_blank'>
-                  <input type='hidden' value='<%= body %>' name='body' />
-                  <input type='hidden' value='<%= JSON.stringify(matrix) %>' name='matrix' />
-                  <input type='submit' value='<%= b.visuals[i] %>' />
-                </form>
-                <% title = b.visuals[i] %>
-                <% ts = timestamp %>
-                <a href='user_data/counts_table/?ts=<%= ts %>' ><%= b.visuals[i] %></a>
+                <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                
+                <% title = b.visuals[i] %>                
+                <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a><br>
               <% } %>
              
             </div>
