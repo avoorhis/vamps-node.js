@@ -80,3 +80,7 @@
 .tax_select a:link {
     text-decoration: none;
 }
+
+.counts_table {
+    background: yellow;
+}
