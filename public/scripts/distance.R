@@ -1,10 +1,10 @@
 args <- commandArgs(TRUE)
 #print(args)  ;
-matrix_in <- args[1]
+matrix_in <- args[1]  # file name
 metric <- args[2]   # horn or jaccard
 
 
-data_matrix<-read.delim(matrix_in, header=T,sep="\t",check.names=TRUE,row.names=1);
+data_matrix<-read.delim(matrix_in, header=T,sep="\t",check.names=FALSE,row.names=1);
 #print(data_matrix);
 
 # IMPORTANT!! must remove last line IF rowname=='ORIGINAL_SUMS'
@@ -12,11 +12,6 @@ rowcount<-nrow(data_matrix)
 last_name = row.names(data_matrix)[rowcount]
 #print(rowcount)
 #print(last_name)
-if(last_name == 'ORIGINAL_SUMS'){
-    # remove it -- it screws up the dist calculation
-    
-    data_matrix <- data_matrix[1:rowcount-1,]
-}
 
 # get rid of datasets with zero sum over all the taxa:
 data_matrix<-data_matrix[,colSums(data_matrix) > 0]
@@ -29,7 +24,7 @@ require(vegan,quietly=TRUE);
 dis <- as.matrix(0)
 if(metric == "horn" || metric == "Morisita-Horn"){
     stand <-decostand(data.matrix(biods),"total");
-   dis<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
+   dis<-vegdist(stand, method="horn",upper=TRUE,binary=FALSE);
 }else if(metric == "yue-clayton" || metric == "Yue-Clayton"){ 
   stand <-decostand(data.matrix(biods),"total");
   dis<-designdist(stand, method="1-(J/(A+B-J))",terms = c( "quadratic"), abcd = FALSE)
