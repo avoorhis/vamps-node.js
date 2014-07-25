@@ -3,6 +3,9 @@ var router = express.Router();
 var helpers = require('../helpers');
 var util = require('util');
 var url = require('url');
+var http = require('http');
+var path = require('path');
+var fs = require('fs');
 var app = express();
 
 
@@ -54,16 +57,16 @@ router.post('/view_selection',  function(req, res) {
   }else{
     //error
   }
-  console.log(unit_name_query);
+  //console.log(unit_name_query);
   req.body.selection_obj.counts_matrix = fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
   
   
   
   
   
-  console.log('START BODY>> in route/visualization.js /view_selection');
-  console.log(JSON.stringify(req.body,null,3));
-  console.log('<<END BODY');
+  //console.log('START BODY>> in route/visualization.js /view_selection');
+  //console.log(JSON.stringify(req.body,null,3));
+  //console.log('<<END BODY');
   var links = {};
   
  
@@ -95,22 +98,25 @@ router.post('/view_selection',  function(req, res) {
       throw err;
     } else {
       
-      matrix = output_matrix( 'to_console',  req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
-      //req.body.matrix = JSON.stringify(matrix);
       var timestamp = +new Date();  // millisecs since the epoch!
+      var user = req.user || 'no-user';
+      timestamp = user + '_' + timestamp;
+
+      matrix = output_matrix( 'to_file_and_console', timestamp, req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
+      //req.body.matrix = JSON.stringify(matrix);
       
-      console.log(JSON.stringify(req.body,null,2));
-      console.warn(util.inspect(matrix));
+      //console.log(JSON.stringify(req.body,null,2));
+      //console.warn(util.inspect(matrix));
       //console.warn(util.inspect(matrix.dataset_names));
       //console.warn(util.inspect(matrix.unit_names));
-      //for (k=0; k < req.body.visuals.length; k++) {
-        //if (req.body.visuals[k]  === 'counts_table'){ links.countstable = ''; create_counts_table(req.db, req.body);}
-        //if (req.body.visuals[k]  === 'heatmap'){ links.heatmap = ''; create_heatmap(req.body);}
-        //if (req.body.visuals[k]  === 'barcharts'){links.barcharts = ''; create_barcharts(req.body);}
+      for (k=0; k < req.body.visuals.length; k++) {
+        if (req.body.visuals[k]  === 'counts_table'){ create_counts_table_html(timestamp, matrix, req.body); }
+        if (req.body.visuals[k]  === 'heatmap')     { create_heatmap_html(timestamp, matrix, req.body);}
+        if (req.body.visuals[k]  === 'barcharts')   { create_barcharts_html(timestamp, matrix, req.body);}
         //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
         //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
-      //}
+      }
       res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
                                         body   : JSON.stringify(req.body),  
                                         matrix : JSON.stringify(matrix),  
@@ -313,29 +319,39 @@ router.get('/index_visuals',  function(req, res) {
 //                                   });
 // });
 router.get('/user_data/counts_table', function(req, res) {
-  console.log('in vis w/ timestamp')
-  console.log(req.params.timestamp)
-  console.log(req.url)
-  myurl = url.parse(req.url, true);
-  console.log(myurl)
-  res.render('visuals/user_data/counts_table2', {
-    title: req.params.title || 'default_title',
-    timestamp: myurl.query.ts || 'default_timestamp',
-    user: req.user
-
+  
+  var myurl = url.parse(req.url, true);
+  //console.log(myurl)
+  var ts = myurl.query.ts;
+  var file = '../../tmp/'+ts+'_counts_table.html';
+  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
+    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    res.render('visuals/user_data/counts_table', {
+      title: req.params.title   || 'default_title',
+      timestamp: myurl.query.ts || 'default_timestamp',
+      html : html,
+      user: req.user
+    });
   });
 });
-// router.get('/user_data/ctable/:title/:timestamp', function(req, res) {
-//   console.log('in vis w/ timestamp')
-//   console.log(req.params.timestamp)
-//   console.log(req.params.title)
-//   res.render('visuals/user_data/ctable', {
-//     title: req.params.title || 'default_title',
-//     timestamp: req.params.timestamp || 'default_timestamp',
-//     user: req.user
-
-//   });
-// });
+//
+//
+//
+router.get('/user_data/heatmap', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  //console.log(myurl)
+  var ts = myurl.query.ts;
+  var file = '../../tmp/'+ts+'_heatmap.html';
+  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
+    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    res.render('visuals/user_data/heatmap', {
+      title: req.params.title   || 'default_title',
+      timestamp: myurl.query.ts || 'default_timestamp',
+      html : html,
+      user: req.user
+    });
+  });
+});
 
 /*
 *   PARTIALS
@@ -495,26 +511,127 @@ function IsJsonString(str) {
 }
 
 //
-// COUNTS TABLE
+// CREATE COUNTS TABLE HTML
 //
-function create_counts_table( db, body ) {
+function create_counts_table_html( ts, matrix, body ) {
   // Intend to create (write) counts_table page here.
   // The page should have a timestamp and/or username appeneded to the file name
   // so that it is unique to the user.
   // The page should be purged when? -- after a certain length of time
   // or when the user leaves the page.
-  // Also I am having trouble understanding how this page (with a dynamic/unique name)
-  // will be seen and accessed by the router.   AAV
+  
+  var file = '../../tmp/'+ts+'_counts_table.html';
+  var html = "<div id='' class='counts_table_div' >";
+  var column_totals = {};
+  html += "<table border='1' class='counts_table' >";
+  html += "<tr><td></td>";
+  for(n in matrix.dataset_names) {
+    html += "<td>"+matrix.dataset_names[n]+"</td>";
+  }
+  html += "</tr>";  
+  var row_count = 0;
+  for(name in matrix.unit_names) {
+    
+    html += "<tr>";
+    html += "<td>"+name+"</td>";
+    var col_count = 0;
+    for(c in matrix.unit_names[name]) {
+      if(column_totals[col_count] === undefined){
+        column_totals[col_count] =  matrix.unit_names[name][c];
+      }else{
+        column_totals[col_count] +=  matrix.unit_names[name][c];
+      }
+      
+      html += "<td>"+matrix.unit_names[name][c]+"</td>";
+      col_count += 1;
+    }
+    html += "</tr>";
+    row_count += 1;
+  }
+  html += "<tr><td></td>";
+  for(n in column_totals) {
+    html += "<td>"+column_totals[n]+"</td>";
+  }
+  html += "</tr>";
+  html += "</table>";
+  html += "</div>"
+  //console.log(column_totals)
+  fs.writeFile(path.resolve(__dirname, file), html, function(err) {
+    if(err) {
+      console.log('Could not write file: '+file+' Here is the error: '+err);
+    } else {
+      console.log("The file ("+file+") was saved!");
+    }
+  });
+}
+//
+// CREATE HEATMAP HTML
+//
+function create_heatmap_html( ts, matrix, body ) {
+  // write distance file usin R
+  console.log(JSON.stringify(body.selection_obj.counts_matrix))
+  console.log(matrix)
+  var spawn = require('child_process').exec;
+  var env = process.env
+  var file = '../../tmp/'+ts+'_heatmap.html';
+  var html = "";
+  
+  var matrix_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
+  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
+  var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
+  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_file +' horn';
+  var R      = spawn(command, function (error, stdout, stderr) {
+    
+    console.log('stderr: ' + stderr);
+    raw_distance_array = stdout.toString().split('\n');
+    console.log('distance array:')
+    console.log(raw_distance_array);
+    var distance_matrix = {}
+    for(row in raw_distance_array){
+      //console.log(raw_distance_array[row]);
+      if(raw_distance_array[row].indexOf("    ") == 0){   // starts with epty spaces
+        //console.log(raw_distance_array[row])
+        ds = raw_distance_array[row].trim()
+        if(ds in distance_matrix) {
 
-  //console.log(b)
-  var ms = +new Date();  // millisecs since the epoch!
-  //var page = 'user_pages/counts_table'+ms+'.html';
-  var page = 'user_data/counts_table'
-  var selection_obj         = body.selection_obj;
+        }else{
+          distance_matrix[ds] = {}
+        }        
+      }else{
+        items = raw_distance_array[row].split(/\s+/);
+        console.log('items0 ' +items[0])
+        console.log('items1 ' +items[1])
+        //console.log(items[1])
+        if(items.length === 1){
+          //console.log(raw_distance_array[row])
+        }
+      }
 
-  var dataset_ids = selection_obj.dataset_ids;
-  var units       = body.unit_choice;
 
+    }
+    console.log(distance_matrix)
+    // this is to write the html to show the colored heatmap
+    // input should be the html itself
+    fs.writeFile(path.resolve(__dirname, file), html, function(err) {
+      if(err) {
+       console.log('Could not write file: '+file+' Here is the error: '+err);
+      } else {
+       console.log("The file ("+file+") was saved!");
+      }
+    });
+
+  });
+
+  
+
+  
+
+  
+}
+//
+//  CREATE BARCHARTS HTML
+//
+function create_barcharts_html( ts, matrix, body ) {
 }
 //
 // C R E A T E  M A T R I X
@@ -598,49 +715,73 @@ function fill_in_counts_matrix(selection_obj, field) {
 //
 //
 
-function output_matrix(to_loc, body, rows ) {
+function output_matrix(to_loc, ts, body, rows ) {
   
   // need chosen units, tax depth(if applicable), db
   selection_obj = body.selection_obj
   name_hash = body.chosen_id_name_hash
-  //console.log(name_hash);
   
-
   var matrix_with_names = {};
   matrix_with_names.dataset_names = [];
   matrix_with_names.unit_names = []
-  
+  var unit_name_lookup = {}
 
-  var mtx = "\t";
+  for (var r=0; r < rows.length; r++){
+    id = rows[r].id;
+    name = rows[r].tax;
+    counts = selection_obj.counts_matrix[id];
+    if(name in unit_name_lookup) {
+      for (var c in counts) {
+        unit_name_lookup[name][c] += counts[c]
+      }
+    }else{
+      unit_name_lookup[name] = []
+      for (var c in counts) {
+        unit_name_lookup[name].push(counts[c])
+      }
+    }
+  }
 
+  var mtx = "";
   for (var did in selection_obj.dataset_ids) {
     
     var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
-    mtx += name_hash.names[ index ] + "\t";
+    mtx += "\t" + name_hash.names[ index ];
     matrix_with_names.dataset_names.push(name_hash.names[ index ]);
   }
   mtx += "\n";
   
-  for (var r=0; r < rows.length; r++){
-    //console.log(rows[r]);
-    id = rows[r].id;
-    name = rows[r].tax;
-    counts = selection_obj.counts_matrix[id];
-    mtx += name + "\t";
-    matrix_with_names.unit_names[name] = [];
-    for (var c in counts) {
-      mtx += counts[c].toString() + "\t";
-      matrix_with_names.unit_names[name].push(counts[c]);
+  matrix_with_names.unit_names = unit_name_lookup;
+  
+  for(var uname in unit_name_lookup) {
+    mtx += uname;
+    for (var c in unit_name_lookup[uname]) {
+      mtx += "\t" + unit_name_lookup[uname][c].toString();
     }
     mtx += "\n";
   }
-  mtx += "\n";
+
   //console.log(matrix_with_names);
   
   if(to_loc === 'to_console') {
     console.log(mtx);
   }else{
+    //console.log('mtx1');
+    //console.log(mtx);
+    //console.log(matrix_with_names);
+    //console.log('mtx2');
     // to file
+    var file = '../../tmp/'+ts+'_text_matrix.mtx';
+    var html = mtx;
+    fs.writeFile(path.resolve(__dirname, file), html, function(err) {
+      if(err) {
+        console.log('Could not write file: '+file+' Here is the error: '+err);
+      } else {
+        console.log("The file ("+file+") was saved!");
+      }
+    });
+
+
   }
   return matrix_with_names;
   
@@ -727,26 +868,7 @@ function get_taxonomy_query( db, uitems, body ) {
 
 
 
-//}
-//
-// HEATMAP
-//
-function create_heatmap(b) {
-  console.log('in create_hetamap');
-  console.log(b);
-}
-//
-// ALPHA DIVERSITY
-//
-function create_alpha_diversity() {
 
-}
-//
-//  BAR CHARTS
-//
-function create_barcharts() {
-
-}
 //
 // NORMALIZATION
 //
