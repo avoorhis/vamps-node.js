@@ -20,7 +20,7 @@ config.UNITSELECT = { units: [
     ]};
 
 config.VISUALOUTPUTCHOICES = { visulachoices: [
-        {id : 'heatmap',        show: 'Heatmap'},
+        {id : 'heatmap',        show: 'Distance Heatmap'},
         {id : 'counts_table',   show: 'Counts Table'},
         {id : 'barcharts',      show: 'Bar Charts'},
         {id : 'dendrogram',     show: 'Dendrogram'},
@@ -32,7 +32,24 @@ config.NORMALIZATIONCHOICES = { normchoices: [
         {id: 'max',             show: 'Normalized to the Maximum Sample'},
         {id: 'freq',            show: 'Normalized to Frequency'}
     ]};
-
+config.DISTANCECHOICES = { distchoices: [
+        {id: 'morisita_horn',   show: 'Morisita-Horn'},
+        {id: 'jaccard',         show: 'Jaccard'},
+        {id: 'yue_clayton',      show: 'Yue-Clayton'},
+        {id: 'bray_curtis',     show: 'Bray-Curtis'},
+        {id: 'manhattan',       show: 'Manhattan'},
+        {id: 'raup',            show: 'Raup'},
+        {id: 'gower',           show: 'Gower'},
+        {id: 'euclidean',       show: 'Euclidean'},
+        {id: 'canberra',        show: 'Canberra'},
+        {id: 'kulczynski',      show: 'Kulczynski'},
+        {id: 'mountford',       show: 'Mountford'},
+        {id: 'chao_j',          show: 'Chao J'},
+        {id: 'chao_s',          show: 'Chao S'},
+        {id: 'pearson',         show: 'Pearson'},
+        {id: 'correlation',     show: 'Correlation'},
+        {id: 'spearman',        show: 'Spearman'}
+    ]};
 
 // This List MUST match the fields in sequence_uniq_infos
 config.AVAILABLE_UNITS = ['tax_silva108_id', 'tax_gg_id', 'med_node_id', 'otu_id'];

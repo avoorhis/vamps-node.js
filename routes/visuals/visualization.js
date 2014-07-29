@@ -31,7 +31,7 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  //console.log(JSON.parse(req.body,null,2));
+  //console.log(req.body);
   req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   
@@ -111,7 +111,7 @@ router.post('/view_selection',  function(req, res) {
       //console.warn(util.inspect(matrix.unit_names));
       for (k=0; k < req.body.visuals.length; k++) {
         if (req.body.visuals[k]  === 'counts_table'){ create_counts_table_html(timestamp, matrix, req.body); }
-        if (req.body.visuals[k]  === 'heatmap')     { create_heatmap_html(timestamp, matrix, req.body);}
+        if (req.body.visuals[k]  === 'heatmap')     { create_heatmap_html(timestamp, matrix, req.body.selected_distance, req.body);}
         if (req.body.visuals[k]  === 'barcharts')   { create_barcharts_html(timestamp, matrix, req.body);}
         //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
         //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
@@ -119,7 +119,8 @@ router.post('/view_selection',  function(req, res) {
       }
       res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
                                         body   : JSON.stringify(req.body),  
-                                        matrix : JSON.stringify(matrix),  
+                                        matrix : JSON.stringify(matrix), 
+                                        constants    : JSON.stringify(req.C), 
                                         timestamp : timestamp,           // for creating unique files/pages                            
                                         user   : req.user
                    });
@@ -567,49 +568,104 @@ function create_counts_table_html( ts, matrix, body ) {
 //
 // CREATE HEATMAP HTML
 //
-function create_heatmap_html( ts, matrix, body ) {
+function create_heatmap_html( ts, matrix, selected_distance, body ) {
   // write distance file usin R
-  console.log(JSON.stringify(body.selection_obj.counts_matrix))
-  console.log(matrix)
+  //console.log(JSON.stringify(body.selection_obj.counts_matrix))
+  //console.log(matrix)
   var spawn = require('child_process').exec;
   var env = process.env
   var file = '../../tmp/'+ts+'_heatmap.html';
   var html = "";
-  
+  var items;
+  var dname;
   var matrix_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
   var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
   var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_file +' horn';
+  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_file +' '+selected_distance;
   var R      = spawn(command, function (error, stdout, stderr) {
-    
-    console.log('stderr: ' + stderr);
+    console.log('R command: ' + command);
+    //console.log('stderr: ' + stderr);
     raw_distance_array = stdout.toString().split('\n');
-    console.log('distance array:')
-    console.log(raw_distance_array);
+    //console.log('distance array (stdout):')
+    //0console.log(raw_distance_array);
     var distance_matrix = {}
+    // distance_matrix[ds1][ds2] = 2
+    // 
     for(row in raw_distance_array){
-      //console.log(raw_distance_array[row]);
-      if(raw_distance_array[row].indexOf("    ") == 0){   // starts with epty spaces
-        //console.log(raw_distance_array[row])
-        ds = raw_distance_array[row].trim()
-        if(ds in distance_matrix) {
+      if( ! raw_distance_array[row] ) { continue; }
+      //console.log('-->'+raw_distance_array[row]+'<--');
+      
+
+
+      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
+        //console.log('found tab')
+        dcolname = raw_distance_array[row].trim()
+        if(dcolname in distance_matrix){
 
         }else{
-          distance_matrix[ds] = {}
-        }        
-      }else{
-        items = raw_distance_array[row].split(/\s+/);
-        console.log('items0 ' +items[0])
-        console.log('items1 ' +items[1])
-        //console.log(items[1])
-        if(items.length === 1){
-          //console.log(raw_distance_array[row])
+          distance_matrix[dcolname] = {}
+          distance_matrix[dcolname][dcolname] = 0;
         }
+        
+        
+        continue;       
       }
+        
+      items = raw_distance_array[row].trim().split(/\s+/); // The length can only be 1 or 2 
+      //console.log(raw_distance_array[row])
+      //console.log('items0 ' +items[0])
+      //console.log('items1 ' +items[1])
+      //console.log(items.length)
+      if(items.length == 1){
+        if(items[0] === dcolname){
+          distance_matrix[dcolname][items[0]] = 0;
+        }else{
+          // do nothing no distance here
+        }
+        
+        
+      
 
+      }else{  // length == 2
+        //distance_matrix[dname][items[0]] = parseFloat(items[1]);
+        distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
+        
+        
+          if(items[0] in distance_matrix){
+            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+            //console.log('a '+dcolname+' - '+items[0])
 
+          }else{
+            //console.log('b '+dcolname+' - '+items[0])
+            distance_matrix[items[0]] = {}
+
+            distance_matrix[items[0]][items[0]] = 0
+            
+            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+            distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
+          }
+         
+     
+        
+      }      
     }
     console.log(distance_matrix)
+    
+    html += "<table border='1' class='counts_table' >";
+    html += '<tr><td></td>';
+    for(x_dname in distance_matrix) {
+      html += '<td>'+x_dname+'</td>';
+    }
+    html += '</tr>';
+    for(x_dname in distance_matrix) {
+      html += '<tr>';
+      html += '<td>'+x_dname+'</td>';
+      for(y_dname in distance_matrix[x_dname]) {
+        html += '<td>'+distance_matrix[x_dname][y_dname]+'</td>';
+      }
+      html += '</tr>';
+    }
+    html += '</table>';
     // this is to write the html to show the colored heatmap
     // input should be the html itself
     fs.writeFile(path.resolve(__dirname, file), html, function(err) {
