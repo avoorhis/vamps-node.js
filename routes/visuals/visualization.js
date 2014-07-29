@@ -1,11 +1,20 @@
 var express = require('express');
 var router = express.Router();
-var helpers = require('../helpers');
+
+
 var util = require('util');
 var url = require('url');
 var http = require('http');
 var path = require('path');
 var fs = require('fs');
+
+var COMMON  = require('./common');
+var HELPERS = require('../helpers');
+var MTX     = require('./counts_matrix');
+var HMAP    = require('./distance_heatmap');
+var BCHARTS = require('./bar_charts');
+var CTABLE  = require('./counts_table');
+
 var app = express();
 
 
@@ -33,12 +42,13 @@ router.post('/view_selection',  function(req, res) {
   //var body = JSON.parse(req.body);
   //console.log(req.body);
   req.body.selection_obj       = JSON.parse(req.body.selection_obj);
+  req.body.max_ds_count = COMMON.get_max_dataset_count(req.body.selection_obj);
   req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   
   // NORMALIZATION:
   var normalization  = req.body.normalization || 'none';
   if (normalization === 'max' || normalization === 'freq') {
-    req.body.selection_obj.seq_freqs = normalize_counts(normalization, req.body.selection_obj);
+    req.body.selection_obj = COMMON.normalize_counts(normalization, req.body);
   }
 
   
@@ -47,36 +57,26 @@ router.post('/view_selection',  function(req, res) {
   var unit_field;
   if (uitems[0] === 'tax'){  // covers both simple and custom
     unit_field = 'tax_silva108_id';
-    unit_name_query = get_taxonomy_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, req.body ) 
   }else if(uitems[0] === 'otus') {
     unit_field = 'otu_id';
-    unit_name_query = get_otus_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_otus_query( req.db, uitems, req.body ) 
   }else if(uitems[0] === 'med_nodes') {
     unit_field = 'med_node_id';
-    unit_name_query = get_med_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_med_query( req.db, uitems, req.body ) 
   }else{
     //error
   }
-  //console.log(unit_name_query);
-  req.body.selection_obj.counts_matrix = fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
+  console.log(unit_name_query);
+  req.body.selection_obj.counts_matrix = MTX.fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
   
   
-  
-  
+
   
   //console.log('START BODY>> in route/visualization.js /view_selection');
-  //console.log(JSON.stringify(req.body,null,3));
+  //console.log(JSON.stringify(req.body));
   //console.log('<<END BODY');
-  var links = {};
   
- 
-  //    seq_ids  : [id1,id2,id3...],
-  //    tax_id1 : [tct1,0,tid3...],
-  //    tax_id2 : [tct4,tct5,tct6...],
-  //    tax_id3 : [tct7,tct8,0...]
-  //    ....
-  //  }
-
   //var old_sid = 'x';
   //var tids = [96,214,82,214,137];
   //var vals = [2,103,8,203,3];
@@ -102,24 +102,38 @@ router.post('/view_selection',  function(req, res) {
       var user = req.user || 'no-user';
       timestamp = user + '_' + timestamp;
 
-      matrix = output_matrix( 'to_file_and_console', timestamp, req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
+      count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
+      // This is what matrix looks like (a different matrix is written to file)
+      // { 
+      //  dataset_names: 
+      //    [ 'SLM_NIH_Bv4v5--03_Junction_City_East',
+      //      'SLM_NIH_Bv4v5--02_Spencer',
+      //      'SLM_NIH_Bv4v5--01_Boonville' 
+      //    ],
+      //  unit_names: 
+      //    { 'Bacteria;Proteobacteria': [ 4, 2, 4 ],
+      //      'Bacteria;Bacteroidetes': [ 272, 401, 430 ] 
+      //    } 
+      //  }
+
       //req.body.matrix = JSON.stringify(matrix);
       
       //console.log(JSON.stringify(req.body,null,2));
       //console.warn(util.inspect(matrix));
+      //console.log(dataset_accumulator)
       //console.warn(util.inspect(matrix.dataset_names));
       //console.warn(util.inspect(matrix.unit_names));
       for (k=0; k < req.body.visuals.length; k++) {
-        if (req.body.visuals[k]  === 'counts_table'){ create_counts_table_html(timestamp, matrix, req.body); }
-        if (req.body.visuals[k]  === 'heatmap')     { create_heatmap_html(timestamp, matrix, req.body.selected_distance, req.body);}
-        if (req.body.visuals[k]  === 'barcharts')   { create_barcharts_html(timestamp, matrix, req.body);}
+        if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, req.body ); } // 
+        if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp
+        if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, req.body ); }
         //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
         //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
       }
-      res.render('visuals/view_selection',{ title   : 'VAMPS: Visualization',
+      res.render('visuals/view_selection', { title   : 'VAMPS: Visualization',
                                         body   : JSON.stringify(req.body),  
-                                        matrix : JSON.stringify(matrix), 
+                                        matrix : JSON.stringify(count_matrix), 
                                         constants    : JSON.stringify(req.C), 
                                         timestamp : timestamp,           // for creating unique files/pages                            
                                         user   : req.user
@@ -511,469 +525,13 @@ function IsJsonString(str) {
     return true;
 }
 
-//
-// CREATE COUNTS TABLE HTML
-//
-function create_counts_table_html( ts, matrix, body ) {
-  // Intend to create (write) counts_table page here.
-  // The page should have a timestamp and/or username appeneded to the file name
-  // so that it is unique to the user.
-  // The page should be purged when? -- after a certain length of time
-  // or when the user leaves the page.
-  
-  var file = '../../tmp/'+ts+'_counts_table.html';
-  var html = "<div id='' class='counts_table_div' >";
-  var column_totals = {};
-  html += "<table border='1' class='counts_table' >";
-  html += "<tr><td></td>";
-  for(n in matrix.dataset_names) {
-    html += "<td>"+matrix.dataset_names[n]+"</td>";
-  }
-  html += "</tr>";  
-  var row_count = 0;
-  for(name in matrix.unit_names) {
-    
-    html += "<tr>";
-    html += "<td>"+name+"</td>";
-    var col_count = 0;
-    for(c in matrix.unit_names[name]) {
-      if(column_totals[col_count] === undefined){
-        column_totals[col_count] =  matrix.unit_names[name][c];
-      }else{
-        column_totals[col_count] +=  matrix.unit_names[name][c];
-      }
-      
-      html += "<td>"+matrix.unit_names[name][c]+"</td>";
-      col_count += 1;
-    }
-    html += "</tr>";
-    row_count += 1;
-  }
-  html += "<tr><td></td>";
-  for(n in column_totals) {
-    html += "<td>"+column_totals[n]+"</td>";
-  }
-  html += "</tr>";
-  html += "</table>";
-  html += "</div>"
-  //console.log(column_totals)
-  fs.writeFile(path.resolve(__dirname, file), html, function(err) {
-    if(err) {
-      console.log('Could not write file: '+file+' Here is the error: '+err);
-    } else {
-      console.log("The file ("+file+") was saved!");
-    }
-  });
-}
-//
-// CREATE HEATMAP HTML
-//
-function create_heatmap_html( ts, matrix, selected_distance, body ) {
-  // write distance file usin R
-  //console.log(JSON.stringify(body.selection_obj.counts_matrix))
-  //console.log(matrix)
-  var spawn = require('child_process').exec;
-  var env = process.env
-  var file = '../../tmp/'+ts+'_heatmap.html';
-  var html = "";
-  var items;
-  var dname;
-  var matrix_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
-  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
-  var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_file +' '+selected_distance;
-  var R      = spawn(command, function (error, stdout, stderr) {
-    console.log('R command: ' + command);
-    //console.log('stderr: ' + stderr);
-    raw_distance_array = stdout.toString().split('\n');
-    //console.log('distance array (stdout):')
-    //0console.log(raw_distance_array);
-    var distance_matrix = {}
-    // distance_matrix[ds1][ds2] = 2
-    // 
-    for(row in raw_distance_array){
-      if( ! raw_distance_array[row] ) { continue; }
-      //console.log('-->'+raw_distance_array[row]+'<--');
-      
 
-
-      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
-        //console.log('found tab')
-        dcolname = raw_distance_array[row].trim()
-        if(dcolname in distance_matrix){
-
-        }else{
-          distance_matrix[dcolname] = {}
-          distance_matrix[dcolname][dcolname] = 0;
-        }
-        
-        
-        continue;       
-      }
-        
-      items = raw_distance_array[row].trim().split(/\s+/); // The length can only be 1 or 2 
-      //console.log(raw_distance_array[row])
-      //console.log('items0 ' +items[0])
-      //console.log('items1 ' +items[1])
-      //console.log(items.length)
-      if(items.length == 1){
-        if(items[0] === dcolname){
-          distance_matrix[dcolname][items[0]] = 0;
-        }else{
-          // do nothing no distance here
-        }
-        
-        
-      
-
-      }else{  // length == 2
-        //distance_matrix[dname][items[0]] = parseFloat(items[1]);
-        distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-        
-        
-          if(items[0] in distance_matrix){
-            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-            //console.log('a '+dcolname+' - '+items[0])
-
-          }else{
-            //console.log('b '+dcolname+' - '+items[0])
-            distance_matrix[items[0]] = {}
-
-            distance_matrix[items[0]][items[0]] = 0
-            
-            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-            distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-          }
-         
-     
-        
-      }      
-    }
-    console.log(distance_matrix)
-    
-    html += "<table border='1' class='counts_table' >";
-    html += '<tr><td></td>';
-    for(x_dname in distance_matrix) {
-      html += '<td>'+x_dname+'</td>';
-    }
-    html += '</tr>';
-    for(x_dname in distance_matrix) {
-      html += '<tr>';
-      html += '<td>'+x_dname+'</td>';
-      for(y_dname in distance_matrix[x_dname]) {
-        html += '<td>'+distance_matrix[x_dname][y_dname]+'</td>';
-      }
-      html += '</tr>';
-    }
-    html += '</table>';
-    // this is to write the html to show the colored heatmap
-    // input should be the html itself
-    fs.writeFile(path.resolve(__dirname, file), html, function(err) {
-      if(err) {
-       console.log('Could not write file: '+file+' Here is the error: '+err);
-      } else {
-       console.log("The file ("+file+") was saved!");
-      }
-    });
-
-  });
 
   
 
   
 
   
-}
-//
-//  CREATE BARCHARTS HTML
-//
-function create_barcharts_html( ts, matrix, body ) {
-}
-//
-// C R E A T E  M A T R I X
-//
-function fill_in_counts_matrix(selection_obj, field) {
-  //selection_obj = JSON.parse(selection_obj);
-  var matrix = {};  
-  
-  var dataset_ids = selection_obj.dataset_ids;
-  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
-  var seq_freqs   = selection_obj.seq_freqs;      
-        
-  //    seq_ids  : [id1,id2,id3...],
-  //    tax_id1 : [tct1,0,tid3...],
-  //    tax_id2 : [tct4,tct5,tct6...],
-  //    tax_id3 : [tct7,tct8,0...]
-  //    ....
-  //  }
-
-  //var old_sid = 'x';
-  //var tids = [96,214,82,214,137];
-  //var vals = [2,103,8,203,3];
-
-  // for (i=0; i < tids.length; i++) {
-  //   id = tids[i]
-  //   if (id in tmp){
-  //     tmp[id][0] += vals[i]
-  //   } else {
-  //     tmp[id] = [vals[i]]
-  //   }
-  // }
-  var counts = {};
-  var unit_id_lookup = {};
-  var unit_ids = [];
-  var unit_id;
-  var tmp;
-  
-  for (var n=0; n < unit_assoc.length; n++) {
-
-        unit_ids = unit_assoc[n];
-        tmp = {};
-        counts[dataset_ids[n]] = {};
-        for (var i=0; i < unit_ids.length; i++) {
-            unit_id = unit_ids[i];
-            unit_id_lookup[unit_id]=1;
-            if (unit_id in tmp){
-              tmp[ unit_id ] += seq_freqs[n][i];
-            } else {
-              tmp[ unit_id ] = seq_freqs[n][i];
-            }
-        }
-        counts[ dataset_ids[n] ]=tmp;
-  }
-  //console.log(JSON.stringify(counts,null,4));
- //console.log(unit_id_lookup);
-// { '82': 8, '96': 2, '137': 3, '214': 306 }
-// { '82': 4, '96': 2, '214': 33 }
-// { '82': 1, '96': 1, '137': 1, '214': 277 }
-// { '82': 6, '96': 1, '137': 1, '214': 596 }
-// { '82': 1, '84': 4, '96': 2, '112': 1, '137': 1, '214': 75 }
-// { '82': 2, '96': 1, '112': 1, '214': 331 }
-  //var mtx = "\t";
-  
- 
-  for (var uid in unit_id_lookup) {  
-    matrix[uid]=[]  
-    
-    for (var did in counts) {
-      if(uid in counts[did]){
-        c = counts[did][uid];
-      }else{
-        c = 0;
-      }
-      matrix[uid].push(c);
-
-    }
-  }
-  return matrix;
-}
-//
-//
-//
-
-function output_matrix(to_loc, ts, body, rows ) {
-  
-  // need chosen units, tax depth(if applicable), db
-  selection_obj = body.selection_obj
-  name_hash = body.chosen_id_name_hash
-  
-  var matrix_with_names = {};
-  matrix_with_names.dataset_names = [];
-  matrix_with_names.unit_names = []
-  var unit_name_lookup = {}
-
-  for (var r=0; r < rows.length; r++){
-    id = rows[r].id;
-    name = rows[r].tax;
-    counts = selection_obj.counts_matrix[id];
-    if(name in unit_name_lookup) {
-      for (var c in counts) {
-        unit_name_lookup[name][c] += counts[c]
-      }
-    }else{
-      unit_name_lookup[name] = []
-      for (var c in counts) {
-        unit_name_lookup[name].push(counts[c])
-      }
-    }
-  }
-
-  var mtx = "";
-  for (var did in selection_obj.dataset_ids) {
-    
-    var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
-    mtx += "\t" + name_hash.names[ index ];
-    matrix_with_names.dataset_names.push(name_hash.names[ index ]);
-  }
-  mtx += "\n";
-  
-  matrix_with_names.unit_names = unit_name_lookup;
-  
-  for(var uname in unit_name_lookup) {
-    mtx += uname;
-    for (var c in unit_name_lookup[uname]) {
-      mtx += "\t" + unit_name_lookup[uname][c].toString();
-    }
-    mtx += "\n";
-  }
-
-  //console.log(matrix_with_names);
-  
-  if(to_loc === 'to_console') {
-    console.log(mtx);
-  }else{
-    //console.log('mtx1');
-    //console.log(mtx);
-    //console.log(matrix_with_names);
-    //console.log('mtx2');
-    // to file
-    var file = '../../tmp/'+ts+'_text_matrix.mtx';
-    var html = mtx;
-    fs.writeFile(path.resolve(__dirname, file), html, function(err) {
-      if(err) {
-        console.log('Could not write file: '+file+' Here is the error: '+err);
-      } else {
-        console.log("The file ("+file+") was saved!");
-      }
-    });
 
 
-  }
-  return matrix_with_names;
-  
-}
-
-//
-//
-//
-function get_taxonomy_query( db, uitems, body ) {
-  console.log(body);
-  selection_obj = body.selection_obj;
-  //selection_obj = body.selection_obj;
-  
-  if (uitems[0] === 'tax' && uitems[1] === 'silva108'){  //covers both simple and custom
-    uassoc = 'tax_silva108_id';
-  }
-  var domains = body.domain || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
-  var tax_depth = body.tax_depth || 'phylum';
-  var fields = [];
-  var joins = '';
-  var and_domain_in = '';
-  if (tax_depth === 'domain') {
-    fields = ['domain'];
-    joins = " JOIN domains  as dom on (t.domain_id=dom.id)";
-  } else if (tax_depth === 'phylum') {
-    fields = ['domain','phylum'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-  } else if (tax_depth === 'class')  {
-    fields = ['domain','phylum','klass'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-  } else if (tax_depth === 'order')  {
-    fields = ['domain','phylum','klass','orderx'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-  } else if (tax_depth === 'family') {
-    fields = ['domain','phylum','klass','orderx','family'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
-  } else if (tax_depth === 'genus') {
-    fields = ['domain','phylum','klass','orderx','family','genus'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
-    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
-  } else if (tax_depth === 'species') {
-    fields = ['domain','phylum','klass','orderx','family','genus','species'];
-    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
-    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
-    joins += " JOIN species  as spe on ( t.species_id= spe.id )\n";
-  }
-    
-  if (domains.length < 5){
-    domains = domains.join("','");
-    and_domain_in = " AND domain in ('"+domains+"')";
-  }
-  
-  var tax_query = "SELECT distinct t.id, concat_ws(';',"+fields+") as tax FROM taxonomies as t\n";
-  tax_query     += joins;
-  
-  unit_id_array = []
-  for(var n in selection_obj.unit_assoc[uassoc]){
-    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
-
-  }
-  tax_query     += " WHERE t.id in (" + unit_id_array + ")\n";
-  tax_query     += and_domain_in;
-  return tax_query;
-
-}
-
-
-
-
-//
-// NORMALIZATION
-//
-function normalize_counts(norm_type, selection_obj) {
-  
-  // get max dataset count
-  //var selection_obj = JSON.parse(obj);
-  var max_count = get_max_dataset_count(selection_obj);
-  //selection_obj.max_ds_count = max_count;
-  console.log('in normalization: '+norm_type+' max: '+max_count.toString());
-
-  var new_counts_obj = [];
-  for (var n=0; n < selection_obj.seq_freqs.length; n++) {
-    var sum=0;
-    for (var i = 0; i < selection_obj.seq_freqs[n].length; i++ ) {
-      sum += selection_obj.seq_freqs[n][i];
-    }
-    var temp = [];
-    for (i=0; i < selection_obj.seq_freqs[n].length; i++) {
-
-      if (norm_type === 'max') {
-        temp.push( parseInt( ( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
-      } else {  // freq
-        temp.push( parseFloat( ( selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
-      }
-
-    }
-    new_counts_obj.push(temp);
-  }
-
-  return new_counts_obj;
-}
-//
-//  MAX DS COUNT
-//
-function get_max_dataset_count(obj) {
-  // Gets the maximum dataset count from the 'seq_freqs' in selection_obj
-  var max_count = 0;
-  for (var n=0; n < obj.seq_freqs.length; n++) {
-    var sum=0;
-    for (var i = 0; i < obj.seq_freqs[n].length; i++) {  
-      sum += parseInt(obj.seq_freqs[n][i]);
-      //console.log(obj.seq_freqs[n][i]);
-    }
-    
-    if (sum > max_count) {
-      max_count = sum;
-    }
-  }
-  return max_count;
-}
 
