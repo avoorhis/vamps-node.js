@@ -1,4 +1,5 @@
 <% include ../add_ins/begin.ejs %>
+<% b = JSON.parse(body) %>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Display Output Page</div>
 
@@ -42,14 +43,22 @@
           </td>
           <td>
             <div id='show_visuals_links_div'>
-              <% b = JSON.parse(body) %>
+              
               <% ts = timestamp %>
+
+              <ul>
               <% for (var i in b.visuals) { %>
-                <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                
-                <% title = b.visuals[i] %>                
-                <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a><br>
+                
+                <li>
+                <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                 
+                <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a>
+                <% if(b.visuals[i] == 'heatmap' ) { %>
+                  <span class='small_font'>(<%= b.selected_distance %>)</span>           
+                <% } %> 
+                <br>
+              </li>
               <% } %>
-             
+             </ul>
             </div>
           </td>
 
