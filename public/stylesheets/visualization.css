@@ -80,7 +80,19 @@
 .tax_select a:link {
     text-decoration: none;
 }
+.selection_info {
+    background: OldLace;
+    border:1px solid black;
+    list-style-type: none;
+
+    padding:3px;
+    width: 400px;
+}
 
 .counts_table {
     background: yellow;
+}
+.heatmap_table {
+    border-collapse:collapse;
+    font-size:10px;
 }

@@ -52,7 +52,7 @@
                 <li>
                 <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                 
                 <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a>
-                <% if(b.visuals[i] == 'heatmap' ) { %>
+                <% if(b.visuals[i] == 'heatmap' || b.visuals[i] == 'dendrogram') { %>
                   <span class='small_font'>(<%= b.selected_distance %>)</span>           
                 <% } %> 
                 <br>
