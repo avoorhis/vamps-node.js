@@ -1,4 +1,4 @@
-<%   var rows = JSON.parse(constants).VISUALOUTPUTCHOICES.visulachoices; %>
+<%   var rows = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
 Display Output:
 <p class='standard'>
     1) Check your selected datasets from the list above.<br>
@@ -10,7 +10,16 @@ Display Output:
 </p>
 <ul>
     <% for (i in rows) { %>
-    <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \><%= rows[i].show %></li>
+        <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \><%= rows[i].show %>
+    		<% if(rows[i].id == 'heatmap' ) { %>
+                <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+                <select name='selected_distance'>
+                <% for(i in distrows ) { %>
+                  <option value='<%= distrows[i].id %>'><%= distrows[i].show %></option>
+                <% } %>
+                </select>
+            <% } %> 
+        </li>
     <% } %>
 </ul>
 
