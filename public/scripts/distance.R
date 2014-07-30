@@ -13,7 +13,8 @@ last_name = row.names(data_matrix)[rowcount]
 #print(rowcount)
 #print(last_name)
 
-# get rid of datasets with zero sum over all the taxa:
+# to get rid of potential NaN errors
+# get rid of datasets with zero sum over all the taxa :
 data_matrix<-data_matrix[,colSums(data_matrix) > 0]
 
 biods = t(data_matrix); #
@@ -22,16 +23,13 @@ require(vegan,quietly=TRUE);
 #  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
 # must use upper=FALSE so that get_distanceR can parse the output correctly
 dis <- as.matrix(0)
-if(metric == "horn" || metric == "Morisita-Horn"){
+if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     stand <-decostand(data.matrix(biods),"total");
-   dis<-vegdist(stand, method="horn",upper=TRUE,binary=FALSE);
-}else if(metric == "yue-clayton" || metric == "Yue-Clayton"){ 
+   dis<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
+}else if(metric == "yue_clayton" || metric == "Yue-Clayton"){ 
   stand <-decostand(data.matrix(biods),"total");
   dis<-designdist(stand, method="1-(J/(A+B-J))",terms = c( "quadratic"), abcd = FALSE)
-}else if(metric == "morisita"){
-  stand <-decostand(data.matrix(biods),"total");
-  dis<-vegdist(stand, method="morisita",upper=FALSE,binary=FALSE);
-}else if(metric == "bray" || metric == "Bray-Curtis"){
+}else if(metric == "bray_curtis" || metric == "Bray-Curtis"){
     stand <-decostand(data.matrix(biods),"total");
    dis<-vegdist(stand, method="bray",upper=FALSE,binary=FALSE);
 }else if(metric == "jaccard" ||  metric == "Jaccard"){
@@ -39,7 +37,7 @@ if(metric == "horn" || metric == "Morisita-Horn"){
    dis<-vegdist(stand, method="jaccard",upper=FALSE,binary=TRUE);
 }else if(metric == "jaccard2"){
     stand <-decostand(data.matrix(biods),"total");
-    dis<-designdist(stand, method = "(A+B-2*J)/(A+B-J)",terms = c("binary"))
+    dis<-designdist(stand, method = "(A+B-2*J)/(A+B-J)",terms = c("binary"), upper=FALSE)
   
 }else if(metric == "manhattan"){
     
@@ -83,7 +81,7 @@ if(metric == "horn" || metric == "Morisita-Horn"){
 
 }else if(metric == "correlation"){
    require(amap,quiet=TRUE);   
-   dis<-Dist(decostand(data.matrix(biods),"total"), method = 'correlation',upper=FALSE)   
+   dis<-Dist(decostand(data.matrix(biods),"total"), method = 'correlation')   
 }else if(metric == "spearman"){
   
    dis<-cor(data_matrix, method = 'spearman')
