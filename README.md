@@ -32,8 +32,14 @@ Install nodemon to keep from restarting server after changes
 sudo npm install nodemon -g
 Then run as: nodemon bin/www
 
+Applying new database schema from vamps2 (on vampsdev)
+  I will record all alterations to the database here:
+
+  
 TODO TODO
   * Testing!
   * DONE:   projects/:id via REST
   * DONE:   user login and auth
   * add 960.gs grid to pages
+
+
