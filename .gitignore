@@ -16,3 +16,5 @@ npm-debug.log
 grep_code.sh
 temp/
 tmp/
+
+.DS_Store
