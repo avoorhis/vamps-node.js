@@ -11,14 +11,24 @@ Display Output:
 <ul>
     <% for (i in rows) { %>
         <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \><%= rows[i].show %>
-    		<% if(rows[i].id == 'heatmap' ) { %>
+    		<% if(rows[i].id === 'heatmap' ) { %>
                 <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
-                <select name='selected_distance'>
-                <% for(i in distrows ) { %>
-                  <option value='<%= distrows[i].id %>'><%= distrows[i].show %></option>
+                <select name='selected_heatmap_distance' class='small_font'>
+                <% for(d in distrows ) { %>
+                  <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
                 <% } %>
                 </select>
             <% } %> 
+
+            <% if(rows[i].id === 'dendrogram' ) { %>
+                <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+                <select name='selected_dendrogram_distance' class='small_font'>
+                <% for(d in distrows ) { %>
+                  <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+                <% } %>
+                </select>
+            <% } %> 
+
         </li>
     <% } %>
 </ul>
