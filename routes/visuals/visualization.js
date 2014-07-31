@@ -42,7 +42,7 @@ router.post('/view_selection',  function(req, res) {
   //var body = JSON.parse(req.body);
   //console.log(req.body);
   req.body.selection_obj       = JSON.parse(req.body.selection_obj);
-  req.body.max_ds_count = COMMON.get_max_dataset_count(req.body.selection_obj);
+  req.body.max_ds_count        = COMMON.get_max_dataset_count(req.body.selection_obj);
   req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   
   // NORMALIZATION:
@@ -74,7 +74,7 @@ router.post('/view_selection',  function(req, res) {
 
   
   //console.log('START BODY>> in route/visualization.js /view_selection');
-  //console.log(JSON.stringify(req.body));
+  console.log(JSON.stringify(req.body,null,2));
   //console.log('<<END BODY');
   
   //var old_sid = 'x';
@@ -314,25 +314,8 @@ router.get('/index_visuals',  function(req, res) {
 });
 
 //
-// USER_DATA VISUALS PAGES
 //
-// router.post('/user_data/counts_table',  function(req, res) {
-  
-//   res.render('visuals/user_data/counts_table', { title   : 'Counts',  
-//                                  data : JSON.stringify(req.body),                               
-//                                  user: req.user
-//            });
-// });
-// router.post('/user_data/heatmap',  function(req, res) {
-//   res.render('visuals/user_data/heatmap', { title   : 'Heatmap',
-//                                  user: req.user
-//                                   });
-// });
-// router.post('/user_data/barcharts',  function(req, res) {
-//   res.render('visuals/user_data/barcharts', { title   : 'BarCharts',
-//                                  user: req.user
-//                                   });
-// });
+//
 router.get('/user_data/counts_table', function(req, res) {
   
   var myurl = url.parse(req.url, true);
@@ -367,7 +350,24 @@ router.get('/user_data/heatmap', function(req, res) {
     });
   });
 });
-
+//
+//
+//
+router.get('/user_data/barcharts', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  //console.log(myurl)
+  var ts = myurl.query.ts;
+  var file = '../../tmp/'+ts+'_barcharts.html';
+  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
+    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    res.render('visuals/user_data/barcharts', {
+      title: req.params.title   || 'default_title',
+      timestamp: myurl.query.ts || 'default_timestamp',
+      html : html,
+      user: req.user
+    });
+  });
+});
 /*
 *   PARTIALS
 *      These six partials all belong to the unit_selection page
@@ -389,7 +389,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   // This taxonomy JSON object can be used for other taxonomies so eventually will be
   // move from here ...
   if (typeof tax_silva108_custom_rows === 'undefined'){
-    var tax_query = "SELECT domain,phylum,klass,orderx,family,species,strain FROM taxonomies as t";
+    var tax_query = "SELECT domain,phylum,klass,orderx,family,genus,species,strain FROM taxonomies as t";
     tax_query +=    " JOIN domains  as dom on (t.domain_id=dom.id)";
     tax_query +=    " JOIN phylums  as phy on (t.phylum_id=phy.id)";
     tax_query +=    " JOIN klasses  as kla on (t.klass_id=kla.id)";
@@ -399,6 +399,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     tax_query +=    " JOIN species  as spe on (t.species_id=spe.id)";
     tax_query +=    " JOIN strains  as str on (t.strain_id=str.id)";
     console.log('running custom tax query');
+    console.log(tax_query);
     db.query(tax_query, function(err, rows, fields){
       if (err) {
         throw err;
@@ -480,7 +481,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
             }
           }
           GLOBAL.tax_silva108_custom_rows = tax_silva108_custom_rows;
-          //console.log(util.inspect(tax_silva108_custom_rows, {showHidden: false, depth: null}));
+          console.log(util.inspect(tax_silva108_custom_rows, {showHidden: false, depth: null}));
 
           res.render('visuals/partials/tax_silva108_custom', {
             rows: tax_silva108_custom_rows
