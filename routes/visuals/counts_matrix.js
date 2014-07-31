@@ -137,8 +137,28 @@ module.exports = {
 		      }
 		    }
 		  }
+		  console.log(unit_name_lookup)
+		  //
+		  //
+		  
+		  var csv = 'DatasetName';   // for D3.js stackbars
+		  // DatasetName,tax1,tax2,tax3,tax4
+			// SLM_NIH_Bv4v5--03_Junction_City_East,c1,c2,c3
+			for(var uname in unit_name_lookup) {
+				csv += ','+uname;
+			}
+			csv += "\n";
+			for (var did in selection_obj.dataset_ids) {  // in correct order
+				var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
+		    csv += name_hash.names[ index ];
+		    for(var uname in unit_name_lookup){  // 
+		    	csv += ','+ unit_name_lookup[uname][did]
+		    }
+		    csv += "\n";
+			}
 
-		  var mtx = "";
+
+			var mtx = '';
 		  for (var did in selection_obj.dataset_ids) {
 		    
 		    var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
@@ -167,17 +187,25 @@ module.exports = {
 		    //console.log(matrix_with_names);
 		    //console.log('mtx2');
 		    // to file
-		    var file = '../../tmp/'+ts+'_text_matrix.mtx';
-		    var html = mtx;
-		    fs.writeFile(path.resolve(__dirname, file), html, function(err) {
+		    var file1 = '../../tmp/'+ts+'_text_matrix.mtx';
+		    var file2 = '../../tmp/'+ts+'_text_matrix.csv';
+		    var html1 = mtx;
+
+		    fs.writeFile(path.resolve(__dirname, file1), html1, function(err) {
 		      if(err) {
-		        console.log('Could not write file: '+file+' Here is the error: '+err);
+		        console.log('Could not write file: '+file1+' Here is the error: '+err);
 		      } else {
-		        console.log("The file ("+file+") was saved!");
+		        console.log("The file ("+file1+") was saved!");
 		      }
 		    });
 
-
+		    fs.writeFile(path.resolve(__dirname, file2), csv, function(err) {
+		      if(err) {
+		        console.log('Could not write file: '+file2+' Here is the error: '+err);
+		      } else {
+		        console.log("The file ("+file2+") was saved!");
+		      }
+		    });
 		  }
 		  return matrix_with_names;
 		  

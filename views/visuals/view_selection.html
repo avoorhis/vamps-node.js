@@ -13,26 +13,7 @@
         <tr>
           <td>
             <div id='show_what_is_chosen_div'>
-              <table>
-                <tr>
-                  <td class='small_font'>
-                    <div id='show_selected_datasets_div' class='general_table' >
-                      <% include partials/show_selected_datasets.html %>
-                    </div><hr>
-                  </td>
-                </tr>
-                <tr>
-                  <td class='small_font'>
-                    Normalization: <%= JSON.parse(body).normalization %>
-                    <hr>
-                  </td>
-                </tr>
-                <tr>
-                  <td class='small_font'>
-                    Units Selected: <%= JSON.parse(body).unit_choice %>
-                  </td>
-                </tr>
-              </table>
+              <% include partials/show_input_items.html %>
             </div>
           </td>
           <td>
@@ -52,8 +33,11 @@
                 <li>
                 <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                 
                 <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a>
-                <% if(b.visuals[i] == 'heatmap' || b.visuals[i] == 'dendrogram') { %>
-                  <span class='small_font'>(<%= b.selected_distance %>)</span>           
+                <% if(b.visuals[i] === 'heatmap') { %>
+                  <span class='small_font'>(<%= b.selected_heatmap_distance %>)</span>           
+                <% } %> 
+                <% if(b.visuals[i] === 'dendrogram') { %>
+                  <span class='small_font'>(<%= b.selected_dendrogram_distance %>)</span>           
                 <% } %> 
                 <br>
               </li>
