@@ -23,7 +23,7 @@ module.exports = {
 		  var matrix_input_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
 		  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 		  //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-		  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_input_file +' '+body.selected_distance;
+		  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_input_file +' '+body.selected_heatmap_distance;
 		  var R      = spawn(command, function (error, stdout, stderr) {
 		    console.log('R command: ' + command);
 		    //console.log('stderr: ' + stderr);
