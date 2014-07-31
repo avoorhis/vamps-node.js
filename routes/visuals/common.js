@@ -6,8 +6,11 @@ module.exports = {
 
 	get_selection_markup: function( visual, body ) {
 	  var html = "<div id='' class='selection_info'>";
-	  if(visual === 'heatmap' || visual === 'dendrogram') {
-	    html += '<li>Selected Distance Metric: ' + body.selected_distance + '</li>';
+	  if(visual === 'heatmap') {
+	    html += '<li>Selected Distance Metric: ' + body.selected_heatmap_distance + '</li>';
+	  }
+	  if(visual === 'dendrogram') {
+	    html += '<li>Selected Distance Metric: ' + body.selected_dendrogram_distance + '</li>';
 	  }
 	  html += '<li>Maximum Dataset Count: ' + body.max_ds_count.toString() + '</li>';
 	  if(body.unit_choice.indexOf('tax') === 0 ) {
@@ -25,7 +28,7 @@ module.exports = {
 	//
 	//
 	get_taxonomy_query: function( db, uitems, body ) {
-	  console.log(body);
+	  //console.log(body);
 	  selection_obj = body.selection_obj;
 	  //selection_obj = body.selection_obj;
 	  
