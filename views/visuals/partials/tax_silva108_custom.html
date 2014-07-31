@@ -10,13 +10,14 @@
   <% id = domain %>
   <li>
     <label class='tax_select'>
+<!-- ///////// D O M A I N /////////////////////////////////////////////// -->
       <a href=''  id='<%= id %>_toggle' onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
         <img alt='plus' src='/images/tree_plus.gif' height='9'  />
       </a>
       <input type='checkbox' id='<%= id %>--cbid' name='domain_names[]' value='<%= domain %>' onclick="open_taxa('<%= id %>'); return false;"/>
     </label>
     <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain]) %>','1'); return false;"><%= domain %></span>
-<!-- //////////////////////////////////////////////////////// -->
+<!-- ///////// P H Y L U M /////////////////////////////////////////////// -->
     <ul>
       <div id='<%= id %>_div' class='tax_list display_none' >
         <% for (phylum in all_tax_data[domain]) { %>
@@ -29,7 +30,7 @@
               <input type='checkbox' id='<%= id %>--cbid' name='phylum_names[]' value='<%= phylum %>' onclick="open_taxa('<%= id %>'); return false;" />
             </label>
             <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum]) %>','2'); return false;"><%= phylum %></span>
-<!-- //////////////////////////////////////////////////////// -->
+<!-- //////// C L A S S //////////////////////////////////////////////// -->
             <ul>
               <div id='<%= id %>_div' class='tax_list display_none' >
                 <% for (klass in all_tax_data[domain][phylum]) { %>
@@ -42,7 +43,7 @@
                       <input type='checkbox' id='<%= id %>--cbid' name='klass_names[]' value='<%= klass %>' onclick="open_taxa('<%= id %>'); return false;" />
                     </label>
                     <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum][klass]) %>','3'); return false;"><%= klass %></span>
-<!-- //////////////////////////////////////////////////////// -->
+<!-- ///////// O R D E R /////////////////////////////////////////////// -->
                     <ul>
                       <div id='<%= id %>_div' class='tax_list display_none' >
                         <% for (order in all_tax_data[domain][phylum][klass]) { %>
@@ -55,7 +56,7 @@
                               <input type='checkbox' id='<%= id %>--cbid' name='order_names[]' value='<%= order %>' onclick="open_taxa('<%= id %>'); return false;" />
                             </label>
                             <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum][klass][order]) %>','4'); return false;"><%= order %></span>
-<!-- //////////////////////////////////////////////////////// -->
+<!-- /////// F A M I L Y ///////////////////////////////////////////////// -->
                             <ul>
                               <div id='<%= id %>_div' class='tax_list display_none' >
                                 <% for (family in all_tax_data[domain][phylum][klass][order]) { %>
@@ -67,19 +68,35 @@
                                       </a>
                                       <input type='checkbox' id='<%= id %>--cbid' name='family_names[]' value='<%= family %>' onclick="open_taxa('<%= id %>'); return false;" />
                                     </label>
-                                    <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum][klass][order][genus]) %>','5'); return false;"><%= family %></span>
-<!-- //////////////////////////////////////////////////////// -->
+                                    <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum][klass][order][family]) %>','5'); return false;"><%= family %></span>
+<!-- /////// G E N U S ///////////////////////////////////////////////// -->
                                     <ul>
                                       <div id='<%= id %>_div' class='tax_list display_none' >
                                         <% for (genus in all_tax_data[domain][phylum][klass][order][family]) { %>
                                           <% id = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus %>
                                           <li>
                                             <label class='tax_select'>
-
-                                              <input type='checkbox' id='<%= id %>--cbid' name='genus_names[]' value='<%= genus %>'  />
-
+                                              <a href=''  id='<%= id %>_toggle' onclick="toggle_selected_taxa('genus','<%= id %>'); return false;">
+                                                <img alt='plus' src='/images/tree_plus.gif' height='9' />
+                                              </a>
+                                              <input type='checkbox' id='<%= id %>--cbid' name='genus_names[]' value='<%= genus %>' onclick="open_taxa('<%= id %>'); return false;" />
                                             </label>
-                                            <%= genus %>
+                                            <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain][phylum][klass][order][family][genus]) %>','5'); return false;"><%= genus %></span>
+<!-- /////// S P E C I E S ///////////////////////////////////////////////// -->
+                                            <ul>
+                                              <div id='<%= id %>_div' class='tax_list display_none' >
+                                                <% for ( species in all_tax_data[domain][phylum][klass][order][family][genus] ) { %>
+                                                  <% id = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species %>
+                                                  <li>
+                                                    <label class='tax_select'>
+                                                      <input type='checkbox' id='<%= id %>--cbid' name='species_names[]' value='<%= species %>'  />
+                                                    </label>
+                                                    <%= species %>                                                  
+                                                  </li>
+                                                <% } %>
+                                              </div>
+                                            </ul> 
+<!-- //////////////////////////////////////////////////////// -->                                                                                     
                                           </li>
                                         <% } %>
                                       </div>

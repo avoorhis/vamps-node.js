@@ -1,0 +1,37 @@
+
+<table>
+<tr>
+  <td class='small_font'>
+    <div id='show_selected_datasets_div' class='general_table' >
+      <% include show_selected_datasets.html %>
+    </div><hr>
+  </td>
+</tr>
+<tr>
+  <td class='small_font'>
+    Normalization: <%= b.normalization %>
+    <hr>
+  </td>
+</tr>
+<tr>
+
+  <td class='small_font'>
+    Units Selected: <%= b.unit_choice %>
+    <% if( b.unit_choice.indexOf('tax') === 0 ) { %>
+    	<% if( b.unit_choice.indexOf('simple') > 0 ) { %>
+	    	<br>
+	    	&nbsp;&nbsp;Taxonomic Depth: <%= b.tax_depth %>
+	    	<br>
+	    	&nbsp;&nbsp;Include NAs: <%= b.include_nas %>
+	    	<br>
+	    	&nbsp;&nbsp;Domains: <%= b.domains %>
+    	<% }else{ %>
+    		<br>
+    		&nbsp;&nbsp;Taxonomic Depth: Custom
+    	<% } %>
+    	
+    <% } %>
+  </td>
+
+</tr>
+</table>
