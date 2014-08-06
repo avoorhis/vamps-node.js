@@ -4,9 +4,9 @@ var router = express.Router();
 //
 //
 //
-var qSelectDatasets = "SELECT project, datasets.id as did, dataset";
-qSelectDatasets += " FROM datasets";
-qSelectDatasets += " JOIN projects ON (projects.id=project_id)";
+var qSelectDatasets = "SELECT project, dataset_id as did, dataset";
+qSelectDatasets += " FROM dataset";
+qSelectDatasets += " JOIN project USING(project_id)";
 qSelectDatasets += " ORDER BY project, dataset";
 
 // This connection object is made global in app.js
