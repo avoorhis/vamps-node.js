@@ -107,7 +107,7 @@ describe('Login page functionality', function(){
     passportStub.install(app);
     
     passportStub.login({
-      username: 'TEST', password: 'TEST'    
+      username: 'TEST', password: 'TEST'
     });
 
     request(app)
