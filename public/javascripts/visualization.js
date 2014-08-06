@@ -80,27 +80,29 @@ function check_viz_selection_pg2(thisform) {
   var unit_selection = thisform["unit_selection"].value;
   var valid  = false;
   var msg = '';
-
+  var domain_names;
+  var i;
+  
   // test for selected units: taxonomy, med_nodes, otus
   if(unit_selection === 'tax_silva108_simple') {
     // check for domains[].length must be > 0
-    var domain_names = thisform["domains[]"];
+    domain_names = thisform["domains[]"];
     msg = '1) You must select some taxa';
-    for (var i=0; i<domain_names.length; i++)
+    for (i=0; i<domain_names.length; i++)
     {
       if (domain_names[i].checked) {
-        valid = true;        
+        valid = true;
       }
     }
   }else if(unit_selection === 'tax_silva108_custom'){
     // check for domain_names <-- atleast one selected
-    var domain_names = thisform["domain_names[]"];
+    domain_names = thisform["domain_names[]"];
     msg = '2) You must select some taxa';
 
-    for (var i=0; i<domain_names.length; i++)
+    for (i=0; i<domain_names.length; i++)
     {
       if (domain_names[i].checked) {
-        valid = true;     
+        valid = true;
       }
     }
 
@@ -114,14 +116,14 @@ function check_viz_selection_pg2(thisform) {
   // test for selected visuals: counts_table, heatmap ...
   //
   valid  = false;
-  for (var i=0; i<visuals.length; i++)
-  {  
+  for (i=0; i<visuals.length; i++)
+  {
       msg = 'You must select one or more display output choices';
       if (visuals[i].checked) {
-        valid = true;        
+        valid = true;
       }
   }
-  if(!valid){alert(msg);return;}
+  if(!valid){alert(msg); return;}
 
   
   thisform.submit();
