@@ -1,9 +1,10 @@
 // bar_charts.js
-var path = require('path');
+var fpath = require('path');
 var fs = require('fs');
 //var http = require('http');
-var d3 = require("d3");
-var jsdom = require('jsdom');
+
+//var jsdom = require('jsdom');
+
 
 module.exports = {
 
@@ -11,153 +12,176 @@ module.exports = {
 		//  CREATE BARCHARTS HTML
 		//
 		create_barcharts_html: function( ts, matrix, body ) {
+			var d3 = require("d3");
+			var xmldom = require('xmldom')
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
-			htmlStub = '<html><head><title>VAMPS BarCharts</title></head><body><div class="header grid_12" id="header"></div><div id="dataviz-container"></div><script src="http://d3js.org/d3.v3.min.js"></script></body></html>';
-			var csv_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.csv');
-			//var html = '<h3>TEST</h3>';
-			jsdom.env({ features : { QuerySelector : true }, html : htmlStub, done : function(errors, window) {
-					
-					var ds_count = body.selection_obj.dataset_ids.length
-					fs.readFile(csv_file, 'utf8', function (error, data) {
-					//d3.csv(csv_file, function(error, data) {
-						if(error){
-							console.log(error)
-						}else{
+			var ds_count = body.selection_obj.dataset_ids.length
+			console.log(outfile)
+			
+			console.log('start matrix');
+			console.log( matrix);
+			console.log('end matrix');
+			
+			var data = [];
+			for(n in matrix.dataset_names) {
+				data.push({'DatasetName': matrix.dataset_names[n]});	
+			}
+			for(u in matrix.unit_names) {
+				for(n in matrix.dataset_names) {
+					dname = matrix.dataset_names[n];
+					data[n][u] = matrix.unit_names[u][n];
+				}
+			}
 
-							data = d3.csv.parse(data);
-							
-							
-						  console.log(d3.keys(data[0]))
-							var el = window.document.querySelector('#dataviz-container');
-							var body = window.document.querySelector('body');
-							var bar_width = 15;
-							// process the html document, like if we were at client side
-							var margin = {top: 20, right: 20, bottom: 250, left: 50};
-							var width  = (ds_count * bar_width) + 200 - margin.left - margin.right;
-							var height = 700 - margin.top - margin.bottom;
+			var bar_width = 15;
+			// process the html document, like if we were at client side
+			var margin = {top: 20, right: 20, bottom: 300, left: 50};
+			//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
+			var width  = (ds_count * (bar_width)) + 50;
+			var height = 700 - margin.top - margin.bottom;
 
-							var x = d3.scale.ordinal()
-							    .rangeRoundBands([0, width], .1);
+			//var x = d3.scale.linear();
+			var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+			var y = d3.scale.linear()
+			    .rangeRound([height, 0]);
 
-							var y = d3.scale.linear()
-							    .rangeRound([height, 0]);
+			    // TODO:  More Colors
+			var color = d3.scale.ordinal()									
+			    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-							var color = d3.scale.ordinal()									
-							    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+			var xAxis = d3.svg.axis()
+			    .scale(x)
+			    .orient("bottom");
 
-							
-							var xAxis = d3.svg.axis()
-							    .scale(x)
-							    .orient("bottom");
+			var yAxis = d3.svg.axis()
+			    .scale(y)
+			    .orient("left")
+			    .tickFormat(d3.format(".2s"));
 
-							var yAxis = d3.svg.axis()
-							    .scale(y)
-							    .orient("left")
-							    .tickFormat(d3.format(".2s"));
+			var svg = d3.select("body").append("svg")
+			    .attr("width",  width + margin.left + margin.right)
+			    .attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			 
+			
 
-							var svg = d3.select(el).append("svg")
-							    .attr("width",  width + margin.left + margin.right)
-							    .attr("height", height + margin.top + margin.bottom)
-							  .append("g")
-							    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			// start matrix
+			// { dataset_names: 
+			//    [ 'SLM_NIH_Bv4v5--03_Junction_City_East',
+			//      'SLM_NIH_Bv4v5--02_Spencer',
+			//      'SLM_NIH_Bv4v5--01_Boonville' ],
+			//   unit_names: 
+			//    { 'Bacteria;Proteobacteria': [ 4, 2, 4 ],
+			//      'Bacteria;Bacteroidetes': [ 272, 401, 430 ] } }
+			// end matrix	
+			//	CREATE:
+			// start data
+			// [ { DatasetName: 'SLM_NIH_Bv4v5--03_Junction_City_East',
+			//     'Bacteria;Proteobacteria': '4',
+			//     'Bacteria;Bacteroidetes': '272' },
+			//   { DatasetName: 'SLM_NIH_Bv4v5--02_Spencer',
+			//     'Bacteria;Proteobacteria': '2',
+			//     'Bacteria;Bacteroidetes': '401' },
+			//   { DatasetName: 'SLM_NIH_Bv4v5--01_Boonville',
+			//     'Bacteria;Proteobacteria': '4',
+			//     'Bacteria;Bacteroidetes': '430' } ]
+			// end data
+			
+	
+			color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
+			
+			data.forEach(function(d) {
+		    var y0 = 0;
+		    d.unitObj = color.domain().map(function(name) {
+		    	 //console.log(d[name])
+		    	 return {name: name, y0: y0, y1: y0 += +d[name]}; 
+		    });
+		    d.total = d.unitObj[d.unitObj.length - 1].y1;
 
-							color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
-							data.forEach(function(d) {
-						    var y0 = 0;
-						    d.taxa = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
-						    d.total = d.taxa[d.taxa.length - 1].y1;
+		  });
 
-						  });
-							
-							
-							
+			data.forEach(function(d) {
+				//console.log('x');
+				tot = d.total
+				d.unitObj.forEach(function(o) {
+						//console.log(o);
+						o.y0 = (o.y0*100)/tot
+						o.y1 = (o.y1*100)/tot
+				});
+			});
+			
+			
+		  // axis legends -- would like to rotate dataset names
+		  x.domain(data.map(function(d) { return d.DatasetName; }));
+		  //y.domain([0, d3.max(data, function(d) { return d.total; })]);
 
-						  data.sort(function(a, b) { return b.total - a.total; });
+		  y.domain([0, 100]);
 
-						  // axis legends -- would like to rotate dataset names
-						  x.domain(data.map(function(d) { return d.DatasetName; }));
-						  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+			svg.append("g")
+		      .attr("class", "x axis")
+		      .attr("transform", "translate(0," + height + ")")
+		      .call(xAxis)
+		      .selectAll("text")  
+				     .style("text-anchor", "end")
+				     .attr("dx", "-.8em")
+				     .attr("dy", "1.4em")  // move the dataset name to the left
+				     .attr("transform", function(d) {
+				         return "rotate(-90)" 
+				     });
 
-							svg.append("g")
-						      .attr("class", "x axis")
-						      .attr("transform", "translate(0," + height + ")")
-						      .call(xAxis)
-						      .selectAll("text")  
-								     .style("text-anchor", "end")
-								     .attr("dx", "-.8em")
-								     .attr("dy", "-6.0em")  // move the dataset name to the left
-								     .attr("transform", function(d) {
-								         return "rotate(-90)" 
-								     });
+		  svg.append("g")
+		      .attr("class", "y axis")
+		      .call(yAxis)
+		    .append("text")
+		      .attr("transform", "rotate(-90)")
+		      .attr("y", 6)
+		      .attr("dy", ".71em")
+		      .style("text-anchor", "end")
+		      .text("Percent");
 
-						  svg.append("g")
-						      .attr("class", "y axis")
-						      .call(yAxis)
-						    .append("text")
-						      .attr("transform", "rotate(-90)")
-						      .attr("y", 6)
-						      .attr("dy", ".71em")
-						      .style("text-anchor", "end")
-						      .text("Taxonomic Counts");
+		  var datasetName = svg.selectAll(".DatasetName")
+		      .data(data)
+		    .enter().append("g")
+		      .attr("class", "g")
+		      .attr("transform", function(d) { return "translate(" + x(d.DatasetName) + ",0)"; });
 
-						  var datasetName = svg.selectAll(".DatasetName")
-						      .data(data)
-						    .enter().append("g")
-						      .attr("class", "g")
-						      .attr("transform", function(d) { return "translate(" + x(d.DatasetName) + ",0)"; });
+		  datasetName.selectAll("rect")
+		      .data(function(d) { return d.unitObj; })
+		    .enter().append("rect")
+		      .attr("width", x.rangeBand())
+					//.attr("title",function(d) { 
+		      // 	return this._parentNode.__data__.DatasetName + '---'+d.name + '---'+this._parentNode.__data__[d.name].toString() // id of each rectangle should be datasetname---unitname---count
+					//})  
+		      .attr("y", function(d) { return y(d.y1); })
+		      .attr("x", 25)  // adjust where first bar starts on x-axis
+		      .attr("height",  function(d) { return y(d.y0) - y(d.y1); })
+		      .attr("class","tip")
+		      .style("fill",   function(d) { return color(d.name); })
+		      .append("title")
+		      .text(function(d) { return 'x'; });
 
-						  datasetName.selectAll("rect")
-						      .data(function(d) { return d.taxa; })
-						    .enter().append("rect")
-						      //.attr("width", x.rangeBand())
-						      .attr("width", bar_width)
-						      .attr("y", function(d) { return y(d.y1); })
-						      .attr("x", 0)
-						      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-						      .style("fill", function(d) { return color(d.name); });
-
-						    var legend = svg.selectAll(".legend")
-						      .data(color.domain().slice().reverse())
-						    .enter().append("g")
-						      .attr("class", "legend")
-						      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-						  legend.append("rect")
-						      .attr("x", width - 18)
-						      .attr("width", 18)
-						      .attr("height", 18)
-						      .style("fill", color);
-
-						  legend.append("text")
-						      .attr("x", width - 24)
-						      .attr("y", 9)
-						      .attr("dy", ".35em")
-						      .style("text-anchor", "end")
-						      .text(function(d) { return d; });
-
-						  d3.select(el)
-						  	.append("svg:svg")
-						  	.attr('width', 600)
-						  	.attr('height', 300)
-						  	
-				
-						// add document html to var and white it to file
-						svgsrc = window.document.innerHTML
-
-						fs.writeFile(path.resolve(__dirname, outfile), svgsrc, function(err) {
+		console.log('start data')
+		console.log(data)
+		console.log('end data') 
+		
+		// get a reference to our SVG object and add the SVG NS
+		var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
+		//console.log(svgGraph[0][0]);
+		var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
+		
+		console.log(svgXML)
+		
+		fs.writeFile( fpath.resolve(__dirname, outfile), svgXML, function(err) {
 				      if(err) {
 				        console.log('Could not write file: '+outfile+' Here is the error: '+err);
 				      } else {
 				        console.log("The file ("+outfile+") was saved!");
 				      }
-				    });
-						} // end error
-			    });
+				      d3.select('svg').remove();
 
-
-
-				}
-			})
+		});
+		
 
 
 
@@ -165,4 +189,6 @@ module.exports = {
 
 	  } // end fxn
 
-}
+
+	 
+} // end of module.exports

@@ -31,7 +31,7 @@
               <% for (var i in b.visuals) { %>
                 
                 <li>
-                <% link = 'user_data/'+b.visuals[i]+'?ts='+ts  %>                 
+                <% link = 'user_data/'+b.visuals[i] +'?ts='+ts %>                
                 <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a>
                 <% if(b.visuals[i] === 'heatmap') { %>
                   <span class='small_font'>(<%= b.selected_heatmap_distance %>)</span>           

@@ -96,14 +96,14 @@ module.exports = {
 		  // This function creates two matrices from the data in body.selection_obj and sqlrows
 			// one matrix is printed to a text file to which the unique timestamp (ts) is appended.
 			// the matrix file is the input for Rscripts that use it: heatmap and dendrogram
-			// FORMAT:
+			// FORMAT file:mtx:
 			//        dsname1    dsname2       dsname3
 			// unitname1  4       2       4
 			// unitname2  272     401     430
 			//
 			// The other matrix is a JSON Object and is returned from this function for use in 
 			// the counts table 
-			// FORMAT:
+			// FORMAT memory:JSON:
 			// { dataset_names: 
    		// 		[ dsname1,     dsname2,     dsname3  ],
   		// 	 unit_names: 
@@ -112,20 +112,44 @@ module.exports = {
      	//			unitname3: [ '315', '778' ] 
      	//		] 
      	// }
- 
+     	//
+     	// Testing new file formats
+     	// FORMAT file:csv2: uses names
+     	//  DatasetName,Bacteria;Proteobacteria,Bacteria;Bacteroidetes
+			//	SLM_NIH_Bv4v5--03_Junction_City_East,4,272
+			//  SLM_NIH_Bv4v5--02_Spencer,2,401
+			//  SLM_NIH_Bv4v5--01_Boonville,4,430
+ 			// FORMAT file:csv3:  uses IDs
+ 			//  DatasetId,82,84,137,214
+			//  122,4,0,0,272
+			//  126,2,0,0,401
+			//  135,2,1,1,430
 		  // need chosen units, tax depth(if applicable), db
 		  selection_obj = body.selection_obj
 		  name_hash = body.chosen_id_name_hash
 		  
 		  var matrix_with_names = {};
 		  matrix_with_names.dataset_names = [];
-		  matrix_with_names.unit_names = []
-		  var unit_name_lookup = {}
+		  matrix_with_names.unit_names = [];
+		  var unit_name_lookup = {};
+		  var unit_id_lookup = {};
 
 		  for (var r=0; r < sqlrows.length; r++){
-		    id = sqlrows[r].id;
+		    uid = sqlrows[r].id;
 		    name = sqlrows[r].tax;
-		    counts = selection_obj.counts_matrix[id];
+		    counts = selection_obj.counts_matrix[uid];
+		    
+		    if(uid in unit_id_lookup) {
+		      for (var c in counts) {
+		        unit_id_lookup[uid][c] += counts[c]
+		      }
+		    }else{
+		      unit_id_lookup[uid] = []
+		      for (var c in counts) {
+		        unit_id_lookup[uid].push(counts[c])
+		      }
+		    }
+
 		    if(name in unit_name_lookup) {
 		      for (var c in counts) {
 		        unit_name_lookup[name][c] += counts[c]
@@ -137,27 +161,49 @@ module.exports = {
 		      }
 		    }
 		  }
-		  console.log(unit_name_lookup)
+		  //console.log(unit_name_lookup)
+
 		  //
-		  //
-		  
-		  var csv = 'DatasetName';   // for D3.js stackbars
-		  // DatasetName,tax1,tax2,tax3,tax4
-			// SLM_NIH_Bv4v5--03_Junction_City_East,c1,c2,c3
-			for(var uname in unit_name_lookup) {
-				csv += ','+uname;
+		  // CSV2
+		  //		  
+		  var csv2 = 'DatasetName';   // for D3.js stackbars
+		  for(var uname in unit_name_lookup) {
+				csv2 += ','+uname;
 			}
-			csv += "\n";
+			csv2 += "\n";
 			for (var did in selection_obj.dataset_ids) {  // in correct order
 				var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
-		    csv += name_hash.names[ index ];
+		    csv2 += name_hash.names[ index ];
 		    for(var uname in unit_name_lookup){  // 
-		    	csv += ','+ unit_name_lookup[uname][did]
+		    	csv2 += ','+ unit_name_lookup[uname][did]
 		    }
-		    csv += "\n";
+		    csv2 += "\n";
 			}
 
+			//
+			// CSV3
+			//
+		  var csv3 = 'DatasetId';   // for D3.js stackbars
+			for(var uid in unit_id_lookup) {
+				csv3 += ','+uid;
+			}
+			csv3 += "\n";
+			for (var did in selection_obj.dataset_ids) {  // in correct order
+				
+		    csv3 += selection_obj.dataset_ids[did];
+		    for(var uid in unit_id_lookup){  // 
+		    	csv3 += ','+ unit_id_lookup[uid][did]
+		    }
+		    csv3 += "\n";
+			}
 
+			// JSON
+			// http://blog.nextgenetics.net/?e=7
+			var json = JSON.stringify(selection_obj.counts_matrix);
+
+			// 
+			// MTX
+			//
 			var mtx = '';
 		  for (var did in selection_obj.dataset_ids) {
 		    
@@ -182,13 +228,12 @@ module.exports = {
 		  if(to_loc === 'to_console') {
 		    console.log(mtx);
 		  }else{
-		    //console.log('mtx1');
-		    //console.log(mtx);
-		    //console.log(matrix_with_names);
-		    //console.log('mtx2');
-		    // to file
+		    
+		    // write to files
 		    var file1 = '../../tmp/'+ts+'_text_matrix.mtx';
 		    var file2 = '../../tmp/'+ts+'_text_matrix.csv';
+		    var file3 = '../../tmp/'+ts+'_id_matrix.csv';
+		    var file4 = '../../tmp/'+ts+'_id_matrix.json';
 		    var html1 = mtx;
 
 		    fs.writeFile(path.resolve(__dirname, file1), html1, function(err) {
@@ -199,11 +244,25 @@ module.exports = {
 		      }
 		    });
 
-		    fs.writeFile(path.resolve(__dirname, file2), csv, function(err) {
+		    fs.writeFile(path.resolve(__dirname, file2), csv2, function(err) {
 		      if(err) {
 		        console.log('Could not write file: '+file2+' Here is the error: '+err);
 		      } else {
 		        console.log("The file ("+file2+") was saved!");
+		      }
+		    });
+		    fs.writeFile(path.resolve(__dirname, file3), csv3, function(err) {
+		      if(err) {
+		        console.log('Could not write file: '+file2+' Here is the error: '+err);
+		      } else {
+		        console.log("The file ("+file2+") was saved!");
+		      }
+		    });
+		    fs.writeFile(path.resolve(__dirname, file4), json, function(err) {
+		      if(err) {
+		        console.log('Could not write file: '+file4+' Here is the error: '+err);
+		      } else {
+		        console.log("The file ("+file4+") was saved!");
 		      }
 		    });
 		  }
