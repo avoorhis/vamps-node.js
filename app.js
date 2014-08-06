@@ -49,7 +49,7 @@ app.use(passport.session()); // persistent login sessions
 
 // Make our db accessible to our router
 app.use(function(req, res, next){
-    if(!connection) {return next(new Error('no db connection'))}
+    if(!connection) {return next(new Error('no db connection'));}
     req.db = connection;
     req.C = C;
     return next();
@@ -79,21 +79,21 @@ app.use('/visuals', visuals);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
-    console.warn(req.params)
-    console.warn(req.uri)
+    console.warn(req.params);
+    console.warn(req.uri);
     var url = req.params[0];
     // I want to create a page like: counts_table_2014080_13452.html
     // for each link
     if(url === 'visuals/user_data/ctable.html') { // 
         // Yay this is the File A... 
-        console.warn("The user file  has been requested")
+        console.warn("The user file  has been requested");
         router.get('/visuals/user_data/ctable.html',  function(req, res) {
-            console.warn('trying to open ctable.html')
+            console.warn('trying to open ctable.html');
         });
     } else {
         // we don't care about any other file, let it download too        
-        console.warn("No Route Found")
-        next()
+        console.warn("No Route Found");
+        next();
     }
 });
 
