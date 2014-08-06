@@ -56,10 +56,10 @@ router.post('/view_selection',  function(req, res) {
   var unit_name_query = '';
   var unit_field;
   if (uitems[0] === 'tax'){  // covers both simple and custom
-    unit_field = 'tax_silva108_id';
+    unit_field = 'silva_taxonomy_info_per_seq_id';
     unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, req.body ) 
   }else if(uitems[0] === 'otus') {
-    unit_field = 'otu_id';
+    unit_field = 'gg_otu_id';
     unit_name_query = COMMON.get_otus_query( req.db, uitems, req.body ) 
   }else if(uitems[0] === 'med_nodes') {
     unit_field = 'med_node_id';
