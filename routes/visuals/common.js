@@ -33,7 +33,7 @@ module.exports = {
 	  //selection_obj = body.selection_obj;
 	  
 	  if (uitems[0] === 'tax' && uitems[1] === 'silva108'){  //covers both simple and custom taxonomy
-	    uassoc = 'tax_silva108_id';
+	    uassoc = 'silva_taxonomy_info_per_seq_id';
 	  }
 	  var domains = body.domains || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
 	  var tax_depth = body.tax_depth || 'phylum';
