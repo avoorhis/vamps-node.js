@@ -1,3 +1,11 @@
+/*
+// anna's
+require('nodetime').profile({
+    accountKey: '13bf15a356e62b822df4395f183fe0a83af757f4', 
+    appName: 'Node.js VAMPS Application'
+  });
+*/
+
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
