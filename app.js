@@ -12,7 +12,7 @@ var db = require('mysql');
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require('./config/database-dev');
-connection.connect();
+//connection.connect();
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var projects = require('./routes/projects');

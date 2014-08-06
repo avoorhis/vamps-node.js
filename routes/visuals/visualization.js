@@ -323,7 +323,9 @@ router.get('/user_data/counts_table', function(req, res) {
   var ts = myurl.query.ts;
   var file = '../../tmp/'+ts+'_counts_table.html';
   fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
-    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    if (err) { 
+      console.log('Could not read file: '+file + '\nHere is the error: '+ err ) 
+    }     
     res.render('visuals/user_data/counts_table', {
       title: req.params.title   || 'default_title',
       timestamp: myurl.query.ts || 'default_timestamp',
