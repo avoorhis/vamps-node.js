@@ -52,7 +52,7 @@ config.DISTANCECHOICES = { choices: [
     ]};
 
 // This List MUST match the fields in sequence_uniq_infos
-config.AVAILABLE_UNITS = ['tax_silva108_id', 'tax_gg_id', 'med_node_id', 'otu_id'];
+config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'olygotype_id', 'gg_otu_id'];
 
 
 module.exports = config;
