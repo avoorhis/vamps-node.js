@@ -28,8 +28,8 @@ describe('visualization functionality on index_visuals', function(){
       .get('/visuals/index_visuals')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('SLM_NIH_v3');
-        res.text.should.include('7_Stockton');
+        res.text.should.include('BPC_MC_Bv6');
+        res.text.should.include('20121014_mock_CGCTC');
         done();
       });
   });
