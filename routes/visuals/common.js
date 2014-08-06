@@ -59,16 +59,16 @@ module.exports = {
 	    fields = ['domain','phylum','klass'];
 	    joins =  join_domain + join_phylum + join_klass;
 	  } else if (tax_depth === 'order')  {
-	    fields = ['domain','phylum','klass','orderx'];
+	    fields = ['domain','phylum','klass','`order`'];
 	    joins =  join_domain + join_phylum + join_klass + join_order;
 	  } else if (tax_depth === 'family') {
-	    fields = ['domain','phylum','klass','orderx','family'];
+	    fields = ['domain','phylum','klass','`order`','family'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family;
 	  } else if (tax_depth === 'genus') {
-	    fields = ['domain','phylum','klass','orderx','family','genus'];
+	    fields = ['domain','phylum','klass','`order`','family','genus'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
 	  } else if (tax_depth === 'species') {
-	    fields = ['domain','phylum','klass','orderx','family','genus','species'];
+	    fields = ['domain','phylum','klass','`order`','family','genus','species'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_strain;
 	  }
 	    
