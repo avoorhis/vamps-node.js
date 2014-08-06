@@ -57,13 +57,13 @@ router.post('/view_selection',  function(req, res) {
   var unit_field;
   if (uitems[0] === 'tax'){  // covers both simple and custom
     unit_field = 'silva_taxonomy_info_per_seq_id';
-    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, req.body );
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
-    unit_name_query = COMMON.get_otus_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_otus_query( req.db, uitems, req.body );
   }else if(uitems[0] === 'med_nodes') {
     unit_field = 'med_node_id';
-    unit_name_query = COMMON.get_med_query( req.db, uitems, req.body ) 
+    unit_name_query = COMMON.get_med_query( req.db, uitems, req.body );
   }else{
     //error
   }
@@ -132,9 +132,9 @@ router.post('/view_selection',  function(req, res) {
 
       }
       res.render('visuals/view_selection', { title   : 'VAMPS: Visualization',
-                                        body   : JSON.stringify(req.body),  
-                                        matrix : JSON.stringify(count_matrix), 
-                                        constants    : JSON.stringify(req.C), 
+                                        body   : JSON.stringify(req.body),
+                                        matrix : JSON.stringify(count_matrix),
+                                        constants    : JSON.stringify(req.C),
                                         timestamp : timestamp,           // for creating unique files/pages                            
                                         user   : req.user
                    });
@@ -214,7 +214,16 @@ router.post('/unit_selection',  function(req, res) {
     chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
   }
 
+  var start = process.hrtime();
 
+  var elapsed_time = function(note){
+      var precision = 3; // 3 decimal places
+      var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+      console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+      start = process.hrtime(); // reset the timer
+  };
+
+  elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info");
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
   qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
@@ -222,6 +231,8 @@ router.post('/unit_selection',  function(req, res) {
 
 
   db.query(qSelectSeqID, function(err, rows, fields){
+    var u;
+
     if (err)  {
       throw err;
     } else {
@@ -229,7 +240,6 @@ router.post('/unit_selection',  function(req, res) {
 
       // here get tax_silva108_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
       // and keep them in the same order as the sequence_ids
-      var u;
       for (var k=0; k < rows.length; k++){
         if (rows[k].dataset_id in dsets){
           dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
@@ -255,7 +265,7 @@ router.post('/unit_selection',  function(req, res) {
         //dataset_accumulator.ds_counts.push(id)
         accumulator.seq_ids.push(dsets[id].seq_ids);
         accumulator.seq_freqs.push(dsets[id].seq_counts);
-        for (var u in dsets[id].unit_assoc) {
+        for (u in dsets[id].unit_assoc) {
           accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
         }
 
@@ -268,7 +278,7 @@ router.post('/unit_selection',  function(req, res) {
       var items = req.body.dataset_ids[n].split('--');
       var did = items[0];
       if(accumulator.dataset_ids.indexOf(did.toString()) === -1 || accumulator.dataset_ids.indexOf(did.toString()) === 'undefined'){
-        console.log('1 '+did)
+        console.log('1 ' + did);
         accumulator.dataset_ids.push(did);
         accumulator.seq_ids.push([]);
         accumulator.seq_freqs.push([]);
@@ -289,6 +299,7 @@ router.post('/unit_selection',  function(req, res) {
                     user         : req.user
                   });
    });
+   elapsed_time("end query");
 
 
 });
@@ -323,9 +334,9 @@ router.get('/user_data/counts_table', function(req, res) {
   var ts = myurl.query.ts;
   var file = '../../tmp/'+ts+'_counts_table.html';
   fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
-    if (err) { 
-      console.log('Could not read file: '+file + '\nHere is the error: '+ err ) 
-    }     
+    if (err) {
+      console.log('Could not read file: ' + file + '\nHere is the error: '+ err);
+    }
     res.render('visuals/user_data/counts_table', {
       title: req.params.title   || 'default_title',
       timestamp: myurl.query.ts || 'default_timestamp',
@@ -343,7 +354,7 @@ router.get('/user_data/heatmap', function(req, res) {
   var ts = myurl.query.ts;
   var file = '../../tmp/'+ts+'_heatmap.html';
   fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
-    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ); }
     res.render('visuals/user_data/heatmap', {
       title: req.params.title   || 'default_title',
       timestamp: myurl.query.ts || 'default_timestamp',
@@ -361,7 +372,7 @@ router.get('/user_data/barcharts', function(req, res) {
   var ts = myurl.query.ts;
   var file = '../../tmp/'+ts+'_barcharts.html';
   fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, html) {
-    if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ) }     
+    if (err) { console.log('Could not read file: ' + file + '\nHere is the error: '+ err ); }
     res.render('visuals/user_data/barcharts', {
       title: req.params.title   || 'default_title',
       timestamp: myurl.query.ts || 'default_timestamp',
