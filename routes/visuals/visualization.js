@@ -214,8 +214,10 @@ router.post('/unit_selection',  function(req, res) {
     chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
   }
 
+  // benchmarking
   var start = process.hrtime();
 
+  // benchmarking
   var elapsed_time = function(note){
       var precision = 3; // 3 decimal places
       var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
@@ -223,7 +225,9 @@ router.post('/unit_selection',  function(req, res) {
       start = process.hrtime(); // reset the timer
   };
 
+  // benchmarking
   elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info");
+  
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
   qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
@@ -299,6 +303,7 @@ router.post('/unit_selection',  function(req, res) {
                     user         : req.user
                   });
    });
+   // benchmarking
    elapsed_time("end query");
 
 
