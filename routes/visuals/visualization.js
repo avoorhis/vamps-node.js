@@ -215,8 +215,8 @@ router.post('/unit_selection',  function(req, res) {
   }
 
 
-  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_infos";
-  qSelectSeqID +=    "  JOIN sequence_uniq_infos using(sequence_id)";
+  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
+  qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
   console.log(qSelectSeqID);
 
@@ -391,15 +391,15 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   // This taxonomy JSON object can be used for other taxonomies so eventually will be
   // move from here ...
   if (typeof tax_silva108_custom_rows === 'undefined'){
-    var tax_query = "SELECT domain,phylum,klass,orderx,family,genus,species,strain FROM taxonomies as t";
-    tax_query +=    " JOIN domains  as dom on (t.domain_id=dom.id)";
-    tax_query +=    " JOIN phylums  as phy on (t.phylum_id=phy.id)";
-    tax_query +=    " JOIN klasses  as kla on (t.klass_id=kla.id)";
-    tax_query +=    " JOIN orders   as ord on (t.order_id=ord.id)";
-    tax_query +=    " JOIN families as fam on (t.family_id=fam.id)";
-    tax_query +=    " JOIN genera   as gen on (t.genus_id=gen.id)";
-    tax_query +=    " JOIN species  as spe on (t.species_id=spe.id)";
-    tax_query +=    " JOIN strains  as str on (t.strain_id=str.id)";
+    var tax_query = "SELECT domain, phylum, klass, `order`, family, genus, species, strain FROM silva_taxonomy";
+    tax_query +=    " JOIN domain  as dom using(domain_id)";
+    tax_query +=    " JOIN phylum  as phy using(phylum_id)";
+    tax_query +=    " JOIN klass  as kla using(klass_id)";
+    tax_query +=    " JOIN `order` as ord using(order_id)";
+    tax_query +=    " JOIN family as fam using(family_id)";
+    tax_query +=    " JOIN genus as gen using(genus_id)";
+    tax_query +=    " JOIN species as spe using(species_id)";
+    tax_query +=    " JOIN strain as str using(strain_id)";
     console.log('running custom tax query');
     console.log(tax_query);
     db.query(tax_query, function(err, rows, fields){

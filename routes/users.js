@@ -13,7 +13,7 @@ var helpers = require('./helpers');
 /* GET User List (index) page. */
 router.get('/index_users', function(req, res) {
     var db = req.db;
-    var qSelect = "SELECT * from users";
+    var qSelect = "SELECT * from user";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
       if (err)  {
