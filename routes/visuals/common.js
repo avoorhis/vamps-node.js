@@ -40,48 +40,36 @@ module.exports = {
 	  var fields = [];
 	  var joins = '';
 	  var and_domain_in = '';
+	  var join_domain = " JOIN domain USING(domain_id)"
+    var join_phylum = " JOIN phylum USING(phylum_id)";
+    var join_klass = " JOIN klass USING(klass_id)";
+    var join_order = " JOIN `order` USING(order_id)";
+    var join_family = " JOIN family USING(family_id)";
+    var join_genus = " JOIN genus USING(genus_id)";
+    var join_species = " JOIN species USING(species_id)";
+    var join_strain = " JOIN strain USING(strain_id)";
+    
 	  if (tax_depth === 'domain') {
 	    fields = ['domain'];
-	    joins = " JOIN domains  as dom on (t.domain_id=dom.id)";
+	    joins = join_domain;
 	  } else if (tax_depth === 'phylum') {
 	    fields = ['domain','phylum'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
+	    joins =  join_domain + join_phylum;
 	  } else if (tax_depth === 'class')  {
 	    fields = ['domain','phylum','klass'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-	    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
+	    joins =  join_domain + join_phylum + join_klass;
 	  } else if (tax_depth === 'order')  {
 	    fields = ['domain','phylum','klass','orderx'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-	    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-	    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
+	    joins =  join_domain + join_phylum + join_klass + join_order;
 	  } else if (tax_depth === 'family') {
 	    fields = ['domain','phylum','klass','orderx','family'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-	    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-	    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-	    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family;
 	  } else if (tax_depth === 'genus') {
 	    fields = ['domain','phylum','klass','orderx','family','genus'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-	    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-	    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-	    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
-	    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
 	  } else if (tax_depth === 'species') {
 	    fields = ['domain','phylum','klass','orderx','family','genus','species'];
-	    joins =  " JOIN domains  as dom on ( t.domain_id = dom.id )\n";
-	    joins += " JOIN phylums  as phy on ( t.phylum_id = phy.id )\n";
-	    joins += " JOIN klasses  as kla on ( t.klass_id  = kla.id )\n";
-	    joins += " JOIN orders   as ord on ( t.order_id  = ord.id )\n";
-	    joins += " JOIN families as fam on ( t.family_id = fam.id )\n";
-	    joins += " JOIN genera   as gen on ( t.genus_id  = gen.id )\n";
-	    joins += " JOIN species  as spe on ( t.species_id= spe.id )\n";
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_strain;
 	  }
 	    
 	  if (domains.length < 5){
@@ -89,7 +77,7 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
-	  var tax_query = "SELECT distinct t.id, concat_ws(';',"+fields+") as tax FROM taxonomies as t\n";
+	  var tax_query = "SELECT distinct silva_taxonomy_id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy\n";
 	  tax_query     += joins;
 	  
 	  unit_id_array = []
@@ -97,7 +85,7 @@ module.exports = {
 	    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
 
 	  }
-	  tax_query     += " WHERE t.id in (" + unit_id_array + ")\n";
+	  tax_query     += " WHERE silva_taxonomy_id in (" + unit_id_array + ")\n";
 	  tax_query     += and_domain_in;
 	  return tax_query;
 

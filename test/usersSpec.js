@@ -113,17 +113,17 @@ describe('Login page functionality', function(){
     request(app)
       .get('/')
       .end(function (err, res) {
-      console.log("===2===");
-      console.log(res);
-      console.log("===22===");
+      // console.log("===2===");
+      // console.log(res);
+      // console.log("===22===");
       res.text.should.include('Logged in as: TEST');
       
       request(app)
         .get('/users/logout')
         .expect(302)
         .end(function (err, res) {
-          console.log("=== 55 ===");
-          console.log(res);
+          // console.log("=== 55 ===");
+          // console.log(res);
           res.header.location.should.include('/');
           res.header.location.should.not.include('login');
 
@@ -132,9 +132,9 @@ describe('Login page functionality', function(){
           request(app)
             .get('/')
             .end(function (err, res) {
-            console.log("===1===");
-            console.log(res);
-            console.log("===11===");
+            // console.log("===1===");
+            // console.log(res);
+            // console.log("===11===");
             res.text.should.not.include('Logged in as: TEST');
           
           // request(app)
