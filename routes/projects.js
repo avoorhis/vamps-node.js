@@ -19,7 +19,7 @@ router.get('/index_projects', function(req, res) {
 
 router.get('/:id', function(req, res) {
     var db = req.db;
-    var qSelect = "SELECT project_id, project, title, project_description from project where id = '" + req.params.id +"'";
+    var qSelect = "SELECT project_id, project, title, project_description from project where project_id = '" + req.params.id +"'";
     console.log(qSelect);
     var collection = db.query(qSelect, function (err, row, fields){
       if (err)  {
