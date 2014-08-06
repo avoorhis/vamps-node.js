@@ -29,7 +29,7 @@ describe('Login page functionality', function(){
     this.timeout(5000);
     async.series([
       function (cb) {
-        connection.query('SELECT * FROM users WHERE username="TEST"'+
+        connection.query('SELECT * FROM user WHERE username="TEST"'+
               ' AND email="TEST"',function(err,results){
             results.length.should.not.equal(0);
             done();
