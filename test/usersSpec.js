@@ -58,11 +58,15 @@ describe('Login page functionality', function(){
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
+        console.log("===5===");
+        console.log(res);
+        console.log("===55===");
         res.header.location.should.include('/');
         res.header.location.should.not.include('login');
         done();
       });
-  });
+    });
+
 
   it('should redirect to "/users/login" if authentication fails', function (done) {
     request(app)
