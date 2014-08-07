@@ -51,6 +51,16 @@ describe('Login page functionality', function(){
   });
 
   it('Able to login with user "TEST"', function(done){
+    connection_dev = require('../config/database-dev');
+    connection_dev.query('INSERT IGNORE INTO user (username, encrypted_password, first_name, last_name, email, institution) VALUES ("TEST","7kT94LYj7y5RnJVb34jrJw==","TEST","TEST","TEST","TEST")', function(err, result) {
+      if (err) {throw err;}
+
+      // console.log(query.sql);
+
+      console.log("result.insertId: " + result.insertId);
+      console.log("=========");
+    });
+    
     request(app)
       .post('/users/login')
       .expect(302)
@@ -58,13 +68,14 @@ describe('Login page functionality', function(){
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
-        console.log("===5===");
-        console.log(res);
-        console.log("===55===");
         res.header.location.should.include('/');
         res.header.location.should.not.include('login');
+        connection_dev.query('DELETE FROM user WHERE username = "TEST" AND first_name = "TEST" AND last_name = "TEST" AND email = "TEST" AND institution = "TEST"', function(err, result) {
+          if (err) {throw err;}
+        });
         done();
       });
+      
     });
 
 
