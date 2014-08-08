@@ -59,16 +59,37 @@ describe('visualization functionality on index_visuals', function(){
   //       });
   //     });
 
-  it('Text on counts_table page');
-  // , function(done){
-  //     request(app)
-  //       .get('/visuals/counts_table')
-  //       .expect(200)
-  //       .end(function (err, res) {
-  //         res.text.should.include('Dataset Selection Page');
-  //         done();
-  //       });
-  //   });
+  it('Text on counts_table page', function(done){
+      request(app)
+        .get('/visuals/user_data/counts_table')
+        .expect(200)
+        .end(function (err, res) {
+          res.text.should.include('VAMPS Counts Table');
+          done();
+        });
+    });
+
+    it('Text on counts_table page', function(done){
+        request(app)
+          .get('/visuals/user_data/heatmap')
+          .expect(200)
+          .end(function (err, res) {
+            res.text.should.include('VAMPS Heatmap');
+            done();
+          });
+      });
+
+      it('Text on counts_table page', function(done){
+          request(app)
+            .get('/visuals/user_data/barcharts')
+            .expect(200)
+            .end(function (err, res) {
+              res.text.should.include('VAMPS Bar Charts');
+              done();
+            });
+        });
+
+
 
   it('Text on tax_silva108_simple page', function(done){
     request(app)
