@@ -42,6 +42,9 @@ a {
 .small_font {
     font-size: x-small;
 }
+.tiny_font {
+    font-size: xx-small;
+}
 .bold_font {
    font-weight:bold;
 }
