@@ -1,4 +1,5 @@
-<%   var rows = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
+<%   var rows     = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
+<%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
 Display Output:
 <p class='standard'>
     1) Check your selected datasets from the list above.<br>
@@ -10,9 +11,9 @@ Display Output:
 </p>
 <ul>
     <% for (i in rows) { %>
-        <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \><%= rows[i].show %>
+        <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
     		<% if(rows[i].id === 'heatmap' ) { %>
-                <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+                
                 <select name='selected_heatmap_distance' class='small_font'>
                 <% for(d in distrows ) { %>
                   <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
@@ -21,14 +22,14 @@ Display Output:
             <% } %> 
 
             <% if(rows[i].id === 'dendrogram' ) { %>
-                <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+                
                 <select name='selected_dendrogram_distance' class='small_font'>
                 <% for(d in distrows ) { %>
                   <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
                 <% } %>
                 </select>
             <% } %> 
-
+            <%= rows[i].show %>
         </li>
     <% } %>
 </ul>
