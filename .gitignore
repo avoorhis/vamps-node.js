@@ -1,6 +1,7 @@
 *.sql.gz
 db.sql
-config/
+config/database-dev.js
+config/database-test.js
 node_modules/
 
 # eclipse
