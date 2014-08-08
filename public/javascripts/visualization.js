@@ -1,5 +1,11 @@
 // visualization.js
 
+var dataset_select_form = document.getElementById('dataset_select_form');
+document.getElementById('unit_selection').addEventListener('click', function () {
+    // alert('Hello world');
+    check_viz_selection_pg1(dataset_select_form);
+});
+
 //
 // TOGGLE_SIMPLE_TAXA
 //
