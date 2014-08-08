@@ -15,7 +15,7 @@ config.UNITSELECT = { units: [
         {id : 'tax_gg_simple',      file: 'unit_selectors/taxa_gg_simple.html',       name : "Taxonomy Greengenes (Simple)"},
         {id : 'tax_gg_custom',      file: 'unit_selectors/taxa_gg_cust.html',         name : "Taxonomy Greengenes (Custom)"},
         {id : 'tax_rdp',            file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP"},
-        {id : 'otus',                file: 'unit_selectors/otus.html',                 name : "OTUs"},
+        {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs"},
         {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',             name : "MED Nodes"}
     ]};
 
@@ -52,7 +52,7 @@ config.DISTANCECHOICES = { choices: [
     ]};
 
 // This List MUST match the fields in sequence_uniq_infos
-config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'olygotype_id', 'gg_otu_id'];
+config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 
 
 module.exports = config;
