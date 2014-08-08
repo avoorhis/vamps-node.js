@@ -3,8 +3,17 @@ var async = require('async'),
     should = require('should'),
     app = require('../app'),
     connection = require('../config/database-test');
+var passportStub = require('passport-stub');
+// passportStub.install(app);
+
+beforeEach(function() {
+  passportStub.logout();    
+});
 
 before(function() {
+
+  // passportStub.logout();    
+
   /*jshint multistr: true */
   connection.query("CREATE TABLE IF NOT EXISTS user (\
     user_id int(11) unsigned NOT NULL AUTO_INCREMENT,\

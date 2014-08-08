@@ -8,6 +8,12 @@ passportStub.install(app);
 
 req = request(app);
 
+// beforeEach
+// before(function(done) {
+//     console.log('Unlog before function');
+//     passportStub.logout();    
+// });
+
 describe('Profile page functionality', function(){
   
   it('redirect to / if not logged in', function(done){
