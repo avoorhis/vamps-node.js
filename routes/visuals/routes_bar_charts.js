@@ -11,7 +11,7 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, matrix, body ) {
+		create_barcharts_html: function( ts, count_matrix, body ) {
 			var d3 = require("d3");
 			var xmldom = require('xmldom')
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
@@ -19,17 +19,17 @@ module.exports = {
 			console.log(outfile)
 			
 			console.log('start matrix');
-			console.log( matrix);
+			console.log( count_matrix);
 			console.log('end matrix');
 			
 			var data = [];
-			for(n in matrix.dataset_names) {
-				data.push({'DatasetName': matrix.dataset_names[n]});	
+			for(n in count_matrix.dataset_names) {
+				data.push({'DatasetName': count_matrix.dataset_names[n]});	
 			}
-			for(u in matrix.unit_names) {
-				for(n in matrix.dataset_names) {
-					dname = matrix.dataset_names[n];
-					data[n][u] = matrix.unit_names[u][n];
+			for(u in count_matrix.unit_names) {
+				for(n in count_matrix.dataset_names) {
+					dname = count_matrix.dataset_names[n];
+					data[n][u] = count_matrix.unit_names[u][n];
 				}
 			}
 
