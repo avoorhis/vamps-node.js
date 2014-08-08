@@ -3,20 +3,17 @@
 var LocalStrategy = require('passport-local').Strategy;
 //var bcrypt        = require('bcrypt-nodejs');
 
-module.exports = function(passport, db) {
-     
-
-var crypto = require('crypto');
+var crypto = require('crypto')
 
 //var mysql = require('mysql');
-
+ 
 //var connection = require('./database-dev');
-
-//connection.query('USE vidyawxx_build2');
-
+     
+//connection.query('USE vidyawxx_build2');    
+     
 // expose this function to our app using module.exports
 module.exports = function(passport, db) {
-
+     
 
     // =========================================================================
     // passport session setup ==================================================
@@ -24,6 +21,7 @@ module.exports = function(passport, db) {
     // required for persistent login sessions
     // passport needs ability to serialize and unserialize users out of session
 
+    
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
         done(null, user.id);
