@@ -3,7 +3,7 @@
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
       <!-- autocomplete="off" clears the checkboxes on page refresh -->
-      <form id='' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
+      <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
 
         <table class='single_border' border='1'>
           <tr>
@@ -13,7 +13,7 @@
               </div>
             </td>
             <td class='center'>
-              <input type='button' value='Next: Get Graphics' onclick='check_viz_selection_pg2(this.form);return false;'>
+              <input type='button' id="get_graphics" value='Next: Get Graphics'>
             </td>
 
           </tr>
@@ -55,7 +55,7 @@
         <input type='hidden' value='<%= selection_obj %>'       name='selection_obj'/>
       </form>
   <div id='DEBUG_div'></div>
-  <script type="text/javascript" src="/javascripts/visualization.js"></script>
+  <script type="text/javascript" src="/javascripts/check_form_pg2.js"></script>
   <script type="text/javascript" src="/javascripts/taxonomy_tree.js"></script>
   <script type="text/javascript" src="/javascripts/unit_selectors.js"></script>
 <% include ../add_ins/end.ejs %>
