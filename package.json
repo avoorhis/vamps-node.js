@@ -30,13 +30,15 @@
     "uid-safe": "1.0.1",
     "ejs":"1.0.0",
     "d3":"3.4.11",
-    "jsdom":"0.11.1"
+    "jsdom":"0.11.1",
+    "nodetime":""
   },
   "devDependencies": {
     "mocha": "1.14.0",
     "debug": "0.7.4",
     "supertest": "0.8.0",
     "should": "2.0.2",
-    "passport-stub": "1.0.0"
+    "passport-stub": "",
+    "istanbul": ""
   }
 }
