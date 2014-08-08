@@ -2,7 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var COMMON  = require('./common');
+var COMMON  = require('./routes_common');
 var colors = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','ccccff','ddeeee','eeeedd','ffdddd','ffbbbb','ff9999','ff7777','ff5555','ff3333','ff0000'];
 module.exports = {
 		//
