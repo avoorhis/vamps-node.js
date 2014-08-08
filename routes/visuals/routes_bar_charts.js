@@ -1,7 +1,7 @@
 // bar_charts.js
 var fpath = require('path');
 var fs = require('fs');
-//var http = require('http');
+var COMMON  = require('./routes_common');
 
 //var jsdom = require('jsdom');
 
@@ -48,7 +48,15 @@ module.exports = {
 			    // TODO:  More Colors
 			var color = d3.scale.ordinal()									
 			    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
+			    // var level = 1
+			    // level += 1
+			    //var hex = level.toString(16);
+			    // color = '#FFFF' + hex + hex
+			    //
+			    // $string2 =  str_pad(dechex(crc32($string1)), 8, '0', STR_PAD_LEFT) ;
+					// $string3 = substr($string2,2,6);
+					// return $string3;
+			var test_color = COMMON.string_to_color_code('Bacteria;Protobacteria');
 			var xAxis = d3.svg.axis()
 			    .scale(x)
 			    .orient("bottom");
@@ -111,7 +119,12 @@ module.exports = {
 				});
 			});
 			
-			
+			var tooltip = d3.select("body")
+				.append("div")
+				.style("position", "absolute")
+				.style("z-index", "10")
+				.style("visibility", "hidden")
+				.text( "a simple tooltip");
 		  // axis legends -- would like to rotate dataset names
 		  x.domain(data.map(function(d) { return d.DatasetName; }));
 		  //y.domain([0, d3.max(data, function(d) { return d.total; })]);
@@ -150,16 +163,15 @@ module.exports = {
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
 		      .attr("width", x.rangeBand())
-					//.attr("title",function(d) { 
-		      // 	return this._parentNode.__data__.DatasetName + '---'+d.name + '---'+this._parentNode.__data__[d.name].toString() // id of each rectangle should be datasetname---unitname---count
-					//})  
+					.attr("id",function(d) { 
+		       	return this._parentNode.__data__.DatasetName + '---'+d.name + '---'+this._parentNode.__data__[d.name].toString() // id of each rectangle should be datasetname---unitname---count
+					})  
 		      .attr("y", function(d) { return y(d.y1); })
 		      .attr("x", 25)  // adjust where first bar starts on x-axis
 		      .attr("height",  function(d) { return y(d.y0) - y(d.y1); })
 		      .attr("class","tip")
-		      .style("fill",   function(d) { return color(d.name); })
-		      .append("title")
-		      .text(function(d) { return 'x'; });
+		      .style("fill",   function(d) { return color(d.name); });
+		      
 
 		console.log('start data')
 		console.log(data)
