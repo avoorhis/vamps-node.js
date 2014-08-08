@@ -1,5 +1,9 @@
 // visualization.js
 
+document.getElementById('toggle_taxa_btn').addEventListener('click', function () {
+    toggle_simple_taxa();
+});
+
 //
 // TOGGLE_SIMPLE_TAXA
 //
@@ -49,27 +53,6 @@ function get_requested_units_selection_box(file_id) {
 }
 
 
-//
-// CHECK_VIZ Page 1
-//
-function check_viz_selection_pg1(thisform) {
-  // simple function to check if user has not selected any datasets.
-  // alerts and returns if not.
-  var x = thisform["dataset_ids[]"];
-  var gotone = false;
-  for (var i=0; i<x.length; i++)
-  {
-      if (x[i].checked) {
-        gotone = true;
-      }
-  }
-  if (gotone){
-    thisform.submit();
-  } else {
-    alert('You must select some datasets');
-    return;
-  }
-}
 //
 // CHECK_VIZ Page 2
 //
