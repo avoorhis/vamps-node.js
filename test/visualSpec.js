@@ -82,15 +82,17 @@ describe('visualization functionality on index_visuals', function(){
       });
   });
 
-  it('Text on tax_silva108_custom page');// , function(done){
-  //     request(app)
-  //       .get('/visuals/partials/tax_silva108_custom')
-  //       .expect(200)
-  //       .end(function (err, res) {
-  //         res.text.should.include('Domains to Include');
-  //         done();
-  //       });
-  //   });
+  it('Text on tax_silva108_custom page', function(done){
+    request(app)
+      .get('/visuals/partials/tax_silva108_custom')
+      .expect(200)
+      .end(function (err, res) {
+        res.text.should.include('Silva(v108) Custom Taxonomy Selection');
+        res.text.should.include('Archaea');
+        res.text.should.include('Bacteria');
+        done();
+      });
+  });
 
 });
 
