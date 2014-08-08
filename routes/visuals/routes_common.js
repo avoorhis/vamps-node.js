@@ -24,6 +24,7 @@ module.exports = {
 	},
 
 
+
 	//
 	//
 	//
@@ -85,9 +86,23 @@ module.exports = {
 	    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
 
 	  }
+	  //console.log(unit_id_array)
+	  //console.log(typeof unit_id_array)
+
+	  //unit_id_array = Array.prototype.slice.call(unit_id_array)
+	  //console.log(typeof unit_id_array)
+	  unit_id_array = unit_id_array.filter(onlyUnique);
+	  //console.log(unit_id_array)
+	  //.getUnique();
+
 	  tax_query     += " WHERE silva_taxonomy_id in (" + unit_id_array + ")\n";
 	  tax_query     += and_domain_in;
 	  return tax_query;
+
+
+		function onlyUnique(value, index, self) { 
+		    return self.indexOf(value) === index;
+		}
 
 	},
 
