@@ -15,6 +15,7 @@ module.exports = {
 			// counts_matrix:{"82":[4,2,2],"84":[0,0,1],"137":[0,0,1],"214":[272,401,430]}}
 
 		  //selection_obj = JSON.parse(selection_obj);
+		  console.log(selection_obj);
 		  var matrix = {};  
 		  
 		  var dataset_ids = selection_obj.dataset_ids;
@@ -161,7 +162,7 @@ module.exports = {
 		      }
 		    }
 		  }
-		  //console.log(unit_name_lookup)
+		  console.log(unit_name_lookup)
 
 		  //
 		  // CSV2
@@ -235,7 +236,7 @@ module.exports = {
 		    var file3 = '../../tmp/'+ts+'_id_matrix.csv';
 		    var file4 = '../../tmp/'+ts+'_id_matrix.json';
 		    var html1 = mtx;
-
+console.log('Writing matrix file(s)');
 		    fs.writeFile(path.resolve(__dirname, file1), html1, function(err) {
 		      if(err) {
 		        console.log('Could not write file: '+file1+' Here is the error: '+err);
@@ -265,6 +266,7 @@ module.exports = {
 		        console.log("The file ("+file4+") was saved!");
 		      }
 		    });
+console.log('DONE writing matrix file(s)');
 		  }
 		  return matrix_with_names;
 		  
