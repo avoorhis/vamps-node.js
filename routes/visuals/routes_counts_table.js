@@ -2,7 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var COMMON  = require('./common');
+var COMMON  = require('./routes_common');
 
 module.exports = {
 
