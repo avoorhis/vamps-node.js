@@ -3,17 +3,17 @@ var router = express.Router();
 
 
 var util = require('util');
-var url = require('url');
+var url  = require('url');
 var http = require('http');
 var path = require('path');
-var fs = require('fs');
+var fs   = require('fs');
 
-var COMMON  = require('./common');
+var COMMON  = require('./routes_common');
 var HELPERS = require('../helpers');
-var MTX     = require('./counts_matrix');
-var HMAP    = require('./distance_heatmap');
-var BCHARTS = require('./bar_charts');
-var CTABLE  = require('./counts_table');
+var MTX     = require('./routes_counts_matrix');
+var HMAP    = require('./routes_distance_heatmap');
+var BCHARTS = require('./routes_bar_charts');
+var CTABLE  = require('./routes_counts_table');
 
 var app = express();
 
@@ -138,7 +138,7 @@ router.post('/view_selection',  function(req, res) {
                                         timestamp : timestamp,           // for creating unique files/pages                            
                                         user   : req.user
                    });
-    }
+      }
     });
       
 
@@ -226,7 +226,7 @@ router.post('/unit_selection',  function(req, res) {
   };
 
   // benchmarking
-  elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info");
+  elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
   qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
@@ -259,11 +259,9 @@ router.post('/unit_selection',  function(req, res) {
           for (u=0; u < available_units.length; u++) {
             dsets[rows[k].dataset_id].unit_assoc[available_units[u]] = [rows[k][available_units[u]]];
           }
-
         }
-
       }
-    //console.log(dsets)
+      //console.log(dsets)
       for (var id in dsets){
         accumulator.dataset_ids.push(id);
         //dataset_accumulator.ds_counts.push(id)
@@ -272,17 +270,16 @@ router.post('/unit_selection',  function(req, res) {
         for (u in dsets[id].unit_assoc) {
           accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
         }
-
       }
+    }// end else
 
-    }
     // Adds dataset_ids that were selected but have no sequences
-    // not sure if this will be needed in production
+    // --not sure if this will be needed in production
     for (var n=0; n < req.body.dataset_ids.length; n++){
       var items = req.body.dataset_ids[n].split('--');
       var did = items[0];
       if(accumulator.dataset_ids.indexOf(did.toString()) === -1 || accumulator.dataset_ids.indexOf(did.toString()) === 'undefined'){
-        console.log('1 ' + did);
+        //console.log('1 ' + did);
         accumulator.dataset_ids.push(did);
         accumulator.seq_ids.push([]);
         accumulator.seq_freqs.push([]);
@@ -292,22 +289,32 @@ router.post('/unit_selection',  function(req, res) {
       }
     }
     GLOBAL.dataset_accumulator = accumulator;
-    console.log(JSON.stringify(accumulator,null,4));
-
-
-     res.render('visuals/unit_selection', {   title: 'Unit Selection',
+    //console.log(JSON.stringify(accumulator,null,4));
+    //console.log(accumulator);
+    //console.log('seq_ids length: '+accumulator.seq_ids[0].length.toString());
+    elapsed_time(">>>>>>>>> 2 Before Page Render <<<<<<");
+    res.render('visuals/unit_selection', {   title: 'Unit Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     selection_obj: JSON.stringify(dataset_accumulator),
                     constants    : JSON.stringify(req.C),
                     body         : JSON.stringify(req.body),
+                    //chosen_id_name_hash: chosen_id_name_hash,
+                    //selection_obj: dataset_accumulator,
+                    //constants    : req.C,
+                    //body         : req.body,
                     user         : req.user
-                  });
-   });
+    });  // end render
+    // benchmarking
+    elapsed_time(">>>>>>>> 3 After Page Render <<<<<<");
+
+  });  // end db query
+   
    // benchmarking
-   elapsed_time("end query");
+   elapsed_time(">>>>>>>>> 1 Before Page Render <<<<<<");
 
 
-});
+}); // end fxn
+
 /*
  * GET visualization page.
  */
