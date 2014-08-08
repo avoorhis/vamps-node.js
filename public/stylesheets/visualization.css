@@ -7,6 +7,9 @@
     display:none;
 }
 
+.center{
+    text-align:center;
+}
 #output_selection_div_id {
     border: 1px solid gray;
     list-style-type: none;
@@ -44,8 +47,7 @@
   color: navy;
 }
 #units_select_div {
-    height: 450px;
-    width: 300px;
+    
     overflow: auto;
 
 }
@@ -64,6 +66,7 @@
 
 #dataset_names_div  {
     height: 100px;
+    width: 400px;
     overflow: auto;
     border:1px solid gray;
 

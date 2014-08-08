@@ -77,7 +77,7 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
-	  var tax_query = "SELECT distinct silva_taxonomy_id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy\n";
+	  var tax_query = "SELECT distinct silva_taxonomy_id as id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy\n";
 	  tax_query     += joins;
 	  
 	  unit_id_array = []

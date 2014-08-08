@@ -41,16 +41,17 @@ router.post('/view_selection',  function(req, res) {
   //
   //var body = JSON.parse(req.body);
   //console.log(req.body);
+  //console.log('1');
   req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   req.body.max_ds_count        = COMMON.get_max_dataset_count(req.body.selection_obj);
   req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
-  
+  //console.log('2');
   // NORMALIZATION:
   var normalization  = req.body.normalization || 'none';
   if (normalization === 'max' || normalization === 'freq') {
     req.body.selection_obj = COMMON.normalize_counts(normalization, req.body);
   }
-
+  //console.log('3');
   
   var uitems = req.body.unit_choice.split('_');
   var unit_name_query = '';
@@ -65,18 +66,19 @@ router.post('/view_selection',  function(req, res) {
     unit_field = 'med_node_id';
     unit_name_query = COMMON.get_med_query( req.db, uitems, req.body );
   }else{
-    //error
+    console.log('ERROR--RORRE');
   }
-  console.log(unit_name_query);
+  //console.log(unit_name_query);
+  //console.log('4');
   req.body.selection_obj.counts_matrix = MTX.fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
   
-  
+  console.log(unit_name_query);
 
   
   //console.log('START BODY>> in route/visualization.js /view_selection');
-  console.log(JSON.stringify(req.body,null,2));
+  //console.log(JSON.stringify(req.body,null,2));
   //console.log('<<END BODY');
-  
+  //console.log(unit_name_query);
   //var old_sid = 'x';
   //var tids = [96,214,82,214,137];
   //var vals = [2,103,8,203,3];

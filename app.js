@@ -39,7 +39,7 @@ app.set('view engine', 'html');
 // MIDDLEWARE  <-- must be in correct order:
 app.use(favicon());
 app.use(logger('dev'));
-app.use(bodyParser());
+app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
