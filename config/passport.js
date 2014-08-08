@@ -2,23 +2,28 @@
 // load all the things we need
 var LocalStrategy = require('passport-local').Strategy;
 //var bcrypt        = require('bcrypt-nodejs');
-var crypto = require('crypto')
 
-//var mysql = require('mysql');
- 
-//var connection = require('./database-dev');
-     
-//connection.query('USE vidyawxx_build2');    
-     
-// expose this function to our app using module.exports
 module.exports = function(passport, db) {
      
+
+var crypto = require('crypto');
+
+//var mysql = require('mysql');
+
+//var connection = require('./database-dev');
+
+//connection.query('USE vidyawxx_build2');
+
+// expose this function to our app using module.exports
+module.exports = function(passport, db) {
+
+
     // =========================================================================
     // passport session setup ==================================================
     // =========================================================================
     // required for persistent login sessions
     // passport needs ability to serialize and unserialize users out of session
-    
+
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
         done(null, user.id);
@@ -31,12 +36,13 @@ module.exports = function(passport, db) {
         });
     });
      
+
     // =========================================================================
     // LOCAL SIGNUP ============================================================
     // =========================================================================
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
-     
+
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password
         usernameField       : 'username',
@@ -44,16 +50,18 @@ module.exports = function(passport, db) {
         passReqToCallback   : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
+
         console.log(req.body.userfirstname)
         return signup_user(req, username, password, done, db);
     }));
      
+
     // =========================================================================
     // LOCAL LOGIN =============================================================
     // =========================================================================
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
-     
+
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password
         usernameField : 'username',
@@ -61,9 +69,11 @@ module.exports = function(passport, db) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) { // callback with email and password from our form
+
         return login_auth_user(req, username, password, done, db);    
     }));
  
+
 };
 /////////////////////////
 /////////////////////////
@@ -75,6 +85,7 @@ function generateHash(password) {
     return cipher.final('base64');
 }
 function validatePassword(entered_pw, database_pw) {
+
     if(generateHash(entered_pw) === database_pw){
         console.log('Match!')
         return true
@@ -104,10 +115,12 @@ function login_auth_user(req, username, password, done, db){
         
     });
  
+
 }
 function signup_user(req, username, password, done, db){
      // find a user whose email is the same as the forms email
     // we are checking to see if the user trying to login already exists
+
     db.query("select * from users where username = '"+username+"'",function(err,rows){
             console.log(rows);
             console.log("above row object");
@@ -121,6 +134,7 @@ function signup_user(req, username, password, done, db){
                 // if there is no user with that username
                 // create the user
                 var newUserMysql        = new Object();
+
                 newUserMysql.username   = username;
                 newUserMysql.password   = generateHash(password); // use the generateHash function in our user model
                 newUserMysql.firstname  = req.body.userfirstname;
@@ -128,6 +142,7 @@ function signup_user(req, username, password, done, db){
                 newUserMysql.email      = req.body.useremail;
                 newUserMysql.institution= req.body.userinstitution;
                 newUserMysql.security_level= 50;  //reg user
+
 
                 var insertQuery = "INSERT INTO users ( username, encrypted_password, first_name,last_name,email,institution )"
                 insertQuery +=    " VALUES ('" + username +"','"+ newUserMysql.password +"','"+ newUserMysql.firstname +"','"+ newUserMysql.lastname +"','"+ newUserMysql.email +"','"+ newUserMysql.institution +"')";
@@ -142,6 +157,7 @@ function signup_user(req, username, password, done, db){
     });
  
 }
+
 
 
 
