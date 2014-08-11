@@ -1,10 +1,13 @@
 // visualization: check_form_pg2.js
 
 var get_graphics_form = document.getElementById('get_graphics_form');
-document.getElementById('get_graphics').addEventListener('click', function () {
-    // alert('Hello world');
-    check_viz_selection_pg2(get_graphics_form);
-});
+get_graphics = document.getElementById('get_graphics');
+if (typeof get_graphics !=="undefined") 
+{
+  get_graphics.addEventListener('click', function () {
+      check_viz_selection_pg2(get_graphics_form);
+  });
+}
 
 //
 // CHECK_VIZ Page 2
@@ -20,7 +23,7 @@ function check_viz_selection_pg2(thisform) {
   var i;
   
   // test for selected units: taxonomy, med_nodes, otus
-  if(unit_selection === 'tax_silva108_simple') {
+  if (unit_selection === 'tax_silva108_simple') {
     // check for domains[].length must be > 0
     domain_names = thisform["domains[]"];
     msg = '1) You must select some taxa';
@@ -30,7 +33,7 @@ function check_viz_selection_pg2(thisform) {
         valid = true;
       }
     }
-  }else if(unit_selection === 'tax_silva108_custom'){
+  } else if (unit_selection === 'tax_silva108_custom'){
     // check for domain_names <-- atleast one selected
     domain_names = thisform["domain_names[]"];
     msg = '2) You must select some taxa';
