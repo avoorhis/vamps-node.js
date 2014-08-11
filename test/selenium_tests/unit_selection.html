@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>index_visuals_onclick_removing</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">index_visuals_onclick_removing</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Community Visualization</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#content &gt; div.subtitle</td>
+	<td>Dataset Selection Page</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=BPC_MC_Bv6</td>
+	<td>BPC_MC_Bv6</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#BPC_MC_Bv6_toggle &gt; img[alt=&quot;plus&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#BPC_MC_Bv6_ds_div &gt; li &gt; label[name=&quot;xx&quot;]</td>
+	<td>20121014_mock_CGCTC</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>id=dataset_names_div</td>
+	<td>1 - BPC_MC_Bv6--20121014_mock_CGCTC</td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>name=unit_selection</td>
+	<td>label=Taxonomy Silva108 (Custom)</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>name=unit_selection</td>
+	<td>label=Taxonomy Silva108 (Simple)</td>
+</tr>
+</tbody></table>
+</body>
+</html>
