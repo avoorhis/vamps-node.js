@@ -1,10 +1,14 @@
 // visualization: check_form_pg1.js
 
 var dataset_select_form = document.getElementById('dataset_select_form');
-document.getElementById('unit_selection').addEventListener('click', function () {
+unit_selection = document.getElementById('unit_selection');
+if (typeof unit_selection !=="undefined") 
+{
+  unit_selection.addEventListener('click', function () {
     // alert('Hello world');
     check_viz_selection_pg1(dataset_select_form);
-});
+  });
+}
 
 
 //
