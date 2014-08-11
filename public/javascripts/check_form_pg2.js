@@ -13,31 +13,32 @@ if (typeof get_graphics !=="undefined")
 // CHECK_VIZ Page 2
 //
 
-function is_checked()
+function is_checked(id_names)
 {
-  return $('input[name="domains[]"]:checked').length > 0; 
+  return $('input[name="'+id_names+'"]:checked').length > 0; 
 }
 
 function check_viz_selection_pg2(thisform) {
   // simple function to check if user has not selected any visuals.
   // alerts and returns if not.
-  var visuals = thisform["visuals[]"];
+  var visuals_id_names = "visuals[]";
   var unit_selection = thisform["unit_selection"].value;
-  // var domain_names = thisform["domains[]"];
-  
-  var valid  = false;
+  var domains_id_names = "domains[]";
+  var valid = false;
   var msg = '';
-  var i;
   
   // test for selected units: taxonomy, med_nodes, otus
-  if (unit_selection === 'tax_silva108_simple') {
-    // check for domains[].length must be > 0
-    msg = '1) You must select some taxa';
-    valid = is_checked();
-  } else if (unit_selection === 'tax_silva108_custom'){
-    // check for domain_names <-- atleast one selected
-    msg = '2) You must select some taxa';
-    valid = is_checked();
+  if (unit_selection === 'tax_silva108_simple' || unit_selection === 'tax_silva108_custom') {
+  
+  // if (unit_selection === 'tax_silva108_simple') {
+  //   // check for domains[].length must be > 0
+  //   msg = '1) You must select some taxa';
+  //   valid = is_checked(domains_id_names);
+  // } else if (unit_selection === 'tax_silva108_custom'){
+  //   // check for domain_names <-- atleast one selected
+    // msg = '2) You must select some taxa';
+    msg = 'You must select some taxa';
+    valid = is_checked(domains_id_names);
   }
   // else{
   // 
@@ -48,16 +49,11 @@ function check_viz_selection_pg2(thisform) {
   //
   // test for selected visuals: counts_table, heatmap ...
   //
-  valid  = false;
-  for (i=0; i<visuals.length; i++)
-  {
-      msg = 'You must select one or more display output choices';
-      if (visuals[i].checked) {
-        valid = true;
-      }
-  }
+  valid = false;
+  msg = 'You must select one or more display output choices';
+  valid = is_checked(visuals_id_names);
+  
   if(!valid){alert(msg); return;}
-
   
   thisform.submit();
   
