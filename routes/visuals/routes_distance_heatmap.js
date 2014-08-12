@@ -127,10 +127,10 @@ function create_hm_html(dm) {
 		      for(y_dname in dm) {
 		      	
 		        if(x_dname === y_dname){
-		        	html += "<td width='10' height='10' bgcolor='#000'></td>";
+		        	html += "<td class='heat_map_td' bgcolor='#000'></td>";
 		        }else{
 		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 )
-		        	html += "<td width='10' height='10' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	html += "<td class='heat_map_td' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
 		        }		        
 		      }
 		      html += '</tr>';
