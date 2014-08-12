@@ -1,4 +1,4 @@
-// visualization.js
+// visualization: unit_selection.js
 
 toggle_taxa_btn = document.getElementById('toggle_taxa_btn');
 if (typeof toggle_taxa_btn !=="undefined") {
