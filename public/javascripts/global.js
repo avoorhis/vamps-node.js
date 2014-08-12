@@ -7,6 +7,19 @@ $(document).ready(function(){
     });
 });
 
+function is_checked(id_names)
+{
+  return $('input[name="'+id_names+'"]:checked').length > 0; 
+}
+
+function check_form(select_form, msg, checkbox_name)
+{
+  var my_check = false;
+  my_check = is_checked(checkbox_name);
+  my_check ? select_form.submit() : alert(msg);
+  return;
+}
+
 function show_post_array(body) {
 
   //if (ENV.development){
