@@ -126,10 +126,7 @@ describe('functions tests', function(){
 
 });
 
-describe('view_selection page', function(){
-  it('Should show one or more datasets in list');
-  it('Should show one or more visual choices');
-});
+
 
 
 describe('unit_selection', function(){
@@ -142,3 +139,9 @@ describe('unit_selection', function(){
 //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
 //        checked by default.
 });
+
+describe('view_selection page', function(){
+  it('Should show one or more datasets in list');
+  it('Should show one or more visual choices');
+});
+
