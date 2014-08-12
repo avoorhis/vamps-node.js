@@ -2,7 +2,8 @@
 var fpath = require('path');
 var fs = require('fs');
 var COMMON  = require('./routes_common');
-
+var d3 = require("d3");
+var xmldom = require('xmldom')
 //var jsdom = require('jsdom');
 
 
@@ -12,91 +13,24 @@ module.exports = {
 		//  CREATE BARCHARTS HTML
 		//
 		create_barcharts_html: function( ts, count_matrix, body ) {
-			var d3 = require("d3");
-			var xmldom = require('xmldom')
+			
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
 			var ds_count = body.selection_obj.dataset_ids.length
-			console.log(outfile)
-			
-			console.log('start matrix');
-			console.log( count_matrix);
-			console.log('end matrix');
-			
-			var data = [];
-			for(n in count_matrix.dataset_names) {
-				data.push({'DatasetName': count_matrix.dataset_names[n]});	
-			}
-			for(u in count_matrix.unit_names) {
-				for(n in count_matrix.dataset_names) {
-					dname = count_matrix.dataset_names[n];
-					data[n][u] = count_matrix.unit_names[u][n];
-				}
-			}
-
+			//console.log(outfile)
 			var bar_width = 15;
-			// process the html document, like if we were at client side
-			var margin = {top: 20, right: 20, bottom: 300, left: 50};
-			//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
-			var width  = (ds_count * (bar_width)) + 50;
-			var height = 700 - margin.top - margin.bottom;
+			var data = convert_matrix(count_matrix);
+
+			
+			// gets margins, width and height
+			var props = get_image_properties(bar_width, ds_count);		
 
 			//var x = d3.scale.linear();
-			var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-			var y = d3.scale.linear()
-			    .rangeRound([height, 0]);
-
-			    // TODO:  More Colors
-			var color = d3.scale.ordinal()									
-			    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-			    // var level = 1
-			    // level += 1
-			    //var hex = level.toString(16);
-			    // color = '#FFFF' + hex + hex
-			    //
-			    // $string2 =  str_pad(dechex(crc32($string1)), 8, '0', STR_PAD_LEFT) ;
-					// $string3 = substr($string2,2,6);
-					// return $string3;
-			var test_color = COMMON.string_to_color_code('Bacteria;Protobacteria');
-			var xAxis = d3.svg.axis()
-			    .scale(x)
-			    .orient("bottom");
-
-			var yAxis = d3.svg.axis()
-			    .scale(y)
-			    .orient("left")
-			    .tickFormat(d3.format(".2s"));
-
-			var svg = d3.select("body").append("svg")
-			    .attr("width",  width + margin.left + margin.right)
-			    .attr("height", height + margin.top + margin.bottom)
-			  .append("g")
-			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 			 
-			
-
-			// start matrix
-			// { dataset_names: 
-			//    [ 'SLM_NIH_Bv4v5--03_Junction_City_East',
-			//      'SLM_NIH_Bv4v5--02_Spencer',
-			//      'SLM_NIH_Bv4v5--01_Boonville' ],
-			//   unit_names: 
-			//    { 'Bacteria;Proteobacteria': [ 4, 2, 4 ],
-			//      'Bacteria;Bacteroidetes': [ 272, 401, 430 ] } }
-			// end matrix	
-			//	CREATE:
-			// start data
-			// [ { DatasetName: 'SLM_NIH_Bv4v5--03_Junction_City_East',
-			//     'Bacteria;Proteobacteria': '4',
-			//     'Bacteria;Bacteroidetes': '272' },
-			//   { DatasetName: 'SLM_NIH_Bv4v5--02_Spencer',
-			//     'Bacteria;Proteobacteria': '2',
-			//     'Bacteria;Bacteroidetes': '401' },
-			//   { DatasetName: 'SLM_NIH_Bv4v5--01_Boonville',
-			//     'Bacteria;Proteobacteria': '4',
-			//     'Bacteria;Bacteroidetes': '430' } ]
-			// end data
-			
-	
+			// get_colors: transforms unit names to unique hex colors
+			var color = d3.scale.ordinal()									
+			    .range( get_colors(count_matrix.unit_names) );
+			    
+			 
 			color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
 			
 			data.forEach(function(d) {
@@ -110,7 +44,7 @@ module.exports = {
 		  });
 
 			data.forEach(function(d) {
-				//console.log('x');
+				// normalize to 100%
 				tot = d.total
 				d.unitObj.forEach(function(o) {
 						//console.log(o);
@@ -118,23 +52,45 @@ module.exports = {
 						o.y1 = (o.y1*100)/tot
 				});
 			});
+			console.log(JSON.stringify(data))
 			
-			var tooltip = d3.select("body")
-				.append("div")
-				.style("position", "absolute")
-				.style("z-index", "10")
-				.style("visibility", "hidden")
-				.text( "a simple tooltip");
 		  // axis legends -- would like to rotate dataset names
-		  x.domain(data.map(function(d) { return d.DatasetName; }));
-		  //y.domain([0, d3.max(data, function(d) { return d.total; })]);
+		  props.x.domain(data.map(function(d) { return d.DatasetName; }));
+		  props.y.domain([0, 100]);
 
-		  y.domain([0, 100]);
+		  create_svg_object(props, color, data);
+		
+		
+			// get a reference to our SVG object and add the SVG NS
+			var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
+			//console.log(svgGraph[0][0]);
+			var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
+			
+			console.log(svgXML)
+			
+			COMMON.write_file(outfile,svgXML);
+			d3.select('svg').remove();
+
+	  } // end fxn
+
+
+	 
+} // end of module.exports
+//
+//
+//
+function create_svg_object(props, color, data) {
+
+		  var svg = d3.select("body").append("svg")
+							    .attr("width",  props.width + props.margin.left + props.margin.right)
+							    .attr("height", props.height + props.margin.top + props.margin.bottom)
+							  .append("g")
+							    .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
 
 			svg.append("g")
 		      .attr("class", "x axis")
-		      .attr("transform", "translate(0," + height + ")")
-		      .call(xAxis)
+		      .attr("transform", "translate(0," + props.height + ")")
+		      .call(props.xAxis)
 		      .selectAll("text")  
 				     .style("text-anchor", "end")
 				     .attr("dx", "-.8em")
@@ -145,7 +101,7 @@ module.exports = {
 
 		  svg.append("g")
 		      .attr("class", "y axis")
-		      .call(yAxis)
+		      .call(props.yAxis)
 		    .append("text")
 		      .attr("transform", "rotate(-90)")
 		      .attr("y", 6)
@@ -157,51 +113,74 @@ module.exports = {
 		      .data(data)
 		    .enter().append("g")
 		      .attr("class", "g")
-		      .attr("transform", function(d) { return "translate(" + x(d.DatasetName) + ",0)"; });
+		      .attr("transform", function(d) { return "translate(" + props.x(d.DatasetName) + ",0)"; });
 
 		  datasetName.selectAll("rect")
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
-		      .attr("width", x.rangeBand())
+		      .attr("width", props.x.rangeBand())
 					.attr("id",function(d) { 
-		       	return this._parentNode.__data__.DatasetName + '---'+d.name + '---'+this._parentNode.__data__[d.name].toString() // id of each rectangle should be datasetname---unitname---count
+		       	return this._parentNode.__data__.DatasetName + '-|-'+d.name + '-|-'+this._parentNode.__data__[d.name].toString() // tip of each rectangle should be datasetname-|-unitname-|-count
 					})  
-		      .attr("y", function(d) { return y(d.y1); })
+		      .attr("y", function(d) { return props.y(d.y1); })
 		      .attr("x", 25)  // adjust where first bar starts on x-axis
-		      .attr("height",  function(d) { return y(d.y0) - y(d.y1); })
-		      .attr("class","tip")
+		      .attr("height",  function(d) { return props.y(d.y0) - props.y(d.y1); })
+		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
-		      
+}
 
-		console.log('start data')
-		console.log(data)
-		console.log('end data') 
-		
-		// get a reference to our SVG object and add the SVG NS
-		var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
-		//console.log(svgGraph[0][0]);
-		var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-		
-		console.log(svgXML)
-		COMMON.write_file(outfile,svgXML);
-		
-		// fs.writeFile( fpath.resolve(__dirname, outfile), svgXML, function(err) {
-		// 		      if(err) {
-		// 		        console.log('Could not write file: '+outfile+' Here is the error: '+err);
-		// 		      } else {
-		// 		        console.log("The file ("+outfile+") was saved!");
-		// 		      }
-		// 		      d3.select('svg').remove();
+//
+//
+//
+function get_image_properties(bar_width, ds_count) {
+	var props = {};
+	props.margin = {top: 20, right: 20, bottom: 300, left: 50};
+	//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
+	props.width  = (ds_count * (bar_width)) + 50;
+	props.height = 700 - props.margin.top - props.margin.bottom;
 
-		// });
-		
+	props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
+	props.y = d3.scale.linear()
+			    .rangeRound([props.height, 0]);
+
+	props.xAxis = d3.svg.axis()
+			    .scale(props.x)
+			    .orient("bottom");
+
+	props.yAxis = d3.svg.axis()
+			    .scale(props.y)
+			    .orient("left")
+			    .tickFormat(d3.format(".2s"));		
+			        
+	return props;
+}
+//
+//
+//
+function get_colors(unit_names){
+	var colors = []
+	for(var n in unit_names){
+		console.log(n)
+		colors.push(COMMON.string_to_color_code(n));
+	}
+	return colors;
+}
+//
+//
+//
+function convert_matrix(mtx) {
+		var data = [];
+		for(n in mtx.dataset_names) {
+			data.push({'DatasetName': mtx.dataset_names[n]});	
+		}
+		for(u in mtx.unit_names) {
+			for(n in mtx.dataset_names) {
+				//dname = mtx.dataset_names[n];
+				data[n][u] = mtx.unit_names[u][n];
+			}
+		}
+		return data;
+}
 
 
 
-
-
-	  } // end fxn
-
-
-	 
-} // end of module.exports
