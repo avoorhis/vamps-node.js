@@ -126,13 +126,17 @@ router.post('/view_selection',  function(req, res) {
       //console.warn(util.inspect(matrix));
       //console.log(dataset_accumulator)
       
-      for (k=0; k < req.body.visuals.length; k++) {
-        if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, req.body ); } // 
-        if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp; uses file not count_matrix OBJ
-        if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, req.body ); }
-        //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
-        //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
+      if (req.body.visuals)
+      {
+        for (k=0; k < req.body.visuals.length; k++) 
+        {
+          if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, req.body ); } // 
+          if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp; uses file not count_matrix OBJ
+          if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, req.body ); }
+          //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
+          //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
+        }        
       }
       res.render('visuals/view_selection', { title   : 'VAMPS: Visualization',
                                         body   : JSON.stringify(req.body),
@@ -550,11 +554,3 @@ function IsJsonString(str) {
     }
     return true;
 }
-
-
-  
-
-  
-
-
-
