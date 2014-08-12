@@ -183,16 +183,17 @@ module.exports = {
 		var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 		
 		console.log(svgXML)
+		COMMON.write_file(outfile,svgXML);
 		
-		fs.writeFile( fpath.resolve(__dirname, outfile), svgXML, function(err) {
-				      if(err) {
-				        console.log('Could not write file: '+outfile+' Here is the error: '+err);
-				      } else {
-				        console.log("The file ("+outfile+") was saved!");
-				      }
-				      d3.select('svg').remove();
+		// fs.writeFile( fpath.resolve(__dirname, outfile), svgXML, function(err) {
+		// 		      if(err) {
+		// 		        console.log('Could not write file: '+outfile+' Here is the error: '+err);
+		// 		      } else {
+		// 		        console.log("The file ("+outfile+") was saved!");
+		// 		      }
+		// 		      d3.select('svg').remove();
 
-		});
+		// });
 		
 
 
