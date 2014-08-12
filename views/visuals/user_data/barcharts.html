@@ -5,25 +5,95 @@
 <div id='dataviz-container' class=''><%- html %></div>
 
 
+<span id='barchart_tooltip' >
+  <table style='margin:0'>      
+    <tr>       
+      <td class='dataset'>Dataset:</td>
+      <td id='dataset'></td>
+    </tr>
+    <tr>        
+      <td class='tax'>Tax:</td>
+      <td id='unit'></td>
+    </tr>
+    <tr>        
+      <td class='knt'>Count:</td>
+      <td id='count'></td>
+    </tr>     
+  </table>  
+</span>
 </div>  <!-- end grid_9  content -->
-    <script src="/javascripts/jquery-2.1.1.min.js"></script>
-    <script src="/javascripts/jquery.tipsy.js"></script>
-    <script type="text/javascript" src="/javascripts/global.js"></script>
+<script src="/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/jquery.tooltip.js""></script>
+<!-- <script src="/javascripts/jquery.tipsy.js"></script> -->
+<script type="text/javascript" src="/javascripts/global.js"></script>
 
 
 <script type='text/javascript'>
-			$('.tip').tipsy({ 
-        	gravity: 'w', 
-        	html: true, 
-        	title: function() {
-          	var items = this.id.split('---'); 
-          	var dname = items[0], uname = items[1], count= items[2]; 
-          	var txt = dname+'<br>'; 
-       			txt += uname+'<br>'; 
-        		txt += 'count: '+count; 
-        		return txt 
-        	}
-      });		
+			// $('.tip').tipsy({ 
+   //      	gravity: 'w', 
+   //      	html: true, 
+   //      	title: function() {
+   //        	var items = this.tip.split('---'); 
+   //        	var dname = items[0], uname = items[1], count= items[2]; 
+   //        	var txt = dname+'<br>'; 
+   //     			txt += uname+'<br>'; 
+   //      		txt += 'count: '+count; 
+   //      		return txt 
+   //      	}
+   //    });		
+
+
+$(document).ready(function() {  
+
+    $(".tooltip").tooltip({
+         
+             
+          tip: "#barchart_tooltip",          
+          position: 'center below',          
+          offset: [-40,0],
+          opacity: 0.9,          
+          delay: 0,
+
+          onBeforeShow: function(){
+           
+            var passthru = this.getTrigger().attr("id");
+            
+            stuff = passthru.split('-|-')
+            dname = stuff[0];
+            uname = stuff[1];
+            count = stuff[2];
+            
+            //distance = stuff[3];
+            //dm = metric+': '+distance
+            //var newarray=[];
+
+
+                       
+            $("#barchart_tooltip table td#dataset").text(dname);
+            $("#barchart_tooltip table td#unit").text(uname); 
+            $("#barchart_tooltip table td#count").text(count);
+                    
+        
+          },        
+          
+         onHide: function(){
+             //this.getTrigger().parents("tr").children().eq("2").css('background-color', 'grey');          
+         
+         }          
+      
+      });         
+      
+      $(".tooltip").hover(function() {
+         
+         var cell = $(this);
+         //test = cell.parents("tr").cells;
+         //alert ('test= '+test)
+  
+    });
+  
+ });
+
+
 </script> 
 
 
