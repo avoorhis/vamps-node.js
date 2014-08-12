@@ -90,7 +90,6 @@ if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     # print("ERROR: no distance method found!")
 }
 
-
 print(dis);
 q();
 
