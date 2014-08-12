@@ -1,9 +1,15 @@
 // visualization.js
 
-document.getElementById('toggle_taxa_btn').addEventListener('click', function () {
-    toggle_simple_taxa();
-});
+toggle_taxa_btn = document.getElementById('toggle_taxa_btn');
+if (typeof toggle_taxa_btn !=="undefined") {
+  toggle_taxa_btn.addEventListener('click', function () {
+      toggle_simple_taxa();
+  });
+}
 
+$(document).ready(function(){
+    $("#unit_selection_name").on("change", get_requested_units_selection_box);
+});
 
 //
 // TOGGLE_SIMPLE_TAXA
@@ -32,10 +38,9 @@ function toggle_simple_taxa()
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
-function get_requested_units_selection_box(file_id) {
+function get_requested_units_selection_box() {
+  var file_id = this.value;  
   // Using ajax it will show the requested units module
-  alert("FROM visualization.js: get_requested_units_selection_box");
-  alert(file_id);
   var file = '';
   var partial_name = '/visuals/partials/'+file_id;
   //alert(partial_name)
