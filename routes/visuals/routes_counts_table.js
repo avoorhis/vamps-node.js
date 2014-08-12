@@ -55,13 +55,14 @@ module.exports = {
 	  html += "</table>";
 	  html += "</div>"
 	  //console.log(column_totals)
-	  fs.writeFile(path.resolve(__dirname, file), html, function(err) {
-	    if(err) {
-	      console.log('Could not write file: '+file+' Here is the error: '+err);
-	    } else {
-	      console.log("The file ("+file+") was saved!");
-	    }
-	  });
+	  COMMON.write_file(file,html);
+	  // fs.writeFile(path.resolve(__dirname, file), html, function(err) {
+	  //   if(err) {
+	  //     console.log('Could not write file: '+file+' Here is the error: '+err);
+	  //   } else {
+	  //     console.log("The file ("+file+") was saved!");
+	  //   }
+	  // });
 	}
 
 }

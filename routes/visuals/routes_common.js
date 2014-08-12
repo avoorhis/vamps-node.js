@@ -1,5 +1,6 @@
 // common.js
-
+var path = require('path');
+var fs = require('fs');
 
 
 module.exports = {
@@ -70,7 +71,7 @@ module.exports = {
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
 	  } else if (tax_depth === 'species') {
 	    fields = ['domain','phylum','klass','`order`','family','genus','species'];
-	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_strain;
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
 	  }
 	    
 	  if (domains.length < 5){
@@ -86,14 +87,9 @@ module.exports = {
 	    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
 
 	  }
-	  //console.log(unit_id_array)
-	  //console.log(typeof unit_id_array)
-
-	  //unit_id_array = Array.prototype.slice.call(unit_id_array)
-	  //console.log(typeof unit_id_array)
+	  // Important to unique this array on larger sets
 	  unit_id_array = unit_id_array.filter(onlyUnique);
-	  //console.log(unit_id_array)
-	  //.getUnique();
+	  
 
 	  tax_query     += " WHERE silva_taxonomy_id in (" + unit_id_array + ")\n";
 	  tax_query     += and_domain_in;
@@ -119,8 +115,20 @@ module.exports = {
 	get_med_query: function() {
 
 	},
+	//
+	// write file
+	//
+	write_file: function(filename, txt) {
 
+		fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
+	    if(err) {
+	      console.log('Could not write file: '+filename+' Here is the error: '+err);
+	    } else {
+	      console.log("The file ("+filename+") was saved!");
+	    }
+	  });
 
+	},
 	//
 	// NORMALIZATION
 	//
