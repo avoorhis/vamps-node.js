@@ -141,113 +141,153 @@ module.exports = {
 		    name = sqlrows[r].tax;
 		    counts = selection_obj.counts_matrix[uid];
 		    
-		    if(uid in unit_id_lookup) {
-		      for (var c in counts) {
-		        unit_id_lookup[uid][c] += counts[c]
-		      }
-		    }else{
-		      unit_id_lookup[uid] = []
-		      for (var c in counts) {
-		        unit_id_lookup[uid].push(counts[c])
-		      }
-		    }
-
-		    if(name in unit_name_lookup) {
-		      for (var c in counts) {
-		        unit_name_lookup[name][c] += counts[c]
-		      }
-		    }else{
-		      unit_name_lookup[name] = []
-		      for (var c in counts) {
-		        unit_name_lookup[name].push(counts[c])
-		      }
-		    }
-		  }
-		  console.log(unit_name_lookup)
-
-		  //
-		  // CSV2
-		  //		  
-		  var csv2 = 'DatasetName';   // for D3.js stackbars
-		  for(var uname in unit_name_lookup) {
-				csv2 += ','+uname;
-			}
-			csv2 += "\n";
-			for (var did in selection_obj.dataset_ids) {  // in correct order
-				var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
-		    csv2 += name_hash.names[ index ];
-		    for(var uname in unit_name_lookup){  // 
-		    	csv2 += ','+ unit_name_lookup[uname][did]
-		    }
-		    csv2 += "\n";
-			}
-
-			//
-			// CSV3
-			//
-		  var csv3 = 'DatasetId';   // for D3.js stackbars
-			for(var uid in unit_id_lookup) {
-				csv3 += ','+uid;
-			}
-			csv3 += "\n";
-			for (var did in selection_obj.dataset_ids) {  // in correct order
-				
-		    csv3 += selection_obj.dataset_ids[did];
-		    for(var uid in unit_id_lookup){  // 
-		    	csv3 += ','+ unit_id_lookup[uid][did]
-		    }
-		    csv3 += "\n";
-			}
-
-			// JSON
-			// http://blog.nextgenetics.net/?e=7
-			var json = JSON.stringify(selection_obj.counts_matrix);
-
-			// 
-			// MTX
-			//
-			var mtx = '';
-		  for (var did in selection_obj.dataset_ids) {
-		    
-		    var index = name_hash.ids.indexOf( selection_obj.dataset_ids[did] );
-		    mtx += "\t" + name_hash.names[ index ];
-		    matrix_with_names.dataset_names.push(name_hash.names[ index ]);
-		  }
-		  mtx += "\n";
-		  
-		  matrix_with_names.unit_names = unit_name_lookup;
-		  
-		  for(var uname in unit_name_lookup) {
-		    mtx += uname;
-		    for (var c in unit_name_lookup[uname]) {
-		      mtx += "\t" + unit_name_lookup[uname][c].toString();
-		    }
-		    mtx += "\n";
+				unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
+		  	unit_name_lookup = create_unit_name_lookup( name, counts, unit_name_lookup );
+		   
 		  }
 
-		  //console.log(matrix_with_names);
+		  console.log(unit_name_lookup);
+
+			var mtx 		= create_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids, matrix_with_names ); // file used by R distance calc
+			var csv_txt = create_csv_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids );
+			var csv_id 	= create_csv_id_matrix( unit_id_lookup, selection_obj.dataset_ids );
+			var json 		= create_json_id_matrix( selection_obj.counts_matrix );
+			
 		  
 		  if(to_loc === 'to_console') {
 		    console.log(mtx);
 		  }else{
-		    
+		    console.log(mtx);
 		    // write to files
 		    var file1 = '../../tmp/'+ts+'_text_matrix.mtx';
 		    var file2 = '../../tmp/'+ts+'_text_matrix.csv';
 		    var file3 = '../../tmp/'+ts+'_id_matrix.csv';
 		    var file4 = '../../tmp/'+ts+'_id_matrix.json';
-		    var html1 = mtx;
-console.log('Writing matrix file(s)');
-				COMMON.write_file(file1,html1);
-				COMMON.write_file(file2,csv2);
-				COMMON.write_file(file3,csv3);
-				COMMON.write_file(file4,json);
-console.log('DONE writing matrix file(s)');
+		    
+				console.log('Writing matrix file(s)');
+				COMMON.write_file( file1, mtx );
+				COMMON.write_file( file2, csv_txt );
+				COMMON.write_file( file3, csv_id );
+				COMMON.write_file( file4, json );
+				console.log('DONE writing matrix file(s)');
+
 		  }
+
 		  return matrix_with_names;
 		  
 		}
 
 };
+//
+//  CREATE UNIT ID LOOKUP
+//
+function create_unit_id_lookup( uid, counts, unit_id_lookup ) {
+	 	
+	 	if(uid in unit_id_lookup) {
+      for (var c in counts) {
+        unit_id_lookup[uid][c] += counts[c]
+      }
+    }else{
+      unit_id_lookup[uid] = []
+      for (var c in counts) {
+        unit_id_lookup[uid].push(counts[c])
+      }
+    }
+    return unit_id_lookup
+}
+//
+//  CREATE UNIT NAME LOOKUP
+//
+function create_unit_name_lookup( name, counts, unit_name_lookup ) {
+ 	if(name in unit_name_lookup) {
+    for (var c in counts) {
+      unit_name_lookup[name][c] += counts[c]
+    }
+  }else{
+    unit_name_lookup[name] = []
+    for (var c in counts) {
+      unit_name_lookup[name].push(counts[c])
+    }
+  }
+  return unit_name_lookup
 
+}
+//
+//
+//
+function create_json_id_matrix(mtx) {
+	return JSON.stringify(mtx)+"\n";
+}
+//
+//  CREATE CSV ID MATRIX
+//
+function create_csv_id_matrix( unit_ids, dataset_ids ) {
+		//
+		// CSV3
+		//
+	  var csv = 'DatasetId';   // for D3.js stackbars
+		for(var uid in unit_ids) {
+			csv += ','+uid;
+		}
+		csv += "\n";
+		for (var did in dataset_ids) {  // in correct order
+			
+	    csv += dataset_ids[did];
+	    for(var uid in unit_ids){  // 
+	    	csv += ','+ unit_ids[uid][did]
+	    }
+	    csv += "\n";
+		}
+		return csv;
+}
+//
+// CREATE TEXT MATRIX
+//
+function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with_names) {
+
+		// 
+		// MTX
+		//
+		var mtx = '';
+	  for (var did in dataset_ids) {
+	    
+	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
+	    mtx += "\t" + dataset_names.names[ index ];
+	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
+	  }
+	  mtx += "\n";
+	  
+	  matrix_with_names.unit_names = unit_names;
+	  
+	  for(var uname in unit_names) {
+	    mtx += uname;
+	    for (var c in unit_names[uname]) {
+	      mtx += "\t" + unit_names[uname][c].toString();
+	    }
+	    mtx += "\n";
+	  }
+	  return mtx;
+}
+//
+//  CREATE CSV TEXT MATRIX
+//
+function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
+		//
+	  // CSV2
+	  //		  
+	  var csv = 'DatasetName';   // for D3.js stackbars
+	  for(var uname in unit_names) {
+			csv += ','+uname;
+		}
+		csv += "\n";
+		for (var did in dataset_ids) {  // in correct order
+			var index = dataset_names.ids.indexOf( dataset_ids[did] );
+	    csv += dataset_names.names[ index ];
+	    for(var uname in unit_names){  // 
+	    	csv += ','+ unit_names[uname][did]
+	    }
+	    csv += "\n";
+		}
+		return csv;
+}
 
