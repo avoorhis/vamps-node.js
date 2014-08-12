@@ -21,9 +21,9 @@ config.UNITSELECT = { units: [
 
 config.VISUALOUTPUTCHOICES = { choices: [
         {id : 'counts_table',   show: 'Counts Table'},
-        {id : 'barcharts',      show: 'Bar Charts'},
+        {id : 'barcharts',      show: 'Counts Bar Charts'},
         {id : 'heatmap',        show: 'Distance Heatmap'},
-        {id : 'dendrogram',     show: 'Dendrogram'},
+        {id : 'dendrogram',     show: 'Community Dendrogram'},
         {id : 'alphadiversity', show: 'Alpha Diversity'}
     ]};
 
@@ -53,6 +53,6 @@ config.DISTANCECHOICES = { choices: [
 
 // This List MUST match the fields in sequence_uniq_infos
 config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
-
+config.HEATMAP_COLORS = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','ccccff','ddeeee','eeeedd','ffdddd','ffbbbb','ff9999','ff7777','ff5555','ff3333','ff0000'];
 
 module.exports = config;

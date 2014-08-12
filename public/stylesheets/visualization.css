@@ -99,3 +99,12 @@
     border-collapse:collapse;
     font-size:10px;
 }
+#show_visuals_links_div {
+    width: 180px;
+}
+#show_visuals_links_div ul li {
+    list-style-type: none;
+    margin-left:-20px;
+}
+
+
