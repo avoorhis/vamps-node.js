@@ -70,17 +70,13 @@ if (typeof get_graphics !=="undefined")
     if (unit_selection === 'tax_silva108_simple' || unit_selection === 'tax_silva108_custom') 
     {
       msg = 'You must select some taxa';
-      checkbox_name = "domains[]";      
-      var taxa_checked = check_form(get_graphics_form, msg, checkbox_name);
+      var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
     }
-    /*
-    * uncomment if we want just one message even if both are unchecked. Untested!
-    * if (taxa_checked) 
-    {    
-    */
+
+    if (taxa_checked) 
+    {
       msg = 'You must select one or more display output choices';
-      checkbox_name = "visuals[]";      
-      check_form(get_graphics_form, msg, checkbox_name);
-    // }    
+      check_form(get_graphics_form, msg, "visuals[]");
+    }    
   });
 }
