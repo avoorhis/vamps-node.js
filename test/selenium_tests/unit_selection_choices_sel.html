@@ -52,9 +52,9 @@
 	<td>1 - BPC_MC_Bv6--20121014_mock_CGCTC</td>
 </tr>
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
+	<td>assertText</td>
+	<td>css=h3</td>
+	<td>Silva(v108) Simple Taxonomy Selection</td>
 </tr>
 <tr>
 	<td>select</td>
@@ -62,9 +62,14 @@
 	<td>label=Taxonomy Silva108 (Custom)</td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>name=unit_selection</td>
-	<td>label=Taxonomy Silva108 (Simple)</td>
+	<td>setTimeout</td>
+	<td>600000</td>
+	<td>Wait 60 seconds for the page</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=h3</td>
+	<td>Silva(v108) Custom Taxonomy Selection</td>
 </tr>
 </tbody></table>
 </body>
