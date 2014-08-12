@@ -1,6 +1,7 @@
 // counts_matrix.js
 var path = require('path');
 var fs = require('fs');
+var COMMON  = require('./routes_common');
 
 module.exports = {
 
@@ -237,35 +238,10 @@ module.exports = {
 		    var file4 = '../../tmp/'+ts+'_id_matrix.json';
 		    var html1 = mtx;
 console.log('Writing matrix file(s)');
-		    fs.writeFile(path.resolve(__dirname, file1), html1, function(err) {
-		      if(err) {
-		        console.log('Could not write file: '+file1+' Here is the error: '+err);
-		      } else {
-		        console.log("The file ("+file1+") was saved!");
-		      }
-		    });
-
-		    fs.writeFile(path.resolve(__dirname, file2), csv2, function(err) {
-		      if(err) {
-		        console.log('Could not write file: '+file2+' Here is the error: '+err);
-		      } else {
-		        console.log("The file ("+file2+") was saved!");
-		      }
-		    });
-		    fs.writeFile(path.resolve(__dirname, file3), csv3, function(err) {
-		      if(err) {
-		        console.log('Could not write file: '+file2+' Here is the error: '+err);
-		      } else {
-		        console.log("The file ("+file2+") was saved!");
-		      }
-		    });
-		    fs.writeFile(path.resolve(__dirname, file4), json, function(err) {
-		      if(err) {
-		        console.log('Could not write file: '+file4+' Here is the error: '+err);
-		      } else {
-		        console.log("The file ("+file4+") was saved!");
-		      }
-		    });
+				COMMON.write_file(file1,html1);
+				COMMON.write_file(file2,csv2);
+				COMMON.write_file(file3,csv3);
+				COMMON.write_file(file4,json);
 console.log('DONE writing matrix file(s)');
 		  }
 		  return matrix_with_names;
