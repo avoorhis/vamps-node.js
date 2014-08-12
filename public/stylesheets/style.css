@@ -99,4 +99,7 @@ vertical-align:top;
     background-color: #a8b6c0;
 }
 
-
+.heat_map_td {
+  width: '10' ;
+  height: '10';
+}
