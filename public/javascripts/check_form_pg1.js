@@ -1,7 +1,7 @@
 // visualization: check_form_pg1.js
 
 var dataset_select_form = document.getElementById('dataset_select_form');
-unit_selection = document.getElementById('unit_selection');
+var unit_selection = document.getElementById('unit_selection');
 if (typeof unit_selection !=="undefined") 
 {
   unit_selection.addEventListener('click', function () {
