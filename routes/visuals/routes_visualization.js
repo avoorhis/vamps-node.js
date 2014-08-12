@@ -104,6 +104,8 @@ router.post('/view_selection',  function(req, res) {
       var user = req.user || 'no-user';
       timestamp = user + '_' + timestamp;
 
+      // this function: output_matrix writes various counts matrices to files for *possible* use later by R or D3
+      // It also reurns a JSON count_matrix
       count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
       // This is what matrix looks like (a different matrix is written to file)
       // { 
@@ -119,15 +121,14 @@ router.post('/view_selection',  function(req, res) {
       //  }
 
       //req.body.matrix = JSON.stringify(matrix);
-      
-      //console.log(JSON.stringify(req.body,null,2));
+      console.log('CM')
+      console.log(JSON.stringify(count_matrix));
       //console.warn(util.inspect(matrix));
       //console.log(dataset_accumulator)
-      //console.warn(util.inspect(matrix.dataset_names));
-      //console.warn(util.inspect(matrix.unit_names));
+      
       for (k=0; k < req.body.visuals.length; k++) {
         if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, req.body ); } // 
-        if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp
+        if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp; uses file not count_matrix OBJ
         if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, req.body ); }
         //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
         //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
