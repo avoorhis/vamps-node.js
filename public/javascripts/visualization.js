@@ -34,7 +34,8 @@ function toggle_simple_taxa()
 //
 function get_requested_units_selection_box(file_id) {
   // Using ajax it will show the requested units module
-
+  alert("FROM visualization.js: get_requested_units_selection_box");
+  alert(file_id);
   var file = '';
   var partial_name = '/visuals/partials/'+file_id;
   //alert(partial_name)
