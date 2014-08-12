@@ -66,6 +66,10 @@ var get_graphics = document.getElementById('get_graphics');
 if (typeof get_graphics !=="undefined") 
 {
   get_graphics.addEventListener('click', function () {
+    // msg = 'You must select some datasets';
+    // checkbox_name = "dataset_ids[]";
+    // check_form(dataset_select_form, msg, checkbox_name);
+    
       check_viz_selection_pg2(get_graphics_form);
   });
 }
@@ -74,10 +78,10 @@ if (typeof get_graphics !=="undefined")
 // CHECK_VIZ Page 2 (visuals/unit_selection)
 //
 
-function is_checked(id_names)
-{
-  return $('input[name="'+id_names+'"]:checked').length > 0; 
-}
+// function is_checked(id_names)
+// {
+//   return $('input[name="'+id_names+'"]:checked').length > 0; 
+// }
 
 // todo: DRY valid = false; check; if(!valid) {alert(msg);return;}
 // function check_for_taxa()
