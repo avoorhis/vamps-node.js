@@ -11,7 +11,7 @@ function toggle_selected_taxa(level,name) {
     tax_div.style.display = 'none';
     document.getElementById(name+'--cbid').checked = false;
     // change image to plus.png
-    toggle.innerHTML = "<img alt='plus' src='/images/tree_plus.gif' height='9' />";
+    toggle.innerHTML = "<img alt='plus' src='/images/tree_plus.gif'/>";
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = false;
@@ -20,7 +20,7 @@ function toggle_selected_taxa(level,name) {
   } else {
     tax_div.style.display = 'inline';
     document.getElementById(name+'--cbid').checked = true;
-    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif' height='9' />";
+    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif'/>";
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
         cbs[i].checked = true  ;
@@ -58,7 +58,7 @@ function open_taxa(name) {
     // check project
     tax_div.style.display = 'inline';
     document.getElementById(name+'--cbid').checked = true;
-    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif' height='9' />";
+    toggle.innerHTML = "<img alt='minus' src='/images/tree_minus.gif'/>";
     // now set all the ds checkboxes to 'checked'
     for (i=0; i < cbs.length; i++) {
       if (cbs[i].type === 'checkbox') {
