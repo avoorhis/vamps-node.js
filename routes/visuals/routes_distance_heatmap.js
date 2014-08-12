@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 
 var COMMON  = require('./routes_common');
-var colors = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','ccccff','ddeeee','eeeedd','ffdddd','ffbbbb','ff9999','ff7777','ff5555','ff3333','ff0000'];
+var C = require('../../public/constants');
 
 module.exports = {
 		//
@@ -32,7 +32,7 @@ module.exports = {
 		    
 		    var dm = create_distance_matrix(stdout);
 		    
-		    var html = selection_html + create_html(dm);
+		    var html = selection_html + create_hm_html(dm);
 		    
 		    // this is to write the html to show the colored heatmap
 		    // input should be the html itself
@@ -40,9 +40,7 @@ module.exports = {
 
 		  });
 
-
 		}		
-
 
 }
 //
@@ -83,26 +81,22 @@ function create_distance_matrix(outstr) {
 	          distance_matrix[dcolname][items[0]] = 0;
 	        }else{
 	          // do nothing no distance here
-	        }
-	        
+	        }	        
 	      }else{  // length == 2
 	        //distance_matrix[items[0][dcolname]] = parseFloat(items[1]);
 	        distance_matrix[dcolname][items[0]] = parseFloat(items[1]);		        
-	        
-	          if(items[0] in distance_matrix){
-	            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-	            //console.log('a '+dcolname+' - '+items[0])
-	          }else{
-	            //console.log('b '+dcolname+' - '+items[0])
-	            distance_matrix[items[0]] = {}
-	            distance_matrix[items[0]][items[0]] = 0
-	            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-	            distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-	          }		     
-	        
+	  
+          if(items[0] in distance_matrix){
+            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+            //console.log('a '+dcolname+' - '+items[0])
+          }else{
+            //console.log('b '+dcolname+' - '+items[0])
+            distance_matrix[items[0]] = {}
+            distance_matrix[items[0]][items[0]] = 0
+            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+            distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
+          }		        
 	      }  
-
-
 	    } // end for row in raw...
 	    return distance_matrix;
 }
@@ -110,13 +104,14 @@ function create_distance_matrix(outstr) {
 //
 //  CREATE HTML
 //
-function create_html(dm) {
+function create_hm_html(dm) {
 
 			
 		    //console.log(dm);
 		    var html = '';
 		    //var selection_html = COMMON.get_selection_markup('heatmap', body); 
 		    //html += selection_html;
+		    html += "<div class='' id='distance_heatmap_div' >";
 		    html += "<table border='1' class='heatmap_table' >";
 		    html += '<tr><td></td>';
 		    var i = 1;
@@ -135,13 +130,14 @@ function create_html(dm) {
 		        	html += "<td width='10' height='10' bgcolor='#000'></td>";
 		        }else{
 		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 )
-		        	html += "<td width='10' height='10' bgcolor='#"+colors[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
-		        }
-		        
+		        	html += "<td width='10' height='10' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        }		        
 		      }
 		      html += '</tr>';
 		    }
 		    html += '</table>';
+		    html += '</div>';
+		    
 		    return html;
 		    
 

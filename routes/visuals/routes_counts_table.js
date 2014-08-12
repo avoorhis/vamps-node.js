@@ -16,11 +16,26 @@ module.exports = {
 	  // The page should be purged when? -- after a certain length of time
 	  // or when the user leaves the page.
 	  
-	  var file = '../../tmp/'+ts+'_counts_table.html';
+	  var out_file = '../../tmp/'+ts+'_counts_table.html';
 	  var html = '';
 	  var selection_html = COMMON.get_selection_markup('counts_table', body); 
-	  html += selection_html;
-	  html += "<div id='' class='counts_table_div' >";
+
+		html = selection_html + create_ct_html(count_matrix)
+	  
+	  //console.log(column_totals)
+	  COMMON.write_file(out_file,html);
+	
+	}
+
+}
+
+//
+//  CREATE HTML
+//
+function create_ct_html(count_matrix) {
+
+	var html = '';
+	html += "<div class='' id='counts_table_div' >";
 	  var column_totals = {};
 	  html += "<table border='1' class='counts_table' >";
 	  html += "<tr><td></td>";
@@ -54,15 +69,6 @@ module.exports = {
 	  html += "</tr>";
 	  html += "</table>";
 	  html += "</div>"
-	  //console.log(column_totals)
-	  COMMON.write_file(file,html);
-	  // fs.writeFile(path.resolve(__dirname, file), html, function(err) {
-	  //   if(err) {
-	  //     console.log('Could not write file: '+file+' Here is the error: '+err);
-	  //   } else {
-	  //     console.log("The file ("+file+") was saved!");
-	  //   }
-	  // });
-	}
+	  return html;
 
 }
