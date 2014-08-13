@@ -104,6 +104,9 @@ function create_distance_matrix(outstr) {
 //
 //  CREATE HTML
 //
+/*
+TODO: That should be in an html file, we can only use DOM scripting to enhance functionality, not create it. What a user will see if javascript is disabled?
+*/
 function create_hm_html(dm) {
 
 			
