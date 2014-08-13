@@ -1,7 +1,16 @@
 <h3>Silva(v108) Custom Taxonomy Selection</h3>
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
 <% all_tax_data = rows %>
+<% 
+console.log(JSON.stringify(dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"], null, 4));
 
+%>
+
+
+<!--  "unit_assoc": {
+        "silva_taxonomy_info_per_seq_id": [
+-->
+        
 <div class='tax_list' >
 <ul>
 <% for (domain in all_tax_data) { %>
@@ -9,7 +18,7 @@
   <li>
     <label class='tax_select'>
 <!-- ///////// D O M A I N /////////////////////////////////////////////// -->
-      <a href=''  id='<%= id %>_toggle' onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
+      <a href=''  id='<%= id %>_toggle' class='domain_toggle'  onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
         <img alt='plus' src='/images/tree_plus.gif'/>
       </a>
       <input type='checkbox' id='<%= id %>--cbid' name='domain_names[]' value='<%= domain %>' onclick="open_taxa('<%= id %>'); return false;"/>
