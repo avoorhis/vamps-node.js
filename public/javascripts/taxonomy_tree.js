@@ -1,5 +1,16 @@
 // taxonomy_tree.js
 
+$(document).ready(function () {
+  // alert("HERE");
+
+  $('a.domain_toggle').click(function(){
+    alert("HERE: " + this.id)
+    // toggle_selected_taxa('domain', this.id);
+    // return false;
+  });
+});
+// onclick="toggle_selected_taxa('domain','<%= id %>'); return false;"
+
 function toggle_selected_taxa(level,name) {
 
   var tax_div = document.getElementById(name+'_div');
