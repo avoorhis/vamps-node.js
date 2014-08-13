@@ -411,12 +411,57 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 //
 //
 //
+
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
 router.get('/partials/tax_silva108_custom',  function(req, res) {
+  var silva_taxonomy_info_per_seq_ids = dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"];
+  console.log(silva_taxonomy_info_per_seq_ids);
+  
+  if (typeof tax_silva108_custom_short_rows === 'undefined')
+  {
+    var tax_short_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
+    FROM silva_taxonomy_info_per_seq \
+    JOIN silva_taxonomy USING(silva_taxonomy_id) \
+    JOIN domain AS dom USING(domain_id) \
+    JOIN phylum AS phy USING(phylum_id) \
+    JOIN klass AS kla USING(klass_id) \
+    JOIN `order` AS ord USING(order_id) \
+    JOIN family AS fam USING(family_id) \
+    JOIN genus AS gen USING(genus_id) \
+    JOIN species AS spe USING(species_id) \
+    JOIN strain AS str USING(strain_id) \
+    WHERE silva_taxonomy_info_per_seq_id IN \
+    ('10050101', '10050129', '10050138', '10050139', '10050140', '10050141', '10050142', '10050143', '10050144', '10050145');";
+    console.log('running custom tax query short');
+    console.log(tax_short_query);
+    var db = req.db;
+    
+    db.query(tax_short_query, function(err, rows, fields){
+      if (err) 
+      {
+        throw err;
+      } 
+      else 
+      {
+        console.log(JSON.stringify(rows, null, 4));
+      }
+    });
+  }
+});
+
+
+router.get('/partials/tax_silva108_custom_all',  function(req, res) {
   var db = req.db;
   // This query should be run only once and the results stored in memory
   // The GLOBAL keyword allows this
   // This taxonomy JSON object can be used for other taxonomies so eventually will be
   // move from here ...
+  
+  
+  
   if (typeof tax_silva108_custom_rows === 'undefined'){
     var tax_query = "SELECT domain, phylum, klass, `order`, family, genus, species, strain FROM silva_taxonomy";
     tax_query +=    " JOIN domain as dom using(domain_id)";
