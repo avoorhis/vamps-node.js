@@ -419,9 +419,9 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   // move from here ...
   if (typeof tax_silva108_custom_rows === 'undefined'){
     var tax_query = "SELECT domain, phylum, klass, `order`, family, genus, species, strain FROM silva_taxonomy";
-    tax_query +=    " JOIN domain  as dom using(domain_id)";
-    tax_query +=    " JOIN phylum  as phy using(phylum_id)";
-    tax_query +=    " JOIN klass  as kla using(klass_id)";
+    tax_query +=    " JOIN domain as dom using(domain_id)";
+    tax_query +=    " JOIN phylum as phy using(phylum_id)";
+    tax_query +=    " JOIN klass as kla using(klass_id)";
     tax_query +=    " JOIN `order` as ord using(order_id)";
     tax_query +=    " JOIN family as fam using(family_id)";
     tax_query +=    " JOIN genus as gen using(genus_id)";
@@ -446,7 +446,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
             var species= rows[k].species || 'species_NA';
             var strain = rows[k].strain  || 'strain_NA';
 
-//            todo: How to rewrite it without nested ifs?
+//            TODO: How to rewrite it without nested ifs?
             if (domain in tax_silva108_custom_rows) {
               if (phylum in tax_silva108_custom_rows[domain]) {
                 if (klass in tax_silva108_custom_rows[domain][phylum]) {
