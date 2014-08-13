@@ -52,7 +52,7 @@ function get_requested_units_selection_box() {
          if (xmlhttp.readyState == 4 ) {
            var string = xmlhttp.responseText;
            
-           var div = document.getElementById('units_select_div').innerHTML = string;
+           var div = document.getElementById('units_select_choices_div').innerHTML = string;
          }
   };
   xmlhttp.send();
