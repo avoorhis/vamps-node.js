@@ -412,13 +412,32 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 //
 //
 
-function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index;
-}
+// benchmarking
+var start = process.hrtime();
+
+var elapsed_time = function(note){
+    var precision = 3; // 3 decimal places
+    var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+    console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+    start = process.hrtime(); // reset the timer
+};
 
 router.get('/partials/tax_silva108_custom',  function(req, res) {
   var silva_taxonomy_info_per_seq_ids = dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"];
-  console.log(silva_taxonomy_info_per_seq_ids);
+  var merged_tax_id = [];
+  start = process.hrtime(); // reset the timer    
+  merged_tax_id = [].concat.apply([], silva_taxonomy_info_per_seq_ids);
+  elapsed_time("merged_tax_id with concat.apply []");
+  
+  start = process.hrtime(); // reset the timer    
+  
+  // arrays = arrays.reduce(function(a, b){
+  //      return a.concat(b);
+  // });
+  // elapsed_time("merged_tax_id and add '");
+  
+  
+  // console.log(merged_tax_id);
   
   if (typeof tax_silva108_custom_short_rows === 'undefined')
   {
@@ -439,6 +458,8 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     console.log(tax_short_query);
     var db = req.db;
     
+    // start = process.hrtime(); // reset the timer    
+    
     db.query(tax_short_query, function(err, rows, fields){
       if (err) 
       {
@@ -449,6 +470,12 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         console.log(JSON.stringify(rows, null, 4));
       }
     });
+    // elapsed_time("tax_short_query");
+    /*
+    0 s, 0.502 ms - tax_short_query
+    0 s, 0.424 ms - tax_short_query
+    */
+    
   }
 });
 
