@@ -88,31 +88,38 @@ function create_svg_object(props, color, data) {
 							    .attr("height", props.height)
 							  .append("g")
 							    .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-			
+			console.log('8')
 			
 			// axis legends -- would like to rotate dataset names
 		  props.y.domain(data.map(function(d) { return d.DatasetName; }));
 		  props.x.domain([0, 100]);
-
+console.log(props.y.domain)
 			svg.append("g")
 		      .attr("class", "y axis")
 		      .call(props.yAxis)
-		      .selectAll("text")  
-				     .style("text-anchor", "end")
-				     .attr("dx", "-.5em")
-				     .attr("dy", "1.4em") 
+		      
 				     
 				     
+			console.log('9')
 		  
 		  svg.append("g")
 		      .attr("class", "x axis")
 		      .call(props.xAxis)
-		   	.append("text")
-		      .attr("x", 400)
-		      .attr("dy", ".8em")
-		      .style("text-anchor", "end")
-		      .text("Percent");
-		 
+		   
+		      
+			console.log('10')
+
+					// svg.selectAll("bar")
+			  //     .data(data.map(function(d) { return d.unitObj; }))
+			  //   .enter().append("rect")
+			  //     .style("fill", function(d) { return color(d.name); })
+
+			  //     .attr("x", function(d) { return props.x(d.x0); })
+			  //     .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+			  //     .attr("y", function(d) { return props.y(d.y0); })
+
+			  //     .attr("height", props.y.rangeBand());
+
 
 		  var datasetName = svg.selectAll(".bar")
 		      .data(data)
@@ -120,16 +127,16 @@ function create_svg_object(props, color, data) {
 		      .attr("class", "g")
 		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; });
 
-			//console.log('11')
+			console.log('11')
 		  
 		  datasetName.selectAll("rect")
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
 
 		      .attr("x", function(d) { return props.x(d.x0); })
-		      .attr("y", 15)  // adjust where first bar starts on x-axis
+		      .attr("y", function(d) { return props.y(d.y1); })  // adjust where first bar starts on x-axis
 		      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-		      .attr("height",  18)
+		      .attr("height",  20)
 		      .attr("id",function(d) { 
 		       	return this._parentNode.__data__.DatasetName + '-|-'+d.name + '-|-'+this._parentNode.__data__[d.name].toString() // ip of each rectangle should be datasetname-|-unitname-|-count
 					}) 
@@ -149,23 +156,19 @@ function get_image_properties(bar_height, ds_count) {
 	//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
 	//props.width  = (ds_count * (bar_width)) + 50;
 	//props.height = 700 - props.margin.top - props.margin.bottom;
-	var plot_width = 400;
-	props.width = plot_width + props.margin.left + props.margin.right
-	props.height = (ds_count * bar_height) + 120;
+	props.width = 400 + props.margin.left + props.margin.right
+	props.height = (ds_count * bar_height) + 100;
 	//props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
 	//props.y = d3.scale.linear() .rangeRound([props.height, 0]);
-	//console.log('1')
-	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-	//console.log('2')
-	var gap = 2;  // gap on each side of bar
-	props.y = d3.scale.ordinal()
-			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
-			//.rangeRoundBands([0, props.height], .1);
-	//console.log('3')
+	console.log('1')
+	props.x = d3.scale.linear() .rangeRound([0, props.width]);
+	console.log('2')
+	props.y = d3.scale.ordinal().rangeRoundBands([0, props.height]);
+	console.log('3')
 	props.xAxis = d3.svg.axis()
 			    .scale(props.x)
 			    .orient("top");
-	//console.log('4')
+	console.log('4')
 	props.yAxis = d3.svg.axis()
 			    .scale(props.y)
 			    .orient("left");
