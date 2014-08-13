@@ -95,25 +95,31 @@
 .counts_table {
     background: yellow;
 }
+
 .heatmap_table {
     border-collapse:collapse;
     font-size:10px;
 }
+
 #show_visuals_links_div {
     width: 180px;
 }
+
 #show_visuals_links_div ul li {
     list-style-type: none;
     margin-left:-20px;
 }
+
 #barchart_tooltip {
+    font-size: small;
     display:none;
-    background:yellow;
+    background: yellow;
     border: 2px solid green;
-    font-size:14px;
-    font-weight:normal;
-    height:auto;
-    width:auto;
-    padding:15px 25px;
-    color:black;    
+    
+    font-weight: normal;
+    height: auto;
+    width: auto;
+    padding: 15px 25px;
+    color: black;    
+}
 
