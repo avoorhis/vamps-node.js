@@ -17,13 +17,13 @@ module.exports = {
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
 			var ds_count = body.selection_obj.dataset_ids.length
 			//console.log(outfile)
-			var bar_height = 15;
+			var bar_width = 15;
 			var data = convert_matrix(count_matrix);
 
 			
 			// gets margins, width and height
-			var props = get_image_properties(bar_height, ds_count);		
-			console.log(props)
+			var props = get_image_properties(bar_width, ds_count);		
+
 			//var x = d3.scale.linear();
 			 
 			// get_colors: transforms unit names to unique hex colors
@@ -34,14 +34,13 @@ module.exports = {
 			color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
 			
 			data.forEach(function(d) {
-		    var x0 = 0;
+		    var y0 = 0;
 		    d.unitObj = color.domain().map(function(name) {
 		    	 //console.log(d[name])
-		    	 //return {name: name, y0: y0, y1: y0 += +d[name]}; 
-		    	 return {name: name, x0: x0, x1: x0 += +d[name]}; 
+		    	 return {name: name, y0: y0, y1: y0 += +d[name]}; 
 		    });
-		    d.total = d.unitObj[d.unitObj.length - 1].x1;
-console.log(d.unitObj)
+		    d.total = d.unitObj[d.unitObj.length - 1].y1;
+
 		  });
 
 			data.forEach(function(d) {
@@ -49,19 +48,21 @@ console.log(d.unitObj)
 				tot = d.total
 				d.unitObj.forEach(function(o) {
 						//console.log(o);
-						o.x0 = (o.x0*100)/tot
-						o.x1 = (o.x1*100)/tot
+						o.y0 = (o.y0*100)/tot
+						o.y1 = (o.y1*100)/tot
 				});
 			});
-			console.log('5')
+			console.log(JSON.stringify(data))
 			
-		  
-
-console.log('6')
+		  // axis legends -- would like to rotate dataset names
+		  props.x.domain(data.map(function(d) {
+		  	console.log(d.datasetName)
+		  	return d.DatasetName; 
+		  }));
+		  props.y.domain([0, 100]);
 
 		  create_svg_object(props, color, data);
-
-		console.log('7')
+		
 		
 			// get a reference to our SVG object and add the SVG NS
 			var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -84,92 +85,75 @@ console.log('6')
 function create_svg_object(props, color, data) {
 
 		  var svg = d3.select("body").append("svg")
-							    .attr("width",  props.width)
-							    .attr("height", props.height)
+							    .attr("width",  props.width + props.margin.left + props.margin.right)
+							    .attr("height", props.height + props.margin.top + props.margin.bottom)
 							  .append("g")
 							    .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-			
-			
-			// axis legends -- would like to rotate dataset names
-		  props.y.domain(data.map(function(d) { return d.DatasetName; }));
-		  props.x.domain([0, 100]);
 
 			svg.append("g")
-		      .attr("class", "y axis")
-		      .call(props.yAxis)
+		      .attr("class", "x axis")
+		      .attr("transform", "translate(0," + props.height + ")")
+		      .call(props.xAxis)
 		      .selectAll("text")  
 				     .style("text-anchor", "end")
-				     .attr("dx", "-.5em")
-				     .attr("dy", "1.4em") 
-				     
-				     
-		  
+				     .attr("dx", "-.8em")
+				     .attr("dy", "1.4em")  // move the dataset name to the left
+				     .attr("transform", function(d) {
+				         return "rotate(-90)" 
+				     });
+
 		  svg.append("g")
-		      .attr("class", "x axis")
-		      .call(props.xAxis)
-		   	.append("text")
-		      .attr("x", 400)
-		      .attr("dy", ".8em")
+		      .attr("class", "y axis")
+		      .call(props.yAxis)
+		    .append("text")
+		      .attr("transform", "rotate(-90)")
+		      .attr("y", 6)
+		      .attr("dy", ".71em")
 		      .style("text-anchor", "end")
 		      .text("Percent");
-		 
 
-		  var datasetName = svg.selectAll(".bar")
+		  var datasetName = svg.selectAll(".DatasetName")
 		      .data(data)
 		    .enter().append("g")
 		      .attr("class", "g")
-		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; });
+		      .attr("transform", function(d) { return "translate(" + props.x(d.DatasetName) + ",0)"; });
 
-			//console.log('11')
-		  
 		  datasetName.selectAll("rect")
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
-
-		      .attr("x", function(d) { return props.x(d.x0); })
-		      .attr("y", 15)  // adjust where first bar starts on x-axis
-		      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-		      .attr("height",  18)
-		      .attr("id",function(d) { 
-		       	return this._parentNode.__data__.DatasetName + '-|-'+d.name + '-|-'+this._parentNode.__data__[d.name].toString() // ip of each rectangle should be datasetname-|-unitname-|-count
-					}) 
+		      .attr("width", props.x.rangeBand())
+					.attr("id",function(d) { 
+		       	return this._parentNode.__data__.DatasetName + '-|-'+d.name + '-|-'+this._parentNode.__data__[d.name].toString() // tip of each rectangle should be datasetname-|-unitname-|-count
+					})  
+		      .attr("y", function(d) { return props.y(d.y1); })
+		      .attr("x", 25)  // adjust where first bar starts on x-axis
+		      .attr("height",  function(d) { return props.y(d.y0) - props.y(d.y1); })
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
-
 }
 
 //
 //
 //
-function get_image_properties(bar_height, ds_count) {
+function get_image_properties(bar_width, ds_count) {
 	var props = {};
-	
-	//props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-	props.margin = {top: 20, right: 20, bottom: 20, left: 300};
+	props.margin = {top: 20, right: 20, bottom: 300, left: 50};
 	//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
-	//props.width  = (ds_count * (bar_width)) + 50;
-	//props.height = 700 - props.margin.top - props.margin.bottom;
-	var plot_width = 400;
-	props.width = plot_width + props.margin.left + props.margin.right
-	props.height = (ds_count * bar_height) + 120;
-	//props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
-	//props.y = d3.scale.linear() .rangeRound([props.height, 0]);
-	//console.log('1')
-	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-	//console.log('2')
-	var gap = 2;  // gap on each side of bar
-	props.y = d3.scale.ordinal()
-			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
-			//.rangeRoundBands([0, props.height], .1);
-	//console.log('3')
+	props.width  = (ds_count * (bar_width)) + 50;
+	props.height = 700 - props.margin.top - props.margin.bottom;
+
+	props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
+	props.y = d3.scale.linear()
+			    .rangeRound([props.height, 0]);
+
 	props.xAxis = d3.svg.axis()
 			    .scale(props.x)
-			    .orient("top");
-	//console.log('4')
+			    .orient("bottom");
+
 	props.yAxis = d3.svg.axis()
 			    .scale(props.y)
-			    .orient("left");
-			    
+			    .orient("left")
+			    .tickFormat(d3.format(".2s"));		
 			        
 	return props;
 }
