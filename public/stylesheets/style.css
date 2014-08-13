@@ -103,3 +103,7 @@ vertical-align:top;
   width: '10' ;
   height: '10';
 }
+
+.unit_selection_page_div_border {
+  style='border:1px solid red;
+}
