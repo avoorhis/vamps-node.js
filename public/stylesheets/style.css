@@ -51,11 +51,12 @@ a {
 .normal_weight {
    font-weight:normal;
 }
-.general_table{
+.table {
     border:1px solid black;
+    list-style-type: none;
     padding:3px;
 }
-.general_table ul {
+.table ul {
     text-align:left;
     list-style-type: none;
 }
