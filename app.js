@@ -83,6 +83,13 @@ app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 
+app.get('/download/:ts/:file_type', function(req, res){
+  console.log('in tmp')
+  console.log(req.params.ts)
+  console.log(req.params.file_type)
+  var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
+  res.download(file); // Set disposition and send it.
+});
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
     console.warn(req.params);
