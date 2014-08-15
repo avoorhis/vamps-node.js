@@ -1,5 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <% b = JSON.parse(body) %>
+<% ts = timestamp %>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Display Output Page</div>
 
@@ -17,15 +18,21 @@
             </div>
           </td>
           <td>
-            <div id='show_download_buttons_div'>
-              <input type='button', id='' name='' value='Download Fasta File' /><br>
-              <input type='button', id='' name='' value='Download Counts Matrix' />
+            <div id='show_download_buttons_div' class='small_font'>
+              <form action='/download/<%= ts %>/counts_matrix'>
+                <input type='submit', id='' name='' value='Download Counts File' />
+              </form>
+              <form action='/download/<%= ts %>/fasta'>
+                <input type='submit', id='' name='' value='Download Fasta Matrix' />
+              </form>
+
+             
             </div>
           </td>
           <td>
             <div id='show_visuals_links_div'>
               
-              <% ts = timestamp %>
+              
 
               <ul>
               <% for (var i in b.visuals) { %>
