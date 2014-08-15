@@ -9,31 +9,34 @@
 <div class="clear"></div>
 
     
-  <div id='submit_button' class='grid_3 prefix_4 suffix_1'  style='border:1px solid red;'>
+  <div id='submit_button' class='grid_3 prefix_3 suffix_2'  style='border:1px solid red;'>
     <input type='button' id="get_graphics" value='Next: Get Graphics'>
   </div>
 
-<div class="clear"></div>   
-
-  <div id='units_select_choices_div' class='grid_3' style='border:1px solid red;'>
-    <% include partials/unit_selection_choices.html %>
-    <br>
-    <% include partials/tax_silva108_simple.html %>
+  <div class="clear"></div>   
+  <div class='grid_4'>
+    <div id='units_select_choices_div' class='' style='border:1px solid red;'>
+      <% include partials/unit_selection_choices.html %>
+      <br>
+    </div>
+    <div class="clear"></div> 
+    <div id='units_select_div' class='table' style='border:1px solid red;'>
+      <% include partials/tax_silva108_simple.html %>
+    </div>
   </div>
- 
-  <div class='grid_5'>
+  <div class='grid_4'>
 
       <div id='show_selected_datasets_div' class=''  style='border:1px solid red;'>
         <% include partials/show_selected_datasets.html %>
       </div>
       <br>   
 
-      <div id='show_normalization_div' class=''  style='border:1px solid red;'>
+      <div id='show_normalization_div' class='table'  style='border:1px solid red;'>
         <% include partials/show_normalization_choices.html %>
       </div>
       <br>
       
-      <div id='visuals_output_choices_div' class=''  style='border:1px solid red;'>
+      <div id='visuals_output_choices_div' class='table'  style='border:1px solid red;'>
         <% include partials/show_visual_output_choices.html %>
       </div>  
 
