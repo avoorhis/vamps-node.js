@@ -62,7 +62,7 @@ function create_ct_html(count_matrix) {
 	    html += "</tr>";
 	    row_count += 1;
 	  }
-	  html += "<tr><td></td>";
+	  html += "<tr><td>TOTAL:</td>";
 	  for(n in column_totals) {
 	    html += "<td>"+column_totals[n]+"</td>";
 	  }
