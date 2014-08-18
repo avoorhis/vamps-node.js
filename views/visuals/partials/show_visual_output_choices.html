@@ -1,5 +1,7 @@
 <%   var rows     = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
 <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+<%    var so = JSON.parse(selection_obj) %>
+
 Display Output:
 <p class='standard'>
     1) Check your selected datasets from the list above.<br>
@@ -11,26 +13,34 @@ Display Output:
 </p>
 <ul>
     <% for (i in rows) { %>
-        <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
-    		<% if(rows[i].id === 'heatmap' ) { %>
-                
-                <select name='selected_heatmap_distance' class='small_font'>
-                <% for(d in distrows ) { %>
-                  <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+       
+    		<% if(rows[i].id === 'heatmap') { %>
+                <% if(so.dataset_ids.length > 1) { %>
+                    <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
+                    <select name='selected_heatmap_distance' class='small_font'>
+                    <% for(d in distrows ) { %>
+                      <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+                    <% } %>
+                    </select>
+                    <%= rows[i].show %>
+                    </li>
                 <% } %>
-                </select>
-            <% } %> 
-
-            <% if(rows[i].id === 'dendrogram' ) { %>
-                
+            <% }else if(rows[i].id === 'dendrogram' ) { %>
+                 <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
                 <select name='selected_dendrogram_distance' class='small_font'>
                 <% for(d in distrows ) { %>
                   <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
                 <% } %>
                 </select>
-            <% } %> 
-            <%= rows[i].show %>
-        </li>
+                <%= rows[i].show %>
+                </li>
+            <% }else{ %> 
+                 <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
+                <% console.log(rows[i].show) %>
+                <%= rows[i].show %>
+                </li>
+            <% } %>
+        
     <% } %>
 </ul>
 
