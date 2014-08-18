@@ -438,12 +438,11 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   
   
   // console.log(merged_tax_id);
-  
+  // tax_silva108_custom_short_rows = {};
   if (typeof tax_silva108_custom_short_rows === 'undefined')
   {
     var tax_short_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
-    FROM silva_taxonomy_info_per_seq \
-    JOIN silva_taxonomy USING(silva_taxonomy_id) \
+    FROM silva_taxonomy \
     JOIN domain AS dom USING(domain_id) \
     JOIN phylum AS phy USING(phylum_id) \
     JOIN klass AS kla USING(klass_id) \
@@ -451,15 +450,15 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     JOIN family AS fam USING(family_id) \
     JOIN genus AS gen USING(genus_id) \
     JOIN species AS spe USING(species_id) \
-    JOIN strain AS str USING(strain_id) \
-    WHERE silva_taxonomy_info_per_seq_id IN \
-    ('10050101', '10050129', '10050138', '10050139', '10050140', '10050141', '10050142', '10050143', '10050144', '10050145');";
+    JOIN strain AS str USING(strain_id)";
     console.log('running custom tax query short');
-    console.log(tax_short_query);
+    // console.log(tax_short_query);
     var db = req.db;
     
     // start = process.hrtime(); // reset the timer    
-    
+    var my_dict = {};
+
+
     db.query(tax_short_query, function(err, rows, fields){
       if (err) 
       {
@@ -467,16 +466,82 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       } 
       else 
       {
-        console.log(JSON.stringify(rows, null, 4));
+        function my_assign(obj, keyPath, value) {
+           lastKeyIndex = keyPath.length-1;
+           console.log("lastKeyIndex 333 = " + JSON.stringify(lastKeyIndex, null, 4));
+           
+           for (var i = 0; i < lastKeyIndex; ++ i) {
+             key = keyPath[i];
+             console.log("key222 = " + JSON.stringify(key, null, 4));
+             if (!(key in obj))
+               obj[key] = {}
+             obj = obj[key];
+           }
+           return obj[keyPath[lastKeyIndex]] = value;
+        }
+        
+        // tax_silva108_custom_short_rows = {};
+        // console.log(JSON.stringify(rows, null, 4));
+        for (var i=0; i < rows.length; i++)
+        {
+          in_obj = rows[i];
+          my_assign(my_dict, in_obj, 1);
+          // console.log(" assign(my_dict, in_obj, 1) = " + JSON.stringify(aa, null, 4));
+          
+          
+          for (var taxa_rank in in_obj) 
+          {
+            if (in_obj.hasOwnProperty(taxa_rank)) 
+            {
+              console.log(taxa_rank + " -> " + JSON.stringify(in_obj[taxa_rank], null, 4));
+              key = in_obj[taxa_rank];
+              // console.log("key = " + key);
+              if (!(key in my_dict))
+              {
+                my_dict[key] = {};                
+              }
+              my_dict = my_dict[key];
+              // tax_silva108_custom_short_rows = {};
+              // tax_silva108_custom_short_rows[my_dict] = 
+              // my_dict[keyPath[lastKeyIndex]] = 1;
+              // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
+              
+              /*
+              <% for (domain in all_tax_data) { %>
+              
+              domain -> "Bacteria"
+              phylum -> "Proteobacteria"
+              klass -> "Alphaproteobacteria"
+              order -> "Sphingomonadales"
+              family -> "Sphingomonadaceae"
+              genus -> "Zymomonas"
+              species -> ""
+              strain -> ""
+              domain -> "Bacteria"
+              
+              */
+            }
+            // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
+            
+          }
+        }
       }
+      tax_silva108_custom_short_rows = my_dict;
+      
     });
     // elapsed_time("tax_short_query");
     /*
     0 s, 0.502 ms - tax_short_query
     0 s, 0.424 ms - tax_short_query
     */
+    // rows: JSON.stringify(rows),
     
   }
+  
+  res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
+    all_taxa_li: tax_silva108_custom_short_rows
+  });
+
 });
 
 
