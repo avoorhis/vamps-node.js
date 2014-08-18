@@ -88,6 +88,7 @@ if(metric == "morisita_horn" || metric == "Morisita-Horn"){
    dis<-(1-abs(dis))
 }else{
     # print("ERROR: no distance method found!")
+    dis<-'err'
 }
 
 print(dis);
