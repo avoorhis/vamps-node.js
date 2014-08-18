@@ -51,11 +51,12 @@ a {
 .normal_weight {
    font-weight:normal;
 }
-.general_table{
+.table {
     border:1px solid black;
+    list-style-type: none;
     padding:3px;
 }
-.general_table ul {
+.table ul {
     text-align:left;
     list-style-type: none;
 }
@@ -106,4 +107,16 @@ vertical-align:top;
 
 .unit_selection_page_div_border {
   style='border:1px solid red;
+}
+
+.button {
+  font: bold 11px Arial;
+  text-decoration: none;
+  background-color: #EEEEEE;
+  color: #333333;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
 }
