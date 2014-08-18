@@ -1,5 +1,7 @@
 <% include ../add_ins/begin.ejs %>
 <% b = JSON.parse(body) %>
+<% ts = timestamp %>
+
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Display Output Page</div>
 
@@ -7,7 +9,7 @@
         <tr>
           <th>Input Items</th>
           <th>Things to do here</th>
-          <th>Selected Visuals<br><span class='small_font'>(pages load in a separate window)</span></th>
+          <th>Selected Visuals<br><span class='small_font'>(pages load in separate windows)</span></th>
 
         </tr>
         <tr>
@@ -17,16 +19,21 @@
             </div>
           </td>
           <td>
-            <div id='show_download_buttons_div'>
-              <input type='button', id='' name='' value='Download Fasta File' /><br>
-              <input type='button', id='' name='' value='Download Counts Matrix' />
+            <div id='show_download_buttons_div' class='small_font'>
+              <form action='/download/<%= ts %>/counts_matrix' method='POST'>
+                <input type='submit', id='' name='' value='Download Counts Matrix' />
+              </form>
+              <form action='/download/<%= ts %>/fasta' method='POST'>
+                <input type='submit' id='' name='' value='Download Fasta File' />
+                <input type='hidden' id='' name='ids' value='<%= JSON.stringify(b.selection_obj.dataset_ids) %>' />
+              </form>
+
+             
             </div>
           </td>
           <td>
             <div id='show_visuals_links_div'>
               
-              <% ts = timestamp %>
-
               <ul>
               <% for (var i in b.visuals) { %>
                 
