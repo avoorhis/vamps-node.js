@@ -27,12 +27,17 @@ module.exports = {
 		  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_input_file +' '+body.selected_heatmap_distance;
 		  console.log('R command: ' + command);
 		  var R      = spawn(command, function (error, stdout, stderr) {
-		    
+		    stdout = stdout.trim();
+		    //console.log(stderr)
+		    //console.log('-->'+stdout+'<--')
 		    var selection_html = COMMON.get_selection_markup('heatmap', body); 
+		    if(stdout === 'dist(0)' || stdout === 'err') {
+		    	var html = selection_html + '<div>Error -- No distances were calculated.</div>'
+		    }else{
+		    	var dm = create_distance_matrix(stdout);
+		    	var html = selection_html + create_hm_html(dm);
+		    }
 		    
-		    var dm = create_distance_matrix(stdout);
-		    
-		    var html = selection_html + create_hm_html(dm);
 		    
 		    // this is to write the html to show the colored heatmap
 		    // input should be the html itself
@@ -50,16 +55,19 @@ function create_distance_matrix(outstr) {
 			//console.log('stderr: ' + stderr);
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
-	    //0console.log(raw_distance_array);
+	    console.log(raw_distance_array);
 	    var distance_matrix = {}
 	    // distance_matrix[ds1][ds2] = 2
-	    // 
+	    var dcolname = raw_distance_array[0].trim();
+	    distance_matrix[dcolname] = {}
+	    distance_matrix[dcolname][dcolname] = 0;
+	    console.log(dcolname);
 	    for(row in raw_distance_array){
 	      if( ! raw_distance_array[row] ) { continue; }
-	      //console.log('-->'+raw_distance_array[row]+'<--');
+	      console.log('-->'+raw_distance_array[row]+'<--');
 
 	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
-	        //console.log('found tab')
+	        console.log('found tab')
 	        dcolname = raw_distance_array[row].trim()
 	        if(dcolname in distance_matrix){
 
@@ -76,7 +84,7 @@ function create_distance_matrix(outstr) {
 	      //console.log('items0 ' +items[0])
 	      //console.log('items1 ' +items[1])
 	      //console.log(items.length)
-	      if(items.length == 1){
+	      if(items.length == 1){   
 	        if(items[0] === dcolname){
 	          distance_matrix[dcolname][items[0]] = 0;
 	        }else{
