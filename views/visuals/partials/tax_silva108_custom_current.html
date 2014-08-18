@@ -2,7 +2,7 @@
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
 <% all_tax_data = rows %>
 <% 
-console.log(JSON.stringify(dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"], null, 4));
+# console.log(JSON.stringify(dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"], null, 4));
 
 %>
 
@@ -10,8 +10,22 @@ console.log(JSON.stringify(dataset_accumulator["unit_assoc"]["silva_taxonomy_inf
 <!--  "unit_assoc": {
         "silva_taxonomy_info_per_seq_id": [
 -->
+
+<div id="myList">
+ === 333 ===
+  <% #var obj = rows; %>
+  <% # var inner = ''; %>
+  <% # for(i=0; i < obj.length; i++) { %>
+  <%= all_taxa_li
+  # "<li>"+obj[i].domain+"</li>"; 
+  %>
+  <% # } %>
+  
+  
+</div>
         
 <div class='tax_list' >
+  
 <ul>
 <% for (domain in all_tax_data) { %>
   <% id = domain %>
