@@ -16,7 +16,7 @@ module.exports = {
 			// counts_matrix:{"82":[4,2,2],"84":[0,0,1],"137":[0,0,1],"214":[272,401,430]}}
 
 		  //selection_obj = JSON.parse(selection_obj);
-		  console.log(selection_obj);
+		  
 		  var matrix = {};  
 		  
 		  var dataset_ids = selection_obj.dataset_ids;
