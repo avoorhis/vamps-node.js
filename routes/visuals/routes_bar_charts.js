@@ -19,7 +19,7 @@ module.exports = {
 			//console.log(outfile)
 			var bar_height = 15;
 			var data = convert_matrix(count_matrix);
-
+			
 			
 			// gets margins, width and height
 			var props = get_image_properties(bar_height, ds_count);		
@@ -41,7 +41,7 @@ module.exports = {
 		    	 return {name: name, x0: x0, x1: x0 += +d[name]}; 
 		    });
 		    d.total = d.unitObj[d.unitObj.length - 1].x1;
-console.log(d.unitObj)
+
 		  });
 
 			data.forEach(function(d) {
@@ -53,22 +53,23 @@ console.log(d.unitObj)
 						o.x1 = (o.x1*100)/tot
 				});
 			});
-			console.log('5')
 			
+			console.log('data')
+			console.log(data)
 		  
 
-console.log('6')
+
 
 		  create_svg_object(props, color, data);
 
-		console.log('7')
+		
 		
 			// get a reference to our SVG object and add the SVG NS
 			var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
 			//console.log(svgGraph[0][0]);
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 			
-			console.log(svgXML)
+			//console.log(svgXML)
 			
 			COMMON.write_file(outfile,svgXML);
 			d3.select('svg').remove();
@@ -125,7 +126,6 @@ function create_svg_object(props, color, data) {
 		  datasetName.selectAll("rect")
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
-
 		      .attr("x", function(d) { return props.x(d.x0); })
 		      .attr("y", 15)  // adjust where first bar starts on x-axis
 		      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
@@ -135,7 +135,17 @@ function create_svg_object(props, color, data) {
 					}) 
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
-
+		   
+		  // datasetName.selectAll("text")
+		  // 	.data(data)
+		  // 	.enter().append("text")
+		  // 	.attr("x", 500)
+			 //  //.attr("y", function(d){ return props.y(d) + props.y.rangeBand()/2; } )
+			 //  //.attr("y", function(d){ return props.y.rangeBand; } )
+			 //  .attr("dx", 1)
+			 //  .attr("dy", "2.3em")
+			 //  .attr("text-anchor", "start")
+			 //  .text(function(d){ return d.total; });
 }
 
 //
@@ -145,19 +155,20 @@ function get_image_properties(bar_height, ds_count) {
 	var props = {};
 	
 	//props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-	props.margin = {top: 20, right: 20, bottom: 20, left: 300};
+	props.margin = {top: 20, right: 100, bottom: 20, left: 300};
 	//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
 	//props.width  = (ds_count * (bar_width)) + 50;
 	//props.height = 700 - props.margin.top - props.margin.bottom;
-	var plot_width = 400;
+	var plot_width = 500;
+	var gap = 2;  // gap on each side of bar
 	props.width = plot_width + props.margin.left + props.margin.right
-	props.height = (ds_count * bar_height) + 120;
+	props.height = (ds_count * (bar_height + 2 * gap)) + 125;
 	//props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
 	//props.y = d3.scale.linear() .rangeRound([props.height, 0]);
 	//console.log('1')
 	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
 	//console.log('2')
-	var gap = 2;  // gap on each side of bar
+	
 	props.y = d3.scale.ordinal()
 			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
 			//.rangeRoundBands([0, props.height], .1);
@@ -179,7 +190,6 @@ function get_image_properties(bar_height, ds_count) {
 function get_colors(unit_names){
 	var colors = []
 	for(var n in unit_names){
-		console.log(n)
 		colors.push(COMMON.string_to_color_code(n));
 	}
 	return colors;
