@@ -51,7 +51,7 @@ router.post('/view_selection',  function(req, res) {
   if (normalization === 'max' || normalization === 'freq') {
     req.body.selection_obj = COMMON.normalize_counts(normalization, req.body);
   }
-  //console.log('3');
+  
   
   var uitems = req.body.unit_choice.split('_');
   var unit_name_query = '';
@@ -70,6 +70,7 @@ router.post('/view_selection',  function(req, res) {
   }
   //console.log(unit_name_query);
   //console.log('4');
+  console.log('3');
   req.body.selection_obj.counts_matrix = MTX.fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
   
   console.log(unit_name_query);
