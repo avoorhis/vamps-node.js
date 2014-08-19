@@ -138,10 +138,11 @@ function create_hm_html(dm) {
 		      for(y_dname in dm) {
 		      	
 		        if(x_dname === y_dname){
-		        	html += "<td class='heat_map_td' bgcolor='#000'></td>";
+		        	html += "<td id='' class='heat_map_td' bgcolor='#000'></td>";
 		        }else{
-		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 )
-		        	html += "<td class='heat_map_td' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	var id = x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname];
+		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 );
+		        	html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
 		        }		        
 		      }
 		      html += '</tr>';
