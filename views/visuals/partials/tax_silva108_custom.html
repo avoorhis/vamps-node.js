@@ -1,12 +1,12 @@
 <h3>Silva(v108) Custom Taxonomy Selection</h3>
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
 
-aaa111
+aaa111-555
 
 <% all_tax_data = all_taxa %>
 <div id="myList">
  === 333 ===
-  <%= all_tax_data %>
+ <%= console.log("777" + JSON.stringify(all_taxa, null, 4))  %>
   
   
 </div>
@@ -14,11 +14,14 @@ aaa111
 
 <div id="myList">
   <ul>
-    <%= all_tax_data.length %>
+    <% all_tax_data.length %>
     <% for(i=0; i < all_tax_data.length; i++) { %>
-      <% for(i=0; i < all_tax_data.length; i++) { %>      
-        <%= "<li>"+all_tax_data[i]+"</li>" %>
-      <% } %>
+      <% var taxa_obj = all_tax_data[i]; %>
+      <% for (var taxa_rank in taxa_obj) { %>
+         <% var taxon = taxa_obj[taxa_rank]; %>
+         <li><%= JSON.stringify(taxon) %> </li>
+         
+      <% } %>      
     <% } %>
     
   </ul>
