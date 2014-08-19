@@ -6,9 +6,7 @@ aaa111-555
 <% all_tax_data = all_taxa %>
 <div id="myList">
  === 333 ===
- <%= console.log("777" + JSON.stringify(all_taxa, null, 4))  %>
-  
-  
+
 </div>
 
 
@@ -17,13 +15,17 @@ aaa111-555
     <% all_tax_data.length %>
     <% for(i=0; i < all_tax_data.length; i++) { %>
       <% var taxa_obj = all_tax_data[i]; %>
+      <ul>
+        new taxon
       <% for (var taxa_rank in taxa_obj) { %>
          <% var taxon = taxa_obj[taxa_rank]; %>
-         <li><%= JSON.stringify(taxon) %> </li>
-         
-      <% } %>      
+
+         <li><%= taxon %> </li>
+
+      <% } %>
+      </ul>
     <% } %>
-    
+
   </ul>
 </div>
 
