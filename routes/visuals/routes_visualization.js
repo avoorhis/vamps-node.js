@@ -424,6 +424,7 @@ var elapsed_time = function(note){
 };
 
 router.get('/partials/tax_silva108_custom',  function(req, res) {
+/*
   var silva_taxonomy_info_per_seq_ids = dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"];
   var merged_tax_id = [];
   start = process.hrtime(); // reset the timer    
@@ -431,7 +432,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   elapsed_time("merged_tax_id with concat.apply []");
   
   start = process.hrtime(); // reset the timer    
-  
+*/  
   // arrays = arrays.reduce(function(a, b){
   //      return a.concat(b);
   // });
@@ -460,6 +461,38 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     var my_dict = {};
 
 
+  /* new */
+  /*
+  DataTable dt = new DataTable();
+ 
+  SqlConnection objSqlCon = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AdventureWorksConnectionString"].ToString());
+  objSqlCon.Open();
+ 
+  SqlDataAdapter objSqlDa = new SqlDataAdapter("select * from Production.Product", objSqlCon);
+ 
+  objSqlDa.Fill(dt);
+
+  StringBuilder objSb = new StringBuilder();
+  JavaScriptSerializer objSer = new JavaScriptSerializer();
+  
+  int index = 0;
+
+  foreach (DataRow dr in dt.Rows)
+  {
+      Dictionary<string, object> result = new Dictionary<string, object>();
+
+      foreach (DataColumn dc in dt.Columns)
+      {
+          result.Add(dc.ColumnName, dr[dc].ToString());
+      }
+      resultMain.Add(index.ToString(), result);
+      index++;
+  }
+  */
+  /* end new */
+  resultMain = [];
+  
+
     db.query(tax_short_query, function(err, rows, fields){
       if (err) 
       {
@@ -467,67 +500,48 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       } 
       else 
       {
-        function my_assign(obj, keyPath, value) {
-           lastKeyIndex = keyPath.length-1;
-           console.log("lastKeyIndex 333 = " + JSON.stringify(lastKeyIndex, null, 4));
-           
-           for (var i = 0; i < lastKeyIndex; ++ i) {
-             key = keyPath[i];
-             console.log("key222 = " + JSON.stringify(key, null, 4));
-             if (!(key in obj))
-               obj[key] = {}
-             obj = obj[key];
-           }
-           return obj[keyPath[lastKeyIndex]] = value;
-        }
+
+          
+      //      Dictionary<string, object> result = new Dictionary<string, object>();
+/*
+            foreach (DataColumn in dt.Columns)
+            {
+                result.Add(dc.ColumnName, dr[dc].ToString());
+            }
+            resultMain.Add(index.ToString(), result);
+            index++;
+            */
         
         // tax_silva108_custom_short_rows = {};
         // console.log(JSON.stringify(rows, null, 4));
         for (var i=0; i < rows.length; i++)
         {
           in_obj = rows[i];
-          my_assign(my_dict, in_obj, 1);
-          // console.log(" assign(my_dict, in_obj, 1) = " + JSON.stringify(aa, null, 4));
-          
+          result = {}          
           
           for (var taxa_rank in in_obj) 
           {
+            
             if (in_obj.hasOwnProperty(taxa_rank)) 
             {
-              console.log(taxa_rank + " -> " + JSON.stringify(in_obj[taxa_rank], null, 4));
+              result[taxa_rank] = in_obj[taxa_rank];              
               key = in_obj[taxa_rank];
+              
               // console.log("key = " + key);
               if (!(key in my_dict))
               {
                 my_dict[key] = {};                
               }
-              my_dict = my_dict[key];
-              // tax_silva108_custom_short_rows = {};
-              // tax_silva108_custom_short_rows[my_dict] = 
-              // my_dict[keyPath[lastKeyIndex]] = 1;
-              // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
-              
-              /*
-              <% for (domain in all_tax_data) { %>
-              
-              domain -> "Bacteria"
-              phylum -> "Proteobacteria"
-              klass -> "Alphaproteobacteria"
-              order -> "Sphingomonadales"
-              family -> "Sphingomonadaceae"
-              genus -> "Zymomonas"
-              species -> ""
-              strain -> ""
-              domain -> "Bacteria"
-              
-              */
+              my_dict = my_dict[key];              
             }
             // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
+            console.log("result = " + JSON.stringify(result, null, 4));
             
           }
+          resultMain[i] = result;
         }
       }
-      tax_silva108_custom_short_rows = my_dict;
+      // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));
       
     });
     // elapsed_time("tax_short_query");
@@ -540,7 +554,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   }
   
   res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
-    all_taxa_li: tax_silva108_custom_short_rows
+    all_taxa: resultMain
   });
 
 });
@@ -552,7 +566,6 @@ router.get('/partials/tax_silva108_custom_all',  function(req, res) {
   // The GLOBAL keyword allows this
   // This taxonomy JSON object can be used for other taxonomies so eventually will be
   // move from here ...
-  
   
   
   if (typeof tax_silva108_custom_rows === 'undefined'){
