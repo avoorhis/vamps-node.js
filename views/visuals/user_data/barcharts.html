@@ -5,7 +5,7 @@
 <div id='dataviz-container' class=''><%- html %></div>
 
 
-<span id='barchart_tooltip' >
+<span id='chart_tooltip' >
   <table style='margin:0'>      
     <tr>       
       <td class='dataset'>Dataset:</td>
@@ -47,9 +47,9 @@ $(document).ready(function() {
     $(".tooltip").tooltip({
          
              
-          tip: "#barchart_tooltip",          
+          tip: "#chart_tooltip",          
           position: 'center below',          
-          offset: [-40,0],
+          offset: [-30,0],
           opacity: 0.9,          
           delay: 0,
 
@@ -68,9 +68,9 @@ $(document).ready(function() {
 
 
                        
-            $("#barchart_tooltip table td#dataset").text(dname);
-            $("#barchart_tooltip table td#unit").text(uname); 
-            $("#barchart_tooltip table td#count").text(count);
+            $("#chart_tooltip table td#dataset").text(dname);
+            $("#chart_tooltip table td#unit").text(uname); 
+            $("#chart_tooltip table td#count").text(count);
                     
         
           },        
