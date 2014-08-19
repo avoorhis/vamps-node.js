@@ -110,16 +110,21 @@
     margin-left:-20px;
 }
 
-#barchart_tooltip {
-    font-size: small;
-    display:none;
+#chart_tooltip {
+    display: none; 
     background: yellow;
     border: 2px solid green;
-    
-    font-weight: normal;
     height: auto;
     width: auto;
-    padding: 15px 25px;
+    padding: 3px 5px;
     color: black;    
 }
+#chart_tooltip td {
+    font-size: x-small; 
+    font-weight: normal;   
+}
+.tooltip:hover {
+    background-color:grey;
+}
+
 
