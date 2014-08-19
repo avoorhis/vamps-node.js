@@ -58,11 +58,8 @@ module.exports = {
 			console.log(data)
 		  
 
-
-
 		  create_svg_object(props, color, data);
 
-		
 		
 			// get a reference to our SVG object and add the SVG NS
 			var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -104,12 +101,11 @@ function create_svg_object(props, color, data) {
 				     .attr("dy", "1.4em") 
 				     
 				     
-		  
 		  svg.append("g")
 		      .attr("class", "x axis")
 		      .call(props.xAxis)
 		   	.append("text")
-		      .attr("x", 400)
+		      .attr("x", 500)
 		      .attr("dy", ".8em")
 		      .style("text-anchor", "end")
 		      .text("Percent");
@@ -136,16 +132,6 @@ function create_svg_object(props, color, data) {
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
 		   
-		  // datasetName.selectAll("text")
-		  // 	.data(data)
-		  // 	.enter().append("text")
-		  // 	.attr("x", 500)
-			 //  //.attr("y", function(d){ return props.y(d) + props.y.rangeBand()/2; } )
-			 //  //.attr("y", function(d){ return props.y.rangeBand; } )
-			 //  .attr("dx", 1)
-			 //  .attr("dy", "2.3em")
-			 //  .attr("text-anchor", "start")
-			 //  .text(function(d){ return d.total; });
 }
 
 //
