@@ -441,8 +441,11 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   
   // console.log(merged_tax_id);
   // tax_silva108_custom_short_rows = {};
-  if (typeof tax_silva108_custom_short_rows === 'undefined')
-  {
+/**
+* TODO: return this or similar check to not create taxonomy list more then one time
+*/
+  // if (typeof tax_silva108_custom_short_rows === 'undefined')
+  // {
     var tax_short_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
     FROM silva_taxonomy \
     JOIN domain AS dom USING(domain_id) \
@@ -458,7 +461,6 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     var db = req.db;
     
     // start = process.hrtime(); // reset the timer    
-    var my_dict = {};
 
 
   /* new */
@@ -490,7 +492,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
   }
   */
   /* end new */
-  resultMain = [];
+    resultMain = [];
   
 
     db.query(tax_short_query, function(err, rows, fields){
@@ -528,35 +530,34 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
               key = in_obj[taxa_rank];
               
               // console.log("key = " + key);
-              if (!(key in my_dict))
-              {
-                my_dict[key] = {};                
-              }
-              my_dict = my_dict[key];              
+              // if (!(key in my_dict))
+              // {
+              //   my_dict[key] = {};                
+              // }
+              // my_dict = my_dict[key];              
             }
             // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
-            console.log("result = " + JSON.stringify(result, null, 4));
+            // console.log("result = " + JSON.stringify(result, null, 4));
             
           }
           resultMain[i] = result;
         }
       }
-      // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));
-      
+      // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
+      res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
+        all_taxa: resultMain
+      });
     });
+    // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
     // elapsed_time("tax_short_query");
     /*
     0 s, 0.502 ms - tax_short_query
     0 s, 0.424 ms - tax_short_query
     */
-    // rows: JSON.stringify(rows),
-    
-  }
-  
-  res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
-    all_taxa: resultMain
-  });
+    // rows: JSON.stringify(rows),    
+  // }
 
+  
 });
 
 
