@@ -122,7 +122,7 @@ app.get('/*', function(req, res, next){
     var url = req.params[0];
     // I want to create a page like: counts_table_2014080_13452.html
     // for each link
-    if(url === 'visuals/user_data/ctable.html') { // 
+    if (url === 'visuals/user_data/ctable.html') { // 
         // Yay this is the File A... 
         console.warn("The user file  has been requested");
         router.get('/visuals/user_data/ctable.html',  function(req, res) {
