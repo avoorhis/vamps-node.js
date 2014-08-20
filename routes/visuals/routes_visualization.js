@@ -480,6 +480,11 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       {
         
         var node_class = new CustomTaxa(rows);
+        console.log('000 node_class = ' + JSON.stringify(node_class));
+        // console.log('000 node_class = ' + node_class);
+        
+        // get_by_rank(dict, taxa_name)
+        
         var init_node = node_class.init_node()
 
         for (var i=0; i < rows.length; i++)
