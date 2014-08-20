@@ -21,20 +21,16 @@ function CustomTaxa(taxon_objs) {
    * @param  {String}   _id         The _id we are looking for
    * @param  {Function} cb          Callback - function(err, Item){}
    */
-var findOne = function(collection, val, options, cb){
-  if(typeof options === 'function'){ cb = options; options = {}; }
-
-  // [Default] defualt attribute to search is '_id'
-  options.key = options.key || '_id';
-
-  // use async.detect() to return the first item that
-  // matches the condition
-  async.detect(collection, function(item, callback){
-    var isMatch = (item[options.key] === val);
-    return callback(isMatch);
-  },cb);
+var nodeExist = function(dict, taxon, rank) {
+    var i = null;
+    for (i = 0; dict.length > i; i += 1) {
+        if (dict[i].taxon === taxon && dict[i].rank === rank) {
+            return true;
+        }
+    }
+    return false;
 };
-
+   
 CustomTaxa.prototype.init_node = function() {
   // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
   var rank_num = 0;
@@ -66,18 +62,27 @@ CustomTaxa.prototype.init_node = function() {
           current_dict.rank = taxa_rank;
           current_dict.node_id = this.taxon_name_id;
       // }
-      console.log("current_dict = " + JSON.stringify(current_dict));
-      this.taxa_tree_dict.push(current_dict);
-      this.taxon_name_id += 1;
+      // console.log("current_dict = " + JSON.stringify(current_dict));
+      aa = nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank);
+      console.log("111 nodeExist(this.taxa_tree_dict, taxon, rank);" + aa);
+      if (!(nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank)))
+      {
+        this.taxa_tree_dict.push(current_dict);
+        this.taxon_name_id += 1;
+      }
+      
       // .find(look_up)
-      console.log("555");
-      // console.log(typeof this.taxa_tree_dict);
-      findOne(this.taxa_tree_dict, 'Archaea', {key: 'taxon'}, function(result){
-         console.log(result);
-
-      });
+      // console.log("555");
+      // console.log(this.taxa_tree_dict);
+      // {
+      // }
+      // findOne(this.taxa_tree_dict, function(result){
+      //    console.log(result);
+      // 
+      // });
     }
   }
+  console.log("555");
   console.log("taxa_tree_dict = " + JSON.stringify(this.taxa_tree_dict));
   
 }
