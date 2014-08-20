@@ -1,3 +1,14 @@
+var start = process.hrtime();
+
+// benchmarking
+var elapsed_time = function(note){
+    var precision = 3; // 3 decimal places
+    var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+    console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+    //start = process.hrtime(); // reset the timer
+};
+
+
 // http://book.mixu.net/node/ch6.html
 // Constructor
 function CustomTaxa(taxon_objs) {
@@ -21,7 +32,7 @@ function CustomTaxa(taxon_objs) {
    * @param  {String}   _id         The _id we are looking for
    * @param  {Function} cb          Callback - function(err, Item){}
    */
-var nodeExist = function(dict, taxon, rank) {
+var nodeExist_1 = function(dict, taxon, rank) {
     var i = null;
       for (i = 0; dict.length > i; i += 1) {
         if (dict[i].taxon === taxon && dict[i].rank === rank) {
@@ -30,14 +41,20 @@ var nodeExist = function(dict, taxon, rank) {
     }
     return false;
 };
+
+var nodeExist = function(dictMap, taxon_rank) {
+    return dictMap[taxon_rank];
+};
+
+
    
 CustomTaxa.prototype.init_node = function() {
   // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
-  var rank_num = 0;
+  var dictMap = {};
 
   
   // for (var i=0; i < this.taxon_objs.length; i++)
-  for (var i=0; i < 15; i++)
+  for (var i=0; i < 5; i++)
   {
     in_obj = this.taxon_objs[i];
     console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
@@ -67,17 +84,41 @@ CustomTaxa.prototype.init_node = function() {
 
           current_dict.parent_id = i_am_a_parent;
           
-          i_am_a_parent = current_dict.node_id;
       
           // this.taxa_tree_dict[]
-      
-          if (!(nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank)))
+          // start = process.hrtime();
+          node = nodeExist(dictMap, taxa_name + taxa_rank);
+          // benchmarking
+          // elapsed_time(">>>0 nodeExist(dictMap, taxa_name + taxa_rank);");
+          
+          // start = process.hrtime();
+          // nodeExist_1(this.taxa_tree_dict, taxa_name, taxa_rank);
+          // elapsed_time(">>>1 nodeExist_1(this.taxa_tree_dict, taxa_name, taxa_rank);");
+          
+          
+          console.log("111 nodeExist(this.taxa_tree_dict, taxa_name + taxa_rank); = " + JSON.stringify(node));
+          
+          // get_current_node_id
+          
+          if (!node)
           {
             current_dict.node_id = this.taxon_name_id;
             this.taxa_tree_dict.push(current_dict);
+            
+            dictMap[current_dict.taxon + current_dict.rank] = current_dict;
+            i_am_a_parent = current_dict.node_id;
+
             this.taxon_name_id += 1;
+            parent_node = current_dict;
           }
+          else
+          {
+            parent_node = node;
+            i_am_a_parent = node.node_id;            
+          }
+          // else find the node and get id for parent/child
           console.log("current_dict = " + JSON.stringify(current_dict));
+          console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
           
         }   
       }   
@@ -85,6 +126,7 @@ CustomTaxa.prototype.init_node = function() {
   }
   console.log("555");
   console.log("taxa_tree_dict = " + JSON.stringify(this.taxa_tree_dict));
+  console.log("dictMap = " + JSON.stringify(dictMap));
   
 }
 
