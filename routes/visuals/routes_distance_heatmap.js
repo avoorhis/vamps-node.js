@@ -35,6 +35,7 @@ module.exports = {
 		    	var html = selection_html + '<div>Error -- No distances were calculated.</div>'
 		    }else{
 		    	var dm = create_distance_matrix(stdout);
+		    	console.log(dm)
 		    	var html = selection_html + create_hm_html(dm);
 		    }
 		    
@@ -125,11 +126,9 @@ function create_hm_html(dm) {
 		    html += "<div class='' id='distance_heatmap_div' >";
 		    html += "<table border='1' class='heatmap_table' >";
 		    html += '<tr><td></td>';
-		    var i = 1;
-		    for(x_dname in dm) {
-		      //html += '<td>'+x_dname+'</td>';
+
+		    for(i=1;i<=Object.keys(dm).length;i++) {
 		      html += '<td>'+i.toString()+'</td>';
-		      i++;
 		    }
 		    html += '</tr>';
 		    for(x_dname in dm) {
