@@ -32,7 +32,8 @@
     "d3":"",
     "jsdom":"",
     "nodetime":"",
-    "xmldom":""
+    "xmldom":"",
+    "async":""
   },
   "devDependencies": {
     "mocha": "",
