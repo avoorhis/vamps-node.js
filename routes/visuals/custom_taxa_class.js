@@ -50,7 +50,7 @@ var nodeExist = function(dictMap, taxon_rank) {
 
    
 CustomTaxa.prototype.init_node = function() {
-  console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
+  // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
   var dictMap = {};
   var dictMap_by_id = {};
   
@@ -135,10 +135,28 @@ CustomTaxa.prototype.init_node = function() {
     }
   }
   console.log("555");
+  items = this.taxa_tree_dict.filter(function(item){
+    return (item.node_id === 15);
+  });
+  console.log(items);
+  console.log(get_by_rank(this.taxa_tree_dict, "domain"));
+  
   console.log("taxa_tree_dict = " + JSON.stringify(this.taxa_tree_dict));
 //   console.log("dictMap = " + JSON.stringify(dictMap));
-  
+  return this.taxa_tree_dict;
 }
+
+// CustomTaxa.prototype.
+get_by_rank = function(dict, taxa_rank) {
+  items = dict.filter(function(item){
+    return (item.rank === taxa_rank);
+  });
+  console.log(items);
+  return items;
+}
+
+
+
 
 CustomTaxa.prototype.add_child_to_parent = function(dict, parent_id, node_id) {
   dict[parent_id].children_ids.push(node_id)
