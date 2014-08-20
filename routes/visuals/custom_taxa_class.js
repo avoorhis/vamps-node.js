@@ -33,15 +33,15 @@ function CustomTaxa(taxon_objs) {
    * @param  {String}   _id         The _id we are looking for
    * @param  {Function} cb          Callback - function(err, Item){}
    */
-var nodeExist_1 = function(dict, taxon, rank) {
-    var i = null;
-      for (i = 0; dict.length > i; i += 1) {
-        if (dict[i].taxon === taxon && dict[i].rank === rank) {
-            return true;
-        }
-    }
-    return false;
-};
+// var nodeExist_1 = function(dict, taxon, rank) {
+//     var i = null;
+//       for (i = 0; dict.length > i; i += 1) {
+//         if (dict[i].taxon === taxon && dict[i].rank === rank) {
+//             return true;
+//         }
+//     }
+//     return false;
+// };
 
 var nodeExist = function(dictMap, taxon_rank) {
     return dictMap[taxon_rank];
@@ -52,7 +52,7 @@ var nodeExist = function(dictMap, taxon_rank) {
 CustomTaxa.prototype.init_node = function() {
   console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
   var dictMap = {};
-
+  var dictMap_by_id = {};
   
   for (var i=0; i < this.taxon_objs.length; i++)
   // for (var i=0; i < 5; i++)
@@ -97,7 +97,7 @@ CustomTaxa.prototype.init_node = function() {
           // elapsed_time(">>>1 nodeExist_1(this.taxa_tree_dict, taxa_name, taxa_rank);");
           
           
-          console.log("111 nodeExist(this.taxa_tree_dict, taxa_name + taxa_rank); = " + JSON.stringify(node));
+          // console.log("111 nodeExist(this.taxa_tree_dict, taxa_name + taxa_rank); = " + JSON.stringify(node));
           
           // get_current_node_id
           
@@ -107,19 +107,28 @@ CustomTaxa.prototype.init_node = function() {
             this.taxa_tree_dict.push(current_dict);
             
             dictMap[current_dict.taxon + current_dict.rank] = current_dict;
+            dictMap_by_id[current_dict.node_id] = current_dict;
             i_am_a_parent = current_dict.node_id;
 
             this.taxon_name_id += 1;
-            parent_node = current_dict;
+            
+            parent_node = dictMap_by_id[current_dict.parent_id];
+            if (parent_node)
+            {
+              console.log("BEFORE parent_node = " + JSON.stringify(parent_node));
+              parent_node.children_ids.push(current_dict.node_id)
+              console.log("AFTER parent_node = " + JSON.stringify(parent_node));
+            }
+            
           }
           else
           {
-            parent_node = node;
             i_am_a_parent = node.node_id;            
           }
+          
           // else find the node and get id for parent/child
-          console.log("current_dict = " + JSON.stringify(current_dict));
-          console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
+          // console.log("current_dict = " + JSON.stringify(current_dict));
+          // console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
           
         }   
       }   
