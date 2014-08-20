@@ -1,6 +1,6 @@
-var start = process.hrtime();
-
 // benchmarking
+
+var start = process.hrtime();
 var elapsed_time = function(note){
     var precision = 3; // 3 decimal places
     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
@@ -14,7 +14,8 @@ var elapsed_time = function(note){
 function CustomTaxa(taxon_objs) {
   // always initialize all instance properties
   this.taxa_tree_dict = [];
-  this.taxon_objs = taxon_objs;
+  // this.taxon_objs = taxon_objs;
+  this.taxon_objs = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
   this.taxon_name_id = 1;
 }
 // class methods
@@ -49,12 +50,12 @@ var nodeExist = function(dictMap, taxon_rank) {
 
    
 CustomTaxa.prototype.init_node = function() {
-  // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
+  console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
   var dictMap = {};
 
   
-  // for (var i=0; i < this.taxon_objs.length; i++)
-  for (var i=0; i < 5; i++)
+  for (var i=0; i < this.taxon_objs.length; i++)
+  // for (var i=0; i < 5; i++)
   {
     in_obj = this.taxon_objs[i];
     console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
@@ -126,7 +127,7 @@ CustomTaxa.prototype.init_node = function() {
   }
   console.log("555");
   console.log("taxa_tree_dict = " + JSON.stringify(this.taxa_tree_dict));
-  console.log("dictMap = " + JSON.stringify(dictMap));
+//   console.log("dictMap = " + JSON.stringify(dictMap));
   
 }
 
