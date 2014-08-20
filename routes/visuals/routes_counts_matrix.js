@@ -128,6 +128,8 @@ module.exports = {
 			//  135,2,1,1,430
 		  // need chosen units, tax depth(if applicable), db
 		  selection_obj = body.selection_obj
+		  console.log('selection_obj')
+		  console.log(selection_obj)
 		  name_hash = body.chosen_id_name_hash
 		  
 		  var matrix_with_names = {};
@@ -157,6 +159,7 @@ module.exports = {
 		  if(to_loc === 'to_console') {
 		    console.log(mtx);
 		  }else{
+		    console.log('mtx');
 		    console.log(mtx);
 		    // write to files
 		    var file1 = '../../tmp/'+ts+'_text_matrix.mtx';
@@ -250,7 +253,7 @@ function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with
 		//
 		var mtx = '';
 	  for (var did in dataset_ids) {
-	    
+	    console.log(dataset_ids[did])
 	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
 	    mtx += "\t" + dataset_names.names[ index ];
 	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
