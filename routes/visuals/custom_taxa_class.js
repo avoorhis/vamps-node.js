@@ -10,9 +10,30 @@ function CustomTaxa(taxon_objs) {
 
 // Foo.prototype.fooBar = function() {
 
-// function look_up(array_of_hashes, values) {
-//   
-// }
+  /**
+  * http://jsfiddle.net/WilsonPage/yJSjP/3/
+   * 'FindOne'
+   * 
+   * Returns one object from a collection of objects
+   * that has a matching '_id' attribute
+   * 
+   * @param  {Array}    collection  An array of objects
+   * @param  {String}   _id         The _id we are looking for
+   * @param  {Function} cb          Callback - function(err, Item){}
+   */
+var findOne = function(collection, val, options, cb){
+  if(typeof options === 'function'){ cb = options; options = {}; }
+
+  // [Default] defualt attribute to search is '_id'
+  options.key = options.key || '_id';
+
+  // use async.detect() to return the first item that
+  // matches the condition
+  async.detect(collection, function(item, callback){
+    var isMatch = (item[options.key] === val);
+    return callback(isMatch);
+  },cb);
+};
 
 CustomTaxa.prototype.init_node = function() {
   // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
@@ -45,10 +66,16 @@ CustomTaxa.prototype.init_node = function() {
           current_dict.rank = taxa_rank;
           current_dict.node_id = this.taxon_name_id;
       // }
-
       console.log("current_dict = " + JSON.stringify(current_dict));
       this.taxa_tree_dict.push(current_dict);
       this.taxon_name_id += 1;
+      // .find(look_up)
+      console.log("555");
+      // console.log(typeof this.taxa_tree_dict);
+      findOne(this.taxa_tree_dict, 'Archaea', {key: 'taxon'}, function(result){
+         console.log(result);
+
+      });
     }
   }
   console.log("taxa_tree_dict = " + JSON.stringify(this.taxa_tree_dict));
