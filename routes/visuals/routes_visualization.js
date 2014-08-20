@@ -213,12 +213,15 @@ router.post('/unit_selection',  function(req, res) {
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
+  console.log('req.body.dataset_ids')
+  console.log(req.body.dataset_ids)
   for (var n=0; n < req.body.dataset_ids.length; n++){
     var items = req.body.dataset_ids[n].split('--');
     chosen_id_name_hash.ids.push(items[0]);
     chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
   }
-
+  //console.log('chosen_id_name_hash')
+  //console.log(chosen_id_name_hash)
   // benchmarking
   var start = process.hrtime();
 
@@ -249,7 +252,10 @@ router.post('/unit_selection',  function(req, res) {
       elapsed_time(">>>>>>>>> 2 Before Page Render and Calc <<<<<<");
       // here get tax_silva108_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
       // and keep them in the same order as the sequence_ids
+      
+
       for (var k=0; k < rows.length; k++){
+        
         if (rows[k].dataset_id in dsets){
           dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
           dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count);
@@ -263,11 +269,22 @@ router.post('/unit_selection',  function(req, res) {
           dsets[rows[k].dataset_id].unit_assoc = {};
           for (u=0; u < available_units.length; u++) {
             dsets[rows[k].dataset_id].unit_assoc[available_units[u]] = [rows[k][available_units[u]]];
-          }
+          }        
         }
+
+
+
       }
+  // console.log('req.body.dataset_ids');
+  // console.log(req.body.dataset_ids);
+  // console.log('req.body.dataset_ids');
+  // console.log('dsets');
+  // console.log(dsets);
+  // console.log('dsets');
+
       //console.log(dsets)
-      for (var id in dsets){
+      for(i in chosen_id_name_hash.ids) {  // has correct ds order
+        id = chosen_id_name_hash.ids[i]
         accumulator.dataset_ids.push(id);
         //dataset_accumulator.ds_counts.push(id)
         accumulator.seq_ids.push(dsets[id].seq_ids);
