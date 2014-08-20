@@ -17,6 +17,8 @@ var CTABLE  = require('./routes_counts_table');
 
 var app = express();
 
+// init_node var node_class = 
+var CustomTaxa  = require('./custom_taxa_class');
 
 /*
  * GET visualization page.
@@ -441,23 +443,14 @@ var elapsed_time = function(note){
 };
 
 router.get('/partials/tax_silva108_custom',  function(req, res) {
-/*
-  var silva_taxonomy_info_per_seq_ids = dataset_accumulator["unit_assoc"]["silva_taxonomy_info_per_seq_id"];
-  var merged_tax_id = [];
-  start = process.hrtime(); // reset the timer    
-  merged_tax_id = [].concat.apply([], silva_taxonomy_info_per_seq_ids);
-  elapsed_time("merged_tax_id with concat.apply []");
-  
-  start = process.hrtime(); // reset the timer    
-*/  
-  // arrays = arrays.reduce(function(a, b){
-  //      return a.concat(b);
-  // });
-  // elapsed_time("merged_tax_id and add '");
-  
-  
-  // console.log(merged_tax_id);
-  // tax_silva108_custom_short_rows = {};
+  function nodeVisitor(key, value) {
+      console.log(
+          JSON.stringify(this) // parent
+          +"; key = "+JSON.stringify(key)
+          +"; value = "+JSON.stringify(value));
+      return value; // don't change
+  }
+
 /**
 * TODO: return this or similar check to not create taxonomy list more then one time
 */
@@ -474,44 +467,10 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     JOIN species AS spe USING(species_id) \
     JOIN strain AS str USING(strain_id)";
     console.log('running custom tax query short');
-    // console.log(tax_short_query);
     var db = req.db;
-    
-    // start = process.hrtime(); // reset the timer    
-
-
-  /* new */
-  /*
-  DataTable dt = new DataTable();
- 
-  SqlConnection objSqlCon = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["AdventureWorksConnectionString"].ToString());
-  objSqlCon.Open();
- 
-  SqlDataAdapter objSqlDa = new SqlDataAdapter("select * from Production.Product", objSqlCon);
- 
-  objSqlDa.Fill(dt);
-
-  StringBuilder objSb = new StringBuilder();
-  JavaScriptSerializer objSer = new JavaScriptSerializer();
-  
-  int index = 0;
-
-  foreach (DataRow dr in dt.Rows)
-  {
-      Dictionary<string, object> result = new Dictionary<string, object>();
-
-      foreach (DataColumn dc in dt.Columns)
-      {
-          result.Add(dc.ColumnName, dr[dc].ToString());
-      }
-      resultMain.Add(index.ToString(), result);
-      index++;
-  }
-  */
-  /* end new */
     resultMain = [];
-  
-
+    taxa_tree_dict = {};
+    
     db.query(tax_short_query, function(err, rows, fields){
       if (err) 
       {
@@ -519,24 +478,20 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       } 
       else 
       {
-
-          
-      //      Dictionary<string, object> result = new Dictionary<string, object>();
-/*
-            foreach (DataColumn in dt.Columns)
-            {
-                result.Add(dc.ColumnName, dr[dc].ToString());
-            }
-            resultMain.Add(index.ToString(), result);
-            index++;
-            */
         
-        // tax_silva108_custom_short_rows = {};
-        // console.log(JSON.stringify(rows, null, 4));
+        var node_class = new CustomTaxa(rows);
+        var init_node = node_class.init_node()
+
         for (var i=0; i < rows.length; i++)
         {
           in_obj = rows[i];
           result = {}          
+          // JSON.stringify("START 555");
+          // JSON.stringify(in_obj, nodeVisitor);
+          // JSON.stringify("end 111");
+          
+          
+          // node_class.
           
           for (var taxa_rank in in_obj) 
           {
@@ -546,12 +501,6 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
               result[taxa_rank] = in_obj[taxa_rank];              
               key = in_obj[taxa_rank];
               
-              // console.log("key = " + key);
-              // if (!(key in my_dict))
-              // {
-              //   my_dict[key] = {};                
-              // }
-              // my_dict = my_dict[key];              
             }
             // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
             // console.log("result = " + JSON.stringify(result, null, 4));
