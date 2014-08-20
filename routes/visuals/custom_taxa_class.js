@@ -4,7 +4,7 @@ function CustomTaxa(taxon_objs) {
   // always initialize all instance properties
   this.taxa_tree_dict = [];
   this.taxon_objs = taxon_objs;
-  this.taxon_name_id = 0;
+  this.taxon_name_id = 1;
 }
 // class methods
 
@@ -23,7 +23,7 @@ function CustomTaxa(taxon_objs) {
    */
 var nodeExist = function(dict, taxon, rank) {
     var i = null;
-    for (i = 0; dict.length > i; i += 1) {
+      for (i = 0; dict.length > i; i += 1) {
         if (dict[i].taxon === taxon && dict[i].rank === rank) {
             return true;
         }
@@ -36,11 +36,13 @@ CustomTaxa.prototype.init_node = function() {
   var rank_num = 0;
 
   
-  for (var i=0; i < this.taxon_objs.length; i++)
+  // for (var i=0; i < this.taxon_objs.length; i++)
+  for (var i=0; i < 15; i++)
   {
     in_obj = this.taxon_objs[i];
     console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
-    // http://blog.tcs.de/creating-trees-from-sql-queries-in-javascript/
+    var i_am_a_parent = 0;
+
     for (var taxa_rank in in_obj) 
     {
       var current_dict = 
@@ -49,37 +51,36 @@ CustomTaxa.prototype.init_node = function() {
         children_ids : [],
         taxon: "",
         rank: "",
-        node_id: 0    
+        node_id: 1    
       };  
+      var parent_node = current_dict;
       
-      // if (in_obj.hasOwnProperty(taxa_rank)) 
-      // {
+      if (in_obj.hasOwnProperty(taxa_rank)) 
+      {
         // console.log("taxa_rank = " + JSON.stringify(taxa_rank));
         // console.log("in_obj[taxa_rank] = taxa_name = " + JSON.stringify(taxa_name));
         var taxa_name = in_obj[taxa_rank];
-        // if 
+        if (taxa_name)
+        {
           current_dict.taxon = taxa_name;
           current_dict.rank = taxa_rank;
-          current_dict.node_id = this.taxon_name_id;
-      // }
-      // console.log("current_dict = " + JSON.stringify(current_dict));
-      aa = nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank);
-      console.log("111 nodeExist(this.taxa_tree_dict, taxon, rank);" + aa);
-      if (!(nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank)))
-      {
-        this.taxa_tree_dict.push(current_dict);
-        this.taxon_name_id += 1;
-      }
+
+          current_dict.parent_id = i_am_a_parent;
+          
+          i_am_a_parent = current_dict.node_id;
       
-      // .find(look_up)
-      // console.log("555");
-      // console.log(this.taxa_tree_dict);
-      // {
-      // }
-      // findOne(this.taxa_tree_dict, function(result){
-      //    console.log(result);
-      // 
-      // });
+          // this.taxa_tree_dict[]
+      
+          if (!(nodeExist(this.taxa_tree_dict, taxa_name, taxa_rank)))
+          {
+            current_dict.node_id = this.taxon_name_id;
+            this.taxa_tree_dict.push(current_dict);
+            this.taxon_name_id += 1;
+          }
+          console.log("current_dict = " + JSON.stringify(current_dict));
+          
+        }   
+      }   
     }
   }
   console.log("555");
