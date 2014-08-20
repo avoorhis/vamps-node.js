@@ -112,7 +112,7 @@
 
 #chart_tooltip {
     display: none; 
-    background: yellow;
+    background: #AFEEEE;
     border: 2px solid green;
     height: auto;
     width: auto;
@@ -124,7 +124,7 @@
     font-weight: normal;   
 }
 .tooltip:hover {
-    background-color:grey;
+    background-color: yellow;
 }
 
 
