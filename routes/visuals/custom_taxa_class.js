@@ -19,6 +19,21 @@ function CustomTaxa(taxon_objs) {
   // this.taxon_objs = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
   this.taxon_name_id = 1;
 }
+
+make_dictMap_by_rank = function(tags) {
+  var dictMap_by_rank = {};
+  var ranks = constants.RANKS;
+  ranks.forEach(function(rank) {
+    dictMap_by_rank[rank] = [];
+  });
+  // var tags = this.taxa_tree_dict;
+  var i = null;
+  for (i = 0; tags.length > i; i += 1) {
+    dictMap_by_rank[tags[i].rank].push(tags[i]);
+  }
+  return dictMap_by_rank
+}
+
 // class methods
 
 // Foo.prototype.fooBar = function() {
@@ -188,21 +203,12 @@ CustomTaxa.prototype.init_node = function() {
   // console.log(get_by_key(dictMap_by_rank, "domain"));
   
   start = process.hrtime();
-  var dictMap_by_rank = {};
-  var ranks = constants.RANKS;
-  ranks.forEach(function(rank) {
-    dictMap_by_rank[rank] = [];
-  });
-  var tags = this.taxa_tree_dict;
-  var i = null;
-  for (i = 0; tags.length > i; i += 1) {
-    dictMap_by_rank[tags[i].rank].push(tags[i]);
-  }
   // elapsed_time(">>>7 create separately dictMap_by_rank[\"domain\"]");
   // console.log("777 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
   // 
   // 
   // start = process.hrtime();
+  dictMap_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
   items = dictMap_by_rank["domain"];
   elapsed_time(">>>5 dictMap_by_rank[\"domain\"]");
   console.log("444 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
