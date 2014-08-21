@@ -489,6 +489,8 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         
         var family_items = new_taxonomy.taxa_tree_dict_map_by_rank["family"];
         console.log('222 new_taxonomy = ' + JSON.stringify(family_items));
+        dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "node_id")
+        console.log('888 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
 
 
         for (var i=0; i < rows.length; i++)
