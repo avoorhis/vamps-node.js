@@ -1,15 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
-
 var util = require('util');
 var url  = require('url');
 var http = require('http');
 var path = require('path');
 var fs   = require('fs');
 
+var helpers = require('../helpers');
+
 var COMMON  = require('./routes_common');
-var HELPERS = require('../helpers');
 var MTX     = require('./routes_counts_matrix');
 var HMAP    = require('./routes_distance_heatmap');
 var BCHARTS = require('./routes_bar_charts');
@@ -224,19 +224,19 @@ router.post('/unit_selection',  function(req, res) {
   }
   //console.log('chosen_id_name_hash')
   //console.log(chosen_id_name_hash)
-  // benchmarking
-  var start = process.hrtime();
+  // // benchmarking
+  // var start = process.hrtime();
+  // 
+  // // benchmarking
+  // var elapsed_time = function(note){
+  //     var precision = 3; // 3 decimal places
+  //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+  //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+  //     //start = process.hrtime(); // reset the timer
+  // };
 
   // benchmarking
-  var elapsed_time = function(note){
-      var precision = 3; // 3 decimal places
-      var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-      console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-      //start = process.hrtime(); // reset the timer
-  };
-
-  // benchmarking
-  elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
+  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
   qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
@@ -251,7 +251,7 @@ router.post('/unit_selection',  function(req, res) {
       throw err;
     } else {
 
-      elapsed_time(">>>>>>>>> 2 Before Page Render and Calc <<<<<<");
+      helpers.elapsed_time(">>>>>>>>> 2 Before Page Render and Calc <<<<<<");
       // here get tax_silva108_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
       // and keep them in the same order as the sequence_ids
       
@@ -316,7 +316,7 @@ router.post('/unit_selection',  function(req, res) {
     //console.log(JSON.stringify(accumulator,null,4));
     //console.log(accumulator);
     //console.log('seq_ids length: '+accumulator.seq_ids[0].length.toString());
-    elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
+    helpers.elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
     res.render('visuals/unit_selection', {   title: 'Unit Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     selection_obj: JSON.stringify(dataset_accumulator),
@@ -329,12 +329,12 @@ router.post('/unit_selection',  function(req, res) {
                     user         : req.user
     });  // end render
     // benchmarking
-    elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
+    helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
 
   });  // end db query
    
    // benchmarking
-   elapsed_time(">>>>>>>>> 1 Before Page Render and Query <<<<<<");
+   helpers.elapsed_time(">>>>>>>>> 1 Before Page Render and Query <<<<<<");
 
 
 }); // end fxn
@@ -433,14 +433,14 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 //
 
 // benchmarking
-var start = process.hrtime();
-
-var elapsed_time = function(note){
-    var precision = 3; // 3 decimal places
-    var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-    console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-    start = process.hrtime(); // reset the timer
-};
+// var start = process.hrtime();
+// 
+// var elapsed_time = function(note){
+//     var precision = 3; // 3 decimal places
+//     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+//     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+//     start = process.hrtime(); // reset the timer
+// };
 
 router.get('/partials/tax_silva108_custom',  function(req, res) {
   function nodeVisitor(key, value) {
@@ -482,11 +482,6 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         var new_taxonomy = new CustomTaxa(rows);
         var new_taxonomy_dict = new_taxonomy.init_node(rows)
         console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-        // console.log('000 node_class = ' + node_class);
-        
-        // get_by_rank(dict, taxa_name)
-        
-        // var init_node = node_class.init_node()
 
         for (var i=0; i < rows.length; i++)
         {
