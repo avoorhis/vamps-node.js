@@ -72,18 +72,6 @@ CustomTaxa.prototype.init_node = function() {
   // console.log("taxon_objs = " + JSON.stringify(this.taxon_objs));
   var dictMap_by_name_n_rank = {};
   var dictMap_by_id = {};
-
-  start = process.hrtime();
-  var dictMap_by_rank = {};
-  // var ranks = JSON.parse(constants).RANKS.ranks;
-  var ranks = constants.RANKS;
-  ranks.forEach(function(rank) {
-    dictMap_by_rank[rank] = [];
-  });
-  elapsed_time(">>>6 create dictMap_by_rank[\"domain\"]");
-  console.log("RRR dictMap_by_rank = " + JSON.stringify(dictMap_by_rank));
-
-
   for (var i=0; i < this.taxon_objs.length; i++)
   // for (var i=0; i < 5; i++)
   {
@@ -150,9 +138,9 @@ CustomTaxa.prototype.init_node = function() {
             // elapsed_time(">>>0 nodeExist(dictMap_by_name_n_rank, taxa_name + taxa_rank);");
             dictMap_by_id[current_dict.node_id] = current_dict;
 
-            start = process.hrtime();
-            dictMap_by_rank[current_dict.rank].push(current_dict);
-            elapsed_time(">>>4 populate dictMap_by_rank[\"domain\"]");
+      //       start = process.hrtime();
+      //       dictMap_by_rank[current_dict.rank].push(current_dict);
+      //       elapsed_time(">>>4 populate dictMap_by_rank[\"domain\"]");
             
             i_am_a_parent = current_dict.node_id;
 
@@ -200,22 +188,27 @@ CustomTaxa.prototype.init_node = function() {
   // console.log(get_by_key(dictMap_by_rank, "domain"));
   
   start = process.hrtime();
+  var dictMap_by_rank = {};
+  var ranks = constants.RANKS;
+  ranks.forEach(function(rank) {
+    dictMap_by_rank[rank] = [];
+  });
   var tags = this.taxa_tree_dict;
   var i = null;
   for (i = 0; tags.length > i; i += 1) {
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
-  elapsed_time(">>>7 create separately dictMap_by_rank[\"domain\"]");
-  console.log("777 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
-  
-  
-  start = process.hrtime();
+  // elapsed_time(">>>7 create separately dictMap_by_rank[\"domain\"]");
+  // console.log("777 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
+  // 
+  // 
+  // start = process.hrtime();
   items = dictMap_by_rank["domain"];
   elapsed_time(">>>5 dictMap_by_rank[\"domain\"]");
   console.log("444 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
 
   // console.log(dictMap_by_rank["domain"])
-  console.log("dictMap_by_rank = " + JSON.stringify(dictMap_by_rank));
+  console.log("ALL in dictMap_by_rank = " + JSON.stringify(dictMap_by_rank));
 
 
 
