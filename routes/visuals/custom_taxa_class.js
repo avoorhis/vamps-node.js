@@ -33,12 +33,12 @@ function make_taxa_tree_dict(taxonomy_obj)
   for (var i=0; i < taxonomy_obj.length; i++)
   {
     in_obj = taxonomy_obj[i];
-    console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
+    // console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
     var i_am_a_parent = 0;
 
     for (var taxa_rank in in_obj)
     {
-      var current_dict =
+      var parent_node = current_dict =
       {
         parent_id: "",
         children_ids : [],
@@ -46,7 +46,7 @@ function make_taxa_tree_dict(taxonomy_obj)
         rank: "",
         node_id: 1
       };
-      var parent_node = current_dict;
+      // var parent_node = current_dict;
 
       if (in_obj.hasOwnProperty(taxa_rank))
       {
