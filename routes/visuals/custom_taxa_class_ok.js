@@ -1,13 +1,14 @@
 // benchmarking
 var constants = require('../../public/constants');
+var helpers = require('../helpers');
 
-var start = process.hrtime();
-var elapsed_time = function(note){
-    var precision = 3; // 3 decimal places
-    var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-    console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-    //start = process.hrtime(); // reset the timer
-};
+// var start = process.hrtime();
+// var elapsed_time = function(note){
+//     var precision = 3; // 3 decimal places
+//     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+//     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+//     //start = process.hrtime(); // reset the timer
+// };
 
 
 function CustomTaxa(taxon_objs) {
@@ -140,28 +141,30 @@ CustomTaxa.prototype.init_node = function(taxon_objs)
   // });
   // console.log(items);
 
-  start = process.hrtime();
+  // start = process.hrtime();
+  helpers.start = process.hrtime();
   
   items = this.taxa_tree_dict.filter(function(item){
     return (item.rank === "domain");
     // return (item.taxon === taxa_name);
   });
-  elapsed_time(">>>3 filter");
+  helpers.elapsed_time(">>>3 filter");
   console.log("333 filter = " + JSON.stringify(items) + "\n=====\n");
 
 
   // console.log("666");
   // console.log(get_by_key(dictMap_by_rank, "domain"));
   
-  start = process.hrtime();
+  // start = process.hrtime();
   // elapsed_time(">>>7 create separately dictMap_by_rank[\"domain\"]");
   // console.log("777 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
   // 
   // 
   // start = process.hrtime();
+  helpers.start = process.hrtime();
   dictMap_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
   items = dictMap_by_rank["domain"];
-  elapsed_time(">>>5 dictMap_by_rank[\"domain\"]");
+  helpers.elapsed_time(">>>5 dictMap_by_rank[\"domain\"]");
   console.log("444 dictMap_by_rank[\"domain\"] = " + JSON.stringify(items) + "\n=====\n");
 
   // console.log(dictMap_by_rank["domain"])
