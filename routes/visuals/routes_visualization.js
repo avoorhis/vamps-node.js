@@ -236,6 +236,7 @@ router.post('/unit_selection',  function(req, res) {
   // };
 
   // benchmarking
+  helpers.start = process.hrtime();
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
@@ -480,7 +481,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       {
         
         var new_taxonomy = new CustomTaxa(rows);
-        var new_taxonomy_dict = new_taxonomy.init_node(rows)
+        // var new_taxonomy_dict = new_taxonomy.init_node(rows)
         console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
 
         for (var i=0; i < rows.length; i++)
