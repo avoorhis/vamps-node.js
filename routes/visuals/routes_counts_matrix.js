@@ -94,7 +94,7 @@ module.exports = {
 		//
 		//  O U T P U T  M A T R I X
 		//
-		output_matrix: function(to_loc, ts, body, sqlrows ) {
+		output_matrix: function(to_loc, ts, selection_obj, chosen_id_name_hash, sqlrows ) {
 		  // This function creates two matrices from the data in body.selection_obj and sqlrows
 			// one matrix is printed to a text file to which the unique timestamp (ts) is appended.
 			// the matrix file is the input for Rscripts that use it: heatmap and dendrogram
@@ -127,10 +127,10 @@ module.exports = {
 			//  126,2,0,0,401
 			//  135,2,1,1,430
 		  // need chosen units, tax depth(if applicable), db
-		  selection_obj = body.selection_obj
+		  selection_obj = selection_obj
 		  console.log('selection_obj')
 		  console.log(selection_obj)
-		  name_hash = body.chosen_id_name_hash
+		  name_hash = chosen_id_name_hash
 		  
 		  var matrix_with_names = {};
 		  matrix_with_names.dataset_names = [];

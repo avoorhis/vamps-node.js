@@ -1,11 +1,5 @@
-<% if (typeof chosen_id_name_hash === 'undefined') { %>
-<%    var items = JSON.parse(body).chosen_id_name_hash %>
 
-<% } else { %>
 <%    var items = JSON.parse(chosen_id_name_hash) %>
-
-<% } %>
-
 
 Here are your <%= items.names.length %> selected datasets:<br>
 <div id='dataset_names_div' class='small_font'>
@@ -15,4 +9,5 @@ Here are your <%= items.names.length %> selected datasets:<br>
 <% } %>
 </ul>
 </div>
-<br>To change these go back to the <a href="/visuals/index_visuals">dataset selection page</a>.
+To change these go back to the <a href="/visuals/index_visuals">dataset selection page</a>.
+Or rearrange them <a href='/visuals/reorder_datasets'>here</a>.

@@ -5,21 +5,21 @@ var fs = require('fs');
 
 module.exports = {
 
-	get_selection_markup: function( visual, body ) {
+	get_selection_markup: function( visual, obj ) {
 	  var html = "<div id='' class='selection_info'>";
 	  if(visual === 'heatmap') {
-	    html += '<li>Selected Distance Metric: ' + body.selected_heatmap_distance + '</li>';
+	    html += '<li>Selected Distance Metric: ' + obj.selected_heatmap_distance + '</li>';
 	  }
 	  if(visual === 'dendrogram') {
-	    html += '<li>Selected Distance Metric: ' + body.selected_dendrogram_distance + '</li>';
+	    html += '<li>Selected Distance Metric: ' + obj.selected_dendrogram_distance + '</li>';
 	  }
-	  html += '<li>Maximum Dataset Count: ' + body.max_ds_count.toString() + '</li>';
-	  if(body.unit_choice.indexOf('tax') === 0 ) {
-	    html += '<li>Included Domains: ' + body.domains     + '</li>';
-	    html += '<li>Include NAs?: '     + body.include_nas + '</li>';
-	    html += '<li>Taxonomic Depth: '  + body.tax_depth   + '</li>';
+	  html += '<li>Maximum Dataset Count: ' + obj.max_ds_count.toString() + '</li>';
+	  if(obj.unit_choice.indexOf('tax') === 0 ) {
+	    html += '<li>Included Domains: ' + obj.domains     + '</li>';
+	    html += '<li>Include NAs?: '     + obj.include_nas + '</li>';
+	    html += '<li>Taxonomic Depth: '  + obj.tax_depth   + '</li>';
 	  }
-	  html += '<li>Normalization: ' + body.normalization + '</li>';
+	  html += '<li>Normalization: ' + obj.normalization + '</li>';
 	  html += '</div>';
 	  return html;
 	},
@@ -29,16 +29,16 @@ module.exports = {
 	//
 	//
 	//
-	get_taxonomy_query: function( db, uitems, body ) {
+	get_taxonomy_query: function( db, uitems, selection_obj, post_items) {
 	  //console.log(body);
-	  selection_obj = body.selection_obj;
+	  //selection_obj = selection_obj;
 	  //selection_obj = body.selection_obj;
 	  
 	  if (uitems[0] === 'tax' && uitems[1] === 'silva108'){  //covers both simple and custom taxonomy
 	    uassoc = 'silva_taxonomy_info_per_seq_id';
 	  }
-	  var domains = body.domains || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
-	  var tax_depth = body.tax_depth || 'phylum';
+	  var domains = post_items.domains || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
+	  var tax_depth = post_items.tax_depth || 'phylum';
 	  var fields = [];
 	  var joins = '';
 	  var and_domain_in = '';
@@ -132,35 +132,35 @@ module.exports = {
 	//
 	// NORMALIZATION
 	//
-	normalize_counts: function(norm_type, body) {
+	normalize_counts: function(norm_type, selection_obj, post_items) {
 	  
 	  // get max dataset count
 	  //var selection_obj = JSON.parse(obj);
-	  var max_count = body.max_ds_count;
+	  var max_count = post_items.max_ds_count;
 	  //selection_obj.max_ds_count = max_count;
 	  console.log('in normalization: '+norm_type+' max: '+max_count.toString());
 
 	  var new_counts_obj = [];
-	  for (var n=0; n < body.selection_obj.seq_freqs.length; n++) {
+	  for (var n=0; n < selection_obj.seq_freqs.length; n++) {
 	    var sum=0;
-	    for (var i = 0; i < body.selection_obj.seq_freqs[n].length; i++ ) {
-	      sum += body.selection_obj.seq_freqs[n][i];
+	    for (var i = 0; i < selection_obj.seq_freqs[n].length; i++ ) {
+	      sum += selection_obj.seq_freqs[n][i];
 	    }
 	    var temp = [];
-	    for (i=0; i < body.selection_obj.seq_freqs[n].length; i++) {
+	    for (i=0; i < selection_obj.seq_freqs[n].length; i++) {
 
 	      if (norm_type === 'max') {
-	        temp.push( parseInt( ( body.selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
+	        temp.push( parseInt( ( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
 	      } else {  // freq
-	        temp.push( parseFloat( ( body.selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
+	        temp.push( parseFloat( ( selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
 	      }
 
 	    }
 	    new_counts_obj.push(temp);
 	  }
-	  body.selection_obj.seq_freqs = new_counts_obj;
-	  body.selection_obj.max_ds_count = max_count;
-	  return body.selection_obj;
+	  selection_obj.seq_freqs = new_counts_obj;
+	  selection_obj.max_ds_count = max_count;
+	  return selection_obj;
 	},
 
 	//

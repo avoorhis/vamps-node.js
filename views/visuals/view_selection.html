@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
-<% b = JSON.parse(body) %>
-<% ts = timestamp %>
+<% b = JSON.parse(post_items) %>
+
 
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Display Output Page</div>
@@ -20,12 +20,12 @@
           </td>
           <td>
             <div id='show_download_buttons_div' class='small_font'>
-              <form action='/download/<%= ts %>/counts_matrix' method='POST'>
+              <form action='/download/<%= timestamp %>/counts_matrix' method='POST'>
                 <input type='submit', id='' name='' value='Download Counts Matrix' />
               </form>
-              <form action='/download/<%= ts %>/fasta' method='POST'>
+              <form action='/download/<%= timestamp %>/fasta' method='POST'>
                 <input type='submit' id='' name='' value='Download Fasta File' />
-                <input type='hidden' id='' name='ids' value='<%= JSON.stringify(b.selection_obj.dataset_ids) %>' />
+                <input type='hidden' id='' name='ids' value='<%= dataset_ids %>' />
               </form>
 
              
@@ -38,7 +38,7 @@
               <% for (var i in b.visuals) { %>
                 
                 <li>
-                <% link = 'user_data/'+b.visuals[i] +'?ts='+ts %>                
+                <% link = 'user_data/'+b.visuals[i] +'?ts='+timestamp %>                
                 
                 <% if(b.visuals[i] === 'heatmap') { %>
                   <a href='<%= link %>' target='_blank' >Distance Heatmap</a>
