@@ -42,38 +42,49 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  //console.log(req.body);
+  console.log(req.body);
   //console.log('1');
-  req.body.selection_obj       = JSON.parse(req.body.selection_obj);
-  req.body.max_ds_count        = COMMON.get_max_dataset_count(req.body.selection_obj);
-  req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
+  //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
+  
+  //req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   //console.log('2');
   // NORMALIZATION:
-  var normalization  = req.body.normalization || 'none';
-  if (normalization === 'max' || normalization === 'freq') {
-    req.body.selection_obj = COMMON.normalize_counts(normalization, req.body);
+  var post_items = {};
+  post_items.unit_choice                  = req.body.unit_choice;
+  post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
+  post_items.normalization                = req.body.normalization;
+  post_items.visuals                      = req.body.visuals;
+  post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance;
+  post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance;
+  post_items.tax_depth                    = req.body.tax_depth    || 'custom';
+  post_items.domains                      = req.body.domains      || 'all';
+  post_items.include_nas                  = req.body.include_nas  || 'yes';
+  
+  if (post_items.normalization === 'max' || post_items.normalization === 'freq') {
+    selection_obj = COMMON.normalize_counts(post_items.normalization, post_items);
   }
   
   
-  var uitems = req.body.unit_choice.split('_');
+  var uitems = post_items.unit_choice.split('_');
   var unit_name_query = '';
   var unit_field;
   if (uitems[0] === 'tax'){  // covers both simple and custom
     unit_field = 'silva_taxonomy_info_per_seq_id';
-    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, req.body );
+    
+    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, selection_obj, post_items );
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
-    unit_name_query = COMMON.get_otus_query( req.db, uitems, req.body );
+    unit_name_query = COMMON.get_otus_query( req.db, uitems, selection_obj, post_items );
   }else if(uitems[0] === 'med_nodes') {
     unit_field = 'med_node_id';
-    unit_name_query = COMMON.get_med_query( req.db, uitems, req.body );
+    unit_name_query = COMMON.get_med_query( req.db, uitems, selection_obj, post_items );
   }else{
     console.log('ERROR--RORRE');
   }
   //console.log(unit_name_query);
   //console.log('4');
   console.log('3');
-  req.body.selection_obj.counts_matrix = MTX.fill_in_counts_matrix( req.body.selection_obj, unit_field );  // just ids, but filled in zeros
+  selection_obj.counts_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   
   console.log(unit_name_query);
 
@@ -109,7 +120,7 @@ router.post('/view_selection',  function(req, res) {
 
       // this function: output_matrix writes various counts matrices to files for *possible* use later by R or D3
       // It also reurns a JSON count_matrix
-      count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, req.body, rows );   // matrix to have names of datasets and units for display  -- not ids
+      count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
       // This is what matrix looks like (a different matrix is written to file)
       // { 
       //  dataset_names: 
@@ -133,20 +144,23 @@ router.post('/view_selection',  function(req, res) {
       {
         for (k=0; k < req.body.visuals.length; k++) 
         {
-          if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, req.body ); } // 
-          if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, req.body ); }  // heatmap only needs timestamp; uses file not count_matrix OBJ
-          if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, req.body ); }
+          if (req.body.visuals[k]  === 'counts_table'){ CTABLE.create_counts_table_html ( timestamp, count_matrix, post_items ); } // 
+          if (req.body.visuals[k]  === 'heatmap')     { HMAP.create_heatmap_html (        timestamp, post_items ); }  // heatmap only needs timestamp; uses file not count_matrix OBJ
+          if (req.body.visuals[k]  === 'barcharts')   { BCHARTS.create_barcharts_html (   timestamp, count_matrix, selection_obj ); }
           //if (req.body.visuals[k]  === 'dendrogram'){links.dendrogram = ''; create_dendrogram(req.body);}
           //if (req.body.visuals[k]  === 'alphadiversity'){links.alphadiversity = ''; create_alpha_diversity(req.body);}
 
         }        
       }
       res.render('visuals/view_selection', { title   : 'VAMPS: Visualization',
-                                        body   : JSON.stringify(req.body),
-                                        matrix : JSON.stringify(count_matrix),
-                                        constants    : JSON.stringify(req.C),
-                                        timestamp : timestamp,           // for creating unique files/pages                            
-                                        user   : req.user
+                                        //body   : JSON.stringify(req.body),
+                                        post_items :          JSON.stringify(post_items),
+                                        dataset_ids :         JSON.stringify(selection_obj.dataset_ids),
+                                        chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+                                        matrix :              JSON.stringify(count_matrix),
+                                        constants :           JSON.stringify(req.C),
+                                        timestamp :           timestamp,           // for creating unique files/pages                            
+                                        user   :              req.user
                    });
       }
     });   
@@ -312,16 +326,17 @@ router.post('/unit_selection',  function(req, res) {
         }
       }
     }
-    GLOBAL.dataset_accumulator = accumulator;
-    //console.log(JSON.stringify(accumulator,null,4));
-    //console.log(accumulator);
-    //console.log('seq_ids length: '+accumulator.seq_ids[0].length.toString());
+    GLOBAL.selection_obj = accumulator;
+    GLOBAL.chosen_id_name_hash = chosen_id_name_hash;
+    console.log('selection_obj-->');
+    console.log(selection_obj);
+    console.log('<--selection_obj');
     elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
     res.render('visuals/unit_selection', {   title: 'Unit Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-                    selection_obj: JSON.stringify(dataset_accumulator),
+                    selection_obj: JSON.stringify(selection_obj),
                     constants    : JSON.stringify(req.C),
-                    body         : JSON.stringify(req.body),
+                    //body         : JSON.stringify(req.body),
                     //chosen_id_name_hash: chosen_id_name_hash,
                     //selection_obj: dataset_accumulator,
                     //constants    : req.C,
@@ -359,7 +374,14 @@ router.get('/index_visuals',  function(req, res) {
                                  user: req.user
                                   });
 });
-
+//
+//
+//
+router.get('/reorder_datasets', function(req, res) {
+  console.log('in reorder datasets')
+  console.log(dataset_accumulator)
+  //console.log(chosen_id_name_hash)
+});
 //
 //
 //
