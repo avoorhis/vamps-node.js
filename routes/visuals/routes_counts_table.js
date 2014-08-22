@@ -9,7 +9,7 @@ module.exports = {
 	//
 	// CREATE COUNTS TABLE HTML
 	//
-	create_counts_table_html: function( ts, count_matrix, body ) {
+	create_counts_table_html: function( ts, count_matrix, obj ) {
 	  // Intend to create (write) counts_table page here.
 	  // The page should have a timestamp and/or username appeneded to the file name
 	  // so that it is unique to the user.
@@ -18,7 +18,7 @@ module.exports = {
 	  
 	  var out_file = '../../tmp/'+ts+'_counts_table.html';
 	  var html = '';
-	  var selection_html = COMMON.get_selection_markup('counts_table', body); 
+	  var selection_html = COMMON.get_selection_markup('counts_table', obj); 
 
 		html = selection_html + create_ct_html(count_matrix)
 	  
