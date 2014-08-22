@@ -12,10 +12,10 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, count_matrix, body ) {
+		create_barcharts_html: function( ts, count_matrix, selection_obj ) {
 			
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
-			var ds_count = body.selection_obj.dataset_ids.length
+			var ds_count = selection_obj.dataset_ids.length
 			//console.log(outfile)
 			var bar_height = 15;
 			var data = convert_matrix(count_matrix);
