@@ -9,13 +9,13 @@ module.exports = {
 		//
 		// CREATE HEATMAP HTML
 		//
-		create_heatmap_html: function( ts, body ) {
+		create_heatmap_html: function( ts, obj ) {
 		  // write distance file using R
 		  // The stdout from R script will be used and parsed
 		  // to create distance_matrix JSON Object
 		  //console.log(JSON.stringify(body.selection_obj.counts_matrix))
 		  //console.log(matrix)
-		  var spawn = require('child_process').exec;
+		  var exec = require('child_process').exec;
 		  var env = process.env
 		  var out_file = '../../tmp/'+ts+'_heatmap.html';
 		  var items;
@@ -24,18 +24,19 @@ module.exports = {
 		  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 
 		  //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-		  var command = "RScript --no-restore --no-save " + script_file +' '+ matrix_input_file +' '+body.selected_heatmap_distance;
+		  var command = C.RSCRIPT_CMD + ' ' + script_file + ' ' + matrix_input_file + ' ' + obj.selected_heatmap_distance;
 		  console.log('R command: ' + command);
-		  var R      = spawn(command, function (error, stdout, stderr) {
+		  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
 		    stdout = stdout.trim();
-		    //console.log(stderr)
-		    //console.log('-->'+stdout+'<--')
-		    var selection_html = COMMON.get_selection_markup('heatmap', body); 
+		    console.log(stderr)
+		    console.log(error)
+		    console.log('-->'+stdout+'<--')
+		    var selection_html = COMMON.get_selection_markup('heatmap', obj); 
 		    if(stdout === 'dist(0)' || stdout === 'err') {
 		    	var html = selection_html + '<div>Error -- No distances were calculated.</div>'
 		    }else{
 		    	var dm = create_distance_matrix(stdout);
-		    	console.log(dm)
+		    	//console.log(dm)
 		    	var html = selection_html + create_hm_html(dm);
 		    }
 		    
@@ -56,22 +57,24 @@ function create_distance_matrix(outstr) {
 			//console.log('stderr: ' + stderr);
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
-	    console.log(raw_distance_array);
+	    console.log(outstr);
 	    var distance_matrix = {}
 	    // distance_matrix[ds1][ds2] = 2
 	    var dcolname = raw_distance_array[0].trim();
+	    console.log('dcolname:  '+dcolname)
 	    distance_matrix[dcolname] = {}
 	    distance_matrix[dcolname][dcolname] = 0;
 	    console.log(dcolname);
 	    for(row in raw_distance_array){
 	      if( ! raw_distance_array[row] ) { continue; }
-	      console.log('-->'+raw_distance_array[row]+'<--');
+	      
+	      //console.log('-->'+raw_distance_array[row]+'<--');
 
 	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
 	        console.log('found tab')
 	        dcolname = raw_distance_array[row].trim()
 	        if(dcolname in distance_matrix){
-
+	        		// pass
 	        }else{
 	          distance_matrix[dcolname] = {}
 	          distance_matrix[dcolname][dcolname] = 0;
@@ -81,31 +84,30 @@ function create_distance_matrix(outstr) {
 	      }
 	        
 	      items = raw_distance_array[row].trim().split(/\s+/); // The length can only be 1 or 2 
-	      //console.log(raw_distance_array[row])
+	      
 	      //console.log('items0 ' +items[0])
 	      //console.log('items1 ' +items[1])
 	      //console.log(items.length)
-	      if(items.length == 1){   
-	        if(items[0] === dcolname){
-	          distance_matrix[dcolname][items[0]] = 0;
-	        }else{
-	          // do nothing no distance here
-	        }	        
-	      }else{  // length == 2
+	      if(items.length === 2) {  // length == 2
 	        //distance_matrix[items[0][dcolname]] = parseFloat(items[1]);
-	        distance_matrix[dcolname][items[0]] = parseFloat(items[1]);		        
+	        //distance_matrix[dcolname][items[0]] = parseFloat(items[1]);		        
 	  
           if(items[0] in distance_matrix){
-            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+            //distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+
             //console.log('a '+dcolname+' - '+items[0])
           }else{
             //console.log('b '+dcolname+' - '+items[0])
             distance_matrix[items[0]] = {}
             distance_matrix[items[0]][items[0]] = 0
-            distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-            distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-          }		        
-	      }  
+            
+          }	
+          distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
+          distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
+          //console.log(items[1])
+
+
+	      }
 	    } // end for row in raw...
 	    return distance_matrix;
 }
