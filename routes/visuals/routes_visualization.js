@@ -19,6 +19,7 @@ var app = express();
 
 // init_node var node_class = 
 var CustomTaxa  = require('./custom_taxa_class');
+var json2html = require('node-json2html');
 
 /*
  * GET visualization page.
@@ -506,46 +507,30 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         // var new_taxonomy = new CustomTaxa(rows);
         var new_taxonomy = new CustomTaxa(small_rows);
         console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+        console.log('000 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
 
         var domain_items = new_taxonomy.taxa_tree_dict_map_by_rank["domain"];
-        console.log('111 new_taxonomy = ' + JSON.stringify(domain_items));
+        console.log('111 domain_items = ' + JSON.stringify(domain_items));
         
         var family_items = new_taxonomy.taxa_tree_dict_map_by_rank["family"];
-        console.log('222 new_taxonomy = ' + JSON.stringify(family_items));
-        dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "node_id")
+        console.log('222 family_items = ' + JSON.stringify(family_items));
+        dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "taxon")
         console.log('888 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
 
-
-        for (var i=0; i < rows.length; i++)
-        {
-          in_obj = rows[i];
-          result = {}          
-          // JSON.stringify("START 555");
-          // JSON.stringify(in_obj, nodeVisitor);
-          // JSON.stringify("end 111");
-          
-          
-          // node_class.
-          
-          for (var taxa_rank in in_obj) 
-          {
-            
-            if (in_obj.hasOwnProperty(taxa_rank)) 
-            {
-              result[taxa_rank] = in_obj[taxa_rank];              
-              key = in_obj[taxa_rank];
-              
-            }
-            // console.log("my_dict = " + JSON.stringify(my_dict, null, 4));
-            // console.log("result = " + JSON.stringify(result, null, 4));
-            
-          }
-          resultMain[i] = result;
-        }
       }
+      var data = small_rows;
+      // [{'male':'Bob','female':'Jane'},{'male':'Rick','female':'Ann'}];
+
+      var transform = {'tag':'li',
+      'html':'${domain} <ul><li>${phylum}</li> <ul><li>${klass}</li> <ul><li>${order}</li> <ul><li>${family}</li> <ul><li>${genus}</li> <ul><li>${species}</li> <ul><li>${strain}</li> </ul> </ul> </ul> </ul> </ul> </ul> </ul>'};
+
+      var m_html = json2html.transform(data, transform);
+      console.log("TTT1: " + json2html.transform(data, transform) );
+      
       // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
       res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
-        all_taxa: resultMain
+        all_taxa: small_rows,
+        tr_html: m_html
       });
     });
     // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
