@@ -55,5 +55,5 @@ config.DISTANCECHOICES = { choices: [
 config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 // blue to red
 config.HEATMAP_COLORS = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','ccccff','ddeeee','eeeedd','ffdddd','ffbbbb','ff9999','ff7777','ff5555','ff3333','ff0000'];
-
+config.RSCRIPT_CMD = 'RScript --no-restore --no-save'
 module.exports = config;
