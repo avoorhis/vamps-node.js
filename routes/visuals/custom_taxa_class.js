@@ -123,12 +123,10 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
 {
   var i = null;
   new_dict = {};
-  console.log("tree_obj NNN1 " + JSON.stringify(tree_obj));
-  console.log("key_name NNN2 " + JSON.stringify(key_name));
   for (i = 0; tree_obj.length > i; i += 1) {
     new_dict[tree_obj[i][key_name]] = tree_obj[i];
   }
-  console.log("new_dict NNN " + JSON.stringify(new_dict));
+  return new_dict;
 }
 
 // 
