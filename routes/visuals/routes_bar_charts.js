@@ -23,7 +23,7 @@ module.exports = {
 			
 			// gets margins, width and height
 			var props = get_image_properties(bar_height, ds_count);		
-			console.log(props)
+			//console.log(props)
 			//var x = d3.scale.linear();
 			 
 			// get_colors: transforms unit names to unique hex colors
@@ -54,8 +54,8 @@ module.exports = {
 				});
 			});
 			
-			console.log('data')
-			console.log(data)
+			//console.log('data')
+			//console.log(data)
 		  
 
 		  create_svg_object(props, color, data);
