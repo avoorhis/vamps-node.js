@@ -511,28 +511,19 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         var domain_items = new_taxonomy.taxa_tree_dict_map_by_rank["domain"];
         console.log('111 domain_items = ' + JSON.stringify(domain_items));
         
-        var family_items = new_taxonomy.taxa_tree_dict_map_by_rank["family"];
-        console.log('222 family_items = ' + JSON.stringify(family_items));
         dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "taxon")
         console.log('888 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
 
       }
       var data = small_rows;
-      // [{'male':'Bob','female':'Jane'},{'male':'Rick','female':'Ann'}];
 
-      var transform = {'tag':'li',
-      'html':'${domain} <ul><li>${phylum}</li> <ul><li>${klass}</li> <ul><li>${order}</li> <ul><li>${family}</li> <ul><li>${genus}</li> <ul><li>${species}</li> <ul><li>${strain}</li> </ul> </ul> </ul> </ul> </ul> </ul> </ul>'};
-
-      var m_html = json2html.transform(data, transform);
-      // console.log("TTT1: " + json2html.transform(data, transform) );
-      
-      // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
       res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
         all_taxa: small_rows,
-        tr_html: m_html
+        taxa_tree_dict: new_taxonomy.taxa_tree_dict,
+        constants:           req.C,
+        ranks: req.C.rank
       });
     });
-    // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
     // elapsed_time("tax_short_query");
     /*
     0 s, 0.502 ms - tax_short_query
