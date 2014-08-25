@@ -127,9 +127,9 @@ module.exports = {
 			//  126,2,0,0,401
 			//  135,2,1,1,430
 		  // need chosen units, tax depth(if applicable), db
-		  selection_obj = selection_obj
-		  console.log('selection_obj')
-		  console.log(selection_obj)
+		  //selection_obj = selection_obj
+		  //console.log('selection_obj')
+		  //console.log(selection_obj)
 		  name_hash = chosen_id_name_hash
 		  
 		  var matrix_with_names = {};
