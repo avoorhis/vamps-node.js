@@ -4,30 +4,45 @@
 aaa111-555
 
 <% all_tax_data = all_taxa %>
-<div id="myList">
- === 333 ===
+<% all_tax_data1 = tr_html %>
 
-</div>
-
-
-<div id="myList">
+<div id="my_custom_list">
   <ul>
-    <% all_tax_data.length %>
-    <% for(i=0; i < all_tax_data.length; i++) { %>
-      <% var taxa_obj = all_tax_data[i]; %>
-      <ul>
-        new taxon
-      <% for (var taxa_rank in taxa_obj) { %>
-         <% var taxon = taxa_obj[taxa_rank]; %>
-
-         <li><%= taxon %> </li>
-
+  <% for(i=0; i < all_tax_data.length; i++) { %>
+    <ul>
+    <% start = 0 %>
+    <% for (var prop in all_tax_data[i]) { %>
+      <% if (all_tax_data[i].hasOwnProperty(prop)) { %>
+        <% rank_name = prop %>
+        <% taxon_name = all_tax_data[i][prop] %>
+        <% if (taxon_name) { %>
+          <li class="<%= JSON.stringify(rank_name)%>"><%= taxon_name %></li>                     
+        <% } %>
       <% } %>
-      </ul>
+      <% start += 1%>      
     <% } %>
-
-  </ul>
+    </ul> 
+  <% } %>
+</ul>
+  
+  
 </div>
 
-
-
+<% for(i=0; i < all_tax_data.length; i++) { %>
+<ul><li class="domain"><%= all_tax_data[i].domain %></li> 
+  <ul><li class="phylum"><%= all_tax_data[i].phylum %></li> 
+    <ul><li class="klass"><%= all_tax_data[i].klass %></li> 
+      <ul><li class="order"><%= all_tax_data[i].order %></li> 
+        <ul><li class="family"><%= all_tax_data[i].family %></li> 
+          <ul><li class="genus"><%= all_tax_data[i].genus %></li> 
+            <ul><li class="species"><%= all_tax_data[i].species %></li> 
+              <ul><li class="strain"><%= all_tax_data[i].strain %></li> 
+              </ul> 
+            </ul> 
+          </ul> 
+        </ul> 
+      </ul> 
+    </ul> 
+  </ul>
+</ul>
+<% } %>
