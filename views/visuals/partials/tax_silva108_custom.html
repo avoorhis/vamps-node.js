@@ -3,51 +3,37 @@
 
 aaa111-555
 
-<% all_tax_data = all_taxa %>
-<% all_tax_data1 = tr_html %>
+<% ranks = constants["RANKS"]; %>
+<br/>
+all_tax_data = <%= JSON.stringify(all_tax_data) %>
 
-<div id="my_custom_list">
-  <ul>
-  <% for(i=0; i < all_tax_data.length; i++) { %>
-    <% start_ul = 0 %>
-    <% for (var prop in all_tax_data[i]) { %>
-      <% if (all_tax_data[i].hasOwnProperty(prop)) { %>
-        <% rank_name = prop %>
-        <% taxon_name = all_tax_data[i][prop] %>
-        <% if (taxon_name) { %>
-          <% if (start_ul > 0) { %>
-            <ul>
-          <% } %>
-          <li class="<%= JSON.stringify(rank_name)%>"><%= taxon_name %></li>     
-          <% if (start_ul > 0) { %>
-            </ul>
-          <% } %>                          
-        <% } %>
-      <% } %>
-      <% start_ul += 1%>      
-    <% } %>
-    </ul> 
-  <% } %>
-</ul>
+<% for (i=0; i < ranks.length; i++) { %>
+  <ul class="<% ranks[i] %>">
+    <li>
+      <%= JSON.stringify(all_tax_data[i]) %>
+    </li>
+  </ul>
   
-  
-</div>
+<% } %> <!-- for (i=0; i < ranks.length; i++) -->
+
+<hr/>
+<% all_tax_data = all_taxa %>
 
 <% for(i=0; i < all_tax_data.length; i++) { %>
-<ul><li class="domain"><%= all_tax_data[i].domain %></li> 
-  <ul><li class="phylum"><%= all_tax_data[i].phylum %></li> 
-    <ul><li class="klass"><%= all_tax_data[i].klass %></li> 
-      <ul><li class="order"><%= all_tax_data[i].order %></li> 
-        <ul><li class="family"><%= all_tax_data[i].family %></li> 
-          <ul><li class="genus"><%= all_tax_data[i].genus %></li> 
-            <ul><li class="species"><%= all_tax_data[i].species %></li> 
-              <ul><li class="strain"><%= all_tax_data[i].strain %></li> 
-              </ul> 
-            </ul> 
-          </ul> 
-        </ul> 
-      </ul> 
-    </ul> 
+<ul class="domain"><li><%= all_tax_data[i].domain %></li>
+  <ul class="phylum"><li><%= all_tax_data[i].phylum %></li>
+    <ul class="klass"><li><%= all_tax_data[i].klass %></li>
+      <ul class="order"><li><%= all_tax_data[i].order %></li>
+        <ul class="family"><li><%= all_tax_data[i].family %></li>
+          <ul class="genus"><li><%= all_tax_data[i].genus %></li>
+            <ul class="species"><li><%= all_tax_data[i].species %></li>
+              <ul class="strain"><li><%= all_tax_data[i].strain %></li>
+              </ul>
+            </ul>
+          </ul>
+        </ul>
+      </ul>
+    </ul>
   </ul>
 </ul>
 <% } %>
