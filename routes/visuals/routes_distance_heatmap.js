@@ -57,21 +57,21 @@ function create_distance_matrix(outstr) {
 			//console.log('stderr: ' + stderr);
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
-	    console.log(outstr);
+	    //console.log(outstr);
 	    var distance_matrix = {}
 	    // distance_matrix[ds1][ds2] = 2
 	    var dcolname = raw_distance_array[0].trim();
-	    console.log('dcolname:  '+dcolname)
+	    //console.log('dcolname:  '+dcolname)
 	    distance_matrix[dcolname] = {}
 	    distance_matrix[dcolname][dcolname] = 0;
-	    console.log(dcolname);
+	    //console.log(dcolname);
 	    for(row in raw_distance_array){
 	      if( ! raw_distance_array[row] ) { continue; }
 	      
 	      //console.log('-->'+raw_distance_array[row]+'<--');
 
 	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
-	        console.log('found tab')
+	        //console.log('found tab')
 	        dcolname = raw_distance_array[row].trim()
 	        if(dcolname in distance_matrix){
 	        		// pass
