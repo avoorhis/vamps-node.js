@@ -524,7 +524,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       'html':'${domain} <ul><li>${phylum}</li> <ul><li>${klass}</li> <ul><li>${order}</li> <ul><li>${family}</li> <ul><li>${genus}</li> <ul><li>${species}</li> <ul><li>${strain}</li> </ul> </ul> </ul> </ul> </ul> </ul> </ul>'};
 
       var m_html = json2html.transform(data, transform);
-      console.log("TTT1: " + json2html.transform(data, transform) );
+      // console.log("TTT1: " + json2html.transform(data, transform) );
       
       // console.log("resultMain = " + JSON.stringify(resultMain, null, 4));      
       res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',

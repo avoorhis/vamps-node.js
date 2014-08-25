@@ -9,17 +9,22 @@ aaa111-555
 <div id="my_custom_list">
   <ul>
   <% for(i=0; i < all_tax_data.length; i++) { %>
-    <ul>
-    <% start = 0 %>
+    <% start_ul = 0 %>
     <% for (var prop in all_tax_data[i]) { %>
       <% if (all_tax_data[i].hasOwnProperty(prop)) { %>
         <% rank_name = prop %>
         <% taxon_name = all_tax_data[i][prop] %>
         <% if (taxon_name) { %>
-          <li class="<%= JSON.stringify(rank_name)%>"><%= taxon_name %></li>                     
+          <% if (start_ul > 0) { %>
+            <ul>
+          <% } %>
+          <li class="<%= JSON.stringify(rank_name)%>"><%= taxon_name %></li>     
+          <% if (start_ul > 0) { %>
+            </ul>
+          <% } %>                          
         <% } %>
       <% } %>
-      <% start += 1%>      
+      <% start_ul += 1%>      
     <% } %>
     </ul> 
   <% } %>
