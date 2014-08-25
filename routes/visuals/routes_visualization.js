@@ -332,14 +332,13 @@ router.post('/unit_selection',  function(req, res) {
     console.log('selection_obj-->');
     console.log(selection_obj);
     console.log('<--selection_obj');
-    elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
+    helpers.elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
 
     res.render('visuals/unit_selection', {   title: 'Unit Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     selection_obj: JSON.stringify(selection_obj),
                     constants    : JSON.stringify(req.C),
                     //body         : JSON.stringify(req.body),
-                    //chosen_id_name_hash: chosen_id_name_hash,
                     //selection_obj: dataset_accumulator,
                     //constants    : req.C,
                     //body         : req.body,
@@ -381,7 +380,7 @@ router.get('/index_visuals',  function(req, res) {
 //
 router.get('/reorder_datasets', function(req, res) {
   console.log('in reorder datasets')
-  console.log(dataset_accumulator)
+  console.log(selection_obj)
   //console.log(chosen_id_name_hash)
 });
 //
