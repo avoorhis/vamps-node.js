@@ -510,8 +510,11 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         var domain_items = new_taxonomy.taxa_tree_dict_map_by_rank["domain"];
         console.log('111 domain_items = ' + JSON.stringify(domain_items));
         
-        dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "taxon")
-        console.log('888 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
+        var dictMap_by_taxon = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "taxon")
+        console.log('888 dictMap_by_taxon = ' + JSON.stringify(dictMap_by_taxon));
+
+        var dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "node_id")
+       console.log('999 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
 
       }
       var data = small_rows;
@@ -520,7 +523,9 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         all_taxa: small_rows,
         taxa_tree_dict: new_taxonomy.taxa_tree_dict,
         constants:           req.C,
-        ranks: req.C.rank
+        dictMap_by_id: dictMap_by_id,
+        taxa_tree_dict_map_by_rank: new_taxonomy.taxa_tree_dict_map_by_rank,
+        domain_items: domain_items
       });
     });
     // elapsed_time("tax_short_query");
