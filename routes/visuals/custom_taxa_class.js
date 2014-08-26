@@ -105,7 +105,7 @@ function make_taxa_tree_dict(taxonomy_obj)
       }
     }
   }
-  return taxa_tree_dict;
+  return [taxa_tree_dict, dictMap_by_id];
 }
 
 // Public
@@ -115,8 +115,12 @@ function TaxonomyTree(rows) {
   this.taxa_tree_dict = this.taxa_tree_dict_map_by_rank = [];
   this.taxonomy_obj = rows;
   
-  this.taxa_tree_dict = make_taxa_tree_dict(this.taxonomy_obj);
+  temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
+  this.taxa_tree_dict = temp_arr[0];
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
+  this.taxa_tree_dict_map_by_id = temp_arr[1];
+  
+  // this.html_tree = make_html_tree
 }
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
