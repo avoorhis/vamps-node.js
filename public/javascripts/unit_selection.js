@@ -73,11 +73,62 @@ function transferComplete(file_id) {
 
 function show_custom_taxa_tree()
 {
-   var il = document.getElementById('my_custom_list').getElementsByTagName('li');
-   for(i=0;i<il.length;i++)
-   {
-     il[i].hide;
-   }
+  $('li.expandable').click(function() {
+      $(this).children('ul').toggle();
+      return false;
+  });
+  
+  // works
+  // $( "div#my_custom_list ul" ).click(function(){
+  //   $(this).children().css( "border", "3px double red" );
+  //   // $(this).children().toggle();
+  //   
+  // });
+  
+  // works
+  // $( "div#my_custom_list ul > li" ).click(function(){
+  //   $(this).css( "border", "3px double red" );
+  // });
+  
+  // http://api.jquery.com/children/
+  // $( "div#my_custom_list ul > li" ).css( "border", "3px double red" );
+/*
+  $( "div#my_custom_list" ).click(function ( event ) {
+    $( "*" ).removeClass( "hilite" );
+    var kids = $( event.target ).children();
+    var len = kids.addClass( "hilite" ).length;
+  
+    $( "#results span:first" ).text( len );
+    $( "#results span:last" ).text( event.target.tagName );
+  
+    // event.preventDefault();
+  });
+*/
+  // $("div#my_custom_list ul").click(function(){
+  //   .children().css( "background-color", "red" );
+  //     $( "li" ).css( "backgroundColor", "yellow" );
+  // });
+  // alert('div#my_custom_list ul' + index + ':' + $(this).attr('class')); 
+  
+/*  $("div#my_custom_list ul").each(function(index, value) { 
+    $(this).children[1].toggle
+    alert('div#my_custom_list ul' + index + ':' + $(this).attr('class')); 
+  });
+ */
+  
+  // $("div#my_custom_list ul")
+  //   $("li").each(function(){
+  //     alert($(this).className);
+  //   });
+  // });
+   // var il = document.getElementById('my_custom_list').getElementsByTagName('ul');
+   // $(il).click(function(){
+   //   $("p").toggle();
+   // });
+   // for(i=0; i<il.length; i++)
+   // {
+   //   il[i].hide;
+   // }
 }
   // $(li).
   //   <li>
