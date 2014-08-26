@@ -19,7 +19,6 @@ var app = express();
 
 // init_node var node_class = 
 var CustomTaxa  = require('./custom_taxa_class');
-var json2html = require('node-json2html');
 
 /*
  * GET visualization page.
