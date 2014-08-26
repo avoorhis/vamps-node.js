@@ -1,8 +1,20 @@
 <h3>Silva(v108) Custom Taxonomy Selection</h3>
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
 
-<!-- todo: rewrite without copy/paste -->
+<div id="my_custom_list">
+  <% for (i=0; i < domain_items.length; i++) { %>
+    <ul class="domain">
+      <li class="expandable"><%= domain_items[i].taxon %>
+        <% children_ids_arr = domain_items[i].children_ids %>        
+        <%- include childrens_list.ejs %>
+      </li>        
+    </ul> <!-- class="domain" -->
+      
+  <% } %> <!-- for (i=0; i < domain_items.length; i++) { -->
+</div>
+<hr/>
 
+<!-- todo: rewrite without copy/paste -->
 <div id="my_custom_list">
 <% for (i=0; i < all_taxa.length; i++) { %>
 <ul class="domain">
@@ -38,5 +50,4 @@
   </li>
 </ul>
 <% } %>
-
 </div>
