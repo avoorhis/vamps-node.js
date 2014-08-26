@@ -505,7 +505,7 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
         // var new_taxonomy = new CustomTaxa(rows);
         var new_taxonomy = new CustomTaxa(small_rows);
         console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-        console.log('000 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
+        console.log('0001 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
 
         var domain_items = new_taxonomy.taxa_tree_dict_map_by_rank["domain"];
         console.log('111 domain_items = ' + JSON.stringify(domain_items));
