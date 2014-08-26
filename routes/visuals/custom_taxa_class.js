@@ -129,6 +129,7 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
   return new_dict;
 }
 
+
 // 
 // TaxonomyTree.prototype.togglePaid = function() {
 //   this._paid = !this._paid;
