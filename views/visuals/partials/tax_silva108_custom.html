@@ -1,39 +1,42 @@
 <h3>Silva(v108) Custom Taxonomy Selection</h3>
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
 
-aaa111-555
+<!-- todo: rewrite without copy/paste -->
 
-<% ranks = constants["RANKS"]; %>
-<br/>
-all_tax_data = <%= JSON.stringify(all_tax_data) %>
-
-<% for (i=0; i < ranks.length; i++) { %>
-  <ul class="<% ranks[i] %>">
-    <li>
-      <%= JSON.stringify(all_tax_data[i]) %>
-    </li>
-  </ul>
-  
-<% } %> <!-- for (i=0; i < ranks.length; i++) -->
-
-<hr/>
-<% all_tax_data = all_taxa %>
-
-<% for(i=0; i < all_tax_data.length; i++) { %>
-<ul class="domain"><li><%= all_tax_data[i].domain %></li>
-  <ul class="phylum"><li><%= all_tax_data[i].phylum %></li>
-    <ul class="klass"><li><%= all_tax_data[i].klass %></li>
-      <ul class="order"><li><%= all_tax_data[i].order %></li>
-        <ul class="family"><li><%= all_tax_data[i].family %></li>
-          <ul class="genus"><li><%= all_tax_data[i].genus %></li>
-            <ul class="species"><li><%= all_tax_data[i].species %></li>
-              <ul class="strain"><li><%= all_tax_data[i].strain %></li>
-              </ul>
+<div id="my_custom_list">
+<% for (i=0; i < all_taxa.length; i++) { %>
+<ul class="domain">
+  <li class="expandable"><%= all_taxa[i].domain %>
+    <ul class="phylum">
+      <li class="expandable"><%= all_taxa[i].phylum %>
+        <ul class="klass">
+          <li class="expandable"><%= all_taxa[i].klass %>
+            <ul class="order">
+              <li class="expandable"><%= all_taxa[i].order %>
+                <ul class="family">
+                  <li class="expandable"><%= all_taxa[i].family %>
+                    <ul class="genus">
+                      <li class="expandable"><%= all_taxa[i].genus %>
+                        <ul class="species">
+                          <li class="expandable"><%= all_taxa[i].species %>
+                            <ul class="strain">
+                              <li><%= all_taxa[i].strain %>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
             </ul>
-          </ul>
+          </li>
         </ul>
-      </ul>
+      </li>
     </ul>
-  </ul>
+  </li>
 </ul>
 <% } %>
+
+</div>
