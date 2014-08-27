@@ -112,15 +112,37 @@ function make_taxa_tree_dict(taxonomy_obj)
   return [taxa_tree_dict, dictMap_by_id];
 }
 
+function start_ul(level, new_level, class_name)
+{
+  if (level != new_level)
+  {
+    console.log('<ul class="' + class_name + '">'); 
+  }
+}
+
+function end_ul(level, new_level, class_name)
+{
+  if (level === new_level)
+  {
+    console.log("</li>");
+    console.log('</ul> <!-- class="' + class_name + '"-->'); 
+  }
+}
+
+
 function traverse(dict_map_by_id, this_node, level)
-{  
-  // var this_node = this_node;
-  // var level = level;
+{ 
+  var new_level = 0;  
   console.log("XXX this_node = " +  JSON.stringify(this_node));
-  console.log("XXX1 level = " + level);
+  console.log("XXX_start level = " + level);
+  console.log("XXX_start new_level = " + new_level);
   
+  start_ul(level, new_level, this_node.rank);
+
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
+  
   console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
+  console.log('<li class="expandable">' + this_node.taxon);
   
   for (var i=0; i < kids_length; i++)
   {
@@ -128,15 +150,18 @@ function traverse(dict_map_by_id, this_node, level)
     traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level);
     level -= 1;    
   }
+  new_level = level;
+  console.log("XXX_end level = " + level);
+  console.log("XXX_end new_level = " + new_level);
+  end_ul(level, new_level, this_node.rank);
+
   console.log("\n=================\n");
   
 }
 
-
 function make_html_tree(dict_map_by_id, domains)
 {
   var level = 1;
-  console.log("WWW domains = " + JSON.stringify(domains));
   
   for (var i=0; i < domains.length; i++)
   {
