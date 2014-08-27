@@ -62,121 +62,7 @@ function add_children_to_parent(dictMap_by_id, current_dict)
   return parent_node;
 }
 
-function childrens(dict_map_by_id, this_node, my_html, count_uls)
-{
-  var childrens_arr = this_node.children_ids;
-  console.log("AAAA this_node = " + JSON.stringify(this_node));
-  console.log("UUUUU childrens_arr = " + JSON.stringify(childrens_arr));
-  
-  // AAAA this_node = {"parent_id":0,"children_ids":[2],"taxon":"Archaea","rank":"domain","node_id":1}
-  // UUUUU childrens_arr = [2]
-  
-  if (childrens_arr.length > 0)
-  {
-    for (var i=0; i < childrens_arr.length; i++)
-    {
-      this_node = dict_map_by_id[childrens_arr[i]];
-      // console.log("TTT this_node = " + JSON.stringify(this_node));
-      // TTT this_node = {"parent_id":1,"children_ids":[3,4,5],"taxon":"Crenarchaeota","rank":"phylum","node_id":2}
-    
-      my_html += '<ul class="' + this_node.rank + '">';
-      my_html += '<li class="expandable">' + this_node.taxon;
-      count_uls += 1;
-    }
-    childrens(dict_map_by_id, this_node, my_html, count_uls);
-  }
-  /*
-  want to see here:
-  <div id=\"my_custom_list\">
-  <ul class=\"domain\">
-  <li class=\"expandable\">Archaea
-  <ul class=\"phylum\">
-  <li class=\"expandable\">Crenarchaeota
-  <ul class=\"klass\">
-  <li class=\"expandable\">D-F10
-  <li class=\"expandable\">Group_C3
-  <li class=\"expandable\">Marine_Benthic_Group_A"
-  
-  */
-  
-  console.log("YYY my_html = " + JSON.stringify(my_html));
-  console.log("EEE count_uls = " + JSON.stringify(count_uls));
-  
-  return [count_uls, my_html, this_node]; 
-}
 
-function make_html_tree(dict_map_by_id)
-{
-  // {"1":{"parent_id":0,"children_ids":[2],"taxon":"Archaea","rank":"domain","node_id":1},
-  // "2":{"parent_id":1,"children_ids":[3,4,5],"taxon":"Crenarchaeota","rank":"phylum","node_id":2},
-  var count_uls = 0;
-  var domain_node = dict_map_by_id["1"];
-  
-  var my_html = '<div id="my_custom_list">';
-  my_html += '<ul class="' + domain_node.rank + '">';
-  my_html += '<li class="expandable">' + domain_node.taxon;
-  
-  // var childrens_arr = domain_node.children_ids;
-  // if (childrens_arr.length > 0)
-  // {
-  
-  // repete
-  // [count_uls, my_html, this_node] 
-  var res = childrens(dict_map_by_id, domain_node, my_html, count_uls);
-  count_uls = res[0];
-  my_html = res[1];
-  this_node = res[2];
-
-  //     for (var i=0; i < children_length; i++)
-  //     {
-  //       var this_node = dict_map_by_id[childrens_arr[i]];
-  //       // console.log("TTT this_node = " + JSON.stringify(this_node));
-  //       // TTT this_node = {"parent_id":1,"children_ids":[3,4,5],"taxon":"Crenarchaeota","rank":"phylum","node_id":2}
-  //       
-  //       my_html += '<ul class="' + this_node.rank + '">';
-  //       my_html += '<li class="expandable">' + this_node.taxon;
-  //       count_uls += 1;
-  //     }
-  // }
-  // repete
-
-  // console.log("TTT count_uls = " + JSON.stringify(count_uls));
-  
-  for (var i=0; i <= count_uls; i++)
-  {
-    my_html += '</li>';
-    my_html += '</ul>';    
-  }
-  
-  my_html += '</div>';
-  console.log("MMM my_html = " + JSON.stringify(my_html));
-  
-  /*
-  is_terminal = false;
-  current_node = dict_map_by_id["1"];
-  function getLeaf(node) {
-      if (node.children_ids.length) {
-          return getLeaf(node.leftChild);
-      } else if (node.rightChild) {
-          return getLeaf(node.rightChild);
-      } else { // node must be a leaf node
-          return node;
-      }
-  }
-  
-  if (current_node.parent_id === 0)
-  {
-    if (current_node.children_ids.length === 0)
-    {
-      is_terminal = true;
-    }    
-    else
-    {
-      
-    }
-  }
-  */
-}
 
 
 function make_taxa_tree_dict(taxonomy_obj)
@@ -226,11 +112,44 @@ function make_taxa_tree_dict(taxonomy_obj)
   return [taxa_tree_dict, dictMap_by_id];
 }
 
+function traverse(dict_map_by_id, this_node, level)
+{  
+  // var this_node = this_node;
+  // var level = level;
+  console.log("XXX this_node = " +  JSON.stringify(this_node));
+  console.log("XXX1 level = " + level);
+  
+  var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
+  console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
+  
+  for (var i=0; i < kids_length; i++)
+  {
+    level += 1;
+    traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level);
+    level -= 1;    
+  }
+  console.log("\n=================\n");
+  
+}
+
+
+function make_html_tree(dict_map_by_id, domains)
+{
+  var level = 1;
+  console.log("WWW domains = " + JSON.stringify(domains));
+  
+  for (var i=0; i < domains.length; i++)
+  {
+    traverse(dict_map_by_id, domains[i], level);
+  }
+}
+
 // Public
 module.exports = TaxonomyTree;
 
 function TaxonomyTree(rows) {
-  this.taxa_tree_dict = this.taxa_tree_dict_map_by_rank = [];
+  this.taxa_tree_dict = [];
+  this.taxa_tree_dict_map_by_rank = [];
   this.taxonomy_obj = rows;
   
   temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
@@ -238,7 +157,7 @@ function TaxonomyTree(rows) {
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
   this.taxa_tree_dict_map_by_id = temp_arr[1];
   
-  this.html_tree = make_html_tree(this.taxa_tree_dict_map_by_id);
+  this.html_tree = make_html_tree(this.taxa_tree_dict_map_by_id, this.taxa_tree_dict_map_by_rank["domain"]);
 }
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
