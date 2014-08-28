@@ -2,8 +2,9 @@
  * TaxonomyTree = custom_taxa_class.js
  */
 
-var constants = require('../../public/constants');
-var helpers = require('../helpers');
+var constants = require(app_root + '/public/constants');
+var helpers = require('./helpers');
+var fs = require('fs');
 
 // Private
 var taxon_name_id = 1;
@@ -116,7 +117,9 @@ function start_ul(level, new_level, class_name)
 {
   if (level != new_level)
   {
-    console.log('<ul class="' + class_name + '">'); 
+    var html = '\n<ul class="' + class_name + '">';
+    // console.log(html); 
+    return html;
   }
 }
 
@@ -124,49 +127,65 @@ function end_ul(level, new_level, class_name)
 {
   if (level === new_level)
   {
-    console.log("</li>");
-    console.log('</ul> <!-- class="' + class_name + '"-->'); 
+    // console.log("</li>");
+    // console.log('</ul> <!-- class="' + class_name + '"-->'); 
+    var html = '\n</li>\n</ul> <!-- class="' + class_name + '"-->'
+    // console.log(html);
+    return html;
   }
 }
 
+function clear_partial_file(fileName)
+{
+  fs.openSync(fileName, "w");
+}
 
-function traverse(dict_map_by_id, this_node, level)
+function write_partial(fileName, html) 
+{
+  fs.appendFileSync(fileName, html);
+}
+
+function traverse(dict_map_by_id, this_node, level, fileName)
 { 
+  /** todo: 
+  *) benchmark what's faster: write_partial 3 times or collect html and then write_partial once above.
+  *) " class="expandable" should be added in the client side javascript to all ul ids (except domains?)
+  */
   var new_level = 0;  
-  console.log("XXX this_node = " +  JSON.stringify(this_node));
-  console.log("XXX_start level = " + level);
-  console.log("XXX_start new_level = " + new_level);
+  var html = "";
+  // console.log("XXX this_node = " +  JSON.stringify(this_node));
+  // console.log("XXX_start level = " + level);
+  // console.log("XXX_start new_level = " + new_level);
   
-  start_ul(level, new_level, this_node.rank);
-
+  html = start_ul(level, new_level, this_node.rank);
+  write_partial(fileName, html);
+    
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
-  console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
-  console.log('<li class="expandable">' + this_node.taxon);
+  // console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
+  // console.log('<li class="expandable">' + this_node.taxon);
+  html = '\n<li class="expandable">' + this_node.taxon;
+  write_partial(fileName, html);
   
   for (var i=0; i < kids_length; i++)
   {
     level += 1;
-    traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level);
+    traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
     level -= 1;    
   }
   new_level = level;
-  console.log("XXX_end level = " + level);
-  console.log("XXX_end new_level = " + new_level);
-  end_ul(level, new_level, this_node.rank);
-
-  console.log("\n=================\n");
+  // console.log("XXX_end level = " + level);
+  // console.log("XXX_end new_level = " + new_level);
+  html = end_ul(level, new_level, this_node.rank);
+  write_partial(fileName, html);
+  
+  // console.log("\n=================\n");
   
 }
 
-function make_html_tree(dict_map_by_id, domains)
+function add_title(fileName, title)
 {
-  var level = 1;
-  
-  for (var i=0; i < domains.length; i++)
-  {
-    traverse(dict_map_by_id, domains[i], level);
-  }
+  write_partial(fileName, title);
 }
 
 // Public
@@ -179,10 +198,8 @@ function TaxonomyTree(rows) {
   
   temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
   this.taxa_tree_dict = temp_arr[0];
+  this.taxa_tree_dict_map_by_id = temp_arr[1]; 
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
-  this.taxa_tree_dict_map_by_id = temp_arr[1];
-  
-  this.html_tree = make_html_tree(this.taxa_tree_dict_map_by_id, this.taxa_tree_dict_map_by_rank["domain"]);
 }
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
@@ -195,17 +212,16 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
   return new_dict;
 }
 
-
-// 
-// TaxonomyTree.prototype.togglePaid = function() {
-//   this._paid = !this._paid;
-// };
-// 
-// TaxonomyTree.prototype.userType = function() {
-//   if(this._paid) return 'Paid TaxonomyTree';
-//   else           return 'Free TaxonomyTree';
-// };
-// 
-// TaxonomyTree.prototype.addBalance = function(amount) {
-//   this.balance += depositeMinusFee(amount);
-// };
+TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
+{
+  var level = 1;
+  var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
+  
+  clear_partial_file(fileName);
+  add_title(fileName, "<h3>Silva(v108) Custom Taxonomy Selection</h3>\n<input type='hidden' value='tax_silva108_custom' name='unit_choice' />");
+  
+  for (var i=0; i < domains.length; i++)
+  {
+    traverse(dict_map_by_id, domains[i], level, fileName);
+  }
+}

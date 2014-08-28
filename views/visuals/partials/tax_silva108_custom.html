@@ -1,42 +1,70 @@
 <h3>Silva(v108) Custom Taxonomy Selection</h3>
 <input type='hidden' value='tax_silva108_custom' name='unit_choice' />
-
-<hr/>
-
-<!-- todo: rewrite without copy/paste -->
-<div id="my_custom_list">
-<% for (i=0; i < all_taxa.length; i++) { %>
 <ul class="domain">
-  <li class="expandable"><%= all_taxa[i].domain %>
-    <ul class="phylum">
-      <li class="expandable"><%= all_taxa[i].phylum %>
-        <ul class="klass">
-          <li class="expandable"><%= all_taxa[i].klass %>
-            <ul class="order">
-              <li class="expandable"><%= all_taxa[i].order %>
-                <ul class="family">
-                  <li class="expandable"><%= all_taxa[i].family %>
-                    <ul class="genus">
-                      <li class="expandable"><%= all_taxa[i].genus %>
-                        <ul class="species">
-                          <li class="expandable"><%= all_taxa[i].species %>
-                            <ul class="strain">
-                              <li><%= all_taxa[i].strain %>
-                              </li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-<% } %>
-</div>
+<li class="expandable">Archaea
+<ul class="phylum">
+<li class="expandable">Crenarchaeota
+<ul class="klass">
+<li class="expandable">D-F10
+</li>
+</ul> <!-- class="klass"-->
+<ul class="klass">
+<li class="expandable">Group_C3
+</li>
+</ul> <!-- class="klass"-->
+<ul class="klass">
+<li class="expandable">Marine_Benthic_Group_A
+</li>
+</ul> <!-- class="klass"-->
+</li>
+</ul> <!-- class="phylum"-->
+</li>
+</ul> <!-- class="domain"-->
+<ul class="domain">
+<li class="expandable">Bacteria
+<ul class="phylum">
+<li class="expandable">Acidobacteria
+<ul class="klass">
+<li class="expandable">Acidobacteria
+<ul class="order">
+<li class="expandable">Acidobacteriales
+<ul class="family">
+<li class="expandable">Acidobacteriaceae
+</li>
+</ul> <!-- class="family"-->
+</li>
+</ul> <!-- class="order"-->
+</li>
+</ul> <!-- class="klass"-->
+<ul class="klass">
+<li class="expandable">Holophagae
+<ul class="order">
+<li class="expandable">Holophagales
+<ul class="family">
+<li class="expandable">Holophagaceae
+</li>
+</ul> <!-- class="family"-->
+</li>
+</ul> <!-- class="order"-->
+</li>
+</ul> <!-- class="klass"-->
+</li>
+</ul> <!-- class="phylum"-->
+<ul class="phylum">
+<li class="expandable">Actinobacteria
+<ul class="klass">
+<li class="expandable">Actinobacteria
+<ul class="order">
+<li class="expandable">Acidimicrobiales
+<ul class="family">
+<li class="expandable">Acidimicrobiaceae
+</li>
+</ul> <!-- class="family"-->
+</li>
+</ul> <!-- class="order"-->
+</li>
+</ul> <!-- class="klass"-->
+</li>
+</ul> <!-- class="phylum"-->
+</li>
+</ul> <!-- class="domain"-->
