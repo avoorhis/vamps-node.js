@@ -499,33 +499,8 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
       {
         throw err;
       } 
-      else 
-      {
-      //   var small_rows = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
-      //   // var new_taxonomy = new CustomTaxa(rows);
-      //   var new_taxonomy = new CustomTaxa(small_rows);
-      //   console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-      //   console.log('0001 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
-      // 
-      //   var domain_items = new_taxonomy.taxa_tree_dict_map_by_rank["domain"];
-      //   console.log('111 domain_items = ' + JSON.stringify(domain_items));
-      //   
-      //   var dictMap_by_taxon = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "taxon")
-      //   console.log('888 dictMap_by_taxon = ' + JSON.stringify(dictMap_by_taxon));
-      // 
-      //   var dictMap_by_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "node_id")
-      //  console.log('999 dictMap_by_id = ' + JSON.stringify(dictMap_by_id));
-      // 
-      }
-      // var data = small_rows;
 
-      res.render('visuals/partials/tax_silva108_custom', { title   : 'All Taxa',
-        // all_taxa: small_rows,
-        // taxa_tree_dict: new_taxonomy.taxa_tree_dict,
-        constants:           req.C,
-        // dictMap_by_id: dictMap_by_id,
-        // taxa_tree_dict_map_by_rank: new_taxonomy.taxa_tree_dict_map_by_rank,
-        // domain_items: domain_items
+      res.render('visuals/partials/tax_silva108_custom', { title   : 'Silva(v108) Custom Taxonomy Selection'
       });
     });
     // elapsed_time("tax_short_query");
@@ -535,7 +510,6 @@ router.get('/partials/tax_silva108_custom',  function(req, res) {
     */
     // rows: JSON.stringify(rows),    
   // }
-
   
 });
 
