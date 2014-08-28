@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var helpers = require('./helpers');
+var helpers = require('./helpers/helpers');
 
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
