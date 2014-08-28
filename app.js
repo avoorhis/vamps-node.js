@@ -12,6 +12,7 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var compression = require('compression')
 var flash = require('connect-flash');
 var passport = require('passport');
 var db = require('mysql');
@@ -43,6 +44,8 @@ app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+
+app.use(compression());
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
