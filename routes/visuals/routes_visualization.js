@@ -332,6 +332,9 @@ router.post('/unit_selection',  function(req, res) {
     console.log('selection_obj-->');
     console.log(selection_obj);
     console.log('<--selection_obj');
+    console.log('chosen_id_name_hash-->');
+    console.log(chosen_id_name_hash);
+    console.log('<--chosen_id_name_hash');
     helpers.elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
 
     res.render('visuals/unit_selection', {   title: 'Unit Selection',
