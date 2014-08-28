@@ -2,8 +2,8 @@
  * TaxonomyTree = custom_taxa_class.js
  */
 
-var constants = require('../../public/constants');
-var helpers = require('../helpers');
+var constants = require(app_root + '/public/constants');
+var helpers = require('./helpers');
 var fs = require('fs');
 
 // Private
@@ -206,10 +206,8 @@ function TaxonomyTree(rows) {
   
   temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
   this.taxa_tree_dict = temp_arr[0];
+  this.taxa_tree_dict_map_by_id = temp_arr[1]; 
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
-  this.taxa_tree_dict_map_by_id = temp_arr[1];
-  
-  this.html_tree = make_html_tree(this.taxa_tree_dict_map_by_id, this.taxa_tree_dict_map_by_rank["domain"]);
 }
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
@@ -222,6 +220,24 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
   return new_dict;
 }
 
+TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
+{
+  var level = 1;
+  var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
+  
+  clear_partial_file(fileName);
+  
+  for (var i=0; i < domains.length; i++)
+  {
+    traverse(dict_map_by_id, domains[i], level, fileName);
+  }
+}
+
+
+// function(tree_obj, key_name) 
+// {
+//   make_html_tree(this.taxa_tree_dict_map_by_id, this.taxa_tree_dict_map_by_rank["domain"]);
+// }
 
 // 
 // TaxonomyTree.prototype.togglePaid = function() {
