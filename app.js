@@ -8,10 +8,13 @@ var express = require('express');
 var router = express.Router();
 var session = require('express-session');
 var path = require('path');
+global.app_root = path.resolve(__dirname);
+
 var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var compression = require('compression')
 var flash = require('connect-flash');
 var passport = require('passport');
 var db = require('mysql');
@@ -43,6 +46,8 @@ app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+
+app.use(compression());
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
@@ -90,14 +95,14 @@ app.post('/download/:ts/:file_type', function(req, res){
     var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
     res.download(file); // Set disposition and send it.
   }else if(req.params.file_type === 'fasta') {
-    console.log(req.body.ids)
-    var dataset_ids = JSON.parse(req.body.ids)
+    console.log(req.body.ids);
+    var dataset_ids = JSON.parse(req.body.ids);
     var qSelectSeqs = "SELECT project, dataset, sequence_id, UNCOMPRESS(sequence_comp) as seq FROM sequence_pdr_info";
     qSelectSeqs +=    "  JOIN dataset  using(dataset_id)";
     qSelectSeqs +=    "  JOIN project  using(project_id)";
     qSelectSeqs +=    "  JOIN sequence using(sequence_id)";
     qSelectSeqs +=    "  WHERE dataset_id in (" + dataset_ids + ")";
-    console.log(qSelectSeqs)
+    console.log(qSelectSeqs);
     req.db.query(qSelectSeqs, function(err, rows, fields){
         if (err)  {
           throw err;
@@ -115,6 +120,7 @@ app.post('/download/:ts/:file_type', function(req, res){
     });
   }
 });
+
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
     console.warn(req.params);
@@ -168,6 +174,20 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
+/**
+* Create global objects once upon server startup
+*/
+
+// var someModule = require('./someModule')(someSharedVariable);
+// init_node var node_class = 
+var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
+// add query call here
+var small_rows = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
+ // var new_taxonomy = new CustomTaxa(rows);
+var new_taxonomy = new CustomTaxa(small_rows);
+console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
 
 module.exports = app;
 
