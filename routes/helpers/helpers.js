@@ -21,7 +21,7 @@ module.exports = {
 
 /** Benchmarking
 * Usage: 
-    var helpers = require('../helpers');
+    var helpers = require('../helpers/helpers');
 
     helpers.start = process.hrtime();
     some code

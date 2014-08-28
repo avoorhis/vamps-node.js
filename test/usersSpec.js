@@ -5,7 +5,7 @@ var async = require('async'),
     connection = require('../config/database-test');
 var express = require('express');
 var passport = require('passport');
-var helpers = require('../routes/helpers');
+var helpers = require('../routes/helpers/helpers');
 
 describe('Users page functionality', function(){
 
