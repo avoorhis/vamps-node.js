@@ -4,7 +4,7 @@
     <% pname = all_pr_dat[i].name %>
     <% datasets = all_pr_dat[i].datasets %>
     <li>
-      <label class='project-select'>
+      <label id='<%= pname %>' class='project-select'>
         <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
           <img alt='plus' src='/images/tree_plus.gif'/>
         </a>
@@ -22,7 +22,7 @@
             <!-- Andy, why do we need to send both dname and did? -->
 
             <li>
-              <label class='dataset-select' name='xx' >
+              <label id='<%= pd %>' class='dataset-select'  >
                  <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= pass_thru_value %>'/>
                  <%= dname %>
               </label>
