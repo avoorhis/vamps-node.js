@@ -4,6 +4,7 @@
 
 var constants = require('../../public/constants');
 var helpers = require('../helpers');
+var fs = require('fs');
 
 // Private
 var taxon_name_id = 1;
@@ -116,7 +117,9 @@ function start_ul(level, new_level, class_name)
 {
   if (level != new_level)
   {
-    console.log('<ul class="' + class_name + '">'); 
+    var html = '<ul class="' + class_name + '">';
+    console.log(html); 
+    return html;
   }
 }
 
@@ -124,25 +127,51 @@ function end_ul(level, new_level, class_name)
 {
   if (level === new_level)
   {
-    console.log("</li>");
-    console.log('</ul> <!-- class="' + class_name + '"-->'); 
+    // console.log("</li>");
+    // console.log('</ul> <!-- class="' + class_name + '"-->'); 
+    var html = '</li>\n</ul> <!-- class="' + class_name + '"-->'
+    console.log(html);
+    return html;
   }
 }
 
+// function create_partial_file(fileName)
+// {
+//   fs.exists(fileName, function (exists) {
+//           if (exists) {
+//           }
+//         }
+//       );
+//   fs.open(fileName, flags, [mode], callback)  
+// }
+
+function write_partial(html) 
+{
+
+  var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
+  console.log("LLL __dirname = " + __dirname);
+  console.log("LLL1 html = " + html);
+  
+  fs.appendFileSync(fileName, html);
+}
 
 function traverse(dict_map_by_id, this_node, level)
 { 
   var new_level = 0;  
+  var html = "";
   console.log("XXX this_node = " +  JSON.stringify(this_node));
   console.log("XXX_start level = " + level);
   console.log("XXX_start new_level = " + new_level);
   
-  start_ul(level, new_level, this_node.rank);
-
+  html = start_ul(level, new_level, this_node.rank);
+  write_partial(html);
+    
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
   console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
   console.log('<li class="expandable">' + this_node.taxon);
+  html = '<li class="expandable">' + this_node.taxon;
+  write_partial(html);
   
   for (var i=0; i < kids_length; i++)
   {
@@ -153,8 +182,9 @@ function traverse(dict_map_by_id, this_node, level)
   new_level = level;
   console.log("XXX_end level = " + level);
   console.log("XXX_end new_level = " + new_level);
-  end_ul(level, new_level, this_node.rank);
-
+  html = end_ul(level, new_level, this_node.rank);
+  write_partial(html);
+  
   console.log("\n=================\n");
   
 }
@@ -162,6 +192,7 @@ function traverse(dict_map_by_id, this_node, level)
 function make_html_tree(dict_map_by_id, domains)
 {
   var level = 1;
+  // create_partial_file();
   
   for (var i=0; i < domains.length; i++)
   {
