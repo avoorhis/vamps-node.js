@@ -135,27 +135,21 @@ function end_ul(level, new_level, class_name)
   }
 }
 
-// function create_partial_file(fileName)
-// {
-//   fs.exists(fileName, function (exists) {
-//           if (exists) {
-//           }
-//         }
-//       );
-//   fs.open(fileName, flags, [mode], callback)  
-// }
+function clear_partial_file(fileName)
+{
+  fs.openSync(fileName, "w");
+}
 
-function write_partial(html) 
+function write_partial(fileName, html) 
 {
 
-  var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
   console.log("LLL __dirname = " + __dirname);
   console.log("LLL1 html = " + html);
   
   fs.appendFileSync(fileName, html);
 }
 
-function traverse(dict_map_by_id, this_node, level)
+function traverse(dict_map_by_id, this_node, level, fileName)
 { 
   var new_level = 0;  
   var html = "";
@@ -164,26 +158,26 @@ function traverse(dict_map_by_id, this_node, level)
   console.log("XXX_start new_level = " + new_level);
   
   html = start_ul(level, new_level, this_node.rank);
-  write_partial(html);
+  write_partial(fileName, html);
     
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
   console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
   console.log('<li class="expandable">' + this_node.taxon);
   html = '<li class="expandable">' + this_node.taxon;
-  write_partial(html);
+  write_partial(fileName, html);
   
   for (var i=0; i < kids_length; i++)
   {
     level += 1;
-    traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level);
+    traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
     level -= 1;    
   }
   new_level = level;
   console.log("XXX_end level = " + level);
   console.log("XXX_end new_level = " + new_level);
   html = end_ul(level, new_level, this_node.rank);
-  write_partial(html);
+  write_partial(fileName, html);
   
   console.log("\n=================\n");
   
@@ -192,11 +186,13 @@ function traverse(dict_map_by_id, this_node, level)
 function make_html_tree(dict_map_by_id, domains)
 {
   var level = 1;
-  // create_partial_file();
+  var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
+  
+  clear_partial_file(fileName);
   
   for (var i=0; i < domains.length; i++)
   {
-    traverse(dict_map_by_id, domains[i], level);
+    traverse(dict_map_by_id, domains[i], level, fileName);
   }
 }
 
