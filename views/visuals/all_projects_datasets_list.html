@@ -19,8 +19,7 @@
             <% dname = datasets[k].dname %>
             <% pd = pname + '--' + dname %>
             <% pass_thru_value = did + '--' + pname + '--' + dname %>
-            <!-- Andy, why do we need to send both dname and did? -->
-
+            
             <li>
               <label id='<%= pd %>' class='dataset-select'  >
                  <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= pass_thru_value %>'/>

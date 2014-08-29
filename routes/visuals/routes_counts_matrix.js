@@ -22,7 +22,7 @@ module.exports = {
 		  var dataset_ids = selection_obj.dataset_ids;
 		  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
 		  var seq_freqs   = selection_obj.seq_freqs;      
-		        
+		  //console.log('')
 		  //    seq_ids  : [id1,id2,id3...],
 		  //    tax_id1 : [tct1,0,tid3...],
 		  //    tax_id2 : [tct4,tct5,tct6...],
@@ -74,11 +74,13 @@ module.exports = {
 		// { '82': 2, '96': 1, '112': 1, '214': 331 }
 		  //var mtx = "\t";
 		  
-		 
+		  //for(did in dataset_ids) {
 		  for (var uid in unit_id_lookup) {  
 		    matrix[uid]=[]  
 		    
-		    for (var did in counts) {
+		    for (var d in dataset_ids) { // this is correct order
+		    	did = dataset_ids[d]
+
 		      if(uid in counts[did]){
 		        c = counts[did][uid];
 		      }else{
@@ -148,7 +150,7 @@ module.exports = {
 		   
 		  }
 
-		  console.log(unit_name_lookup);
+		  //console.log(unit_name_lookup);
 
 			var mtx 		= create_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids, matrix_with_names ); // file used by R distance calc
 			var csv_txt = create_csv_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids );
