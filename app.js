@@ -22,7 +22,7 @@ var db = require('mysql');
 // needed for DATASETS initialization
 connection = require('./config/database-dev');
 //connection.connect();
-var routes = require('./routes/index');
+var routes = require('./routes/index');  // This grabs ALL_DATASETS
 var users = require('./routes/users');
 var projects = require('./routes/projects');
 var datasets = require('./routes/datasets');
