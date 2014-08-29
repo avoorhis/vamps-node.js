@@ -28,8 +28,8 @@ module.exports = {
 		  console.log('R command: ' + command);
 		  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
 		    stdout = stdout.trim();
-		    console.log(stderr)
-		    console.log(error)
+		    //console.log(stderr)
+		    //console.log(error)
 		    console.log('-->'+stdout+'<--')
 		    var selection_html = COMMON.get_selection_markup('heatmap', obj); 
 		    if(stdout === 'dist(0)' || stdout === 'err') {

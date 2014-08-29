@@ -42,7 +42,7 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  console.log(req.body);
+  //console.log(req.body);
   //console.log('1');
   //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   
@@ -83,10 +83,10 @@ router.post('/view_selection',  function(req, res) {
   }
   //console.log(unit_name_query);
   //console.log('4');
-  console.log('3');
+  //console.log('3');
   selection_obj.counts_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   
-  console.log(unit_name_query);
+  //console.log(unit_name_query);
 
   
   //console.log('START BODY>> in route/visualization.js /view_selection');
@@ -135,8 +135,8 @@ router.post('/view_selection',  function(req, res) {
       //  }
 
       //req.body.matrix = JSON.stringify(matrix);
-      console.log('CM')
-      console.log(JSON.stringify(count_matrix));
+      //console.log('CM')
+      //console.log(JSON.stringify(count_matrix));
       //console.warn(util.inspect(matrix));
       //console.log(dataset_accumulator)
       
@@ -205,9 +205,9 @@ router.post('/unit_selection',  function(req, res) {
   //    The 'Display Output' section should list the items from public/constants.js
   //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
   //        checked by default.
-  console.log('START BODY>> in route/visualization.js /unit_selection');
-  console.log(JSON.stringify(req.body));
-  console.log('<<END BODY');
+  //console.log('START BODY>> in route/visualization.js /unit_selection');
+  //console.log(JSON.stringify(req.body));
+  //console.log('<<END BODY');
   var db = req.db;
   var dsets = {};
   var accumulator = {
@@ -229,8 +229,8 @@ router.post('/unit_selection',  function(req, res) {
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-  console.log('req.body.dataset_ids')
-  console.log(req.body.dataset_ids)
+  //console.log('req.body.dataset_ids')
+  //console.log(req.body.dataset_ids)
   for (var n=0; n < req.body.dataset_ids.length; n++){
     var items = req.body.dataset_ids[n].split('--');
     chosen_id_name_hash.ids.push(items[0]);
@@ -277,6 +277,9 @@ router.post('/unit_selection',  function(req, res) {
           dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
           dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count);
           for (u=0; u < available_units.length; u++) {
+            //console.log('idsss');
+            //console.log(rows[k].dataset_id)
+
             dsets[rows[k].dataset_id].unit_assoc[available_units[u]].push(rows[k][available_units[u]]);
           }
         } else {
@@ -307,6 +310,8 @@ router.post('/unit_selection',  function(req, res) {
         accumulator.seq_ids.push(dsets[id].seq_ids);
         accumulator.seq_freqs.push(dsets[id].seq_counts);
         for (u in dsets[id].unit_assoc) {
+          //console.log('idsss');
+          //console.log(id)
           accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
         }
       }
