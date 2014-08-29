@@ -179,15 +179,79 @@ app.use(function(err, req, res, next) {
 * Create global objects once upon server startup
 */
 
+// var silvaTaxonomy = require('./models/silva_taxonomy');
+// add query call here
+// var new_taxonomy = new CustomTaxa(rows);
+// var all_silva_taxonomy = new silvaTaxonomy();
+
+var async = require('async');
+
+var taxa_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
+ FROM silva_taxonomy \
+ JOIN domain AS dom USING(domain_id) \
+ JOIN phylum AS phy USING(phylum_id) \
+ JOIN klass AS kla USING(klass_id) \
+ JOIN `order` AS ord USING(order_id) \
+ JOIN family AS fam USING(family_id) \
+ JOIN genus AS gen USING(genus_id) \
+ JOIN species AS spe USING(species_id) \
+ JOIN strain AS str USING(strain_id)";
+ console.log('running custom tax query short');
+
+GLOBAL.all_silva_taxonomy = [];
+
+// connection.query(taxa_query, function (err, rows, fields) {
+//   if (err) {
+//       throw err;
+//   }
+//   for (var i in rows) {
+//       console.log(rows[i]);
+//   }
+//   // all_silva_taxonomy.push(rows);
+//   // doSomethingWithUsers(rows);
+//   // dbClose(req,res);
+// }).done(console.log("orders have been archived"));
+
+// module.exports = function(client, callback) { dbAlias.query( 'select * from City', function(err, rows, fields) { client.context.data = { rows:rows, fields:fields }; callback(); } ); }
+
+get_all_taxa = function(cb) {
+  connection.query(taxa_query, function (err, rows, fields) {
+    // close connection first
+    // closeConnection(connection);
+    // done: call callback with results
+    cb(err, rows);
+  });
+};
+
+get_all_taxa(function(err, results) {
+  if (err)
+    throw err; // or return an error message, or something
+  else
+  {
+    console.log("AAA all_silva_taxonomy from app = " + JSON.stringify(results));
+    
+    var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
+    // // add query call here
+    // var small_rows = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
+     var new_taxonomy = new CustomTaxa(results);
+    // var new_taxonomy = new CustomTaxa(small_rows);
+    console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+    new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+    
+  }
+});
+
+console.log("XXX all_silva_taxonomy from app = " + JSON.stringify(GLOBAL.all_silva_taxonomy));
+
 // var someModule = require('./someModule')(someSharedVariable);
 // init_node var node_class = 
-var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
-// add query call here
-var small_rows = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
- // var new_taxonomy = new CustomTaxa(rows);
-var new_taxonomy = new CustomTaxa(small_rows);
-console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
+// var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
+// // add query call here
+// var small_rows = [{"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":""},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":""}];
+//  // var new_taxonomy = new CustomTaxa(rows);
+// var new_taxonomy = new CustomTaxa(small_rows);
+// console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+// new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);
 
 module.exports = app;
 
