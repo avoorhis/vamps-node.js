@@ -145,6 +145,23 @@ function write_partial(fileName, html)
   fs.appendFileSync(fileName, html);
 }
 
+/*
+ <li>
+   <label id='<%= pname %>' class='project-select'>
+     <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
+       <img alt='plus' src='/images/tree_plus.gif'/>
+     </a>
+     <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
+     <a href=''><%= pname %></a>
+   </label>
+ */
+ 
+ // html = '\n<li class="expandable">' + this_node.taxon;
+function add_li(this_node)
+{
+  return '\n<li class="expandable">' + this_node.taxon;
+}
+
 function traverse(dict_map_by_id, this_node, level, fileName)
 { 
   /** todo: 
@@ -163,8 +180,21 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
   // console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
-  // console.log('<li class="expandable">' + this_node.taxon);
-  html = '\n<li class="expandable">' + this_node.taxon;
+  console.log('this_node' + JSON.stringify(this_node));
+  
+  /*
+  <li>
+    <label id='<%= pname %>' class='project-select'>
+      <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
+        <img alt='plus' src='/images/tree_plus.gif'/>
+      </a>
+      <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
+      <a href=''><%= pname %></a>
+    </label>
+  */
+  
+  // html = '\n<li class="expandable">' + this_node.taxon;
+  html = add_li(this_node);
   write_partial(fileName, html);
   
   for (var i=0; i < kids_length; i++)
