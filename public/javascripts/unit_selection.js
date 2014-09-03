@@ -97,7 +97,8 @@ if (typeof get_graphics !=="undefined")
 // custom taxa tree
 function show_custom_taxa_tree()
 {
-  $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+  $('.tree li:has(ul)').addClass('parent_li');
+  // .find(' > span').attr('title', 'Collapse this branch');
   
   $('.tree li.parent_li > span').each(function(i,e){
       if ($(this).find('i').hasClass("icon-plus-sign")){
@@ -110,11 +111,11 @@ function show_custom_taxa_tree()
       if (children.is(":visible")) {
           children.hide('fast');
           $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
-          $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
+          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
       } else {
           children.show('fast');
           $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-          $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
+          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
           // $(this).find('img').attr("src").replace("minus", "plus");
       }
       e.stopPropagation();
