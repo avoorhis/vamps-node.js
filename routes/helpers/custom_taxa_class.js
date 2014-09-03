@@ -146,20 +146,41 @@ function write_partial(fileName, html)
 }
 
 /*
- <li>
-   <label id='<%= pname %>' class='project-select'>
-     <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
-       <img alt='plus' src='/images/tree_plus.gif'/>
-     </a>
-     <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
-     <a href=''><%= pname %></a>
-   </label>
+  <li>
+    <label class='tax_select'>
+<!-- ///////// D O M A I N /////////////////////////////////////////////// -->
+      <a href=''  id='<%= id %>_toggle' class='domain_toggle'  onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
+        <img alt='plus' src='/images/tree_plus.gif'/>
+      </a>
+      <input type='checkbox' id='<%= id %>--cbid' name='domain_names[]' value='<%= domain %>' onclick="open_taxa('<%= id %>'); return false;"/>
+    </label>
+    <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain]) %>','1'); return false;"><%= domain %></span>
+    ...
+    <li>
+      <label class="tax_select">
+        <a href=""  id="<%= id %>_toggle" onclick="toggle_selected_taxa("phylum","<%= id %>"); return false;">
+          <img alt="plus" src="/images/tree_plus.gif"/>
+        </a>
+        <input type="checkbox" id="<%= id %>--cbid" name="phylum_names[]" value="<%= phylum %>" onclick="open_taxa("<%= id %>"); return false;" />
+      </label>
+      <span ondblclick="open_level("<%= id %>","<%= JSON.stringify(all_tax_data[domain][phylum]) %>","2"); return false;"><%= phylum %></span>
+    ====
+    <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
+    <a href=''><%= pname %></a>
+  </label>
  */
  
  // html = '\n<li class="expandable">' + this_node.taxon;
 function add_li(this_node)
 {
-  return '\n<li class="expandable">' + this_node.taxon;
+  // this_html = '\n<li class="expandable">';
+  this_html = '<li>\n';
+  this_html += '<span><i class="icon-plus-sign"></i>';
+  this_html += '<img alt="plus" src="/images/tree_plus.gif"/>';
+  this_html += '<input type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
+  this_html += this_node.taxon + '</span>'
+  return this_html;
+   // + this_node.taxon;
 }
 
 function traverse(dict_map_by_id, this_node, level, fileName)
@@ -180,19 +201,8 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
   // console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
-  console.log('this_node' + JSON.stringify(this_node));
-  
-  /*
-  <li>
-    <label id='<%= pname %>' class='project-select'>
-      <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
-        <img alt='plus' src='/images/tree_plus.gif'/>
-      </a>
-      <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
-      <a href=''><%= pname %></a>
-    </label>
-  */
-  
+  console.log('this_node: ' + JSON.stringify(this_node));
+    
   // html = '\n<li class="expandable">' + this_node.taxon;
   html = add_li(this_node);
   write_partial(fileName, html);
@@ -248,10 +258,15 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
   var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
   
   clear_partial_file(fileName);
-  add_title(fileName, "<h3>Silva(v108) Custom Taxonomy Selection</h3>\n<input type='hidden' value='tax_silva108_custom' name='unit_choice' />");
+  
+  add_title(fileName, "<h3>Silva(v108) Custom Taxonomy Selection</h3>\n<input type='hidden' value='tax_silva108_custom' name='unit_choice' />\n\
+  <div class='tree well'>");
   
   for (var i=0; i < domains.length; i++)
   {
     traverse(dict_map_by_id, domains[i], level, fileName);
   }
+  write_partial(fileName, "</div> <!-- tree well -->");
+  
+  
 }
