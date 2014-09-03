@@ -1,14 +1,15 @@
 /*http://jsfiddle.net/q3DQ2/*/
 .tree {
-    min-height:20px;
+  min-height:2ex;
+/*    min-height:20px;*/
 /*    padding:19px;*/
-    padding: 5px;
-    margin-bottom:20px;
+/*    padding: 5px;*/
+/*    margin-bottom:20px;*/
     background-color:#fbfbfb;
-    border:1px solid #999;
-    -webkit-border-radius:4px;
-    -moz-border-radius:4px;
-    border-radius:4px;
+/*    border:1px solid #999;*/
+/*    -webkit-border-radius:4px;*/
+/*    -moz-border-radius:4px;*/
+/*    border-radius:4px;*/
     -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
     -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -20,25 +21,25 @@
 
 .well {
     background-color: #f5f5f5;
-    border: 1px solid #e3e3e3;
-    border-radius: 4px;
+/*    border: 1px solid #e3e3e3;*/
+/*    border-radius: 4px;*/
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    margin-bottom: 20px;
-    min-height: 20px;
+/*    margin-bottom: 20px;*/
+/*    min-height: 20px;*/
 /*    padding: 19px;*/
 }
 
 .tree ul {
-    margin: 0 0 1px 0px;
-/*    margin-bottom: 1px;*/
+    margin: 0;
     padding: 0;
 }
 
 
 .tree li {
     list-style-type:none;
-    margin:0;
-    padding:10px 5px 0 5px;
+/*    margin:0;*/
+    margin-left: 1.5ex;
+/*    padding:10px 5px 0 5px;*/
     position:relative
     line-height: 2ex;
 }
@@ -49,25 +50,25 @@
     right:auto
 }
 .tree li::before {
-    border-left:1px solid #999;
+/*    border-left:1px solid #999;*/
     bottom:50px;
     height:100%;
     top:0;
-    width:1px
+/*    width:1px*/
 }
 .tree li::after {
-    border-top:1px solid #999;
+/*    border-top:1px solid #999;*/
     height:20px;
     top:25px;
-    width:25px
+/*    width:25px*/
 }
 .tree li span {
-    -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    border:1px solid #999;
-    border-radius:5px;
+/*    -moz-border-radius:5px;*/
+/*    -webkit-border-radius:5px;*/
+/*    border:1px solid #999;*/
+/*    border-radius:5px;*/
     display:inline-block;
-    padding:3px 8px;
+/*    padding:3px 8px;*/
     text-decoration:none
 }
 .tree li.parent_li>span {
@@ -77,35 +78,46 @@
     border:0
 }
 .tree li:last-child::before {
-    height:30px
+    height:3ex
+/*    height:30px*/
 }
 .tree li.parent_li>span:hover, .tree li.parent_li>span:hover+ul li span {
     background:#eee;
-    border:1px solid #94a0b4;
+/*    border:1px solid #94a0b4;*/
     color:#000
 }
 
 /*i.icon-plus-sign {background: url(../images/mktree/plus.gif)  }*/
 i.icon-plus-sign {
-    background: url("../images/mktree/plus.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../images/mktree/plus.gif");
+/*     repeat scroll 0 0 rgba(0, 0, 0, 0);*/
     display: inline-block;
     height: 14px;
-    line-height: 14px;
-    margin-top: 1px;
+/*    line-height: 14px;*/
+/*    margin-top: 1px;*/
 /*    text-top;*/
-    width: 14px;
+/*    width: 14px;*/
 }
-i.icon-minus-sign {background: url(../images/mktree/minus.gif)  }
+i.icon-minus-sign {
+  background: url(../images/mktree/minus.gif);  
+/*  background: url("../images/mktree/plus.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
+  display: inline-block;
+  height: 14px;
+/*  line-height: 14px;*/
+/*  margin-top: 1px;*/
+/*    text-top;*/
+/*  width: 14px;*/
+  }
 
 
 [class^="icon-"], [class*=" icon-"] {
     background-image: url("../images/mktree/plus.gif");
-    background-position: 14px 14px;
+/*    background-position: 14px 14px;*/
     background-repeat: no-repeat;
     display: inline-block;
-    height: 14px;
+/*    height: 14px;
     line-height: 14px;
-    margin-top: 1px;
+    margin-top: 1px;*/
 /*    vertical-align: text-top;*/
     vertical-align: middle;
     width: 14px;
