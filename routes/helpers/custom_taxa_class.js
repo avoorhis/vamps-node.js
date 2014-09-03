@@ -176,7 +176,7 @@ function add_li(this_node)
   // this_html = '\n<li class="expandable">';
   this_html = '<li>\n';
   this_html += '<span><i class="icon-plus-sign"></i>';
-  this_html += '<img alt="plus" src="/images/tree_plus.gif"/>';
+  // this_html += '<img alt="plus" src="/images/tree_plus.gif"/>';
   this_html += '<input type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
   this_html += this_node.taxon + '</span>'
   return this_html;
