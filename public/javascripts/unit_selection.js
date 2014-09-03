@@ -110,13 +110,17 @@ function show_custom_taxa_tree()
       if (children.is(":visible")) {
           children.hide('fast');
           $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+          $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
       } else {
           children.show('fast');
           $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+          $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
+          // $(this).find('img').attr("src").replace("minus", "plus");
       }
       e.stopPropagation();
   });
   
+// .attr("src", toggle_switch.attr("src").replace("down", "up"));
   
   // $('li.expandable').click(function() {
   //     $(this).children('ul').toggle();
