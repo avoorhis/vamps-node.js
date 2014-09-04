@@ -2,6 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 
+
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
 
@@ -31,13 +32,15 @@ module.exports = {
 		    //console.log(stderr)
 		    //console.log(error)
 		    console.log('-->'+stdout+'<--')
-		    var selection_html = COMMON.get_selection_markup('heatmap', obj); 
+		    
 		    if(stdout === 'dist(0)' || stdout === 'err') {
-		    	var html = selection_html + '<div>Error -- No distances were calculated.</div>'
+
+		    	var html = '<div>Error -- No distances were calculated.</div>'
+
 		    }else{
 		    	var dm = create_distance_matrix(stdout);
-		    	//console.log(dm)
-		    	var html = selection_html + create_hm_html(dm);
+		    	
+		    	var html = create_hm_html(dm);
 		    }
 		    
 		    
