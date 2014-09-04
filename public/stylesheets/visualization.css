@@ -87,11 +87,18 @@
     background: OldLace;
     border:1px solid black;
     list-style-type: none;
-
+    font-size:11px;
     padding:3px;
     width: 400px;
 }
-
+.choices_info {
+    background: OldLace;
+    border:1px solid black;
+    list-style-type: none;
+    font-size:11px;
+    padding:3px;
+    width: 400px;
+}
 .counts_table {
     background: yellow;
 }
