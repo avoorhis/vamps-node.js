@@ -12,11 +12,11 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, count_matrix, selection_obj ) {
-			
+		create_barcharts_html: function( ts, count_matrix, obj ) {
+			console.log(obj)
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
-			var ds_count = selection_obj.dataset_ids.length
-			//console.log(outfile)
+			var ds_count = obj.no_of_datasets
+			
 			var bar_height = 15;
 			var data = convert_matrix(count_matrix);
 			
@@ -68,6 +68,8 @@ module.exports = {
 			
 			//console.log(svgXML)
 			
+			
+
 			COMMON.write_file(outfile,svgXML);
 			d3.select('svg').remove();
 
