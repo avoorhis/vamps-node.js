@@ -1,11 +1,13 @@
 // common.js
 var path = require('path');
 var fs = require('fs');
-
+var C = require('../../public/constants');
 
 module.exports = {
 
 	get_selection_markup: function( visual, obj ) {
+	  
+		console.log(obj)
 	  var html = "<div id='' class='selection_info'>";
 	  if(visual === 'heatmap') {
 	    html += '<li>Selected Distance Metric: ' + obj.selected_heatmap_distance + '</li>';
@@ -13,7 +15,7 @@ module.exports = {
 	  if(visual === 'dendrogram') {
 	    html += '<li>Selected Distance Metric: ' + obj.selected_dendrogram_distance + '</li>';
 	  }
-	  html += '<li>Maximum Dataset Count: ' + obj.max_ds_count.toString() + '</li>';
+	  html += '<li>Maximum Dataset Count (raw): ' + obj.max_ds_count.toString() + '</li>';
 	  if(obj.unit_choice.indexOf('tax') === 0 ) {
 	    html += '<li>Included Domains: ' + obj.domains     + '</li>';
 	    html += '<li>Include NAs?: '     + obj.include_nas + '</li>';
@@ -23,8 +25,87 @@ module.exports = {
 	  html += '</div>';
 	  return html;
 	},
-
-
+  //
+  //
+  //
+	get_choices_markup: function( visual, obj ) {
+	  var html = "<form name='' method='GET'>";
+	  //title: req.params.title   || 'default_title',
+    //  timestamp: myurl.query.ts || 'default_timestamp',
+    //  html : html,
+    //  user: req.user
+	  html += "<div id='' class='choices_info'>";
+	  if( visual === 'heatmap' || visual === 'dendrogram' ) {
+	  	//console.log(C.DISTANCECHOICES)
+	  	var viz_page = 'selected_'+visual+'_distance';
+	  	var distrows = C.DISTANCECHOICES.choices;
+	    html += '<li>Change Distance Metric: ';
+	    html += "<select name='selected_distance' class='small_font'>";
+      for(d in distrows ) {
+      	if(obj[viz_page]===distrows[d].id) {
+      		html += "<option value='"+distrows[d].id+"' selected='selected' >"+distrows[d].show+"</option>";
+      	}else{
+      		html += "<option value='"+distrows[d].id+"'>"+distrows[d].show+"</option>";
+      	}
+      } 
+      html += "</select></li>";
+      html += '<hr>';
+	  }
+	// unit_choice: 'tax_silva108_simple',
+  // max_ds_count: 3609,
+  // no_of_datasets: 232,
+  // normalization: 'none',
+  // visuals: [ 'barcharts' ],
+  // selected_heatmap_distance: 'morisita_horn',
+  // selected_dendrogram_distance: 'morisita_horn',
+  // tax_depth: 'phylum',
+  // domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+  // include_nas: 'yes' }
+	  html += '<li>Normalization: ';
+	  if(obj.normalization ==='freq') {
+		  html += '<input type="radio" name="norm" value="none" >None &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="max" >To Maximum Count &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="freq" checked="checked">To Frequency';
+		} else if (obj.normalization ==='max') {
+			html += '<input type="radio" name="norm" value="none" >None &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="max" checked="checked">To Maximum Count &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="freq" >To Frequency';
+		} else {
+		  html += '<input type="radio" name="norm" value="none" checked="checked">None &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="max" >To Maximum Count &nbsp;&nbsp;&nbsp;';
+		  html += '<input type="radio" name="norm" value="freq" >To Frequency';
+		}
+		html += '</li>';
+		html += '<hr>';
+	  html += '<li>Limit view based on tax percentage: &nbsp;&nbsp;&nbsp;';
+	 	var range = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
+	 	html += "MIN <select name='min_range' class='small_font'>";
+	 	for( var n=0;n < range.length-1;n++ ) {
+	 		if(obj.min_range.toString()===range[n].toString()) {
+	 			html += "<option value='"+range[n]+"' selected='selected'>"+range[n]+" %</option>";
+	 		}else{
+	 			html += "<option value='"+range[n]+"'>"+range[n]+" %</option>";
+	 		}	 		
+	 	}
+	  html += "</select>";
+	  html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
+	 	for( var n=1;n < range.length;n++ ) {
+	 		
+	 		if(obj.max_range.toString()===range[n].toString()) {
+	 			html += "<option value='"+range[n]+"' selected='selected'>"+range[n]+" %</option>";
+	 		}else{
+	 			html += "<option value='"+range[n]+"'>"+range[n]+" %</option>";
+	 		}
+	 	}
+	  html += "</select></li>";
+	  html += '<hr>';
+	  html += "<li>Make your selections then press: ";
+	  html += "<input type='submit' value='Change View' ></li>";
+	  html += '</div>';
+	  html += '<input type="hidden" name="ts" value="'+obj.ts+'">';
+	  html += '</form>';
+	  return html;
+	},
 
 	//
 	//
@@ -132,11 +213,11 @@ module.exports = {
 	//
 	// NORMALIZATION
 	//
-	normalize_counts: function(norm_type, selection_obj, post_items) {
+	normalize_counts: function(norm_type, selection_obj, max_count) {
 	  
 	  // get max dataset count
 	  //var selection_obj = JSON.parse(obj);
-	  var max_count = post_items.max_ds_count;
+	  //var max_count = post_items.max_ds_count;
 	  //selection_obj.max_ds_count = max_count;
 	  console.log('in normalization: '+norm_type+' max: '+max_count.toString());
 
@@ -158,9 +239,8 @@ module.exports = {
 	    }
 	    new_counts_obj.push(temp);
 	  }
-	  selection_obj.seq_freqs = new_counts_obj;
-	  selection_obj.max_ds_count = max_count;
-	  return selection_obj;
+	  
+	  return new_counts_obj;
 	},
 
 	//
@@ -180,6 +260,7 @@ module.exports = {
 	      max_count = sum;
 	    }
 	  }
+	  //console.log(max_count);
 	  return max_count;
 	},
 
