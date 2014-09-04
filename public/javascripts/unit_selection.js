@@ -67,82 +67,10 @@ function transferComplete(file_id) {
   // if (file_id === "tax_silva108_custom")
   // {
   //   show_custom_taxa_tree();
+  //   // convertTrees();
   // }
   ;
 }  
-
-function show_custom_taxa_tree()
-{
-  $('li.expandable').click(function() {
-      $(this).children('ul').toggle();
-      return false;
-  });
-  
-  // works
-  // $( "div#my_custom_list ul" ).click(function(){
-  //   $(this).children().css( "border", "3px double red" );
-  //   // $(this).children().toggle();
-  //   
-  // });
-  
-  // works
-  // $( "div#my_custom_list ul > li" ).click(function(){
-  //   $(this).css( "border", "3px double red" );
-  // });
-  
-  // http://api.jquery.com/children/
-  // $( "div#my_custom_list ul > li" ).css( "border", "3px double red" );
-/*
-  $( "div#my_custom_list" ).click(function ( event ) {
-    $( "*" ).removeClass( "hilite" );
-    var kids = $( event.target ).children();
-    var len = kids.addClass( "hilite" ).length;
-  
-    $( "#results span:first" ).text( len );
-    $( "#results span:last" ).text( event.target.tagName );
-  
-    // event.preventDefault();
-  });
-*/
-  // $("div#my_custom_list ul").click(function(){
-  //   .children().css( "background-color", "red" );
-  //     $( "li" ).css( "backgroundColor", "yellow" );
-  // });
-  // alert('div#my_custom_list ul' + index + ':' + $(this).attr('class')); 
-  
-/*  $("div#my_custom_list ul").each(function(index, value) { 
-    $(this).children[1].toggle
-    alert('div#my_custom_list ul' + index + ':' + $(this).attr('class')); 
-  });
- */
-  
-  // $("div#my_custom_list ul")
-  //   $("li").each(function(){
-  //     alert($(this).className);
-  //   });
-  // });
-   // var il = document.getElementById('my_custom_list').getElementsByTagName('ul');
-   // $(il).click(function(){
-   //   $("p").toggle();
-   // });
-   // for(i=0; i<il.length; i++)
-   // {
-   //   il[i].hide;
-   // }
-}
-  // $(li).
-  //   <li>
-  //     <label class='tax_select'>
-  // <!-- ///////// D O M A I N /////////////////////////////////////////////// -->
-  //       <a href=''  id='<%= id %>_toggle' class='domain_toggle'  onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
-  //         <img alt='plus' src='/images/tree_plus.gif'/>
-  //       </a>
-  //       <input type='checkbox' id='<%= id %>--cbid' name='domain_names[]' value='<%= domain %>' onclick="open_taxa('<%= id %>'); return false;"/>
-  //     </label>
-  //     <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain]) %>','1'); return false;"><%= domain %></span>
-  
-  
-
 
 // visualization: check_form_pg2.js
 
@@ -165,3 +93,82 @@ if (typeof get_graphics !=="undefined")
     }    
   });
 }
+
+// custom taxa tree
+function show_custom_taxa_tree()
+{
+  $('.tree li:has(ul)').addClass('parent_li');
+  // .find(' > span').attr('title', 'Collapse this branch');
+  
+  $('.tree li.parent_li > span').each(function(i,e){
+      if ($(this).find('i').hasClass("icon-plus-sign")){
+          $(this).parent('li.parent_li').find(' > ul > li').hide();
+      }
+  });
+  
+  $('.tree li.parent_li > span').on('click', function (e) {
+      var children = $(this).parent('li.parent_li').find(' > ul > li');
+      if (children.is(":visible")) {
+          children.hide('fast');
+          $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
+      } else {
+          children.show('fast');
+          $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
+          // $(this).find('img').attr("src").replace("minus", "plus");
+      }
+      e.stopPropagation();
+  });
+  
+// .attr("src", toggle_switch.attr("src").replace("down", "up"));
+  
+  // $('li.expandable').click(function() {
+  //     $(this).children('ul').toggle();
+  //     return false;
+  // });
+  // 
+  // location.reload();
+  
+  // $('div#custom_taxa_tree > ul.domain').children().css( "border", "3px double red" );
+  // .addClass( "display_none" );
+
+
+  // works
+  // $( "div#my_custom_list ul" ).click(function(){
+  //   $(this).children().css( "border", "3px double red" );
+  //   // $(this).children().toggle();
+  //   
+  // });
+  
+  // works
+  // $( "div#my_custom_list ul > li" ).click(function(){
+  //   $(this).css( "border", "3px double red" );
+  // });
+  
+}
+
+// =====
+$(function () {    
+    
+    $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+    
+    $('.tree li.parent_li > span').each(function(i,e){
+        if ($(this).find('i').hasClass("icon-plus-sign")){
+            $(this).parent('li.parent_li').find(' > ul > li').hide();
+        }
+    });
+    
+    $('.tree li.parent_li > span').on('click', function (e) {
+        var children = $(this).parent('li.parent_li').find(' > ul > li');
+        if (children.is(":visible")) {
+            children.hide('fast');
+            $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+        } else {
+            children.show('fast');
+            $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+        }
+        e.stopPropagation();
+    });
+    
+});
