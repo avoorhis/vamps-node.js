@@ -16,11 +16,11 @@ module.exports = {
 	  // The page should be purged when? -- after a certain length of time
 	  // or when the user leaves the page.
 	  
+	  //var selection_html;
+	  //var choices_html
 	  var out_file = '../../tmp/'+ts+'_counts_table.html';
-	  var html = '';
-	  var selection_html = COMMON.get_selection_markup('counts_table', obj); 
-
-		html = selection_html + create_ct_html(count_matrix)
+	  
+		var html = create_ct_html(count_matrix)
 	  
 	  //console.log(column_totals)
 	  COMMON.write_file(out_file,html);
