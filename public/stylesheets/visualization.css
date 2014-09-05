@@ -99,8 +99,18 @@
     padding:3px;
     width: 400px;
 }
+#counts_table_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
 .counts_table {
-    background: yellow;
+    background: #8FBC8F;
+    font-size:small;
+    border-collapse: collapse;
+    margin-right:20px;
+    padding-right:20px;
+
 }
 
 .heatmap_table {
