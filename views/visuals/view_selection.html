@@ -41,19 +41,19 @@
                 <% link = 'user_data/'+b.visuals[i] +'?ts='+timestamp %>                
                 
                 <% if(b.visuals[i] === 'heatmap') { %>
-                  <a href='<%= link %>' target='_blank' >Distance Heatmap</a>
+                  <a href='<%= link %>' target='<%= timestamp %>-dh' >Distance Heatmap</a>
                   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <span class='small_font'>(<%= b.selected_heatmap_distance %>)</span>           
                 <% } else if(b.visuals[i] === 'dendrogram') { %>
-                  <a href='<%= link %>' target='_blank' >Community Dendrogram</a>
+                  <a href='<%= link %>' target='<%= timestamp %>-cd' >Community Dendrogram</a>
                   <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <span class='small_font'>(<%= b.selected_dendrogram_distance %>)</span>           
                 <% } else if(b.visuals[i] === 'counts_table') { %>
-                  <a href='<%= link %>' target='_blank' >Counts Table</a>
+                  <a href='<%= link %>' target='<%= timestamp %>-ct' >Counts Table</a>
                 <% } else if(b.visuals[i] === 'barcharts') { %>
-                  <a href='<%= link %>' target='_blank' >Counts Bar Charts</a>
+                  <a href='<%= link %>' target='<%= timestamp %>-bc' >Counts Bar Charts</a>
                 <% } else { %> 
-                  <a href='<%= link %>' target='_blank' ><%= b.visuals[i] %></a>
+                  <a href='<%= link %>' target='<%= timestamp %>' ><%= b.visuals[i] %></a>
                 <% } %> 
                 <br>
               </li>
