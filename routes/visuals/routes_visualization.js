@@ -8,6 +8,7 @@ var path = require('path');
 var fs   = require('fs');
 var async = require('async');
 
+
 var helpers = require('../helpers/helpers');
 
 var COMMON  = require('./routes_common');
@@ -396,29 +397,30 @@ router.get('/reorder_datasets', function(req, res) {
   //console.log(chosen_id_name_hash)
 });
 //
-//
+//  C O U N T S  T A B L E
 //
 router.get('/user_data/counts_table', function(req, res) {
   
   var myurl = url.parse(req.url, true);
-  
-  var ts = myurl.query.ts;
-  if( (myurl.query.norm      != undefined && myurl.query.norm      != visual_post_items.normalization) ||
-      (myurl.query.min_range != undefined && myurl.query.min_range != visual_post_items.min_range)     ||
-      (myurl.query.max_range != undefined && myurl.query.max_range != visual_post_items.max_range) ) {
-    visual_post_items.min_range = Number(myurl.query.min_range)
-    visual_post_items.max_range = Number(myurl.query.max_range)
-    visual_post_items.normalization = myurl.query.norm
-    
-    //new_counts_obj = COMMON.normalize_counts(visual_post_items.normalization, selection_obj, visual_post_items.max_ds_count);
+  var old_vals = {};
+  old_vals.min = visual_post_items.min_range || undefined;
+  old_vals.max = visual_post_items.max_range || undefined;
+  old_vals.norm = visual_post_items.normalization || undefined;
+  var ts   = myurl.query.ts;
+  var min  = myurl.query.min_range;
+  var max  = myurl.query.max_range;
+  var norm = myurl.query.norm;
 
+  if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
+      (min !== undefined && min !== visual_post_items.min_range)     ||
+      (max !== undefined && max !== visual_post_items.max_range) ) {
+    visual_post_items.min_range = Number(min);
+    visual_post_items.max_range = Number(max);
+    visual_post_items.normalization = norm;
+    //console.log(count_matrix);
+    var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
     console.log('re-write file needed')
-    console.log(count_matrix)
-    console.log(new_counts_obj)
-    console.log('xx')
-
-    
-    CTABLE.create_counts_table_html ( ts, count_matrix, visual_post_items )
+    CTABLE.create_counts_table_html ( ts, custom_count_matrix, visual_post_items )
   }
   
 
@@ -427,7 +429,7 @@ router.get('/user_data/counts_table', function(req, res) {
     if (err) {
       console.log('Could not read file: ' + file + '\nHere is the error: '+ err);
     }
-    var html = '<table border="1"><tr><td>';
+    var html = '<table border="1" class="single_border"><tr><td>';
     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
@@ -442,22 +444,28 @@ router.get('/user_data/counts_table', function(req, res) {
   });
 });
 //
-//
+//   H E A T M A P
 //
 router.get('/user_data/heatmap', function(req, res) {
   var myurl = url.parse(req.url, true);
-  var ts = myurl.query.ts;
+
+  var ts    = myurl.query.ts;
+  var min   = myurl.query.min_range;
+  var max   = myurl.query.max_range;
+  var norm  = myurl.query.norm;
+  var dist  = myurl.query.selected_distance;
+
   var file = '../../tmp/'+ts+'_heatmap.html';
   
-  if( (myurl.query.norm      != undefined && myurl.query.norm      != visual_post_items.normalization) ||
-      (myurl.query.min_range != undefined && myurl.query.min_range != visual_post_items.min_range)     ||
-      (myurl.query.max_range != undefined && myurl.query.max_range != visual_post_items.max_range)     ||
-      (myurl.query.selected_distance != undefined && myurl.query.selected_distance != visual_post_items.selected_heatmap_distance) ) {
+  if( (norm !== undefined && norm   !== visual_post_items.normalization) ||
+      (min !== undefined && min !== visual_post_items.min_range)     ||
+      (max !== undefined && max !== visual_post_items.max_range)     ||
+      (dist !== undefined && dist !== visual_post_items.selected_heatmap_distance) ) {
     
-    visual_post_items.min_range = Number(myurl.query.min_range)
-    visual_post_items.max_range = Number(myurl.query.max_range)
-    visual_post_items.normalization = myurl.query.norm
-    visual_post_items.selected_heatmap_distance = myurl.query.selected_distance
+    visual_post_items.min_range = Number(min)
+    visual_post_items.max_range = Number(max)
+    visual_post_items.normalization = norm
+    visual_post_items.selected_heatmap_distance = dist
 
     console.log('re-write file needed '+visual_post_items.selected_heatmap_distance)
     HMAP.create_heatmap_html ( ts, visual_post_items )
@@ -471,7 +479,7 @@ router.get('/user_data/heatmap', function(req, res) {
           if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ); }
           console.log('in read file '+visual_post_items.selected_heatmap_distance)
 
-          var html = '<table border="1"><tr><td>';
+          var html = '<table border="1" class="single_border"><tr><td>';
           html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
           html += '</td><td>';
           html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
@@ -491,27 +499,32 @@ router.get('/user_data/heatmap', function(req, res) {
 
 });
 //
-//
+// B A R C H A R T S
 //
 router.get('/user_data/barcharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  if( (myurl.query.norm      != undefined && myurl.query.norm      != visual_post_items.normalization) ||
-      (myurl.query.min_range != undefined && myurl.query.min_range != visual_post_items.min_range)     ||
-      (myurl.query.max_range != undefined && myurl.query.max_range != visual_post_items.max_range) ) {
-    visual_post_items.min_range = Number(myurl.query.min_range)
-    visual_post_items.max_range = Number(myurl.query.max_range)
-    visual_post_items.normalization = myurl.query.norm
+  var min   = myurl.query.min_range;
+  var max   = myurl.query.max_range;
+  var norm  = myurl.query.norm;
+
+  if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
+      (min !== undefined && min !== visual_post_items.min_range)     ||
+      (max !== undefined && max !== visual_post_items.max_range) ) {
+    visual_post_items.min_range = Number(min)
+    visual_post_items.max_range = Number(max)
+    visual_post_items.normalization = norm
 
     console.log('re-write file needed')
-    BCHARTS.create_barcharts_html ( ts, count_matrix, visual_post_items )
+    var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
+    BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
   }
   var file = '../../tmp/'+ts+'_barcharts.html';
   fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, file_contents) {
     if (err) { console.log('Could not read file: ' + file + '\nHere is the error: '+ err ); }
     
-      var html = '<table border="1"><tr><td>';
+      var html = '<table border="1" class="single_border"><tr><td>';
       html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
       html += '</td><td>';
       html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
