@@ -3,7 +3,84 @@
 
 <div><%- html %></div>
 
+<span id='chart_tooltip' >
+  <table style='margin:0'>      
+    <tr>       
+      <td class='dataset'>Dataset:</td>
+      <td id='dataset'></td>
+    </tr>
+    <tr>        
+      <td class='count'>Count:</td>
+      <td id='count'></td>
+    </tr>
+    
+  </table>  
+</span>
+
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/jquery.tooltip.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
+<script type='text/javascript'>
+			// $('.tip').tipsy({ 
+   //      	gravity: 'w', 
+   //      	html: true, 
+   //      	title: function() {
+   //        	var items = this.tip.split('---'); 
+   //        	var dname = items[0], uname = items[1], count= items[2]; 
+   //        	var txt = dname+'<br>'; 
+   //     			txt += uname+'<br>'; 
+   //      		txt += 'count: '+count; 
+   //      		return txt 
+   //      	}
+   //    });		
+
+
+$(document).ready(function() {  
+
+    $(".tooltip").tooltip({
+         
+             
+          tip: "#chart_tooltip",          
+          position: 'center below',          
+          offset: [-40,0],
+          opacity: 0.95,          
+          delay: 0,
+
+          onBeforeShow: function(){
+           
+            var passthru = this.getTrigger().attr("id");
+            
+            var stuff = passthru.split('-|-')
+            dname = stuff[0];
+            c = stuff[1];
+            pct   = stuff[2];
+            count = c + ' ('+pct+' %)'
+                       
+            $("#chart_tooltip table td#dataset").text(dname);
+            $("#chart_tooltip table td#count").text(count);
+            //$("#chart_tooltip table td#tmp").text(pct);
+                    
+        
+          },        
+          
+         onHide: function(){
+             //this.getTrigger().parents("tr").children().eq("2").css('background-color', 'grey');          
+         
+         }          
+      
+      });         
+      
+      $(".tooltip").hover(function() {
+         
+         var cell = $(this);
+         //test = cell.parents("tr").cells;
+         //alert ('test= '+test)
+  
+    });
+  
+ });
+
+
+</script> 
 <% include ../../add_ins/end.ejs %>
 <div id='DEBUG_div'></div>
