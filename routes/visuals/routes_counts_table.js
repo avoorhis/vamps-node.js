@@ -62,7 +62,7 @@ function create_ct_html(matrix) {
 	    	var cnt = matrix.unit_names[name][c];
 	    	var pct =  (cnt * 100 / column_totals[c]).toFixed(2)
 	      var id  = matrix.dataset_names[c]+'-|-'+cnt.toString()+'-|-'+pct.toString();
-	      html += "<td id='"+id+"' class='tooltip'>"+matrix.unit_names[name][c]+"</td>";
+	      html += "<td id='"+id+"' class='tooltip right_justify'>"+matrix.unit_names[name][c]+"</td>";
 	      //col_count += 1;
 	    }
 	    html += "</tr>";
@@ -70,7 +70,7 @@ function create_ct_html(matrix) {
 	  }
 	  html += "<tr><td>TOTAL COUNTS:</td>";
 	  for (n in column_totals) {
-	    html += "<td>"+column_totals[n]+"</td>";
+	    html += "<td class='right_justify'>"+column_totals[n]+"</td>";
 	  }
 	  html += "</tr>";
 	  html += "</table>";
