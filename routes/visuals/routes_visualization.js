@@ -90,15 +90,14 @@ router.post('/view_selection',  function(req, res) {
     console.log('ERROR--RORRE');
   }
   //console.log(unit_name_query);
-  //console.log('4');
-  //console.log('3');
+  
   selection_obj.counts_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   
   //console.log(unit_name_query);
 
   
   //console.log('START BODY>> in route/visualization.js /view_selection');
-  //console.log(JSON.stringify(req.body,null,2));
+  //console.log(JSON.stringify(selection_obj.counts_matrix);
   //console.log('<<END BODY');
   //console.log(unit_name_query);
   //var old_sid = 'x';
@@ -129,6 +128,9 @@ router.post('/view_selection',  function(req, res) {
       // this function: output_matrix writes various counts matrices to files for *possible* use later by R or D3
       // It also reurns a JSON count_matrix
       count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
+      //console.log(count_matrix);
+      //console.log('3');
+
       // This is what matrix looks like (a different matrix is written to file)
       // { 
       //  dataset_names: 
@@ -218,15 +220,17 @@ router.post('/unit_selection',  function(req, res) {
   //console.log('<<END BODY');
   var db = req.db;
   var dsets = {};
-  var selection_obj = {dataset_ids : [],
+  var selection_obj = {
+    dataset_ids : [],
     seq_ids     : [],
-    seq_freqs  : [],
-    unit_assoc: {}};
+    seq_freqs   : [],
+    unit_assoc  : {}
+  };
   var accumulator = {
     dataset_ids : [],
     seq_ids     : [],
-    seq_freqs  : [],
-    unit_assoc: {}
+    seq_freqs   : [],
+    unit_assoc  : {}
   };
 
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
@@ -265,13 +269,17 @@ router.post('/unit_selection',  function(req, res) {
   helpers.start = process.hrtime();
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
-  var qSelectSeqID = "SELECT dataset_id, seq_count, sequence_id, "+available_units+" FROM sequence_pdr_info";
+  var qSelectSeqID = "SELECT dataset_id, sequence_id, seq_count, "+available_units+" FROM sequence_pdr_info";
   qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
   qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
+
+  
+  //var qSelectSeqID = "SELECT dataset_id, sequence_id, seq_count FROM sequence_pdr_info";
+  //qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
   console.log(qSelectSeqID);
 
 
-  db.query(qSelectSeqID, function(err, rows, fields){
+  db.query(qSelectSeqID, function(err, rows){
     var u;
 
     if (err)  {
@@ -302,42 +310,22 @@ router.post('/unit_selection',  function(req, res) {
         }
 
       }
-  // console.log('req.body.dataset_ids');
-  // console.log(req.body.dataset_ids);
-  // console.log('req.body.dataset_ids');
-  // console.log('dsets');
-  // console.log(dsets);
-  // console.log('dsets');
-
-      //console.log(dsets)
+  
       for(i in chosen_id_name_hash.ids) {  // has correct ds order
         id = chosen_id_name_hash.ids[i]
         accumulator.dataset_ids.push(id);
-        //dataset_accumulator.ds_counts.push(id)
         accumulator.seq_ids.push(dsets[id].seq_ids);
         accumulator.seq_freqs.push(dsets[id].seq_counts);
         for (u in dsets[id].unit_assoc) {
           accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
+
         }
       }
     }// end else
 
-    // Adds dataset_ids that were selected but have no sequences
-    // --not sure if this will be needed in production
-    // for (var n=0; n < req.body.dataset_ids.length; n++){
-    //   var items = req.body.dataset_ids[n].split('--');
-    //   var did = items[0];
-    //   if(accumulator.dataset_ids.indexOf(did.toString()) === -1 || accumulator.dataset_ids.indexOf(did.toString()) === 'undefined'){
-    //     //console.log('1 ' + did);
-    //     accumulator.dataset_ids.push(did);
-    //     accumulator.seq_ids.push([]);
-    //     accumulator.seq_freqs.push([]);
-    //     for (u=0; u < available_units.length; u++) {
-    //       accumulator.unit_assoc[available_units[u]].push([]);
-    //     }
-    //   }
-    // }
+   
     GLOBAL.selection_obj = accumulator;
+
     GLOBAL.chosen_id_name_hash = chosen_id_name_hash;
     console.log('selection_obj-->');
     console.log(accumulator);
@@ -346,18 +334,20 @@ router.post('/unit_selection',  function(req, res) {
     console.log(chosen_id_name_hash);
     console.log('<--chosen_id_name_hash');
     helpers.elapsed_time(">>>>>>>>> 3 Before Page Render But after Query/Calc <<<<<<");
+ 
 
     res.render('visuals/unit_selection', {   
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-                    selection_obj: JSON.stringify(accumulator),
+                    //selection_obj: JSON.stringify(accumulator),
+                    //selection_obj: JSON.stringify(selection_obj),
                     constants    : JSON.stringify(req.C),
                     user         : req.user
     });  // end render
     // benchmarking
     helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
 
-  });  // end db query
+  });  // end db query   
    
    
 
