@@ -1,6 +1,6 @@
 <%   var rows     = JSON.parse(constants).VISUALOUTPUTCHOICES.choices; %>
 <%   var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
-<%    var so = JSON.parse(selection_obj) %>
+<%   var items    = JSON.parse(chosen_id_name_hash) %>
 
 Display Output:
 <p class='standard'>
@@ -15,7 +15,7 @@ Display Output:
     <% for (i in rows) { %>
        
     		<% if(rows[i].id === 'heatmap') { %>
-                <% if(so.dataset_ids.length > 1) { %>
+                <% if(items.ids.length > 1) { %>
                     <li><input type='checkbox' id='' name='visuals[]' value='<%= rows[i].id %>' \>
                     <select name='selected_heatmap_distance' class='small_font'>
                     <% for(d in distrows ) { %>
