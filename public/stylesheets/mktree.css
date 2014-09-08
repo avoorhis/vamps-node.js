@@ -38,7 +38,7 @@
 .tree li {
     list-style-type:none;
 /*    margin:0;*/
-    margin-left: 1.5ex;
+    margin-left: .5ex;
 /*    padding:10px 5px 0 5px;*/
     position:relative
     line-height: 2ex;
@@ -87,22 +87,25 @@
     color:#000
 }
 
+.tree>input {
+  margin-left: 1.5ex;
+}
+
 /*i.icon-plus-sign {background: url(../images/mktree/plus.gif)  }*/
 i.icon-plus-sign {
-    background: url("../images/mktree/plus.gif");
+    background: url("../images/tree_plus.gif") no-repeat;
 /*     repeat scroll 0 0 rgba(0, 0, 0, 0);*/
     display: inline-block;
-    height: 14px;
+/*    height: 14px;*/
 /*    line-height: 14px;*/
 /*    margin-top: 1px;*/
 /*    text-top;*/
 /*    width: 14px;*/
 }
 i.icon-minus-sign {
-  background: url(../images/mktree/minus.gif);  
+  background: url("../images/tree_minus.gif") no-repeat;  
 /*  background: url("../images/mktree/plus.gif") repeat scroll 0 0 rgba(0, 0, 0, 0);*/
   display: inline-block;
-  height: 14px;
 /*  line-height: 14px;*/
 /*  margin-top: 1px;*/
 /*    text-top;*/
@@ -111,17 +114,21 @@ i.icon-minus-sign {
 
 
 [class^="icon-"], [class*=" icon-"] {
-    background-image: url("../images/mktree/plus.gif");
+/*    background-image: url("../images/tree_plus.gif");*/
 /*    background-position: 14px 14px;*/
-    background-repeat: no-repeat;
-    display: inline-block;
+/*    background-repeat: no-repeat;*/
+/*    display: inline-block;*/
 /*    height: 14px;
     line-height: 14px;
     margin-top: 1px;*/
 /*    vertical-align: text-top;*/
-    vertical-align: middle;
-    width: 14px;
-}
+/*    vertical-align: middle;*/
+    width: 1.9ex;
+    height: 1.9ex;
+    
+/*    width: 14px;
+    height: 14px;
+*/}
 
 
 /** From http://www.javascripttoolbox.com/lib/mktree/mktree.css */
