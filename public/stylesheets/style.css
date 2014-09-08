@@ -76,6 +76,13 @@ vertical-align:top;
     
   
 }
+
+td.right_justify {
+  text-align:right;
+}
+td.left_justify {
+  text-align:left;
+}
 .main_menu ul {
     float:left;
     margin: 0;

@@ -201,8 +201,20 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
 module.exports = app;
 
+// if (!module.parent) {
+//   http.createServer(app).listen(process.env.PORT, function(){
+//     console.log("Server listening on port " + app.get('port'));
+//   });
+// }
+
 if (!module.parent) {
-  http.createServer(app).listen(process.env.PORT, function(){
-    console.log("Server listening on port " + app.get('port'));
-  });
+  var server = http.createServer(app)
+  cluster(server).listen(process.env.PORT)
 }
+
+
+
+
+
+
+
