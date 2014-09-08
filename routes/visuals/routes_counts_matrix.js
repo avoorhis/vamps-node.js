@@ -131,20 +131,20 @@ module.exports = {
 		  // need chosen units, tax depth(if applicable), db
 		  //selection_obj = selection_obj
 		  //console.log('selection_obj')
-		  //console.log(selection_obj)
+		  //console.log(selection_obj.unit_assoc)
 		  name_hash = chosen_id_name_hash
-		  
+		  //console.log(selection_obj.counts_matrix)
 		  var matrix_with_names = {};
 		  matrix_with_names.dataset_names = [];
 		  matrix_with_names.unit_names = [];
 		  var unit_name_lookup = {};
 		  var unit_id_lookup = {};
-
+// silva_taxonomy_info_per_seq_id in selection_obj
 		  for (var r=0; r < sqlrows.length; r++){
 		    uid = sqlrows[r].id;
 		    name = sqlrows[r].tax;
 		    counts = selection_obj.counts_matrix[uid];
-		    
+		    //console.log(counts)
 				unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
 		  	unit_name_lookup = create_unit_name_lookup( name, counts, unit_name_lookup );
 		   
