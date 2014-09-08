@@ -161,7 +161,8 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
-	  var tax_query = "SELECT distinct silva_taxonomy_id as id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy\n";
+	  var tax_query = "SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy_info_per_seq as t1\n";
+	  tax_query     += "JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n";
 	  tax_query     += joins;
 	  
 	  unit_id_array = []
@@ -169,11 +170,13 @@ module.exports = {
 	    unit_id_array = unit_id_array.concat(selection_obj.unit_assoc[uassoc][n])
 
 	  }
+	  //console.log(uassoc)
+	  //console.log(selection_obj.unit_assoc[uassoc])
 	  // Important to unique this array on larger sets
 	  unit_id_array = unit_id_array.filter(onlyUnique);
 	  
 
-	  tax_query     += " WHERE silva_taxonomy_id in (" + unit_id_array + ")\n";
+	  tax_query     += " WHERE silva_taxonomy_info_per_seq_id in (" + unit_id_array + ")\n";
 	  tax_query     += and_domain_in;
 	  return tax_query;
 
