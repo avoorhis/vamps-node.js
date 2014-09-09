@@ -38,10 +38,10 @@
 .tree li {
     list-style-type:none;
 /*    margin:0;*/
-    margin-left: .5ex;
+    margin-left: .8ex;
 /*    padding:10px 5px 0 5px;*/
-    position:relative
-    line-height: 2ex;
+/*    position:relative*/
+/*    line-height: 2ex;*/
 }
 .tree li::before, .tree li::after {
     content:'';
