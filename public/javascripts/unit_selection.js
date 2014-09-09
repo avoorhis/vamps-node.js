@@ -111,6 +111,12 @@ function show_custom_taxa_tree()
       $(this).prop( "checked", true );
   });
   
+  
+  // $('.tree li.parent_li > span').click(function(e){
+  //   toggle_children();
+  //   e.stopPropagation();
+  // });
+  
   $('.tree li.parent_li > span').on('click', function (e) {
       var children = $(this).parent('li.parent_li').find(' > ul > li');
       if (children.is(":visible")) {
@@ -127,36 +133,12 @@ function show_custom_taxa_tree()
   });
 
 
-// input:
-// $('.tree li.parent_li > input').each(function(i,e){
-//     if ($(this).hasClass("plus-sign")){
-//         $(this).parent('li.parent_li').find(' > ul > li').hide();
-//     }
-// });
 
 // $( "input:checked" )
 // Check #x
 // $( "#x" ).prop( "checked", true );
 // Uncheck #x
 // $( "#x" ).prop( "checked", false );
-
-$('.tree li.parent_li > input').on('click', function (e) {
-    var children = $(this).parent('li.parent_li').find(' > ul > li');
-    var l = $('.tree li.parent_li').find('input:checked').length;
-    alert(l);
-    // if (children.is(":visible")) {
-    //     children.hide('fast');
-    //     $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
-    //     // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
-    // } else {
-    //     children.show('fast');
-    //     $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-    //     // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
-    //     // $(this).find('img').attr("src").replace("minus", "plus");
-    // }
-    e.stopPropagation();
-});
-
   
 // .attr("src", toggle_switch.attr("src").replace("down", "up"));
   
@@ -196,4 +178,14 @@ $('.tree li.parent_li > input').on('click', function (e) {
   
 }
 
-// =====
+var toggle_children = function()
+{
+    var children = $(this).parent('li.parent_li').find(' > ul > li');
+    if (children.is(":visible")) {
+        children.hide('fast');
+        $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+    } else {
+        children.show('fast');
+        $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+    }
+}
