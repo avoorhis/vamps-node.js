@@ -1,9 +1,9 @@
-var is_visible = function(div_to_check) {
-  if (div_to_check.css('display') === 'block')
-  {  return true; }
-  else
-  { return false; }
-};
+// var is_visible = function(div_to_check) {
+//   if (div_to_check.css('display') === 'block')
+//   {  return true; }
+//   else
+//   { return false; }
+// };
 
 var toggle_checking_all = function(clicked) {
   $(clicked.parentNode.parentNode).find('input').prop('checked',
@@ -37,9 +37,13 @@ var plus_img  = function(my_img) {
 
 var toggle_plus_img = function(clicked) {
   var my_img = $(clicked).children();
-  if (is_visible($(clicked.parentNode.parentNode).find('.datasets_per_pr'))) {
+  // if (is_visible($(clicked.parentNode.parentNode).find('.datasets_per_pr'))) {
+  //   minus_img(my_img);
+  // }
+  
+  if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').is(":visible")) {
     minus_img(my_img);
-  }
+  }  
   else {
     plus_img(my_img);
   }
@@ -47,7 +51,10 @@ var toggle_plus_img = function(clicked) {
 };
 
 var uncheck_closed = function(parent_place) {
-  if (!is_visible(parent_place.find('.datasets_per_pr'))) {
+  // if (!is_visible(parent_place.find('.datasets_per_pr'))) {
+  //   parent_place.find('input').prop('checked', false);
+  // }
+  if (parent_place.find('.datasets_per_pr').not(":visible")) {
     parent_place.find('input').prop('checked', false);
   }
 };
@@ -71,7 +78,8 @@ $(document).ready(function () {
     var checkbox = $(this),
       datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
 
-    if (!is_visible(datasets_per_pr)) {
+    // if (!is_visible(datasets_per_pr)) {
+    if (datasets_per_pr.not(":visible")) {
       datasets_per_pr.show();
       minus_img(checkbox.siblings('a').find('img'));
     }
