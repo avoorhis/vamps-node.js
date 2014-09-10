@@ -112,6 +112,7 @@ function show_custom_taxa_tree()
   });
   
   $('.tree li.parent_li > span').click(toggle_children);
+  // $('.tree li.parent_li > input').click(toggle_children);
 
   
   // $('.tree li.parent_li > span').click(function(e){
@@ -170,7 +171,6 @@ function show_custom_taxa_tree()
   // var show_next_level = function() {
   //   children.show('fast');
   //   $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-  //   
   // }
 
   // var hide_next_level = function() {
