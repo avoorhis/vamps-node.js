@@ -111,26 +111,28 @@ function show_custom_taxa_tree()
       $(this).prop( "checked", true );
   });
   
+  $('.tree li.parent_li > span').click(toggle_children);
+
   
   // $('.tree li.parent_li > span').click(function(e){
   //   toggle_children();
   //   e.stopPropagation();
   // });
   
-  $('.tree li.parent_li > span').on('click', function (e) {
-      var children = $(this).parent('li.parent_li').find(' > ul > li');
-      if (children.is(":visible")) {
-          children.hide('fast');
-          $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
-          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
-      } else {
-          children.show('fast');
-          $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
-          // $(this).find('img').attr("src").replace("minus", "plus");
-      }
-      e.stopPropagation();
-  });
+  // $('.tree li.parent_li > span').on('click', function (e) {
+  //     var children = $(this).parent('li.parent_li').find(' > ul > li');
+  //     if (children.is(":visible")) {
+  //         children.hide('fast');
+  //         $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+  //         // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
+  //     } else {
+  //         children.show('fast');
+  //         $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+  //         // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
+  //         // $(this).find('img').attr("src").replace("minus", "plus");
+  //     }
+  //     e.stopPropagation();
+  // });
 
 
 
@@ -139,7 +141,7 @@ function show_custom_taxa_tree()
 // $( "#x" ).prop( "checked", true );
 // Uncheck #x
 // $( "#x" ).prop( "checked", false );
-  
+  // th.parent('li.parent_li').find('input').each(function(i){$(this).prop( "checked", false )})
 // .attr("src", toggle_switch.attr("src").replace("down", "up"));
   
   // $('li.expandable').click(function() {
@@ -181,11 +183,17 @@ function show_custom_taxa_tree()
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
+    // alert("children");
     if (children.is(":visible")) {
         children.hide('fast');
         $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
     } else {
         children.show('fast');
         $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
     }
+    // a = $( "input:checked" ).length;
+    // alert(a);
+    
+    return false;
 }
