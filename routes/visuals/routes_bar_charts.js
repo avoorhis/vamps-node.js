@@ -13,7 +13,7 @@ module.exports = {
 		//  CREATE BARCHARTS HTML
 		//
 		create_barcharts_html: function( ts, count_matrix, obj ) {
-			console.log(obj)
+			console.log(count_matrix)
 			var outfile = '../../tmp/'+ts+'_barcharts.html';
 			var ds_count = obj.no_of_datasets
 			
@@ -129,7 +129,11 @@ function create_svg_object(props, color, data) {
 		      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
 		      .attr("height",  18)
 		      .attr("id",function(d) { 
-		       	return this._parentNode.__data__.DatasetName + '-|-'+d.name + '-|-'+this._parentNode.__data__[d.name].toString() // ip of each rectangle should be datasetname-|-unitname-|-count
+		      	var cnt =  this._parentNode.__data__[d.name];
+		      	var total = this._parentNode.__data__['total'];
+		      	//console.log(this._parentNode.__data__['total']);
+		      	var pct = (cnt * 100 / total).toFixed(2)
+		       	return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 					}) 
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
