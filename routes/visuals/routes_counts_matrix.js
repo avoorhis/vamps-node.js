@@ -45,13 +45,12 @@ module.exports = {
 			biome_matrix = {
 				id: post_items.ts,
 				format: "Biological Observation Matrix",
-				format_url: "",
-				type: "",
-				generated_by:"VAMPS-NodeJS",
+				units: post_items.unit_choice,
+				generated_by:"VAMPS-NodeJS Version 2.0",
 				date: date.toISOString(),
 				rows:[],										// taxonomy (or OTUs, MED nodes) names
 				columns:[],									// ORDERED dataset names
-				max_col_counts:[],								// ORDERED datasets count sums
+				column_totals:[],								// ORDERED datasets count sums
 				max_dataset_count:0,							// maximum dataset count
 				matrix_type: 'dense',
     		matrix_element_type: 'int',
@@ -255,8 +254,8 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
   	}
   }
   var max = 0;
-  for(n in chosen_id_name_hash.names) {
-  	biome_matrix.max_col_counts.push(max_count[chosen_id_name_hash.names[n]])
+  for(n in chosen_id_name_hash.names) { 		// correct order
+  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]])
   	if(max_count[chosen_id_name_hash.names[n]] > max){
   		max = max_count[chosen_id_name_hash.names[n]];
   	}
