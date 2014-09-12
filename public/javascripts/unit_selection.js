@@ -88,8 +88,8 @@ if (typeof get_graphics !=="undefined")
 
     if (taxa_checked) 
     {
-      msg = 'You must select one or more display output choices';
-      check_form(get_graphics_form, msg, "visuals[]");
+     // msg = 'You must select one or more display output choices';
+     // check_form(get_graphics_form, msg, "visuals[]");
     }    
   });
 }
