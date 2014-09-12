@@ -123,6 +123,7 @@ module.exports = {
 		  var matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
 		    
  			console.log('Writing matrix file');
+ 			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
  			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
 
 			return biome_matrix;
@@ -233,12 +234,12 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biome_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: null });
+	    biome_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
 	for(uk in ukeys) {
 		
-		biome_matrix.rows.push({ id: ukeys[uk], metadata: null });
+		biome_matrix.rows.push({ id: ukeys[uk], metadata: {} });
 		
 		biome_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}

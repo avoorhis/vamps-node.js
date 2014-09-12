@@ -378,10 +378,10 @@ router.get('/user_data/counts_table', function(req, res) {
   // }
   
 
-  var file = '../../tmp/'+ts+'_count_matrix.biom';
-  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, file_contents) {
+  var infile = '../../tmp/'+ts+'_count_matrix.biom';
+  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
     if (err) {
-      console.log('Could not read file: ' + file + '\nHere is the error: '+ err);
+      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
     }
     var mtx = JSON.parse(file_contents);
     //var html = "<table border='1' class='single_border'><tr><td>";
@@ -426,51 +426,83 @@ router.get('/user_data/counts_table', function(req, res) {
 //
 router.get('/user_data/heatmap', function(req, res) {
   var myurl = url.parse(req.url, true);
-
+  var exec = require('child_process').exec;
   var ts    = myurl.query.ts;
-  var min   = myurl.query.min_range;
-  var max   = myurl.query.max_range;
-  var norm  = myurl.query.norm;
-  var dist  = myurl.query.selected_distance;
+  // var min   = myurl.query.min_range;
+  // var max   = myurl.query.max_range;
+  // var norm  = myurl.query.norm;
+  var dist  = 'morisita_horn';  // default distance
 
-  var file = '../../tmp/'+ts+'_heatmap.html';
+  //var file = '../../tmp/'+ts+'_heatmap.html';
   
-  if( (norm !== undefined && norm   !== visual_post_items.normalization) ||
-      (min !== undefined && min !== visual_post_items.min_range)     ||
-      (max !== undefined && max !== visual_post_items.max_range)     ||
-      (dist !== undefined && dist !== visual_post_items.selected_heatmap_distance) ) {
+  // if( (norm !== undefined && norm   !== visual_post_items.normalization) ||
+  //     (min !== undefined && min !== visual_post_items.min_range)     ||
+  //     (max !== undefined && max !== visual_post_items.max_range)     ||
+  //     (dist !== undefined && dist !== visual_post_items.selected_heatmap_distance) ) {
     
-    visual_post_items.min_range = Number(min)
-    visual_post_items.max_range = Number(max)
-    visual_post_items.normalization = norm
-    visual_post_items.selected_heatmap_distance = dist
+  //   visual_post_items.min_range = Number(min)
+  //   visual_post_items.max_range = Number(max)
+  //   visual_post_items.normalization = norm
+  //   visual_post_items.selected_heatmap_distance = dist
 
-    console.log('re-write file needed '+visual_post_items.selected_heatmap_distance)
-    HMAP.create_heatmap_html ( ts, visual_post_items )
+  //   console.log('re-write file needed '+visual_post_items.selected_heatmap_distance)
+  //   HMAP.create_heatmap_html ( ts, visual_post_items )
     
 
-  }else{
+  // }else{
     
-  }
+  // }
+  var infile = './tmp/'+ts+'_count_matrix.biom';
+  //var mtx = JSON.parse(file_contents);
+  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 
-  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, file_contents) {
-          if (err) { console.log('Could not read file: '+file + '\nHere is the error: '+ err ); }
-          console.log('in read file '+visual_post_items.selected_heatmap_distance)
+  //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
+  var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + infile + ' ' + dist;
+  console.log(command);
+  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(stderr){console.log(stderr)}
+        stdout = stdout.trim();
+        console.log(stdout)
+        if(stdout === 'dist(0)' || stdout === 'err') {
 
-          var html = '<table border="1" class="single_border"><tr><td>';
-          html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-          html += '</td><td>';
-          html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-          html += '</td></tr></table>';
-          html += file_contents;
+          var html = '<div>Error -- No distances were calculated.</div>'
 
-          res.render('visuals/user_data/heatmap', {
-            title: req.params.title   || 'default_title',
-            timestamp: ts || 'default_timestamp',
-            html : html,
-            user: req.user
-          });
-      })
+        }else{
+          var dm = HMAP.create_distance_matrix(stdout);
+          
+          var html = HMAP.create_hm_html(dm);          
+
+        }
+
+        res.render('visuals/user_data/heatmap', {
+              title: req.params.title   || 'default_title',
+              timestamp: ts || 'default_timestamp',
+              html : html,
+              user: req.user
+        });
+
+
+  });
+  // fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, file_contents) {
+  //     if (err) { 
+  //       console.log('Could not read file: '+file + '\nHere is the error: '+ err ); 
+  //     }
+     
+
+  //     var html = '<table border="1" class="single_border"><tr><td>';
+  //     //html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+  //     html += '</td><td>';
+  //     //html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+  //     html += '</td></tr></table>';
+  //     html += file_contents;
+
+  //     res.render('visuals/user_data/heatmap', {
+  //       title: req.params.title   || 'default_title',
+  //       timestamp: ts || 'default_timestamp',
+  //       html : html,
+  //       user: req.user
+  //     });
+  // })
   
   
 
