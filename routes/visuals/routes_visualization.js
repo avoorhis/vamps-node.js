@@ -515,39 +515,41 @@ router.get('/user_data/barcharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  var min   = myurl.query.min_range;
-  var max   = myurl.query.max_range;
-  var norm  = myurl.query.norm;
+  // var min   = myurl.query.min_range;
+  // var max   = myurl.query.max_range;
+  // var norm  = myurl.query.norm;
 
-  if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
-      (min !== undefined && min !== visual_post_items.min_range)     ||
-      (max !== undefined && max !== visual_post_items.max_range) ) {
-    visual_post_items.min_range = Number(min)
-    visual_post_items.max_range = Number(max)
-    visual_post_items.normalization = norm
+  // if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
+  //     (min !== undefined && min !== visual_post_items.min_range)     ||
+  //     (max !== undefined && max !== visual_post_items.max_range) ) {
+  //   visual_post_items.min_range = Number(min)
+  //   visual_post_items.max_range = Number(max)
+  //   visual_post_items.normalization = norm
 
-    console.log('re-write file needed')
-    var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
-    BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
-  }
-  var file = '../../tmp/'+ts+'_barcharts.html';
-  fs.readFile(path.resolve(__dirname, file), 'UTF-8', function (err, file_contents) {
-    if (err) { console.log('Could not read file: ' + file + '\nHere is the error: '+ err ); }
-    
-      var html = '<table border="1" class="single_border"><tr><td>';
-      html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-      html += '</td><td>';
-      html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-      html += '</td></tr></table>';
-      html += file_contents;
+  //   console.log('re-write file needed')
+  //   var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
+  //   BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
+  // }
+  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
+  //fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
+  //  if (err) { console.log('Could not read file: ' + infile + '\nHere is the error: '+ err ); }
+    //var d3 = require("d3");
+     
 
+      //var html = '<table border="1" class="single_border"><tr><td>';
+      //html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+      //html += '</td><td>';
+      //html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+      //html += '</td></tr></table>';
+      //html += file_contents;
+    var html = BCHARTS.create_barcharts_html ( ts )
     res.render('visuals/user_data/barcharts', {
       title: req.params.title   || 'default_title',
       timestamp: ts || 'default_timestamp',
       html : html,
       user: req.user
     });
-  });
+  //});
 });
 /*
 *   PARTIALS
