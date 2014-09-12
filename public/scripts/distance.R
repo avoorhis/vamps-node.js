@@ -3,7 +3,9 @@ args <- commandArgs(TRUE)
 url <- args[1]  # file name
 metric <- args[2]   # horn or jaccard
 #print(url)
+
 library(jsonlite,quietly=TRUE)
+
 myjson<-fromJSON(url)
 
 
