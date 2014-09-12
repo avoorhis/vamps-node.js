@@ -52,9 +52,9 @@ $(document).ready(function() {
             
             var stuff = passthru.split('-|-')
             dname = stuff[0];
-            c = stuff[1];
+            cnt = stuff[1];
             pct   = stuff[2];
-            count = c + ' ('+pct+' %)'
+            count = cnt + ' ('+pct+' %)'
                        
             $("#chart_tooltip table td#dataset").text(dname);
             $("#chart_tooltip table td#count").text(count);
