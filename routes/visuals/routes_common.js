@@ -173,7 +173,7 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
-	  var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',domain,phylum) as tax\n";
+	  var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
 		tax_query     += "   FROM sequence_pdr_info as t1\n";
 		tax_query     += "   JOIN sequence_uniq_info as t2 using(sequence_id)\n";
 		tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 using (silva_taxonomy_info_per_seq_id)\n";
