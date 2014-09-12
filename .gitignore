@@ -1,4 +1,5 @@
 *.sql.gz
+*.sql
 db.sql
 config/database-dev.js
 config/database-test.js

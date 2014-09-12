@@ -35,105 +35,44 @@ var COMMON  = require('./routes_common');
 //               [0,1,1,0,0,0]]
 // }
 
-
 module.exports = {
 
 
-		get_biome_matrix: function(chosen_id_name_hash, post_items, sqlrows) {
+		get_biome_matrix: function(uid_matrix, chosen_id_name_hash, sqlrows) {
 			var date = new Date()
 			
 			biome_matrix = {
-				id: post_items.ts,
-				format: "Biological Observation Matrix",
-				format_url: "",
+				id:null,
+				format: "Biological Observation Matrix 0.9.1-dev",
+				format_url: "http://biom-format.org/documentation/format_versions/biom-1.0.html",
 				type: "",
-				generated_by:"VAMPS-NodeJS",
+				generated_by:"VAMPS",
 				date: date.toISOString(),
-				rows:[],										// taxonomy (or OTUs, MED nodes) names
-				columns:[],									// ORDERED dataset names
-				max_col_counts:[],								// ORDERED datasets count sums
-				max_dataset_count:0,							// maximum dataset count
+				rows:[],
+				columns:[],
 				matrix_type: 'dense',
     		matrix_element_type: 'int',
-     		shape: [],									// [row_count, col_count]
-     		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
-     	}
+     		shape: [],
+     		data:  []
+			}
 			
 			var unit_name_lookup = {};
-			var ukeys = [];
-			var unit_name_lookup_per_dataset = {};
 		  //var unit_id_lookup = {};
 			for (var r=0; r < sqlrows.length; r++){
-		    var did  = sqlrows[r].did;
-		    var cnt  = sqlrows[r].seq_count;
-		    var uid  = sqlrows[r].uid;
-		    var uname = sqlrows[r].tax;
-		    //counts = uid_matrix[uid];
+		    uid = sqlrows[r].id;
+		    name = sqlrows[r].tax;
+		    counts = uid_matrix[uid];
 		    //biome_matrix.rows.push({id:name})
 		    //biome_matrix.data.push(counts)
 		    //console.log(counts)
 				//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-				unit_name_lookup[uname] = 1;
-				ukeys.push(uname);
-
-				//unit_name_lookup_per_dataset[did][uid] = sumcounts
-		  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-		  	if(did in unit_name_lookup_per_dataset) {
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
-		  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-		  		}else{
-		  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-		  		}
-
-		  	}else{
-		  		unit_name_lookup_per_dataset[did] = {};
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
-		  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-
-		  		}else{
-		  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-		  		}
-		  	}
+		  	unit_name_lookup = create_unit_name_lookup( name, counts, unit_name_lookup);
 		   
 		  }
-
-		  var unit_name_counts={};
-		  for(uname in unit_name_lookup){
-		  	unit_name_counts[uname]=[];
-		  }
-		  for (var n in chosen_id_name_hash.ids) { // correct order
-		  	did = chosen_id_name_hash.ids[n];
-		  	
-		  	for(uname in unit_name_lookup) {
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
-		  			cnt = unit_name_lookup_per_dataset[did][uname];
-		  			unit_name_counts[uname].push(cnt)
-
-		  		} else {
-		  			unit_name_counts[uname].push(0)
-		  		}
-		  	}
-		  }
-		  ukeys.push(uname);
-		  ukeys = ukeys.filter(onlyUnique);
-		  ukeys.sort()
-		  //console.log(unit_name_lookup_per_dataset);
-		  
-		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
-		  
-		  var matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-		    
- 			console.log('Writing matrix file');
- 			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
-
+		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_lookup, chosen_id_name_hash );
+		  console.log(biome_matrix)
 			return biome_matrix;
-
-			function onlyUnique(value, index, self) { 
-		    return self.indexOf(value) === index;
-			}
-
 		},
-
 		//
 		// F I L L  I N  C O U N T S  M A T R I X
 		//
@@ -222,70 +161,132 @@ module.exports = {
 		  return matrix;
 		},
 
-	
+		//
+		//  O U T P U T  M A T R I X
+		//
+		output_matrix: function(to_loc, ts, selection_obj, chosen_id_name_hash, sqlrows ) {
+		  // This function creates two matrices from the data in body.selection_obj and sqlrows
+			// one matrix is printed to a text file to which the unique timestamp (ts) is appended.
+			// the matrix file is the input for Rscripts that use it: heatmap and dendrogram
+			// FORMAT file:mtx:
+			//        dsname1    dsname2       dsname3
+			// unitname1  4       2       4
+			// unitname2  272     401     430
+			//
+			// The other matrix is a JSON Object and is returned from this function for use in 
+			// the counts table 
+			// FORMAT memory:JSON:
+			// { dataset_names: 
+   		// 		[ dsname1,     dsname2,     dsname3  ],
+  		// 	 unit_names: 
+   		//		[	unitname1: [ '1', '0', '1'  ],
+     	//			unitname2: [ '2', '1', '2'  ],
+     	//			unitname3: [ '315', '778' ] 
+     	//		] 
+     	// }
+     	//
+     	// Testing new file formats
+     	// FORMAT file:csv2: uses names
+     	//  DatasetName,Bacteria;Proteobacteria,Bacteria;Bacteroidetes
+			//	SLM_NIH_Bv4v5--03_Junction_City_East,4,272
+			//  SLM_NIH_Bv4v5--02_Spencer,2,401
+			//  SLM_NIH_Bv4v5--01_Boonville,4,430
+ 			// FORMAT file:csv3:  uses IDs
+ 			//  DatasetId,82,84,137,214
+			//  122,4,0,0,272
+			//  126,2,0,0,401
+			//  135,2,1,1,430
+		  // need chosen units, tax depth(if applicable), db
+		  //selection_obj = selection_obj
+		  //console.log('selection_obj')
+		  //console.log(selection_obj.unit_assoc)
+		  name_hash = chosen_id_name_hash
+		  //console.log(selection_obj.counts_matrix)
+		  var matrix_with_names = {};
+		  matrix_with_names.dataset_names = [];
+		  matrix_with_names.unit_names = [];
+		  var unit_name_lookup = {};
+		  var unit_id_lookup = {};
+// silva_taxonomy_info_per_seq_id in selection_obj
+		  for (var r=0; r < sqlrows.length; r++){
+		    uid = sqlrows[r].id;
+		    name = sqlrows[r].tax;
+		    counts = selection_obj.counts_matrix[uid];
+		    //console.log(counts)
+				unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
+		  	unit_name_lookup = create_unit_name_lookup( name, counts, unit_name_lookup );
+		   
+		  }
+
+		  //console.log(unit_name_lookup);
+
+			var mtx 		= create_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids, matrix_with_names ); // file used by R distance calc
+			var csv_txt = create_csv_text_matrix( unit_name_lookup, name_hash, selection_obj.dataset_ids );
+			var csv_id 	= create_csv_id_matrix( unit_id_lookup, selection_obj.dataset_ids );
+			var json 		= create_json_id_matrix( selection_obj.counts_matrix );
+			
+		  
+		  if(to_loc === 'to_console') {
+		    console.log(mtx);
+		  }else{
+		    console.log('mtx');
+		    console.log(mtx);
+		    // write to files
+		    var file1 = '../../tmp/'+ts+'_text_matrix.mtx';
+		    var file2 = '../../tmp/'+ts+'_text_matrix.csv';
+		    var file3 = '../../tmp/'+ts+'_id_matrix.csv';
+		    var file4 = '../../tmp/'+ts+'_id_matrix.json';
+		    
+				console.log('Writing matrix file(s)');
+				COMMON.write_file( file1, mtx );
+				COMMON.write_file( file2, csv_txt );
+				COMMON.write_file( file3, csv_id );
+				COMMON.write_file( file4, json );
+				console.log('DONE writing matrix file(s)');
+
+		  }
+
+		  return matrix_with_names;
+		  
+		}
 
 };
-//
-//
-//
-function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
-	
-	//console.log(ukeys);  // uname:
+function create_biome_matrix(biome_matrix, unit_name_lookup, chosen_id_name_hash) {
+	//console.log(unit_name_lookup);  // uname:
 	//console.log(chosen_id_name_hash);
-	for (var n in chosen_id_name_hash.names) {   // correct order
+	for (var n in chosen_id_name_hash.names) {
 	    //console.log(dataset_ids[did])
-	    biome_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: null });
+	    biome_matrix.columns.push({ id:chosen_id_name_hash.names[n], metadata: null });
 	}
-	// ukeys is sorted by alpha
-	for(uk in ukeys) {
-		
-		biome_matrix.rows.push({ id: ukeys[uk], metadata: null });
-		
-		biome_matrix.data.push(unit_name_counts[ukeys[uk]]);
+	for(n in unit_name_lookup) {
+		biome_matrix.rows.push({ id: n, metadata: null });
+		biome_matrix.data.push(unit_name_lookup[n]);
 	}
-
 	biome_matrix.shape = [biome_matrix.rows.length, biome_matrix.columns.length];
-	
-	var max_count = {};
-  for(n in biome_matrix.columns) {
-  	console.log(biome_matrix.columns[n].id);
-  	max_count[biome_matrix.columns[n].id] = 0;
-  	for(d in biome_matrix.data) {
-  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n]
-  	}
-  }
-  var max = 0;
-  for(n in chosen_id_name_hash.names) {
-  	biome_matrix.max_col_counts.push(max_count[chosen_id_name_hash.names[n]])
-  	if(max_count[chosen_id_name_hash.names[n]] > max){
-  		max = max_count[chosen_id_name_hash.names[n]];
-  	}
-  }
-  biome_matrix.max_dataset_count = max;
-  console.log(max_count);
+	//console.log(biome_matrix.data); 
 	return(biome_matrix);
 }
 //
 //  CREATE UNIT ID LOOKUP
 //
-// function create_unit_id_lookup( uid, counts, unit_id_lookup ) {
+function create_unit_id_lookup( uid, counts, unit_id_lookup ) {
 	 	
-// 	 	if(uid in unit_id_lookup) {
-//       for (var c in counts) {
-//         unit_id_lookup[uid][c] += counts[c]
-//       }
-//     }else{
-//       unit_id_lookup[uid] = []
-//       for (var c in counts) {
-//         unit_id_lookup[uid].push(counts[c])
-//       }
-//     }
-//     return unit_id_lookup
-// }
+	 	if(uid in unit_id_lookup) {
+      for (var c in counts) {
+        unit_id_lookup[uid][c] += counts[c]
+      }
+    }else{
+      unit_id_lookup[uid] = []
+      for (var c in counts) {
+        unit_id_lookup[uid].push(counts[c])
+      }
+    }
+    return unit_id_lookup
+}
 //
 //  CREATE UNIT NAME LOOKUP
 //
-function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
+function create_unit_name_lookup( name, counts, unit_name_lookup ) {
  	
  	if(name in unit_name_lookup) {
     for (var c in counts) {
@@ -303,38 +304,38 @@ function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
 //
 //
 //
-//function create_json_id_matrix(mtx) {
-//	return JSON.stringify(mtx)+"\n";
-//}
+function create_json_id_matrix(mtx) {
+	return JSON.stringify(mtx)+"\n";
+}
 //
 //  CREATE CSV ID MATRIX
 //
-// function create_csv_id_matrix( unit_ids, dataset_ids ) {
-// 		//
-// 		// CSV3
-// 		//
-// 	  var csv = 'DatasetId';   // for D3.js stackbars
-// 		for(var uid in unit_ids) {
-// 			csv += ','+uid;
-// 		}
-// 		csv += "\n";
-// 		for (var did in dataset_ids) {  // in correct order
+function create_csv_id_matrix( unit_ids, dataset_ids ) {
+		//
+		// CSV3
+		//
+	  var csv = 'DatasetId';   // for D3.js stackbars
+		for(var uid in unit_ids) {
+			csv += ','+uid;
+		}
+		csv += "\n";
+		for (var did in dataset_ids) {  // in correct order
 			
-// 	    csv += dataset_ids[did];
-// 	    for(var uid in unit_ids){  // 
-// 	    	csv += ','+ unit_ids[uid][did]
-// 	    }
-// 	    csv += "\n";
-// 		}
-// 		return csv;
-// }
+	    csv += dataset_ids[did];
+	    for(var uid in unit_ids){  // 
+	    	csv += ','+ unit_ids[uid][did]
+	    }
+	    csv += "\n";
+		}
+		return csv;
+}
 //
 // CREATE TEXT MATRIX
 //
 function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with_names) {
 
 		// 
-		// MTX  for input to R scripts
+		// MTX
 		//
 		var mtx = '';
 	  for (var did in dataset_ids) {
@@ -359,23 +360,23 @@ function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with
 //
 //  CREATE CSV TEXT MATRIX
 //
-// function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
-// 		//
-// 	  // CSV2
-// 	  //		  
-// 	  var csv = 'DatasetName';   // for D3.js stackbars
-// 	  for(var uname in unit_names) {
-// 			csv += ','+uname;
-// 		}
-// 		csv += "\n";
-// 		for (var did in dataset_ids) {  // in correct order
-// 			var index = dataset_names.ids.indexOf( dataset_ids[did] );
-// 	    csv += dataset_names.names[ index ];
-// 	    for(var uname in unit_names){  // 
-// 	    	csv += ','+ unit_names[uname][did]
-// 	    }
-// 	    csv += "\n";
-// 		}
-// 		return csv;
-// }
+function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
+		//
+	  // CSV2
+	  //		  
+	  var csv = 'DatasetName';   // for D3.js stackbars
+	  for(var uname in unit_names) {
+			csv += ','+uname;
+		}
+		csv += "\n";
+		for (var did in dataset_ids) {  // in correct order
+			var index = dataset_names.ids.indexOf( dataset_ids[did] );
+	    csv += dataset_names.names[ index ];
+	    for(var uname in unit_names){  // 
+	    	csv += ','+ unit_names[uname][did]
+	    }
+	    csv += "\n";
+		}
+		return csv;
+}
 
