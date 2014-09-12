@@ -383,17 +383,36 @@ router.get('/user_data/counts_table', function(req, res) {
     if (err) {
       console.log('Could not read file: ' + file + '\nHere is the error: '+ err);
     }
-    var data = JSON.parse(file_contents);
+    var mtx = JSON.parse(file_contents);
     //var html = "<table border='1' class='single_border'><tr><td>";
     //html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
+    //html += '</td><td>';
     //html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
     //html += '</td></tr></table>';
-    var html = "<table border='1' class='single_border'>";
-    for(n in data.columns){ 
-      html += '<tr><td>'+data.columns[n].id+'</td><tr>';
+    var html = "<table border='1' class='single_border small_font counts_table'>";
+    html += '<tr><td></td>';
+    for(var n in mtx.columns){ 
+      html += '<td>'+mtx.columns[n].id+'</td>';
     }
-    
+    html += '</tr>';
+    for(n in mtx.rows){ 
+      html += '<tr>';
+      html += '<td>'+mtx.rows[n].id+'</td>';
+      for(i in mtx.data[n]) {
+        var cnt = mtx.data[n][i];
+        var pct =  (cnt * 100 / mtx.column_totals[n]).toFixed(2)
+        var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
+        html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
+      }
+      html += '</tr>';
+    }
+    html += '<tr>';
+    html += "<td class='right_justify'><strong>%% Sums:</strong></td>";
+    for(n in mtx.column_totals) {
+      html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
+    } 
+    html += '</tr>';
+    html += '</table>';
     res.render('visuals/user_data/counts_table', {
       title: req.params.title   || 'default_title',
       timestamp: ts || 'default_timestamp',
