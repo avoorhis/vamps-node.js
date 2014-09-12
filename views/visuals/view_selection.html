@@ -1,67 +1,22 @@
 <% include ../add_ins/begin.ejs %>
-<% b = JSON.parse(post_items) %>
 
+<%   var thumbs = JSON.parse(constants).VISUAL_THUMBNAILS.visuals; %>
+<%   var ts = timestamp; %>
 
   <div class='title'>Community Visualization</div>
-  <div class='subtitle'>Display Output Page</div>
+  <div class='subtitle'>Display Choices</div>
 
       <table border='1'>
         <tr>
-          <th>Input Items</th>
-          <th>Things to do here</th>
-          <th>Selected Visuals<br><span class='small_font'>(pages load in separate windows)</span></th>
-
-        </tr>
-        <tr>
-          <td>
-            <div id='show_what_is_chosen_div'>
-              <% include partials/show_input_items.html %>
-            </div>
-          </td>
-          <td>
-            <div id='show_download_buttons_div' class='small_font'>
-              <form action='/download/<%= timestamp %>/counts_matrix' method='POST'>
-                <input type='submit', id='' name='' value='Download Counts Matrix' />
-              </form>
-              <form action='/download/<%= timestamp %>/fasta' method='POST'>
-                <input type='submit' id='' name='' value='Download Fasta File' />
-                <input type='hidden' id='' name='ids' value='<%= dataset_ids %>' />
-              </form>
-
-             
-            </div>
-          </td>
-          <td>
-            <div id='show_visuals_links_div'>
-              
-              <ul>
-              <% for (var i in b.visuals) { %>
-                
-                <li>
-                <% link = 'user_data/'+b.visuals[i] +'?ts='+timestamp %>                
-                
-                <% if(b.visuals[i] === 'heatmap') { %>
-                  <a href='<%= link %>' target='<%= timestamp %>-dh' >Distance Heatmap</a>
-                  <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span class='small_font'>(<%= b.selected_heatmap_distance %>)</span>           
-                <% } else if(b.visuals[i] === 'dendrogram') { %>
-                  <a href='<%= link %>' target='<%= timestamp %>-cd' >Community Dendrogram</a>
-                  <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span class='small_font'>(<%= b.selected_dendrogram_distance %>)</span>           
-                <% } else if(b.visuals[i] === 'counts_table') { %>
-                  <a href='<%= link %>' target='<%= timestamp %>-ct' >Counts Table</a>
-                <% } else if(b.visuals[i] === 'barcharts') { %>
-                  <a href='<%= link %>' target='<%= timestamp %>-bc' >Counts Bar Charts</a>
-                <% } else { %> 
-                  <a href='<%= link %>' target='<%= timestamp %>' ><%= b.visuals[i] %></a>
-                <% } %> 
-                <br>
-              </li>
-              <% } %>
-             </ul>
-            </div>
-          </td>
-
+          <% for(n in thumbs) { %>
+            <% var file = thumbs[n].file %>
+            <% var name = thumbs[n].name %>
+            <% var link = thumbs[n].link %>
+            <td class='td_top'><%= name %><br><a href='<%= link %>?ts=<%= ts %>' target='<%= ts %>'><img src='<%= file %>' border='0' alt='<%= name %>' width='200'></a> </td>
+            <% if((n+1) % 3 === 0) { %>
+              </tr><tr>
+            <% } %>
+          <% } %>
         </tr>
       </table>
       <a href="#" class="back">Go back</a> to the previous page.      
