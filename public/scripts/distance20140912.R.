@@ -1,30 +1,23 @@
 args <- commandArgs(TRUE)
 #print(args)  ;
-url <- args[1]  # file name
+matrix_in <- args[1]  # file name
 metric <- args[2]   # horn or jaccard
-#print(url)
-library(jsonlite,quietly=TRUE)
-myjson<-fromJSON(url)
 
 
-#print(myjson$rows)
-#print(myjson$data)
-#data_matrix<-read.delim(matrix_in, header=T,sep="\t",check.names=FALSE,row.names=1);
+data_matrix<-read.delim(matrix_in, header=T,sep="\t",check.names=FALSE,row.names=1);
 #print(data_matrix);
 
 # IMPORTANT!! must remove last line IF rowname=='ORIGINAL_SUMS'
-#rowcount<-nrow(data_matrix)
-#last_name = row.names(data_matrix)[rowcount]
+rowcount<-nrow(data_matrix)
+last_name = row.names(data_matrix)[rowcount]
 #print(rowcount)
 #print(last_name)
 
 # to get rid of potential NaN errors
 # get rid of datasets with zero sum over all the taxa :
-data_matrix<-myjson$data
-rownames(data_matrix)<-myjson$rows$id
-colnames(data_matrix)<-myjson$columns$id
-#print(data_matrix)
-biods = t(data_matrix);
+data_matrix<-data_matrix[,colSums(data_matrix) > 0]
+
+biods = t(data_matrix); #
 #print(biods);
 require(vegan,quietly=TRUE);
 #  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
@@ -97,8 +90,7 @@ if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     # print("ERROR: no distance method found!")
     dis<-'err'
 }
-# this should be the ONLY print!!!!
+
 print(dis);
-#
 q();
 
