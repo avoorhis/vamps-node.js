@@ -50,13 +50,11 @@ module.exports = {
 
 		  });
 
-		}		
-
-}
-//
-//  CREATE DISTANCE MATRIX
-//
-function create_distance_matrix(outstr) {
+		},
+		//
+		//  CREATE DISTANCE MATRIX
+		//
+		create_distance_matrix: function (outstr) {
 			//console.log('stderr: ' + stderr);
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
@@ -113,15 +111,13 @@ function create_distance_matrix(outstr) {
 	      }
 	    } // end for row in raw...
 	    return distance_matrix;
-}
+		},
 
-//
-//  CREATE HTML
-//
-/*
-TODO: That should be in an html file, we can only use DOM scripting to enhance functionality, not create it. What a user will see if javascript is disabled?
-*/
-function create_hm_html(dm) {
+		//
+		//  CREATE HTML
+		//
+	
+		create_hm_html: function (dm) {
 
 			
 		    //console.log(dm);
@@ -158,3 +154,8 @@ function create_hm_html(dm) {
 		    
 
 		}
+
+}
+
+
+
