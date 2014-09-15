@@ -542,13 +542,9 @@ router.get('/user_data/barcharts', function(req, res) {
       //html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
       //html += '</td></tr></table>';
       //html += file_contents;
-    var html = BCHARTS.create_barcharts_html ( ts )
-    res.render('visuals/user_data/barcharts', {
-      title: req.params.title   || 'default_title',
-      timestamp: ts || 'default_timestamp',
-      html : html,
-      user: req.user
-    });
+    
+    //var BCHARTS = require('./routes_bar_charts_states');
+    BCHARTS.create_barcharts_html ( ts,res );
   //});
 });
 /*
