@@ -112,7 +112,7 @@ function show_custom_taxa_tree()
   });
   
   $('.tree li.parent_li > span').click(toggle_children);
-  // $('.tree li.parent_li > input').click(toggle_children);
+  $('.tree li.parent_li > input').click(toggle_children);
 
   
   // $('.tree li.parent_li > span').click(function(e){
@@ -180,6 +180,19 @@ function show_custom_taxa_tree()
   
 }
 
+var count_checked = function()
+{
+  a = $( "input" ).filter(':checked').length;
+  alert(a);
+}
+
+var show_children = function()
+{
+  alert(this);
+  $(this).parent('li.parent_li').find(' > ul > li').show('fast');
+  $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+}
+
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
@@ -187,13 +200,17 @@ var toggle_children = function()
     if (children.is(":visible")) {
         children.hide('fast');
         $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
     } else {
         children.show('fast');
         $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        if (this.type === "checkbox")
+        {
+          // alert(this.checked);      
+          this.checked.toggle();    
+        }
+        // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", true )});
     }
-    // a = $( "input:checked" ).length;
-    // alert(a);
     
     return false;
 }
