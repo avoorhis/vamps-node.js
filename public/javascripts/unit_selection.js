@@ -114,16 +114,32 @@ function show_custom_taxa_tree()
   $('.tree li.parent_li > span').click(toggle_children);
   // $('.tree li.parent_li > input').click(toggle_children1);
   // $('.tree li.parent_li').dblclick(toggle_children2);
+  // $('input.custom-taxa').click(toggle_children1);
+  
+  // -=-=-=-
   $('input.custom-taxa').click(function() {
-    var checkbox = $(this),
-      this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-
-    // if (!is_visible(this_to_check)) {
-    if (this_to_check.not(":visible")) {
-      this_to_check.show();
+    var children = $(this).parent('li.parent_li').find(' > ul > li');
+    var checkbox = $(this);
+    var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  
+    if (children.is(":visible")) {
+      toggle_checking_taxa(checkbox, this_to_check);
+    } else {
+      show_children(checkbox);
     }
-    toggle_checking_taxa(checkbox, this_to_check);
   });
+  // -=-==-=
+  
+  // $('input.custom-taxa').click(function() {
+  //   var checkbox = $(this),
+  //     this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  // 
+  //   // if (!is_visible(this_to_check)) {
+  //   if (this_to_check.not(":visible")) {
+  //     this_to_check.show();
+  //   }
+  //   toggle_checking_taxa(checkbox, this_to_check);
+  // });
 
   var toggle_children2 = function()
   {
@@ -270,12 +286,24 @@ var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
   }
 };
 
+//   var checkbox = $(this),
+//     this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+// 
+//   // if (!is_visible(this_to_check)) {
+//   if (this_to_check.not(":visible")) {
+//     this_to_check.show();
+//   }
+//   toggle_checking_taxa(checkbox, this_to_check);
+
 var toggle_children1 = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
-    var current = this;
+    var checkbox = $(this);
+    var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+    
     if (children.is(":visible")) {
-      toggle_checking(this);
+      toggle_checking_taxa(checkbox, this_to_check);
+      // toggle_checking(this);
         // count_checked();
         // alert(this.checked);
         // alert($(this).prop("checked"));
@@ -296,7 +324,7 @@ var toggle_children1 = function()
         // $(this).checked = !this.checked;
         // count_checked();
     } else {
-        show_children(current);
+        show_children(checkbox);
     }
     
     return false;
