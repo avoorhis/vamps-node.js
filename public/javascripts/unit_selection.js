@@ -112,8 +112,23 @@ function show_custom_taxa_tree()
   });
   
   $('.tree li.parent_li > span').click(toggle_children);
-  $('.tree li.parent_li > input').click(toggle_children1);
+  // $('.tree li.parent_li > input').click(toggle_children1);
+  // $('.tree li.parent_li').dblclick(toggle_children2);
+  $('input.custom-taxa').click(function() {
+    var checkbox = $(this),
+      this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
 
+    // if (!is_visible(this_to_check)) {
+    if (this_to_check.not(":visible")) {
+      this_to_check.show();
+    }
+    toggle_checking_taxa(checkbox, this_to_check);
+  });
+
+  var toggle_children2 = function()
+  {
+    alert($(this).class);
+  }
   
   // $('.tree li.parent_li > span').click(function(e){
   //   toggle_children();
@@ -210,15 +225,76 @@ var hide_children = function(current, children)
 //   $(this).prop( "checked", false );    
 // }
 
+var toggle_checking = function(cl_checkbox) {
+  // alert(cl_checkbox.parentElement.className)
+  val = cl_checkbox.value;
+  // val = "Crenarchaeota";
+  cl_checkbox = $('input[value='+val+']');
+  // $('#special').click(function () {
+  //     specialFunction();
+  //     return false;
+  // });
+
+  // cl_checkbox.parent().find('input[value="'+val+'"]').prop('checked',
+  //            function(idx, oldProp) {
+  //              return !oldProp;
+  //            });
+             
+  // val = cl_checkbox.value;
+  // alert(val);
+  // qq = $(cl_checkbox.parentNode).find('input[value="'+val+'"]')
+  // alert(qq);
+  // if ($(cl_checkbox).prop('checked')) {
+  //   // alert("cl_checkbox yes, parentElement:");
+  //   aa = $(cl_checkbox).prop('checked');
+  //   alert(aa);
+  //  // this_to_check.find('input').prop('checked', true);
+  //  $(cl_checkbox).prop('checked', aa);
+  // }
+  // else {
+  //   $(cl_checkbox).prop('checked', true);
+  //   
+  //   // alert("cl_checkbox NO, parentElement:");
+  //   // alert(parentElement);
+  //   
+  //  // this_to_check.find('input').prop('checked', false);
+  // }
+};
+
+var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
+  if (pr_checkbox.prop('checked')) {
+   this_to_check.find('input').prop('checked', true);
+  }
+  else {
+   this_to_check.find('input').prop('checked', false);
+  }
+};
+
 var toggle_children1 = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
     var current = this;
     if (children.is(":visible")) {
-        hide_children(current, children);
-        count_checked();
-        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
-        count_checked();
+      toggle_checking(this);
+        // count_checked();
+        // alert(this.checked);
+        // alert($(this).prop("checked"));
+        // $(this).prop("checked", !$(this).prop("checked"));
+        
+        // $(clicked.parentNode.parentNode).find('input').prop('checked',
+        //    function(idx, oldProp) {
+        //      return !oldProp;
+        //    });
+        
+        // a = this.checked;
+        // alert(this.type);
+        // alert(!a);
+        // $(this).prop("checked", function(idx, oldProp) {
+        //              return !oldProp;
+        //           });
+        // alert(this.checked);
+        // $(this).checked = !this.checked;
+        // count_checked();
     } else {
         show_children(current);
     }
