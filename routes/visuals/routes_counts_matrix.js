@@ -104,7 +104,7 @@ module.exports = {
 		  	did = chosen_id_name_hash.ids[n];
 		  	
 		  	for(uname in unit_name_lookup) {
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
+		  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
 		  			cnt = unit_name_lookup_per_dataset[did][uname];
 		  			unit_name_counts[uname].push(cnt)
 
