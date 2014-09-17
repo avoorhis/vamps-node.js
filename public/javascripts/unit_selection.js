@@ -186,6 +186,12 @@ var count_checked = function()
   alert(a);
 }
 
+var see_this = function(variable)
+{
+  alert(variable.type);
+}
+
+
 var show_children = function()
 {
   alert(this);
@@ -196,6 +202,8 @@ var show_children = function()
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
+    var current = this;
+    see_this(current);
     // alert("children");
     if (children.is(":visible")) {
         children.hide('fast');
