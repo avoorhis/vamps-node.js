@@ -112,7 +112,7 @@ function show_custom_taxa_tree()
   });
   
   $('.tree li.parent_li > span').click(toggle_children);
-  $('.tree li.parent_li > input').click(toggle_children);
+  $('.tree li.parent_li > input').click(toggle_children1);
 
   
   // $('.tree li.parent_li > span').click(function(e){
@@ -204,28 +204,39 @@ var hide_children = function(current, children)
   $(current).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
 }
 
+// $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+// if (this.type === "checkbox")
+// {
+//   $(this).prop( "checked", false );    
+// }
+
+var toggle_children1 = function()
+{
+    var children = $(this).parent('li.parent_li').find(' > ul > li');
+    var current = this;
+    if (children.is(":visible")) {
+        hide_children(current, children);
+        count_checked();
+        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
+    } else {
+        show_children(current);
+    }
+    
+    return false;
+}
 
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
     var current = this;
-    // see_this(current);
-    // alert("children");
     if (children.is(":visible")) {
         hide_children(current, children);
-        // children.hide('fast');
-        // $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+        count_checked();
         $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
     } else {
         show_children(current);
-        // children.show('fast');
-        // $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-        if (this.type === "checkbox")
-        {
-          // alert(this.checked);      
-          $(this).checked.toggle();    
-        }
-        // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", true )});
     }
     
     return false;
