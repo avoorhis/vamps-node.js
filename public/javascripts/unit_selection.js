@@ -192,30 +192,38 @@ var see_this = function(variable)
 }
 
 
-var show_children = function()
+var show_children = function(current)
 {
-  alert(this);
-  $(this).parent('li.parent_li').find(' > ul > li').show('fast');
-  $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+  $(current).parent('li.parent_li').find(' > ul > li').show('fast');
+  $(current).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
 }
+
+var hide_children = function(current, children)
+{
+  children.hide('fast');
+  $(current).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+}
+
 
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
     var current = this;
-    see_this(current);
+    // see_this(current);
     // alert("children");
     if (children.is(":visible")) {
-        children.hide('fast');
-        $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+        hide_children(current, children);
+        // children.hide('fast');
+        // $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
         $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
     } else {
-        children.show('fast');
-        $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+        show_children(current);
+        // children.show('fast');
+        // $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
         if (this.type === "checkbox")
         {
           // alert(this.checked);      
-          this.checked.toggle();    
+          $(this).checked.toggle();    
         }
         // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", true )});
     }
