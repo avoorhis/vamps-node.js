@@ -146,7 +146,7 @@ function add_li(this_node)
 {
   this_html = '<li>\n';
   this_html += '<span><i class="icon-plus-sign"></i></span>';
-  this_html += '<input class="plus-sign" type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
+  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
   this_html += this_node.taxon
   return this_html;
 }
