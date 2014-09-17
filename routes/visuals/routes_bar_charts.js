@@ -13,9 +13,8 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts,res ) {
-				//console.log(count_matrix)
-				//path.join(__dirname, '/tmp/public')
+		create_barcharts_html: function( ts, html, user, res ) {
+							
 				var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
 				console.log('in create_barcharts_html: '+infile)
 				//var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
@@ -33,7 +32,6 @@ module.exports = {
 	  		}
 
   		
-
   			var unit_list = [];
   			for(o in mtx.rows){
   				unit_list.push(mtx.rows[o].id)
@@ -63,18 +61,15 @@ module.exports = {
 
 
 				data.forEach(function(d) {
-				// normalize to 100%
-				tot = d.total
-				d.unitObj.forEach(function(o) {
-						//console.log(o);
-						o.x0 = (o.x0*100)/tot
-						o.x1 = (o.x1*100)/tot
+					// normalize to 100%
+					tot = d.total
+					d.unitObj.forEach(function(o) {
+							//console.log(o);
+							o.x0 = (o.x0*100)/tot
+							o.x1 = (o.x1*100)/tot
+					});
 				});
-			});
 			
-			//console.log('data')
-			//console.log(data)
-		  
 
 		  	create_svg_object(props, color, data);
 
@@ -84,11 +79,12 @@ module.exports = {
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 				console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
+				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>"
 				res.render('visuals/user_data/barcharts', {
           //title: req.params.title   || 'default_title',
           timestamp: ts || 'default_timestamp',
-          html : svgXML,
-          //user: req.user
+          html : html,
+          user: user
        	});
 				d3.select('svg').remove();
 			})
@@ -141,8 +137,7 @@ function create_svg_object(props, color, data) {
 		      .attr("class", "g")
 		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; });
 
-			//console.log('11')
-		  
+					  
 		  datasetName.selectAll("rect")
 		      .data(function(d) { return d.unitObj; })
 		    .enter().append("rect")
@@ -170,27 +165,21 @@ function get_image_properties(bar_height, ds_count) {
 	
 	//props.margin = {top: 20, right: 20, bottom: 300, left: 50};
 	props.margin = {top: 20, right: 100, bottom: 20, left: 300};
-	//var width  = (ds_count * (bar_width + 5)) + 50 - margin.left - margin.right;
-	//props.width  = (ds_count * (bar_width)) + 50;
-	//props.height = 700 - props.margin.top - props.margin.bottom;
+	
 	var plot_width = 650;
 	var gap = 2;  // gap on each side of bar
 	props.width = plot_width + props.margin.left + props.margin.right
 	props.height = (ds_count * (bar_height + 2 * gap)) + 125;
-	//props.x = d3.scale.ordinal().rangeRoundBands([0, props.width], .1);
-	//props.y = d3.scale.linear() .rangeRound([props.height, 0]);
-	//console.log('1')
-	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-	//console.log('2')
 	
+	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
+		
 	props.y = d3.scale.ordinal()
 			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
-			//.rangeRoundBands([0, props.height], .1);
-	//console.log('3')
+		
 	props.xAxis = d3.svg.axis()
 			    .scale(props.x)
 			    .orient("top");
-	//console.log('4')
+	
 	props.yAxis = d3.svg.axis()
 			    .scale(props.y)
 			    .orient("left");
