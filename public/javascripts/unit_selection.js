@@ -125,7 +125,7 @@ function show_custom_taxa_tree()
     if (children.is(":visible")) {
       toggle_checking_taxa(checkbox, this_to_check);
     } else {
-      show_children(checkbox);
+      show_children(this);
     }
   });
   // -=-==-=
@@ -226,7 +226,12 @@ var see_this = function(variable)
 var show_children = function(current)
 {
   $(current).parent('li.parent_li').find(' > ul > li').show('fast');
-  $(current).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+  
+  // $(current).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+  $(current).parent('li.parent_li').find(' > span > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+  // $(current).parent('li.parent_li').find("span[title=Collapse this branch]").find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+
+  // $(current).parent('li.parent_li').find("span[title=Collapse this branch]").find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
 }
 
 var hide_children = function(current, children)
