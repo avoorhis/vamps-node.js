@@ -91,6 +91,11 @@
   margin-left: 1.5ex;
 }
 
+i.icon-no-sign {
+  background: #f5;
+  display: inline-block;
+}
+
 /*i.icon-plus-sign {background: url(../images/mktree/plus.gif)  }*/
 i.icon-plus-sign {
     background: url("../images/tree_plus.gif") no-repeat;
