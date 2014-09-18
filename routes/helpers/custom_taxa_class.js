@@ -145,9 +145,9 @@ function write_partial(fileName, html)
 function add_li(this_node)
 {
   this_html = '<li>\n';
-  this_html += '<span><i class="icon-plus-sign"></i></span>';
+  this_html += '<span class="sign"><i class="icon-plus-sign"></i></span>';
   this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
-  this_html += this_node.taxon
+  this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
   return this_html;
 }
 
