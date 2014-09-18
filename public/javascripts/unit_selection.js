@@ -131,14 +131,96 @@ function show_custom_taxa_tree()
 
 var open_one_layer = function()
 {
-   // alert(this.className);
-   // aa = $(":hidden:first").slideToggle("fast").className;
-   var aa = $(this).parent('li.parent_li').find(":hidden");
-   alert(aa.length);
-   aa.show();
+   // var aa = $(".open-one-layer:contains(Bacteria)");
+   // var this_parent = $(this).parent('li.parent_li');
+   // var aa = $(".open-one-layer:contains(Bacteria)");
+   // var next_hidden_class = aa.find(":hidden:first").parent().attr('class');
+   // alert(next_hidden_class);
+   // aa.show();
+   
+   aa = $(".open-one-layer:contains(Bacteria)");
+   //aa.parent('li.parent_li').find(":hidden:first").show()
+   //.css( "background-color", "red" );
+   //each(function(i){$(this).prop( "checked", false )}
+   aa.parent('li.parent_li').find(":hidden:first").parent().attr('class')
+   aa.parent('li.parent_li').find(".phylum").each(function(i){show_children(this)})
+   
+   
+   
+   //aa = $(["innerHTML=Bacteria"]).parent('li.parent_li').find(":hidden:first");
+   //$('.open-one-layer[innerHTML=Bacteria]')
+   // aa = $(".open-one-layer:contains(Bacteria)");
+   // aa.parent('li.parent_li').find(":hidden:first").show()
+   // //.css( "background-color", "red" );
+   // each(function(i){$(this).prop( "checked", false )}
+   // aa.parent('li.parent_li').find(":hidden:first")
+   // 
+   // 
+   // show_children(this);
+   
+   
+   
+   
    // .slideToggle("fast"); 
    // $("a.add").click(function(){ $(":hidden:first").slideToggle("fast"); });
-   
+//    for(var i=1; i<=itemObject.childsCount; i++)
+//    {
+//      if (!itemObject.htmlNode.childNodes[0].childNodes[i])break;
+//      itemObject.htmlNode.childNodes[0].childNodes[i].childNodes[0].style.backgroundImage="url("+this.imPath+this.lineArray[5]+")";
+//      itemObject.htmlNode.childNodes[0].childNodes[i].childNodes[0].style.backgroundRepeat="repeat-y"
+//     }
+//   };
+// dhtmlXTreeObject.prototype._getCountStatus=function(itemId,itemObject)
+// {
+//   if (itemObject.childsCount<=1)
+//   {
+//     if (itemObject.id==this.rootId)return 4;
+//     else return 0
+//   };
+//   if (itemObject.childNodes[0].id==itemId)if (!itemObject.id)return 2;
+//   else return 1;
+//   if (itemObject.childNodes[itemObject.childsCount-1].id==itemId)return 0;
+//   return 1
+// };
+// dhtmlXTreeObject.prototype._getLineStatus =function(itemId,itemObject)
+// {
+//   if (itemObject.childNodes[itemObject.childsCount-1].id==itemId)return 0;
+//   return 1
+// };
+// dhtmlXTreeObject.prototype._HideShow=function(itemObject,mode)
+// {
+//   if ((this.XMLsource)&&(!itemObject.XMLload)) 
+//   {
+//     if (mode==1)return;
+//     itemObject.XMLload=1;
+//     this._loadDynXML(itemObject.id);
+//     return
+//   };
+//   if (itemObject.unParsed)this.reParse(itemObject);
+//   var Nodes=itemObject.htmlNode.childNodes[0].childNodes;
+//   var Count=Nodes.length;
+//   if (Count>1)
+//   {
+//     if ( ( (Nodes[1].style.display!="none")|| (mode==1) ) && (mode!=2) ) 
+//     {
+//       this.allTree.childNodes[0].border = "1";
+//       this.allTree.childNodes[0].border = "0";
+//       nodestyle="none"}else nodestyle="";
+//       for (var i=1;i<Count;i++)Nodes[i].style.display=nodestyle
+//     };
+// this._correctPlus(itemObject)};
+// dhtmlXTreeObject.prototype._getOpenState=function(itemObject)
+// {
+//   var z=itemObject.htmlNode.childNodes[0].childNodes;
+//   if (z.length<=1)return 0;
+//   if (z[1].style.display!="none")return 1;
+//   else return -1
+// };
+// dhtmlXTreeObject.prototype.onRowClick2=function()
+// {
+//   var that=this.parentObject.treeNod;
+//   if (!that.callEvent("onDblClick",[this.parentObject.id,that])) return 0;
+//   if ((this.parentObject.closeble)&&(this.parentObject.closeble!="0"))   
 }
 
 var count_checked = function()
