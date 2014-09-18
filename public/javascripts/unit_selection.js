@@ -98,6 +98,9 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
+  //$( "ul" ).has( "li" ).length ? "Yes" : "No"
+  $('.tree .parent_li > span.sign > i').addClass('icon-plus-sign').removeClass('icon-no-sign');;
+  // aa.parent('li.parent_li').has( "ul" ).length
 
 // hide by default
   $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
@@ -171,11 +174,6 @@ var hide_children = function(current, children)
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
-// var toggle_checking = function(cl_checkbox) {
-//   val = cl_checkbox.value;
-//   cl_checkbox = $('input[value='+val+']');
-// };
-
 var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
   if (pr_checkbox.prop('checked')) {
    this_to_check.find('input').prop('checked', true);
@@ -184,21 +182,6 @@ var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
    this_to_check.find('input').prop('checked', false);
   }
 };
-
-var toggle_children1 = function()
-{
-    var children = $(this).parent('li.parent_li').find(' > ul > li');
-    var checkbox = $(this);
-    var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-    
-    if (children.is(":visible")) {
-      toggle_checking_taxa(checkbox, this_to_check);
-    } else {
-        show_children(checkbox);
-    }
-    
-    return false;
-}
 
 var toggle_children = function()
 {
