@@ -98,8 +98,6 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
-  // $('.tree li:has(ul)').find(' > span.sign').attr('title', 'Expand this branch');
-//     $('.tree li:has(ul)').find(' > span.sign').attr('title', 'Collapse this branch');
 
 // hide by default
   $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
@@ -125,18 +123,22 @@ function show_custom_taxa_tree()
     } else {
       show_children(this);
     }
-  });
+  });  
 
-  $('.open-one-layer').dblclick(function() {
-    open_one_layer();
-    // alert(this.className)
-  })  
-  
+  $('.open-one-layer').dblclick(open_one_layer); 
+
 }
 
 var open_one_layer = function()
 {
-   alert($(this).className);
+   // alert(this.className);
+   // aa = $(":hidden:first").slideToggle("fast").className;
+   var aa = $(this).parent('li.parent_li').find(":hidden");
+   alert(aa.length);
+   aa.show();
+   // .slideToggle("fast"); 
+   // $("a.add").click(function(){ $(":hidden:first").slideToggle("fast"); });
+   
 }
 
 var count_checked = function()
