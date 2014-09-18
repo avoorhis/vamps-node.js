@@ -120,6 +120,7 @@ function show_custom_taxa_tree()
     var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
   
     if (children.is(":visible")) {
+      check_last_visible(this_to_check);
       toggle_checking_taxa($(this), this_to_check);
     } else {
       show_children(this);
@@ -127,13 +128,13 @@ function show_custom_taxa_tree()
   });  
 
   $('.open-one-layer').dblclick(open_one_layer); 
-
 }
 
 var open_one_layer = function()
 {
    first_hidden_class = $(this).parent('li.parent_li').find(":hidden:first").parent().attr('class');
-   $(this).parent('li.parent_li').find("." + first_hidden_class).each(function(i){
+   $(this).parent('li.parent_li').find("." + first_hidden_class).each(function(i)
+   {
      try
      {
         show_children(this);
@@ -144,6 +145,54 @@ var open_one_layer = function()
        //Handle errors here
      }     
   })   
+}
+
+var check_last_visible = function(this_to_check)
+{
+  // clicked = $(".open-one-layer:contains(Bacteria)");
+  all_plus_vis = $(this_to_check).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
+  all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
+  all_inputs_vis.prop( "checked", true );
+  // toggle_checking_taxa(this_to_check, all_inputs_vis)
+
+  //$('[mandatory="true"],[validate="true"]')
+  // clicked = $(".open-one-layer:contains(Archaea)");
+  // last_open_class = clicked.parent('li.parent_li').find(":visible:last").parent().parent('ul').attr('class');
+  // alert(last_open_class);
+  //  // $(this)
+  //  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  //  // last_open_class = clicked.closest('.parent_li').find(":visible:last").parent().parent('ul').attr('class');
+  //  
+  //   clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
+  //   {
+  //     try
+  //     {
+  //       check = $(this).find(' > input')
+  //       alert(check.className);
+  //        // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
+  //     }
+  //     catch(e)
+  //     {
+  //       ;
+  //       //Handle errors here
+  //     }     
+  //  })
+   
+  //  clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
+  //  {
+  //    try
+  //    {
+  //      check = $(this)
+  //      alert(this.className);
+  //       // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
+  //    }
+  //    catch(e)
+  //    {
+  //      ;
+  //      //Handle errors here
+  //    }     
+  // })
+
 }
 
 var show_children = function(current)
