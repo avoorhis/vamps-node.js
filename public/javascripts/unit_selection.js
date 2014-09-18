@@ -98,11 +98,14 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
-  // .find(' > span').attr('title', 'Collapse this branch');
-  
+  // $('.tree li:has(ul)').find(' > span.sign').attr('title', 'Expand this branch');
+//     $('.tree li:has(ul)').find(' > span.sign').attr('title', 'Collapse this branch');
+
+// hide by default
   $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
       if ($(this).find('i').hasClass("icon-plus-sign")){
           $(this).parent('li.parent_li').find(' > ul > li').hide();
+          $(this).attr('title', 'Expand this branch');
       }
   });
 
@@ -115,26 +118,25 @@ function show_custom_taxa_tree()
 
   $('input.custom-taxa').click(function() {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
-    var checkbox = $(this);
     var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
   
     if (children.is(":visible")) {
-      toggle_checking_taxa(checkbox, this_to_check);
+      toggle_checking_taxa($(this), this_to_check);
     } else {
       show_children(this);
     }
   });
 
   $('.open-one-layer').dblclick(function() {
-    alert(this.className)
-  })
+    open_one_layer();
+    // alert(this.className)
+  })  
+  
+}
 
-  var toggle_children2 = function()
-  {
-    alert($(this).class);
-  }
-  
-  
+var open_one_layer = function()
+{
+   alert($(this).className);
 }
 
 var count_checked = function()
@@ -152,7 +154,8 @@ var see_this = function(variable)
 var show_children = function(current)
 {
   $(current).parent('li.parent_li').find(' > ul > li').show('fast');
-  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');  
+  $(current).parent('li.parent_li').find(' > span').filter('.sign').attr('title', 'Collapse this branch')  
+  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
 }
 
 var hide_children = function(current, children)
