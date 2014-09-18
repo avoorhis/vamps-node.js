@@ -131,15 +131,6 @@ function show_custom_taxa_tree()
 
 var open_one_layer = function()
 {
-   // var aa = $(".open-one-layer:contains(Bacteria)");
-   // var this_parent = $(this).parent('li.parent_li');
-   // var aa = $(".open-one-layer:contains(Bacteria)");
-   // var next_hidden_class = aa.find(":hidden:first").parent().attr('class');
-   // alert(next_hidden_class);
-   // aa.show();
-   
-   // aa = $(".open-one-layer:contains(Bacteria)");
-
    first_hidden_class = $(this).parent('li.parent_li').find(":hidden:first").parent().attr('class');
    $(this).parent('li.parent_li').find("." + first_hidden_class).each(function(i){
      try
@@ -151,97 +142,19 @@ var open_one_layer = function()
        ;
        //Handle errors here
      }     
-  })
-   
-   
-   
-   //aa = $(["innerHTML=Bacteria"]).parent('li.parent_li').find(":hidden:first");
-   //$('.open-one-layer[innerHTML=Bacteria]')
-   // aa = $(".open-one-layer:contains(Bacteria)");
-   // aa.parent('li.parent_li').find(":hidden:first").show()
-   // //.css( "background-color", "red" );
-   // each(function(i){$(this).prop( "checked", false )}
-   // aa.parent('li.parent_li').find(":hidden:first")
-   // 
-   // 
-   // show_children(this);
-   
-   
-   
-   
-   // .slideToggle("fast"); 
-   // $("a.add").click(function(){ $(":hidden:first").slideToggle("fast"); });
-//    for(var i=1; i<=itemObject.childsCount; i++)
-//    {
-//      if (!itemObject.htmlNode.childNodes[0].childNodes[i])break;
-//      itemObject.htmlNode.childNodes[0].childNodes[i].childNodes[0].style.backgroundImage="url("+this.imPath+this.lineArray[5]+")";
-//      itemObject.htmlNode.childNodes[0].childNodes[i].childNodes[0].style.backgroundRepeat="repeat-y"
-//     }
-//   };
-// dhtmlXTreeObject.prototype._getCountStatus=function(itemId,itemObject)
-// {
-//   if (itemObject.childsCount<=1)
-//   {
-//     if (itemObject.id==this.rootId)return 4;
-//     else return 0
-//   };
-//   if (itemObject.childNodes[0].id==itemId)if (!itemObject.id)return 2;
-//   else return 1;
-//   if (itemObject.childNodes[itemObject.childsCount-1].id==itemId)return 0;
-//   return 1
-// };
-// dhtmlXTreeObject.prototype._getLineStatus =function(itemId,itemObject)
-// {
-//   if (itemObject.childNodes[itemObject.childsCount-1].id==itemId)return 0;
-//   return 1
-// };
-// dhtmlXTreeObject.prototype._HideShow=function(itemObject,mode)
-// {
-//   if ((this.XMLsource)&&(!itemObject.XMLload)) 
-//   {
-//     if (mode==1)return;
-//     itemObject.XMLload=1;
-//     this._loadDynXML(itemObject.id);
-//     return
-//   };
-//   if (itemObject.unParsed)this.reParse(itemObject);
-//   var Nodes=itemObject.htmlNode.childNodes[0].childNodes;
-//   var Count=Nodes.length;
-//   if (Count>1)
-//   {
-//     if ( ( (Nodes[1].style.display!="none")|| (mode==1) ) && (mode!=2) ) 
-//     {
-//       this.allTree.childNodes[0].border = "1";
-//       this.allTree.childNodes[0].border = "0";
-//       nodestyle="none"}else nodestyle="";
-//       for (var i=1;i<Count;i++)Nodes[i].style.display=nodestyle
-//     };
-// this._correctPlus(itemObject)};
-// dhtmlXTreeObject.prototype._getOpenState=function(itemObject)
-// {
-//   var z=itemObject.htmlNode.childNodes[0].childNodes;
-//   if (z.length<=1)return 0;
-//   if (z[1].style.display!="none")return 1;
-//   else return -1
-// };
-// dhtmlXTreeObject.prototype.onRowClick2=function()
-// {
-//   var that=this.parentObject.treeNod;
-//   if (!that.callEvent("onDblClick",[this.parentObject.id,that])) return 0;
-//   if ((this.parentObject.closeble)&&(this.parentObject.closeble!="0"))   
+  })   
 }
 
-var count_checked = function()
-{
-  a = $( "input" ).filter(':checked').length;
-  alert(a);
-}
+// var count_checked = function()
+// {
+//   a = $( "input" ).filter(':checked').length;
+//   alert(a);
+// }
 
-var see_this = function(variable)
-{
-  alert(variable.type);
-}
-
+// var see_this = function(variable)
+// {
+//   alert(variable.type);
+// }
 
 var show_children = function(current)
 {
@@ -293,9 +206,9 @@ var toggle_children = function()
     var current = this;
     if (children.is(":visible")) {
         hide_children(current, children);
-        count_checked();
+        // count_checked();
         $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
-        count_checked();
+        // count_checked();
     } else {
         show_children(current);
     }
