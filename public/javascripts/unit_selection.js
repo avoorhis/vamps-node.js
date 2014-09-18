@@ -138,12 +138,20 @@ var open_one_layer = function()
    // alert(next_hidden_class);
    // aa.show();
    
-   aa = $(".open-one-layer:contains(Bacteria)");
-   //aa.parent('li.parent_li').find(":hidden:first").show()
-   //.css( "background-color", "red" );
-   //each(function(i){$(this).prop( "checked", false )}
-   aa.parent('li.parent_li').find(":hidden:first").parent().attr('class')
-   aa.parent('li.parent_li').find(".phylum").each(function(i){show_children(this)})
+   // aa = $(".open-one-layer:contains(Bacteria)");
+
+   first_hidden_class = $(this).parent('li.parent_li').find(":hidden:first").parent().attr('class');
+   $(this).parent('li.parent_li').find("." + first_hidden_class).each(function(i){
+     try
+     {
+        show_children(this);
+     }
+     catch(e)
+     {
+       ;
+       //Handle errors here
+     }     
+  })
    
    
    
