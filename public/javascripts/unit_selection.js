@@ -154,8 +154,9 @@ var see_this = function(variable)
 var show_children = function(current)
 {
   $(current).parent('li.parent_li').find(' > ul > li').show('fast');
-  $(current).parent('li.parent_li').find(' > span').filter('.sign').attr('title', 'Collapse this branch')  
-  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+  var span_sign = $(current).parent('li.parent_li').find(' > span').filter('.sign');
+  span_sign.attr('title', 'Collapse this branch');
+  span_sign.find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
 }
 
 var hide_children = function(current, children)
@@ -165,10 +166,10 @@ var hide_children = function(current, children)
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
-var toggle_checking = function(cl_checkbox) {
-  val = cl_checkbox.value;
-  cl_checkbox = $('input[value='+val+']');
-};
+// var toggle_checking = function(cl_checkbox) {
+//   val = cl_checkbox.value;
+//   cl_checkbox = $('input[value='+val+']');
+// };
 
 var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
   if (pr_checkbox.prop('checked')) {
