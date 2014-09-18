@@ -98,9 +98,7 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
-  //$( "ul" ).has( "li" ).length ? "Yes" : "No"
   $('.tree .parent_li > span.sign > i').addClass('icon-plus-sign').removeClass('icon-no-sign');;
-  // aa.parent('li.parent_li').has( "ul" ).length
 
 // hide by default
   $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
@@ -148,17 +146,6 @@ var open_one_layer = function()
   })   
 }
 
-// var count_checked = function()
-// {
-//   a = $( "input" ).filter(':checked').length;
-//   alert(a);
-// }
-
-// var see_this = function(variable)
-// {
-//   alert(variable.type);
-// }
-
 var show_children = function(current)
 {
   $(current).parent('li.parent_li').find(' > ul > li').show('fast');
@@ -170,7 +157,6 @@ var show_children = function(current)
 var hide_children = function(current, children)
 {
   children.hide('fast');
-  // $(current).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
@@ -189,9 +175,7 @@ var toggle_children = function()
     var current = this;
     if (children.is(":visible")) {
         hide_children(current, children);
-        // count_checked();
         $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
-        // count_checked();
     } else {
         show_children(current);
     }
