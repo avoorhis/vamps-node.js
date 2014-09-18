@@ -117,11 +117,12 @@ function show_custom_taxa_tree()
 
   $('input.custom-taxa').click(function() {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
-    var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+    // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
   
     if (children.is(":visible")) {
       check_last_visible(this_to_check);
-      toggle_checking_taxa($(this), this_to_check);
+      // toggle_checking_taxa($(this), this_to_check);
+      toggle_checking_taxa(this);
     } else {
       show_children(this);
     }
@@ -209,7 +210,9 @@ var hide_children = function(current, children)
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
-var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
+// var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
+var toggle_checking_taxa = function(pr_checkbox) {
+  var this_to_check = $(pr_checkbox.parentNode.parentNode).find('.custom-taxa');
   if (pr_checkbox.prop('checked')) {
    this_to_check.find('input').prop('checked', true);
   }
@@ -217,6 +220,8 @@ var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
    this_to_check.find('input').prop('checked', false);
   }
 };
+
+
 
 var toggle_children = function()
 {
