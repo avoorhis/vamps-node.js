@@ -120,9 +120,9 @@ function show_custom_taxa_tree()
     // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
   
     if (children.is(":visible")) {
-      check_last_visible(this_to_check);
+      check_last_visible(this);
       // toggle_checking_taxa($(this), this_to_check);
-      toggle_checking_taxa(this);
+      // toggle_checking_taxa(this);
     } else {
       show_children(this);
     }
@@ -148,12 +148,26 @@ var open_one_layer = function()
   })   
 }
 
-var check_last_visible = function(this_to_check)
+var check_last_visible = function(this_input)
 {
   // clicked = $(".open-one-layer:contains(Bacteria)");
-  all_plus_vis = $(this_to_check).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
+  all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
-  all_inputs_vis.prop( "checked", true );
+  
+  // all_inputs_vis.prop( "checked", true );
+  all_inputs_vis.each(function(i)
+  {
+    // alert($(this).prop('checked'));
+    $(this.parentNode.parentNode).find('input').prop('checked',
+       function(idx, oldProp) {
+         return !oldProp;
+       });
+    
+    // alert(this.className);
+    // toggle_checking_taxa(this);
+  }
+  );
+  
   // toggle_checking_taxa(this_to_check, all_inputs_vis)
 
   //$('[mandatory="true"],[validate="true"]')
@@ -212,8 +226,8 @@ var hide_children = function(current, children)
 
 // var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
 var toggle_checking_taxa = function(pr_checkbox) {
-  var this_to_check = $(pr_checkbox.parentNode.parentNode).find('.custom-taxa');
-  if (pr_checkbox.prop('checked')) {
+  var this_to_check = $(pr_checkbox).parent('li').parent('ul').find('.custom-taxa');
+  if ($(pr_checkbox).prop('checked')) {
    this_to_check.find('input').prop('checked', true);
   }
   else {
