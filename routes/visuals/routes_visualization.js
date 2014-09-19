@@ -15,6 +15,7 @@ var COMMON  = require('./routes_common');
 var MTX     = require('./routes_counts_matrix');
 var HMAP    = require('./routes_distance_heatmap');
 var BCHARTS = require('./routes_bar_charts');
+var PCHARTS = require('./routes_pie_charts');
 var CTABLE  = require('./routes_counts_table');
 
 var app = express();
@@ -403,7 +404,7 @@ router.get('/user_data/counts_table', function(req, res) {
       html += '</tr>';
     }
     html += '<tr>';
-    html += "<td class='right_justify'><strong>%% Sums:</strong></td>";
+    html += "<td class='right_justify'><strong>Sums:</strong></td>";
     for(n in mtx.column_totals) {
       html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
     } 
@@ -530,6 +531,47 @@ router.get('/user_data/barcharts', function(req, res) {
     BCHARTS.create_barcharts_html ( ts, html, req.user, res );
   //});
 });
+
+//
+// P I E C H A R T S
+//
+router.get('/user_data/piecharts', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  //console.log(myurl)
+  var ts = myurl.query.ts;
+  // var min   = myurl.query.min_range;
+  // var max   = myurl.query.max_range;
+  // var norm  = myurl.query.norm;
+
+  // if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
+  //     (min !== undefined && min !== visual_post_items.min_range)     ||
+  //     (max !== undefined && max !== visual_post_items.max_range) ) {
+  //   visual_post_items.min_range = Number(min)
+  //   visual_post_items.max_range = Number(max)
+  //   visual_post_items.normalization = norm
+
+  //   console.log('re-write file needed')
+  //   var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
+  //   BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
+  // }
+  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
+  //fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
+  //  if (err) { console.log('Could not read file: ' + infile + '\nHere is the error: '+ err ); }
+    //var d3 = require("d3");
+     
+
+      var html = '<table border="1" class="single_border"><tr><td>';
+      html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+      html += '</td><td>';
+      html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+      html += '</td></tr></table>';
+     
+    
+    //var BCHARTS = require('./routes_bar_charts_states');
+    PCHARTS.create_piecharts_html ( ts, html, req.user, res );
+  //});
+});
+
 /*
 *   PARTIALS
 *      These six partials all belong to the unit_selection page
