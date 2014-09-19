@@ -115,21 +115,68 @@ function show_custom_taxa_tree()
   
   $('.tree li.parent_li > span').filter('.sign').click(toggle_children);
 
-  $('input.custom-taxa').click(function() {
-    var children = $(this).parent('li.parent_li').find(' > ul > li');
-    // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  // $('.radiobox input').click(function() {
+  //   a = this.id;
+  //   alert(a);
+  // })
+
+
+  $('.radiobox input').click(function() {
+    check_mode = this.id;
+    // alert(check_mode);
+    // $('input.custom-taxa').click(function() {
+      alert(check_mode);
+       //   var children = $(this).parent('li.parent_li').find(' > ul > li');
+       //   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+       //   // alert(check_mode);
+       // 
+       //   if (children.is(":visible")) {
+       //     // if (this.id ==)
+       //     // check_mode(this)
+       //     check_last_visible(this);
+       //     // toggle_checking_taxa($(this), this_to_check);
+       //     // toggle_checking_taxa(this);
+       //   } else {
+       //     show_children(this);
+       //   }
+     // });  
+       
+  });
+  $('input.custom-taxa').click(check_input);
   
-    if (children.is(":visible")) {
-      // check_mode(this)
-      check_last_visible(this);
-      // toggle_checking_taxa($(this), this_to_check);
-      // toggle_checking_taxa(this);
-    } else {
-      show_children(this);
-    }
-  });  
+  // var check_input = function(check_mode)
+  // $('input.custom-taxa').click(function() {
+  //   var children = $(this).parent('li.parent_li').find(' > ul > li');
+  //   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  // 
+  //   if (children.is(":visible")) {
+  //     // check_mode(this)
+  //     check_last_visible(this);
+  //     // toggle_checking_taxa($(this), this_to_check);
+  //     // toggle_checking_taxa(this);
+  //   } else {
+  //     show_children(this);
+  //   }
+  // });  
 
   $('.open-one-layer').dblclick(open_one_layer); 
+}
+
+var check_input = function()
+{
+  // alert(check_mode);
+  alert(this.id);
+  var children = $(this).parent('li.parent_li').find(' > ul > li');
+  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+
+  if (children.is(":visible")) {
+    // check_mode(this)
+    check_last_visible(this);
+    // toggle_checking_taxa($(this), this_to_check);
+    // toggle_checking_taxa(this);
+  } else {
+    show_children(this);
+  }
 }
 
 var open_one_layer = function()
