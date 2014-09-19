@@ -160,15 +160,24 @@ var check_last_visible = function(this_input)
 {
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
+  all_inputs_vis.each(check_it);
   
-  all_inputs_vis.each(function(i)
-  {
-    $(this.parentNode.parentNode).find('input').prop('checked',
-       function(idx, oldProp) {
-         return !oldProp;
-       });
-  }
-  );
+  // all_inputs_vis.each(function(i)
+  // {
+  //   $(this.parentNode.parentNode).find('input').prop('checked',
+  //      function(idx, oldProp) {
+  //        return !oldProp;
+  //      });
+  // }
+  // );
+}
+
+var check_it = function(i)
+{
+  $(this.parentNode.parentNode).find('input').prop('checked',
+     function(idx, oldProp) {
+       return !oldProp;
+     });
 }
 
 var show_children = function(current)
