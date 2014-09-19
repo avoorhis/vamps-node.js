@@ -120,7 +120,7 @@ function show_custom_taxa_tree()
   //   alert(a);
   // })
 
-  $('input.custom-taxa').click({param1: "Individual"}, check_input);
+  $('input.custom-taxa').click({param1: " clade"}, check_input);
 
   $('.radiobox input').click(function() {
     check_mode = this.id;
@@ -168,17 +168,17 @@ function show_custom_taxa_tree()
 
 var check_input = function(event)
 {
-  // alert(check_mode);
-  alert(event.data.param1);
-  alert(this.id);
+  var check_mode = event.data.param1;
   var children = $(this).parent('li.parent_li').find(' > ul > li');
-  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-
   if (children.is(":visible")) {
-    // check_mode(this)
-    check_last_visible(this);
-    // toggle_checking_taxa($(this), this_to_check);
-    // toggle_checking_taxa(this);
+    if (check_mode === "individual")
+    {
+      toggle_checking_taxa(this);      
+    }
+    else
+    {
+      check_last_visible(this);      
+    }
   } else {
     show_children(this);
   }
