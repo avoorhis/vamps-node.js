@@ -15,10 +15,10 @@ module.exports = {
 		//
 		create_barcharts_html: function( ts, html, user, res ) {
 							
-				var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-				console.log('in create_barcharts_html: '+infile)
+			var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+			console.log('in create_barcharts_html: '+infile)
 				//var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
-				fs.readFile(infile, 'utf8', function (err, json) {
+			fs.readFile(infile, 'utf8', function (err, json) {
   			mtx = JSON.parse(json);
 
 	  		data = [];
@@ -77,7 +77,7 @@ module.exports = {
 			  var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
 				//console.log(svgGraph[0][0]);
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-				console.log(svgXML);
+				//console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
 				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>"
 				res.render('visuals/user_data/barcharts', {
@@ -86,8 +86,10 @@ module.exports = {
           html : html,
           user: user
        	});
+
 				d3.select('svg').remove();
-			})
+
+			})  // end readfile
 			
 			
 
@@ -150,7 +152,8 @@ function create_svg_object(props, color, data) {
 		      	var total = this._parentNode.__data__['total'];
 		      	//console.log(this._parentNode.__data__['total']);
 		      	var pct = (cnt * 100 / total).toFixed(2)
-		       	return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+		       	return d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+		       	//return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 					}) 
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
