@@ -1,25 +1,29 @@
 <% include ../../add_ins/begin-no_menu.ejs %>
-<div class='title'  >VAMPS Counts Table</div>
 
-<div><%- html %></div>
+<div class='title'>VAMPS Pie Charts</div>
+
+<div id='dataviz-container' class=''><%- html %></div>
+
 
 <span id='chart_tooltip' >
   <table style='margin:0'>      
-    <tr>       
-      <td class='dataset'>Dataset:</td>
-      <td id='dataset'></td>
+    
+    <tr>        
+      <td class='tax'>Tax:</td>
+      <td id='unit'></td>
     </tr>
     <tr>        
-      <td class='count'>Count:</td>
+      <td class='knt'>Count:</td>
       <td id='count'></td>
-    </tr>
-    
+    </tr>     
   </table>  
 </span>
-
+</div>  <!-- end grid_9  content -->
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
 <script src="/javascripts/jquery.tooltip.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
+
+
 <script type='text/javascript'>
 			// $('.tip').tipsy({ 
    //      	gravity: 'w', 
@@ -42,7 +46,7 @@ $(document).ready(function() {
              
           tip: "#chart_tooltip",          
           position: 'center below',          
-          offset: [-40,0],
+          offset: [-30,0],
           opacity: 0.95,          
           delay: 0,
 
@@ -51,14 +55,18 @@ $(document).ready(function() {
             var passthru = this.getTrigger().attr("id");
             
             var stuff = passthru.split('-|-')
-            dname = stuff[0];
+            //dname = stuff[0];
+            uname = stuff[0];
             cnt = stuff[1];
             pct   = stuff[2];
             count = cnt + ' ('+pct+' %)'
+            //distance = stuff[3];
+            //dm = metric+': '+distance
+            //var newarray=[];
                        
-            $("#chart_tooltip table td#dataset").text(dname);
+            //$("#chart_tooltip table td#dataset").text(dname);
+            $("#chart_tooltip table td#unit").text(uname); 
             $("#chart_tooltip table td#count").text(count);
-            //$("#chart_tooltip table td#tmp").text(pct);
                     
         
           },        
@@ -82,5 +90,13 @@ $(document).ready(function() {
 
 
 </script> 
-<% include ../../add_ins/end.ejs %>
-<div id='DEBUG_div'></div>
+
+
+
+    <div class="grid_7 prefix_4 suffix_1" id="footer">
+      <% include ../../add_ins/footer.html %>
+    </div>
+  </div>    <!-- end container_12 -->
+</body>
+</html>
+
