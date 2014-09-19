@@ -162,16 +162,12 @@ var check_last_visible = function(this_input)
 {
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
-  all_inputs_vis.each(toggle_checking);
-  
-  // all_inputs_vis.each(function(i)
-  // {
-  //   $(this.parentNode.parentNode).find('input').prop('checked',
-  //      function(idx, oldProp) {
-  //        return !oldProp;
-  //      });
-  // }
-  // );
+  // all_inputs_vis.each(toggle_checking);  
+  count_checked();
+  all_inputs_vis.each(toggle_checking);  
+  count_checked();
+  uncheck_closed(this);
+  count_checked();
 }
 
 var show_children = function(current)
@@ -188,6 +184,7 @@ var hide_children = function(current, children)
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
+// todo: the same in project_dataset_tree.js
 var toggle_checking = function()
 {
   $(this.parentNode.parentNode).find('input').prop('checked',
@@ -206,15 +203,30 @@ var toggle_checking = function()
 //   }
 // };
 
+var count_checked = function()
+{
+  a = $( "input" ).filter(':checked').length
+  alert(a);
+}
+
+// todo: simila in project_dataset_tree.js
+var uncheck_closed =  function(current)
+{
+  $(current).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+}
+
 var toggle_children = function()
 {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
     var current = this;
     if (children.is(":visible")) {
         hide_children(current, children);
-        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
+        uncheck_closed(this);
+        // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
     } else {
-        show_children(current);
+        show_children(this);
     }
     
     return false;
