@@ -120,12 +120,16 @@ function show_custom_taxa_tree()
   //   alert(a);
   // })
 
+  $('input.custom-taxa').click({param1: "Individual"}, check_input);
 
   $('.radiobox input').click(function() {
     check_mode = this.id;
     // alert(check_mode);
     // $('input.custom-taxa').click(function() {
-      alert(check_mode);
+    // alert(check_mode);
+    $('input.custom-taxa').unbind('click');
+    $('input.custom-taxa').click({param1: check_mode}, check_input);
+      
        //   var children = $(this).parent('li.parent_li').find(' > ul > li');
        //   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
        //   // alert(check_mode);
@@ -142,7 +146,7 @@ function show_custom_taxa_tree()
      // });  
        
   });
-  $('input.custom-taxa').click(check_input);
+  // $('input.custom-taxa').click(check_input);
   
   // var check_input = function(check_mode)
   // $('input.custom-taxa').click(function() {
@@ -162,9 +166,10 @@ function show_custom_taxa_tree()
   $('.open-one-layer').dblclick(open_one_layer); 
 }
 
-var check_input = function()
+var check_input = function(event)
 {
   // alert(check_mode);
+  alert(event.data.param1);
   alert(this.id);
   var children = $(this).parent('li.parent_li').find(' > ul > li');
   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
