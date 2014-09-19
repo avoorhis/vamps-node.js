@@ -98,77 +98,155 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
-  // .find(' > span').attr('title', 'Collapse this branch');
-  
-  $('.tree li.parent_li > span').each(function(i,e){
+  $('.tree .parent_li > span.sign > i').addClass('icon-plus-sign').removeClass('icon-no-sign');;
+
+// hide by default
+  $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
       if ($(this).find('i').hasClass("icon-plus-sign")){
           $(this).parent('li.parent_li').find(' > ul > li').hide();
+          $(this).attr('title', 'Expand this branch');
       }
   });
-  
-  $('.tree li.parent_li > span').on('click', function (e) {
-      var children = $(this).parent('li.parent_li').find(' > ul > li');
-      if (children.is(":visible")) {
-          children.hide('fast');
-          $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
-          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("plus", "minus");
-      } else {
-          children.show('fast');
-          $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-          // $(this).attr('title', 'Expand this branch').find(' > img').attr("src").replace("minus", "plus");
-          // $(this).find('img').attr("src").replace("minus", "plus");
-      }
-      e.stopPropagation();
+
+// domains are checked at the beginning
+  $('.tree ul.domain > li.parent_li > input').each(function(i,e){
+      $(this).prop( "checked", true );
   });
   
-// .attr("src", toggle_switch.attr("src").replace("down", "up"));
-  
-  // $('li.expandable').click(function() {
-  //     $(this).children('ul').toggle();
-  //     return false;
-  // });
-  // 
-  // location.reload();
-  
-  // $('div#custom_taxa_tree > ul.domain').children().css( "border", "3px double red" );
-  // .addClass( "display_none" );
+  $('.tree li.parent_li > span').filter('.sign').click(toggle_children);
 
+  $('input.custom-taxa').click(function() {
+    var children = $(this).parent('li.parent_li').find(' > ul > li');
+    // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  
+    if (children.is(":visible")) {
+      check_last_visible(this);
+      // toggle_checking_taxa($(this), this_to_check);
+      // toggle_checking_taxa(this);
+    } else {
+      show_children(this);
+    }
+  });  
 
-  // works
-  // $( "div#my_custom_list ul" ).click(function(){
-  //   $(this).children().css( "border", "3px double red" );
-  //   // $(this).children().toggle();
-  //   
-  // });
-  
-  // works
-  // $( "div#my_custom_list ul > li" ).click(function(){
-  //   $(this).css( "border", "3px double red" );
-  // });
-  
+  $('.open-one-layer').dblclick(open_one_layer); 
 }
 
-// =====
-$(function () {    
+var open_one_layer = function()
+{
+   first_hidden_class = $(this).parent('li.parent_li').find(":hidden:first").parent().attr('class');
+   $(this).parent('li.parent_li').find("." + first_hidden_class).each(function(i)
+   {
+     try
+     {
+        show_children(this);
+     }
+     catch(e)
+     {
+       ;
+       //Handle errors here
+     }     
+  })   
+}
+
+var check_last_visible = function(this_input)
+{
+  // clicked = $(".open-one-layer:contains(Bacteria)");
+  all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
+  all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
+  
+  // all_inputs_vis.prop( "checked", true );
+  all_inputs_vis.each(function(i)
+  {
+    // alert($(this).prop('checked'));
+    $(this.parentNode.parentNode).find('input').prop('checked',
+       function(idx, oldProp) {
+         return !oldProp;
+       });
     
-    $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+    // alert(this.className);
+    // toggle_checking_taxa(this);
+  }
+  );
+  
+  // toggle_checking_taxa(this_to_check, all_inputs_vis)
+
+  //$('[mandatory="true"],[validate="true"]')
+  // clicked = $(".open-one-layer:contains(Archaea)");
+  // last_open_class = clicked.parent('li.parent_li').find(":visible:last").parent().parent('ul').attr('class');
+  // alert(last_open_class);
+  //  // $(this)
+  //  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
+  //  // last_open_class = clicked.closest('.parent_li').find(":visible:last").parent().parent('ul').attr('class');
+  //  
+  //   clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
+  //   {
+  //     try
+  //     {
+  //       check = $(this).find(' > input')
+  //       alert(check.className);
+  //        // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
+  //     }
+  //     catch(e)
+  //     {
+  //       ;
+  //       //Handle errors here
+  //     }     
+  //  })
+   
+  //  clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
+  //  {
+  //    try
+  //    {
+  //      check = $(this)
+  //      alert(this.className);
+  //       // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
+  //    }
+  //    catch(e)
+  //    {
+  //      ;
+  //      //Handle errors here
+  //    }     
+  // })
+
+}
+
+var show_children = function(current)
+{
+  $(current).parent('li.parent_li').find(' > ul > li').show('fast');
+  var span_sign = $(current).parent('li.parent_li').find(' > span').filter('.sign');
+  span_sign.attr('title', 'Collapse this branch');
+  span_sign.find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+}
+
+var hide_children = function(current, children)
+{
+  children.hide('fast');
+  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
+}
+
+// var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
+var toggle_checking_taxa = function(pr_checkbox) {
+  var this_to_check = $(pr_checkbox).parent('li').parent('ul').find('.custom-taxa');
+  if ($(pr_checkbox).prop('checked')) {
+   this_to_check.find('input').prop('checked', true);
+  }
+  else {
+   this_to_check.find('input').prop('checked', false);
+  }
+};
+
+
+
+var toggle_children = function()
+{
+    var children = $(this).parent('li.parent_li').find(' > ul > li');
+    var current = this;
+    if (children.is(":visible")) {
+        hide_children(current, children);
+        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+    } else {
+        show_children(current);
+    }
     
-    $('.tree li.parent_li > span').each(function(i,e){
-        if ($(this).find('i').hasClass("icon-plus-sign")){
-            $(this).parent('li.parent_li').find(' > ul > li').hide();
-        }
-    });
-    
-    $('.tree li.parent_li > span').on('click', function (e) {
-        var children = $(this).parent('li.parent_li').find(' > ul > li');
-        if (children.is(":visible")) {
-            children.hide('fast');
-            $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
-        } else {
-            children.show('fast');
-            $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-        }
-        e.stopPropagation();
-    });
-    
-});
+    return false;
+}
