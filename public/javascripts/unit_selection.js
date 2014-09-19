@@ -115,53 +115,15 @@ function show_custom_taxa_tree()
   
   $('.tree li.parent_li > span').filter('.sign').click(toggle_children);
 
-  // $('.radiobox input').click(function() {
-  //   a = this.id;
-  //   alert(a);
-  // })
-
-  $('input.custom-taxa').click({param1: " clade"}, check_input);
+  // Default Selection Mode: Clade 
+  $('input.custom-taxa').click({param1: "clade"}, check_input);
 
   $('.radiobox input').click(function() {
     check_mode = this.id;
-    // alert(check_mode);
-    // $('input.custom-taxa').click(function() {
-    // alert(check_mode);
     $('input.custom-taxa').unbind('click');
     $('input.custom-taxa').click({param1: check_mode}, check_input);
       
-       //   var children = $(this).parent('li.parent_li').find(' > ul > li');
-       //   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-       //   // alert(check_mode);
-       // 
-       //   if (children.is(":visible")) {
-       //     // if (this.id ==)
-       //     // check_mode(this)
-       //     check_last_visible(this);
-       //     // toggle_checking_taxa($(this), this_to_check);
-       //     // toggle_checking_taxa(this);
-       //   } else {
-       //     show_children(this);
-       //   }
-     // });  
-       
   });
-  // $('input.custom-taxa').click(check_input);
-  
-  // var check_input = function(check_mode)
-  // $('input.custom-taxa').click(function() {
-  //   var children = $(this).parent('li.parent_li').find(' > ul > li');
-  //   // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-  // 
-  //   if (children.is(":visible")) {
-  //     // check_mode(this)
-  //     check_last_visible(this);
-  //     // toggle_checking_taxa($(this), this_to_check);
-  //     // toggle_checking_taxa(this);
-  //   } else {
-  //     show_children(this);
-  //   }
-  // });  
 
   $('.open-one-layer').dblclick(open_one_layer); 
 }
@@ -171,13 +133,13 @@ var check_input = function(event)
   var check_mode = event.data.param1;
   var children = $(this).parent('li.parent_li').find(' > ul > li');
   if (children.is(":visible")) {
-    if (check_mode === "individual")
+    if (check_mode === "clade")
     {
-      toggle_checking_taxa(this);      
+      check_last_visible(this);      
     }
     else
     {
-      check_last_visible(this);      
+      toggle_checking_taxa(this);      
     }
   } else {
     show_children(this);
