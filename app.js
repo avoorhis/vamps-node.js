@@ -49,6 +49,7 @@ app.use(cookieParser());
 
 app.use(compression());
 app.use(express.static(path.join(__dirname, '/public')));
+//app.use(express.static(path.join(__dirname, '/tmp')));
 app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
