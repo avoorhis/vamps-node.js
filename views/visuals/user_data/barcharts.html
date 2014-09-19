@@ -7,10 +7,7 @@
 
 <span id='chart_tooltip' >
   <table style='margin:0'>      
-    <tr>       
-      <td class='dataset'>Dataset:</td>
-      <td id='dataset'></td>
-    </tr>
+    
     <tr>        
       <td class='tax'>Tax:</td>
       <td id='unit'></td>
@@ -58,17 +55,18 @@ $(document).ready(function() {
             var passthru = this.getTrigger().attr("id");
             
             var stuff = passthru.split('-|-')
-            dname = stuff[0];
-            uname = stuff[1];
-            count = stuff[2];
-            
+            //dname = stuff[0];
+            uname = stuff[0];
+            cnt = stuff[1];
+            pct   = stuff[2];
+            count = cnt + ' ('+pct+' %)'
             //distance = stuff[3];
             //dm = metric+': '+distance
             //var newarray=[];
 
 
                        
-            $("#chart_tooltip table td#dataset").text(dname);
+            //$("#chart_tooltip table td#dataset").text(dname);
             $("#chart_tooltip table td#unit").text(uname); 
             $("#chart_tooltip table td#count").text(count);
                     
