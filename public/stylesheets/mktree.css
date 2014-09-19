@@ -85,44 +85,12 @@ i.icon-minus-sign {
 
 
 [class^="icon-"], [class*=" icon-"] {
-/*    background-image: url("../images/tree_plus.gif");*/
-/*    background-position: 14px 14px;*/
-/*    background-repeat: no-repeat;*/
-/*    display: inline-block;*/
-/*    height: 14px;
-    line-height: 14px;
-    margin-top: 1px;*/
-/*    vertical-align: text-top;*/
-/*    vertical-align: middle;*/
     width: 1.9ex;
     height: 1.9ex;
-    
-/*    width: 14px;
-    height: 14px;
-*/}
+}
 
-
-/** From http://www.javascripttoolbox.com/lib/mktree/mktree.css */
-/* Put this inside a @media qualifier so Netscape 4 ignores it */
-/*@media screen, print { */
-  /* Turn off list bullets */
-/*  ul.mktree  li { list-style: none; } */
-  /* Control how "spaced out" the tree is */
-/*  ul.mktree, ul.mktree ul , ul.mktree li { margin-left:10px; padding:0px; }*/
-  /* Provide space for our own "bullet" inside the LI */
-/*  ul.mktree  li           .bullet { padding-left: 15px; }*/
-  /* Show "bullets" in the links, depending on the class of the LI that the link's in */
-/*  ul.mktree  li.liOpen    .bullet { cursor: pointer; background: url(../images/mktree/minus.gif)  center left no-repeat; }*/
-/*  ul.mktree  li.liClosed  .bullet { cursor: pointer; background: url(../images/mktree/plus.gif)   center left no-repeat; }*/
-/*  ul.mktree  li.liBullet  .bullet { cursor: default; background: url(../images/mktree/bullet.gif) center left no-repeat; }*/
-  /* Sublists are visible or not based on class of parent LI */
-/*  ul.mktree  li.liOpen    ul { display: block; }*/
-/*  ul.mktree  li.liClosed  ul { display: none; }*/
-
-  /* Format menu items differently depending on what level of the tree they are in */
-  /* Uncomment this if you want your fonts to decrease in size the deeper they are in the tree */
-/*
-  ul.mktree  li ul li { font-size: 90% }
-*/
-
-/*}*/
+.radiobox {
+  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size: 10px; 
+  padding-bottom: 10px;
+}
