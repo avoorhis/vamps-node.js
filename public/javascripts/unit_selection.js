@@ -120,6 +120,7 @@ function show_custom_taxa_tree()
     // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
   
     if (children.is(":visible")) {
+      // check_mode(this)
       check_last_visible(this);
       // toggle_checking_taxa($(this), this_to_check);
       // toggle_checking_taxa(this);
@@ -150,64 +151,17 @@ var open_one_layer = function()
 
 var check_last_visible = function(this_input)
 {
-  // clicked = $(".open-one-layer:contains(Bacteria)");
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
   
-  // all_inputs_vis.prop( "checked", true );
   all_inputs_vis.each(function(i)
   {
-    // alert($(this).prop('checked'));
     $(this.parentNode.parentNode).find('input').prop('checked',
        function(idx, oldProp) {
          return !oldProp;
        });
-    
-    // alert(this.className);
-    // toggle_checking_taxa(this);
   }
   );
-  
-  // toggle_checking_taxa(this_to_check, all_inputs_vis)
-
-  //$('[mandatory="true"],[validate="true"]')
-  // clicked = $(".open-one-layer:contains(Archaea)");
-  // last_open_class = clicked.parent('li.parent_li').find(":visible:last").parent().parent('ul').attr('class');
-  // alert(last_open_class);
-  //  // $(this)
-  //  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-  //  // last_open_class = clicked.closest('.parent_li').find(":visible:last").parent().parent('ul').attr('class');
-  //  
-  //   clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
-  //   {
-  //     try
-  //     {
-  //       check = $(this).find(' > input')
-  //       alert(check.className);
-  //        // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
-  //     }
-  //     catch(e)
-  //     {
-  //       ;
-  //       //Handle errors here
-  //     }     
-  //  })
-   
-  //  clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
-  //  {
-  //    try
-  //    {
-  //      check = $(this)
-  //      alert(this.className);
-  //       // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
-  //    }
-  //    catch(e)
-  //    {
-  //      ;
-  //      //Handle errors here
-  //    }     
-  // })
-
 }
 
 var show_children = function(current)
