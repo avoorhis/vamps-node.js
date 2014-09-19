@@ -127,10 +127,7 @@ function end_ul(level, new_level, class_name)
 {
   if (level === new_level)
   {
-    // console.log("</li>");
-    // console.log('</ul> <!-- class="' + class_name + '"-->'); 
     var html = '\n</li>\n</ul> <!-- class="' + class_name + '"-->'
-    // console.log(html);
     return html;
   }
 }
@@ -145,65 +142,30 @@ function write_partial(fileName, html)
   fs.appendFileSync(fileName, html);
 }
 
-/*
-  <li>
-    <label class='tax_select'>
-<!-- ///////// D O M A I N /////////////////////////////////////////////// -->
-      <a href=''  id='<%= id %>_toggle' class='domain_toggle'  onclick="toggle_selected_taxa('domain','<%= id %>'); return false;" >
-        <img alt='plus' src='/images/tree_plus.gif'/>
-      </a>
-      <input type='checkbox' id='<%= id %>--cbid' name='domain_names[]' value='<%= domain %>' onclick="open_taxa('<%= id %>'); return false;"/>
-    </label>
-    <span ondblclick="open_level('<%= id %>','<%= JSON.stringify(all_tax_data[domain]) %>','1'); return false;"><%= domain %></span>
-    ...
-    <li>
-      <label class="tax_select">
-        <a href=""  id="<%= id %>_toggle" onclick="toggle_selected_taxa("phylum","<%= id %>"); return false;">
-          <img alt="plus" src="/images/tree_plus.gif"/>
-        </a>
-        <input type="checkbox" id="<%= id %>--cbid" name="phylum_names[]" value="<%= phylum %>" onclick="open_taxa("<%= id %>"); return false;" />
-      </label>
-      <span ondblclick="open_level("<%= id %>","<%= JSON.stringify(all_tax_data[domain][phylum]) %>","2"); return false;"><%= phylum %></span>
-    ====
-    <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
-    <a href=''><%= pname %></a>
-  </label>
- */
- 
- // html = '\n<li class="expandable">' + this_node.taxon;
 function add_li(this_node)
 {
-  // this_html = '\n<li class="expandable">';
   this_html = '<li>\n';
-  this_html += '<span><i class="icon-plus-sign"></i>';
-  // this_html += '<img alt="plus" src="/images/tree_plus.gif"/>';
-  this_html += '<input type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
-  this_html += this_node.taxon + '</span>'
+  this_html += '<span class="sign"><i class="icon-no-sign"></i></span>';
+  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
+  this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
   return this_html;
-   // + this_node.taxon;
 }
 
 function traverse(dict_map_by_id, this_node, level, fileName)
 { 
   /** todo: 
   *) benchmark what's faster: write_partial 3 times or collect html and then write_partial once above.
-  *) " class="expandable" should be added in the client side javascript to all ul ids (except domains?)
   */
   var new_level = 0;  
   var html = "";
-  // console.log("XXX this_node = " +  JSON.stringify(this_node));
-  // console.log("XXX_start level = " + level);
-  // console.log("XXX_start new_level = " + new_level);
-  
+
   html = start_ul(level, new_level, this_node.rank);
   write_partial(fileName, html);
     
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
-  // console.log("TTT this_node.children_ids (kids_length) = " + JSON.stringify(kids_length));
   console.log('this_node: ' + JSON.stringify(this_node));
     
-  // html = '\n<li class="expandable">' + this_node.taxon;
   html = add_li(this_node);
   write_partial(fileName, html);
   
@@ -214,12 +176,8 @@ function traverse(dict_map_by_id, this_node, level, fileName)
     level -= 1;    
   }
   new_level = level;
-  // console.log("XXX_end level = " + level);
-  // console.log("XXX_end new_level = " + new_level);
   html = end_ul(level, new_level, this_node.rank);
   write_partial(fileName, html);
-  
-  // console.log("\n=================\n");
   
 }
 
@@ -267,6 +225,5 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
     traverse(dict_map_by_id, domains[i], level, fileName);
   }
   write_partial(fileName, "</div> <!-- tree well -->");
-  
   
 }
