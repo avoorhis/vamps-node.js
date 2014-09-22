@@ -132,8 +132,7 @@ var check_input = function(event)
 {
   var check_mode = event.data.param1;
   var children = $(this).parent('li.parent_li').find(' > ul > li');
-  if (children.is(":visible")) {
-    // check_mode === "clade" ? check_last_visible(this) : toggle_checking_taxa(this)
+  if (children.is(":visible")) {    
     check_mode === "clade" ? check_last_visible(this) : toggle_checking
     
   } else {
@@ -162,12 +161,7 @@ var check_last_visible = function(this_input)
 {
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
-  // all_inputs_vis.each(toggle_checking);  
-  count_checked();
   all_inputs_vis.each(toggle_checking);  
-  count_checked();
-  uncheck_closed(this);
-  count_checked();
 }
 
 var show_children = function(current)
@@ -187,21 +181,11 @@ var hide_children = function(current, children)
 // todo: the same in project_dataset_tree.js
 var toggle_checking = function()
 {
-  $(this.parentNode.parentNode).find('input').prop('checked',
+  $(this.parentNode.parentNode).find('input').filter(":visible").prop('checked',
      function(idx, oldProp) {
        return !oldProp;
      });
 }
-
-// var toggle_checking_taxa = function(pr_checkbox) {
-//   var this_to_check = $(pr_checkbox).parent('li').parent('ul').find('.custom-taxa');
-//   if ($(pr_checkbox).prop('checked')) {
-//    this_to_check.find('input').prop('checked', true);
-//   }
-//   else {
-//    this_to_check.find('input').prop('checked', false);
-//   }
-// };
 
 var count_checked = function()
 {
@@ -209,7 +193,7 @@ var count_checked = function()
   alert(a);
 }
 
-// todo: simila in project_dataset_tree.js
+// todo: similar in project_dataset_tree.js
 var uncheck_closed =  function(current)
 {
   $(current).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
@@ -221,10 +205,7 @@ var toggle_children = function()
     var current = this;
     if (children.is(":visible")) {
         hide_children(current, children);
-        count_checked();
         uncheck_closed(this);
-        // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
-        count_checked();
     } else {
         show_children(this);
     }
