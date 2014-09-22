@@ -14,9 +14,10 @@ var helpers = require('../helpers/helpers');
 var COMMON  = require('./routes_common');
 var MTX     = require('./routes_counts_matrix');
 var HMAP    = require('./routes_distance_heatmap');
+var DEND    = require('./routes_dendrogram');
 var BCHARTS = require('./routes_bar_charts');
 var PCHARTS = require('./routes_pie_charts');
-var CTABLE  = require('./routes_counts_table');
+//var CTABLE  = require('./routes_counts_table');
 
 var app = express();
 
@@ -59,7 +60,7 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
   visual_post_items.normalization                = req.body.normalization || 'none';
   visual_post_items.visuals                      = req.body.visuals;
-  visual_post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance;
+  visual_post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance || 'morisita_horn';
   visual_post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance;
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
   visual_post_items.domains                      = req.body.domains      || 'all';
@@ -348,7 +349,7 @@ router.get('/index_visuals',  function(req, res) {
 //
 //
 router.get('/reorder_datasets', function(req, res) {
-  console.log('in reorder datasets')
+  console.log('TODO::TODO reorder datasets')
   console.log(selection_obj)
   //console.log(chosen_id_name_hash)
 });
@@ -359,27 +360,25 @@ router.get('/user_data/counts_table', function(req, res) {
   
   var myurl = url.parse(req.url, true);
   var ts   = myurl.query.ts;
-  var norm = myurl.query.norm || 'none';
-  var min  = myurl.query.min_range || 0;
-  var max  = myurl.query.max_range || 100;
-  console.log(min.toString()+' - '+visual_post_items.min_range.toString())
-      console.log(max.toString()+' - '+visual_post_items.max_range.toString())
-      console.log(norm+' - '+visual_post_items.normalization)
+  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
+  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
+  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
+   
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+
+
   var infile = '../../tmp/'+ts+'_count_matrix.biom';
   fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
     if (err) {
       console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
     }
     var mtx = JSON.parse(file_contents);
-    if( min.toString()  !== visual_post_items.min_range.toString() ||
-        max.toString()  !== visual_post_items.max_range.toString() ||
-        norm !== visual_post_items.normalization) {
-        
-        // recalulate mtx.biome
-        // should it be written to a file? or try to make changes in memory?
-        mtx = COMMON.get_custom_biome_matrix(mtx,min,max,norm);
 
-    }
+    var mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    console.log('after cust')
+    console.log(new_mtx)
 
     var html = "<table border='1' class='single_border'><tr><td>";
     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
@@ -397,7 +396,7 @@ router.get('/user_data/counts_table', function(req, res) {
       html += '<td>'+mtx.rows[n].id+'</td>';
       for(i in mtx.data[n]) {
         var cnt = mtx.data[n][i];
-        var pct =  (cnt * 100 / mtx.column_totals[n]).toFixed(2)
+        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2)
         var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
         html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
       }
@@ -418,80 +417,7 @@ router.get('/user_data/counts_table', function(req, res) {
     });
   });
 });
-//
-//   H E A T M A P
-//
-router.get('/user_data/heatmap', function(req, res) {
-  var myurl = url.parse(req.url, true);
-  var exec = require('child_process').exec;
-  var ts    = myurl.query.ts;
-  // var min   = myurl.query.min_range;
-  // var max   = myurl.query.max_range;
-  // var norm  = myurl.query.norm;
-  var dist  = 'morisita_horn';  // default distance
 
-  //var file = '../../tmp/'+ts+'_heatmap.html';
-  
-  // if( (norm !== undefined && norm   !== visual_post_items.normalization) ||
-  //     (min !== undefined && min !== visual_post_items.min_range)     ||
-  //     (max !== undefined && max !== visual_post_items.max_range)     ||
-  //     (dist !== undefined && dist !== visual_post_items.selected_heatmap_distance) ) {
-    
-  //   visual_post_items.min_range = Number(min)
-  //   visual_post_items.max_range = Number(max)
-  //   visual_post_items.normalization = norm
-  //   visual_post_items.selected_heatmap_distance = dist
-
-  //   console.log('re-write file needed '+visual_post_items.selected_heatmap_distance)
-  //   HMAP.create_heatmap_html ( ts, visual_post_items )
-    
-
-  // }else{
-    
-  // }
-  var infile = './tmp/'+ts+'_count_matrix.biom';
-  //var mtx = JSON.parse(file_contents);
-  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
-
-  //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-  var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + infile + ' ' + dist;
-  console.log(command);
-  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-        if(stderr){console.log(stderr)}
-        stdout = stdout.trim();
-        console.log(stdout)
-        
-
-      var html = '<table border="1" class="single_border"><tr><td>';
-      html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-      html += '</td><td>';
-      html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-      html += '</td></tr></table>';
-
-        if(stdout === 'dist(0)' || stdout === 'err') {
-
-          html += '<div>Error -- No distances were calculated.</div>'
-
-        }else{
-          var dm = HMAP.create_distance_matrix(stdout);
-          
-          html += HMAP.create_hm_html(dm);          
-
-        }
-
-        res.render('visuals/user_data/heatmap', {
-              title: req.params.title   || 'default_title',
-              timestamp: ts || 'default_timestamp',
-              html : html,
-              user: req.user
-        });
-
-
-  });
- 
-
-
-});
 //
 // B A R C H A R T S
 //
@@ -499,37 +425,33 @@ router.get('/user_data/barcharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  // var min   = myurl.query.min_range;
-  // var max   = myurl.query.max_range;
-  // var norm  = myurl.query.norm;
-
-  // if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
-  //     (min !== undefined && min !== visual_post_items.min_range)     ||
-  //     (max !== undefined && max !== visual_post_items.max_range) ) {
-  //   visual_post_items.min_range = Number(min)
-  //   visual_post_items.max_range = Number(max)
-  //   visual_post_items.normalization = norm
-
-  //   console.log('re-write file needed')
-  //   var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
-  //   BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
-  // }
-  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
-  //fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-  //  if (err) { console.log('Could not read file: ' + infile + '\nHere is the error: '+ err ); }
-    //var d3 = require("d3");
+  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
+  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
+  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
      
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+  
+  var infile = '../../tmp/'+ts+'_count_matrix.biom';
+  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
+    if (err) {
+      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
+    }
+    var mtx = JSON.parse(file_contents);
 
-      var html = '<table border="1" class="single_border"><tr><td>';
-      html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-      html += '</td><td>';
-      html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-      html += '</td></tr></table>';
+    mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
      
-    
+    var html = '<table border="1" class="single_border"><tr><td>';
+    html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
+   
+
     //var BCHARTS = require('./routes_bar_charts_states');
-    BCHARTS.create_barcharts_html ( ts, html, req.user, res );
-  //});
+    BCHARTS.create_barcharts_html ( ts, html, req.user, res, mtx );
+  });
 });
 
 //
@@ -539,39 +461,154 @@ router.get('/user_data/piecharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  // var min   = myurl.query.min_range;
-  // var max   = myurl.query.max_range;
-  // var norm  = myurl.query.norm;
+  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
+  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
+  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
+ 
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+ 
+  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+  console.log('in create_piecharts_html: '+infile)
+  //var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
+  fs.readFile(infile, 'utf8', function (err, json) {
+    var mtx = JSON.parse(json);
+    mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
 
-  // if( (norm      !== undefined && norm      !== visual_post_items.normalization) ||
-  //     (min !== undefined && min !== visual_post_items.min_range)     ||
-  //     (max !== undefined && max !== visual_post_items.max_range) ) {
-  //   visual_post_items.min_range = Number(min)
-  //   visual_post_items.max_range = Number(max)
-  //   visual_post_items.normalization = norm
-
-  //   console.log('re-write file needed')
-  //   var custom_count_matrix = COMMON.get_custom_count_matrix(visual_post_items, old_vals, count_matrix);
-  //   BCHARTS.create_barcharts_html ( ts, custom_count_matrix, visual_post_items )
-  // }
-  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
-  //fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-  //  if (err) { console.log('Could not read file: ' + infile + '\nHere is the error: '+ err ); }
-    //var d3 = require("d3");
-     
-
-      var html = '<table border="1" class="single_border"><tr><td>';
-      html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-      html += '</td><td>';
-      html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-      html += '</td></tr></table>';
-     
-    
-    //var BCHARTS = require('./routes_bar_charts_states');
-    PCHARTS.create_piecharts_html ( ts, html, req.user, res );
-  //});
+    var html = '<table border="1" class="single_border"><tr><td>';
+    html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
+   
+    PCHARTS.create_piecharts_html ( ts, html, req.user, res, mtx );
+  });
 });
+//
+//   H E A T M A P
+//
+router.get('/user_data/heatmap', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  var exec = require('child_process').exec;
+  var ts    = myurl.query.ts;
+  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
+  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
+  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
+  var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
 
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+  visual_post_items.selected_heatmap_distance = dist
+
+  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+  fs.readFile(infile, 'utf8', function (err, json) {
+    var mtx = JSON.parse(json);
+    biome_matrix = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    var cust_file_name = ts+'_count_matrix_cust_heat.biom';
+    // must write custom file for R script
+    COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
+  
+        
+    console.log('Writing cust matrix file');
+      //COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
+ 
+    var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
+
+    //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
+    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
+    console.log(command);
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(stderr){console.log(stderr)}
+        stdout = stdout.trim();
+        console.log(stdout)
+          
+        var html = '<table border="1" class="single_border"><tr><td>';
+        html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+        html += '</td><td>';
+        html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+        html += '</td></tr></table>';
+        if(stdout === 'dist(0)' || stdout === 'err') {
+          html += '<div>Error -- No distances were calculated.</div>'
+        }else{
+          var dm = HMAP.create_distance_matrix(stdout);
+          html  += HMAP.create_hm_html(dm);  
+        }
+
+        res.render('visuals/user_data/heatmap', {
+              title: req.params.title   || 'default_title',
+              timestamp: ts || 'default_timestamp',
+              html : html,
+              user: req.user
+        });
+
+    });
+  });
+ 
+});
+//
+//   D E N D R O G R A M
+//
+router.get('/user_data/dendrogram', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  var exec = require('child_process').exec;
+  var ts    = myurl.query.ts;
+  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
+  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
+  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
+  var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
+    
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+  visual_post_items.selected_heatmap_distance = dist
+  var ds_count = visual_post_items.no_of_datasets
+
+  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+  fs.readFile(infile, 'utf8', function (err, json) {
+    var mtx = JSON.parse(json);
+    biome_matrix = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    var cust_file_name = ts+'_count_matrix_cust_dend.biom';
+    //var custom_matrix_file = 'tmp/'+ts+'_count_matrix_cust.biom';
+    COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
+
+  
+    //var mtx = JSON.parse(file_contents);
+    var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
+
+    //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
+    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
+    console.log(command);
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(stderr){console.log(stderr)}
+        stdout = stdout.trim();
+        //console.log(stdout)
+
+    
+        var html = '<table border="1" class="single_border"><tr><td>';
+        html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+        html += '</td><td>';
+        html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+        html += '</td></tr></table>';
+
+          
+        html += DEND.create_dendrogram_html(stdout, ds_count);          
+
+         
+
+        res.render('visuals/user_data/dendrogram', {
+              title: req.params.title   || 'default_title',
+              timestamp: ts || 'default_timestamp',
+              html : html,
+              user: req.user
+        });
+
+    });
+ 
+  });
+
+});
 /*
 *   PARTIALS
 *      These six partials all belong to the unit_selection page
