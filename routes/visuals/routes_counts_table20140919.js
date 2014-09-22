@@ -61,7 +61,7 @@ function create_ct_html(matrix) {
 	    for(c in matrix.unit_names[name]) {
 	    	var cnt = matrix.unit_names[name][c];
 	    	var pct =  (cnt * 100 / column_totals[c]).toFixed(2)
-	      var id  = matrix.dataset_names[c]+'-|-'+cnt.toString()+'-|-'+pct.toString();
+	      var id  = matrix.dataset_names[c]+'-|-'+cnt.toString()+'-|-'+column_totals[c].toString();
 	      html += "<td id='"+id+"' class='tooltip right_justify'>"+matrix.unit_names[name][c]+"</td>";
 	      //col_count += 1;
 	    }

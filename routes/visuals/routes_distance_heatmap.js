@@ -10,47 +10,47 @@ module.exports = {
 		//
 		// CREATE HEATMAP HTML
 		//
-		create_heatmap_html: function( ts, obj ) {
-		  // write distance file using R
-		  // The stdout from R script will be used and parsed
-		  // to create distance_matrix JSON Object
-		  //console.log(JSON.stringify(body.selection_obj.counts_matrix))
-		  //console.log(matrix)
-		  var exec = require('child_process').exec;
-		  var env = process.env
-		  var out_file = '../../tmp/'+ts+'_heatmap.html';
-		  var items;
-		  var dname;
-		  var matrix_input_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
-		  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
+		// create_heatmap_html: function( ts, obj ) {
+		//   // write distance file using R
+		//   // The stdout from R script will be used and parsed
+		//   // to create distance_matrix JSON Object
+		//   //console.log(JSON.stringify(body.selection_obj.counts_matrix))
+		//   //console.log(matrix)
+		//   var exec = require('child_process').exec;
+		//   var env = process.env
+		//   var out_file = '../../tmp/'+ts+'_heatmap.html';
+		//   var items;
+		//   var dname;
+		//   var matrix_input_file = path.resolve(__dirname, '../../tmp/'+ts+'_text_matrix.mtx');
+		//   var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 
-		  //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
-		  var command = C.RSCRIPT_CMD + ' ' + script_file + ' ' + matrix_input_file + ' ' + obj.selected_heatmap_distance;
-		  console.log('R command: ' + command);
-		  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-		    stdout = stdout.trim();
-		    //console.log(stderr)
-		    //console.log(error)
-		    console.log('-->'+stdout+'<--')
+		//   //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
+		//   var command = C.RSCRIPT_CMD + ' ' + script_file + ' ' + matrix_input_file + ' ' + obj.selected_heatmap_distance;
+		//   console.log('R command: ' + command);
+		//   exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+		//     stdout = stdout.trim();
+		//     //console.log(stderr)
+		//     //console.log(error)
+		//     console.log('-->'+stdout+'<--')
 		    
-		    if(stdout === 'dist(0)' || stdout === 'err') {
+		//     if(stdout === 'dist(0)' || stdout === 'err') {
 
-		    	var html = '<div>Error -- No distances were calculated.</div>'
+		//     	var html = '<div>Error -- No distances were calculated.</div>'
 
-		    }else{
-		    	var dm = create_distance_matrix(stdout);
+		//     }else{
+		//     	var dm = create_distance_matrix(stdout);
 		    	
-		    	var html = create_hm_html(dm);
-		    }
+		//     	var html = create_hm_html(dm);
+		//     }
 		    
 		    
-		    // this is to write the html to show the colored heatmap
-		    // input should be the html itself
-		    COMMON.write_file(out_file,html);
+		//     // this is to write the html to show the colored heatmap
+		//     // input should be the html itself
+		//     COMMON.write_file(out_file,html);
 
-		  });
+		//   });
 
-		},
+		// },
 		//
 		//  CREATE DISTANCE MATRIX
 		//
