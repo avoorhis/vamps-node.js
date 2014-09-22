@@ -5,33 +5,22 @@ metric <- args[2]   # horn or jaccard
 #print(url)
 
 library(jsonlite,quietly=TRUE)
+require(vegan,quietly=TRUE);
 
 myjson<-fromJSON(paste('./tmp/',url,sep=''))
 
-
-#print(myjson$rows)
-#print(myjson$data)
-#data_matrix<-read.delim(matrix_in, header=T,sep="\t",check.names=FALSE,row.names=1);
-#print(data_matrix);
-
-# IMPORTANT!! must remove last line IF rowname=='ORIGINAL_SUMS'
-#rowcount<-nrow(data_matrix)
-#last_name = row.names(data_matrix)[rowcount]
-#print(rowcount)
-#print(last_name)
-
-# to get rid of potential NaN errors
-# get rid of datasets with zero sum over all the taxa :
 data_matrix<-myjson$data
 rownames(data_matrix)<-myjson$rows$id
 colnames(data_matrix)<-myjson$columns$id
 #print(data_matrix)
 biods = t(data_matrix);
 #print(biods);
-require(vegan,quietly=TRUE);
+
 #  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
 # must use upper=FALSE so that get_distanceR can parse the output correctly
 dis <- as.matrix(0)
+
+
 if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     stand <-decostand(data.matrix(biods),"total");
    dis<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
@@ -100,7 +89,102 @@ if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     dis<-'err'
 }
 # this should be the ONLY print!!!!
-print(dis);
-#
-q();
 
+# dis is the distance matrix
+#print(dis);
+
+
+
+#print(dd);
+library(ape);
+library(ctc);
+#hc = upgma(dd);
+hc<-hclust(dis); 
+newick<-hc2Newick(hc);
+print(newick)
+#write(newick,file='../../tmp/hclust.newick')
+q()
+
+
+
+# ape as.phylo is a generic function which converts an object into a tree of class "phylo".
+phc<-as.phylo(hc);
+dend <- as.dendrogram(hc)
+#  write tree to: 
+tree_file<-paste('/usr/local/www/vamps/tmp/',prefix,'_outtree.tre',sep='')
+write.tree(phc, file=tree_file)
+#
+print('dend');
+print(dend)
+# this file is the output from R
+# outfile = paste('tmp/',prefix,'_test_cluster.out',sep='');
+
+edges<-paste(phc$edge,collapse=',');
+#xedges<-phpSerialize(edges);
+out<-paste('edges',edges,sep='=');
+print(out);
+
+lengths<-paste(phc$edge.length,collapse=',');
+#xlengths<-phpSerialize(lengths);
+out<-paste('lengths',lengths,sep='=');
+print(out);
+#
+#
+tiplabels<-paste(phc$tip.label,collapse=',');
+#xtiplabels<-phpSerialize(tiplabels);
+out<-paste('tiplabels',tiplabels,sep='=');
+print(out);
+
+numtips<-length(phc$tip.label);
+#xnumtips<-phpSerialize(numtips);
+out<-paste('numtips',numtips,sep='=');
+print(out);
+
+plotname <- paste(prefix,'_tree.png',sep='');
+
+filename <-paste('/usr/local/www/vamps/docs/tmp/',plotname,sep='')
+#filename <-paste(plotname,sep='')
+print(filename);
+
+#http://cran.r-project.org/web/packages/Cairo/Cairo.pdf
+#library(Cairo)
+htime<-Sys.time();
+#default csi is .2 inches per character
+#5 characters per inch
+#72 pixels per inch .. maybe
+#all related to point size (ps) in the GDD
+myheight<- numtips*50;
+#myheight<- numtips*36;
+
+#http://cran.r-project.org/web/packages/GDD/GDD.pdf
+#library(GDD);
+
+
+png(file=filename, pointsize = 10, width=800, height=myheight,  bg='#F8F8FF')
+#print('help2');
+sink('/dev/null');
+#plot(rnorm(100),rnorm(100))
+
+maintitle=paste('VAMPS Cluster Plot Based on Taxonomic Counts (distance metric = ',metric,')\n',htime);
+
+par(mai=c(.5,2.5,.5,4.0));
+#plot(phc,horiz=TRUE); 
+#plot(phc);
+#par(mar = c(8, 0, 0, 0)) # leave space for the labels
+plot(dend,horiz=TRUE)
+
+#plot(dend,horiz=TRUE,ylab="Distance")
+#plot(1:500, col = gl(2,250)) 
+
+
+title(main=maintitle);
+dev.off();
+sink();
+#
+
+
+ #nwkfilename<- paste('./nwk_','.nwk',sep='');
+ #write.tree(phc,nwkfilename);
+
+#here we deviate
+#DONE
