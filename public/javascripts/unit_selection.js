@@ -115,20 +115,30 @@ function show_custom_taxa_tree()
   
   $('.tree li.parent_li > span').filter('.sign').click(toggle_children);
 
-  $('input.custom-taxa').click(function() {
-    var children = $(this).parent('li.parent_li').find(' > ul > li');
-    // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-  
-    if (children.is(":visible")) {
-      check_last_visible(this);
-      // toggle_checking_taxa($(this), this_to_check);
-      // toggle_checking_taxa(this);
-    } else {
-      show_children(this);
-    }
-  });  
+  // Default Selection Mode: Clade 
+  $('input.custom-taxa').click({param1: "clade"}, check_input);
+
+  $('.radiobox input').click(function() {
+    check_mode = this.id;
+    $('input.custom-taxa').unbind('click');
+    $('input.custom-taxa').click({param1: check_mode}, check_input);
+      
+  });
 
   $('.open-one-layer').dblclick(open_one_layer); 
+}
+
+var check_input = function(event)
+{
+  var check_mode = event.data.param1;
+  var children = $(this).parent('li.parent_li').find(' > ul > li');
+  if (children.is(":visible")) {
+    // check_mode === "clade" ? check_last_visible(this) : toggle_checking_taxa(this)
+    check_mode === "clade" ? check_last_visible(this) : toggle_checking
+    
+  } else {
+    show_children(this);
+  }
 }
 
 var open_one_layer = function()
@@ -150,64 +160,14 @@ var open_one_layer = function()
 
 var check_last_visible = function(this_input)
 {
-  // clicked = $(".open-one-layer:contains(Bacteria)");
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
-  
-  // all_inputs_vis.prop( "checked", true );
-  all_inputs_vis.each(function(i)
-  {
-    // alert($(this).prop('checked'));
-    $(this.parentNode.parentNode).find('input').prop('checked',
-       function(idx, oldProp) {
-         return !oldProp;
-       });
-    
-    // alert(this.className);
-    // toggle_checking_taxa(this);
-  }
-  );
-  
-  // toggle_checking_taxa(this_to_check, all_inputs_vis)
-
-  //$('[mandatory="true"],[validate="true"]')
-  // clicked = $(".open-one-layer:contains(Archaea)");
-  // last_open_class = clicked.parent('li.parent_li').find(":visible:last").parent().parent('ul').attr('class');
-  // alert(last_open_class);
-  //  // $(this)
-  //  // var this_to_check = $(this.parentNode.parentNode).find('.custom-taxa');
-  //  // last_open_class = clicked.closest('.parent_li').find(":visible:last").parent().parent('ul').attr('class');
-  //  
-  //   clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
-  //   {
-  //     try
-  //     {
-  //       check = $(this).find(' > input')
-  //       alert(check.className);
-  //        // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
-  //     }
-  //     catch(e)
-  //     {
-  //       ;
-  //       //Handle errors here
-  //     }     
-  //  })
-   
-  //  clicked.parent('li.parent_li').find("." + last_open_class).each(function(i)
-  //  {
-  //    try
-  //    {
-  //      check = $(this)
-  //      alert(this.className);
-  //       // toggle_checking_taxa($(this), $(this.parentNode.parentNode).find('.custom-taxa'));
-  //    }
-  //    catch(e)
-  //    {
-  //      ;
-  //      //Handle errors here
-  //    }     
-  // })
-
+  // all_inputs_vis.each(toggle_checking);  
+  count_checked();
+  all_inputs_vis.each(toggle_checking);  
+  count_checked();
+  uncheck_closed(this);
+  count_checked();
 }
 
 var show_children = function(current)
@@ -224,18 +184,36 @@ var hide_children = function(current, children)
   $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
 }
 
-// var toggle_checking_taxa = function(pr_checkbox, this_to_check) {
-var toggle_checking_taxa = function(pr_checkbox) {
-  var this_to_check = $(pr_checkbox).parent('li').parent('ul').find('.custom-taxa');
-  if ($(pr_checkbox).prop('checked')) {
-   this_to_check.find('input').prop('checked', true);
-  }
-  else {
-   this_to_check.find('input').prop('checked', false);
-  }
-};
+// todo: the same in project_dataset_tree.js
+var toggle_checking = function()
+{
+  $(this.parentNode.parentNode).find('input').prop('checked',
+     function(idx, oldProp) {
+       return !oldProp;
+     });
+}
 
+// var toggle_checking_taxa = function(pr_checkbox) {
+//   var this_to_check = $(pr_checkbox).parent('li').parent('ul').find('.custom-taxa');
+//   if ($(pr_checkbox).prop('checked')) {
+//    this_to_check.find('input').prop('checked', true);
+//   }
+//   else {
+//    this_to_check.find('input').prop('checked', false);
+//   }
+// };
 
+var count_checked = function()
+{
+  a = $( "input" ).filter(':checked').length
+  alert(a);
+}
+
+// todo: simila in project_dataset_tree.js
+var uncheck_closed =  function(current)
+{
+  $(current).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+}
 
 var toggle_children = function()
 {
@@ -243,9 +221,12 @@ var toggle_children = function()
     var current = this;
     if (children.is(":visible")) {
         hide_children(current, children);
-        $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
+        uncheck_closed(this);
+        // $(this).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
+        count_checked();
     } else {
-        show_children(current);
+        show_children(this);
     }
     
     return false;
