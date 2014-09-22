@@ -11,12 +11,8 @@ module.exports = {
 		//
 		//  CREATE PIECHARTS HTML
 		//
-		create_piecharts_html: function( ts, html, user, res ) {
-			var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-			console.log('in create_piecharts_html: '+infile)
-			//var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
-			fs.readFile(infile, 'utf8', function (err, json) {
-			mtx = JSON.parse(json);
+		create_piecharts_html: function( ts, html, user, res, mtx ) {
+			
 
   		var counts_per_ds = [];
   		var tmp={};
@@ -45,7 +41,7 @@ module.exports = {
 			}
 			var colors = get_colors(unit_list) ;
 			var pies_per_row = 4
-			var m = 20;
+			var m = 20;  // margin
 	    var r = 320/pies_per_row; // five pies per row
 	    var image_w = 2*(r+m)*pies_per_row;
 	    
@@ -130,34 +126,35 @@ module.exports = {
 			  		//console.log(d);
 			  		return d;
 			  	})
-//console.log(svg.node());
-		//console.log((new xmldom.XMLSerializer()).serializeToString(d3.select('svg')));
+					//console.log(svg.node());
+					//console.log((new xmldom.XMLSerializer()).serializeToString(d3.select('svg')));
 
-				  	var svgGraph = d3.selectAll('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
+				  var svgGraph = d3.selectAll('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
 						
-						//console.log(svgGraph[0]);
+					//console.log(svgGraph[0]);
 						
-						//console.log(svgGraph[0][0]);
-						var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-						
+					//console.log(svgGraph[0][0]);
+					
+					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
+					html = html + svgXML;
 						
 				//}
 //
 
 //console.log(xml)
 				//return '<h1>start</h1>'+svgXML;
-				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>"
+				
 				res.render('visuals/user_data/piecharts', {
           //title: req.params.title   || 'default_title',
           timestamp: ts || 'default_timestamp',
-          html : svgXML,
+          html : html,
           user: user
        	});
 
 				d3.select('svg').remove();
 
 
-		}); // end readfile
+		//}); // end readfile
 
 
 	  } // end fxn
