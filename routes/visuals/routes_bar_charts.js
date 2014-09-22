@@ -13,13 +13,13 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, html, user, res ) {
+		create_barcharts_html: function( ts, html, user, res, mtx ) {
 							
-			var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-			console.log('in create_barcharts_html: '+infile)
+			//var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+			//console.log('in create_barcharts_html: '+infile)
 				//var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
-			fs.readFile(infile, 'utf8', function (err, json) {
-  			mtx = JSON.parse(json);
+			//fs.readFile(infile, 'utf8', function (err, json) {
+  			//mtx = JSON.parse(json);
 
 	  		data = [];
 				for(o in mtx.columns){
@@ -79,7 +79,7 @@ module.exports = {
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 				//console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
-				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>"
+				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>";
 				res.render('visuals/user_data/barcharts', {
           //title: req.params.title   || 'default_title',
           timestamp: ts || 'default_timestamp',
@@ -89,7 +89,7 @@ module.exports = {
 
 				d3.select('svg').remove();
 
-			})  // end readfile
+			//})  // end readfile
 			
 			
 
