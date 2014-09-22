@@ -146,7 +146,7 @@ function add_li(this_node)
 {
   this_html = '<li>\n';
   this_html += '<span class="sign"><i class="icon-no-sign"></i></span>';
-  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.node_id + '" value="' + this_node.taxon + '"/>\n'
+  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '"/>\n'
   this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
   return this_html;
 }
@@ -216,9 +216,16 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
   var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom.html';
   
   clear_partial_file(fileName);
-  
-  add_title(fileName, "<h3>Silva(v108) Custom Taxonomy Selection</h3>\n<input type='hidden' value='tax_silva108_custom' name='unit_choice' />\n\
-  <div class='tree well'>");
+  var page_head = "<h3>Silva(v108) Custom Taxonomy Selection</h3>\n<input type='hidden' value='tax_silva108_custom' name='unit_choice' />\n\
+  <div class='radiobox'>\n\
+		Selection Mode:\n\
+    <input id='clade' type='radio' value='clade' checked='checked' name='mode'>\n\
+    Clade\n\
+    <input id='individual' type='radio' value='individual' name='mode'>\n\
+    Individual\n\
+  </div>\n\
+  <div class='tree well'>"
+  add_title(fileName, page_head);
   
   for (var i=0; i < domains.length; i++)
   {
