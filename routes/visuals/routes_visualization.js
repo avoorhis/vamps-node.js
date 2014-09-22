@@ -363,7 +363,7 @@ router.get('/user_data/counts_table', function(req, res) {
   var min   = myurl.query.min_range || visual_post_items.min_range || 0;
   var max   = myurl.query.max_range || visual_post_items.max_range || 100;
   var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-   
+  if(max <= min) {min=0;max=100;} 
   visual_post_items.min_range = Number(min)
   visual_post_items.max_range = Number(max)
   visual_post_items.normalization = norm
@@ -428,7 +428,7 @@ router.get('/user_data/barcharts', function(req, res) {
   var min   = myurl.query.min_range || visual_post_items.min_range || 0;
   var max   = myurl.query.max_range || visual_post_items.max_range || 100;
   var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-     
+  if(max <= min) {min=0;max=100;} 
   visual_post_items.min_range = Number(min)
   visual_post_items.max_range = Number(max)
   visual_post_items.normalization = norm
@@ -464,7 +464,7 @@ router.get('/user_data/piecharts', function(req, res) {
   var min   = myurl.query.min_range || visual_post_items.min_range || 0;
   var max   = myurl.query.max_range || visual_post_items.max_range || 100;
   var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
- 
+  if(max <= min) {min=0;max=100;} 
   visual_post_items.min_range = Number(min)
   visual_post_items.max_range = Number(max)
   visual_post_items.normalization = norm
@@ -496,7 +496,7 @@ router.get('/user_data/heatmap', function(req, res) {
   var max   = myurl.query.max_range || visual_post_items.max_range || 100;
   var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
   var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
-
+  if(max <= min) {min=0;max=100;} 
   visual_post_items.min_range = Number(min)
   visual_post_items.max_range = Number(max)
   visual_post_items.normalization = norm
@@ -558,7 +558,7 @@ router.get('/user_data/dendrogram', function(req, res) {
   var max   = myurl.query.max_range || visual_post_items.max_range || 100;
   var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
   var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
-    
+  if(max <= min) {min=0;max=100;} 
   visual_post_items.min_range = Number(min)
   visual_post_items.max_range = Number(max)
   visual_post_items.normalization = norm
