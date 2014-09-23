@@ -8,10 +8,11 @@ var fs = require('fs');
 
 // Private
 var taxon_name_id = 1;
+var ranks = constants.RANKS;
 
 function make_dictMap_by_rank(tags) {
   var dictMap_by_rank = {};
-  var ranks = constants.RANKS;
+  // var ranks = constants.RANKS;
   ranks.forEach(function(rank) {
     dictMap_by_rank[rank] = [];
   });
@@ -33,7 +34,7 @@ function get_by_key(dictMap, dictMap_key)
   return dictMap[dictMap_key];
 };
 
-function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id)
+function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
 {
   var current_dict =
   {
@@ -41,13 +42,15 @@ function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id)
     children_ids : [],
     taxon: "",
     rank: "",
-    node_id: 1
+    node_id: 1,
+    db_id: 1
   };
   
   current_dict.taxon = taxa_name;
   current_dict.rank = taxa_rank;
   current_dict.parent_id = i_am_a_parent;
   current_dict.node_id = taxon_name_id;
+  current_dict.db_id = db_id;
   return current_dict;
 }
 
@@ -63,50 +66,82 @@ function add_children_to_parent(dictMap_by_id, current_dict)
   return parent_node;
 }
 
+function check_if_rank(field_name)
+{
+  // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
+  return ranks.indexOf(field_name) > -1
+}
 
-
-
+// todo: refactoring! Too long and nested
 function make_taxa_tree_dict(taxonomy_obj)
 {
   var taxa_tree_dict = [];
   var dictMap_by_name_n_rank = {};
   var dictMap_by_id = {};
+  // console.log("HHH1");
+  // console.log("taxonomy_obj = " + JSON.stringify(taxonomy_obj));
+  // console.log("HHH");
+  
   for (var i=0; i < taxonomy_obj.length; i++)
   {
     in_obj = taxonomy_obj[i];
     // console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
     var i_am_a_parent = 0;
 
-    for (var taxa_rank in in_obj)
+    for (var field_name in in_obj)
     {
-      var parent_node = current_dict = {};
-
-      if (in_obj.hasOwnProperty(taxa_rank))
+      // console.log("field_name = " + JSON.stringify(field_name));
+      // ranks.forEach(function(rank) {
+      //   dictMap_by_rank[rank] = [];
+      // });
+      // 
+      
+      var is_rank = check_if_rank(field_name);
+      if (is_rank)
       {
-        var taxa_name = in_obj[taxa_rank];
-        if (taxa_name)
+        var db_id_field_name = field_name + "_id";
+        // console.log("db_id_field_name = " + JSON.stringify(db_id_field_name));
+        var db_id = in_obj[db_id_field_name];
+        // console.log("db_id = " + JSON.stringify(db_id));
+      
+        var parent_node = current_dict = {};
+        taxa_rank = field_name;
+        if (in_obj.hasOwnProperty(taxa_rank))
         {
-          node = get_by_key(dictMap_by_name_n_rank, taxa_name + taxa_rank);
-
-          if (!node)
+          var taxa_name = in_obj[taxa_rank];
+          if (taxa_name)
           {
-            current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id)
+            node = get_by_key(dictMap_by_name_n_rank, taxa_name + taxa_rank);
 
-            taxa_tree_dict.push(current_dict);
+            if (!node)
+            {
+              // console.log("taxa_name = " + JSON.stringify(taxa_name));
+              // console.log("taxa_rank = " + JSON.stringify(taxa_rank));
+              // console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
+              // console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
             
-            add_to_dict_by_key(dictMap_by_name_n_rank, current_dict.taxon + current_dict.rank, current_dict);
+              current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
 
-            i_am_a_parent = current_dict.node_id;
-
-            taxon_name_id += 1;
+              taxa_tree_dict.push(current_dict);
             
-            add_children_to_parent(dictMap_by_id, current_dict);
-          }
-          else
-          {
-            i_am_a_parent = node.node_id;
+              add_to_dict_by_key(dictMap_by_name_n_rank, current_dict.taxon + current_dict.rank, current_dict);
+
+              i_am_a_parent = current_dict.node_id;
+
+              taxon_name_id += 1;
+            
+              add_children_to_parent(dictMap_by_id, current_dict);
+            }
+            else
+            {
+              i_am_a_parent = node.node_id;
+            }
           }
         }
+      }
+      else
+      {
+        continue;
       }
     }
   }  
