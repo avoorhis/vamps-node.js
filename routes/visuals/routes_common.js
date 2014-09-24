@@ -177,22 +177,32 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
-	  ////var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n";
-	 	// var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
-		// tax_query     += "   FROM sequence_pdr_info as t1\n";
-		// tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
-		// tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
-		// tax_query     += "   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n";
+	  //var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n";
+	 	//  var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
+		 // tax_query     += "   FROM sequence_pdr_info as t1\n";
+		 // tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
+		 // tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
+		 // tax_query     += "   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n";
 
 	 //  //var tax_query = "SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy_info_per_seq as t1\n";
 	 //  //tax_query     += "JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n";
-	 //  tax_query     += joins;
+	   tax_query     += joins;
 	  
+
+	 	var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_id\n";
+	 	// var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
+		 tax_query     += "   FROM sequence_pdr_info as t1\n";
+		 tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
+		 tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
+		 
+
+
+
 	  // OLD db -->
-	  var tax_query = "SELECT dataset_id as did, seq_count,  taxonomy as tax\n";
-   	tax_query     += "   FROM sequence_pdr_info as t1\n";
-   	tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
-   	tax_query     += "   JOIN taxonomies_old as t4 on (t2.silva_taxonomy_info_per_seq_id=t4.id)\n";
+	  // var tax_query = "SELECT dataset_id as did, seq_count,  taxonomy as tax\n";
+   // 	tax_query     += "   FROM sequence_pdr_info as t1\n";
+   // 	tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
+   // 	tax_query     += "   JOIN taxonomies_old as t4 on (t2.silva_taxonomy_info_per_seq_id=t4.id)\n";
    	// <-- OLD db
 	  
 		tax_query     += " WHERE dataset_id in ("+chosen_id_name_hash.ids+")\n";
