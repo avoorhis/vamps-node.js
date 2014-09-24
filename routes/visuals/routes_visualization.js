@@ -88,6 +88,8 @@ router.post('/view_selection',  function(req, res) {
   }else{
     console.log('ERROR--RORRE');
   }
+  console.log('MAP:::');
+  console.log(map_dict_by_db_id )
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
@@ -502,6 +504,21 @@ router.get('/user_data/piecharts', function(req, res) {
         });
 
   });
+});
+//
+// P I E C H A R T  -- S I N G L E
+//
+router.get('/user_data/piechart_single', function(req, res) {
+  
+
+    res.render('visuals/user_data/piechart_single', {
+          //title: req.params.title   || 'default_title',
+          timestamp: ts || 'default_timestamp',
+          //html : html,
+          user: req.user
+        });
+
+ 
 });
 //
 //   H E A T M A P
