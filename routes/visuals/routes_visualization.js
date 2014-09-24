@@ -88,8 +88,10 @@ router.post('/view_selection',  function(req, res) {
   }else{
     console.log('ERROR--RORRE');
   }
-  console.log('MAP:::');
-  console.log(map_dict_by_db_id[724] )
+  //console.log('MAP:::');
+  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
+  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
+
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
@@ -112,6 +114,13 @@ router.post('/view_selection',  function(req, res) {
       // It also reurns a JSON count_matrix
       //count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
       
+
+   
+
+
+
+
+
       biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
       visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
       console.log(biome_matrix);
