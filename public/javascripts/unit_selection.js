@@ -80,12 +80,17 @@ if (typeof get_graphics !=="undefined")
 {
   get_graphics.addEventListener('click', function () {
     var unit_selection = get_graphics_form["unit_selection"].value;
-    if (unit_selection === 'tax_silva108_simple' || unit_selection === 'tax_silva108_custom') 
+    if (unit_selection === 'tax_silva108_simple') 
     {
       msg = 'You must select some taxa';
       var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
     }
-
+    if (unit_selection === 'tax_silva108_custom') 
+    {
+      get_graphics_form.submit()
+      //msg = 'You must select some custom taxa';
+      //var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
+    }
     if (taxa_checked) 
     {
      // msg = 'You must select one or more display output choices';
