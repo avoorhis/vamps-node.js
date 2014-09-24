@@ -12,8 +12,8 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
   });
 
   /* GET Hello World page. */
-  router.get('/helloworld', function(req, res) {
-      res.render('helloworld', { title: 'Hello, World!' });
+  router.get('/overview', function(req, res) {
+      res.render('overview', { title: 'Overview of the VAMPS Project' });
   });
 });
 

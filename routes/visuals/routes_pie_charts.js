@@ -11,7 +11,7 @@ module.exports = {
 		//
 		//  CREATE PIECHARTS HTML
 		//
-		create_piecharts_html: function( ts, html, user, res, mtx ) {
+		create_piecharts_html: function( ts, res, mtx ) {
 			
 
   		var counts_per_ds = [];
@@ -40,7 +40,7 @@ module.exports = {
 				unit_list.push(mtx.rows[o].id);
 			}
 			var colors = get_colors(unit_list) ;
-			var pies_per_row = 4
+			var pies_per_row = 5
 			var m = 20;  // margin
 	    var r = 320/pies_per_row; // five pies per row
 	    var image_w = 2*(r+m)*pies_per_row;
@@ -92,7 +92,7 @@ module.exports = {
 			    .data(d3.layout.pie())
 			  .enter().append("path")
 			    .attr("d", d3.svg.arc()
-			    .innerRadius(r / 2)
+			    .innerRadius(0)
 			    .outerRadius(r))
 			    .attr("id",function(d,i) { 
 		      	var cnt =  d.value;
@@ -124,6 +124,7 @@ module.exports = {
 			  	.text(function(d, i) {
 			  		//console.log('xxy');
 			  		//console.log(d);
+			  		//s = d.split('--')
 			  		return d;
 			  	})
 					//console.log(svg.node());
@@ -136,25 +137,11 @@ module.exports = {
 					//console.log(svgGraph[0][0]);
 					
 					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-					html = html + svgXML;
-						
-				//}
-//
-
-//console.log(xml)
-				//return '<h1>start</h1>'+svgXML;
-				
-				res.render('visuals/user_data/piecharts', {
-          //title: req.params.title   || 'default_title',
-          timestamp: ts || 'default_timestamp',
-          html : html,
-          user: user
-       	});
+					
+			
 
 				d3.select('svg').remove();
-
-
-		//}); // end readfile
+				return svgXML;
 
 
 	  } // end fxn
