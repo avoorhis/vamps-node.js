@@ -138,6 +138,7 @@ module.exports = {
 	  var domains = post_items.domains || ['Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown'];
 	  var tax_depth = post_items.tax_depth || 'phylum';
 	  var fields = [];
+	  var ids = [];
 	  var joins = '';
 	  var and_domain_in = '';
 	  var join_domain 	= " JOIN domain USING(domain_id)"
@@ -151,24 +152,31 @@ module.exports = {
     
 	  if (tax_depth === 'domain') {
 	    fields = ['domain'];
+	    ids = ['domain_id'];
 	    joins = join_domain;
 	  } else if (tax_depth === 'phylum') {
 	    fields = ['domain','phylum'];
+	    ids = ['domain_id','phylum_id'];
 	    joins =  join_domain + join_phylum;
 	  } else if (tax_depth === 'class')  {
 	    fields = ['domain','phylum','klass'];
+	    ids = ['domain_id','phylum_id','klass_id'];
 	    joins =  join_domain + join_phylum + join_klass;
 	  } else if (tax_depth === 'order')  {
 	    fields = ['domain','phylum','klass','`order`'];
+	    ids = ['domain_id','phylum_id','klass_id','order_id'];
 	    joins =  join_domain + join_phylum + join_klass + join_order;
 	  } else if (tax_depth === 'family') {
 	    fields = ['domain','phylum','klass','`order`','family'];
+	    ids = ['domain_id','phylum_id','klass_id','order_id','family_id'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family;
 	  } else if (tax_depth === 'genus') {
 	    fields = ['domain','phylum','klass','`order`','family','genus'];
+	    ids = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
 	  } else if (tax_depth === 'species') {
 	    fields = ['domain','phylum','klass','`order`','family','genus','species'];
+	    ids = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id'];
 	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
 	  }
 	    
@@ -186,16 +194,16 @@ module.exports = {
 
 	 //  //var tax_query = "SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(';',"+fields+") as tax FROM silva_taxonomy_info_per_seq as t1\n";
 	 //  //tax_query     += "JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n";
-	   tax_query     += joins;
+	   
 	  
 
-	 	var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_id\n";
+	 	var tax_query = "SELECT dataset_id as did, seq_count, " + ids + "\n";
 	 	// var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
-		 tax_query     += "   FROM sequence_pdr_info as t1\n";
-		 tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
-		 tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
-		 
-
+		tax_query     += "   FROM sequence_pdr_info as t1\n";
+		tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
+		tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
+		tax_query     += "   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n";
+		tax_query     += joins;
 
 
 	  // OLD db -->
