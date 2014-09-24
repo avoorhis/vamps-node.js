@@ -387,7 +387,7 @@ function assemble_tax(depth, dict, row) {
 		      }else{
 		      	phylum = 'unknown';
 		      }
-		      console.log(domain+';'+phylum)
+		      //console.log(domain+';'+phylum)
 		      tax = domain+';'+phylum;
 		    }else if(depth === 'class') {
 		    	var p_id = row.phylum_id+"_phylum";	
