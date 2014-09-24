@@ -77,6 +77,8 @@ function make_taxa_tree_dict(taxonomy_obj)
 {
   var taxa_tree_dict = [];
   var dictMap_by_name_n_rank = {};
+  var dictMap_by_db_id_n_rank = {};
+  
   var dictMap_by_id = {};
   // console.log("HHH1");
   // console.log("taxonomy_obj = " + JSON.stringify(taxonomy_obj));
@@ -125,6 +127,7 @@ function make_taxa_tree_dict(taxonomy_obj)
               taxa_tree_dict.push(current_dict);
             
               add_to_dict_by_key(dictMap_by_name_n_rank, current_dict.taxon + current_dict.rank, current_dict);
+              add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
 
               i_am_a_parent = current_dict.node_id;
 
@@ -145,7 +148,7 @@ function make_taxa_tree_dict(taxonomy_obj)
       }
     }
   }  
-  return [taxa_tree_dict, dictMap_by_id];
+  return [taxa_tree_dict, dictMap_by_id, dictMap_by_db_id_n_rank];
 }
 
 function start_ul(level, new_level, class_name)
@@ -232,6 +235,7 @@ function TaxonomyTree(rows) {
   temp_arr = make_taxa_tree_dict(this.taxonomy_obj);
   this.taxa_tree_dict = temp_arr[0];
   this.taxa_tree_dict_map_by_id = temp_arr[1]; 
+  this.taxa_tree_dict_map_by_db_id_n_rank = temp_arr[2]; 
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
 }
 
