@@ -46,13 +46,15 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  //console.log(req.body);
+  console.log('req.body');
+  console.log(req.body);
+  console.log('req.body');
   //console.log('1');
   //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   
   //req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
   //console.log('2');
-  // NORMALIZATION:
+  
   var visual_post_items = {};
   GLOBAL.visual_post_items = visual_post_items;
   visual_post_items.unit_choice                  = req.body.unit_choice;
@@ -378,7 +380,7 @@ router.get('/user_data/counts_table', function(req, res) {
 
     var mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     console.log('after cust')
-    console.log(new_mtx)
+    
 
     var html = "<table border='1' class='single_border'><tr><td>";
     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
@@ -450,7 +452,15 @@ router.get('/user_data/barcharts', function(req, res) {
    
 
     //var BCHARTS = require('./routes_bar_charts_states');
-    BCHARTS.create_barcharts_html ( ts, html, req.user, res, mtx );
+    html += BCHARTS.create_barcharts_html ( ts, res, mtx );
+
+    res.render('visuals/user_data/barcharts', {
+          //title: req.params.title   || 'default_title',
+          timestamp: ts || 'default_timestamp',
+          html : html,
+          user: req.user
+        });
+
   });
 });
 
@@ -471,7 +481,7 @@ router.get('/user_data/piecharts', function(req, res) {
  
   var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
   console.log('in create_piecharts_html: '+infile)
-  //var infile = 'http://localhost:3000/tmp/'+ts+'_count_matrix.biom';
+
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
     mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
@@ -482,7 +492,15 @@ router.get('/user_data/piecharts', function(req, res) {
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
    
-    PCHARTS.create_piecharts_html ( ts, html, req.user, res, mtx );
+    html += PCHARTS.create_piecharts_html ( ts, res, mtx );
+
+    res.render('visuals/user_data/piecharts', {
+          //title: req.params.title   || 'default_title',
+          timestamp: ts || 'default_timestamp',
+          html : html,
+          user: req.user
+        });
+
   });
 });
 //
@@ -510,13 +528,10 @@ router.get('/user_data/heatmap', function(req, res) {
     // must write custom file for R script
     COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
   
-        
     console.log('Writing cust matrix file');
-      //COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
  
     var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 
-    //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
     var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
     console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
@@ -570,32 +585,24 @@ router.get('/user_data/dendrogram', function(req, res) {
     var mtx = JSON.parse(json);
     biome_matrix = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     var cust_file_name = ts+'_count_matrix_cust_dend.biom';
-    //var custom_matrix_file = 'tmp/'+ts+'_count_matrix_cust.biom';
     COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
 
-  
-    //var mtx = JSON.parse(file_contents);
     var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
 
-    //var RCall  = ['--no-restore','--no-save', script_file, matrix_file, 'horn'];
     var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
     console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
         if(stderr){console.log(stderr)}
         stdout = stdout.trim();
         //console.log(stdout)
-
     
         var html = '<table border="1" class="single_border"><tr><td>';
         html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
         html += '</td><td>';
         html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
         html += '</td></tr></table>';
-
           
         html += DEND.create_dendrogram_html(stdout, ds_count);          
-
-         
 
         res.render('visuals/user_data/dendrogram', {
               title: req.params.title   || 'default_title',
