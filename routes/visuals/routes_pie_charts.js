@@ -76,6 +76,7 @@ module.exports = {
 			    .data(myjson_obj.values)
 
 			  .enter().append("g")
+
 			    //.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
 			    .attr("transform", function(d, i){
 			    		//console.log(i);
@@ -116,6 +117,7 @@ module.exports = {
 			  // add dataset text
 			  d3.selectAll("g")
 			  	.data(myjson_obj.names)
+			  	
 			  	.append("text")
 			  	.attr("dx", -(r+m))
 			  	.attr("dy", r+m)			  	
@@ -126,7 +128,9 @@ module.exports = {
 			  		//console.log(d);
 			  		//s = d.split('--')
 			  		return d;
-			  	})
+			  	});
+
+			  	 
 					//console.log(svg.node());
 					//console.log((new xmldom.XMLSerializer()).serializeToString(d3.select('svg')));
 
@@ -137,7 +141,7 @@ module.exports = {
 					//console.log(svgGraph[0][0]);
 					
 					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-					
+					console.log(svgXML);
 			
 
 				d3.select('svg').remove();
