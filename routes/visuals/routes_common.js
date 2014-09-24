@@ -177,6 +177,7 @@ module.exports = {
 	    and_domain_in = " AND domain in ('"+domains+"')";
 	  }
 	  
+	  //var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n";
 	  var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
 		tax_query     += "   FROM sequence_pdr_info as t1\n";
 		tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
@@ -293,165 +294,123 @@ module.exports = {
 	//
 	// STRING to COLOR CODE
 	//
-	string_to_color_code: function(str) {
+	string_to_color_code2: function(str) {
 		// str to hash
     for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
-
     // int/hash to hex
     for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
-
     return colour;
-
+	},
+	string_to_color_code: function (str){
+	  var hash = 0;
+	  for(var i=0; i < str.length; i++) {
+	    hash = str.charCodeAt(i) + ((hash << 3) - hash);
+	  }
+	  var color = Math.abs(hash).toString(16).substring(0, 6);
+	  return "#" + '000000'.substring(0, 6 - color.length) + color;
 	},
 	//
 	// GET CUSTOM COUNT MATRIX
 	//
-	get_custom_count_matrix: function(visual_post_items, old_vals, count_matrix) {
-		var custom_count_matrix = extend({},count_matrix);  // this clones count_matrix which keeps original intact.
-		//console.log(visual_post_items);
-		// { dataset_names: 
-	  //  [ 'SLM_NIH_Bv4v5--01_Boonville',
-	  //    'SLM_NIH_Bv4v5--02_Spencer',
-	  //    'SLM_NIH_Bv4v5--03_Junction_City_East' ],
-	  // unit_names: 
-	  //  { 'Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacteriales;Enterobacteriaceae;genus_NA': [ 2, 2, 4 ],
-	  //    'Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas': [ 1, 0, 0 ],
-	  //    'Bacteria;Proteobacteria;Alphaproteobacteria;order_NA;family_NA;genus_NA': [ 1, 0, 0 ],
-	  //    'Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides': [ 430, 401, 272 ] } }
-		var max_cnt = visual_post_items.max_ds_count;
-		var min = visual_post_items.min_range;
-		var max = visual_post_items.max_range;
-		var norm = visual_post_items.normalization;
+	// get_custom_count_matrix: function(visual_post_items, old_vals, count_matrix) {
+	// 	var custom_count_matrix = extend({},count_matrix);  // this clones count_matrix which keeps original intact.
+		
+	// 	var max_cnt = visual_post_items.max_ds_count;
+	// 	var min = visual_post_items.min_range;
+	// 	var max = visual_post_items.max_range;
+	// 	var norm = visual_post_items.normalization;
 
-		// normalize and filter pct here
-		var dsnames_sums={};
-		var dsnames_pcts={};
-		for(var n in custom_count_matrix.dataset_names) {
-			dsnames_sums[n] =0;
-			dsnames_pcts[n] =0;
-		}
-		var new_unames1 = {}
-		var new_unames2 = {}
-		for(var uname in custom_count_matrix.unit_names) {
-			var counts = custom_count_matrix.unit_names[uname];
-			new_unames1[uname] = [];
-			new_unames2[uname] = [];
-			//console.log(uname)
-			for(k in counts) {
-				dsnames_sums[k] += counts[k];
-			}
-		}
+	// 	// normalize and filter pct here
+	// 	var dsnames_sums={};
+	// 	var dsnames_pcts={};
+	// 	for(var n in custom_count_matrix.dataset_names) {
+	// 		dsnames_sums[n] =0;
+	// 		dsnames_pcts[n] =0;
+	// 	}
+	// 	var new_unames1 = {}
+	// 	var new_unames2 = {}
+	// 	for(var uname in custom_count_matrix.unit_names) {
+	// 		var counts = custom_count_matrix.unit_names[uname];
+	// 		new_unames1[uname] = [];
+	// 		new_unames2[uname] = [];
+	// 		//console.log(uname)
+	// 		for(k in counts) {
+	// 			dsnames_sums[k] += counts[k];
+	// 		}
+	// 	}
 		
 
-		// DEF: filter pct by removing taxa where none of the values are in the range min-max% of max for that ds
-		//  		Should we normalize first? or filter first?
-		// 			the filtering needs to be reversable: count_matrix is kept intact
+	// 	// DEF: filter pct by removing taxa where none of the values are in the range min-max% of max for that ds
+	// 	//  		Should we normalize first? or filter first?
+	// 	// 			the filtering needs to be reversable: count_matrix is kept intact
 		
-		//if(old_vals.min != min || old_vals.max != max) {
+	// 	//if(old_vals.min != min || old_vals.max != max) {
 		  	
 		  	
-				for(var uname in custom_count_matrix.unit_names) {
-					var counts = custom_count_matrix.unit_names[uname];
-					var got_one = false;
-					for(k in counts) {
-						//dsnames_pcts[k].push(counts[k]/dsnames_sums[k]);  //list of freqs
-						//console.log((counts[k]*100)/dsnames_sums[k])
-						var x = (counts[k]*100)/dsnames_sums[k];
-						if(x > min && x < max){
-							got_one = true;
-						}
-					}			
+	// 			for(var uname in custom_count_matrix.unit_names) {
+	// 				var counts = custom_count_matrix.unit_names[uname];
+	// 				var got_one = false;
+	// 				for(k in counts) {
+	// 					//dsnames_pcts[k].push(counts[k]/dsnames_sums[k]);  //list of freqs
+	// 					//console.log((counts[k]*100)/dsnames_sums[k])
+	// 					var x = (counts[k]*100)/dsnames_sums[k];
+	// 					if(x > min && x < max){
+	// 						got_one = true;
+	// 					}
+	// 				}			
 
-					// 
-					if(got_one){
-						new_unames1[uname] = counts;
-					}else{
-						console.log('rejecting '+uname)
-						delete new_unames1[uname];
-						delete new_unames2[uname];
-					}
-				}
-				custom_count_matrix.unit_names = new_unames1;
+	// 				// 
+	// 				if(got_one){
+	// 					new_unames1[uname] = counts;
+	// 				}else{
+	// 					console.log('rejecting '+uname)
+	// 					delete new_unames1[uname];
+	// 					delete new_unames2[uname];
+	// 				}
+	// 			}
+	// 			custom_count_matrix.unit_names = new_unames1;
 				
-		//}
+	// 	//}
 
 
-		// normalize:
-		//if(old_vals.norm != norm) {
+	// 	// normalize:
+	// 	//if(old_vals.norm != norm) {
 				
-				// name_sums: { '0': 434, '1': 403, '2': 276 }
+	// 			// name_sums: { '0': 434, '1': 403, '2': 276 }
 				
-				for(var uname in custom_count_matrix.unit_names) {
-					var counts = custom_count_matrix.unit_names[uname];
-					for(k in counts) {
-							if (norm === 'max') {
-								new_unames2[uname].push(parseInt( ( counts[k] * max_cnt ) / dsnames_sums[k], 10) )
-							}else if(norm === 'freq') {
-								new_unames2[uname].push(parseFloat( counts[k] / dsnames_sums[k].toFixed(8) ) );
-							}else{
-								new_unames2[uname].push( counts[k] );
-							}
-					}
-				}
-				//console.log(new_unames);
-				custom_count_matrix.unit_names = new_unames2;
+	// 			for(var uname in custom_count_matrix.unit_names) {
+	// 				var counts = custom_count_matrix.unit_names[uname];
+	// 				for(k in counts) {
+	// 						if (norm === 'max') {
+	// 							new_unames2[uname].push(parseInt( ( counts[k] * max_cnt ) / dsnames_sums[k], 10) )
+	// 						}else if(norm === 'freq') {
+	// 							new_unames2[uname].push(parseFloat( counts[k] / dsnames_sums[k].toFixed(8) ) );
+	// 						}else{
+	// 							new_unames2[uname].push( counts[k] );
+	// 						}
+	// 				}
+	// 			}
+	// 			//console.log(new_unames);
+	// 			custom_count_matrix.unit_names = new_unames2;
 				
-		//}
+	// 	//}
 
-		console.log(custom_count_matrix)
-		return custom_count_matrix;
-	},
+	// 	console.log(custom_count_matrix)
+	// 	return custom_count_matrix;
+	// },
 	//
 	// GET CUSTOM BIOME MATRIX
 	//
 	get_custom_biome_matrix: function(visual_post_items, mtx) {
 		var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
-		//console.log(visual_post_items);
-		// { dataset_names: 
-	  //  [ 'SLM_NIH_Bv4v5--01_Boonville',
-	  //    'SLM_NIH_Bv4v5--02_Spencer',
-	  //    'SLM_NIH_Bv4v5--03_Junction_City_East' ],
-	  // unit_names: 
-	  //  { 'Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacteriales;Enterobacteriaceae;genus_NA': [ 2, 2, 4 ],
-	  //    'Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas': [ 1, 0, 0 ],
-	  //    'Bacteria;Proteobacteria;Alphaproteobacteria;order_NA;family_NA;genus_NA': [ 1, 0, 0 ],
-	  //    'Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides': [ 430, 401, 272 ] } }
+		
 		var max_cnt = visual_post_items.max_ds_count;
 		var min = visual_post_items.min_range;
 		var max = visual_post_items.max_range;
 		var norm = visual_post_items.normalization;
 
 		console.log('in custom biome '+max_cnt.toString());
-		//var min = visual_post_items.min_range;
-		//var max = visual_post_items.max_range;
-		//var norm = visual_post_items.normalization;
-
-		// normalize and filter pct here
-		//var dsnames_sums={};
-		//var dsnames_pcts={};
-		//for(var n in custom_count_matrix.dataset_names) {
-			//dsnames_sums[n] =0;
-			//dsnames_pcts[n] =0;
-		//}
-		//var new_unames = {}
-		
-		//for(var counts = custom_count_matrix.data) {
-			//var counts = custom_count_matrix.unit_names[uname];
-			//new_unames1[uname] = [];
-			//new_unames2[uname] = [];
-			//console.log(uname)
-			//for(k in counts) {
-		//		dsnames_sums[k] += counts[k];
-		//	}
-	//	}
-		
-
-		// DEF: filter pct by removing taxa where none of the values are in the range min-max% of max for that ds
-		//  		Should we normalize first? or filter first?
-		// 			the filtering needs to be reversable: count_matrix is kept intact
-		
-		//if(old_vals.min != min || old_vals.max != max) {
-		  	
+				  	
 		  	var new_counts = [];
 		  	var new_units = [];
 				for(var c in custom_count_matrix.data) {
@@ -477,16 +436,7 @@ module.exports = {
 				custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
 				console.log(custom_count_matrix)
-				// must remove a row and a data item
-				// also change shape and column totals
 				
-		//}
-
-
-		// normalize:
-		//if(old_vals.norm != norm) {
-				
-				// name_sums: { '0': 434, '1': 403, '2': 276 }
 				var tmp2 = [];
 				var tots = [];
 				if (norm === 'max') {
@@ -500,7 +450,7 @@ module.exports = {
 						for(x in custom_count_matrix.columns) {
 							tots.push(max_cnt);
 						}
-						//console.log(new_unames);
+					
 						custom_count_matrix.column_totals =  tots;
 						custom_count_matrix.data = tmp2;
 
@@ -518,10 +468,9 @@ module.exports = {
 						custom_count_matrix.column_totals =  tots;
 						custom_count_matrix.data = tmp2;
 				}else{
-					//custom_count_matrix = mtx;
+					// nothing here
 				}
 
-				
 
 		console.log('returning custom_count_matrix')
 		return custom_count_matrix;
