@@ -87,7 +87,7 @@ function make_taxa_tree_dict(taxonomy_obj)
   for (var i=0; i < taxonomy_obj.length; i++)
   {
     in_obj = taxonomy_obj[i];
-    console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
+    //console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
     var i_am_a_parent = 0;
 
     for (var field_name in in_obj)
@@ -202,7 +202,7 @@ function traverse(dict_map_by_id, this_node, level, fileName)
     
   var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
   
-  console.log('this_node: ' + JSON.stringify(this_node));
+  //console.log('this_node: ' + JSON.stringify(this_node));
     
   html = add_li(this_node);
   write_partial(fileName, html);
