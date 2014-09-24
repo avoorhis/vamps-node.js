@@ -9,7 +9,7 @@ var taxa_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus,
  JOIN genus AS gen USING(genus_id) \
  JOIN species AS spe USING(species_id) \
  JOIN strain AS str USING(strain_id)";
- console.log('running custom tax query short');
+ console.log('running custom tax query short-2');
 
 module.exports = silvaTaxonomy;
 

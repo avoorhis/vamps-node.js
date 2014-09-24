@@ -8,12 +8,12 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
 
   /* GET home page. */
   router.get('/', function(req, res) {
-    res.render('index', { title: 'VAMPS-Node.js', user: req.user });
+    res.render('index', { title: 'VAMPS Home Page', user: req.user });
   });
 
   /* GET Hello World page. */
   router.get('/overview', function(req, res) {
-      res.render('overview', { title: 'Overview of the VAMPS Project' });
+      res.render('overview', { title: 'Overview of the VAMPS Project', user: req.user });
   });
 });
 
