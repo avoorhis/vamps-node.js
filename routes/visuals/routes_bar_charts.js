@@ -13,7 +13,7 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, html, user, res, mtx ) {
+		create_barcharts_html: function( ts, res, mtx ) {
 							
 			//var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
 			//console.log('in create_barcharts_html: '+infile)
@@ -79,16 +79,10 @@ module.exports = {
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 				//console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
-				html = html + "<div id='' class='svg_div'>"+svgXML+"</div>";
-				res.render('visuals/user_data/barcharts', {
-          //title: req.params.title   || 'default_title',
-          timestamp: ts || 'default_timestamp',
-          html : html,
-          user: user
-       	});
-
+				html = "<div id='' class='barchart_div'>"+svgXML+"</div>";
+				
 				d3.select('svg').remove();
-
+				return html;
 			//})  // end readfile
 			
 			
