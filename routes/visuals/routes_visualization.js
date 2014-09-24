@@ -89,7 +89,7 @@ router.post('/view_selection',  function(req, res) {
     console.log('ERROR--RORRE');
   }
   console.log('MAP:::');
-  console.log(map_dict_by_db_id )
+  console.log(map_dict_by_db_id[724] )
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
