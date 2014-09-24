@@ -77,7 +77,7 @@ module.exports = {
 			  var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
 				//console.log(svgGraph[0][0]);
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-				//console.log(svgXML);
+				console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
 				html = "<div id='' class='barchart_div'>"+svgXML+"</div>";
 				
@@ -126,7 +126,10 @@ function create_svg_object(props, color, data) {
 		      .style("text-anchor", "end")
 		      .text("Percent");
 		 
-
+		  // svg.append("svg:g")
+			 //  		.append("a")
+    //         .attr("xlink:href", function(d) { return 'http://www.google.com'; });
+            
 		  var datasetName = svg.selectAll(".bar")
 		      .data(data)
 		    .enter().append("g")
