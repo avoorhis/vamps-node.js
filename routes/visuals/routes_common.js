@@ -203,7 +203,7 @@ module.exports = {
 		tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
 		tax_query     += "   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n";
 		tax_query     += "   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n";
-		tax_query     += joins;
+		//tax_query     += joins;
 
 
 	  // OLD db -->
