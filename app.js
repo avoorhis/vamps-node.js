@@ -199,9 +199,8 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
     // console.log('000 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
-    map_dict_by_db_id = new_taxonomy.make_dict(new_taxonomy.taxa_tree_dict, "db_id");    
     // console.log('RRR333 map_dict_by_db_id = ' + JSON.stringify(map_dict_by_db_id));
-    console.log('RRR333 map_dict_by_db_id[138]["taxon"] = ' + JSON.stringify(map_dict_by_db_id[138]["taxon"]));
+    console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"]));
   }
 });
 
