@@ -54,7 +54,7 @@ a {
 .table {
     border:1px solid black;
     list-style-type: none;
-    padding:3px;
+    padding:10px;
 }
 .table ul {
     text-align:left;
@@ -108,10 +108,7 @@ td.left_justify {
     background-color: #a8b6c0;
 }
 
-.heat_map_td {
-  width: '10' ;
-  height: '10';
-}
+
 
 .unit_selection_page_div_border {
   style='border:1px solid red;
