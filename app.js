@@ -4,6 +4,7 @@ require('nodetime').profile({
     appName: 'Node.js VAMPS Application'
   });
 
+var compression = require('compression')
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
@@ -14,7 +15,6 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var compression = require('compression')
 var flash = require('connect-flash');
 var passport = require('passport');
 var db = require('mysql');
@@ -48,7 +48,8 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
 app.use(compression());
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(__dirname + '/public', { maxAge: 900000 }));
+// app.use(express.static(path.join(__dirname, '/public')));
 app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
