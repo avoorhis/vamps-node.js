@@ -1,3 +1,5 @@
+/*jshint multistr: true */
+
 var taxa_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
  , domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id \
  FROM silva_taxonomy \
