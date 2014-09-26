@@ -69,10 +69,10 @@ describe('visualization functionality:', function(){
           throw new Error(err);
         }
         else {
-          body.title.should.include('mytitle')
-          body.chosen_id_name_hash.ids.should.not.equal([])
-          body.chosen_id_name_hash.ids.should.include('135')
-          body.chosen_id_name_hash.names.should.include('SLM_NIH_Bv4v5--01_Boonville')
+          body.title.should.include('mytitle');
+          body.chosen_id_name_hash.ids.should.not.equal([]);
+          body.chosen_id_name_hash.ids.should.include('135');
+          body.chosen_id_name_hash.names.should.include('SLM_NIH_Bv4v5--01_Boonville');
           done();
         }
       });
