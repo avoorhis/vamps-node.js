@@ -336,7 +336,7 @@ module.exports = {
 				max     = visual_post_items.max_range,
 				norm    = visual_post_items.normalization;
 
-		console.log('in custom biome '+max_cnt.toString());
+		//console.log('in custom biome '+max_cnt.toString());
 				
 				// Adjust for percent limit change	
 		  	var new_counts = [];
@@ -404,7 +404,7 @@ module.exports = {
 				custom_count_matrix.column_totals = tots;
 				custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
-		console.log('returning custom_count_matrix');
+		//console.log('returning custom_count_matrix');
 		return custom_count_matrix;
 	} 
 
