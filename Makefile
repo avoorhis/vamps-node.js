@@ -12,3 +12,4 @@ test-w:
 	$(TESTS)
 
 .PHONY: test test-w
+
