@@ -316,8 +316,8 @@ router.get('/index_visuals',  function(req, res) {
 //
 //
 router.get('/reorder_datasets', function(req, res) {
-  console.log('TODO::TODO reorder datasets')
-  console.log(selection_obj)
+  console.log('TODO::TODO reorder datasets');
+  console.log(selection_obj);
   //console.log(chosen_id_name_hash)
 });
 //
@@ -339,7 +339,7 @@ router.get('/user_data/counts_table', function(req, res) {
     if(values_updated) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
-    console.log('after cust')
+    console.log('after cust');
     
 
     var html = "<table border='1' class='single_border'><tr><td>";
@@ -358,7 +358,7 @@ router.get('/user_data/counts_table', function(req, res) {
       html += '<td>'+mtx.rows[n].id+'</td>';
       for(i in mtx.data[n]) {
         var cnt = mtx.data[n][i];
-        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2)
+        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
         var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
         html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
       }
@@ -430,7 +430,7 @@ router.get('/user_data/piecharts', function(req, res) {
   var values_updated = check_initial_status(myurl);  
  
   var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-  console.log('in create_piecharts_html: '+infile)
+  console.log('in create_piecharts_html: '+infile);
 
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
@@ -631,16 +631,16 @@ function check_initial_status(url) {
   }
 
   if(Number(max) <= Number(min)) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
-  visual_post_items.selected_heatmap_distance = dist
-  visual_post_items.selected_dendrogram_distance = dist
+  visual_post_items.min_range = Number(min);
+  visual_post_items.max_range = Number(max);
+  visual_post_items.normalization = norm;
+  visual_post_items.selected_heatmap_distance = dist;
+  visual_post_items.selected_dendrogram_distance = dist;
   //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
   if(Number(min)===0 && Number(max)===100 && norm==='none') {
     values_updated = false;  // return to initial state
   }
-  return values_updated
+  return values_updated;
 }
 
 //
@@ -655,11 +655,11 @@ function run_R_cmd(req,res, ts, R_command, visual) {
     html += '</td></tr></table>';
 
     exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-      if(stderr){console.log(stderr)}
+      if(stderr){console.log(stderr);}
       stdout = stdout.trim();
-      console.log(stdout)
+      console.log(stdout);
       if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-        html += '<div>Error -- No distances were calculated.</div>'
+        html += '<div>Error -- No distances were calculated.</div>';
       }else{
         if(visual === 'heatmap') {
           var dm = HMAP.create_distance_matrix(stdout);
