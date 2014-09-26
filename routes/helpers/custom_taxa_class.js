@@ -169,7 +169,7 @@ function end_ul(level, new_level, class_name)
 {
   if (level === new_level)
   {
-    var html = '\n</li>\n</ul> <!-- class="' + class_name + '"-->'
+    var html = '\n</li>\n</ul> <!-- class="' + class_name + '"-->';
     return html;
   }
 }
@@ -188,7 +188,7 @@ function add_li(this_node)
 {
   this_html = '<li>\n';
   this_html += '<span class="sign"><i class="icon-no-sign"></i></span>';
-  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '"/>\n'
+  this_html += '<input class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '"/>\n';
   this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
   return this_html;
 }

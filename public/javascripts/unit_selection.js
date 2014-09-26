@@ -39,20 +39,20 @@ function toggle_simple_taxa()
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box() {
-  var file_id = this.value;  
+  var file_id = this.value;
   // Using ajax it will show the requested units module
   var file = '';
   var partial_name = '/visuals/partials/'+file_id;
   //alert(partial_name)
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.addEventListener("load", transferComplete(file_id), false);
-  
+
   xmlhttp.open("GET", partial_name);
   xmlhttp.onreadystatechange = function() {
-    
+
          if (xmlhttp.readyState == 4 ) {
            var string = xmlhttp.responseText;
-           
+
            var div = document.getElementById('units_select_choices_div').innerHTML = string;
            show_custom_taxa_tree();
          }
@@ -70,32 +70,32 @@ function transferComplete(file_id) {
   //   // convertTrees();
   // }
   ;
-}  
+}
 
 // visualization: check_form_pg2.js
 
 var get_graphics_form = document.getElementById('get_graphics_form');
 var get_graphics = document.getElementById('get_graphics');
-if (typeof get_graphics !=="undefined") 
+if (typeof get_graphics !=="undefined")
 {
   get_graphics.addEventListener('click', function () {
     var unit_selection = get_graphics_form["unit_selection"].value;
-    if (unit_selection === 'tax_silva108_simple') 
+    if (unit_selection === 'tax_silva108_simple')
     {
       msg = 'You must select some taxa';
       var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
     }
-    if (unit_selection === 'tax_silva108_custom') 
+    if (unit_selection === 'tax_silva108_custom')
     {
-      get_graphics_form.submit()
+      get_graphics_form.submit();
       //msg = 'You must select some custom taxa';
       //var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
     }
-    if (taxa_checked) 
+    if (taxa_checked)
     {
      // msg = 'You must select one or more display output choices';
      // check_form(get_graphics_form, msg, "visuals[]");
-    }    
+    }
   });
 }
 
@@ -103,7 +103,7 @@ if (typeof get_graphics !=="undefined")
 function show_custom_taxa_tree()
 {
   $('.tree li:has(ul)').addClass('parent_li');
-  $('.tree .parent_li > span.sign > i').addClass('icon-plus-sign').removeClass('icon-no-sign');;
+  $('.tree .parent_li > span.sign > i').addClass('icon-plus-sign').removeClass('icon-no-sign');
 
 // hide by default
   $('.tree li.parent_li > span').filter('.sign').each(function(i,e){
@@ -117,33 +117,33 @@ function show_custom_taxa_tree()
   $('.tree ul.domain > li.parent_li > input').each(function(i,e){
       $(this).prop( "checked", true );
   });
-  
+
   $('.tree li.parent_li > span').filter('.sign').click(toggle_children);
 
-  // Default Selection Mode: Clade 
+  // Default Selection Mode: Clade
   $('input.custom-taxa').click({param1: "clade"}, check_input);
 
   $('.radiobox input').click(function() {
     check_mode = this.id;
     $('input.custom-taxa').unbind('click');
     $('input.custom-taxa').click({param1: check_mode}, check_input);
-      
+
   });
 
-  $('.open-one-layer').dblclick(open_one_layer); 
+  $('.open-one-layer').dblclick(open_one_layer);
 }
 
 var check_input = function(event)
 {
   var check_mode = event.data.param1;
   var children = $(this).parent('li.parent_li').find(' > ul > li');
-  if (children.is(":visible")) {    
-    check_mode === "clade" ? check_last_visible(this) : toggle_checking
-    
+  if (children.is(":visible")) {
+    check_mode === "clade" ? check_last_visible(this) : toggle_checking;
+
   } else {
     show_children(this);
   }
-}
+};
 
 var open_one_layer = function()
 {
@@ -156,18 +156,17 @@ var open_one_layer = function()
      }
      catch(e)
      {
-       ;
        //Handle errors here
-     }     
-  })   
-}
+     }
+  });
+};
 
 var check_last_visible = function(this_input)
 {
   all_plus_vis = $(this_input).closest('ul').find('.icon-plus-sign:visible, .icon-no-sign:visible');
   all_inputs_vis = all_plus_vis.closest('span.sign').siblings('input.custom-taxa');
-  all_inputs_vis.each(toggle_checking);  
-}
+  all_inputs_vis.each(toggle_checking);
+};
 
 var show_children = function(current)
 {
@@ -175,13 +174,13 @@ var show_children = function(current)
   var span_sign = $(current).parent('li.parent_li').find(' > span').filter('.sign');
   span_sign.attr('title', 'Collapse this branch');
   span_sign.find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
-}
+};
 
 var hide_children = function(current, children)
 {
   children.hide('fast');
-  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');  
-}
+  $(current).parent('li.parent_li').find(' > span.sign > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+};
 
 // todo: the same in project_dataset_tree.js
 var toggle_checking = function()
@@ -190,19 +189,19 @@ var toggle_checking = function()
      function(idx, oldProp) {
        return !oldProp;
      });
-}
+};
 
 var count_checked = function()
 {
   a = $( "input" ).filter(':checked').length
   alert(a);
-}
+};
 
 // todo: similar in project_dataset_tree.js
 var uncheck_closed =  function(current)
 {
   $(current).siblings().find('input').each(function(i){$(this).prop( "checked", false )});
-}
+};
 
 var toggle_children = function()
 {
@@ -214,6 +213,6 @@ var toggle_children = function()
     } else {
         show_children(this);
     }
-    
+
     return false;
-}
+};
