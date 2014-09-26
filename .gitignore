@@ -4,6 +4,8 @@ db.sql
 config/database-dev.js
 config/database-test.js
 node_modules/
+colony/
+colony-npm/
 
 # eclipse
 .jshintrc

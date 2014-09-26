@@ -25,13 +25,13 @@ function make_dictMap_by_rank(tags) {
 
 function add_to_dict_by_key(dictMap, dictMap_key, value) 
 {
-  dictMap[dictMap_key] = value;
+  dictMap[dictMap_key] = value;
   return dictMap
 };
 
 function get_by_key(dictMap, dictMap_key) 
 {
-  return dictMap[dictMap_key];
+  return dictMap[dictMap_key];
 };
 
 function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
