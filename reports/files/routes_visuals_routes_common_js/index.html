@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/visuals/routes_common.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/visuals/routes_common.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">52.79</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">410</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">53.62</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">4.26</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">// common.js
+var path = require(&#039;path&#039;);
+var fs = require(&#039;fs&#039;);
+var extend = require(&#039;util&#039;)._extend;
+var C = require(&#039;../../public/constants&#039;);
+
+module.exports = {
+
+	get_selection_markup: function( visual, obj ) {
+	  
+		// obj is visual_post_items
+	  var html = &quot;&lt;div id=&#039;&#039; class=&#039;selection_info&#039;&gt;&quot;;
+	  if(visual === &#039;heatmap&#039;) {
+	    html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_heatmap_distance + &#039;&lt;/li&gt;&#039;;
+	  }
+	  if(visual === &#039;dendrogram&#039;) {
+	    html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_dendrogram_distance + &#039;&lt;/li&gt;&#039;;
+	  }
+	  html += &#039;&lt;li&gt;Maximum Dataset Count (raw): &#039; + obj.max_ds_count.toString() + &#039;&lt;/li&gt;&#039;;
+	  if(obj.unit_choice.indexOf(&#039;tax&#039;) === 0 ) {
+	    html += &#039;&lt;li&gt;Included Domains: &#039; + obj.domains     + &#039;&lt;/li&gt;&#039;;
+	    html += &#039;&lt;li&gt;Include NAs?: &#039;     + obj.include_nas + &#039;&lt;/li&gt;&#039;;
+	    html += &#039;&lt;li&gt;Taxonomic Depth: &#039;  + obj.tax_depth   + &#039;&lt;/li&gt;&#039;;
+	  }
+	  if(obj.normalization === &#039;none&#039;) {
+	  	html += &#039;&lt;li&gt;Normalization: &#039; + obj.normalization + &#039; (raw counts)&lt;/li&gt;&#039;;
+		}else{
+			html += &#039;&lt;li&gt;Normalization: &#039; + obj.normalization + &#039;&lt;/li&gt;&#039;;
+		}
+	  html += &#039;&lt;/div&gt;&#039;;
+	  return html;
+	},
+  //
+  //
+  //
+	get_choices_markup: function( visual, obj ) {
+	  var html = &quot;&lt;div id=&#039;&#039; class=&#039;choices_info&#039;&gt;&quot;;
+	  //title: req.params.title   || &#039;default_title&#039;,
+    //  timestamp: myurl.query.ts || &#039;default_timestamp&#039;,
+    //  html : html,
+    //  user: req.user
+	  html += &quot;&lt;form name=&#039;&#039; method=&#039;GET&#039;&gt;&quot;;
+	  if( visual === &#039;heatmap&#039; || visual === &#039;dendrogram&#039; ) {
+	  	//console.log(C.DISTANCECHOICES)
+	  	var viz_page = &#039;selected_&#039;+visual+&#039;_distance&#039;;
+	  	var distrows = C.DISTANCECHOICES.choices;
+	    html += &#039;&lt;li&gt;Change Distance Metric: &#039;;
+	    html += &quot;&lt;select name=&#039;selected_distance&#039; class=&#039;small_font&#039;&gt;&quot;;
+      for(d in distrows ) {
+      	if(obj[viz_page] === distrows[d].id) {
+      		html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039; selected=&#039;selected&#039; &gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
+      	}else{
+      		html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039;&gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
+      	}
+      } 
+      html += &quot;&lt;/select&gt;&lt;/li&gt;&quot;;
+      html += &#039;&lt;hr&gt;&#039;;
+	  }
+	// unit_choice: &#039;tax_silva108_simple&#039;,
+  // max_ds_count: 3609,
+  // no_of_datasets: 232,
+  // normalization: &#039;none&#039;,
+  // visuals: [ &#039;barcharts&#039; ],
+  // selected_heatmap_distance: &#039;morisita_horn&#039;,
+  // selected_dendrogram_distance: &#039;morisita_horn&#039;,
+  // tax_depth: &#039;phylum&#039;,
+  // domains: [ &#039;Archaea&#039;, &#039;Bacteria&#039;, &#039;Eukarya&#039;, &#039;Organelle&#039;, &#039;Unknown&#039; ],
+  // include_nas: &#039;yes&#039; }
+
+
+
+	  html += &#039;&lt;li&gt;Normalization: &#039;;
+	  if(obj.normalization === &#039;freq&#039;) {
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; checked=&quot;checked&quot;&gt;To Frequency&#039;;
+		} else if (obj.normalization === &#039;max&#039;) {
+			html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; checked=&quot;checked&quot;&gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
+		} else {
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; checked=&quot;checked&quot;&gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+		  html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
+		}
+		html += &#039;&lt;/li&gt;&#039;;
+		html += &#039;&lt;hr&gt;&#039;;
+	  html += &#039;&lt;li&gt;Limit view based on tax percentage: &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+	 	
+	 	html += &quot;MIN &lt;select name=&#039;min_range&#039; class=&#039;small_font&#039;&gt;&quot;;
+	 	for( var n=0;n &lt; C.PCT_RANGE.length-1;n++ ) {
+	 		if(obj.min_range.toString() === C.PCT_RANGE[n].toString()) {
+	 			html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+	 		}else{
+	 			html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+	 		}	 		
+	 	}
+	  html += &quot;&lt;/select&gt;&quot;;
+	  html += &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp; MAX &lt;select name=&#039;max_range&#039; class=&#039;small_font&#039;&gt;&quot;;
+	 	for( var n=1;n &lt; C.PCT_RANGE.length;n++ ) {
+	 		
+	 		if(obj.max_range.toString() === C.PCT_RANGE[n].toString()) {
+	 			html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+	 		}else{
+	 			html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+	 		}
+	 	}
+	  html += &quot;&lt;/select&gt;&lt;/li&gt;&quot;;
+	  html += &#039;&lt;hr&gt;&#039;;
+	  html += &quot;&lt;li&gt;Make your selections then press: &quot;;
+	  html += &quot;&lt;input type=&#039;submit&#039; value=&#039;Change View&#039; &gt;&lt;/li&gt;&quot;;
+	  html += &#039;&lt;input type=&quot;hidden&quot; name=&quot;ts&quot; value=&quot;&#039;+obj.ts+&#039;&quot;&gt;&#039;;
+	  html += &#039;&lt;/form&gt;&#039;;
+	  html += &#039;&lt;/div&gt;&#039;;
+	  return html;
+	},
+
+	//
+	//
+	//
+	get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
+	  //console.log(body);
+	  //selection_obj = selection_obj;
+	  //selection_obj = body.selection_obj;
+	  
+	  //   SELECT dataset_id, silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,domain,phylum) as tax 
+		//   From sequence_pdr_info as t1
+		//   JOIN sequence_uniq_info as t2 using(sequence_id)
+		//   JOIN silva_taxonomy_info_per_seq as t3 using (silva_taxonomy_info_per_seq_id)
+		//   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)
+		//   JOIN domain USING(domain_id) 
+		//   JOIN phylum USING(phylum_id) 
+		//   WHERE dataset_id in (150,151,152,153)
+
+	  if (uitems[0] === &#039;tax&#039; &amp;&amp; uitems[1] === &#039;silva108&#039;){  //covers both simple and custom taxonomy
+	    uassoc = &#039;silva_taxonomy_info_per_seq_id&#039;;
+	  }
+	  var domains = post_items.domains || [&#039;Archaea&#039;, &#039;Bacteria&#039;, &#039;Eukarya&#039;, &#039;Organelle&#039;, &#039;Unknown&#039;];
+	  var tax_depth = post_items.tax_depth || &#039;phylum&#039;;
+	  var fields = [];
+	  var ids = [];
+	  var joins = &#039;&#039;;
+	  var and_domain_in = &#039;&#039;;
+	  var join_domain 	= &quot; JOIN domain USING(domain_id)&quot;
+    var join_phylum 	= &quot; JOIN phylum USING(phylum_id)&quot;;
+    var join_klass 		= &quot; JOIN klass USING(klass_id)&quot;;
+    var join_order 		= &quot; JOIN `order` USING(order_id)&quot;;
+    var join_family 	= &quot; JOIN family USING(family_id)&quot;;
+    var join_genus 		= &quot; JOIN genus USING(genus_id)&quot;;
+    var join_species 	= &quot; JOIN species USING(species_id)&quot;;
+    var join_strain 	= &quot; JOIN strain USING(strain_id)&quot;;
+    
+	  if (tax_depth === &#039;domain&#039;) {
+	    fields = [&#039;domain&#039;];
+	    ids = [&#039;domain_id&#039;];
+	    joins = join_domain;
+	  } else if (tax_depth === &#039;phylum&#039;) {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;];
+	    joins =  join_domain + join_phylum;
+	  } else if (tax_depth === &#039;class&#039;)  {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;];
+	    joins =  join_domain + join_phylum + join_klass;
+	  } else if (tax_depth === &#039;order&#039;)  {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;];
+	    joins =  join_domain + join_phylum + join_klass + join_order;
+	  } else if (tax_depth === &#039;family&#039;) {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;];
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family;
+	  } else if (tax_depth === &#039;genus&#039;) {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;,&#039;genus&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;,&#039;genus_id&#039;];
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
+	  } else if (tax_depth === &#039;species&#039;) {
+	    fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;,&#039;genus&#039;,&#039;species&#039;];
+	    ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;,&#039;genus_id&#039;,&#039;species_id&#039;];
+	    joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
+	  }
+	    
+	  if (domains.length &lt; 5){
+	    domains = domains.join(&quot;&#039;,&#039;&quot;);
+	    and_domain_in = &quot; AND domain in (&#039;&quot;+domains+&quot;&#039;)&quot;;
+	  }
+	  
+	  //var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n&quot;;
+	 	//  var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
+		 // tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
+		 // tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
+		 // tax_query     += &quot;   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;;
+		 // tax_query     += &quot;   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;;
+
+	 //  //var tax_query = &quot;SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax FROM silva_taxonomy_info_per_seq as t1\n&quot;;
+	 //  //tax_query     += &quot;JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n&quot;;
+	   
+	  
+
+	 	var tax_query = &quot;SELECT dataset_id, seq_count, &quot; + ids + &quot;\n&quot;;
+	 	// var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
+		tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
+		tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
+		tax_query     += &quot;   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;;
+		tax_query     += &quot;   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;;
+		//tax_query     += joins;
+
+
+	  // OLD db --&gt;
+	  // var tax_query = &quot;SELECT dataset_id as did, seq_count,  taxonomy as tax\n&quot;;
+   // 	tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
+   // 	tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
+   // 	tax_query     += &quot;   JOIN taxonomies_old as t4 on (t2.silva_taxonomy_info_per_seq_id=t4.id)\n&quot;;
+   	// &lt;-- OLD db
+	  
+		tax_query     += &quot; WHERE dataset_id in (&quot;+chosen_id_name_hash.ids+&quot;)\n&quot;;
+	  //tax_query     += &quot; WHERE silva_taxonomy_info_per_seq_id in (&quot; + unit_id_array + &quot;)\n&quot;;
+	  tax_query     += and_domain_in;
+	  return tax_query;
+
+
+		function onlyUnique(value, index, self) { 
+		    return self.indexOf(value) === index;
+		}
+
+	},
+
+	//
+	//
+	//
+	get_otus_query: function() {
+
+	},
+
+	//
+	//
+	//
+	get_med_query: function() {
+
+	},
+	//
+	// write file
+	//
+	write_file: function(filename, txt) {
+
+		fs.writeFile(path.resolve(__dirname, filename), txt, function(err) {
+	    if(err) {
+	      console.log(&#039;Could not write file: &#039;+filename+&#039; Here is the error: &#039;+err);
+	    } else {
+	      console.log(&quot;The file (&quot;+filename+&quot;) was saved!&quot;);
+	    }
+	  });
+
+	},
+	//
+	// NORMALIZATION
+	//
+	normalize_counts: function(norm_type, selection_obj, max_count) {
+	  
+	  // get max dataset count
+	  //var selection_obj = JSON.parse(obj);
+	  //var max_count = post_items.max_ds_count;
+	  //selection_obj.max_ds_count = max_count;
+	  console.log(&#039;in normalization: &#039;+norm_type+&#039; max: &#039;+max_count.toString());
+
+	  var new_counts_obj = [];
+	  for (var n=0; n &lt; selection_obj.seq_freqs.length; n++) {
+	    var sum=0;
+	    for (var i = 0; i &lt; selection_obj.seq_freqs[n].length; i++ ) {
+	      sum += selection_obj.seq_freqs[n][i];
+	    }
+	    var temp = [];
+	    for (i=0; i &lt; selection_obj.seq_freqs[n].length; i++) {
+
+	      if (norm_type === &#039;max&#039;) {
+	        temp.push( parseInt( ( selection_obj.seq_freqs[n][i] * max_count ) / sum, 10) );
+	      } else {  // freq
+	        temp.push( parseFloat( ( selection_obj.seq_freqs[n][i]  / sum ).toFixed(8) ) );
+	      }
+
+	    }
+	    new_counts_obj.push(temp);
+	  }
+	  
+	  return new_counts_obj;
+	},
+
+	//
+	//  MAX DS COUNT
+	//
+	get_max_dataset_count: function(obj) {
+	  // Gets the maximum dataset count from the &#039;seq_freqs&#039; in selection_obj
+	  var max_count = 0;
+	  for (var n=0; n &lt; obj.seq_freqs.length; n++) {
+	    var sum=0;
+	    for (var i = 0; i &lt; obj.seq_freqs[n].length; i++) {  
+	      sum += parseInt(obj.seq_freqs[n][i]);
+	      //console.log(obj.seq_freqs[n][i]);
+	    }
+	    
+	    if (sum &gt; max_count) {
+	      max_count = sum;
+	    }
+	  }
+	  //console.log(max_count);
+	  return max_count;
+	},
+
+	//
+	// STRING to COLOR CODE
+	//
+	string_to_color_code2: function(str) {
+		// str to hash
+    for (var i = 0, hash = 0; i &lt; str.length; hash = str.charCodeAt(i++) + ((hash &lt;&lt; 5) - hash));
+    // int/hash to hex
+    for (var i = 0, colour = &quot;#&quot;; i &lt; 3; colour += (&quot;00&quot; + ((hash &gt;&gt; i++ * 8) &amp; 0xFF).toString(16)).slice(-2));
+    return colour;
+	},
+	string_to_color_code: function (str){
+	  var hash = 0;
+	  for(var i=0; i &lt; str.length; i++) {
+	    hash = str.charCodeAt(i) + ((hash &lt;&lt; 3) - hash);
+	  }
+	  var color = Math.abs(hash).toString(16).substring(0, 6);
+	  return &quot;#&quot; + &#039;000000&#039;.substring(0, 6 - color.length) + color;
+	},
+	
+	//
+	// GET CUSTOM BIOME MATRIX
+	//
+	get_custom_biome_matrix: function(visual_post_items, mtx) {
+		var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
+		
+		var max_cnt = visual_post_items.max_ds_count,
+				min     = visual_post_items.min_range,
+				max     = visual_post_items.max_range,
+				norm    = visual_post_items.normalization;
+
+		console.log(&#039;in custom biome &#039;+max_cnt.toString());
+				
+				// Adjust for percent limit change	
+		  	var new_counts = [];
+		  	var new_units = [];
+				for(var c in custom_count_matrix.data) {
+					
+					var got_one = false;
+					for(var k in custom_count_matrix.data[c]) {
+						var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
+						if(thispct &gt; min &amp;&amp; thispct &lt; max){
+							got_one = true;
+						}
+					}			
+					
+					if(got_one){
+						new_counts.push(custom_count_matrix.data[c]);
+						new_units.push(custom_count_matrix.rows[c]);
+					}else{
+						console.log(&#039;rejecting &#039;+custom_count_matrix.rows[c].id);
+					}
+				}
+				custom_count_matrix.data = new_counts;
+				custom_count_matrix.rows = new_units;
+								
+
+				// Adjust for normalization
+				var tmp = [];
+				if (norm === &#039;max&#039;) {
+						for(var c in custom_count_matrix.data) {
+							var new_counts = [];
+							for(var k in custom_count_matrix.data[c]) {								
+									new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );									
+							}		
+							tmp.push(new_counts);							
+						}
+						custom_count_matrix.data = tmp;
+				}else if(norm === &#039;freq&#039;){
+						for(var c in custom_count_matrix.data) {							
+							var new_counts = [];
+							for(var k in custom_count_matrix.data[c]) {								
+									new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );										
+							}		
+							tmp.push(new_counts);
+						}
+						custom_count_matrix.data = tmp;
+				}else{
+					// nothing here
+				}
+
+				// re-calculate totals
+				var tots = [];
+				var tmp = {};
+				for(var c in custom_count_matrix.data) {
+					for(var k in custom_count_matrix.data[c]) {
+						if(k in tmp){
+							tmp[k] += custom_count_matrix.data[c][k];
+						}else{
+							tmp[k] = custom_count_matrix.data[c][k];
+						}						
+					}
+				}
+				for(var k in custom_count_matrix.columns){
+					tots.push(tmp[k]);
+				}
+				custom_count_matrix.column_totals = tots;
+				custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+
+		console.log(&#039;returning custom_count_matrix&#039;);
+		return custom_count_matrix;
+	} 
+
+}   // end module.exports</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
