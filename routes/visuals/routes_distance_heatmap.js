@@ -59,11 +59,11 @@ module.exports = {
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
 	    //console.log(outstr);
-	    var distance_matrix = {}
+	    var distance_matrix = {};
 	    // distance_matrix[ds1][ds2] = 2
 	    var dcolname = raw_distance_array[0].trim();
 	    //console.log('dcolname:  '+dcolname)
-	    distance_matrix[dcolname] = {}
+	    distance_matrix[dcolname] = {};
 	    distance_matrix[dcolname][dcolname] = 0;
 	    //console.log(dcolname);
 	    for(row in raw_distance_array){
@@ -73,11 +73,11 @@ module.exports = {
 
 	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
 	        //console.log('found tab')
-	        dcolname = raw_distance_array[row].trim()
+	        dcolname = raw_distance_array[row].trim();
 	        if(dcolname in distance_matrix){
 	        		// pass
 	        }else{
-	          distance_matrix[dcolname] = {}
+	          distance_matrix[dcolname] = {};
 	          distance_matrix[dcolname][dcolname] = 0;
 	        }
 	        
@@ -99,8 +99,8 @@ module.exports = {
             //console.log('a '+dcolname+' - '+items[0])
           }else{
             //console.log('b '+dcolname+' - '+items[0])
-            distance_matrix[items[0]] = {}
-            distance_matrix[items[0]][items[0]] = 0
+            distance_matrix[items[0]] = {};
+            distance_matrix[items[0]][items[0]] = 0;
             
           }	
           distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
@@ -155,7 +155,7 @@ module.exports = {
 
 		}
 
-}
+};
 
 
 
