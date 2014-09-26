@@ -20,19 +20,19 @@ function make_dictMap_by_rank(tags) {
   for (i = 0; tags.length > i; i += 1) {
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
-  return dictMap_by_rank
+  return dictMap_by_rank;
 }
 
 function add_to_dict_by_key(dictMap, dictMap_key, value) 
 {
   dictMap[dictMap_key] = value;
-  return dictMap
-};
+  return dictMap;
+}
 
 function get_by_key(dictMap, dictMap_key) 
 {
   return dictMap[dictMap_key];
-};
+}
 
 function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
 {
@@ -58,10 +58,11 @@ function add_children_to_parent(dictMap_by_id, current_dict)
 {
   add_to_dict_by_key(dictMap_by_id, current_dict.node_id, current_dict);
   
+//  TODO: test if changed to var and removed from above
   parent_node = dictMap_by_id[current_dict.parent_id];
   if (parent_node)
   {
-    parent_node.children_ids.push(current_dict.node_id)
+    parent_node.children_ids.push(current_dict.node_id);
   }
   return parent_node;
 }
@@ -69,7 +70,7 @@ function add_children_to_parent(dictMap_by_id, current_dict)
 function check_if_rank(field_name)
 {
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
-  return ranks.indexOf(field_name) > -1
+  return ranks.indexOf(field_name) > -1;
 }
 
 // todo: refactoring! Too long and nested
@@ -106,7 +107,8 @@ function make_taxa_tree_dict(taxonomy_obj)
         var db_id = in_obj[db_id_field_name];
         // console.log("db_id = " + JSON.stringify(db_id));
       
-        var parent_node = current_dict = {};
+        var parent_node = {}; 
+        var current_dict = {};
         taxa_rank = field_name;
         if (in_obj.hasOwnProperty(taxa_rank))
         {
@@ -122,7 +124,7 @@ function make_taxa_tree_dict(taxonomy_obj)
               // console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
               // console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
             
-              current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
+              current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
 
               taxa_tree_dict.push(current_dict);
             
@@ -209,6 +211,7 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   
   for (var i=0; i < kids_length; i++)
   {
+//    TODO: The parameter level should not be assigned
     level += 1;
     traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
     level -= 1;    
@@ -247,7 +250,7 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
     new_dict[tree_obj[i][key_name]] = tree_obj[i];
   }
   return new_dict;
-}
+};
 
 TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
 {
@@ -263,7 +266,7 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
     <input id='individual' type='radio' value='individual' name='mode'>\n\
     Individual\n\
   </div>\n\
-  <div class='tree well'>"
+  <div class='tree well'>";
   add_title(fileName, page_head);
   
   for (var i=0; i < domains.length; i++)
@@ -272,4 +275,4 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
   }
   write_partial(fileName, "</div> <!-- tree well -->");
   
-}
+};
