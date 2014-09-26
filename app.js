@@ -4,6 +4,7 @@ require('nodetime').profile({
     appName: 'Node.js VAMPS Application'
   });
 
+var compression = require('compression')
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
@@ -14,7 +15,6 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var compression = require('compression')
 var flash = require('connect-flash');
 var passport = require('passport');
 var db = require('mysql');
@@ -48,12 +48,19 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
 app.use(compression());
-app.use(express.static(path.join(__dirname, '/public')));
+/**
+ * maxAge used to cache the content, # msec
+ * to "uncache" some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
+ */
+ app.use(express.static(__dirname + '/public', {maxAge: '2h' }));
+// app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
+// app.use(express.static(path.join(__dirname, '/public')));
 app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
-app.use(session({ secret: 'keyboard cat' })); // session secret
+// app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
+app.use(session({ secret: 'keyboard cat'})); // session secret
 app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
