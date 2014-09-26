@@ -1,0 +1,12 @@
+<%    var md = metadata %>
+
+<span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
+
+<ul>
+    <% for (i in md) { %>
+       
+       <li><input type='checkbox' name='metadata[]' value='<%= md[i] %>'><%= md[i] %></li>
+                     
+    <% } %>
+</ul>
+
