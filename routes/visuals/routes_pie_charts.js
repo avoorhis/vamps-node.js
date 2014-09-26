@@ -40,22 +40,13 @@ module.exports = {
 				unit_list.push(mtx.rows[o].id);
 			}
 			var colors = get_colors(unit_list) ;
-			var pies_per_row = 5
+			var pies_per_row = 4
 			var m = 20;  // margin
 	    var r = 320/pies_per_row; // five pies per row
 	    var image_w = 2*(r+m)*pies_per_row;
 	    
 	    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30
 
-			//var ds_count = mtx.shape[1];			
-			//var bar_height = 15;
-			//var props = get_image_properties(bar_height, ds_count);	
-			//console.log(props)
-			//var color = d3.scale.ordinal()									
-		  //  .range( get_colors(unit_list) );
-		  
-		  //console.log(unit_list)
-		  //console.log(colors);
 		  
 			var arc = d3.svg.arc()
                 .innerRadius(r / 2)
@@ -75,19 +66,17 @@ module.exports = {
 			//var svg = d3.select("body").selectAll("svg")
 			    .data(myjson_obj.values)
 
-			  .enter().append("g")
-
-			    //.attr("transform", "translate(" + (r + m) + "," + (r + m) + ")");
+			  .enter().append("g")			    
 			    .attr("transform", function(d, i){
 			    		//console.log(i);
 			    		var modulo_i = i+1;
 			    		var d = r+m;
 			    		var h_spacer = d*2*(i % pies_per_row);
 			    		var v_spacer = d*2*Math.floor(i / pies_per_row);			    					    		
-			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";					    	
-
-			    });
-
+			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
+			    })
+				.append("a")
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts} );
 			
 			pies.selectAll("path")
 			    .data(d3.layout.pie())
@@ -141,7 +130,7 @@ module.exports = {
 					//console.log(svgGraph[0][0]);
 					
 					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-					console.log(svgXML);
+					//console.log(svgXML);
 			
 
 				d3.select('svg').remove();

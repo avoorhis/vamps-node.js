@@ -70,8 +70,8 @@ module.exports = {
 					});
 				});
 			
-
-		  	create_svg_object(props, color, data);
+				console.log(data);
+		  	create_svg_object(props, color, ts, data);
 
 
 			  var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -86,16 +86,14 @@ module.exports = {
 			//})  // end readfile
 			
 			
-
 	  } // end fxn
-
 
 	 
 } // end of module.exports
 //
 //
 //
-function create_svg_object(props, color, data) {
+function create_svg_object(props, color, ts, data) {
 
 		  var svg = d3.select("body").append("svg")
 							    .attr("width",  props.width)
@@ -126,20 +124,30 @@ function create_svg_object(props, color, data) {
 		      .style("text-anchor", "end")
 		      .text("Percent");
 		 
-		  // svg.append("svg:g")
-			 //  		.append("a")
-    //         .attr("xlink:href", function(d) { return 'http://www.google.com'; });
-            
-		  var datasetName = svg.selectAll(".bar")
-		      .data(data)
-		    .enter().append("g")
-		      .attr("class", "g")
-		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; });
+		 
+		  
 
-					  
-		  datasetName.selectAll("rect")
+		  // var datasetBar = svg.selectAll("a")
+		  //     .data(data)
+		  //   .enter().append("a")
+		  //   .attr("xlink:href",  'http://www.google.com' )
+		  //   .append("g")
+		  //     .attr("class", "g")
+		  //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })
+		   var datasetBar = svg.selectAll(".bar")
+		      .data(data)
+		    .enter() .append("g")
+		      .attr("class", "g")
+		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
+		      .append("a")
+		    .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+ts} )
+
+		  datasetBar.selectAll("rect")
+		 // 		.append("a")
+		 //   .attr("xlink:href",  'http://www.google.com')
 		      .data(function(d) { return d.unitObj; })
-		    .enter().append("rect")
+		    .enter()
+		    .append("rect")
 		      .attr("x", function(d) { return props.x(d.x0); })
 		      .attr("y", 15)  // adjust where first bar starts on x-axis
 		      .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
@@ -154,6 +162,8 @@ function create_svg_object(props, color, data) {
 					}) 
 		      .attr("class","tooltip")
 		      .style("fill",   function(d) { return color(d.name); });
+
+		   //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
 		   
 }
 

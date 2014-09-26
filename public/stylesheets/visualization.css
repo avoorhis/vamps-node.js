@@ -82,20 +82,22 @@
     text-decoration: none;
 }
 .selection_info {
-    background: OldLace;
+    background: #a8b6c0;
     border:1px solid black;
     list-style-type: none;
     font-size:11px;
     padding:3px;
     width: 400px;
+    height:110px;
 }
 .choices_info {
-    background: OldLace;
+    background: #a8b6c0;
     border:1px solid black;
     list-style-type: none;
     font-size:11px;
     padding:3px;
     width: 400px;
+    height:110px;
 }
 #counts_table_div {
     width: 500px;

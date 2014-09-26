@@ -34,12 +34,12 @@ module.exports = {
   //
   //
 	get_choices_markup: function( visual, obj ) {
-	  var html = "<form name='' method='GET'>";
+	  var html = "<div id='' class='choices_info'>";
 	  //title: req.params.title   || 'default_title',
     //  timestamp: myurl.query.ts || 'default_timestamp',
     //  html : html,
     //  user: req.user
-	  html += "<div id='' class='choices_info'>";
+	  html += "<form name='' method='GET'>";
 	  if( visual === 'heatmap' || visual === 'dendrogram' ) {
 	  	//console.log(C.DISTANCECHOICES)
 	  	var viz_page = 'selected_'+visual+'_distance';
@@ -109,9 +109,9 @@ module.exports = {
 	  html += '<hr>';
 	  html += "<li>Make your selections then press: ";
 	  html += "<input type='submit' value='Change View' ></li>";
-	  html += '</div>';
 	  html += '<input type="hidden" name="ts" value="'+obj.ts+'">';
 	  html += '</form>';
+	  html += '</div>';
 	  return html;
 	},
 
@@ -197,7 +197,7 @@ module.exports = {
 	   
 	  
 
-	 	var tax_query = "SELECT dataset_id as did, seq_count, " + ids + "\n";
+	 	var tax_query = "SELECT dataset_id, seq_count, " + ids + "\n";
 	 	// var tax_query = "SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(';',"+fields+") as tax\n";
 		tax_query     += "   FROM sequence_pdr_info as t1\n";
 		tax_query     += "   JOIN sequence_uniq_info as t2 USING(sequence_id)\n";
@@ -324,117 +324,29 @@ module.exports = {
 	  var color = Math.abs(hash).toString(16).substring(0, 6);
 	  return "#" + '000000'.substring(0, 6 - color.length) + color;
 	},
-	//
-	// GET CUSTOM COUNT MATRIX
-	//
-	// get_custom_count_matrix: function(visual_post_items, old_vals, count_matrix) {
-	// 	var custom_count_matrix = extend({},count_matrix);  // this clones count_matrix which keeps original intact.
-		
-	// 	var max_cnt = visual_post_items.max_ds_count;
-	// 	var min = visual_post_items.min_range;
-	// 	var max = visual_post_items.max_range;
-	// 	var norm = visual_post_items.normalization;
-
-	// 	// normalize and filter pct here
-	// 	var dsnames_sums={};
-	// 	var dsnames_pcts={};
-	// 	for(var n in custom_count_matrix.dataset_names) {
-	// 		dsnames_sums[n] =0;
-	// 		dsnames_pcts[n] =0;
-	// 	}
-	// 	var new_unames1 = {}
-	// 	var new_unames2 = {}
-	// 	for(var uname in custom_count_matrix.unit_names) {
-	// 		var counts = custom_count_matrix.unit_names[uname];
-	// 		new_unames1[uname] = [];
-	// 		new_unames2[uname] = [];
-	// 		//console.log(uname)
-	// 		for(k in counts) {
-	// 			dsnames_sums[k] += counts[k];
-	// 		}
-	// 	}
-		
-
-	// 	// DEF: filter pct by removing taxa where none of the values are in the range min-max% of max for that ds
-	// 	//  		Should we normalize first? or filter first?
-	// 	// 			the filtering needs to be reversable: count_matrix is kept intact
-		
-	// 	//if(old_vals.min != min || old_vals.max != max) {
-		  	
-		  	
-	// 			for(var uname in custom_count_matrix.unit_names) {
-	// 				var counts = custom_count_matrix.unit_names[uname];
-	// 				var got_one = false;
-	// 				for(k in counts) {
-	// 					//dsnames_pcts[k].push(counts[k]/dsnames_sums[k]);  //list of freqs
-	// 					//console.log((counts[k]*100)/dsnames_sums[k])
-	// 					var x = (counts[k]*100)/dsnames_sums[k];
-	// 					if(x > min && x < max){
-	// 						got_one = true;
-	// 					}
-	// 				}			
-
-	// 				// 
-	// 				if(got_one){
-	// 					new_unames1[uname] = counts;
-	// 				}else{
-	// 					console.log('rejecting '+uname)
-	// 					delete new_unames1[uname];
-	// 					delete new_unames2[uname];
-	// 				}
-	// 			}
-	// 			custom_count_matrix.unit_names = new_unames1;
-				
-	// 	//}
-
-
-	// 	// normalize:
-	// 	//if(old_vals.norm != norm) {
-				
-	// 			// name_sums: { '0': 434, '1': 403, '2': 276 }
-				
-	// 			for(var uname in custom_count_matrix.unit_names) {
-	// 				var counts = custom_count_matrix.unit_names[uname];
-	// 				for(k in counts) {
-	// 						if (norm === 'max') {
-	// 							new_unames2[uname].push(parseInt( ( counts[k] * max_cnt ) / dsnames_sums[k], 10) )
-	// 						}else if(norm === 'freq') {
-	// 							new_unames2[uname].push(parseFloat( counts[k] / dsnames_sums[k].toFixed(8) ) );
-	// 						}else{
-	// 							new_unames2[uname].push( counts[k] );
-	// 						}
-	// 				}
-	// 			}
-	// 			//console.log(new_unames);
-	// 			custom_count_matrix.unit_names = new_unames2;
-				
-	// 	//}
-
-	// 	console.log(custom_count_matrix)
-	// 	return custom_count_matrix;
-	// },
+	
 	//
 	// GET CUSTOM BIOME MATRIX
 	//
 	get_custom_biome_matrix: function(visual_post_items, mtx) {
 		var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
 		
-		var max_cnt = visual_post_items.max_ds_count;
-		var min = visual_post_items.min_range;
-		var max = visual_post_items.max_range;
-		var norm = visual_post_items.normalization;
+		var max_cnt = visual_post_items.max_ds_count,
+				min     = visual_post_items.min_range,
+				max     = visual_post_items.max_range,
+				norm    = visual_post_items.normalization;
 
 		console.log('in custom biome '+max_cnt.toString());
-				  	
+				
+				// Adjust for percent limit change	
 		  	var new_counts = [];
 		  	var new_units = [];
 				for(var c in custom_count_matrix.data) {
 					
 					var got_one = false;
-					for(k in custom_count_matrix.data[c]) {
-						
-						var x = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
-						if(x > min && x < max){
+					for(var k in custom_count_matrix.data[c]) {
+						var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
+						if(thispct > min && thispct < max){
 							got_one = true;
 						}
 					}			
@@ -448,46 +360,51 @@ module.exports = {
 				}
 				custom_count_matrix.data = new_counts;
 				custom_count_matrix.rows = new_units;
-				custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+								
 
-				console.log(custom_count_matrix)
-				
-				var tmp2 = [];
-				var tots = [];
+				// Adjust for normalization
+				var tmp = [];
 				if (norm === 'max') {
 						for(var c in custom_count_matrix.data) {
 							var new_counts = [];
-							for(k in custom_count_matrix.data[c]) {								
+							for(var k in custom_count_matrix.data[c]) {								
 									new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );									
 							}		
-							tmp2.push(new_counts);							
+							tmp.push(new_counts);							
 						}
-						for(x in custom_count_matrix.columns) {
-							tots.push(max_cnt);
-						}
-					
-						custom_count_matrix.column_totals =  tots;
-						custom_count_matrix.data = tmp2;
-
+						custom_count_matrix.data = tmp;
 				}else if(norm === 'freq'){
 						for(var c in custom_count_matrix.data) {							
 							var new_counts = [];
-							for(k in custom_count_matrix.data[c]) {								
+							for(var k in custom_count_matrix.data[c]) {								
 									new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );										
 							}		
-							tmp2.push(new_counts);
+							tmp.push(new_counts);
 						}
-						for(x in custom_count_matrix.columns) {
-							tots.push(1);
-						}
-						custom_count_matrix.column_totals =  tots;
-						custom_count_matrix.data = tmp2;
+						custom_count_matrix.data = tmp;
 				}else{
 					// nothing here
 				}
 
+				// re-calculate totals
+				var tots = [];
+				var tmp = {};
+				for(var c in custom_count_matrix.data) {
+					for(var k in custom_count_matrix.data[c]) {
+						if(k in tmp){
+							tmp[k] += custom_count_matrix.data[c][k];
+						}else{
+							tmp[k] = custom_count_matrix.data[c][k];
+						}						
+					}
+				}
+				for(var k in custom_count_matrix.columns){
+					tots.push(tmp[k]);
+				}
+				custom_count_matrix.column_totals = tots;
+				custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
 
-		console.log('returning custom_count_matrix')
+		console.log('returning custom_count_matrix');
 		return custom_count_matrix;
 	} 
 
