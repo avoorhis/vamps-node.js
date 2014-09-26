@@ -97,7 +97,7 @@ router.post('/view_selection',  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-   console.log(unit_name_query)
+   console.log(unit_name_query);
   
   // Get matrix data here
   // The visuals have been selected so now we need to create them

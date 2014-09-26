@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var COMMON  = require('./routes_common');
 var d3 = require("d3");
-var xmldom = require('xmldom')
+var xmldom = require('xmldom');
 
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
   		var counts_per_ds = [];
   		var tmp={};
   		for(var i in mtx.columns){
-  			tmp[mtx.columns[i].id]=[] // datasets
+  			tmp[mtx.columns[i].id]=[]; // datasets
   		}
 			for(var x in mtx.data){
   			for(var i in mtx.columns){
@@ -39,13 +39,13 @@ module.exports = {
 			for(o in mtx.rows){
 				unit_list.push(mtx.rows[o].id);
 			}
-			var colors = get_colors(unit_list) ;
-			var pies_per_row = 4
+			var colors = get_colors(unit_list);
+			var pies_per_row = 4;
 			var m = 20;  // margin
 	    var r = 320/pies_per_row; // five pies per row
 	    var image_w = 2*(r+m)*pies_per_row;
 	    
-	    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30
+	    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
 
 		  
 			var arc = d3.svg.arc()
@@ -60,7 +60,7 @@ module.exports = {
 			//for(i in counts_per_ds){
 			var svgContainer = d3.select("body").append("svg")
                                   .attr("width",image_w)
-                                  .attr("height",image_h)
+                                  .attr("height",image_h);
 			
 			var pies = 	svgContainer.selectAll("svg")
 			//var svg = d3.select("body").selectAll("svg")
@@ -76,7 +76,7 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
-		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts} );
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
 			
 			pies.selectAll("path")
 			    .data(d3.layout.pie())
@@ -139,17 +139,17 @@ module.exports = {
 
 	  } // end fxn
 
-}
+};
 
 //
 //
 //
 function get_colors(unit_names){
-	var colors = []
+	var colors = [];
 	for(var n in unit_names){
-		//console.log(unit_names[n])
-		col=COMMON.string_to_color_code(unit_names[n])
-		//console.log(col)
+		//console.log(unit_names[n]);
+		col=COMMON.string_to_color_code(unit_names[n]);
+		//console.log(col);
 		colors.push(col);
 	}
 	return colors;
