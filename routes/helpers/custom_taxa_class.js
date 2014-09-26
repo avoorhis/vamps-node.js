@@ -2,6 +2,8 @@
  * TaxonomyTree = custom_taxa_class.js
  */
 
+/*jshint multistr: true */
+
 var constants = require(app_root + '/public/constants');
 var helpers = require('./helpers');
 var fs = require('fs');
