@@ -71,4 +71,47 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Metadata Table',    file:'', link:''   }
     ]};
 
+config.sample_metadata = {   
+      'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
+                          {name: 'patientID',     value:'32'},
+                          {name: 'sample_location',      value:'south'},
+                          {name: 'temperature',    value:'101.2'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude' ,     value:'-57.23'},
+                          {name: 'description',    value:'test meta-1'},
+                          {name: 'body_site',      value:'L hip'},
+                          {name: 'collection_date',    value:'2014-09-14'},
+                          {name: 'sample_size',    value:'10'},
+                          {name: 'phosphate' ,     value:'3.1'},
+                          {name: 'study_center',    value:'There'}
+                        ],
+
+    'HMP_204_Bv4v5--204_10_M_26Jan12_H':   [ 
+                          {name: 'patientID',     value:'33'},
+                          {name: 'sample_location',      value:'south'},
+                          {name: 'temperature',    value:'98.9'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude',      value:'-57.23'},
+                          {name: 'description',    value:'test mata-2'},
+                          {name: 'body_site',      value:'R foot'},
+                          {name: 'collection_date',value:'2014-09-09'},
+                          {name: 'sample_size',    value:'44'},
+                          {name: 'phosphate',      value:'4.3'},
+                          {name: 'study_center',    value:'Not here'}
+                        ],
+    'HMP_204_Bv4v5--204_12_GG_09Mar11_P':  [ 
+                          {name: 'patientID',       value:'34'},
+                          {name: 'sample_location',value:'east'},
+                          {name: 'temperature',    value:'100.1'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude',      value:'-57.23'},
+                          {name: 'description',    value:'test meta-3'},
+                          {name: 'body_site',      value:'R leg'},
+                          {name: 'collection_date',value:'2014-09-14'},
+                          {name: 'sample_size',    value:'14'},
+                          {name: 'phosphate',      value:'3.2'},
+                          {name: 'study_center',    value:'Here'}
+                        ]                      
+  }
+
 module.exports = config;
