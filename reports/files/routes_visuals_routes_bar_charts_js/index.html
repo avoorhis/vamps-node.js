@@ -95,7 +95,7 @@ var fs = require(&#039;fs&#039;);
 var path = require(&#039;path&#039;);
 var COMMON  = require(&#039;./routes_common&#039;);
 var d3 = require(&quot;d3&quot;);
-var xmldom = require(&#039;xmldom&#039;)
+var xmldom = require(&#039;xmldom&#039;);
 
 
 
@@ -114,8 +114,8 @@ module.exports = {
 
 	  		data = [];
 				for(o in mtx.columns){
-	  			tmp={}
-	  			tmp.DatasetName = mtx.columns[o].id
+	  			tmp={};
+	  			tmp.DatasetName = mtx.columns[o].id;
 	  			for (t in mtx.rows){
 	  				tmp[mtx.rows[t].id] = mtx.data[t][o];
 	  			}
@@ -125,7 +125,7 @@ module.exports = {
   		
   			var unit_list = [];
   			for(o in mtx.rows){
-  				unit_list.push(mtx.rows[o].id)
+  				unit_list.push(mtx.rows[o].id);
   			}
   			
 
@@ -153,11 +153,11 @@ module.exports = {
 
 				data.forEach(function(d) {
 					// normalize to 100%
-					tot = d.total
+					tot = d.total;
 					d.unitObj.forEach(function(o) {
 							//console.log(o);
-							o.x0 = (o.x0*100)/tot
-							o.x1 = (o.x1*100)/tot
+							o.x0 = (o.x0*100)/tot;
+							o.x1 = (o.x1*100)/tot;
 					});
 				});
 			
@@ -180,7 +180,7 @@ module.exports = {
 	  } // end fxn
 
 	 
-} // end of module.exports
+}; // end of module.exports
 //
 //
 //
@@ -203,7 +203,7 @@ function create_svg_object(props, color, ts, data) {
 		      .selectAll(&quot;text&quot;)  
 				     .style(&quot;text-anchor&quot;, &quot;end&quot;)
 				     .attr(&quot;dx&quot;, &quot;-.5em&quot;)
-				     .attr(&quot;dy&quot;, &quot;1.4em&quot;) 
+				     .attr(&quot;dy&quot;, &quot;1.4em&quot;); 
 				     
 				     
 		  svg.append(&quot;g&quot;)
@@ -231,7 +231,7 @@ function create_svg_object(props, color, ts, data) {
 		      .attr(&quot;class&quot;, &quot;g&quot;)
 		      .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.DatasetName) + &quot;)&quot;; })  
 		      .append(&quot;a&quot;)
-		    .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;piechart_single?ds=&#039;+d.DatasetName+&#039;&amp;ts=&#039;+ts} )
+		    .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;piechart_single?ds=&#039;+d.DatasetName+&#039;&amp;ts=&#039;+ts;} );
 
 		  datasetBar.selectAll(&quot;rect&quot;)
 		 // 		.append(&quot;a&quot;)
@@ -247,7 +247,7 @@ function create_svg_object(props, color, ts, data) {
 		      	var cnt =  this._parentNode.__data__[d.name];
 		      	var total = this._parentNode.__data__[&#039;total&#039;];
 		      	//console.log(this._parentNode.__data__[&#039;total&#039;]);
-		      	var pct = (cnt * 100 / total).toFixed(2)
+		      	var pct = (cnt * 100 / total).toFixed(2);
 		       	return d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 		       	//return this._parentNode.__data__.DatasetName + &#039;-|-&#039; + d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 					}) 
@@ -269,13 +269,13 @@ function get_image_properties(bar_height, ds_count) {
 	
 	var plot_width = 650;
 	var gap = 2;  // gap on each side of bar
-	props.width = plot_width + props.margin.left + props.margin.right
+	props.width = plot_width + props.margin.left + props.margin.right;
 	props.height = (ds_count * (bar_height + 2 * gap)) + 125;
 	
 	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
 		
 	props.y = d3.scale.ordinal()
-			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
+			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);
 		
 	props.xAxis = d3.svg.axis()
 			    .scale(props.x)
@@ -292,11 +292,11 @@ function get_image_properties(bar_height, ds_count) {
 //
 //
 function get_colors(unit_names){
-	var colors = []
+	var colors = [];
 	for(var n in unit_names){
-		//console.log(unit_names[n])
-		col=COMMON.string_to_color_code(unit_names[n])
-		//console.log(col)
+		//console.log(unit_names[n]);
+		col=COMMON.string_to_color_code(unit_names[n]);
+		//console.log(col);
 		colors.push(col);
 	}
 	return colors;
