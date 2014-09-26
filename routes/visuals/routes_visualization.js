@@ -70,6 +70,8 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
 
+  var sample_metadata = req.C.sample_metadata;
+  
   
   var uitems = visual_post_items.unit_choice.split('_');
   var unit_name_query = '';
@@ -248,49 +250,8 @@ router.post('/unit_selection',  function(req, res) {
   helpers.start = process.hrtime();
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
-  var metadata = {   
-      'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
-                          {name: 'patientID',     value:'32'},
-                          {name: 'sample_location',      value:'south'},
-                          {name: 'temperature',    value:'101.2'},
-                          {name: 'latitude',       value:'30.3'},
-                          {name: 'longitude' ,     value:'-57.23'},
-                          {name: 'description',    value:'test meta-1'},
-                          {name: 'body_site',      value:'L hip'},
-                          {name: 'collection_date',    value:'2014-09-14'},
-                          {name: 'sample_size',    value:'10'},
-                          {name: 'phosphate' ,     value:'3.1'},
-                          {name: 'study_center',    value:'There'}
-                        ],
-
-    'HMP_204_Bv4v5--204_10_M_26Jan12_H':   [ 
-                          {name: 'patientID',     value:'33'},
-                          {name: 'sample_location',      value:'south'},
-                          {name: 'temperature',    value:'98.9'},
-                          {name: 'latitude',       value:'30.3'},
-                          {name: 'longitude',      value:'-57.23'},
-                          {name: 'description',    value:'test mata-2'},
-                          {name: 'body_site',      value:'R foot'},
-                          {name: 'collection_date',value:'2014-09-09'},
-                          {name: 'sample_size',    value:'44'},
-                          {name: 'phosphate',      value:'4.3'},
-                          {name: 'study_center',    value:'Not here'}
-                        ],
-    'HMP_204_Bv4v5--204_12_GG_09Mar11_P':  [ 
-                          {name: 'patientID',       value:'34'},
-                          {name: 'sample_location',value:'east'},
-                          {name: 'temperature',    value:'100.1'},
-                          {name: 'latitude',       value:'30.3'},
-                          {name: 'longitude',      value:'-57.23'},
-                          {name: 'description',    value:'test meta-3'},
-                          {name: 'body_site',      value:'R leg'},
-                          {name: 'collection_date',value:'2014-09-14'},
-                          {name: 'sample_size',    value:'14'},
-                          {name: 'phosphate',      value:'3.2'},
-                          {name: 'study_center',    value:'Here'}
-                        ]                      
-  }
-var metadata_names = ['patientID',  'sample_location', 'temperature', 
+  
+  var metadata_names = ['patientID',  'sample_location', 'temperature', 
                       'latitude', 'longitude', 'description', 'body_site', 
                       'collection_date', 'sample_size', 'study_center',
                       'meta_10','meta_11','meta_12','meta_13','meta_14',
@@ -519,60 +480,41 @@ router.get('/user_data/piechart_single', function(req, res) {
 
  
 });
+
 //
 //   H E A T M A P
 //
 router.get('/user_data/heatmap', function(req, res) {
   var myurl = url.parse(req.url, true);
-  var exec = require('child_process').exec;
+  
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var biom_file;
+  var biom_file,R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
-  fs.readFile(infile, 'utf8', function (err, json) {
-    var mtx = JSON.parse(json);
-    if(values_updated) {
-      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
+
+  if(values_updated) {
+    fs.readFile(infile, 'utf8', function (err, json) {
+      var mtx = JSON.parse(json);
+      COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+'_count_matrix_cust_heat.biom';
+      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
+      console.log(R_command);
       // must write custom file for R script
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
-      console.log('Writing cust matrix file');
-    }else{
-      biom_file = infile_name;
-    }
-    
- 
-    var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
-
-    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
-    console.log(command);
-    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-        if(stderr){console.log(stderr)}
-        stdout = stdout.trim();
-        console.log(stdout)
-          
-        var html = '<table border="1" class="single_border"><tr><td>';
-        html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-        html += '</td><td>';
-        html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-        html += '</td></tr></table>';
-        if(stdout === 'dist(0)' || stdout === 'err') {
-          html += '<div>Error -- No distances were calculated.</div>'
-        }else{
-          var dm = HMAP.create_distance_matrix(stdout);
-          html  += HMAP.create_hm_html(dm);  
-        }
-
-        res.render('visuals/user_data/heatmap', {
-              title: req.params.title   || 'default_title',
-              timestamp: ts || 'default_timestamp',
-              html : html,
-              user: req.user
-        });
-
+      console.log('Writing/Using custom matrix file');
+      run_R_cmd(req,res,  ts, R_command, 'heatmap');
+      
     });
-  });
+  }else{
+    biom_file = infile_name;
+    R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
+    console.log(R_command);
+    console.log('Using original matrix file');
+    run_R_cmd(req,res,  ts, R_command, 'heatmap');
+
+  } 
  
 });
 //
@@ -580,52 +522,31 @@ router.get('/user_data/heatmap', function(req, res) {
 //
 router.get('/user_data/dendrogram', function(req, res) {
   var myurl = url.parse(req.url, true);
-  var exec = require('child_process').exec;
+  
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var ds_count = visual_post_items.no_of_datasets
-  var biom_file;
+  var biom_file,R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
-  fs.readFile(infile, 'utf8', function (err, json) {
-    var mtx = JSON.parse(json);
-    if(values_updated) {
-      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+  var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
+  if(values_updated) {
+    fs.readFile(infile, 'utf8', function (err, json) {
+      var mtx = JSON.parse(json);
+      COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+'_count_matrix_cust_dend.biom';
-      // must write custom file for R script
+      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
+      console.log(R_command);
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
-      console.log('Writing cust matrix file');
-    }else{
-      biom_file = infile_name;
-    }
-
-    var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
-
-    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
-    console.log(command);
-    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-        if(stderr){console.log(stderr)}
-        stdout = stdout.trim();
-        //console.log(stdout)
-    
-        var html = '<table border="1" class="single_border"><tr><td>';
-        html += COMMON.get_selection_markup('dendrogram', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-        html += '</td><td>';
-        html += COMMON.get_choices_markup('dendrogram', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-        html += '</td></tr></table>';
-          
-        html += DEND.create_dendrogram_html(stdout, ds_count);          
-
-        res.render('visuals/user_data/dendrogram', {
-              title: req.params.title   || 'default_title',
-              timestamp: ts || 'default_timestamp',
-              html : html,
-              user: req.user
-        });
-
+      console.log('Writing/Using cust matrix file');
+      run_R_cmd(req, res, ts, R_command, 'dendrogram');
     });
- 
-  });
+  }else {
+    biom_file = infile_name;
+    R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
+    console.log(R_command);
+    console.log('Using original matrix file');
+    run_R_cmd(req, res, ts, R_command, 'dendrogram');
+  } 
 
 });
 /*
@@ -699,15 +620,13 @@ function check_initial_status(url) {
     min   = 0;
     max   = 100;
     norm  = 'none';
-    dist  = 'morisita_horn';  // default distance
-    
+    dist  = 'morisita_horn';  // default distance    
     values_updated = false;
   } else {
     min   = url.query.min_range  || 0;
     max   = url.query.max_range  || 100;
     norm  = url.query.norm       ||  'none';
-    dist  = url.query.selected_distance || 'morisita_horn';  // default distance
-    
+    dist  = url.query.selected_distance || 'morisita_horn';  // default distance    
     values_updated = true;    
   }
 
@@ -724,4 +643,40 @@ function check_initial_status(url) {
   return values_updated
 }
 
+//
+//
+//
+function run_R_cmd(req,res, ts, R_command, visual) {
+    var exec = require('child_process').exec;
+    var html = '<table border="1" class="single_border"><tr><td>';
+    html += COMMON.get_selection_markup(visual, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += COMMON.get_choices_markup(visual, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
 
+    exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+      if(stderr){console.log(stderr)}
+      stdout = stdout.trim();
+      console.log(stdout)
+      if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
+        html += '<div>Error -- No distances were calculated.</div>'
+      }else{
+        if(visual === 'heatmap') {
+          var dm = HMAP.create_distance_matrix(stdout);
+          html  += HMAP.create_hm_html(dm);  
+        }else if(visual==='dendrogram') {
+          html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+        }
+        
+      }
+
+      res.render('visuals/user_data/'+visual, {
+            title: req.params.title   || 'default_title',
+            timestamp: ts || 'default_timestamp',
+            html : html,
+            user: req.user
+      });
+      
+
+    });
+}
