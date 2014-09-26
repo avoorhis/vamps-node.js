@@ -40,7 +40,7 @@ module.exports = {
 
 
 		get_biome_matrix: function(chosen_id_name_hash, post_items, sqlrows) {
-			var date = new Date()
+			var date = new Date();
 			
 			biome_matrix = {
 				id: post_items.ts,
@@ -56,7 +56,7 @@ module.exports = {
     		matrix_element_type: 'int',
      		shape: [],									// [row_count, col_count]
      		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
-     	}
+     	};
 			
 			var unit_name_lookup = {};
 			var ukeys = [];
@@ -110,16 +110,16 @@ module.exports = {
 		  	for(uname in unit_name_lookup) {
 		  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
 		  			cnt = unit_name_lookup_per_dataset[did][uname];
-		  			unit_name_counts[uname].push(cnt)
+		  			unit_name_counts[uname].push(cnt);
 
 		  		} else {
-		  			unit_name_counts[uname].push(0)
+		  			unit_name_counts[uname].push(0);
 		  		}
 		  	}
 		  }
 		  ukeys.push(uname);
 		  ukeys = ukeys.filter(onlyUnique);
-		  ukeys.sort()
+		  ukeys.sort();
 		  //console.log(unit_name_lookup_per_dataset);
 		  
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
@@ -209,10 +209,10 @@ module.exports = {
 		  
 		  //for(did in dataset_ids) {
 		  for (var uid in unit_id_lookup) {  
-		    matrix[uid]=[]  
+		    matrix[uid]=[];
 		    
 		    for (var d in dataset_ids) { // this is correct order
-		    	did = dataset_ids[d]
+		    	did = dataset_ids[d];
 
 		      if(uid in counts[did]){
 		        c = counts[did][uid];
@@ -255,12 +255,12 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
   	console.log(biome_matrix.columns[n].id);
   	max_count[biome_matrix.columns[n].id] = 0;
   	for(d in biome_matrix.data) {
-  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n]
+  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
   	}
   }
   var max = 0;
   for(n in chosen_id_name_hash.names) { 		// correct order
-  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]])
+  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
   	if(max_count[chosen_id_name_hash.names[n]] > max){
   		max = max_count[chosen_id_name_hash.names[n]];
   	}
@@ -293,15 +293,15 @@ function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
  	
  	if(name in unit_name_lookup) {
     for (var c in counts) {
-      unit_name_lookup[name][c] += counts[c]
+      unit_name_lookup[name][c] += counts[c];
     }
   }else{
-    unit_name_lookup[name] = []
+    unit_name_lookup[name] = [];
     for (var c in counts) {
-      unit_name_lookup[name].push(counts[c])
+      unit_name_lookup[name].push(counts[c]);
     }
   }
-  return unit_name_lookup
+  return unit_name_lookup;
 
 }
 //
@@ -342,7 +342,7 @@ function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with
 		//
 		var mtx = '';
 	  for (var did in dataset_ids) {
-	    console.log(dataset_ids[did])
+	    console.log(dataset_ids[did]);
 	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
 	    mtx += "\t" + dataset_names.names[ index ];
 	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
