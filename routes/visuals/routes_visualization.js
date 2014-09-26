@@ -63,7 +63,7 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.normalization                = req.body.normalization || 'none';
   visual_post_items.visuals                      = req.body.visuals;
   visual_post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance || 'morisita_horn';
-  visual_post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance;
+  visual_post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance || 'morisita_horn';
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
   visual_post_items.domains                      = req.body.domains      || 'all';
   visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
@@ -114,11 +114,6 @@ router.post('/view_selection',  function(req, res) {
       // It also reurns a JSON count_matrix
       //count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
       
-
-   
-
-
-
 
 
       biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
@@ -253,58 +248,55 @@ router.post('/unit_selection',  function(req, res) {
   helpers.start = process.hrtime();
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
-  //var qSelectSeqID = "SELECT dataset_id, seq_count, "+available_units+" FROM sequence_pdr_info";
-  //qSelectSeqID +=    "  JOIN sequence_uniq_info using(sequence_id)";
-  //qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
+  var metadata = {   
+      'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
+                          {name: 'patientID',     value:'32'},
+                          {name: 'sample_location',      value:'south'},
+                          {name: 'temperature',    value:'101.2'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude' ,     value:'-57.23'},
+                          {name: 'description',    value:'test meta-1'},
+                          {name: 'body_site',      value:'L hip'},
+                          {name: 'collection_date',    value:'2014-09-14'},
+                          {name: 'sample_size',    value:'10'},
+                          {name: 'phosphate' ,     value:'3.1'},
+                          {name: 'study_center',    value:'There'}
+                        ],
 
-  
-//  var qSelectSeqID = "SELECT dataset_id, seq_count FROM sequence_pdr_info";
-//  qSelectSeqID +=    "  WHERE dataset_id in (" + chosen_id_name_hash.ids + ")";
-//  console.log(qSelectSeqID);
-
-
-  // db.query(qSelectSeqID, function(err, rows) {
-  //   if (err)  {
-  //     throw err;
-  //   } else {
-
-  //     helpers.elapsed_time(">>>>>>>>> 2 Before Page Render and Calc <<<<<<");
-  //     // here get tax_silva108_id, med_id, otu_id.... for each sequence_id from sequence_uniq_infos
-  //     // and keep them in the same order as the sequence_ids
-      
-
-  //     for (var k=0; k < rows.length; k++){
-        
-  //       if (rows[k].dataset_id in dsets){
-  //         //dsets[rows[k].dataset_id].seq_ids.push(rows[k].sequence_id);
-  //         dsets[rows[k].dataset_id].seq_counts.push(rows[k].seq_count);
-  //         //for (u=0; u < available_units.length; u++) {
-  //           //dsets[rows[k].dataset_id].unit_assoc[available_units[u]].push(rows[k][available_units[u]]);
-  //         //}
-  //       } else {
-  //         dsets[rows[k].dataset_id] = {};
-  //         //dsets[rows[k].dataset_id].seq_ids = [rows[k].sequence_id];
-  //         dsets[rows[k].dataset_id].seq_counts = [rows[k].seq_count];
-  //         //dsets[rows[k].dataset_id].unit_assoc = {};
-  //         //for (u=0; u < available_units.length; u++) {
-  //           //dsets[rows[k].dataset_id].unit_assoc[available_units[u]] = [rows[k][available_units[u]]];
-  //         //}        
-  //       }
-
-  //     }
-  
-  //     for(var i in chosen_id_name_hash.ids) {  // has correct ds order
-  //       id = chosen_id_name_hash.ids[i]
-  //       accumulator.dataset_ids.push(id);
-  //       //accumulator.seq_ids.push(dsets[id].seq_ids);
-  //       accumulator.seq_freqs.push(dsets[id].seq_counts);
-  //       //for (u in dsets[id].unit_assoc) {
-  //         //accumulator.unit_assoc[u].push(dsets[id].unit_assoc[u]);
-
-  //       //}
-  //     }
-  //   }// end else
-
+    'HMP_204_Bv4v5--204_10_M_26Jan12_H':   [ 
+                          {name: 'patientID',     value:'33'},
+                          {name: 'sample_location',      value:'south'},
+                          {name: 'temperature',    value:'98.9'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude',      value:'-57.23'},
+                          {name: 'description',    value:'test mata-2'},
+                          {name: 'body_site',      value:'R foot'},
+                          {name: 'collection_date',value:'2014-09-09'},
+                          {name: 'sample_size',    value:'44'},
+                          {name: 'phosphate',      value:'4.3'},
+                          {name: 'study_center',    value:'Not here'}
+                        ],
+    'HMP_204_Bv4v5--204_12_GG_09Mar11_P':  [ 
+                          {name: 'patientID',       value:'34'},
+                          {name: 'sample_location',value:'east'},
+                          {name: 'temperature',    value:'100.1'},
+                          {name: 'latitude',       value:'30.3'},
+                          {name: 'longitude',      value:'-57.23'},
+                          {name: 'description',    value:'test meta-3'},
+                          {name: 'body_site',      value:'R leg'},
+                          {name: 'collection_date',value:'2014-09-14'},
+                          {name: 'sample_size',    value:'14'},
+                          {name: 'phosphate',      value:'3.2'},
+                          {name: 'study_center',    value:'Here'}
+                        ]                      
+  }
+var metadata_names = ['patientID',  'sample_location', 'temperature', 
+                      'latitude', 'longitude', 'description', 'body_site', 
+                      'collection_date', 'sample_size', 'study_center',
+                      'meta_10','meta_11','meta_12','meta_13','meta_14',
+                      'meta_15','meta_16','meta_17','meta_18','meta_19',
+                      'meta_20','meta_21','meta_22','meta_23','meta_24'
+                      ];
    
 //    GLOBAL.selection_obj = accumulator;
 
@@ -322,6 +314,7 @@ router.post('/unit_selection',  function(req, res) {
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     constants    : JSON.stringify(req.C),
+                    metadata: metadata_names,  // should contain all the items that selected datasets have
                     user         : req.user
     });  // end render
     // benchmarking
@@ -373,13 +366,7 @@ router.get('/user_data/counts_table', function(req, res) {
   
   var myurl = url.parse(req.url, true);
   var ts   = myurl.query.ts;
-  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
-  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
-  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-  if(max <= min) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
+  var values_updated = check_initial_status(myurl);  
 
 
   var infile = '../../tmp/'+ts+'_count_matrix.biom';
@@ -388,8 +375,9 @@ router.get('/user_data/counts_table', function(req, res) {
       console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
     }
     var mtx = JSON.parse(file_contents);
-
-    var mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    if(values_updated) {
+      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    }
     console.log('after cust')
     
 
@@ -438,13 +426,7 @@ router.get('/user_data/barcharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
-  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
-  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-  if(max <= min) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
+  var values_updated = check_initial_status(myurl);  
   
   var infile = '../../tmp/'+ts+'_count_matrix.biom';
   fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
@@ -453,7 +435,9 @@ router.get('/user_data/barcharts', function(req, res) {
     }
     var mtx = JSON.parse(file_contents);
 
-    mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    if(values_updated) {
+      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    }
      
     var html = '<table border="1" class="single_border"><tr><td>';
     html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
@@ -482,20 +466,16 @@ router.get('/user_data/piecharts', function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
-  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
-  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-  if(max <= min) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
+  var values_updated = check_initial_status(myurl);  
  
   var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
   console.log('in create_piecharts_html: '+infile)
 
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
-    mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    if(values_updated) {
+      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+    }
 
     var html = '<table border="1" class="single_border"><tr><td>';
     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
@@ -518,12 +498,22 @@ router.get('/user_data/piecharts', function(req, res) {
 // P I E C H A R T  -- S I N G L E
 //
 router.get('/user_data/piechart_single', function(req, res) {
-  
+  var myurl = url.parse(req.url, true);
+  //console.log(myurl)
+  var ts = myurl.query.ts;
+  var ds = myurl.query.ds;
 
-    res.render('visuals/user_data/piechart_single', {
-          //title: req.params.title   || 'default_title',
+  var html = '<table border="1" class="single_border"><tr><td>';
+    html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
+  res.render('visuals/user_data/piechart_single', {
+          title: 'Single PieChart:',
+          subtitle: ds,
           timestamp: ts || 'default_timestamp',
-          //html : html,
+          dataset: ds,
+          html: html,
           user: req.user
         });
 
@@ -536,29 +526,26 @@ router.get('/user_data/heatmap', function(req, res) {
   var myurl = url.parse(req.url, true);
   var exec = require('child_process').exec;
   var ts    = myurl.query.ts;
-  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
-  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
-  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-  var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
-  if(max <= min) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
-  visual_post_items.selected_heatmap_distance = dist
-
-  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+  var values_updated = check_initial_status(myurl);  
+  var biom_file;
+  var infile_name = ts+'_count_matrix.biom';
+  var infile = path.join(__dirname, '../../tmp/'+infile_name);
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
-    biome_matrix = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-    var cust_file_name = ts+'_count_matrix_cust_heat.biom';
-    // must write custom file for R script
-    COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
-  
-    console.log('Writing cust matrix file');
+    if(values_updated) {
+      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      biom_file = ts+'_count_matrix_cust_heat.biom';
+      // must write custom file for R script
+      COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
+      console.log('Writing cust matrix file');
+    }else{
+      biom_file = infile_name;
+    }
+    
  
     var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
 
-    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
+    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
     console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
         if(stderr){console.log(stderr)}
@@ -595,27 +582,26 @@ router.get('/user_data/dendrogram', function(req, res) {
   var myurl = url.parse(req.url, true);
   var exec = require('child_process').exec;
   var ts    = myurl.query.ts;
-  var min   = myurl.query.min_range || visual_post_items.min_range || 0;
-  var max   = myurl.query.max_range || visual_post_items.max_range || 100;
-  var norm  = myurl.query.norm || visual_post_items.normalization || 'none';
-  var dist  = myurl.query.selected_distance || visual_post_items.selected_heatmap_distance || 'morisita_horn';  // default distance
-  if(max <= min) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
-  visual_post_items.selected_heatmap_distance = dist
+  var values_updated = check_initial_status(myurl);  
   var ds_count = visual_post_items.no_of_datasets
-
-  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+  var biom_file;
+  var infile_name = ts+'_count_matrix.biom';
+  var infile = path.join(__dirname, '../../tmp/'+infile_name);
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
-    biome_matrix = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-    var cust_file_name = ts+'_count_matrix_cust_dend.biom';
-    COMMON.write_file( '../../tmp/'+cust_file_name, JSON.stringify(biome_matrix,null,2) );
+    if(values_updated) {
+      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      biom_file = ts+'_count_matrix_cust_dend.biom';
+      // must write custom file for R script
+      COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
+      console.log('Writing cust matrix file');
+    }else{
+      biom_file = infile_name;
+    }
 
     var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
 
-    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + cust_file_name + ' ' + dist;
+    var command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
     console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
         if(stderr){console.log(stderr)}
@@ -623,9 +609,9 @@ router.get('/user_data/dendrogram', function(req, res) {
         //console.log(stdout)
     
         var html = '<table border="1" class="single_border"><tr><td>';
-        html += COMMON.get_selection_markup('heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+        html += COMMON.get_selection_markup('dendrogram', visual_post_items); // block for listing prior selections: domains,include_NAs ...
         html += '</td><td>';
-        html += COMMON.get_choices_markup('heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+        html += COMMON.get_choices_markup('dendrogram', visual_post_items);      // block for controls to normalize, change tax percentages or distance
         html += '</td></tr></table>';
           
         html += DEND.create_dendrogram_html(stdout, ds_count);          
@@ -701,3 +687,41 @@ function IsJsonString(str) {
     }
     return true;
 }
+//
+//
+//
+function check_initial_status(url) {
+
+  var values_updated;
+  var min,max,norm,dist;
+  // these only seen in url after page first rendered
+  if(url.query.min_range === undefined) {
+    min   = 0;
+    max   = 100;
+    norm  = 'none';
+    dist  = 'morisita_horn';  // default distance
+    
+    values_updated = false;
+  } else {
+    min   = url.query.min_range  || 0;
+    max   = url.query.max_range  || 100;
+    norm  = url.query.norm       ||  'none';
+    dist  = url.query.selected_distance || 'morisita_horn';  // default distance
+    
+    values_updated = true;    
+  }
+
+  if(Number(max) <= Number(min)) {min=0;max=100;} 
+  visual_post_items.min_range = Number(min)
+  visual_post_items.max_range = Number(max)
+  visual_post_items.normalization = norm
+  visual_post_items.selected_heatmap_distance = dist
+  visual_post_items.selected_dendrogram_distance = dist
+  //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
+  if(Number(min)===0 && Number(max)===100 && norm==='none') {
+    values_updated = false;  // return to initial state
+  }
+  return values_updated
+}
+
+
