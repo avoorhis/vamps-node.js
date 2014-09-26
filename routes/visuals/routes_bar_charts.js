@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var COMMON  = require('./routes_common');
 var d3 = require("d3");
-var xmldom = require('xmldom')
+var xmldom = require('xmldom');
 
 
 
@@ -23,8 +23,8 @@ module.exports = {
 
 	  		data = [];
 				for(o in mtx.columns){
-	  			tmp={}
-	  			tmp.DatasetName = mtx.columns[o].id
+	  			tmp={};
+	  			tmp.DatasetName = mtx.columns[o].id;
 	  			for (t in mtx.rows){
 	  				tmp[mtx.rows[t].id] = mtx.data[t][o];
 	  			}
@@ -34,7 +34,7 @@ module.exports = {
   		
   			var unit_list = [];
   			for(o in mtx.rows){
-  				unit_list.push(mtx.rows[o].id)
+  				unit_list.push(mtx.rows[o].id);
   			}
   			
 
@@ -62,11 +62,11 @@ module.exports = {
 
 				data.forEach(function(d) {
 					// normalize to 100%
-					tot = d.total
+					tot = d.total;
 					d.unitObj.forEach(function(o) {
 							//console.log(o);
-							o.x0 = (o.x0*100)/tot
-							o.x1 = (o.x1*100)/tot
+							o.x0 = (o.x0*100)/tot;
+							o.x1 = (o.x1*100)/tot;
 					});
 				});
 			
@@ -89,7 +89,7 @@ module.exports = {
 	  } // end fxn
 
 	 
-} // end of module.exports
+}; // end of module.exports
 //
 //
 //
@@ -112,7 +112,7 @@ function create_svg_object(props, color, ts, data) {
 		      .selectAll("text")  
 				     .style("text-anchor", "end")
 				     .attr("dx", "-.5em")
-				     .attr("dy", "1.4em") 
+				     .attr("dy", "1.4em"); 
 				     
 				     
 		  svg.append("g")
@@ -140,7 +140,7 @@ function create_svg_object(props, color, ts, data) {
 		      .attr("class", "g")
 		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
 		      .append("a")
-		    .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+ts} )
+		    .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+ts;} );
 
 		  datasetBar.selectAll("rect")
 		 // 		.append("a")
@@ -156,7 +156,7 @@ function create_svg_object(props, color, ts, data) {
 		      	var cnt =  this._parentNode.__data__[d.name];
 		      	var total = this._parentNode.__data__['total'];
 		      	//console.log(this._parentNode.__data__['total']);
-		      	var pct = (cnt * 100 / total).toFixed(2)
+		      	var pct = (cnt * 100 / total).toFixed(2);
 		       	return d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 		       	//return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
 					}) 
@@ -178,13 +178,13 @@ function get_image_properties(bar_height, ds_count) {
 	
 	var plot_width = 650;
 	var gap = 2;  // gap on each side of bar
-	props.width = plot_width + props.margin.left + props.margin.right
+	props.width = plot_width + props.margin.left + props.margin.right;
 	props.height = (ds_count * (bar_height + 2 * gap)) + 125;
 	
 	props.x = d3.scale.linear() .rangeRound([0, plot_width]);
 		
 	props.y = d3.scale.ordinal()
-			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);;
+			.rangeBands([0, (bar_height + 2 * gap) * ds_count]);
 		
 	props.xAxis = d3.svg.axis()
 			    .scale(props.x)
@@ -201,11 +201,11 @@ function get_image_properties(bar_height, ds_count) {
 //
 //
 function get_colors(unit_names){
-	var colors = []
+	var colors = [];
 	for(var n in unit_names){
-		//console.log(unit_names[n])
-		col=COMMON.string_to_color_code(unit_names[n])
-		//console.log(col)
+		//console.log(unit_names[n]);
+		col=COMMON.string_to_color_code(unit_names[n]);
+		//console.log(col);
 		colors.push(col);
 	}
 	return colors;
