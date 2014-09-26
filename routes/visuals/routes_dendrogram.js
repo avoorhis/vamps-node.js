@@ -1,7 +1,7 @@
 // distance_heatmap.js
 var path = require('path');
 var fs = require('fs');
-var xmldom = require('xmldom')
+var xmldom = require('xmldom');
 
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
@@ -17,11 +17,11 @@ module.exports = {
 	    raw_distance_array = outstr.toString().split('\n');
 	    //console.log('distance array (stdout):')
 	    //console.log(outstr);
-	    var distance_matrix = {}
-	    // distance_matrix[ds1][ds2] = 2
+	    var distance_matrix = {};
+	    // distance_matrix[ds1][ds2] = 2;
 	    var dcolname = raw_distance_array[0].trim();
-	    //console.log('dcolname:  '+dcolname)
-	    distance_matrix[dcolname] = {}
+	    //console.log('dcolname:  '+dcolname);
+	    distance_matrix[dcolname] = {};
 	    distance_matrix[dcolname][dcolname] = 0;
 	    //console.log(dcolname);
 	    for(row in raw_distance_array){
@@ -31,11 +31,11 @@ module.exports = {
 
 	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
 	        //console.log('found tab')
-	        dcolname = raw_distance_array[row].trim()
+	        dcolname = raw_distance_array[row].trim();
 	        if(dcolname in distance_matrix){
 	        		// pass
 	        }else{
-	          distance_matrix[dcolname] = {}
+	          distance_matrix[dcolname] = {};
 	          distance_matrix[dcolname][dcolname] = 0;
 	        }
 	        
@@ -54,11 +54,11 @@ module.exports = {
           if(items[0] in distance_matrix){
             //distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
 
-            //console.log('a '+dcolname+' - '+items[0])
+            //console.log('a '+dcolname+' - '+items[0]);
           }else{
-            //console.log('b '+dcolname+' - '+items[0])
-            distance_matrix[items[0]] = {}
-            distance_matrix[items[0]][items[0]] = 0
+            //console.log('b '+dcolname+' - '+items[0]);
+            distance_matrix[items[0]] = {};
+            distance_matrix[items[0]][items[0]] = 0;
             
           }	
           distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
@@ -82,16 +82,16 @@ module.exports = {
 		  var newick  = Newick.parse(newick);
 		  //console.log(newick);
 
-	    var newickNodes = []
+	    var newickNodes = [];
       function buildNewickNodes(node, callback) {
-        newickNodes.push(node)
+        newickNodes.push(node);
         if (node.branchset) {
           for (var i=0; i < node.branchset.length; i++) {
-            buildNewickNodes(node.branchset[i])
+            buildNewickNodes(node.branchset[i]);
           }
         }
       }
-      buildNewickNodes(newick)
+      buildNewickNodes(newick);
 
       var tree_data = d3.phylogram.build('body', newick, {
         width: 300,
@@ -108,7 +108,7 @@ module.exports = {
 		    
 		}
 
-}
+};
 
 
 
