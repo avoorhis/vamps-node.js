@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">67.23</p>
+      <p class="stat">67.11</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">271</p>
+      <p class="stat">274</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,7 +62,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">47.73</p>
+      <p class="stat">47.84</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -111,19 +111,19 @@ function make_dictMap_by_rank(tags) {
   for (i = 0; tags.length &gt; i; i += 1) {
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
-  return dictMap_by_rank
+  return dictMap_by_rank;
 }
 
 function add_to_dict_by_key(dictMap, dictMap_key, value) 
 {
   dictMap[dictMap_key] = value;
-  return dictMap
-};
+  return dictMap;
+}
 
 function get_by_key(dictMap, dictMap_key) 
 {
   return dictMap[dictMap_key];
-};
+}
 
 function make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
 {
@@ -149,10 +149,11 @@ function add_children_to_parent(dictMap_by_id, current_dict)
 {
   add_to_dict_by_key(dictMap_by_id, current_dict.node_id, current_dict);
   
+//  TODO: test if changed to var and removed from above
   parent_node = dictMap_by_id[current_dict.parent_id];
   if (parent_node)
   {
-    parent_node.children_ids.push(current_dict.node_id)
+    parent_node.children_ids.push(current_dict.node_id);
   }
   return parent_node;
 }
@@ -160,7 +161,7 @@ function add_children_to_parent(dictMap_by_id, current_dict)
 function check_if_rank(field_name)
 {
   // ranks = [&quot;domain&quot;,&quot;phylum&quot;,&quot;klass&quot;,&quot;order&quot;,&quot;family&quot;,&quot;genus&quot;,&quot;species&quot;,&quot;strain&quot;]
-  return ranks.indexOf(field_name) &gt; -1
+  return ranks.indexOf(field_name) &gt; -1;
 }
 
 // todo: refactoring! Too long and nested
@@ -197,7 +198,8 @@ function make_taxa_tree_dict(taxonomy_obj)
         var db_id = in_obj[db_id_field_name];
         // console.log(&quot;db_id = &quot; + JSON.stringify(db_id));
       
-        var parent_node = current_dict = {};
+        var parent_node = {}; 
+        var current_dict = {};
         taxa_rank = field_name;
         if (in_obj.hasOwnProperty(taxa_rank))
         {
@@ -213,7 +215,7 @@ function make_taxa_tree_dict(taxonomy_obj)
               // console.log(&quot;i_am_a_parent = &quot; + JSON.stringify(i_am_a_parent));
               // console.log(&quot;taxon_name_id = &quot; + JSON.stringify(taxon_name_id));
             
-              current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id)
+              current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
 
               taxa_tree_dict.push(current_dict);
             
@@ -300,6 +302,7 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   
   for (var i=0; i &lt; kids_length; i++)
   {
+//    TODO: The parameter level should not be assigned
     level += 1;
     traverse(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
     level -= 1;    
@@ -338,7 +341,7 @@ TaxonomyTree.prototype.make_dict = function(tree_obj, key_name)
     new_dict[tree_obj[i][key_name]] = tree_obj[i];
   }
   return new_dict;
-}
+};
 
 TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
 {
@@ -354,7 +357,7 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
     &lt;input id=&#039;individual&#039; type=&#039;radio&#039; value=&#039;individual&#039; name=&#039;mode&#039;&gt;\n\
     Individual\n\
   &lt;/div&gt;\n\
-  &lt;div class=&#039;tree well&#039;&gt;&quot;
+  &lt;div class=&#039;tree well&#039;&gt;&quot;;
   add_title(fileName, page_head);
   
   for (var i=0; i &lt; domains.length; i++)
@@ -363,7 +366,7 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
   }
   write_partial(fileName, &quot;&lt;/div&gt; &lt;!-- tree well --&gt;&quot;);
   
-}</textarea>
+};</textarea>
   </div>
 </div>
 
