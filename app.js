@@ -4,7 +4,7 @@ require('nodetime').profile({
     appName: 'Node.js VAMPS Application'
   });
 
-var compression = require('compression')
+var compression = require('compression');
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
@@ -97,8 +97,8 @@ app.use('/visuals', visuals);
 
 // todo: Andy, shouldn't it be in a module?
 app.post('/download/:ts/:file_type', function(req, res){
-  console.log(req.params.ts)
-  console.log(req.params.file_type)
+  console.log(req.params.ts);
+  console.log(req.params.file_type);
   if(req.params.file_type === 'counts_matrix') {
     var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
     res.download(file); // Set disposition and send it.
@@ -222,8 +222,8 @@ module.exports = app;
 // }
 
 if (!module.parent) {
-  var server = http.createServer(app)
-  cluster(server).listen(process.env.PORT)
+  var server = http.createServer(app);
+  cluster(server).listen(process.env.PORT);
 }
 
 
