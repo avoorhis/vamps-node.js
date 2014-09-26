@@ -56,7 +56,7 @@ config.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_
 // blue to red
 config.HEATMAP_COLORS = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','ccccff','ddeeee','eeeedd','ffdddd','ffbbbb','ff9999','ff7777','ff5555','ff3333','ff0000'];
 
-config.RSCRIPT_CMD = 'RScript --no-restore --no-save'
+config.RSCRIPT_CMD = 'RScript --no-restore --no-save';
 
 config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "species", "strain"];
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
@@ -112,6 +112,6 @@ config.sample_metadata = {
                           {name: 'phosphate',      value:'3.2'},
                           {name: 'study_center',    value:'Here'}
                         ]                      
-  }
+  };
 
 module.exports = config;
