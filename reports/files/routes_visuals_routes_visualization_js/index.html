@@ -407,8 +407,8 @@ router.get(&#039;/index_visuals&#039;,  function(req, res) {
 //
 //
 router.get(&#039;/reorder_datasets&#039;, function(req, res) {
-  console.log(&#039;TODO::TODO reorder datasets&#039;)
-  console.log(selection_obj)
+  console.log(&#039;TODO::TODO reorder datasets&#039;);
+  console.log(selection_obj);
   //console.log(chosen_id_name_hash)
 });
 //
@@ -430,7 +430,7 @@ router.get(&#039;/user_data/counts_table&#039;, function(req, res) {
     if(values_updated) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
-    console.log(&#039;after cust&#039;)
+    console.log(&#039;after cust&#039;);
     
 
     var html = &quot;&lt;table border=&#039;1&#039; class=&#039;single_border&#039;&gt;&lt;tr&gt;&lt;td&gt;&quot;;
@@ -449,7 +449,7 @@ router.get(&#039;/user_data/counts_table&#039;, function(req, res) {
       html += &#039;&lt;td&gt;&#039;+mtx.rows[n].id+&#039;&lt;/td&gt;&#039;;
       for(i in mtx.data[n]) {
         var cnt = mtx.data[n][i];
-        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2)
+        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
         var id  = mtx.columns[i].id+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
         html += &quot;&lt;td id=&#039;&quot;+id+&quot;&#039; class=&#039;tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
       }
@@ -521,7 +521,7 @@ router.get(&#039;/user_data/piecharts&#039;, function(req, res) {
   var values_updated = check_initial_status(myurl);  
  
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+ts+&#039;_count_matrix.biom&#039;);
-  console.log(&#039;in create_piecharts_html: &#039;+infile)
+  console.log(&#039;in create_piecharts_html: &#039;+infile);
 
   fs.readFile(infile, &#039;utf8&#039;, function (err, json) {
     var mtx = JSON.parse(json);
@@ -722,16 +722,16 @@ function check_initial_status(url) {
   }
 
   if(Number(max) &lt;= Number(min)) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min)
-  visual_post_items.max_range = Number(max)
-  visual_post_items.normalization = norm
-  visual_post_items.selected_heatmap_distance = dist
-  visual_post_items.selected_dendrogram_distance = dist
+  visual_post_items.min_range = Number(min);
+  visual_post_items.max_range = Number(max);
+  visual_post_items.normalization = norm;
+  visual_post_items.selected_heatmap_distance = dist;
+  visual_post_items.selected_dendrogram_distance = dist;
   //console.log(&#039;min &#039;+min.toString()+&#039; max &#039;+max.toString()+&#039; norm &#039;+norm)
   if(Number(min)===0 &amp;&amp; Number(max)===100 &amp;&amp; norm===&#039;none&#039;) {
     values_updated = false;  // return to initial state
   }
-  return values_updated
+  return values_updated;
 }
 
 //
@@ -746,11 +746,11 @@ function run_R_cmd(req,res, ts, R_command, visual) {
     html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
 
     exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-      if(stderr){console.log(stderr)}
+      if(stderr){console.log(stderr);}
       stdout = stdout.trim();
-      console.log(stdout)
+      console.log(stdout);
       if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
-        html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;
+        html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
       }else{
         if(visual === &#039;heatmap&#039;) {
           var dm = HMAP.create_distance_matrix(stdout);

@@ -33,7 +33,8 @@ sudo npm install nodemon -g
 Then run as: nodemon bin/www
 
 To check code quality run:
-plato -r -x public/javascripts/jquery-2.1.1.min.js -x models/ds_tax_cnt.js -d reports public app.js views routes models config 
+plato -r -x public/javascripts/jquery-2.1.1.min.js -d reports public app.js views routes models config 
+
 Then see vamps-node.js/reports/index.html in a browser.
 
 Applying new database schema from vamps2 (on vampsdev)
