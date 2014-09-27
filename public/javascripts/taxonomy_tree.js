@@ -4,7 +4,7 @@ $(document).ready(function () {
   // alert("HERE");
 
   $('a.domain_toggle').click(function(){
-    alert("HERE: " + this.id)
+    alert("HERE: " + this.id);
     // toggle_selected_taxa('domain', this.id);
     // return false;
   });
