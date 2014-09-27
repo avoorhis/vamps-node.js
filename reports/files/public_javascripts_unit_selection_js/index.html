@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">217</p>
+      <p class="stat">216</p>
     </div>
   </div>
   <div class="row historical">
@@ -130,20 +130,20 @@ function toggle_simple_taxa()
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box() {
-  var file_id = this.value;  
+  var file_id = this.value;
   // Using ajax it will show the requested units module
   var file = &#039;&#039;;
   var partial_name = &#039;/visuals/partials/&#039;+file_id;
   //alert(partial_name)
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.addEventListener(&quot;load&quot;, transferComplete(file_id), false);
-  
+
   xmlhttp.open(&quot;GET&quot;, partial_name);
   xmlhttp.onreadystatechange = function() {
-    
+
          if (xmlhttp.readyState == 4 ) {
            var string = xmlhttp.responseText;
-           
+
            var div = document.getElementById(&#039;units_select_choices_div&#039;).innerHTML = string;
            show_custom_taxa_tree();
          }
@@ -161,32 +161,32 @@ function transferComplete(file_id) {
   //   // convertTrees();
   // }
   ;
-}  
+}
 
 // visualization: check_form_pg2.js
 
 var get_graphics_form = document.getElementById(&#039;get_graphics_form&#039;);
 var get_graphics = document.getElementById(&#039;get_graphics&#039;);
-if (typeof get_graphics !==&quot;undefined&quot;) 
+if (typeof get_graphics !==&quot;undefined&quot;)
 {
   get_graphics.addEventListener(&#039;click&#039;, function () {
     var unit_selection = get_graphics_form[&quot;unit_selection&quot;].value;
-    if (unit_selection === &#039;tax_silva108_simple&#039;) 
+    if (unit_selection === &#039;tax_silva108_simple&#039;)
     {
       msg = &#039;You must select some taxa&#039;;
       var taxa_checked = check_form(get_graphics_form, msg, &quot;domains[]&quot;);
     }
-    if (unit_selection === &#039;tax_silva108_custom&#039;) 
+    if (unit_selection === &#039;tax_silva108_custom&#039;)
     {
-      get_graphics_form.submit()
+      get_graphics_form.submit();
       //msg = &#039;You must select some custom taxa&#039;;
       //var taxa_checked = check_form(get_graphics_form, msg, &quot;domains[]&quot;);
     }
-    if (taxa_checked) 
+    if (taxa_checked)
     {
      // msg = &#039;You must select one or more display output choices&#039;;
      // check_form(get_graphics_form, msg, &quot;visuals[]&quot;);
-    }    
+    }
   });
 }
 
@@ -194,7 +194,7 @@ if (typeof get_graphics !==&quot;undefined&quot;)
 function show_custom_taxa_tree()
 {
   $(&#039;.tree li:has(ul)&#039;).addClass(&#039;parent_li&#039;);
-  $(&#039;.tree .parent_li &gt; span.sign &gt; i&#039;).addClass(&#039;icon-plus-sign&#039;).removeClass(&#039;icon-no-sign&#039;);;
+  $(&#039;.tree .parent_li &gt; span.sign &gt; i&#039;).addClass(&#039;icon-plus-sign&#039;).removeClass(&#039;icon-no-sign&#039;);
 
 // hide by default
   $(&#039;.tree li.parent_li &gt; span&#039;).filter(&#039;.sign&#039;).each(function(i,e){
@@ -208,33 +208,33 @@ function show_custom_taxa_tree()
   $(&#039;.tree ul.domain &gt; li.parent_li &gt; input&#039;).each(function(i,e){
       $(this).prop( &quot;checked&quot;, true );
   });
-  
+
   $(&#039;.tree li.parent_li &gt; span&#039;).filter(&#039;.sign&#039;).click(toggle_children);
 
-  // Default Selection Mode: Clade 
+  // Default Selection Mode: Clade
   $(&#039;input.custom-taxa&#039;).click({param1: &quot;clade&quot;}, check_input);
 
   $(&#039;.radiobox input&#039;).click(function() {
     check_mode = this.id;
     $(&#039;input.custom-taxa&#039;).unbind(&#039;click&#039;);
     $(&#039;input.custom-taxa&#039;).click({param1: check_mode}, check_input);
-      
+
   });
 
-  $(&#039;.open-one-layer&#039;).dblclick(open_one_layer); 
+  $(&#039;.open-one-layer&#039;).dblclick(open_one_layer);
 }
 
 var check_input = function(event)
 {
   var check_mode = event.data.param1;
   var children = $(this).parent(&#039;li.parent_li&#039;).find(&#039; &gt; ul &gt; li&#039;);
-  if (children.is(&quot;:visible&quot;)) {    
-    check_mode === &quot;clade&quot; ? check_last_visible(this) : toggle_checking
-    
+  if (children.is(&quot;:visible&quot;)) {
+    check_mode === &quot;clade&quot; ? check_last_visible(this) : toggle_checking;
+
   } else {
     show_children(this);
   }
-}
+};
 
 var open_one_layer = function()
 {
@@ -247,18 +247,17 @@ var open_one_layer = function()
      }
      catch(e)
      {
-       ;
        //Handle errors here
-     }     
-  })   
-}
+     }
+  });
+};
 
 var check_last_visible = function(this_input)
 {
   all_plus_vis = $(this_input).closest(&#039;ul&#039;).find(&#039;.icon-plus-sign:visible, .icon-no-sign:visible&#039;);
   all_inputs_vis = all_plus_vis.closest(&#039;span.sign&#039;).siblings(&#039;input.custom-taxa&#039;);
-  all_inputs_vis.each(toggle_checking);  
-}
+  all_inputs_vis.each(toggle_checking);
+};
 
 var show_children = function(current)
 {
@@ -266,13 +265,13 @@ var show_children = function(current)
   var span_sign = $(current).parent(&#039;li.parent_li&#039;).find(&#039; &gt; span&#039;).filter(&#039;.sign&#039;);
   span_sign.attr(&#039;title&#039;, &#039;Collapse this branch&#039;);
   span_sign.find(&#039; &gt; i&#039;).addClass(&#039;icon-minus-sign&#039;).removeClass(&#039;icon-plus-sign&#039;);
-}
+};
 
 var hide_children = function(current, children)
 {
   children.hide(&#039;fast&#039;);
-  $(current).parent(&#039;li.parent_li&#039;).find(&#039; &gt; span.sign &gt; i&#039;).addClass(&#039;icon-plus-sign&#039;).removeClass(&#039;icon-minus-sign&#039;);  
-}
+  $(current).parent(&#039;li.parent_li&#039;).find(&#039; &gt; span.sign &gt; i&#039;).addClass(&#039;icon-plus-sign&#039;).removeClass(&#039;icon-minus-sign&#039;);
+};
 
 // todo: the same in project_dataset_tree.js
 var toggle_checking = function()
@@ -281,19 +280,19 @@ var toggle_checking = function()
      function(idx, oldProp) {
        return !oldProp;
      });
-}
+};
 
 var count_checked = function()
 {
   a = $( &quot;input&quot; ).filter(&#039;:checked&#039;).length
   alert(a);
-}
+};
 
 // todo: similar in project_dataset_tree.js
 var uncheck_closed =  function(current)
 {
   $(current).siblings().find(&#039;input&#039;).each(function(i){$(this).prop( &quot;checked&quot;, false )});
-}
+};
 
 var toggle_children = function()
 {
@@ -305,9 +304,9 @@ var toggle_children = function()
     } else {
         show_children(this);
     }
-    
+
     return false;
-}</textarea>
+};</textarea>
   </div>
 </div>
 
