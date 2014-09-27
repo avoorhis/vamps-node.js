@@ -260,7 +260,7 @@ function end_ul(level, new_level, class_name)
 {
   if (level === new_level)
   {
-    var html = &#039;\n&lt;/li&gt;\n&lt;/ul&gt; &lt;!-- class=&quot;&#039; + class_name + &#039;&quot;--&gt;&#039;
+    var html = &#039;\n&lt;/li&gt;\n&lt;/ul&gt; &lt;!-- class=&quot;&#039; + class_name + &#039;&quot;--&gt;&#039;;
     return html;
   }
 }
@@ -279,7 +279,7 @@ function add_li(this_node)
 {
   this_html = &#039;&lt;li&gt;\n&#039;;
   this_html += &#039;&lt;span class=&quot;sign&quot;&gt;&lt;i class=&quot;icon-no-sign&quot;&gt;&lt;/i&gt;&lt;/span&gt;&#039;;
-  this_html += &#039;&lt;input class=&quot;custom-taxa&quot; type=&quot;checkbox&quot; id=&quot;&#039; + this_node.taxon + &#039;&quot; value=&quot;&#039; + this_node.taxon + &#039;&quot;/&gt;\n&#039;
+  this_html += &#039;&lt;input class=&quot;custom-taxa&quot; type=&quot;checkbox&quot; id=&quot;&#039; + this_node.taxon + &#039;&quot; value=&quot;&#039; + this_node.taxon + &#039;&quot;/&gt;\n&#039;;
   this_html += &#039;&lt;span class=&quot;open-one-layer&quot;&gt;&#039; + this_node.taxon + &#039;&lt;/span&gt;&#039;;
   return this_html;
 }
