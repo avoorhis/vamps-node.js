@@ -32,7 +32,7 @@ Install nodemon to keep from restarting server after changes
 sudo npm install nodemon -g
 Then run as: nodemon bin/www
 
-To check code quality run:
+To check code quality:
 plato -r -x public/javascripts/jquery-2.1.1.min.js -d reports public app.js views routes models config 
 
 Then see vamps-node.js/reports/index.html in a browser.
