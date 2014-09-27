@@ -69,7 +69,6 @@ function transferComplete(file_id) {
   //   show_custom_taxa_tree();
   //   // convertTrees();
   // }
-  ;
 }
 
 // visualization: check_form_pg2.js
@@ -193,7 +192,7 @@ var toggle_checking = function()
 
 var count_checked = function()
 {
-  a = $( "input" ).filter(':checked').length
+  a = $( "input" ).filter(':checked').length;
   alert(a);
 };
 
