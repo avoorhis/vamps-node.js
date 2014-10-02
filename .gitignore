@@ -1,4 +1,3 @@
-*.sql.gz
 *.sql
 db.sql
 config/database-dev.js
