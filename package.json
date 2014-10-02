@@ -33,7 +33,8 @@
     "static-favicon": "",
     "uid-safe": "",
     "xmldom":"",
-    "zombie": ""
+    "zombie": "", 
+    "ya-csv": ""
   },
   "devDependencies": {
     "debug": "",
