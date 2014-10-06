@@ -41,9 +41,9 @@ describe('Form page functionality', function(){
         .get('/users/signup')
         .expect(200)
         .end(function (err, res) {
-          res.text.should.include('Add User');
-          res.text.should.include('Username');
-          res.text.should.include('Password');
+          res.text.should.containEql('Add User');
+          res.text.should.containEql('Username');
+          res.text.should.containEql('Password');
           done();
         });
     });
@@ -69,8 +69,8 @@ describe('Form page functionality', function(){
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
-        res.header.location.should.include('profile');
-        res.header.location.should.not.include('signup');
+        res.header.location.should.containEql('profile');
+        res.header.location.should.not.containEql('signup');
         done();
       });
   });
@@ -83,8 +83,8 @@ describe('Form page functionality', function(){
         .end(function (err, res) {
           should.not.exist(err);
           // confirm the redirect
-          res.header.location.should.include('signup');
-          res.header.location.should.not.include('profile');
+          res.header.location.should.containEql('signup');
+          res.header.location.should.not.containEql('profile');
           done();
         });
     });
@@ -119,13 +119,13 @@ describe('Form page functionality', function(){
 //       // .send({ username: 'TEST', email: 'TEST'})
 //       .send({ username: 'TEST', password: 'TEST'})
 //       .end(function (err, res) {
-//         res.text.should.include('Form');
+//         res.text.should.containEql('Form');
 //         it('Need to be able to see the text for input box', function(done){
-//           res.text.should.include('<input type="text" name="fname">');
+//           res.text.should.containEql('<input type="text" name="fname">');
 //           done();
 //         });
 //         it('Need to be able to see all the previous inputs listed', function(done){
-//           res.text.should.include('<div> TEST TEST TEST TEST </div>');
+//           res.text.should.containEql('<div> TEST TEST TEST TEST </div>');
 //           done();
 //         });
 //         done();
@@ -148,12 +148,12 @@ describe('Form page functionality', function(){
 //             });
 //         });
 //         it('Need to be able to see entry on the page', function(done){
-//           res.text.should.include('<div> TEST TEST TEST1 TEST1 </div>');
+//           res.text.should.containEql('<div> TEST TEST TEST1 TEST1 </div>');
 //           done();
 //         });
 //
 //         it('Need to see the link to the login page', function(done){
-//           res.text.should.include('<a href="/login">Exit</a>');
+//           res.text.should.containEql('<a href="/login">Exit</a>');
 //           done();
 //         });
 //         done();
