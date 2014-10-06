@@ -147,12 +147,13 @@
     background-color: yellow;
 }
 
-.barchart_div {
+.chart_div {
     border: 1px solid black;
-    width: 1000px;
+    width: 800px;
     padding:20px;
     
 }
+
 
 /*mktree*/
 /*http://jsfiddle.net/q3DQ2/*/
