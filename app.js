@@ -208,10 +208,28 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // console.log('000 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
     // console.log('RRR333 map_dict_by_db_id = ' + JSON.stringify(map_dict_by_db_id));
 
-    console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"]));
+    // console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"]));
 
   }
 });
+
+var csvUpload = require('./sbin/metadata_upload');
+var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
+myCSV = new csvUpload(csv_filename);
+// new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+// 
+// get_csv.myCSV(
+//   function(err, results) {
+//     if (err)
+//       throw err; // or return an error message, or something
+//     else
+//     {
+      console.log("URA!");
+//     
+//     }
+//   }
+// );
+
 
 module.exports = app;
 
@@ -225,10 +243,4 @@ if (!module.parent) {
   var server = http.createServer(app);
   cluster(server).listen(process.env.PORT);
 }
-
-
-
-
-
-
 
