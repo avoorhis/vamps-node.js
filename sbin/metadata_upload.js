@@ -14,50 +14,63 @@
 * put custom info in db
 */
 
-var csv = require('ya-csv');
+// var csv = require('ya-csv');
 
-//load csv file
-var loadCsv = function(csv_filename) {
-  console.log(csv_filename);
-    var reader = csv.createCsvFileReader(csv_filename, {
-      'separator': ',',
-      'quote': '"',
-      'escape': '"',       
-      'comment': '',
+
+// make filePath a parameter, and use a callback function
+function loadCsv(filePath, callback) {
+  // make people scoped to readFile()
+  var people = [];
+  var IN = require('ya-csv');
+  var reader = IN.createCsvFileReader(filePath, {
+    separator: ',' // quotes around property name are optional
   });
 
-  var allEntries = new Array();
-
-  reader.setColumnNames([ 'first', 'second', 'third' ]);
-
-  reader.addListener('data', function(data) {
-    //this gets called on every row load
-    allEntries.push(data);
+  // data is emitted for each processed line
+  reader.on('data', function(item) {
+    // closure magic: people is accessible because current function is nested into readFile()
+    people.push(item);
   });
 
-  reader.addListener('end', function(data) {
-    //this gets called when it's finished loading the entire file
-    // console.log("URA222");
-    // console.log(allEntries);
-    
-    return allEntries;
+  // end event
+  reader.on('end', function() {
+    // return results to caller, simply by invoking the callback.
+    // by convention, first argument is an error, which is null it no problem occured
+    callback(null, people);
+  });
+
+  // error handling
+  reader.on('error', function(err) {
+    // stop listening on events, to avoid continuing queuing data
+    reader.removeAllListeners();
+    // report to caller the error.
+    callback(err);
   });
   
-  console.log("URA333");
-  console.log(allEntries);
-  return reader;
-  
-};
+  // console.log(reader);
+}
+
 
 // Public
 module.exports = csvUpload;
 
 function csvUpload(csv_filename) {
-  this.myCSV = loadCsv(csv_filename);
-  console.log("URA111:");
-  console.log(this.myCSV);
+  loadCsv(csv_filename, function(err, results) {
+    if (err) {
+      // error handling
+      // return ...
+    }
+    // nominal case: use results that contains peoples !
+    console.log("URA111:");
+    console.dir(results);
+  });
+  
+  // this.myCSV = loadCsv(csv_filename);
+  // console.log("URA111:");
+  // console.log(this.myCSV);
   
 }
+
 
 // csvUpload.prototype.make_dict = function(tree_obj, key_name) 
 // {
