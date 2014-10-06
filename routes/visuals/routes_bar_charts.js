@@ -79,7 +79,7 @@ module.exports = {
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 				console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
-				html = "<div id='' class='barchart_div'>"+svgXML+"</div>";
+				html = "<div id='' class='center'>"+svgXML+"</div>";
 				
 				d3.select('svg').remove();
 				return html;

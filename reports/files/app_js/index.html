@@ -143,7 +143,7 @@ app.use(compression());
  * maxAge used to cache the content, # msec
  * to &quot;uncache&quot; some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
- app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: &#039;2h&#039; }));
+app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: &#039;2h&#039; }));
 // app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, &#039;/public&#039;)));
 app.use(&#039;public/javascripts&#039;, express.static(path.join(__dirname, &#039;/public/javascripts&#039;)));

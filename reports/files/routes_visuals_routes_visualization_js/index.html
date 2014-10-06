@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">59.92</p>
+      <p class="stat">59.91</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">682</p>
+      <p class="stat">704</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">56.36</p>
+      <p class="stat">58.53</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.11</p>
+      <p class="stat">6.38</p>
     </div>
   </div>
 </div>
@@ -153,8 +153,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
   visual_post_items.normalization                = req.body.normalization || &#039;none&#039;;
   visual_post_items.visuals                      = req.body.visuals;
-  visual_post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance || &#039;morisita_horn&#039;;
-  visual_post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance || &#039;morisita_horn&#039;;
+  visual_post_items.selected_distance            = req.body.selected_distance || &#039;morisita_horn&#039;;
   visual_post_items.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
   visual_post_items.domains                      = req.body.domains      || &#039;all&#039;;
   visual_post_items.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
@@ -162,7 +161,6 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   visual_post_items.max_range                    = 100;
 
   var sample_metadata = req.C.sample_metadata;
-  
   
   var uitems = visual_post_items.unit_choice.split(&#039;_&#039;);
   var unit_name_query = &#039;&#039;;
@@ -188,7 +186,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-   console.log(unit_name_query);
+   console.log(visual_post_items);
   
   // Get matrix data here
   // The visuals have been selected so now we need to create them
@@ -236,7 +234,6 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
      
       res.render(&#039;visuals/view_selection&#039;, { 
                                   title   : &#039;VAMPS: Visuals Select&#039;,
-                                  post_items :          JSON.stringify(visual_post_items),
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix :              JSON.stringify(biome_matrix),
                                   constants :           JSON.stringify(req.C),
@@ -342,12 +339,12 @@ router.post(&#039;/unit_selection&#039;,  function(req, res) {
   helpers.elapsed_time(&quot;START: select from sequence_pdr_info and sequence_uniq_info--&gt;&gt;&gt;&gt;&gt;&gt;&quot;);
   
   
-  var metadata_names = [&#039;patientID&#039;,  &#039;sample_location&#039;, &#039;temperature&#039;, 
+  var metadata_names = [&#039;patientID&#039;,  &#039;sample_location&#039;, &#039;temperature&#039;,
+                      &#039;diss_oxygen&#039;, &#039;ammonium&#039;,  &#039;chlorophyll&#039;,
                       &#039;latitude&#039;, &#039;longitude&#039;, &#039;description&#039;, &#039;body_site&#039;, 
                       &#039;collection_date&#039;, &#039;sample_size&#039;, &#039;study_center&#039;,
                       &#039;meta_10&#039;,&#039;meta_11&#039;,&#039;meta_12&#039;,&#039;meta_13&#039;,&#039;meta_14&#039;,
-                      &#039;meta_15&#039;,&#039;meta_16&#039;,&#039;meta_17&#039;,&#039;meta_18&#039;,&#039;meta_19&#039;,
-                      &#039;meta_20&#039;,&#039;meta_21&#039;,&#039;meta_22&#039;,&#039;meta_23&#039;,&#039;meta_24&#039;
+                      &#039;meta_15&#039;,&#039;meta_16&#039;,&#039;meta_17&#039;,&#039;meta_18&#039;,&#039;meta_19&#039;                     
                       ];
    
 //    GLOBAL.selection_obj = accumulator;
@@ -590,7 +587,7 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+&#039;_count_matrix_cust_heat.biom&#039;;
-      R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_heatmap_distance;
+      R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_distance;
       console.log(R_command);
       // must write custom file for R script
       COMMON.write_file( &#039;../../tmp/&#039;+biom_file, JSON.stringify(mtx,null,2) );  
@@ -600,7 +597,7 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
     });
   }else{
     biom_file = infile_name;
-    R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_heatmap_distance;
+    R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_distance;
     console.log(R_command);
     console.log(&#039;Using original matrix file&#039;);
     run_R_cmd(req,res,  ts, R_command, &#039;heatmap&#039;);
@@ -625,7 +622,7 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+&#039;_count_matrix_cust_dend.biom&#039;;
-      R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_dendrogram_distance;
+      R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_distance;
       console.log(R_command);
       COMMON.write_file( &#039;../../tmp/&#039;+biom_file, JSON.stringify(mtx,null,2) );  
       console.log(&#039;Writing/Using cust matrix file&#039;);
@@ -633,11 +630,33 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
     });
   }else {
     biom_file = infile_name;
-    R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_dendrogram_distance;
+    R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_distance;
     console.log(R_command);
     console.log(&#039;Using original matrix file&#039;);
     run_R_cmd(req, res, ts, R_command, &#039;dendrogram&#039;);
   } 
+
+});
+//
+//   P C O A
+//
+router.get(&#039;/user_data/pcoa&#039;, function(req, res) {
+  var myurl = url.parse(req.url, true);
+  
+  var ts    = myurl.query.ts;
+  var values_updated = check_initial_status(myurl);  
+  var biom_file,R_command;
+  var infile_name = ts+&#039;_count_matrix.biom&#039;;
+  var infile = path.resolve(__dirname, &#039;../../tmp/&#039;+infile_name);
+  var script_file = path.resolve(__dirname, &#039;../../public/scripts/pcoa.R&#039;);
+  var metadata_file = &#039;test_metadata.csv&#039;;
+  
+    biom_file = infile_name;
+    R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + metadata_file + &#039; &#039; + visual_post_items.selected_distance;
+    console.log(R_command);
+    console.log(&#039;Using original matrix file&#039;);
+    run_R_cmd(req, res, ts, R_command, &#039;pcoa&#039;);
+ 
 
 });
 /*
@@ -725,8 +744,8 @@ function check_initial_status(url) {
   visual_post_items.min_range = Number(min);
   visual_post_items.max_range = Number(max);
   visual_post_items.normalization = norm;
-  visual_post_items.selected_heatmap_distance = dist;
-  visual_post_items.selected_dendrogram_distance = dist;
+  visual_post_items.selected_distance = dist;
+  
   //console.log(&#039;min &#039;+min.toString()+&#039; max &#039;+max.toString()+&#039; norm &#039;+norm)
   if(Number(min)===0 &amp;&amp; Number(max)===100 &amp;&amp; norm===&#039;none&#039;) {
     values_updated = false;  // return to initial state
@@ -737,12 +756,12 @@ function check_initial_status(url) {
 //
 //
 //
-function run_R_cmd(req,res, ts, R_command, visual) {
+function run_R_cmd(req,res, ts, R_command, visual_name) {
     var exec = require(&#039;child_process&#039;).exec;
     var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
-    html += COMMON.get_selection_markup(visual, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += COMMON.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += &#039;&lt;/td&gt;&lt;td&gt;&#039;;
-    html += COMMON.get_choices_markup(visual, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
 
     exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
@@ -752,16 +771,19 @@ function run_R_cmd(req,res, ts, R_command, visual) {
       if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
         html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
       }else{
-        if(visual === &#039;heatmap&#039;) {
+        if(visual_name === &#039;heatmap&#039;) {
           var dm = HMAP.create_distance_matrix(stdout);
           html  += HMAP.create_hm_html(dm);  
-        }else if(visual===&#039;dendrogram&#039;) {
+        }else if(visual_name===&#039;dendrogram&#039;) {
           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+        }else if(visual_name===&#039;pcoa&#039;) {
+          html += &quot;&lt;img src=&#039;test_pcoa.pdf&#039; &gt;&quot;;  
+
         }
         
       }
 
-      res.render(&#039;visuals/user_data/&#039;+visual, {
+      res.render(&#039;visuals/user_data/&#039;+visual_name, {
             title: req.params.title   || &#039;default_title&#039;,
             timestamp: ts || &#039;default_timestamp&#039;,
             html : html,

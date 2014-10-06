@@ -60,7 +60,10 @@ a {
     text-align:left;
     list-style-type: none;
 }
-
+.div_border {
+  border:1px solid black;
+  
+}
 .single_border {
     border-collapse:collapse;
 }
@@ -70,6 +73,10 @@ vertical-align:top;
 }
 .center {
     text-align:center;
+}
+.center_table {
+  margin-left:auto;
+  margin-right:auto;
 }
 /* CSSTerm.com Simple CSS menu */
 .main_menu  {
