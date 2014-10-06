@@ -20,5 +20,5 @@ npm-debug.log
 grep_code.sh
 temp/
 tmp/
-
+visuals_testing/
 .DS_Store

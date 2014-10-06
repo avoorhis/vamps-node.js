@@ -1,6 +1,6 @@
 args <- commandArgs(TRUE)
 #print(args)  ;
-url <- args[1]  # file name
+url <- args[1]  # json
 metric <- args[2]   # horn or jaccard
 #print(url)
 
@@ -22,11 +22,13 @@ myjson<-fromJSON(paste('./tmp/',url,sep=''))
 
 # to get rid of potential NaN errors
 # get rid of datasets with zero sum over all the taxa :
+#print(myjson$data)
 data_matrix<-myjson$data
 rownames(data_matrix)<-myjson$rows$id
 colnames(data_matrix)<-myjson$columns$id
 #print(data_matrix)
 biods = t(data_matrix);
+#print(biods)
 #print(biods);
 require(vegan,quietly=TRUE);
 #  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
