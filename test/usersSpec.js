@@ -15,8 +15,8 @@ describe('Users page functionality', function(){
       .expect(200)
       .end(function (err, res) {
         should.not.exist(err);
-        res.text.should.include('VAMPS User List');
-        res.text.should.include('TEST');
+        res.text.should.containEql('VAMPS User List');
+        res.text.should.containEql('TEST');
         done();
       });
   });
@@ -43,9 +43,9 @@ describe('Login page functionality', function(){
       .get('/users/login')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('VAMPS Login');
-        res.text.should.include('Username');
-        res.text.should.include('Password');
+        res.text.should.containEql('VAMPS Login');
+        res.text.should.containEql('Username');
+        res.text.should.containEql('Password');
         done();
       });
   });
@@ -68,8 +68,8 @@ describe('Login page functionality', function(){
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
-        res.header.location.should.include('/');
-        res.header.location.should.not.include('login');
+        res.header.location.should.containEql('/');
+        res.header.location.should.not.containEql('login');
         connection_dev.query('DELETE FROM user WHERE username = "TEST" AND first_name = "TEST" AND last_name = "TEST" AND email = "TEST" AND institution = "TEST"', function(err, result) {
           if (err) {throw err;}
         });
@@ -85,8 +85,8 @@ describe('Login page functionality', function(){
       .expect(302)
       .send({ username: 'NO User', password: ''})
       .end(function (err, res) {
-        res.header.location.should.not.include('/');
-        res.header.location.should.include('login');
+        res.header.location.should.not.containEql('/');
+        res.header.location.should.containEql('login');
         // console.log("res.header.location: ");
         // console.log(res.header.location);
         done();
@@ -101,17 +101,17 @@ describe('Login page functionality', function(){
 //       .end(function (err, res) {
 //         console.log("=== 55 ===");
 //         console.log(res);
-//         res.header.location.should.include('/');
-//         res.header.location.should.not.include('login');
+//         res.header.location.should.containEql('/');
+//         res.header.location.should.not.containEql('login');
 // 
 //         if (err) return done(err);
 //         // request(app)
 //         //   .get('/')
 //         //   .end(function (err, res) {
 //         //     if (err) return done(err);
-//         //     res.text.should.not.include('Logged in as:');
-//         //     res.text.should.include('login');
-//         //     res.text.should.include('register');
+//         //     res.text.should.not.containEql('Logged in as:');
+//         //     res.text.should.containEql('login');
+//         //     res.text.should.containEql('register');
 //             done();
 //         //   });
 //       });
@@ -131,7 +131,7 @@ describe('Login page functionality', function(){
       // console.log("===2===");
       // console.log(res);
       // console.log("===22===");
-      res.text.should.include('Logged in as: TEST');
+      res.text.should.containEql('Logged in as: TEST');
       
       request(app)
         .get('/users/logout')
@@ -139,8 +139,8 @@ describe('Login page functionality', function(){
         .end(function (err, res) {
           // console.log("=== 55 ===");
           // console.log(res);
-          res.header.location.should.include('/');
-          res.header.location.should.not.include('login');
+          res.header.location.should.containEql('/');
+          res.header.location.should.not.containEql('login');
 
           if (err) return done(err);
           
@@ -150,15 +150,15 @@ describe('Login page functionality', function(){
             // console.log("===1===");
             // console.log(res);
             // console.log("===11===");
-            res.text.should.not.include('Logged in as: TEST');
+            res.text.should.not.containEql('Logged in as: TEST');
           
           // request(app)
           //   .get('/')
           //   .end(function (err, res) {
           //     if (err) return done(err);
-          //     res.text.should.not.include('Logged in as:');
-          //     res.text.should.include('login');
-          //     res.text.should.include('register');
+          //     res.text.should.not.containEql('Logged in as:');
+          //     res.text.should.containEql('login');
+          //     res.text.should.containEql('register');
             });
         });
         done();
@@ -178,7 +178,8 @@ describe('Login page functionality', function(){
     app.use(passport.session());
     app.get('/', function(req, res){
       if (!req.user || !req.isAuthenticated()){
-        return res.send(403);
+        // return res.send(403);
+        return res.status(403).end()
       }
       res.send(200);
     });
@@ -205,7 +206,8 @@ describe('Login page functionality', function(){
       if (!req.user || !req.isAuthenticated()){
         return res.send(403);
       }
-      res.send(200);
+      res.status(200).end()
+      // res.send(200);
     });
 
     request(app)

@@ -38,7 +38,7 @@ describe('visualization functionality:', function(){
           .get('/visuals/index_visuals')
           .expect(200)
           .end(function (err, res) {
-            res.text.should.include('Dataset Selection Page');
+            res.text.should.containEql('Dataset Selection Page');
             done();
           });
       });
@@ -48,8 +48,8 @@ describe('visualization functionality:', function(){
           .get('/visuals/index_visuals')
           .expect(200)
           .end(function (err, res) {
-            res.text.should.include('SLM_NIH_Bv6');
-            res.text.should.include('SS_WWTP_1_25_11_2step'); // SS_WWTP_1_25_11_2step
+            res.text.should.containEql('SLM_NIH_Bv6');
+            res.text.should.containEql('SS_WWTP_1_25_11_2step'); // SS_WWTP_1_25_11_2step
             done();
           });
       });
@@ -69,10 +69,10 @@ describe('visualization functionality:', function(){
           throw new Error(err);
         }
         else {
-          body.title.should.include('mytitle');
+          body.title.should.containEql('mytitle');
           body.chosen_id_name_hash.ids.should.not.equal([]);
-          body.chosen_id_name_hash.ids.should.include('135');
-          body.chosen_id_name_hash.names.should.include('SLM_NIH_Bv4v5--01_Boonville');
+          body.chosen_id_name_hash.ids.should.containEql('135');
+          body.chosen_id_name_hash.names.should.containEql('SLM_NIH_Bv4v5--01_Boonville');
           done();
         }
       });
@@ -112,7 +112,7 @@ describe('visualization functionality:', function(){
         else {
           body.visuals.should.not.equal([])
           body.visuals.should.not.equal(null)
-          body.visuals.should.contain('barcharts')
+          body.visuals.should.containEql('barcharts')
           done();
         }
       });
@@ -126,9 +126,9 @@ describe('visualization functionality:', function(){
       .get('/visuals/partials/tax_silva108_simple')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('Domains to Include');
-        res.text.should.include('Archaea');
-        res.text.should.include('Bacteria');
+        res.text.should.containEql('Domains to Include');
+        res.text.should.containEql('Archaea');
+        res.text.should.containEql('Bacteria');
         done();
       });
     });
@@ -141,9 +141,9 @@ describe('visualization functionality:', function(){
       .get('/visuals/partials/tax_silva108_custom')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('Silva(v108) Custom Taxonomy Selection');
-        res.text.should.include('Archaea');
-        res.text.should.include('Bacteria');
+        res.text.should.containEql('Silva(v108) Custom Taxonomy Selection');
+        res.text.should.containEql('Archaea');
+        res.text.should.containEql('Bacteria');
         done();
       });
     });
@@ -156,7 +156,7 @@ describe('visualization functionality:', function(){
         .get('/visuals/user_data/counts_table')
         .expect(200)
         .end(function (err, res) {
-          res.text.should.include('VAMPS Counts Table');
+          res.text.should.containEql('VAMPS Counts Table');
           done();
         });
     });
@@ -169,7 +169,7 @@ describe('visualization functionality:', function(){
       .get('/visuals/user_data/heatmap')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('VAMPS Heatmap');
+        res.text.should.containEql('VAMPS Heatmap');
         done();
       });
   });
@@ -182,7 +182,7 @@ describe('visualization functionality:', function(){
             .get('/visuals/user_data/barcharts')
             .expect(200)
             .end(function (err, res) {
-              res.text.should.include('VAMPS Bar Charts');
+              res.text.should.containEql('VAMPS Bar Charts');
               done();
             });
     });
