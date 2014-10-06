@@ -12,6 +12,7 @@ var async = require('async');
 var helpers = require('../helpers/helpers');
 
 var COMMON  = require('./routes_common');
+var META    = require('./routes_metadata');
 var MTX     = require('./routes_counts_matrix');
 var HMAP    = require('./routes_distance_heatmap');
 var DEND    = require('./routes_dendrogram');
@@ -62,16 +63,15 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
   visual_post_items.normalization                = req.body.normalization || 'none';
   visual_post_items.visuals                      = req.body.visuals;
-  visual_post_items.selected_heatmap_distance    = req.body.selected_heatmap_distance || 'morisita_horn';
-  visual_post_items.selected_dendrogram_distance = req.body.selected_dendrogram_distance || 'morisita_horn';
+  visual_post_items.selected_distance            = req.body.selected_distance || 'morisita_horn';
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
   visual_post_items.domains                      = req.body.domains      || 'all';
   visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
+  visual_post_items.metadata                     = req.body.metadata  || [];
 
   var sample_metadata = req.C.sample_metadata;
-  
   
   var uitems = visual_post_items.unit_choice.split('_');
   var unit_name_query = '';
@@ -97,7 +97,7 @@ router.post('/view_selection',  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-   console.log(unit_name_query);
+   console.log(visual_post_items);
   
   // Get matrix data here
   // The visuals have been selected so now we need to create them
@@ -120,6 +120,7 @@ router.post('/view_selection',  function(req, res) {
 
       biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
       visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows)
       console.log(biome_matrix);
 
       // This is what matrix looks like (a different matrix is written to file)
@@ -145,7 +146,6 @@ router.post('/view_selection',  function(req, res) {
      
       res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Select',
-                                  post_items :          JSON.stringify(visual_post_items),
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix :              JSON.stringify(biome_matrix),
                                   constants :           JSON.stringify(req.C),
@@ -251,13 +251,12 @@ router.post('/unit_selection',  function(req, res) {
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   
-  var metadata_names = ['patientID',  'sample_location', 'temperature', 
+  var metadata_names = ['patientID',  'sample_location', 'temperature',
+                      'diss_oxygen', 'ammonium',  'chlorophyll',
                       'latitude', 'longitude', 'description', 'body_site', 
                       'collection_date', 'sample_size', 'study_center',
                       'meta_10','meta_11','meta_12','meta_13','meta_14',
-                      'meta_15','meta_16','meta_17','meta_18','meta_19',
-                      'meta_20','meta_21','meta_22','meta_23','meta_24'
-                      ];
+                      'meta_15','meta_16','meta_17'  ];
    
 //    GLOBAL.selection_obj = accumulator;
 
@@ -342,7 +341,7 @@ router.get('/user_data/counts_table', function(req, res) {
     console.log('after cust');
     
 
-    var html = "<table border='1' class='single_border'><tr><td>";
+    var html = "<table border='1' class='single_border center_table'><tr><td>";
     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
@@ -400,7 +399,7 @@ router.get('/user_data/barcharts', function(req, res) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
      
-    var html = '<table border="1" class="single_border"><tr><td>';
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
@@ -438,7 +437,7 @@ router.get('/user_data/piecharts', function(req, res) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
 
-    var html = '<table border="1" class="single_border"><tr><td>';
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
@@ -464,12 +463,12 @@ router.get('/user_data/piechart_single', function(req, res) {
   var ts = myurl.query.ts;
   var ds = myurl.query.ds;
 
-  var html = '<table border="1" class="single_border"><tr><td>';
+  var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
-  res.render('visuals/user_data/piechart_single', {
+    res.render('visuals/user_data/piechart_single', {
           title: 'Single PieChart:',
           subtitle: ds,
           timestamp: ts || 'default_timestamp',
@@ -499,7 +498,7 @@ router.get('/user_data/heatmap', function(req, res) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+'_count_matrix_cust_heat.biom';
-      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
+      R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
       console.log(R_command);
       // must write custom file for R script
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
@@ -509,7 +508,7 @@ router.get('/user_data/heatmap', function(req, res) {
     });
   }else{
     biom_file = infile_name;
-    R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_heatmap_distance;
+    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
     console.log(R_command);
     console.log('Using original matrix file');
     run_R_cmd(req,res,  ts, R_command, 'heatmap');
@@ -534,7 +533,7 @@ router.get('/user_data/dendrogram', function(req, res) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+'_count_matrix_cust_dend.biom';
-      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
+      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_distance;
       console.log(R_command);
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using cust matrix file');
@@ -542,11 +541,46 @@ router.get('/user_data/dendrogram', function(req, res) {
     });
   }else {
     biom_file = infile_name;
-    R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_dendrogram_distance;
+    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
     console.log(R_command);
     console.log('Using original matrix file');
     run_R_cmd(req, res, ts, R_command, 'dendrogram');
   } 
+
+});
+//
+//   P C O A
+//
+router.get('/user_data/pcoa', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  
+  var ts    = myurl.query.ts;
+  var values_updated = check_initial_status(myurl);  
+  var biom_file,R_command;
+  var infile_name = ts+'_count_matrix.biom';
+  var metafile_name = ts+'_metadata.txt'
+  var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
+  var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
+  var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
+  var name_on_graph= 'no';
+    
+  R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
+  console.log(R_command);
+  console.log('Using original matrix file');
+  run_R_cmd(req, res, ts, R_command, 'pcoa');
+ 
+
+});
+//
+//   F R E Q U E N C Y  H E A T M A P
+//
+router.get('/user_data/frequency_heatmap', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  
+  var ts    = myurl.query.ts;
+  var values_updated = check_initial_status(myurl);  
+  
+ 
 
 });
 /*
@@ -634,8 +668,8 @@ function check_initial_status(url) {
   visual_post_items.min_range = Number(min);
   visual_post_items.max_range = Number(max);
   visual_post_items.normalization = norm;
-  visual_post_items.selected_heatmap_distance = dist;
-  visual_post_items.selected_dendrogram_distance = dist;
+  visual_post_items.selected_distance = dist;
+  
   //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
   if(Number(min)===0 && Number(max)===100 && norm==='none') {
     values_updated = false;  // return to initial state
@@ -646,12 +680,12 @@ function check_initial_status(url) {
 //
 //
 //
-function run_R_cmd(req,res, ts, R_command, visual) {
+function run_R_cmd(req,res, ts, R_command, visual_name) {
     var exec = require('child_process').exec;
-    var html = '<table border="1" class="single_border"><tr><td>';
-    html += COMMON.get_selection_markup(visual, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
+    html += COMMON.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
-    html += COMMON.get_choices_markup(visual, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
 
     exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
@@ -661,16 +695,19 @@ function run_R_cmd(req,res, ts, R_command, visual) {
       if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
         html += '<div>Error -- No distances were calculated.</div>';
       }else{
-        if(visual === 'heatmap') {
+        if(visual_name === 'heatmap') {
           var dm = HMAP.create_distance_matrix(stdout);
           html  += HMAP.create_hm_html(dm);  
-        }else if(visual==='dendrogram') {
+        }else if(visual_name==='dendrogram') {
           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+        }else if(visual_name==='pcoa') {
+          html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
+
         }
         
       }
 
-      res.render('visuals/user_data/'+visual, {
+      res.render('visuals/user_data/'+visual_name, {
             title: req.params.title   || 'default_title',
             timestamp: ts || 'default_timestamp',
             html : html,

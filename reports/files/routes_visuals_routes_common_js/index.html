@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">52.89</p>
+      <p class="stat">52.97</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">410</p>
+      <p class="stat">407</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">53.58</p>
+      <p class="stat">53.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.22</p>
+      <p class="stat">4.20</p>
     </div>
   </div>
 </div>
@@ -101,11 +101,8 @@ module.exports = {
     
     // obj is visual_post_items
     var html = &quot;&lt;div id=&#039;&#039; class=&#039;selection_info&#039;&gt;&quot;;
-    if(visual === &#039;heatmap&#039;) {
-      html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_heatmap_distance + &#039;&lt;/li&gt;&#039;;
-    }
-    if(visual === &#039;dendrogram&#039;) {
-      html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_dendrogram_distance + &#039;&lt;/li&gt;&#039;;
+    if(visual === &#039;heatmap&#039; ||visual === &#039;dendrogram&#039; || visual === &#039;pcoa&#039; ) {
+      html += &#039;&lt;li&gt;Selected Distance Metric: &#039; + obj.selected_distance + &#039;&lt;/li&gt;&#039;;
     }
     html += &#039;&lt;li&gt;Maximum Dataset Count (raw): &#039; + obj.max_ds_count.toString() + &#039;&lt;/li&gt;&#039;;
     if(obj.unit_choice.indexOf(&#039;tax&#039;) === 0 ) {
@@ -131,9 +128,9 @@ module.exports = {
     //  html : html,
     //  user: req.user
     html += &quot;&lt;form name=&#039;&#039; method=&#039;GET&#039;&gt;&quot;;
-    if( visual === &#039;heatmap&#039; || visual === &#039;dendrogram&#039; ) {
+    if( visual === &#039;heatmap&#039; || visual === &#039;dendrogram&#039; || visual === &#039;pcoa&#039; ) {
       //console.log(C.DISTANCECHOICES)
-      var viz_page = &#039;selected_&#039;+visual+&#039;_distance&#039;;
+      var viz_page = &#039;selected_distance&#039;;
       var distrows = C.DISTANCECHOICES.choices;
       html += &#039;&lt;li&gt;Change Distance Metric: &#039;;
       html += &quot;&lt;select name=&#039;selected_distance&#039; class=&#039;small_font&#039;&gt;&quot;;
