@@ -9,9 +9,9 @@ describe('projects pages', function(){
       request(app)
       .get('/projects/index_projects')
       .end(function (err, res) {
-        res.text.should.include('VAMPS Projects Listing');
-       // res.text.should.include('-- Human Microbiome Pouchitis Project; HMP Pouchitis Project, Healthy Patient 308, V6V4 region')
-        res.text.should.include('/projects/2');
+        res.text.should.containEql('VAMPS Projects Listing');
+       // res.text.should.containEql('-- Human Microbiome Pouchitis Project; HMP Pouchitis Project, Healthy Patient 308, V6V4 region')
+        res.text.should.containEql('/projects/2');
         done();
       });      
     }
@@ -22,8 +22,8 @@ describe('projects pages', function(){
         .get('/projects/2')
         .expect(200)
         .end(function (err, res) {
-          res.text.should.include('Project Profile');
-          res.text.should.include('<li>2</li>');
+          res.text.should.containEql('Project Profile');
+          res.text.should.containEql('<li>2</li>');
           done();
         });
       });

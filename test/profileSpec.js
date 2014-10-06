@@ -22,7 +22,7 @@ describe('Profile page functionality', function(){
       .get('/users/profile')
       .expect(302)
       .end(function (err, res) {
-        res.header.location.should.include('/');
+        res.header.location.should.containEql('/');
         done();
       });
   });
@@ -39,8 +39,8 @@ describe('Profile page functionality', function(){
         // console.log("===2===");
         // console.log(res);
         // console.log("===22===");
-        res.text.should.include('Profile Page');
-        res.text.should.include('TEST');
+        res.text.should.containEql('Profile Page');
+        res.text.should.containEql('TEST');
         done();
       });
     
