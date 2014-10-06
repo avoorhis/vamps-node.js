@@ -10,11 +10,8 @@ module.exports = {
     
     // obj is visual_post_items
     var html = "<div id='' class='selection_info'>";
-    if(visual === 'heatmap') {
-      html += '<li>Selected Distance Metric: ' + obj.selected_heatmap_distance + '</li>';
-    }
-    if(visual === 'dendrogram') {
-      html += '<li>Selected Distance Metric: ' + obj.selected_dendrogram_distance + '</li>';
+    if(visual === 'heatmap' ||visual === 'dendrogram' || visual === 'pcoa' ) {
+      html += '<li>Selected Distance Metric: ' + obj.selected_distance + '</li>';
     }
     html += '<li>Maximum Dataset Count (raw): ' + obj.max_ds_count.toString() + '</li>';
     if(obj.unit_choice.indexOf('tax') === 0 ) {
@@ -40,9 +37,9 @@ module.exports = {
     //  html : html,
     //  user: req.user
     html += "<form name='' method='GET'>";
-    if( visual === 'heatmap' || visual === 'dendrogram' ) {
+    if( visual === 'heatmap' || visual === 'dendrogram' || visual === 'pcoa' ) {
       //console.log(C.DISTANCECHOICES)
-      var viz_page = 'selected_'+visual+'_distance';
+      var viz_page = 'selected_distance';
       var distrows = C.DISTANCECHOICES.choices;
       html += '<li>Change Distance Metric: ';
       html += "<select name='selected_distance' class='small_font'>";
@@ -406,7 +403,7 @@ module.exports = {
 
     //console.log('returning custom_count_matrix');
     return custom_count_matrix;
-  } 
+  }
 
 };   // end module.exports
 

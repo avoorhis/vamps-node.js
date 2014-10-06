@@ -124,8 +124,8 @@ module.exports = {
 		    var html = '';
 		    //var selection_html = COMMON.get_selection_markup('heatmap', body); 
 		    //html += selection_html;
-		    html += "<div class='' id='distance_heatmap_div' >";
-		    html += "<table border='1' class='heatmap_table' >";
+		    //html += "<div class='' id='distance_heatmap_div center_table' >";
+		    html += "<table border='1' class='heatmap_table center_table' >";
 		    html += '<tr><td></td>';
 
 		    for(i=1;i<=Object.keys(dm).length;i++) {
