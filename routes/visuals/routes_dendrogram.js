@@ -101,10 +101,10 @@ module.exports = {
 			//console.log(tree_data.vis[0][0]);
 
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-			var svg = "<svg height='"+(ds_count*100)+"' width='900'>"+svgXML+"</svg>";
+			var html = "<div id='' class='chart_div center_table'><svg height='"+(ds_count*100)+"' width='900'>"+svgXML+"</svg></div>";
 		  //console.log(svg);
 		  d3.select('svg').remove();
-		  return svg;
+		  return html;
 		    
 		}
 

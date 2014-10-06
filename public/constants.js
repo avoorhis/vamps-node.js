@@ -62,15 +62,15 @@ config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "specie
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Distance Heatmap',  file:'/images/visuals/heatmap.png',     link:'user_data/heatmap'     },
-    {name:'Frequency Heatmap',  file:'', link:''     },
+    {name:'Frequency Heatmap',  file:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap' },
     {name:'Bar Charts',        file:'/images/visuals/barcharts.png',   link:'user_data/barcharts'     },
     {name:'Pie Charts',        file:'/images/visuals/pie_charts.png',  link:'user_data/piecharts'   },
     {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram'   },
-    {name:'PCoA Plots',        file:'', link:''    },
+    {name:'PCoA Plots',        file:'/images/visuals/pcoa.png',        link:'user_data/pcoa'   },
     {name:'Counts Table',      file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
     {name:'Metadata Table',    file:'', link:''   }
     ]};
-
+//diss_oxygen ammonium  chlorophyll
 config.sample_metadata = {   
       'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
                           {name: 'patientID',     value:'32'},

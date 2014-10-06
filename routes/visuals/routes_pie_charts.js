@@ -131,10 +131,11 @@ module.exports = {
 					
 					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 					//console.log(svgXML);
+					var html = "<div id='' class='chart_div center_table'>"+svgXML+"</div>";
 			
 
 				d3.select('svg').remove();
-				return svgXML;
+				return html;
 
 
 	  } // end fxn
