@@ -37,13 +37,17 @@ var loadCsv = function(csv_filename) {
 
   reader.addListener('end', function(data) {
     //this gets called when it's finished loading the entire file
-    console.log("URA222");
-    console.log(allEntries);
+    // console.log("URA222");
+    // console.log(allEntries);
     
     return allEntries;
   });
+  
+  console.log("URA333");
+  console.log(allEntries);
+  return reader;
+  
 };
-
 
 // Public
 module.exports = csvUpload;
