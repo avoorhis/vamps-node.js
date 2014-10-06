@@ -17,8 +17,9 @@
 var csv = require('ya-csv');
 
 //load csv file
-var loadCsv = function() {
-    var reader = csv.createCsvFileReader('data/KCK_LSM_Bv6_qii.csv', {
+var loadCsv = function(csv_filename) {
+  console.log(csv_filename);
+    var reader = csv.createCsvFileReader(csv_filename, {
       'separator': ',',
       'quote': '"',
       'escape': '"',       
@@ -27,7 +28,7 @@ var loadCsv = function() {
 
   var allEntries = new Array();
 
-  reader.setColumnNames([ 'firstName', 'lastName', 'username' ]);
+  reader.setColumnNames([ 'first', 'second', 'third' ]);
 
   reader.addListener('data', function(data) {
     //this gets called on every row load
@@ -36,8 +37,30 @@ var loadCsv = function() {
 
   reader.addListener('end', function(data) {
     //this gets called when it's finished loading the entire file
+    console.log("URA222");
+    console.log(allEntries);
+    
     return allEntries;
   });
 };
 
-var myUsers = loadCsv();
+
+// Public
+module.exports = csvUpload;
+
+function csvUpload(csv_filename) {
+  this.myCSV = loadCsv(csv_filename);
+  console.log("URA111:");
+  console.log(this.myCSV);
+  
+}
+
+// csvUpload.prototype.make_dict = function(tree_obj, key_name) 
+// {
+//   var i = null;
+//   new_dict = {};
+//   for (i = 0; tree_obj.length > i; i += 1) {
+//     new_dict[tree_obj[i][key_name]] = tree_obj[i];
+//   }
+//   return new_dict;
+// };
