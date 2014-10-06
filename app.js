@@ -216,19 +216,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 var csvUpload = require('./sbin/metadata_upload');
 var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
 myCSV = new csvUpload(csv_filename);
-// new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
-// 
-// get_csv.myCSV(
-//   function(err, results) {
-//     if (err)
-//       throw err; // or return an error message, or something
-//     else
-//     {
-      console.log("URA!");
-//     
-//     }
-//   }
-// );
+console.log("URA!");
 
 
 module.exports = app;
