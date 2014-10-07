@@ -39,7 +39,7 @@ Test using mocha
 To check code quality:
   * plato -r -x public/javascripts/jquery-2.1.1.min.js -d reports public app.js views routes models config 
 
-Then see vamps-node.js/reports/index.html in a browser.
+Then see file vamps-node.js/reports/index.html in a browser.
 
 --- DB ---
 
