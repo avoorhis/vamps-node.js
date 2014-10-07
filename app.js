@@ -213,10 +213,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
-var csvUpload = require('./sbin/metadata_upload');
-var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
-myCSV = new csvUpload(csv_filename);
-console.log("URA!");
+// var csvUpload = require('./sbin/metadata_upload');
+// var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
+// myCSV = new csvUpload(csv_filename);
+// console.log("FROM app!");
 
 
 module.exports = app;
