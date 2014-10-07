@@ -20,8 +20,8 @@
 // make filePath a parameter, and use a callback function
 function loadCsv(filePath, callback) {
   
-  // make people scoped to readFile()
-  var people = [];
+  // make csv_data scoped to readFile()
+  var csv_data = [];
   var IN = require('ya-csv');
   var reader = IN.createCsvFileReader(filePath, {
     separator: ',', // quotes around property name are optional
@@ -32,59 +32,59 @@ function loadCsv(filePath, callback) {
   reader.on('data', function(item) {
     // console.log('777');
     
-    // closure magic: people is accessible because current function is nested into readFile()
+    // closure magic: csv_data is accessible because current function is nested into readFile()
     // console.log(item);
-    people.push(item);
+    csv_data.push(item);
   });
 
   // end event
   reader.on('end', function() {
     // return results to caller, simply by invoking the callback.
     // by convention, first argument is an error, which is null it no problem occured
-    console.log('888');
-    console.log('people1:');
-    console.log(people);
-    return people;    
-    callback(null, people);
-    // return people;    
+    // console.log('888');
+    // console.log('csv_data1:');
+    // console.log(csv_data);
+    // return csv_data;    
+    callback(null, csv_data);
+    // return csv_data;    
   });
 
   // error handling
   reader.on('error', function(err) {
     // stop listening on events, to avoid continuing queuing data
-    console.log('999');
+    // console.log('999');
     reader.removeAllListeners();
     // report to caller the error.
-    console.log('000');
+    // console.log('000');
     callback(err);
   });
   
-  console.log('people2:');
-  console.log(people);
-  console.log('reader:');
-  console.log(reader);
+  // console.log('csv_data2:');
+  // console.log(csv_data);
+  // console.log('reader:');
+  // console.log(reader);
 }
 
-module.exports = loadCsv;
+// module.exports = loadCsv;
 // Public
-// module.exports = csvUpload;
-// 
-// function csvUpload(csv_filename) {
-//   loadCsv(csv_filename, function(err, results) {
-//     if (err) {
-//       // error handling
-//       // return ...
-//     }
-//     // nominal case: use results that contains peoples !
-//     console.log("URA111:");
-//     // console.dir(results);
-//   });
-//   
-//   // this.myCSV = loadCsv(csv_filename);
-//   // console.log("URA111:");
-//   // console.log(this.myCSV);
-//   
-// }
+module.exports = csvUpload;
+
+function csvUpload(csv_filename) {
+  loadCsv(csv_filename, function(err, results) {
+    if (err) {
+      // error handling
+      // return ...
+    }
+    // nominal case: use results that contains csv_datas !
+    console.log("URA111:");
+    console.dir(results);
+  });
+  
+  // this.myCSV = loadCsv(csv_filename);
+  // console.log("URA111:");
+  // console.log(this.myCSV);
+  
+}
 
 
 // csvUpload.prototype.make_dict = function(tree_obj, key_name) 

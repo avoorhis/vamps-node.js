@@ -20,7 +20,18 @@ describe('csvUpload', function(){
     var myCSV = new csvUpload(csv_filename);
     console.log("FROM spec!");
     // console.log(myCSV);
-    myCSV();
+    
+    // myCSV(csv_filename, function(err, results) {
+    //   if (err) {
+    //     // error handling
+    //     // return ...
+    //   }
+    //   // nominal case: use results that contains csv_datas !
+    //   console.log("URA111:");
+    //   console.dir(results);
+    // });
+    
+    // myCSV();
   });
 });
 
