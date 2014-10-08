@@ -33,7 +33,6 @@
     "static-favicon": "",
     "uid-safe": "",
     "xmldom":"",
-    "zombie": "", 
     "ya-csv": ""
   },
   "devDependencies": {
@@ -42,9 +41,10 @@
     "mocha": "",
     "nodetime":"",
     "passport-stub": "",
+    "plato": "",
     "should": "",
     "supertest": "",
-    "plato": ""
+    "zombie": ""
   }
 }
 
