@@ -14,30 +14,85 @@
 * put custom info in db
 */
 
-var csv = require('ya-csv');
+// var csv = require('ya-csv');
 
-//load csv file
-var loadCsv = function() {
-    var reader = csv.createCsvFileReader('data/KCK_LSM_Bv6_qii.csv', {
-      'separator': ',',
-      'quote': '"',
-      'escape': '"',       
-      'comment': '',
+
+// make filePath a parameter, and use a callback function
+function loadCsv(filePath, callback) {
+  
+  // make csv_data scoped to readFile()
+  var csv_data = [];
+  var IN = require('ya-csv');
+  var reader = IN.createCsvFileReader(filePath, {
+    separator: ',', // quotes around property name are optional
+    columnsFromHeader: true   
+    });
+
+  // data is emitted for each processed line
+  reader.on('data', function(item) {
+    // console.log('777');
+    
+    // closure magic: csv_data is accessible because current function is nested into readFile()
+    // console.log(item);
+    csv_data.push(item);
   });
 
-  var allEntries = new Array();
-
-  reader.setColumnNames([ 'firstName', 'lastName', 'username' ]);
-
-  reader.addListener('data', function(data) {
-    //this gets called on every row load
-    allEntries.push(data);
+  // end event
+  reader.on('end', function() {
+    // return results to caller, simply by invoking the callback.
+    // by convention, first argument is an error, which is null it no problem occured
+    // console.log('888');
+    // console.log('csv_data1:');
+    // console.log(csv_data);
+    // return csv_data;    
+    callback(null, csv_data);
+    // return csv_data;    
   });
 
-  reader.addListener('end', function(data) {
-    //this gets called when it's finished loading the entire file
-    return allEntries;
+  // error handling
+  reader.on('error', function(err) {
+    // stop listening on events, to avoid continuing queuing data
+    // console.log('999');
+    reader.removeAllListeners();
+    // report to caller the error.
+    // console.log('000');
+    callback(err);
   });
-};
+  
+  // console.log('csv_data2:');
+  // console.log(csv_data);
+  // console.log('reader:');
+  // console.log(reader);
+}
 
-var myUsers = loadCsv();
+// module.exports = loadCsv;
+// Public
+module.exports = csvUpload;
+
+function csvUpload(csv_filename) {
+  loadCsv(csv_filename, function(err, results) {
+    if (err) {
+      // error handling
+      // return ...
+    }
+    // nominal case: use results that contains csv_datas !
+    console.log("URA111:");
+    console.dir(results);
+  });
+  
+  // this.myCSV = loadCsv(csv_filename);
+  // console.log("URA111:");
+  // console.log(this.myCSV);
+  
+}
+
+
+// csvUpload.prototype.make_dict = function(tree_obj, key_name) 
+// {
+//   var i = null;
+//   new_dict = {};
+//   for (i = 0; tree_obj.length > i; i += 1) {
+//     new_dict[tree_obj[i][key_name]] = tree_obj[i];
+//   }
+//   return new_dict;
+// };
