@@ -10,9 +10,11 @@ var async = require('async');
 
 
 var helpers = require('../helpers/helpers');
+var QUERY = require('../queries');
 
 var COMMON  = require('./routes_common');
 var META    = require('./routes_metadata');
+var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
 var HMAP    = require('./routes_distance_heatmap');
 var DEND    = require('./routes_dendrogram');
@@ -79,7 +81,7 @@ router.post('/view_selection',  function(req, res) {
   if (uitems[0] === 'tax'){  // covers both simple and custom
 
     unit_field = 'silva_taxonomy_info_per_seq_id';
-    unit_name_query = COMMON.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
 
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
@@ -120,7 +122,8 @@ router.post('/view_selection',  function(req, res) {
 
       biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
       visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
-      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows)
+      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
+      GLOBAL.metadata = metadata;
       console.log(biome_matrix);
 
       // This is what matrix looks like (a different matrix is written to file)
@@ -429,7 +432,7 @@ router.get('/user_data/piecharts', function(req, res) {
   var values_updated = check_initial_status(myurl);  
  
   var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-  console.log('in create_piecharts_html: '+infile);
+  console.log('in create_piecharts_html: ' + infile);
 
   fs.readFile(infile, 'utf8', function (err, json) {
     var mtx = JSON.parse(json);
@@ -560,14 +563,41 @@ router.get('/user_data/pcoa', function(req, res) {
   var infile_name = ts+'_count_matrix.biom';
   var metafile_name = ts+'_metadata.txt'
   var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
-  var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
+  //var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
+  var script_file = path.resolve(__dirname, '../../public/scripts/distance_pcoa.py');
   var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
-  var name_on_graph= 'no';
+  //var name_on_graph= 'no';
     
-  R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
-  console.log(R_command);
+  //command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
+  command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
+  console.log(command);
   console.log('Using original matrix file');
-  run_R_cmd(req, res, ts, R_command, 'pcoa');
+  var exec = require('child_process').exec;
+  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+      if(stderr){console.log(stderr);}
+      html='';
+      //console.log('parsing json')
+      stdout = JSON.parse(stdout);
+      
+      console.log(stdout);
+      if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
+        html += '<div>Error -- No distances were calculated.</div>';
+      }else{
+        
+          //html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
+          html += PCOA.create_pcoa_graphs(stdout, metadata_file)
+        
+      }
+
+      res.render('visuals/user_data/pcoa', {
+            title: req.params.title   || 'default_title',
+            timestamp: ts || 'default_timestamp',
+            html : html,
+            user: req.user
+      });
+      
+
+    });
  
 
 });
