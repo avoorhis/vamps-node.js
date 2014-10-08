@@ -68,7 +68,7 @@ describe('Home page functionality', function(){
       .get('/')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('VAMPS');
+        res.text.should.containEql('VAMPS');
         done();
       });
   });
@@ -78,7 +78,7 @@ describe('Home page functionality', function(){
       .get('/')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('/users/login');
+        res.text.should.containEql('/users/login');
         done();
       });
   });
@@ -88,7 +88,7 @@ describe('Home page functionality', function(){
       .get('/helloworld')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.include('Hello!');
+        res.text.should.containEql('Hello!');
         done();
       });
   });
