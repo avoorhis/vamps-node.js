@@ -42,9 +42,35 @@ Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
 
-required_fields = ["sample_name", "ANONYMIZED_NAME", "DESCRIPTION", "TAXON_ID", "common_name", "TITLE", "altitude", "assigned_from_geo", "collection_date", "collection_time", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
+// todo: move all sql to models and constants to constants
+required_fields_from_template = ["sample_name", "ANONYMIZED_NAME", "DESCRIPTION", "TAXON_ID", "common_name", "TITLE", "altitude", "assigned_from_geo", "collection_date", "collection_time", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
 
-console.log(headers_arr.diff( required_fields ));  
+database_req_fields = ["dataset_id", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"]
+
+custom_fields = headers_arr.diff( required_fields_from_template ); 
+console.log(custom_fields);
+/*
+[ 'habitat',
+  'type_sample',
+  'environmental_zone',
+  'specific_conductance',
+  'Dissolved_Oxygen2',
+  'absolute_depth_beta',
+  'lat_lon',
+  'conductivity',
+  'longhurst_long_name',
+  'volume_filtered',
+  'fecal_coliform',
+  'redox_state',
+  'depth_start',
+  'depth_end',
+  'iho_area',
+  'notes',
+  'precipitation',
+  'volume_filtered',
+  'longhurst_zone' ]
+*/
+
 // => [1, 2, 6]
 
 // node sbin/metadata_upload.js
