@@ -561,11 +561,11 @@ router.get('/user_data/pcoa', function(req, res) {
   var values_updated = check_initial_status(myurl);  
   var biom_file,R_command;
   var infile_name = ts+'_count_matrix.biom';
-  var metafile_name = ts+'_metadata.txt'
+  //var metafile_name = ts+'_metadata.txt'
   var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
   //var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
   var script_file = path.resolve(__dirname, '../../public/scripts/distance_pcoa.py');
-  var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
+  //var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
   //var name_on_graph= 'no';
     
   //command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
@@ -584,8 +584,13 @@ router.get('/user_data/pcoa', function(req, res) {
         html += '<div>Error -- No distances were calculated.</div>';
       }else{
         
+          var html = '<table border="1" class="single_border center_table"><tr><td>';
+          html += COMMON.get_selection_markup('pcoa', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+          html += '</td><td>';
+          html += COMMON.get_choices_markup('pcoa', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+          html += '</td></tr></table>';
           //html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
-          html += PCOA.create_pcoa_graphs(stdout, metadata_file)
+          html += PCOA.create_pcoa_graphs(stdout)
         
       }
 
