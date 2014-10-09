@@ -149,12 +149,20 @@
 
 .chart_div {
     border: 1px solid black;
-    width: 900px;
-    padding:20px;
-    
+    width: 800px;
+    padding:20px;    
 }
-
-
+.pcoa_chart_div {
+    border: 1px solid black;
+    width: 1100px;
+    padding:20px;    
+}
+ .legend {
+    padding: 5px;
+    font: 10px sans-serif;
+    background: yellow;
+    box-shadow: 2px 2px 1px #888;
+}
 /*mktree*/
 /*http://jsfiddle.net/q3DQ2/*/
 .tree {
