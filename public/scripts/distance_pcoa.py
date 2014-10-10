@@ -72,7 +72,7 @@ def distance(args):
 			if i < n: # only needs one copy
 					dist[ (datasets[i],datasets[n]) ] = d
 
-	np.savetxt(os.path.join(args.output_dir, args.file_prefix+'_distance.mtx'), distance_matrix)
+	#np.savetxt(os.path.join(args.output_dir, args.file_prefix+'_distance.mtx'), distance_matrix)
 	if args.to_output == 'distance':
 		print(distance_matrix)
 	return dist
@@ -93,7 +93,7 @@ def pcoa(args, dist):
 	print json.dumps(json_array)
 	
 
-	PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
+	#PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
 
 if __name__ == '__main__':
 
