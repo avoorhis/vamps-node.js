@@ -5,13 +5,14 @@
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
       <!-- autocomplete="off" clears the checkboxes on page refresh -->
-<div id='show_selected_datasets_div' class='unit_selection_page_div_border table'>
+<div id='show_selected_datasets_div' class='div_border table'>
                 <% include partials/show_selected_datasets.html %>
 </div>
 <br>
+<div id='' class=''>
 <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' autocomplete="off">
 
-  <table  class='table'>
+  <table  class='center_table table' >
     <tr><td colspan='2' class='center'>
         <span class='bold_font'>Next:</span> 
         <input type='button' id="get_graphics" name='get_graphics' value='Show Available Graphics' >
@@ -22,7 +23,7 @@
            <% include partials/unit_selection_choices.html %>
       </td>
       <td>
-        <span class='bold_font'>Metadata Selection</span>
+        <span class='bold_font'>Metadata Selection:</span>
       </td>
       </tr>
       <tr>
@@ -41,6 +42,7 @@
     </tr>
   </table>
 </form>
+</div>
 
 
 
