@@ -112,6 +112,16 @@
     padding-right:20px;
 
 }
+.blue {
+    background:blue;
+    width:12px;
+    height:12px;
+}
+.red {
+    background:red;
+    width:12px;
+    height:12px;
+}
 .heat_map_td {
   width: '10' ;
   height: '10';
