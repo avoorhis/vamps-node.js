@@ -126,7 +126,9 @@ module.exports = {
 		    //html += selection_html;
 		    //html += "<div class='' id='distance_heatmap_div center_table' >";
 		    html += "<table border='1' class='heatmap_table center_table' >";
-		    html += '<tr><td></td>';
+		    html += '<tr><td>';
+		    html += "Similar: <span title='blue' class='blue'>&nbsp;</span> Dissimilar: <span title='red' class='red'>&nbsp;&nbsp;</span>";
+		    html += '</td>';
 
 		    for(i=1;i<=Object.keys(dm).length;i++) {
 		      html += '<td>'+i.toString()+'</td>';
