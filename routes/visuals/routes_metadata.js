@@ -8,7 +8,7 @@ module.exports = {
 
 		write_metadata_file: function(chosen_id_name_hash, post_items, sqlrows) {
 			console.log('in metadata')
-			var test_metadata = ['blue_group','red_group'];
+			var test_metadata = ['horses','donkeys'];
 			//var txt = "project_dataset\tproject\tdataset\n";
 			var txt = "project_dataset\tproject\tdataset\ttest_color_grouping\n";
 			var meta_file = '../../tmp/'+post_items.ts+'_metadata.txt';
