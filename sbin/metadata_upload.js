@@ -21,7 +21,9 @@
 
 var fs = require('fs');
 var parse = require('csv-parse');
+var constants = require('../public/constants');
 
+var req_fields = constants.required_metadata_fields;
 
 // Using the first line of the CSV data to discover the column names
 var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
@@ -31,15 +33,25 @@ parser = parse(function(err, data){
   do_smth_w_data(data);
 })
 
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
+
 function do_smth_w_data(ddd)
 {
   console.log("ddd");
   var column_names = ddd[0];
   console.log(column_names);
-  var m_l = ddd.length;
   var all_data = ddd.slice(1)
   console.log(all_data);
-  console.log(m_l);
+  console.log(req_fields);
+  aa = column_names.diff(req_fields)
+  console.log(aa);
+  bb = req_fields.diff(column_names);
+  console.log(bb);
+  
 }
+
+
 
 input.pipe(parser);
