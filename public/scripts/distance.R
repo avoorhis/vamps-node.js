@@ -30,7 +30,7 @@ colnames(data_matrix)<-myjson$columns$id
 biods = t(data_matrix);
 #print(biods)
 #print(biods);
-require(vegan,quietly=TRUE);
+require(vegan);
 #  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
 # must use upper=FALSE so that get_distanceR can parse the output correctly
 dis <- as.matrix(0)
