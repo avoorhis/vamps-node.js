@@ -15,19 +15,139 @@
 */
 
 // var csv = require('csv');
+
+// ===
+// call as node sbin/metadata_upload.js 
+
 var fs = require('fs');
 var parse = require('csv-parse');
-var transform = require('stream-transform');
 
-var output = [];
-var parser = parse({delimiter: ','})
+
+// Using the first line of the CSV data to discover the column names
 var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
-var transformer = transform(function(record, callback){
-  setTimeout(function(){
-    callback(null, record.join(' ')+'\n');
-  }, 500);
-}, {parallel: 10});
-input.pipe(parser).pipe(transformer).pipe(process.stdout);
+
+// parser = parse({columns: true}, function(err, data){
+parser = parse(function(err, data){
+  do_smth_w_data(data);
+})
+
+function do_smth_w_data(ddd)
+{
+  console.log("ddd");
+  var column_names = ddd[0];
+  console.log(column_names);
+  var m_l = ddd.length;
+  var all_data = ddd.slice(1)
+  console.log(m_l);
+  console.log(all_data);
+}
+
+input.pipe(parser);
+// ====
+
+// var transform = require('stream-transform');
+// 
+// var alldata = {
+//     peptides : []
+// };
+// var agi = null;
+// x = 0;
+// function Peptide(row, x) 
+// {
+//   // console.log("row from Peptide");
+//   // console.log(row);
+//   
+//    this.sequence = row[1];
+//    this.mod_sequence = row[2];
+//     if(row[5]){
+//         this.mod_indeces = [ row[3], row[4] ];
+//         this.spectral_count = row[5];  
+//     } else {
+//         this.mod_indeces= row[3];
+//         this.spectral_count= row[4];  
+//     };
+//     console.log("row this");
+//     console.log(x);
+//     console.log(this);
+//     return this;
+// }
+// 
+// var output = fs.createWriteStream('./data/proteins_output.csv');
+// var parser = parse({delimiter: ','})
+// // var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
+// var input = fs.createReadStream('./data/proteins.csv');
+// // var transformer = transform(function(record, callback){
+// //   setTimeout(function(){
+// //     callback(null, record.join(' ')+'\n');
+// //   }, 500);
+// // }, {parallel: 10});
+// 
+// // var transformer = transform(function(row, index, callback){
+// //   setTimeout(function(){
+// //     callback(null, record.join(' ')+'\n');
+// //   }, 500);
+// // }, {parallel: 10});
+// 
+// var transformer = transform(function(row, index, callback){
+//   setTimeout(function(){
+//     callback(null, alldata.peptides.push(new Peptide(row, x)));
+//   }, 500);
+// }, {parallel: 10});
+// 
+// // var transformer = transform(function(row, index){
+// //   if (agi === null)
+// //   {
+// //       agi = row[0];
+// //   }
+// //   x += 1;
+// //   return alldata.peptides.push(new Peptide(row, x));
+// //   // callback(null, alldata);
+// //   // setTimeout(function(){
+// //   //   callback(null, alldata)
+// //   // }, 500);
+// // // }, {parallel: 10});
+// // 
+// // 
+// // // var transformer = transform(function(row, index, callback) {    
+// // //     if (agi === null)
+// // //     {
+// // //         agi = row[0];
+// // //     }
+// // // 
+// // //     x += 1;
+// // //     alldata.peptides.push(new Peptide(row, x));
+// // //     callback(null )'
+// // });
+// 
+// 
+// input.pipe(parser).pipe(transformer).pipe(output);
+// console.log("alldata")
+// console.log(alldata)
+
+// .pipe(process.stdout);
+
+// ===
+
+
+// === works ===
+// // call as node sbin/metadata_upload.js 
+// var fs = require('fs');
+// var parse = require('csv-parse');
+// var transform = require('stream-transform');
+// 
+// var output = [];
+// var parser = parse({delimiter: ','})
+// var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
+// var transformer = transform(function(record, callback){
+//   setTimeout(function(){
+//     callback(null, record.join(' ')+'\n');
+//   }, 500);
+// }, {parallel: 10});
+// 
+// input.pipe(parser).pipe(transformer).pipe(process.stdout);
+// 
+// 
+// ===
 
 // var csv = require('ya-csv');
 // 
