@@ -130,7 +130,11 @@
     border-collapse:collapse;
     font-size:10px;
 }
-
+.no_data {
+    color:red;
+    font-size:large;
+    text-align:center;
+}
 #show_visuals_links_div {
     width: 180px;
 }
@@ -200,7 +204,7 @@
 
 .tree li {
     list-style-type:none;
-    margin-left: .8ex;
+    margin-left: 2.8ex;
 }
 .tree li::before, .tree li::after {
     content:'';
