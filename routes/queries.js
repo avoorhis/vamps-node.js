@@ -28,11 +28,11 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     var and_domain_in = '';
     var join_domain   = " JOIN domain USING(domain_id)";
     var join_phylum   = " JOIN phylum USING(phylum_id)";
-    var join_klass     = " JOIN klass USING(klass_id)";
-    var join_order     = " JOIN `order` USING(order_id)";
+    var join_klass    = " JOIN klass USING(klass_id)";
+    var join_order    = " JOIN `order` USING(order_id)";
     var join_family   = " JOIN family USING(family_id)";
-    var join_genus     = " JOIN genus USING(genus_id)";
-    var join_species   = " JOIN species USING(species_id)";
+    var join_genus    = " JOIN genus USING(genus_id)";
+    var join_species  = " JOIN species USING(species_id)";
     var join_strain   = " JOIN strain USING(strain_id)";
     
     if (tax_depth === 'domain') {
@@ -64,7 +64,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       ids = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id'];
       joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
     }
-      
+     console.log(domains) 
     if (domains.length < 5){
       domains = domains.join("','");
       and_domain_in = " AND domain in ('"+domains+"')";
@@ -101,6 +101,8 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     tax_query     += " WHERE dataset_id in ("+chosen_id_name_hash.ids+")\n";
     //tax_query     += " WHERE silva_taxonomy_info_per_seq_id in (" + unit_id_array + ")\n";
     tax_query     += and_domain_in;
+    console.log(tax_query)
+    console.log(post_items)
     return tax_query;
 
 

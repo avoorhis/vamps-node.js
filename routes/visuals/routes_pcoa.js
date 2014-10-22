@@ -26,49 +26,93 @@ var COMMON  = require('./routes_common');
 module.exports = {
 
 
-		create_pcoa_graphs: function(matrix, metadata_filename) {
+		create_pcoa_graphs: function(matrix) {
 			console.log('in pcoa')
-			console.log(typeof(matrix))
+			//console.log(matrix)
+			
 			//console.log(metadata_filename)
 			var svgGraph ='';
 			//console.log(metadata)
 			//fs.readFile(metadata_filename, 'utf8', function (err, data) {
   		//		 var mdata = d3.tsv.parse(data);
   		//		 console.log(mdata)
-  				mdata = {};
+  				var mdata_name_value_lookup = {};
+  				var mdata_name_ds_lookup = {};
   				for(m in metadata) {
   					var ds = metadata[m]['project_dataset'];
   					for(name in metadata[m]) {
   						if(name !== 'project_dataset') {
   							//console.log(metadata[m][item]);
   							var value = metadata[m][name];
-								//console.log(name)  							
-  							if(name in mdata) {
-  								if(value in mdata[name]){
-  									mdata[name][value].push(ds);
+								//console.log(name)  
+								// mdata_name_value_lookup							
+  							if(name in mdata_name_value_lookup) {
+  								if(value in mdata_name_value_lookup[name]){
+  									mdata_name_value_lookup[name][value].push(ds);
   								}else {
-  									mdata[name][value] = [ds];
+  									mdata_name_value_lookup[name][value] = [ds];
   								}
   							}else {
-  								mdata[name] = {};
-  								mdata[name][value] = [ds];
-  							}  							
+  								mdata_name_value_lookup[name] = {};
+  								mdata_name_value_lookup[name][value] = [ds];
+  							}
+  							// mdata_vals is for the tool tip
+  							if(name in mdata_name_ds_lookup) {
+  								mdata_name_ds_lookup[name][ds] = value;  								
+  							}else {  	  								
+  								mdata_name_ds_lookup[name] = {};
+  								mdata_name_ds_lookup[name][ds] = value;
+  							}
+  						
   						}
   					}
-  				}	
-
-					console.log(mdata);
-					var metadata_count = Object.keys(mdata).length;
+  				}
+  				//console.log(mdata_vals);
+  				var p=d3.scale.category20();
+					var colors = p.range(); // ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+                      // "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
+  				var mdata_colors = {};
+  				mdata_colors_by_val = {};
+  				//mdata_colors[name]['HMP_204_Bv4v5--204_10_GG_26Jan12_H'] = '#ababab';
+  				for(mname in mdata_name_value_lookup) {
+  					mdata_colors[mname] = {};
+  					mdata_colors_by_val[mname] = {};
+  					c =0
+  					for(val in mdata_name_value_lookup[mname]){
+  						
+  						for(d in mdata_name_value_lookup[mname][val]){
+  							ds = mdata_name_value_lookup[mname][val][d];
+  							mdata_colors[mname][ds] = colors[c];
+  							mdata_colors_by_val[mname][val] = colors[c];
+  						
+  						}
+  						// if(mname in mdata_colors_by_val) {
+  							
+  						// 		mdata_colors_by_val[mname][val] = colors[c];
+  							
+  							
+  						// }else {
+  						// 	mdata_colors_by_val[mname]={};
+  							
+  						// }
+  						c += 1;
+  					}
+  				}
+  				//console.log(metadata)
+  				//console.log(mdata_name_value_lookup)
+					//console.log(mdata_colors_by_val);
+					var metadata_count = Object.keys(mdata_name_value_lookup).length;
 					// size and margins for the chart
-					var margin = {top: 20, right: 15, bottom: 50, left: 60};
-					var img_width = 900;
+					var margin = {top: 20, right: 25, bottom: 50, left: 60};
+					var img_width = 1100;
 					var img_height = 320 * metadata_count;
 					var base_chart_size = 300;
 					var chart_width  = base_chart_size - margin.left - margin.right;
 					var chart_height = base_chart_size - margin.top  - margin.bottom;
-					var colors = ['#1111ff','#3333ff','#5555ff','#7777ff','#9999ff','#aaaaff','#ccccff','#ddeeee','#eeeedd','#ffdddd','#ffbbbb','#ff9999','#ff7777','#ff5555','#ff3333','#ff0000'];
+					// add the tooltip area to the webpage
+					
 					var x = d3.scale.linear()
-		          .domain([-1, 1])  // the range of the values to plot
+		          .domain([-1, 1])  					// the range of the values to plot
 		          .range([ 0, chart_width ]);        // the pixel range of the x-axis
 
 					var y = d3.scale.linear()
@@ -84,11 +128,15 @@ module.exports = {
 
 
 					var md_count = 0;			
-					for(m in mdata)	{	 
+					for(m in mdata_name_value_lookup)	{	 
 						var mdata_name = m;
-						console.log(mdata_name);
+						//var colors_needed = Object.keys(mdata[m]).length;
+						
+						//var mdata_colors = default_colors.slice(0,colors_needed);
+						//console.log(mdata_colors)
+
 						for(v in vectors) {
-			      		console.log(v)
+			      		
 			      		xdata = matrix[vectors[v][0]];
 								ydata = matrix[vectors[v][1]];
 								//var chart = 'chart'+v.toString();
@@ -129,9 +177,21 @@ module.exports = {
 									  .enter().append("circle")  // create a new circle for each value
 									      .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
 									      .attr("cx", function (d,i) { return x(xdata[i]); } ) // translate x value
-									      .attr("r", 2) // radius of circle
-									      .style("opacity", 0.6); // opacity of circle
+									      .attr("r", 4) // radius of circle
+									      //.style("opacity", 0.6) // opacity of circle
+									      .attr("id",function(d,i) {
+									      		var ret_str = matrix.names[i]+'-|-'+mdata_name+'-|-'+mdata_name_ds_lookup[mdata_name][matrix.names[i]];
+									      		return ret_str;    // ip of each dot should be ds -|- metadataname -|- metadatavalue									       	
+												}) 
+											  .attr("class","tooltip")
+									      .style("fill", function(d,i){
+									      	ds = matrix.names[i];
+									      	return mdata_colors[mdata_name][ds]
+									      });
+									      
+
 									
+
 									g.append('text')
 										.attr('class', 'x label')
 										.attr('text-anchor','end')
@@ -147,6 +207,7 @@ module.exports = {
 								    .attr("dy", "1em")
 								    .style("text-anchor", "middle")
 								    .text(vectors[v][1]);
+								  
 								  if(v == 1){
 								  	g.append('text')					
 											.attr('text-anchor','middle')
@@ -154,26 +215,61 @@ module.exports = {
 				    					.attr("y", 0 )
 				    					.style("font-size", "12px") 
 	        						.style("text-decoration", "underline")  
-				    					.text(mdata_name);     
+				    					.text('metadata name: '+mdata_name);     
 								  }
+
+								  if(v == 2) {
+								  	// add legend to right hand graph
+										var legend = g.append("g")
+										  .attr("class", "legend")
+										  .attr("x", chart_width - 5)
+										  .attr("y", 15)
+										  .attr("height", chart_height)
+										  .attr("width", 100);
+										  // mdata_name
+										legend.selectAll('g').data( Object.keys(mdata_name_value_lookup[mdata_name]) )
+									      .enter()
+									      .append('g')
+									      .each(function(d, i) {
+									        var g = d3.select(this);
+									        g.append("rect")
+									          .attr("x", chart_width)
+									          .attr("y", i*15)
+									          .attr("width", 7)
+									          .attr("height", 7)
+									          .style("fill", mdata_colors_by_val[mdata_name][d]);
+									        
+									        g.append("text")
+									          .attr("x", chart_width + 10)
+									          .attr("y", i * 15 + 8)
+									          .attr("height",30)
+									          .attr("width",100)
+									          .style("fill", mdata_colors_by_val[mdata_name][d])
+									          .text(d);
+
+									      });
+								  }
+
+								  
 									
 						}	
 					md_count += 1;
 					}						
 
+
 					d3.selectAll('.axis line, .axis path')
      				.style({'stroke': 'Black', 'fill': 'none', 'stroke-width': '1px'});
 
-
+					
 					svgGraph = d3.selectAll('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
-					//console.log(svgGraph[0]);
+					
 						
 					//console.log(svgGraph[0][0]);
 					
 					var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
 					//console.log(svgXML);
-					var html = "<div id='' class='chart_div center_table'>"+svgXML+"</div>";
-			
+					//var html = "<div id='' class='chart_div center_table'>"+svgXML+"</div>";
+					var html = "<div id='' class='pcoa_chart_div center_table'>"+svgXML+"</div>";
 					d3.select('svg').remove();
 					return html;
 			//})
