@@ -74,13 +74,13 @@ config.VISUAL_THUMBNAILS = { visuals: [
 config.sample_metadata = {   
       'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
                           {name: 'patientID',     value:'32'},
-                          {name: 'sample_location',      value:'south'},
+                          {name: 'sample_location',value:'south'},
                           {name: 'temperature',    value:'101.2'},
                           {name: 'latitude',       value:'30.3'},
                           {name: 'longitude' ,     value:'-57.23'},
                           {name: 'description',    value:'test meta-1'},
                           {name: 'body_site',      value:'L hip'},
-                          {name: 'collection_date',    value:'2014-09-14'},
+                          {name: 'collection_date',value:'2014-09-14'},
                           {name: 'sample_size',    value:'10'},
                           {name: 'phosphate' ,     value:'3.1'},
                           {name: 'study_center',    value:'There'}
