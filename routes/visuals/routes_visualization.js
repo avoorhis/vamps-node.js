@@ -67,7 +67,7 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.visuals                      = req.body.visuals;
   visual_post_items.selected_distance            = req.body.selected_distance || 'morisita_horn';
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
-  visual_post_items.domains                      = req.body.domains      || 'all';
+  visual_post_items.domains                      = req.body.domains      || ['NA'];
   visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
@@ -79,10 +79,10 @@ router.post('/view_selection',  function(req, res) {
   var unit_name_query = '';
   var unit_field;
   if (uitems[0] === 'tax'){  // covers both simple and custom
-
+  
     unit_field = 'silva_taxonomy_info_per_seq_id';
     unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-
+    
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
     //unit_name_query = COMMON.get_otus_query( req.db, uitems, selection_obj, visual_post_items );
@@ -374,7 +374,7 @@ router.get('/user_data/counts_table', function(req, res) {
     html += '</tr>';
     html += '</table>';
     res.render('visuals/user_data/counts_table', {
-      title: req.params.title   || 'default_title',
+      title: 'VAMPS Counts Table',
       timestamp: ts || 'default_timestamp',
       html : html,
       user: req.user
@@ -413,7 +413,7 @@ router.get('/user_data/barcharts', function(req, res) {
     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
 
     res.render('visuals/user_data/barcharts', {
-          //title: req.params.title   || 'default_title',
+          title: 'VAMPS BarCharts',
           timestamp: ts || 'default_timestamp',
           html : html,
           user: req.user
@@ -449,7 +449,7 @@ router.get('/user_data/piecharts', function(req, res) {
     html += PCHARTS.create_piecharts_html ( ts, res, mtx );
 
     res.render('visuals/user_data/piecharts', {
-          //title: req.params.title   || 'default_title',
+          title: 'VAMPS PieCharts',
           timestamp: ts || 'default_timestamp',
           html : html,
           user: req.user
@@ -472,7 +472,7 @@ router.get('/user_data/piechart_single', function(req, res) {
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
     res.render('visuals/user_data/piechart_single', {
-          title: 'Single PieChart:',
+          title: 'VAMPS Single PieChart:',
           subtitle: ds,
           timestamp: ts || 'default_timestamp',
           dataset: ds,
@@ -561,11 +561,11 @@ router.get('/user_data/pcoa', function(req, res) {
   var values_updated = check_initial_status(myurl);  
   var biom_file,R_command;
   var infile_name = ts+'_count_matrix.biom';
-  var metafile_name = ts+'_metadata.txt'
+  //var metafile_name = ts+'_metadata.txt'
   var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
   //var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
   var script_file = path.resolve(__dirname, '../../public/scripts/distance_pcoa.py');
-  var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
+  //var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
   //var name_on_graph= 'no';
     
   //command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
@@ -584,13 +584,18 @@ router.get('/user_data/pcoa', function(req, res) {
         html += '<div>Error -- No distances were calculated.</div>';
       }else{
         
+          var html = '<table border="1" class="single_border center_table"><tr><td>';
+          html += COMMON.get_selection_markup('pcoa', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+          html += '</td><td>';
+          html += COMMON.get_choices_markup('pcoa', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+          html += '</td></tr></table>';
           //html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
-          html += PCOA.create_pcoa_graphs(stdout, metadata_file)
+          html += PCOA.create_pcoa_graphs(stdout)
         
       }
 
       res.render('visuals/user_data/pcoa', {
-            title: req.params.title   || 'default_title',
+            title: 'VAMPS PCoA Graphs',
             timestamp: ts || 'default_timestamp',
             html : html,
             user: req.user
@@ -713,6 +718,7 @@ function check_initial_status(url) {
 function run_R_cmd(req,res, ts, R_command, visual_name) {
     var exec = require('child_process').exec;
     var html = '<table border="1" class="single_border center_table"><tr><td>';
+    var title = 'VAMPS';
     html += COMMON.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
@@ -727,18 +733,19 @@ function run_R_cmd(req,res, ts, R_command, visual_name) {
       }else{
         if(visual_name === 'heatmap') {
           var dm = HMAP.create_distance_matrix(stdout);
+          title += ' Heatmap';
           html  += HMAP.create_hm_html(dm);  
-        }else if(visual_name==='dendrogram') {
+        }else if(visual_name === 'dendrogram') {
           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-        }else if(visual_name==='pcoa') {
-          html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
+          title += ' Dendrogram';
+        }else{
 
         }
         
       }
 
       res.render('visuals/user_data/'+visual_name, {
-            title: req.params.title   || 'default_title',
+            title: title,
             timestamp: ts || 'default_timestamp',
             html : html,
             user: req.user
