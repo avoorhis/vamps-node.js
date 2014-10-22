@@ -14,63 +14,32 @@
 * put custom info in db
 */
 
+// var csv = require('csv');
+
+// ===
+// call as node sbin/metadata_upload.js 
+
 var fs = require('fs');
+var parse = require('csv-parse');
 
-function get_line(filename, line_no, callback) {
-    var data = fs.readFileSync(filename, 'utf8');
-    var lines = data.split("\n");
 
-    if(+line_no > lines.length){
-      throw new Error('File end reached without finding line');
-    }
+// Using the first line of the CSV data to discover the column names
+var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
 
-    return callback(null, lines[+line_no]);
-}
-
-var headers = get_line('./data/KCK_LSM_Bv6_qii.csv', 0, function(err, line){
-  // console.log('The line: ' + line);
-  return line;
+// parser = parse({columns: true}, function(err, data){
+parser = parse(function(err, data){
+  do_smth_w_data(data);
 })
 
-console.log('The headers: ' + typeof headers);
+function do_smth_w_data(ddd)
+{
+  console.log("ddd");
+  var column_names = ddd[0];
+  console.log(column_names);
+  var m_l = ddd.length;
+  var all_data = ddd.slice(1)
+  console.log(all_data);
+  console.log(m_l);
+}
 
-var headers_arr = headers.split(",");
-console.log('The headers_arr: ');
-console.log(headers_arr);
-
-Array.prototype.diff = function(a) {
-    return this.filter(function(i) {return a.indexOf(i) < 0;});
-};
-
-// todo: move all sql to models and constants to constants
-required_fields_from_template = ["sample_name", "ANONYMIZED_NAME", "DESCRIPTION", "TAXON_ID", "common_name", "TITLE", "altitude", "assigned_from_geo", "collection_date", "collection_time", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
-
-database_req_fields = ["dataset_id", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"]
-
-custom_fields = headers_arr.diff( required_fields_from_template ); 
-console.log(custom_fields);
-/*
-[ 'habitat',
-  'type_sample',
-  'environmental_zone',
-  'specific_conductance',
-  'Dissolved_Oxygen2',
-  'absolute_depth_beta',
-  'lat_lon',
-  'conductivity',
-  'longhurst_long_name',
-  'volume_filtered',
-  'fecal_coliform',
-  'redox_state',
-  'depth_start',
-  'depth_end',
-  'iho_area',
-  'notes',
-  'precipitation',
-  'volume_filtered',
-  'longhurst_zone' ]
-*/
-
-// => [1, 2, 6]
-
-// node sbin/metadata_upload.js
+input.pipe(parser);
