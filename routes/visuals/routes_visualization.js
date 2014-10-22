@@ -68,6 +68,7 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.selected_distance            = req.body.selected_distance || 'morisita_horn';
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
   visual_post_items.domains                      = req.body.domains      || ['NA'];
+  visual_post_items.custom_taxa                  = req.body.custom_taxa  || ['NA'];
   visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
