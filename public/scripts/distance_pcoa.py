@@ -12,10 +12,8 @@ import csv
 from pprint import pprint
 
 
-
 from cogent.maths import distance_transform as dt
-#from skbio.core.distance import DistanceMatrix
-#from cogent.evolve.models import HKY85
+
 
 def distance(args):
 	
@@ -72,7 +70,7 @@ def distance(args):
 			if i < n: # only needs one copy
 					dist[ (datasets[i],datasets[n]) ] = d
 
-	np.savetxt(os.path.join(args.output_dir, args.file_prefix+'_distance.mtx'), distance_matrix)
+	#np.savetxt(os.path.join(args.output_dir, args.file_prefix+'_distance.mtx'), distance_matrix)
 	if args.to_output == 'distance':
 		print(distance_matrix)
 	return dist
@@ -93,7 +91,7 @@ def pcoa(args, dist):
 	print json.dumps(json_array)
 	
 
-	PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
+	#PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
 
 if __name__ == '__main__':
 
@@ -103,13 +101,13 @@ if __name__ == '__main__':
 
 	"""
 	parser = argparse.ArgumentParser(description="Calculates distance from input matrix file", usage=usage)
-	parser.add_argument('--mtx',   		required=True,  action="store",   	 dest='matrix_file',   help = 'Matrix File'   ) 
+	parser.add_argument('--mtx',   					required=True,  action="store",   	 dest='matrix_file',   help = 'Matrix File'   ) 
 	#parser.add_argument('-meta','--meta',     required=False,  action="store",   	dest='metadata_file', help = 'Metadata File' ) 
-	parser.add_argument('--metric', required=False, action="store",   	 dest='metric',    help = 'Distance Metric', default='bray_curtis' ) 
-	parser.add_argument('--calculate_pcoa', 	required=False, action="store_true", dest='calculate_pcoa',    help = 'T/F', default=False ) 
- 	parser.add_argument('--file_prefix', 			required=False, action="store", dest='file_prefix',  help = 'File Prefix', default='file_prefix' ) 
- 	parser.add_argument('--output_dir', 			required=False, action="store", dest='output_dir',   help = 'Output Directory', default='./' ) 
- 	parser.add_argument('--to_output', 				required=False, action="store", dest='to_output',    help = 'distance or pcoa', default='none' )
+	parser.add_argument('--metric', 				required=False, action="store",   	 dest='metric',    help = 'Distance Metric', default='bray_curtis' ) 
+	parser.add_argument('--calculate_pcoa', required=False, action="store_true", dest='calculate_pcoa',    help = 'T/F', default=False ) 
+ 	parser.add_argument('--file_prefix', 		required=False, action="store", dest='file_prefix',  help = 'File Prefix', default='file_prefix' ) 
+ 	parser.add_argument('--output_dir', 		required=False, action="store", dest='output_dir',   help = 'Output Directory', default='./' ) 
+ 	parser.add_argument('--to_output', 			required=False, action="store", dest='to_output',    help = 'distance or pcoa', default='none' )
 
  	args = parser.parse_args()
 
