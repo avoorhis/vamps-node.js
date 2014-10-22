@@ -70,6 +70,9 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Counts Table',      file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
     {name:'Metadata Table',    file:'', link:''   }
     ]};
+    
+config.required_metadata_fields = ["dataset_id", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
+
 //diss_oxygen ammonium  chlorophyll
 config.sample_metadata = {   
       'HMP_204_Bv4v5--204_10_GG_26Jan12_H': [ 
