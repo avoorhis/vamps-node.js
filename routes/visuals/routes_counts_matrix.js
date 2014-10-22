@@ -53,73 +53,80 @@ module.exports = {
 				column_totals:[],								// ORDERED datasets count sums
 				max_dataset_count:0,						// maximum dataset count
 				matrix_type: 'dense',
-    		matrix_element_type: 'int',
-     		shape: [],									// [row_count, col_count]
-     		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
-     	};
+    			matrix_element_type: 'int',
+     			shape: [],									// [row_count, col_count]
+     			data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+     		};
 			
 			var unit_name_lookup = {};
 			var ukeys = [];
 			var unit_name_lookup_per_dataset = {};
 		  //var unit_id_lookup = {};
-			for (var r=0; r < sqlrows.length; r++){
+			if(sqlrows.length === 0) {
+				ukeys = undefined;
+			}else {
 
-				tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
+				for (var r=0; r < sqlrows.length; r++){
 
-		    var did  = sqlrows[r].dataset_id;
-		    var cnt  = sqlrows[r].seq_count;
-		    //var uid  = sqlrows[r].uid;
-		    //var uname = sqlrows[r].tax;
-		    var uname = tax;
-		    //counts = uid_matrix[uid];
-		    //biome_matrix.rows.push({id:name})
-		    //biome_matrix.data.push(counts)
-		    //console.log(did)
-				//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-				unit_name_lookup[uname] = 1;
-				ukeys.push(uname);
+					tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
 
-				//unit_name_lookup_per_dataset[did][uid] = sumcounts
-		  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-		  	if(did in unit_name_lookup_per_dataset) {
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
-		  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-		  		}else{
-		  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-		  		}
+				    var did  = sqlrows[r].dataset_id;
+				    var cnt  = sqlrows[r].seq_count;
+				    //var uid  = sqlrows[r].uid;
+				    //var uname = sqlrows[r].tax;
+				    var uname = tax;
+			    
+					//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
+					unit_name_lookup[uname] = 1;
+					ukeys.push(uname);
 
-		  	}else{
-		  		unit_name_lookup_per_dataset[did] = {};
-		  		if(uname in unit_name_lookup_per_dataset[did]) {
-		  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+					//unit_name_lookup_per_dataset[did][uid] = sumcounts
+				  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
+				  	if(did in unit_name_lookup_per_dataset) {
+				  		if(uname in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+				  		}else{
+				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  		}
 
-		  		}else{
-		  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-		  		}
-		  	}
-		   
-		  }
+				  	}else{
+				  		unit_name_lookup_per_dataset[did] = {};
+				  		if(uname in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
 
-		  var unit_name_counts={};
-		  for(uname in unit_name_lookup){
-		  	unit_name_counts[uname]=[];
-		  }
-		  for (var n in chosen_id_name_hash.ids) { // correct order
-		  	did = chosen_id_name_hash.ids[n];
-		  	
-		  	for(uname in unit_name_lookup) {
-		  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
-		  			cnt = unit_name_lookup_per_dataset[did][uname];
-		  			unit_name_counts[uname].push(cnt);
+				  		}else{
+				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  		}
+				  	}
+			   
+			    }
+			    var unit_name_counts={};
+				  for(uname in unit_name_lookup){
+				  	unit_name_counts[uname]=[];
+				  }
+				  for (var n in chosen_id_name_hash.ids) { // correct order
+				  	did = chosen_id_name_hash.ids[n];
+				  	
+				  	for(uname in unit_name_lookup) {
+				  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
+				  			cnt = unit_name_lookup_per_dataset[did][uname];
+				  			unit_name_counts[uname].push(cnt);
 
-		  		} else {
-		  			unit_name_counts[uname].push(0);
-		  		}
-		  	}
-		  }
-		  ukeys.push(uname);
-		  ukeys = ukeys.filter(onlyUnique);
-		  ukeys.sort();
+				  		} else {
+				  			unit_name_counts[uname].push(0);
+				  		}
+				  	}
+				  }
+				  ukeys.push(uname);
+				  ukeys = ukeys.filter(onlyUnique);
+				  ukeys.sort();
+
+
+
+			}
+
+
+		  
 		  //console.log(unit_name_lookup_per_dataset);
 		  
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
@@ -251,22 +258,27 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 	biome_matrix.shape = [biome_matrix.rows.length, biome_matrix.columns.length];
 	
 	var max_count = {};
-  for(n in biome_matrix.columns) {
-  	console.log(biome_matrix.columns[n].id);
-  	max_count[biome_matrix.columns[n].id] = 0;
-  	for(d in biome_matrix.data) {
-  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
-  	}
-  }
-  var max = 0;
-  for(n in chosen_id_name_hash.names) { 		// correct order
-  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
-  	if(max_count[chosen_id_name_hash.names[n]] > max){
-  		max = max_count[chosen_id_name_hash.names[n]];
-  	}
-  }
-  biome_matrix.max_dataset_count = max;
-  console.log(max_count);
+	
+	if(ukeys === undefined) {
+		max = 0;
+	}else{
+		for(n in biome_matrix.columns) {
+		  	console.log(biome_matrix.columns[n].id);
+		  	max_count[biome_matrix.columns[n].id] = 0;
+		  	for(d in biome_matrix.data) {
+		  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
+		  	}
+		}
+		var max = 0;
+		for(n in chosen_id_name_hash.names) { 		// correct order
+		  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
+		  	if(max_count[chosen_id_name_hash.names[n]] > max){
+		  		max = max_count[chosen_id_name_hash.names[n]];
+		  	}
+		}
+	}
+	biome_matrix.max_dataset_count = max;
+	console.log(max_count);
 	return(biome_matrix);
 }
 //
@@ -365,7 +377,8 @@ function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with
 //
 function assemble_taxa(depth, dict, row) {
 				var tax,domain,phylum,klass,order,family,genus,species,strain;
-				var d_id = row.domain_id+"_domain";		      	      
+				var d_id = row.domain_id+"_domain";	
+				//console.log('d_id '+d_id.toString())	      	      
 	      if(d_id in dict){
 	      	domain = dict[d_id]["taxon"];
 	      }else{
@@ -381,7 +394,7 @@ function assemble_taxa(depth, dict, row) {
 		      }
 		      //console.log(domain+';'+phylum)
 		      tax = domain+';'+phylum;
-		    }else if(depth === 'class') {
+		    }else if(depth === 'class' || depth === 'klass') {
 		    	var p_id = row.phylum_id+"_phylum";	
 		    	var k_id = row.klass_id+"_klass";	
 		      if(p_id in dict){
