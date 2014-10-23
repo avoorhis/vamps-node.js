@@ -64,11 +64,11 @@ function get_custom_column_examples(metadata_dict_by_project, custom_column_name
   {
     // console.log("555");
     // console.log(metadata_dict_by_project[project]);
-    custom_column_examples['project'] = project;
+    custom_column_examples[project] = [];
     for (var u = 0, len = custom_column_names.length; u < len; u++)
     {
       column_name = custom_column_names[u];
-      custom_column_examples[column_name] = metadata_dict_by_project[project][0][column_name];
+      custom_column_examples[project][column_name] = metadata_dict_by_project[project][0][column_name];
     }
   }
   return custom_column_examples;
@@ -144,20 +144,46 @@ function get_db_ids()
 function format_custom_metadata_fields_info(db_ids)
 {
   var insert_into_custom_fields = [];
-  // console.log("9999");
-  // console.log("db_ids");
-  // console.log(db_ids);
+  console.log("9999");
+  // console.log("custom_column_examples");
+  // console.log(custom_column_examples);
   for (project in metadata_dict_by_project)
   {
-    console.log(project);
-    console.log(metadata_dict_by_project[project][0]);
+    // console.log(project);
+    // console.log(metadata_dict_by_project[project][0]);
     var filteredprojects = db_ids.filter(function(obj) {
         return (obj.project === project);
     });
     project_id = filteredprojects[0]['project_id'];
-    console.log(project_id);
-    
+    console.log("custom_column_examples[project]");
+    console.log(custom_column_examples[project]);
+    // Object.keys(custom_column_examples[project]).forEach(
+    //   console.log("key");
+    //   console.log(key);
+    //   )
+    for (var i = 0; custom_column_names.length > i; i += 1)
+    {
+        field_name = custom_column_names[i];
+        console.log("field_name = " + field_name);
+        example = custom_column_examples[project][field_name];
+        console.log("example = " + example);
+        into_db = project_id + ", '" + field_name + "', '" + example + "'"
+        insert_into_custom_fields.push(into_db)
+    }
   }
+  console.log("insert_into_custom_fields");
+  console.log(insert_into_custom_fields);
+  
+  csv_metadata_db.insert_custom_field_names(insert_into_custom_fields, function insert_db(err, results)
+  {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+    {
+      console.log("results");    
+      console.log(results);    
+    }
+  });
   // for (var i = 0; project_ids.length > i; i += 1)
   // {
   //   // console.log(project_ids[i]);
