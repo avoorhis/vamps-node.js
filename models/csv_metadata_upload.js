@@ -20,14 +20,20 @@ function make_db_id_query(project, datasets)
    return get_dataset_id_query;
 }
 
-function make_insert_custom_field_names_query()
+function make_insert_custom_field_names_query(insert_into_custom_fields_info)
 {
-  var insert_custom_field_names_query = "";
+  var insert_custom_field_names_query = "INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES ( " + insert_into_custom_fields_info[0] + " )"
+  
+  for (var i = 1; insert_into_custom_fields_info.length > i; i += 1)
+  {
+    insert_custom_field_names_query += ", ( " + insert_into_custom_fields_info[i] + " ) ";
+  }
+  // insert_custom_field_names_query = "";
   // "INSERT IGNORE INTO custom_metadata_fields (dataset_id, field_name, example) 
   // VALUES ()
   // ";
-  // console.log('insert_custom_field_names_query:');
-  // console.log(insert_custom_field_names_query);
+  console.log('insert_custom_field_names_query:');
+  console.log(insert_custom_field_names_query);
   // 
   // return insert_custom_field_names_query;
 }
@@ -43,6 +49,14 @@ csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callba
 {
   get_db_id_query = make_db_id_query(project, datasets);
   connection.query(get_db_id_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
+{
+  insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
+  connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
