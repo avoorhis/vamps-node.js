@@ -25,6 +25,7 @@ var parse = require('csv-parse');
 var constants = require('../public/constants');
 
 var req_fields = constants.required_metadata_fields;
+var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON_ID', 'common_name', 'TITLE'] 
 
 // Using the first line of the CSV data to discover the column names
 var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
@@ -60,7 +61,9 @@ function do_smth_w_data(ddd)
 function get_custom_columns(data_hash)
 {
   var column_names = Object.keys(data_hash[0]);
-  var custom_column_names = column_names.diff(req_fields);
+  var not_req_column_names = column_names.diff(req_fields);
+  var custom_column_names = not_req_column_names.diff(fields_to_replace);
+  
   return custom_column_names;
 }
 
@@ -68,21 +71,49 @@ function get_custom_columns_examples(data_hash, custom_column_names)
 {
   custom_column_examples = {};
   for (var u = 0, len = custom_column_names.length; u < len; u++)
-     {
-       column_name = custom_column_names[u];
-       console.log('column_name = ' + column_name);
-       // for(row_obj in data_hash) 
-       // {
-       //   console.log(data_hash[row_obj][column_name]);
-       // }  
-       console.log(data_hash[0][column_name]);
-       custom_column_examples[column_name] = data_hash[0][column_name];
-     }
-     console.log("custom_column_examples");
-     console.log(custom_column_examples);
-     return custom_column_examples;
+  {
+    column_name = custom_column_names[u];
+    console.log('column_name = ' + column_name);
+    // for(row_obj in data_hash) 
+    // {
+    //   console.log(data_hash[row_obj][column_name]);
+    // }  
+    console.log(data_hash[0][column_name]);
+    custom_column_examples[column_name] = data_hash[0][column_name];
+  }
+  console.log("custom_column_examples");
+  console.log(custom_column_examples);
+  return custom_column_examples;
 }
 
+function get_dataset_ids(data_hash)
+{
+  
+  var project_datasets = {},
+      project = dataset = "";
+      n = 0;
+  for(row_obj in data_hash) 
+  {
+    n+=1;
+    console.log("n = " + n);
+    
+    project = data_hash[row_obj]['TITLE'];
+    dataset = data_hash[row_obj]['sample_name'];
+    if (project_datasets[project])
+    {
+    // hasOwnProperty(prop)
+      project_datasets[project].push(dataset);
+    }
+    else
+    {
+      project_datasets[project] = [];
+      project_datasets[project].push(dataset);
+    }
+    
+    // console.log(data_hash[row_obj][column_name]);
+  }  
+  console.log(project_datasets);
+}
 
 function do_smth_w_data_hash(data_hash)
 {
@@ -91,6 +122,7 @@ function do_smth_w_data_hash(data_hash)
   custom_column_names = get_custom_columns(data_hash);
   console.log(custom_column_names);
   get_custom_columns_examples(data_hash, custom_column_names);
+  get_dataset_ids(data_hash);
 }
 
 
