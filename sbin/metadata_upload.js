@@ -57,17 +57,34 @@ function do_smth_w_data(ddd)
   
 }
 
+function get_custom_columns(data_hash)
+{
+  var column_names = Object.keys(data_hash[0]);
+  var custom_column_names = column_names.diff(req_fields);
+  return custom_column_names;
+}
+
+function get_custom_columns_examples(data_hash, custom_column_names)
+{
+  for (var u = 0, len = custom_column_names.length; u < len; u++)
+     {
+       column_name = custom_column_names[u];
+       console.log('column_name = ' + column_name);
+       for(row_obj in data_hash) 
+       {
+         console.log(data_hash[row_obj][column_name]);
+       }    
+     }
+}
+
+
 function do_smth_w_data_hash(data_hash)
 {
   console.log("data_hash");
   console.log(data_hash[0]);
-  var column_names = Object.keys(data_hash[0]),
-      len = column_names.length;
-  console.log(column_names);
-  console.log(len);
-  aa = column_names.diff(req_fields)
-  console.log(aa);
-  
+  custom_column_names = get_custom_columns(data_hash);
+  console.log(custom_column_names);
+  get_custom_columns_examples(data_hash, custom_column_names);
 }
 
 
