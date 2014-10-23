@@ -87,7 +87,7 @@ function make_taxa_tree_dict(taxonomy_obj)
   // console.log("taxonomy_obj = " + JSON.stringify(taxonomy_obj));
   // console.log("HHH");
   
-  for (var i=0; i < taxonomy_obj.length; i++)
+  for (var i=0, len = taxonomy_obj.length; i < len; i++)
   {
     in_obj = taxonomy_obj[i];
     //console.log("taxon_objs[i] = " + JSON.stringify(in_obj));
