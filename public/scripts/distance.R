@@ -102,7 +102,16 @@ if(metric == "morisita_horn" || metric == "Morisita-Horn"){
     dis<-'err'
 }
 # this should be the ONLY print!!!!
-print(dis);
+x = as.matrix(dis)
+#print(dis);
+#format(x, cols = 1)
+
+#print(row.names(x)[1])
+#print(x[,1])
+# write.table gives the most consistant output for varying dataset length
+write.table(x, quote=FALSE,sep = "\t",row.names = TRUE,col.names = TRUE);
+#print('')
+
 #
 q();
 
