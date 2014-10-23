@@ -3,6 +3,7 @@
 /**
 * Read csv into an object
 * get field/column names and info into mixs_field_description
+* Convert 'sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON_ID', 'common_name', 'TITLE' into dataset_id
 * Put data into required_metadata_info
 * create a custom metadata table, using dataset_id, mixs_field_description and the additional columns info
 * The object should have methods:
