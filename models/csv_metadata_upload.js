@@ -7,9 +7,9 @@
 
 */
 
-function make_dataset_id_query(project, datasets)
+function make_db_id_query(project, datasets)
 {
-  var get_dataset_id_query = "SELECT DISTINCT project, dataset, dataset_id \
+  var get_dataset_id_query = "SELECT DISTINCT project, project_id, dataset, dataset_id \
     FROM dataset \
     JOIN project USING(project_id) \
     WHERE dataset in (" + datasets + ") \
@@ -41,8 +41,8 @@ function csvMetadataUpload() {
 
 csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callback) 
 {
-  get_dataset_id_query = make_dataset_id_query(project, datasets);
-  connection.query(get_dataset_id_query, function (err, rows, fields) {
+  get_db_id_query = make_db_id_query(project, datasets);
+  connection.query(get_db_id_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
