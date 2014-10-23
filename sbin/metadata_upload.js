@@ -116,18 +116,11 @@ function get_project_datasets(data_hash)
 
 function get_db_dataset_ids(project_datasets)
 {
-  // { KCK_LSM_Bv6: 
-  //    [ '071007st5b',
-  //      'LSM.0008.031808st6',
-  //      'LSM.0002.090407st6',
-  //      '061307st4a',
-  //      'LSM.0004.110707st6',
-  // 
   for (var project in project_datasets)
   {
     if (project != "undefined")
     {
-      datasets = "'" + project_datasets[project].join("', '") + "'";
+      var datasets = "'" + project_datasets[project].join("', '") + "'";
     
       csv_metadata_db.get_dataset_ids(project, datasets, function(err, results) 
       {
