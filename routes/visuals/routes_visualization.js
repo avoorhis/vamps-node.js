@@ -734,6 +734,7 @@ function run_R_cmd(req,res, ts, R_command, visual_name) {
       }else{
         if(visual_name === 'heatmap') {
           var dm = HMAP.create_distance_matrix(stdout);
+          console.log(dm)
           title += ' Heatmap';
           html  += HMAP.create_hm_html(dm);  
         }else if(visual_name === 'dendrogram') {
