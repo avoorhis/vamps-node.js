@@ -120,7 +120,7 @@ app.post('/download/:ts/:file_type', function(req, res){
             res.setHeader('Content-disposition', 'attachment; filename='+filename+'');
             res.setHeader('Content-type', 'text/plain');
             res.charset = 'UTF-8';
-            for (var k=0; k < rows.length; k++){
+            for (var k=0, len=rows.length; k < len; k++){
                 res.write(">"+rows[k].sequence_id+'|project='+rows[k].project+'|dataset='+rows[k].dataset+'\n');
                 res.write(rows[k].seq+'\n');
             }
