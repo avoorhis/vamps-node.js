@@ -15,7 +15,10 @@
 * put custom info in db
 */
 
-// var csv = require('csv');
+var csvMetadataUpload = require('../models/csv_metadata_upload.js');
+var csv_metadata_db = new csvMetadataUpload();
+
+connection = require('../config/database-dev');
 
 // ===
 // call as node sbin/metadata_upload.js 
@@ -91,28 +94,24 @@ function get_dataset_ids(data_hash)
   
   var project_datasets = {},
       project = dataset = "";
-      n = 0;
-  for(row_obj in data_hash) 
+
+  for(var row_obj in data_hash) 
   {
-    n+=1;
-    console.log("n = " + n);
-    
     project = data_hash[row_obj]['TITLE'];
     dataset = data_hash[row_obj]['sample_name'];
+    
     if (project_datasets[project])
     {
-    // hasOwnProperty(prop)
       project_datasets[project].push(dataset);
     }
     else
     {
       project_datasets[project] = [];
       project_datasets[project].push(dataset);
-    }
-    
-    // console.log(data_hash[row_obj][column_name]);
+    }    
   }  
   console.log(project_datasets);
+  return project_datasets;
 }
 
 function do_smth_w_data_hash(data_hash)
@@ -122,7 +121,22 @@ function do_smth_w_data_hash(data_hash)
   custom_column_names = get_custom_columns(data_hash);
   console.log(custom_column_names);
   get_custom_columns_examples(data_hash, custom_column_names);
-  get_dataset_ids(data_hash);
+  project_datasets = get_dataset_ids(data_hash);
+  datasets = "'" + [ '071007st5b',
+       'LSM.0008.031808st6',
+       'LSM.0002.090407st6',
+       '061307st4a'].join("', '") + "'";
+       console.log("DDD" + datasets);
+  csv_metadata_db.get_dataset_ids("KCK_LSM_Bv6", datasets, function(err, results) {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+    { 
+      console.log(results)
+
+    }
+  });
+  
 }
 
 
