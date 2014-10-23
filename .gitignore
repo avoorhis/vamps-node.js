@@ -21,3 +21,5 @@ temp/
 tmp/
 visuals_testing/
 .DS_Store
+
+.~lock.*.csv#
