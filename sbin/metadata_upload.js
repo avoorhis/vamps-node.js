@@ -33,6 +33,10 @@ parser = parse(function(err, data){
   do_smth_w_data(data);
 })
 
+parser_hash = parse({columns: true}, function(err, data){
+  do_smth_w_data_hash(data);
+})
+
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) < 0;});
 };
@@ -52,6 +56,19 @@ function do_smth_w_data(ddd)
   
 }
 
+function do_smth_w_data_hash(data_hash)
+{
+  console.log("data_hash");
+  console.log(data_hash[0]);
+  var column_names = Object.keys(data_hash[0]),
+      len = column_names.length;
+  console.log(column_names);
+  console.log(len);
+  aa = column_names.diff(req_fields)
+  console.log(aa);
+  
+}
 
 
-input.pipe(parser);
+// input.pipe(parser);
+input.pipe(parser_hash);
