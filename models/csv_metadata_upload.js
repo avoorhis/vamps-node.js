@@ -6,22 +6,29 @@
 3) add required info into db
 
 */
-var get_dataset_id_query = "SELECT DISTINCT dataset_id
-  FROM dataset
-  JOIN project USING(project_id)
-  WHERE dataset = '" +  + "'
-  AND project = '" +  + "'
-";
- console.log('running get_dataset_id_query');
 
-module.exports = silvaTaxonomy;
+function make_dataset_id_query(project, datasets)
+{
+  var get_dataset_id_query = "SELECT DISTINCT dataset_id \
+    FROM dataset \
+    JOIN project USING(project_id) \
+    WHERE dataset in (" + datasets + ") \
+    AND project = '" + project + "' \
+  ";
+   console.log('running get_dataset_id_query:');
+   console.log(get_dataset_id_query);
+   return get_dataset_id_query;
+}
+
+module.exports = csvMetadataUpload;
 
 function csvMetadataUpload() {
 }
 
-silvaTaxonomy.prototype.get_all_taxa = function(callback) 
+csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callback) 
 {
-  connection.query(taxa_query, function (err, rows, fields) {
+  get_dataset_id_query = make_dataset_id_query(project, datasets);
+  connection.query(get_dataset_id_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
