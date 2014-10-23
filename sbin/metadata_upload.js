@@ -80,6 +80,7 @@ function get_custom_columns_examples(data_hash, custom_column_names)
      }
      console.log("custom_column_examples");
      console.log(custom_column_examples);
+     return custom_column_examples;
 }
 
 
