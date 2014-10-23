@@ -9,7 +9,7 @@
 
 function make_dataset_id_query(project, datasets)
 {
-  var get_dataset_id_query = "SELECT DISTINCT dataset_id \
+  var get_dataset_id_query = "SELECT DISTINCT dataset, dataset_id \
     FROM dataset \
     JOIN project USING(project_id) \
     WHERE dataset in (" + datasets + ") \
