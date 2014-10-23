@@ -89,7 +89,7 @@ function get_custom_columns_examples(data_hash, custom_column_names)
   return custom_column_examples;
 }
 
-function get_dataset_ids(data_hash)
+function get_project_datasets(data_hash)
 {
   
   var project_datasets = {},
@@ -114,6 +114,35 @@ function get_dataset_ids(data_hash)
   return project_datasets;
 }
 
+function get_db_dataset_ids(project_datasets)
+{
+  // { KCK_LSM_Bv6: 
+  //    [ '071007st5b',
+  //      'LSM.0008.031808st6',
+  //      'LSM.0002.090407st6',
+  //      '061307st4a',
+  //      'LSM.0004.110707st6',
+  // 
+  for (var project in project_datasets)
+  {
+    if (project != "undefined")
+    {
+      datasets = "'" + project_datasets[project].join("', '") + "'";
+    
+      csv_metadata_db.get_dataset_ids(project, datasets, function(err, results) 
+      {
+        if (err)
+          throw err; // or return an error message, or something
+        else
+        { 
+          console.log(results)
+
+        }
+      });
+    }
+  }  
+}
+
 function do_smth_w_data_hash(data_hash)
 {
   console.log("data_hash");
@@ -121,21 +150,8 @@ function do_smth_w_data_hash(data_hash)
   custom_column_names = get_custom_columns(data_hash);
   console.log(custom_column_names);
   get_custom_columns_examples(data_hash, custom_column_names);
-  project_datasets = get_dataset_ids(data_hash);
-  datasets = "'" + [ '071007st5b',
-       'LSM.0008.031808st6',
-       'LSM.0002.090407st6',
-       '061307st4a'].join("', '") + "'";
-       console.log("DDD" + datasets);
-  csv_metadata_db.get_dataset_ids("KCK_LSM_Bv6", datasets, function(err, results) {
-    if (err)
-      throw err; // or return an error message, or something
-    else
-    { 
-      console.log(results)
-
-    }
-  });
+  project_datasets = get_project_datasets(data_hash);
+  get_db_dataset_ids(project_datasets);
   
 }
 
