@@ -3,25 +3,20 @@
 /*
 1) get dataset_id
 2) add dataset_id, field_name, field_type, example into custom_metadata_fields
-3) 
+3) add required info into db
 
 */
-var taxa_query = "SELECT DISTINCT domain, phylum, klass, `order`, family, genus, species, strain \
- , domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id \
- FROM silva_taxonomy \
- JOIN domain AS dom USING(domain_id) \
- JOIN phylum AS phy USING(phylum_id) \
- JOIN klass AS kla USING(klass_id) \
- JOIN `order` AS ord USING(order_id) \
- JOIN family AS fam USING(family_id) \
- JOIN genus AS gen USING(genus_id) \
- JOIN species AS spe USING(species_id) \
- JOIN strain AS str USING(strain_id)";
- console.log('running custom tax query short-2');
+var get_dataset_id_query = "SELECT DISTINCT dataset_id
+  FROM dataset
+  JOIN project USING(project_id)
+  WHERE dataset = '" +  + "'
+  AND project = '" +  + "'
+";
+ console.log('running get_dataset_id_query');
 
 module.exports = silvaTaxonomy;
 
-function silvaTaxonomy() {
+function csvMetadataUpload() {
 }
 
 silvaTaxonomy.prototype.get_all_taxa = function(callback) 
