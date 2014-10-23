@@ -66,15 +66,20 @@ function get_custom_columns(data_hash)
 
 function get_custom_columns_examples(data_hash, custom_column_names)
 {
+  custom_column_examples = {};
   for (var u = 0, len = custom_column_names.length; u < len; u++)
      {
        column_name = custom_column_names[u];
        console.log('column_name = ' + column_name);
-       for(row_obj in data_hash) 
-       {
-         console.log(data_hash[row_obj][column_name]);
-       }    
+       // for(row_obj in data_hash) 
+       // {
+       //   console.log(data_hash[row_obj][column_name]);
+       // }  
+       console.log(data_hash[0][column_name]);
+       custom_column_examples[column_name] = data_hash[0][column_name];
      }
+     console.log("custom_column_examples");
+     console.log(custom_column_examples);
 }
 
 
