@@ -61,55 +61,30 @@ module.exports = {
 	    //console.log(outstr);
 	    var distance_matrix = {};
 	    // distance_matrix[ds1][ds2] = 2
-	    var dcolname = raw_distance_array[0].trim();
-	    //console.log('dcolname:  '+dcolname)
-	    distance_matrix[dcolname] = {};
-	    distance_matrix[dcolname][dcolname] = 0;
+	    var dcolnames = raw_distance_array[0].trim().split("\t");
+	    console.log('dcolnames:  '+dcolnames)
+	    //distance_matrix[dcolname] = {};
+	    //distance_matrix[dcolname][dcolname] = 0;
 	    //console.log(dcolname);
-	    for(row in raw_distance_array){
-	      if( ! raw_distance_array[row] ) { continue; }
-	      
-	      //console.log('-->'+raw_distance_array[row]+'<--');
+	    for(n in dcolnames) {
+	    	distance_matrix[dcolnames[n]] = {};
+	    }
+	    for(n in raw_distance_array){
+	    	console.log(raw_distance_array[n])
+	    	
+	    	
+	      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
+	      if( n == 0 ) { continue; }   						// skip header
+	      var items = raw_distance_array[n].trim().split("\t");
+	      //console.log('i  '+items)
+		  var ds = items.shift();  // remove and return dataset
+		  //console.log('ds  '+ds)
+	      for(i in items){     	
+	      		distance_matrix[ds][dcolnames[i]] = items[i];	      
+	      }	      
 
-	      if(raw_distance_array[row].indexOf("    ") === 0 ){   // starts with empty spaces
-	        //console.log('found tab')
-	        dcolname = raw_distance_array[row].trim();
-	        if(dcolname in distance_matrix){
-	        		// pass
-	        }else{
-	          distance_matrix[dcolname] = {};
-	          distance_matrix[dcolname][dcolname] = 0;
-	        }
-	        
-	        continue;       
-	      }
-	        
-	      items = raw_distance_array[row].trim().split(/\s+/); // The length can only be 1 or 2 
-	      
-	      //console.log('items0 ' +items[0])
-	      //console.log('items1 ' +items[1])
-	      //console.log(items.length)
-	      if(items.length === 2) {  // length == 2
-	        //distance_matrix[items[0][dcolname]] = parseFloat(items[1]);
-	        //distance_matrix[dcolname][items[0]] = parseFloat(items[1]);		        
-	  
-          if(items[0] in distance_matrix){
-            //distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-
-            //console.log('a '+dcolname+' - '+items[0])
-          }else{
-            //console.log('b '+dcolname+' - '+items[0])
-            distance_matrix[items[0]] = {};
-            distance_matrix[items[0]][items[0]] = 0;
-            
-          }	
-          distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-          distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-          //console.log(items[1])
-
-
-	      }
 	    } // end for row in raw...
+	    //console.log(distance_matrix)
 	    return distance_matrix;
 		},
 
