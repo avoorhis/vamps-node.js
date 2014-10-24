@@ -51,7 +51,7 @@ function add_to_dict(dict, key, value)
     dict[key] = [];
   }
   dict[key].push(value);    
-  return dict
+  return dict;
 }
 
 function make_metadata_dict_by_pr_dataset(csv_data_hash)
@@ -139,7 +139,7 @@ function work_with_ids_from_db()
         else
         {
           insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
-          call_insert_into_db(insert_into_custom_fields_txt);
+          call_insert_cusom_fields_into_db(insert_into_custom_fields_txt);
         }
       });
     }
@@ -153,7 +153,7 @@ function get_this_project(db_ids, project)
   });
 }
 
-function call_insert_into_db(insert_into_custom_fields_txt)
+function call_insert_cusom_fields_into_db(insert_into_custom_fields_txt)
 {
   csv_metadata_db.insert_custom_field_names(insert_into_custom_fields_txt, function insert_db(err, results)
   {
@@ -209,27 +209,36 @@ function format_custom_metadata_fields_info(db_ids)
 //   }
 // }
 
-
-function do_smth_w_data_hash(csv_data_hash)
+function custom_fields(csv_data_hash)
 {
-  // console.log("csv_data_hash[0]");
-  // console.log(csv_data_hash[0]);
-  metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
-  // console.log("metadata_dict_by_project");
-  // console.log(metadata_dict_by_project);
   custom_column_names = get_custom_columns_from_csv(csv_data_hash);
   // console.log("custom_column_names");
   // console.log(custom_column_names);
   custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log("custom_column_examples 333");
   // console.log(custom_column_examples);
-  metadata_dict_by_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
-  // console.log("metadata_dict_by_dataset");
-  // console.log(metadata_dict_by_dataset);
-  // console.log("=====");
+  
+}
 
+
+// * put required info in db
+/*
+dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public
+*/
+
+
+function do_smth_w_data_hash(csv_data_hash)
+{
+  // console.log("=====");
+  // console.log("csv_data_hash[0]");
+  // console.log(csv_data_hash[0]);
+  metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
+  metadata_dict_by_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
+  
+  custom_fields(csv_data_hash);
   work_with_ids_from_db();
+  
 }
 
 
