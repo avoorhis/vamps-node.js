@@ -138,7 +138,7 @@ function work_with_ids_from_db()
           throw err; // or return an error message, or something
         else
         {
-          // todo: add ids to dict, use for custom and required
+          // todo: add ids to dict, use for custom and requireds
           insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
           call_insert_cusom_fields_into_db(insert_into_custom_fields_txt);
           format_required_metadata_info(results);
@@ -176,6 +176,7 @@ function format_custom_metadata_fields_info(db_ids)
   {
     var filteredprojects = get_this_project(db_ids, project);
     project_id = filteredprojects[0].project_id;
+    // separate, use above for required too
     for (var i = 0; custom_column_names.length > i; i += 1)
     {
         field_name = custom_column_names[i];
