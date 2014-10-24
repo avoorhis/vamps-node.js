@@ -47,6 +47,19 @@ MySQL db schema is included in root dir as: db_schema.sql
 
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
+  
+  CREATE TABLE custom_metadata_fields (
+    required_sample_info_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    project_id int(11) unsigned NOT NULL,
+    field_name varchar(32) NOT NULL DEFAULT '',
+    field_type varchar(16) NOT NULL DEFAULT 'varchar(128)',
+    example varchar(128) NOT NULL,
+    PRIMARY KEY (required_sample_info_id),
+    KEY project_id (project_id),
+    CONSTRAINT custom_metadata_fields_ibfk_1 FOREIGN KEY (project_id) REFERENCES project (project_id) ON UPDATE CASCADE
+  ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+
+
 
 --- Dir structure ---
 routes - server side logic
