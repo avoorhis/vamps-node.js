@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">51.11</p>
+      <p class="stat">53.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">157</p>
+      <p class="stat">134</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">29.72</p>
+      <p class="stat">25.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.68</p>
+      <p class="stat">0.59</p>
     </div>
   </div>
 </div>
@@ -152,55 +152,30 @@ module.exports = {
 	    //console.log(outstr);
 	    var distance_matrix = {};
 	    // distance_matrix[ds1][ds2] = 2
-	    var dcolname = raw_distance_array[0].trim();
-	    //console.log(&#039;dcolname:  &#039;+dcolname)
-	    distance_matrix[dcolname] = {};
-	    distance_matrix[dcolname][dcolname] = 0;
+	    var dcolnames = raw_distance_array[0].trim().split(&quot;\t&quot;);
+	    console.log(&#039;dcolnames:  &#039;+dcolnames)
+	    //distance_matrix[dcolname] = {};
+	    //distance_matrix[dcolname][dcolname] = 0;
 	    //console.log(dcolname);
-	    for(row in raw_distance_array){
-	      if( ! raw_distance_array[row] ) { continue; }
-	      
-	      //console.log(&#039;--&gt;&#039;+raw_distance_array[row]+&#039;&lt;--&#039;);
+	    for(n in dcolnames) {
+	    	distance_matrix[dcolnames[n]] = {};
+	    }
+	    for(n in raw_distance_array){
+	    	console.log(raw_distance_array[n])
+	    	
+	    	
+	      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
+	      if( n == 0 ) { continue; }   						// skip header
+	      var items = raw_distance_array[n].trim().split(&quot;\t&quot;);
+	      //console.log(&#039;i  &#039;+items)
+		  var ds = items.shift();  // remove and return dataset
+		  //console.log(&#039;ds  &#039;+ds)
+	      for(i in items){     	
+	      		distance_matrix[ds][dcolnames[i]] = items[i];	      
+	      }	      
 
-	      if(raw_distance_array[row].indexOf(&quot;    &quot;) === 0 ){   // starts with empty spaces
-	        //console.log(&#039;found tab&#039;)
-	        dcolname = raw_distance_array[row].trim();
-	        if(dcolname in distance_matrix){
-	        		// pass
-	        }else{
-	          distance_matrix[dcolname] = {};
-	          distance_matrix[dcolname][dcolname] = 0;
-	        }
-	        
-	        continue;       
-	      }
-	        
-	      items = raw_distance_array[row].trim().split(/\s+/); // The length can only be 1 or 2 
-	      
-	      //console.log(&#039;items0 &#039; +items[0])
-	      //console.log(&#039;items1 &#039; +items[1])
-	      //console.log(items.length)
-	      if(items.length === 2) {  // length == 2
-	        //distance_matrix[items[0][dcolname]] = parseFloat(items[1]);
-	        //distance_matrix[dcolname][items[0]] = parseFloat(items[1]);		        
-	  
-          if(items[0] in distance_matrix){
-            //distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-
-            //console.log(&#039;a &#039;+dcolname+&#039; - &#039;+items[0])
-          }else{
-            //console.log(&#039;b &#039;+dcolname+&#039; - &#039;+items[0])
-            distance_matrix[items[0]] = {};
-            distance_matrix[items[0]][items[0]] = 0;
-            
-          }	
-          distance_matrix[items[0]][dcolname] = parseFloat(items[1]);
-          distance_matrix[dcolname][items[0]] = parseFloat(items[1]);
-          //console.log(items[1])
-
-
-	      }
 	    } // end for row in raw...
+	    //console.log(distance_matrix)
 	    return distance_matrix;
 		},
 
@@ -217,7 +192,9 @@ module.exports = {
 		    //html += selection_html;
 		    //html += &quot;&lt;div class=&#039;&#039; id=&#039;distance_heatmap_div center_table&#039; &gt;&quot;;
 		    html += &quot;&lt;table border=&#039;1&#039; class=&#039;heatmap_table center_table&#039; &gt;&quot;;
-		    html += &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&#039;;
+		    html += &#039;&lt;tr&gt;&lt;td&gt;&#039;;
+		    html += &quot;Similar: &lt;span title=&#039;blue&#039; class=&#039;blue&#039;&gt;&amp;nbsp;&lt;/span&gt; Dissimilar: &lt;span title=&#039;red&#039; class=&#039;red&#039;&gt;&amp;nbsp;&amp;nbsp;&lt;/span&gt;&quot;;
+		    html += &#039;&lt;/td&gt;&#039;;
 
 		    for(i=1;i&lt;=Object.keys(dm).length;i++) {
 		      html += &#039;&lt;td&gt;&#039;+i.toString()+&#039;&lt;/td&gt;&#039;;
