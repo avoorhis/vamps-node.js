@@ -82,12 +82,7 @@ function get_project_datasets_from_csv(data_hash)
   {
     project = data_hash[row_obj]['TITLE'];
     dataset = data_hash[row_obj]['sample_name'];
-
-    if (!(project_datasets[project]))
-    {
-      project_datasets[project] = [];      
-    }
-      project_datasets[project].push(dataset);
+    project_datasets = add_to_dict(project_datasets, project, dataset);
   }
   // console.log(project_datasets);
   return project_datasets;
@@ -217,17 +212,23 @@ function make_metadata_dict_by_pr_dataset(data_hash)
   return metadata_dict_by_dataset;
 }
 
+function add_to_dict(dict, key, value)
+{
+  if (!(dict[key]))
+  {
+    dict[key] = [];
+  }
+  dict[key].push(value);    
+  return dict
+}
+
 function make_metadata_dict_by_project(data_hash)
 {
   metadata_dict_by_project = {};
 
   for (var i = 0; data_hash.length > i; i += 1) {
     project = data_hash[i]['TITLE'];
-    if (!(metadata_dict_by_project[project]))
-    {
-      metadata_dict_by_project[project] = [];
-    }
-    metadata_dict_by_project[project].push(data_hash[i]);    
+    metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, data_hash[i]);
   }
   return metadata_dict_by_project;
 }
