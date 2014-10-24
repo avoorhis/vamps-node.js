@@ -32,10 +32,8 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   // "INSERT IGNORE INTO custom_metadata_fields (dataset_id, field_name, example) 
   // VALUES ()
   // ";
-  console.log('insert_custom_field_names_query:');
-  console.log(insert_custom_field_names_query);
   // 
-  // return insert_custom_field_names_query;
+  return insert_custom_field_names_query;
 }
 
 // public
@@ -56,6 +54,9 @@ csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callba
 csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
 {
   insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
+  console.log('insert_into_custom_fields_info_query:');
+  console.log(insert_into_custom_fields_info_query);
+  
   connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
