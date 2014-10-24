@@ -28,11 +28,6 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   {
     insert_custom_field_names_query += ", ( " + insert_into_custom_fields_info[i] + " ) ";
   }
-  // insert_custom_field_names_query = "";
-  // "INSERT IGNORE INTO custom_metadata_fields (dataset_id, field_name, example) 
-  // VALUES ()
-  // ";
-  // 
   return insert_custom_field_names_query;
 }
 

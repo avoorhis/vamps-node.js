@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">62.52</p>
+      <p class="stat">52.93</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">25</p>
+      <p class="stat">40</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">8.43</p>
+      <p class="stat">15.09</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.20</p>
+      <p class="stat">0.31</p>
     </div>
   </div>
 </div>
@@ -99,19 +99,34 @@ module.exports = {
 
 		write_metadata_file: function(chosen_id_name_hash, post_items, sqlrows) {
 			console.log(&#039;in metadata&#039;)
-			var txt = &quot;\tproject\tdataset\n&quot;;
+			var test_metadata = [&#039;horses&#039;,&#039;donkeys&#039;];
+			//var txt = &quot;project_dataset\tproject\tdataset\n&quot;;
+			var txt = &quot;project_dataset\tproject\tdataset\ttest_color_grouping\n&quot;;
 			var meta_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_metadata.txt&#039;;
+			var metadata = [];
+
 			for(i in chosen_id_name_hash.names) {
 				console.log(chosen_id_name_hash.names[i]);
 				var ds = chosen_id_name_hash.names[i];
 				var tmp = ds.split(&#039;--&#039;);
-				txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] + &quot;\n&quot;;
+				if(i % 2 === 0){
+					var c = test_metadata[0]
+				}else{
+					var c = test_metadata[1]
+				}
+				txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] +&quot;\t&quot;+c+ &quot;\n&quot;;  // just put project and dataset in here for now				
+				metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1],&#039;test_color_group&#039;:c});
+
+				//txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] + &quot;\n&quot;;  // just put project and dataset in here for now				
+				//metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1]});
+
 			}
-			console.log(&#039;Writing metadata file&#039;);
- 			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
- 			COMMON.write_file( meta_file, txt );
+			//console.log(&#039;Writing metadata file&#039;);
+ 			
+ 			//COMMON.write_file( meta_file, txt );
+ 			return metadata
 		}
-		
+
 
 }</textarea>
   </div>
