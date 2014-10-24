@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">70.33</p>
+      <p class="stat">71.05</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">272</p>
+      <p class="stat">242</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">37.52</p>
+      <p class="stat">36.21</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.35</p>
+      <p class="stat">1.32</p>
     </div>
   </div>
 </div>
@@ -93,13 +93,14 @@
 
 /**
 * Read csv into an object
-* get field/column names and info into mixs_field_description
+* get field/column names and info into custom_metadata_fields (mixs_field_description)
 * Convert &#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &#039;DESCRIPTION&#039;, &#039;TAXON_ID&#039;, &#039;common_name&#039;, &#039;TITLE&#039; into dataset_id
 * Put data into required_metadata_info
-* create a custom metadata table, using dataset_id, mixs_field_description and the additional columns info
+* create a custom metadata table, using project_id, custom_metadata_fields and the additional columns info
 * The object should have methods:
-* get required field names from db
-* get custom field names from csv
+*   get required field names from db (for now from constants)
+* get required field info from csv
+*   get custom field names etc. from csv
 * put custom field names into db
 * create a custom table
 * put required info in db
@@ -123,13 +124,7 @@ var fields_to_replace = [&#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &
 
 var metadata_dict_by_dataset = {};
 
-// Using the first line of the CSV data to discover the column names
 var input = fs.createReadStream(&#039;./data/KCK_LSM_Bv6_qii.csv&#039;);
-
-// parser = parse({columns: true}, function(err, data){
-parser = parse(function(err, data){
-  do_smth_w_data(data);
-});
 
 parser_hash = parse({columns: true}, function(err, data){
   do_smth_w_data_hash(data);
@@ -139,7 +134,9 @@ Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) &lt; 0;});
 };
 
-function get_custom_columns(data_hash)
+// * get custom field names etc. from csv
+
+function get_custom_columns_from_csv(data_hash)
 {
   var column_names = Object.keys(data_hash[0]);
   var not_req_column_names = column_names.diff(req_fields);
@@ -148,7 +145,7 @@ function get_custom_columns(data_hash)
   return custom_column_names;
 }
 
-function get_custom_column_examples(metadata_dict_by_project, custom_column_names)
+function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names)
 {
   var custom_column_examples = {};
   for(var project in metadata_dict_by_project)
@@ -165,7 +162,7 @@ function get_custom_column_examples(metadata_dict_by_project, custom_column_name
   return custom_column_examples;
 }
 
-function get_project_datasets(data_hash)
+function get_project_datasets_from_csv(data_hash)
 {
 
   var project_datasets = {},
@@ -176,22 +173,11 @@ function get_project_datasets(data_hash)
   {
     project = data_hash[row_obj][&#039;TITLE&#039;];
     dataset = data_hash[row_obj][&#039;sample_name&#039;];
-
-    if (project_datasets[project])
-    {
-      project_datasets[project].push(dataset);
-    }
-    else
-    {
-      project_datasets[project] = [];
-      project_datasets[project].push(dataset);
-    }
+    project_datasets = add_to_dict(project_datasets, project, dataset);
   }
   // console.log(project_datasets);
   return project_datasets;
 }
-
-
 
 function get_db_ids()
 {
@@ -280,27 +266,6 @@ function format_custom_metadata_fields_info(db_ids)
   console.log(&quot;insert_into_custom_fields&quot;);
   console.log(insert_into_custom_fields);
   return insert_into_custom_fields;
-  // csv_metadata_db.insert_custom_field_names(insert_into_custom_fields, function insert_db(err, results)
-  // {
-  //   if (err)
-  //     throw err; // or return an error message, or something
-  //   else
-  //   {
-  //     console.log(&quot;insert_custom_field_names results&quot;);    
-  //     console.log(results);    
-  //   }
-  // });
-  // for (var i = 0; project_ids.length &gt; i; i += 1)
-  // {
-  //   // console.log(project_ids[i]);
-  //   // console.log(project_ids[i][&#039;project&#039;]);
-  //   project_project = project_ids[i][&#039;project&#039;] + &quot;--&quot; + project_ids[i][&#039;project&#039;];
-  //   // console.log(metadata_dict_by_project[project_project]);
-  //   project_id = project_ids[i][&#039;project_id&#039;];
-  //   // console.log(&quot;77777&quot;);
-  //   // console.log(project_id, field_name, example);
-  //   console.log(project_id, field_name, example);
-  // }
 }
 
 // function format_custom_metadata_fields_info(dataset_ids)
@@ -338,17 +303,23 @@ function make_metadata_dict_by_pr_dataset(data_hash)
   return metadata_dict_by_dataset;
 }
 
+function add_to_dict(dict, key, value)
+{
+  if (!(dict[key]))
+  {
+    dict[key] = [];
+  }
+  dict[key].push(value);    
+  return dict
+}
+
 function make_metadata_dict_by_project(data_hash)
 {
   metadata_dict_by_project = {};
 
   for (var i = 0; data_hash.length &gt; i; i += 1) {
     project = data_hash[i][&#039;TITLE&#039;];
-    if (!(metadata_dict_by_project[project]))
-    {
-      metadata_dict_by_project[project] = [];
-    }
-    metadata_dict_by_project[project].push(data_hash[i]);    
+    metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, data_hash[i]);
   }
   return metadata_dict_by_project;
 }
@@ -360,10 +331,10 @@ function do_smth_w_data_hash(data_hash)
   metadata_dict_by_project = make_metadata_dict_by_project(data_hash);
   // console.log(&quot;metadata_dict_by_project&quot;);
   // console.log(metadata_dict_by_project);
-  custom_column_names = get_custom_columns(data_hash);
+  custom_column_names = get_custom_columns_from_csv(data_hash);
   // console.log(&quot;custom_column_names&quot;);
   // console.log(custom_column_names);
-  custom_column_examples = get_custom_column_examples(metadata_dict_by_project, custom_column_names);
+  custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log(&quot;custom_column_examples 333&quot;);
   // console.log(custom_column_examples);
   metadata_dict_by_dataset = make_metadata_dict_by_pr_dataset(data_hash);
@@ -371,7 +342,7 @@ function do_smth_w_data_hash(data_hash)
   // console.log(metadata_dict_by_dataset);
   // console.log(&quot;=====&quot;);
 
-  project_datasets = get_project_datasets(data_hash);
+  project_datasets = get_project_datasets_from_csv(data_hash);
   get_db_ids();
 }
 
