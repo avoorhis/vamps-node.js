@@ -10,7 +10,7 @@
 *   get required field names from db (for now from constants)
 * get required field info from csv
 *   get custom field names etc. from csv
-* put custom field names into db
+*   put custom field names into db
 * create a custom table
 * put required info in db
 * put custom info in db
@@ -120,7 +120,7 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
   return custom_column_examples;
 }
 
-function get_ids_from_db()
+function work_with_ids_from_db()
 {
   // console.log("000000");
   // console.log(project_datasets);
@@ -138,8 +138,8 @@ function get_ids_from_db()
           throw err; // or return an error message, or something
         else
         {
-          insert_into_custom_fields = format_custom_metadata_fields_info(results);
-          call_insert_into_db(insert_into_custom_fields);
+          insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
+          call_insert_into_db(insert_into_custom_fields_txt);
         }
       });
     }
@@ -153,9 +153,9 @@ function get_this_project(db_ids, project)
   });
 }
 
-function call_insert_into_db(insert_into_custom_fields)
+function call_insert_into_db(insert_into_custom_fields_txt)
 {
-  csv_metadata_db.insert_custom_field_names(insert_into_custom_fields, function insert_db(err, results)
+  csv_metadata_db.insert_custom_field_names(insert_into_custom_fields_txt, function insert_db(err, results)
   {
     if (err)
       throw err; // or return an error message, or something
@@ -169,7 +169,7 @@ function call_insert_into_db(insert_into_custom_fields)
 
 function format_custom_metadata_fields_info(db_ids)
 {
-  var insert_into_custom_fields = [];
+  var insert_into_custom_fields_txt = [];
   for (var project in metadata_dict_by_project)
   {
     var filteredprojects = get_this_project(db_ids, project);
@@ -179,10 +179,10 @@ function format_custom_metadata_fields_info(db_ids)
         field_name = custom_column_names[i];
         example = custom_column_examples[project][field_name];
         into_db = project_id + ", '" + field_name + "', '" + example + "'";
-        insert_into_custom_fields.push(into_db);
+        insert_into_custom_fields_txt.push(into_db);
     }
   }
-  return insert_into_custom_fields;
+  return insert_into_custom_fields_txt;
 }
 
 // function format_custom_metadata_fields_info(dataset_ids)
@@ -193,7 +193,7 @@ function format_custom_metadata_fields_info(db_ids)
 //   // console.log(custom_column_examples);
 //   // console.log("metadata_dict_by_dataset");
 //   // console.log(metadata_dict_by_dataset);
-//   var insert_into_custom_fields = [];
+//   var insert_into_custom_fields_txt = [];
 //   // console.log("9999");
 //   for (var i = 0; dataset_ids.length > i; i += 1)
 //   {
@@ -229,7 +229,7 @@ function do_smth_w_data_hash(csv_data_hash)
   // console.log("=====");
 
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
-  get_ids_from_db();
+  work_with_ids_from_db();
 }
 
 
