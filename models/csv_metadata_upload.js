@@ -22,7 +22,7 @@ function make_db_id_query(project, datasets)
 
 function make_insert_custom_field_names_query(insert_into_custom_fields_info)
 {
-  var insert_custom_field_names_query = "INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES ( " + insert_into_custom_fields_info[0] + " )"
+  var insert_custom_field_names_query = "INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES ( " + insert_into_custom_fields_info[0] + " )";
   
   for (var i = 1; insert_into_custom_fields_info.length > i; i += 1)
   {
