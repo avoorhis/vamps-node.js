@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">71.05</p>
+      <p class="stat">72.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">242</p>
+      <p class="stat">219</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">36.21</p>
+      <p class="stat">35.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.32</p>
+      <p class="stat">1.24</p>
     </div>
   </div>
 </div>
@@ -101,7 +101,7 @@
 *   get required field names from db (for now from constants)
 * get required field info from csv
 *   get custom field names etc. from csv
-* put custom field names into db
+*   put custom field names into db
 * create a custom table
 * put required info in db
 * put custom info in db
@@ -134,11 +134,60 @@ Array.prototype.diff = function(a) {
     return this.filter(function(i) {return a.indexOf(i) &lt; 0;});
 };
 
+// todo: move to helper, use also in custom_taxa_class.js
+function add_to_dict(dict, key, value)
+{
+  if (!(dict[key]))
+  {
+    dict[key] = [];
+  }
+  dict[key].push(value);    
+  return dict
+}
+
+function make_metadata_dict_by_pr_dataset(csv_data_hash)
+{
+  metadata_dict_by_dataset = {};
+
+  for (var i = 0; csv_data_hash.length &gt; i; i += 1) {
+    var dataset = csv_data_hash[i][&#039;sample_name&#039;];
+    var project = csv_data_hash[i][&#039;TITLE&#039;];
+    metadata_dict_by_dataset[project + &quot;--&quot; + dataset] = csv_data_hash[i];
+  }
+  return metadata_dict_by_dataset;
+}
+
+function make_metadata_dict_by_project(csv_data_hash)
+{
+  metadata_dict_by_project = {};
+
+  for (var i = 0; csv_data_hash.length &gt; i; i += 1) {
+    var project = csv_data_hash[i][&#039;TITLE&#039;];
+    metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, csv_data_hash[i]);
+  }
+  return metadata_dict_by_project;
+}
+
+function make_dict_by_project_datasets(csv_data_hash)
+{
+
+  var project_datasets = {};
+
+  for(var row_obj in csv_data_hash)
+  {
+    var project = csv_data_hash[row_obj][&#039;TITLE&#039;];
+    var dataset = csv_data_hash[row_obj][&#039;sample_name&#039;];
+    project_datasets = add_to_dict(project_datasets, project, dataset);
+  }
+  // console.log(project_datasets);
+  return project_datasets;
+}
+
 // * get custom field names etc. from csv
 
-function get_custom_columns_from_csv(data_hash)
+function get_custom_columns_from_csv(csv_data_hash)
 {
-  var column_names = Object.keys(data_hash[0]);
+  var column_names = Object.keys(csv_data_hash[0]);
   var not_req_column_names = column_names.diff(req_fields);
   var custom_column_names = not_req_column_names.diff(fields_to_replace);
 
@@ -162,24 +211,7 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
   return custom_column_examples;
 }
 
-function get_project_datasets_from_csv(data_hash)
-{
-
-  var project_datasets = {},
-      project = &quot;&quot;,
-      dataset = &quot;&quot;;
-
-  for(var row_obj in data_hash)
-  {
-    project = data_hash[row_obj][&#039;TITLE&#039;];
-    dataset = data_hash[row_obj][&#039;sample_name&#039;];
-    project_datasets = add_to_dict(project_datasets, project, dataset);
-  }
-  // console.log(project_datasets);
-  return project_datasets;
-}
-
-function get_db_ids()
+function work_with_ids_from_db()
 {
   // console.log(&quot;000000&quot;);
   // console.log(project_datasets);
@@ -197,38 +229,24 @@ function get_db_ids()
           throw err; // or return an error message, or something
         else
         {
-          // console.log(data_hash);
-
-          // format_custom_metadata_fields_info(results, custom_column_examples, metadata_dict_by_dataset);
-          insert_into_custom_fields = format_custom_metadata_fields_info(results);
-          call_insert_into_db(insert_into_custom_fields);
-          /*
-          custom_column_examples:
-          { habitat: &#039;salt marsh&#039;,
-            collection_time: &#039;10:10:00&#039;,
-            type_sample: &#039;saltmarsh&#039;,
-            environmental_zone: &#039;temperate&#039;,
-            specific_conductance: &#039;45.4&#039;,
-            Dissolved_Oxygen2: &#039;63.3&#039;,
-            absolute_depth_beta: &#039;26
-          */
+          insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
+          call_insert_into_db(insert_into_custom_fields_txt);
         }
       });
-
     }
   }
 }
 
-function get_this_prject(db_ids, project)
+function get_this_project(db_ids, project)
 {
   return db_ids.filter(function(obj) {
       return (obj.project === project);
   });
 }
 
-function call_insert_into_db(insert_into_custom_fields)
+function call_insert_into_db(insert_into_custom_fields_txt)
 {
-  csv_metadata_db.insert_custom_field_names(insert_into_custom_fields, function insert_db(err, results)
+  csv_metadata_db.insert_custom_field_names(insert_into_custom_fields_txt, function insert_db(err, results)
   {
     if (err)
       throw err; // or return an error message, or something
@@ -242,30 +260,20 @@ function call_insert_into_db(insert_into_custom_fields)
 
 function format_custom_metadata_fields_info(db_ids)
 {
-  var insert_into_custom_fields = [];
-  console.log(&quot;9999&quot;);
-  // console.log(&quot;custom_column_examples&quot;);
-  // console.log(custom_column_examples);
+  var insert_into_custom_fields_txt = [];
   for (var project in metadata_dict_by_project)
   {
-    var filteredprojects = get_this_prject(db_ids, project);
+    var filteredprojects = get_this_project(db_ids, project);
     project_id = filteredprojects[0].project_id;
-    // console.log(&quot;custom_column_examples[project]&quot;);
-    // console.log(custom_column_examples[project]);
-
     for (var i = 0; custom_column_names.length &gt; i; i += 1)
     {
         field_name = custom_column_names[i];
-        console.log(&quot;field_name = &quot; + field_name);
         example = custom_column_examples[project][field_name];
-        console.log(&quot;example = &quot; + example);
         into_db = project_id + &quot;, &#039;&quot; + field_name + &quot;&#039;, &#039;&quot; + example + &quot;&#039;&quot;;
-        insert_into_custom_fields.push(into_db);
+        insert_into_custom_fields_txt.push(into_db);
     }
   }
-  console.log(&quot;insert_into_custom_fields&quot;);
-  console.log(insert_into_custom_fields);
-  return insert_into_custom_fields;
+  return insert_into_custom_fields_txt;
 }
 
 // function format_custom_metadata_fields_info(dataset_ids)
@@ -276,7 +284,7 @@ function format_custom_metadata_fields_info(db_ids)
 //   // console.log(custom_column_examples);
 //   // console.log(&quot;metadata_dict_by_dataset&quot;);
 //   // console.log(metadata_dict_by_dataset);
-//   var insert_into_custom_fields = [];
+//   var insert_into_custom_fields_txt = [];
 //   // console.log(&quot;9999&quot;);
 //   for (var i = 0; dataset_ids.length &gt; i; i += 1)
 //   {
@@ -291,59 +299,28 @@ function format_custom_metadata_fields_info(db_ids)
 //     // console.log(dataset_id, field_name, example);
 //   }
 // }
-function make_metadata_dict_by_pr_dataset(data_hash)
+
+
+function do_smth_w_data_hash(csv_data_hash)
 {
-  metadata_dict_by_dataset = {};
-
-  for (var i = 0; data_hash.length &gt; i; i += 1) {
-    dataset = data_hash[i][&#039;sample_name&#039;];
-    project = data_hash[i][&#039;TITLE&#039;];
-    metadata_dict_by_dataset[project + &quot;--&quot; + dataset] = data_hash[i];
-  }
-  return metadata_dict_by_dataset;
-}
-
-function add_to_dict(dict, key, value)
-{
-  if (!(dict[key]))
-  {
-    dict[key] = [];
-  }
-  dict[key].push(value);    
-  return dict
-}
-
-function make_metadata_dict_by_project(data_hash)
-{
-  metadata_dict_by_project = {};
-
-  for (var i = 0; data_hash.length &gt; i; i += 1) {
-    project = data_hash[i][&#039;TITLE&#039;];
-    metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, data_hash[i]);
-  }
-  return metadata_dict_by_project;
-}
-
-function do_smth_w_data_hash(data_hash)
-{
-  // console.log(&quot;data_hash[0]&quot;);
-  // console.log(data_hash[0]);
-  metadata_dict_by_project = make_metadata_dict_by_project(data_hash);
+  // console.log(&quot;csv_data_hash[0]&quot;);
+  // console.log(csv_data_hash[0]);
+  metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
   // console.log(&quot;metadata_dict_by_project&quot;);
   // console.log(metadata_dict_by_project);
-  custom_column_names = get_custom_columns_from_csv(data_hash);
+  custom_column_names = get_custom_columns_from_csv(csv_data_hash);
   // console.log(&quot;custom_column_names&quot;);
   // console.log(custom_column_names);
   custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log(&quot;custom_column_examples 333&quot;);
   // console.log(custom_column_examples);
-  metadata_dict_by_dataset = make_metadata_dict_by_pr_dataset(data_hash);
+  metadata_dict_by_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
   // console.log(&quot;metadata_dict_by_dataset&quot;);
   // console.log(metadata_dict_by_dataset);
   // console.log(&quot;=====&quot;);
 
-  project_datasets = get_project_datasets_from_csv(data_hash);
-  get_db_ids();
+  project_datasets = make_dict_by_project_datasets(csv_data_hash);
+  work_with_ids_from_db();
 }
 
 
