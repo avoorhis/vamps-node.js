@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">52.97</p>
+      <p class="stat">54.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">407</p>
+      <p class="stat">303</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">53.63</p>
+      <p class="stat">55.80</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.20</p>
+      <p class="stat">3.04</p>
     </div>
   </div>
 </div>
@@ -94,6 +94,7 @@ var path = require(&#039;path&#039;);
 var fs = require(&#039;fs&#039;);
 var extend = require(&#039;util&#039;)._extend;
 var C = require(&#039;../../public/constants&#039;);
+
 
 module.exports = {
 
@@ -160,15 +161,15 @@ module.exports = {
     html += &#039;&lt;li&gt;Normalization: &#039;;
     if(obj.normalization === &#039;freq&#039;) {
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
-      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; checked=&quot;checked&quot;&gt;To Frequency&#039;;
     } else if (obj.normalization === &#039;max&#039;) {
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
-      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; checked=&quot;checked&quot;&gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  checked=&quot;checked&quot;&gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
     } else {
-      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; checked=&quot;checked&quot;&gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
-      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot; &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; checked=&quot;checked&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
+      html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
     }
     html += &#039;&lt;/li&gt;&#039;;
@@ -206,112 +207,7 @@ module.exports = {
   //
   //
   //
-  get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
-    //console.log(body);
-    //selection_obj = selection_obj;
-    //selection_obj = body.selection_obj;
-    
-    //   SELECT dataset_id, silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,domain,phylum) as tax 
-    //   From sequence_pdr_info as t1
-    //   JOIN sequence_uniq_info as t2 using(sequence_id)
-    //   JOIN silva_taxonomy_info_per_seq as t3 using (silva_taxonomy_info_per_seq_id)
-    //   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)
-    //   JOIN domain USING(domain_id) 
-    //   JOIN phylum USING(phylum_id) 
-    //   WHERE dataset_id in (150,151,152,153)
-
-    if (uitems[0] === &#039;tax&#039; &amp;&amp; uitems[1] === &#039;silva108&#039;){  //covers both simple and custom taxonomy
-      uassoc = &#039;silva_taxonomy_info_per_seq_id&#039;;
-    }
-    var domains = post_items.domains || [&#039;Archaea&#039;, &#039;Bacteria&#039;, &#039;Eukarya&#039;, &#039;Organelle&#039;, &#039;Unknown&#039;];
-    var tax_depth = post_items.tax_depth || &#039;phylum&#039;;
-    var fields = [];
-    var ids = [];
-    var joins = &#039;&#039;;
-    var and_domain_in = &#039;&#039;;
-    var join_domain   = &quot; JOIN domain USING(domain_id)&quot;;
-    var join_phylum   = &quot; JOIN phylum USING(phylum_id)&quot;;
-    var join_klass     = &quot; JOIN klass USING(klass_id)&quot;;
-    var join_order     = &quot; JOIN `order` USING(order_id)&quot;;
-    var join_family   = &quot; JOIN family USING(family_id)&quot;;
-    var join_genus     = &quot; JOIN genus USING(genus_id)&quot;;
-    var join_species   = &quot; JOIN species USING(species_id)&quot;;
-    var join_strain   = &quot; JOIN strain USING(strain_id)&quot;;
-    
-    if (tax_depth === &#039;domain&#039;) {
-      fields = [&#039;domain&#039;];
-      ids = [&#039;domain_id&#039;];
-      joins = join_domain;
-    } else if (tax_depth === &#039;phylum&#039;) {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;];
-      joins =  join_domain + join_phylum;
-    } else if (tax_depth === &#039;class&#039;)  {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;];
-      joins =  join_domain + join_phylum + join_klass;
-    } else if (tax_depth === &#039;order&#039;)  {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;];
-      joins =  join_domain + join_phylum + join_klass + join_order;
-    } else if (tax_depth === &#039;family&#039;) {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;];
-      joins =  join_domain + join_phylum + join_klass + join_order + join_family;
-    } else if (tax_depth === &#039;genus&#039;) {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;,&#039;genus&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;,&#039;genus_id&#039;];
-      joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus;
-    } else if (tax_depth === &#039;species&#039;) {
-      fields = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;`order`&#039;,&#039;family&#039;,&#039;genus&#039;,&#039;species&#039;];
-      ids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;,&#039;genus_id&#039;,&#039;species_id&#039;];
-      joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
-    }
-      
-    if (domains.length &lt; 5){
-      domains = domains.join(&quot;&#039;,&#039;&quot;);
-      and_domain_in = &quot; AND domain in (&#039;&quot;+domains+&quot;&#039;)&quot;;
-    }
-    
-    //var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n&quot;;
-     //  var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
-     // tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
-     // tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
-     // tax_query     += &quot;   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;;
-     // tax_query     += &quot;   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;;
-
-   //  //var tax_query = &quot;SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax FROM silva_taxonomy_info_per_seq as t1\n&quot;;
-   //  //tax_query     += &quot;JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n&quot;;
-     
-    
-
-     var tax_query = &quot;SELECT dataset_id, seq_count, &quot; + ids + &quot;\n&quot;;
-     // var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
-    tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
-    tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
-    tax_query     += &quot;   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;;
-    tax_query     += &quot;   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;;
-    //tax_query     += joins;
-
-
-    // OLD db --&gt;
-    // var tax_query = &quot;SELECT dataset_id as did, seq_count,  taxonomy as tax\n&quot;;
-   //   tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
-   //   tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
-   //   tax_query     += &quot;   JOIN taxonomies_old as t4 on (t2.silva_taxonomy_info_per_seq_id=t4.id)\n&quot;;
-     // &lt;-- OLD db
-    
-    tax_query     += &quot; WHERE dataset_id in (&quot;+chosen_id_name_hash.ids+&quot;)\n&quot;;
-    //tax_query     += &quot; WHERE silva_taxonomy_info_per_seq_id in (&quot; + unit_id_array + &quot;)\n&quot;;
-    tax_query     += and_domain_in;
-    return tax_query;
-
-
-    function onlyUnique(value, index, self) { 
-        return self.indexOf(value) === index;
-    }
-
-  },
+  
 
   //
   //
