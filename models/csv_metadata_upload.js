@@ -6,22 +6,53 @@
 3) add required info into db
 
 */
-var get_dataset_id_query = "SELECT DISTINCT dataset_id
-  FROM dataset
-  JOIN project USING(project_id)
-  WHERE dataset = '" +  + "'
-  AND project = '" +  + "'
-";
- console.log('running get_dataset_id_query');
 
-module.exports = silvaTaxonomy;
+function make_db_id_query(project, datasets)
+{
+  var get_dataset_id_query = "SELECT DISTINCT project, project_id, dataset, dataset_id \
+    FROM dataset \
+    JOIN project USING(project_id) \
+    WHERE dataset in (" + datasets + ") \
+    AND project = '" + project + "' \
+  ";
+   console.log('get_dataset_id_query:');
+   console.log(get_dataset_id_query);
+   return get_dataset_id_query;
+}
+
+function make_insert_custom_field_names_query(insert_into_custom_fields_info)
+{
+  var insert_custom_field_names_query = "INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES ( " + insert_into_custom_fields_info[0] + " )"
+  
+  for (var i = 1; insert_into_custom_fields_info.length > i; i += 1)
+  {
+    insert_custom_field_names_query += ", ( " + insert_into_custom_fields_info[i] + " ) ";
+  }
+  return insert_custom_field_names_query;
+}
+
+// public
+
+module.exports = csvMetadataUpload;
 
 function csvMetadataUpload() {
 }
 
-silvaTaxonomy.prototype.get_all_taxa = function(callback) 
+csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callback) 
 {
-  connection.query(taxa_query, function (err, rows, fields) {
+  get_db_id_query = make_db_id_query(project, datasets);
+  connection.query(get_db_id_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
+{
+  insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
+  console.log('insert_into_custom_fields_info_query:');
+  console.log(insert_into_custom_fields_info_query);
+  
+  connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
