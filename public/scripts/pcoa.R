@@ -77,7 +77,7 @@ if(method=="horn")
     method_text<-"Kulczynski"
 }else if(method=="mountford")
 {
-    dis<-vegdist(stand, method="mountford",upper=FALSE,binary=FALSE);
+    d<-vegdist(stand, method="mountford",upper=FALSE,binary=FALSE);
     method_text<-"Mountford"
 }else if(method=="pearson")
 {

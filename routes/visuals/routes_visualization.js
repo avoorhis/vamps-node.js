@@ -83,6 +83,7 @@ router.post('/view_selection',  function(req, res) {
   
     unit_field = 'silva_taxonomy_info_per_seq_id';
     unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    console.log(unit_name_query);
     
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
@@ -100,6 +101,7 @@ router.post('/view_selection',  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
+   console.log('visual_post_items:');
    console.log(visual_post_items);
   
   // Get matrix data here
@@ -492,30 +494,32 @@ router.get('/user_data/heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var biom_file,R_command;
+  var biom_file, custom_biom_file, R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
-  var script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
-
+  var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
+  //var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.py');
   if(values_updated) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-      biom_file = ts+'_count_matrix_cust_heat.biom';
-      R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
-      console.log(R_command);
+      custom_biom_file = ts+'_count_matrix_cust_heat.biom';
+      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+      //shell_command = [dist_script_file, '--in', custom_biom_file, '--metric', visual_post_items.selected_distance].join(' ');
+      console.log(shell_command);
       // must write custom file for R script
-      COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
+      COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using custom matrix file');
-      run_R_cmd(req,res,  ts, R_command, 'heatmap');
+      run_script_cmd(req,res,  ts, command, 'heatmap');
       
     });
   }else{
     biom_file = infile_name;
-    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
-    console.log(R_command);
+    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+    //shell_command = [dist_script_file, '--in', biom_file, '--metric', visual_post_items.selected_distance].join(' ');
+    console.log(shell_command);
     console.log('Using original matrix file');
-    run_R_cmd(req,res,  ts, R_command, 'heatmap');
+    run_script_cmd(req,res,  ts, shell_command, 'heatmap');
 
   } 
  
@@ -531,24 +535,27 @@ router.get('/user_data/dendrogram', function(req, res) {
   var biom_file,R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
-  var script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
+  var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
+  //var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.py');
+  //var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.py');
   if(values_updated) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+'_count_matrix_cust_dend.biom';
-      R_command = req.C.RSCRIPT_CMD + ' ' + script_file + ' ' + biom_file + ' ' + visual_post_items.selected_distance;
-      console.log(R_command);
+      shell_command = [req.C.RSCRIPT_CMD,dend_script_file,biom_file,visual_post_items.selected_distance].join(' ');
+      console.log(shell_command);
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using cust matrix file');
-      run_R_cmd(req, res, ts, R_command, 'dendrogram');
+      run_script_cmd(req, res, ts, shell_command, 'dendrogram');
     });
   }else {
     biom_file = infile_name;
-    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(' ');
-    console.log(R_command);
+    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+    //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
+    console.log(shell_command);
     console.log('Using original matrix file');
-    run_R_cmd(req, res, ts, R_command, 'dendrogram');
+    run_script_cmd(req, res, ts, shell_command, 'dendrogram');
   } 
 
 });
@@ -560,7 +567,7 @@ router.get('/user_data/pcoa', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var biom_file,R_command;
+  var biom_file,shell_command;
   var infile_name = ts+'_count_matrix.biom';
   //var metafile_name = ts+'_metadata.txt'
   var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
@@ -569,12 +576,12 @@ router.get('/user_data/pcoa', function(req, res) {
   //var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
   //var name_on_graph= 'no';
     
-  //command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
-  command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
-  console.log(command);
+  //shell_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
+  shell_command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
+  console.log(shell_command);
   console.log('Using original matrix file');
   var exec = require('child_process').exec;
-  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+  exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
       if(stderr){console.log(stderr);}
       html='';
       //console.log('parsing json')
@@ -615,7 +622,29 @@ router.get('/user_data/frequency_heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
+  res.render('visuals/user_data/frequency_heatmap', {
+            title: 'VAMPS Frequency Heatmap',
+            timestamp: ts || 'default_timestamp',
+            html : "<h2>Not Coded Yet</h2>",
+            user: req.user
+      });
+ 
+
+});
+//
+//  M E T A D A T A  T A B L E
+//
+router.get('/user_data/metadata_table', function(req, res) {
+  var myurl = url.parse(req.url, true);
   
+  var ts    = myurl.query.ts;
+  var values_updated = check_initial_status(myurl);  
+  res.render('visuals/user_data/metadata_table', {
+            title: 'VAMPS Metadata Table',
+            timestamp: ts || 'default_timestamp',
+            html : "<h2>Not Coded Yet</h2>",
+            user: req.user
+      });
  
 
 });
@@ -716,7 +745,7 @@ function check_initial_status(url) {
 //
 //
 //
-function run_R_cmd(req,res, ts, R_command, visual_name) {
+function run_script_cmd(req,res, ts, command, visual_name) {
     var exec = require('child_process').exec;
     var html = '<table border="1" class="single_border center_table"><tr><td>';
     var title = 'VAMPS';
@@ -725,7 +754,8 @@ function run_R_cmd(req,res, ts, R_command, visual_name) {
     html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
 
-    exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+
       if(stderr){console.log(stderr);}
       stdout = stdout.trim();
       console.log(stdout);

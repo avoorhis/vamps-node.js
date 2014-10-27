@@ -7,7 +7,7 @@ module.exports = {
 
 
 		write_metadata_file: function(chosen_id_name_hash, post_items, sqlrows) {
-			console.log('in metadata')
+			//console.log('in metadata')
 			var test_metadata = ['horses','donkeys'];
 			//var txt = "project_dataset\tproject\tdataset\n";
 			var txt = "project_dataset\tproject\tdataset\ttest_color_grouping\n";
@@ -15,7 +15,6 @@ module.exports = {
 			var metadata = [];
 
 			for(i in chosen_id_name_hash.names) {
-				console.log(chosen_id_name_hash.names[i]);
 				var ds = chosen_id_name_hash.names[i];
 				var tmp = ds.split('--');
 				if(i % 2 === 0){
