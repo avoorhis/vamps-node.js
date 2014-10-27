@@ -26,7 +26,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     var taxids = [];
     var custom_joins = '';
     var and_domain_in = '';
-    // var join_domain   = " JOIN domain USING(domain_id)";
+    var join_domain   = " JOIN domain USING(domain_id)";
     // var join_phylum   = " JOIN phylum USING(phylum_id)";
     // var join_klass    = " JOIN klass USING(klass_id)";
     // var join_order    = " JOIN `order` USING(order_id)";
@@ -121,8 +121,8 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     
     tax_query     += and_domain_in;
 
-    console.log(tax_query)
-    console.log(post_items)
+    
+    
     return tax_query;
 
     //
