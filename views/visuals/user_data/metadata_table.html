@@ -1,10 +1,8 @@
-
 <% include ../../add_ins/begin-user_data.ejs %>
 
-<div class='title'  >Distance Heatmap</div>
+<div class='title'  >Metadata Table</div>
 
 <div><%- html %></div>
-<div id='dragInfoArea' >- Drag a row to rearrange the table.</div>
 
 <span id='chart_tooltip' >
   <table style='margin:0'>      
@@ -25,11 +23,20 @@
 
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
 <script src="/javascripts/jquery.tooltip.js"></script>
-<script src="/javascripts/jquery.tablednd.js"></script>
-<script src="/javascripts/drag_rows.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type='text/javascript'>
-	
+			// $('.tip').tipsy({ 
+   //      	gravity: 'w', 
+   //      	html: true, 
+   //      	title: function() {
+   //        	var items = this.tip.split('---'); 
+   //        	var dname = items[0], uname = items[1], count= items[2]; 
+   //        	var txt = dname+'<br>'; 
+   //     			txt += uname+'<br>'; 
+   //      		txt += 'count: '+count; 
+   //      		return txt 
+   //      	}
+   //    });		
 
 
 $(document).ready(function() {  

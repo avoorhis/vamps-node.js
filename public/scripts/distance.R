@@ -4,7 +4,7 @@ url <- args[1]  # json
 metric <- args[2]   # horn or jaccard
 #print(url)
 
-library(jsonlite,quietly=TRUE)
+library(jsonlite)
 
 myjson<-fromJSON(paste('./tmp/',url,sep=''))
 

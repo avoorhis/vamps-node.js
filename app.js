@@ -209,11 +209,11 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log('000 new_taxonomy.taxa_tree_dict = ' + JSON.stringify(new_taxonomy.taxa_tree_dict));
     //console.log('taxa_tree_dict_map_by_id = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
-    console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+    //console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     //console.log('taxa_tree_dict_map_by_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank));
     //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
     
-    console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"]));
+    //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["138_family"]["taxon"]));
     
   
 
