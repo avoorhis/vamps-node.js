@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">67.26</p>
+      <p class="stat">66.61</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">232</p>
+      <p class="stat">239</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">25.08</p>
+      <p class="stat">25.05</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.16</p>
+      <p class="stat">2.23</p>
     </div>
   </div>
 </div>
@@ -143,15 +143,16 @@ app.use(compression());
  * maxAge used to cache the content, # msec
  * to &quot;uncache&quot; some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
-app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: &#039;2h&#039; }));
+app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: &#039;24h&#039; }));
 // app.use(express.static(__dirname + &#039;/public&#039;, {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, &#039;/public&#039;)));
 app.use(&#039;public/javascripts&#039;, express.static(path.join(__dirname, &#039;/public/javascripts&#039;)));
 app.use(&#039;public/stylesheets&#039;, express.static(path.join(__dirname, &#039;/public/stylesheets&#039;)));
+
 // app.use(&#039;views/add_ins&#039;, express.static(path.join(__dirname, &#039;/views/add_ins&#039;)));
 // required for passport
 // app.use(session({ secret: &#039;keyboard cat&#039;,  cookie: {maxAge: 900000}})); // session secret
-app.use(session({ secret: &#039;keyboard cat&#039;})); // session secret
+//app.use(session({ secret: &#039;keyboard cat&#039;})); // session secret
 app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -210,7 +211,7 @@ app.post(&#039;/download/:ts/:file_type&#039;, function(req, res){
             res.setHeader(&#039;Content-disposition&#039;, &#039;attachment; filename=&#039;+filename+&#039;&#039;);
             res.setHeader(&#039;Content-type&#039;, &#039;text/plain&#039;);
             res.charset = &#039;UTF-8&#039;;
-            for (var k=0; k &lt; rows.length; k++){
+            for (var k=0, len=rows.length; k &lt; len; k++){
                 res.write(&quot;&gt;&quot;+rows[k].sequence_id+&#039;|project=&#039;+rows[k].project+&#039;|dataset=&#039;+rows[k].dataset+&#039;\n&#039;);
                 res.write(rows[k].seq+&#039;\n&#039;);
             }
@@ -296,10 +297,16 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // uncomment to print out the object:
     // console.log(&#039;000 new_taxonomy = &#039; + JSON.stringify(new_taxonomy));
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank[&quot;domain&quot;]);    
-    // console.log(&#039;000 new_taxonomy.taxa_tree_dict = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict));
-    // console.log(&#039;RRR333 map_dict_by_db_id = &#039; + JSON.stringify(map_dict_by_db_id));
-
-    // console.log(&#039;RRR333 taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;] = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;]));
+    //console.log(&#039;000 new_taxonomy.taxa_tree_dict = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict));
+    //console.log(&#039;taxa_tree_dict_map_by_id = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
+    
+    console.log(&#039;taxa_tree_dict_map_by_db_id_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+    //console.log(&#039;taxa_tree_dict_map_by_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank));
+    //console.log(&#039;taxa_tree_dict_map_by_name_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
+    
+    console.log(&#039;RRR333 taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;] = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;]));
+    
+  
 
   }
 });
