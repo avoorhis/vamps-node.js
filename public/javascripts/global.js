@@ -30,3 +30,22 @@ function show_post_array(body) {
     document.getElementById('DEBUG_div').innerHTML = body;
   //}
 }
+
+//
+// view_selection page
+//
+$(document).ready(function(){
+    $('#download_fasta').click(function(){
+       alert('Not Attached yet')
+        return false;
+    });
+});
+//
+// Heatmap page
+//
+$(document).ready(function(){
+    $('#ds_save_order_btn').click(function(){
+       alert('Not Attached yet')
+        return false;
+    });
+});

@@ -32,23 +32,36 @@ config.NORMALIZATIONCHOICES = { choices: [
         {id: 'max',             show: 'Normalized to the Maximum Sample'},
         {id: 'freq',            show: 'Normalized to Frequency'}
     ]};
+
+   
 config.DISTANCECHOICES = { choices: [
+        // both R and python
         {id: 'morisita_horn',   show: 'Morisita-Horn'},
-        {id: 'jaccard',         show: 'Jaccard'     },
-        {id: 'yue_clayton',     show: 'Yue-Clayton' },
         {id: 'bray_curtis',     show: 'Bray-Curtis' },
         {id: 'manhattan',       show: 'Manhattan'   },
-        {id: 'raup',            show: 'Raup'        },
         {id: 'gower',           show: 'Gower'       },
         {id: 'euclidean',       show: 'Euclidean'   },
         {id: 'canberra',        show: 'Canberra'    },
         {id: 'kulczynski',      show: 'Kulczynski'  },
+        {id: 'pearson',         show: 'Pearson'     },
+        {id: 'spearman',        show: 'Spearman'    },
+// R only
+        {id: 'correlation',     show: 'Correlation' },
         {id: 'mountford',       show: 'Mountford'   },
         {id: 'chao_j',          show: 'Chao J'      },
         {id: 'chao_s',          show: 'Chao S'      },
-        {id: 'pearson',         show: 'Pearson'     },
-        {id: 'correlation',     show: 'Correlation' },
-        {id: 'spearman',        show: 'Spearman'    }
+        {id: 'raup',            show: 'Raup'        },
+        {id: 'jaccard',         show: 'Jaccard'     },
+        {id: 'yue_clayton',     show: 'Yue-Clayton' }
+// python distances:
+
+        // {id: 'abund_jaccard',         show: 'Jaccard  - Abundance'     },
+        // {id: 'binary_jaccard',        show: 'Jaccard - Binary'     },
+        // {id: 'soergel',         show: 'Soergel'     },
+        // {id: 'hellinger',         show: 'Hellinger'     },
+        // {id: 'chord',         show: 'chord'     },
+        // {id: 'chisq',         show: 'Chisq'     }
+
     ]};
 
 // This List MUST match the fields in sequence_uniq_infos
@@ -68,7 +81,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram'   },
     {name:'PCoA Plots',        file:'/images/visuals/pcoa.png',        link:'user_data/pcoa'   },
     {name:'Counts Table',      file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
-    {name:'Metadata Table',    file:'', link:''   }
+    {name:'Metadata Table',    file:'', link:'user_data/metadata_table'    }
     ]};
     
 config.required_metadata_fields = ["dataset_id", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
