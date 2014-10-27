@@ -114,21 +114,35 @@
 }
 .blue {
     background:blue;
-    width:12px;
+    width:60px;
     height:12px;
+    color:white;
+    padding:2px;
+    display: inline-block;
+   
 }
 .red {
     background:red;
-    width:12px;
+    width:60px;
     height:12px;
+    color:white;
+    padding:2px;
+    display: inline-block;
+}
+#ds_save_order_div {
+    display: inline-block;
 }
 .heat_map_td {
   width: '10' ;
   height: '10';
+  cursor:pointer;
 }
 .heatmap_table {
     border-collapse:collapse;
     font-size:10px;
+}
+.dragHandle{
+  cursor:pointer;
 }
 .no_data {
     color:red;
