@@ -99,7 +99,7 @@ module.exports = {
 		    //var selection_html = COMMON.get_selection_markup('heatmap', body); 
 		    //html += selection_html;
 		    //html += "<div class='' id='distance_heatmap_div center_table' >";
-		    html += "<table border='1' id='heatmap_table' class='heatmap_table center_table' >";
+		    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >";
 		    html += "<tr class='nodrag nodrop' ><td>";
 		    html += "<div class='blue'>Similar</div>";
 		    html += "<div class='red'>Dissimilar</div>";

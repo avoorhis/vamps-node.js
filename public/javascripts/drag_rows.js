@@ -1,7 +1,7 @@
  // jquery script for moving table rows AND columns
  $(document).ready(function() {        
      
-    $("#heatmap_table").tableDnD({
+    $("#drag_table").tableDnD({
     
        onDragClass: "myDragClass",
 	     onDragStart: function(table, row){        
