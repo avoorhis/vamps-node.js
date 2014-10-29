@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.13</p>
+      <p class="stat">52.50</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">134</p>
+      <p class="stat">137</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">25.13</p>
+      <p class="stat">25.91</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.59</p>
+      <p class="stat">0.62</p>
     </div>
   </div>
 </div>
@@ -153,7 +153,7 @@ module.exports = {
 	    var distance_matrix = {};
 	    // distance_matrix[ds1][ds2] = 2
 	    var dcolnames = raw_distance_array[0].trim().split(&quot;\t&quot;);
-	    console.log(&#039;dcolnames:  &#039;+dcolnames)
+	    //console.log(&#039;dcolnames:  &#039;+dcolnames)
 	    //distance_matrix[dcolname] = {};
 	    //distance_matrix[dcolname][dcolname] = 0;
 	    //console.log(dcolname);
@@ -161,8 +161,7 @@ module.exports = {
 	    	distance_matrix[dcolnames[n]] = {};
 	    }
 	    for(n in raw_distance_array){
-	    	console.log(raw_distance_array[n])
-	    	
+	    	//console.log(raw_distance_array[n])	    	
 	    	
 	      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
 	      if( n == 0 ) { continue; }   						// skip header
@@ -171,7 +170,7 @@ module.exports = {
 		  var ds = items.shift();  // remove and return dataset
 		  //console.log(&#039;ds  &#039;+ds)
 	      for(i in items){     	
-	      		distance_matrix[ds][dcolnames[i]] = items[i];	      
+	      	distance_matrix[ds][dcolnames[i]] = items[i];	      
 	      }	      
 
 	    } // end for row in raw...
@@ -191,18 +190,21 @@ module.exports = {
 		    //var selection_html = COMMON.get_selection_markup(&#039;heatmap&#039;, body); 
 		    //html += selection_html;
 		    //html += &quot;&lt;div class=&#039;&#039; id=&#039;distance_heatmap_div center_table&#039; &gt;&quot;;
-		    html += &quot;&lt;table border=&#039;1&#039; class=&#039;heatmap_table center_table&#039; &gt;&quot;;
-		    html += &#039;&lt;tr&gt;&lt;td&gt;&#039;;
-		    html += &quot;Similar: &lt;span title=&#039;blue&#039; class=&#039;blue&#039;&gt;&amp;nbsp;&lt;/span&gt; Dissimilar: &lt;span title=&#039;red&#039; class=&#039;red&#039;&gt;&amp;nbsp;&amp;nbsp;&lt;/span&gt;&quot;;
+		    html += &quot;&lt;table border=&#039;1&#039; id=&#039;heatmap_table&#039; class=&#039;heatmap_table center_table&#039; &gt;&quot;;
+		    html += &quot;&lt;tr class=&#039;nodrag nodrop&#039; &gt;&lt;td&gt;&quot;;
+		    html += &quot;&lt;div class=&#039;blue&#039;&gt;Similar&lt;/div&gt;&quot;;
+		    html += &quot;&lt;div class=&#039;red&#039;&gt;Dissimilar&lt;/div&gt;&quot;;
+		    html += &quot;&lt;div id=&#039;ds_save_order_div&#039;&gt;&lt;input type=&#039;button&#039; id=&#039;ds_save_order_btn&#039; class=&#039;&#039; value=&#039;Save Order&#039;&gt;&lt;/div&gt;&quot;;
 		    html += &#039;&lt;/td&gt;&#039;;
 
 		    for(i=1;i&lt;=Object.keys(dm).length;i++) {
-		      html += &#039;&lt;td&gt;&#039;+i.toString()+&#039;&lt;/td&gt;&#039;;
+		      html += &quot;&lt;td&gt;&quot;+i.toString()+&#039;&lt;/td&gt;&#039;;
 		    }
 		    html += &#039;&lt;/tr&gt;&#039;;
+		    var n=1;
 		    for(x_dname in dm) {
-		      html += &#039;&lt;tr&gt;&#039;;
-		      html += &#039;&lt;td&gt;&#039;+x_dname+&#039;&lt;/td&gt;&#039;;
+		      html += &quot;&lt;tr id=&#039;&quot;+x_dname+&quot;&#039;&gt;&quot;;
+		      html += &quot;&lt;td id=&#039;&quot;+x_dname+&quot;&#039; class=&#039;dragHandle&#039; &gt;&quot;+n.toString()+&#039; &#039;+x_dname+&#039;&lt;/td&gt;&#039;;
 		      for(y_dname in dm) {
 		      	
 		        if(x_dname === y_dname){
@@ -214,6 +216,7 @@ module.exports = {
 		        }		        
 		      }
 		      html += &#039;&lt;/tr&gt;&#039;;
+		      n+=1;
 		    }
 		    html += &#039;&lt;/table&gt;&#039;;
 		    html += &#039;&lt;/div&gt;&#039;;
