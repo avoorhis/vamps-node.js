@@ -31,6 +31,19 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   return insert_custom_field_names_query;
 }
 
+function make_insert_required_field_names_query(insert_into_required_fields_info)
+{
+  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( " + insert_into_required_fields_info[0] + " )"
+  
+  for (var i = 1; insert_into_required_fields_info.length > i; i += 1)
+  {
+    insert_required_field_names_query += ", ( " + insert_into_required_fields_info[i] + " ) ";
+  }
+  return insert_required_field_names_query;
+}
+
+
+
 // public
 
 module.exports = csvMetadataUpload;
@@ -48,7 +61,7 @@ csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callba
 
 csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
 {
-  insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
+  var insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
   console.log('insert_into_custom_fields_info_query:');
   console.log(insert_into_custom_fields_info_query);
   
@@ -56,4 +69,16 @@ csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_cus
     callback(err, rows);
   });
 };
+
+csvMetadataUpload.prototype.insert_required_field_names = function(insert_into_required_fields_info, callback) 
+{
+  var insert_into_required_fields_info_query = make_insert_required_field_names_query(insert_into_required_fields_info);
+  console.log('888 insert_into_required_fields_info_query:');
+  console.log(insert_into_required_fields_info_query);
+  
+  connection.query(insert_into_required_fields_info_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
 
