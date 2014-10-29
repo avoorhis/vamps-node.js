@@ -52,6 +52,7 @@ router.post('/view_selection',  function(req, res) {
   console.log('req.body');
   console.log(req.body);
   console.log('req.body');
+  //console.log(TaxaCounts['27'])
   //console.log('1');
   //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   
@@ -82,8 +83,8 @@ router.post('/view_selection',  function(req, res) {
   if (uitems[0] === 'tax'){  // covers both simple and custom
   
     unit_field = 'silva_taxonomy_info_per_seq_id';
-    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    console.log(unit_name_query);
+    //unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    //console.log(unit_name_query);
     
   }else if(uitems[0] === 'otus') {
     unit_field = 'gg_otu_id';
@@ -101,33 +102,24 @@ router.post('/view_selection',  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-   console.log('visual_post_items:');
-   console.log(visual_post_items);
+  console.log('visual_post_items:');
+  console.log(visual_post_items);
   
-  // Get matrix data here
-  // The visuals have been selected so now we need to create them
-  // so they can be shown fast when selected
-  //console.log(JSON.stringify(selection_obj));
-  req.db.query(unit_name_query, function(err, rows, fields){
-    if (err) {
-      throw err;
-    } else {   
-      var timestamp = +new Date();  // millisecs since the epoch!
-      var user = req.user || 'no-user';
-      timestamp = user + '_' + timestamp;
-      visual_post_items.ts = timestamp;
+ 
+  var timestamp = +new Date();  // millisecs since the epoch!
+  var user = req.user || 'no-user';
+  timestamp = user + '_' + timestamp;
+  visual_post_items.ts = timestamp;
 
-      // this function: output_matrix writes various counts matrices to files for *possible* use later by R or D3
-      // It also reurns a JSON count_matrix
-      //count_matrix = MTX.output_matrix( 'to_file_and_console', timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
-      
+ 
 
 
-      biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
-      visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
-      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-      GLOBAL.metadata = metadata;
-      console.log(biome_matrix);
+  biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+  metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+  GLOBAL.metadata = metadata;
+  
+  console.log(biome_matrix);
 
       // This is what matrix looks like (a different matrix is written to file)
       // { 
@@ -150,7 +142,7 @@ router.post('/view_selection',  function(req, res) {
       
      
      
-      res.render('visuals/view_selection', { 
+  res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Select',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix :              JSON.stringify(biome_matrix),
@@ -159,8 +151,8 @@ router.post('/view_selection',  function(req, res) {
                                   user   :              req.user
                    });
     
-    }
-  });
+  //  }
+ // });
  
  
 });
@@ -322,7 +314,12 @@ router.get('/index_visuals',  function(req, res) {
 //
 router.get('/reorder_datasets', function(req, res) {
   console.log('TODO::TODO reorder datasets');
-  console.log(selection_obj);
+  res.render('visuals/reorder_datasets', { 
+                                title   : 'VAMPS: Reorder Datasets',
+                                chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+                                constants    : JSON.stringify(req.C),
+                                user: req.user
+                            });
   //console.log(chosen_id_name_hash)
 });
 //
