@@ -1,0 +1,62 @@
+<% var items = JSON.parse(chosen_id_name_hash) %>
+<% var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+<% include ../add_ins/begin.ejs %>
+<!-- <link rel="stylesheet" type="text/css" href="/stylesheets/mktree.css">-->
+<!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
+
+  <div class='title'>Community Visualization</div>
+  <div class='subtitle'>Re-Order Datasets</div>
+      
+<div id='show_selected_datasets_divx' class=''>
+Here are your <%= items.names.length %> selected datasets:<br>
+
+<div id='' class='small_font'>
+<table>
+  <tr><td>Original Order</td><td>Drag to Re-Order</td></tr>
+  <tr><td class='td_top'>
+    <table border='1' id='' class='small_font center_table' >
+    <% for (var i in items.names){ %>
+        <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
+    <% } %>
+    </table>
+</td><td>
+    <table border='1' id='drag_table' class='small_font center_table' >
+    <% for (var i in items.names){ %>
+        <tr><td class='dragHandle'>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
+    <% } %> 
+
+    </table>
+    <div id='ds_save_order_div'><input type='button' id='ds_save_order_btn' class='' value='Save Order'></div>
+</td>
+<td class='td_top'>
+    <table>
+      <tr><td class='small_font'>Drag rows to re-order<br>OR</td></tr>
+    
+      <tr><td class='small_font'><input type='button' value='Alphabetize'><br>OR</td></tr>
+      <tr><td class='small_font'>Select distance metric<br>to cluster by:<br>
+
+                    <select name='selected_heatmap_distance' class='small_font'>
+                    <% for(d in distrows ) { %>
+                      <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+                    <% } %>
+                    </select>   
+      <br>OR</td></tr> 
+      <tr><td class='small_font'><input type='button' value='Reset Order'></td></tr>            
+    </table>
+</td>
+</tr>
+</table>
+
+</div>
+
+</div>
+<br>
+
+
+  <div id='DEBUG_div'></div>
+<script src="/javascripts/jquery-2.1.1.min.js"></script>
+<script src="/javascripts/jquery.tablednd.js"></script>
+<script src="/javascripts/drag_rows.js"></script>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+  
+<% include ../add_ins/end.ejs %>
