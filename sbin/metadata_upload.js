@@ -206,7 +206,7 @@ function format_custom_metadata_fields_info(db_ids)
         into_db = project_id + ", '" + field_name + "', '" + example + "'";
         insert_into_custom_fields_txt.push(into_db);
     }
-  }
+  }  
   return insert_into_custom_fields_txt;
 }
 
@@ -237,14 +237,14 @@ function format_required_metadata_info(db_ids)
     
     for (var i = 0; metadata_dict_by_project[project].length > i; i += 1)
     {
-      console.log("111 =====");
+      // console.log("111 =====");
       
       var dataset = correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);      
       var this_dataset = get_this_dataset_id(db_ids, dataset);
       var dataset_id = "";
       if (this_dataset[0])
       {
-        var dataset_id = this_dataset[0].dataset_id;
+        dataset_id = this_dataset[0].dataset_id;
         var altitude = metadata_dict_by_project[project][i]["altitude"];
         var assigned_from_geo = metadata_dict_by_project[project][i]["assigned_from_geo"];
         var collection_date = correct_db_data(metadata_dict_by_project[project][i]["collection_date"]);
@@ -271,9 +271,9 @@ function format_required_metadata_info(db_ids)
       }
     }
   }
-  console.log("7777 insert_into_required_metadata_info_txt");
-  console.log(insert_into_required_metadata_info_txt);
-  
+  // console.log("7777 insert_into_required_metadata_info_txt");
+  // console.log(insert_into_required_metadata_info_txt);
+  // 
   return insert_into_required_metadata_info_txt;
 }
 
