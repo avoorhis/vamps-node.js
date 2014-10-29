@@ -232,17 +232,12 @@ function format_required_metadata_info(db_ids)
   var insert_into_required_metadata_info_txt = [];
   for (var project in metadata_dict_by_project)
   {
-    // console.log("111 =====");
-    // console.log("metadata_dict_by_project[project]");
-    // console.log(metadata_dict_by_project[project]);
     console.log("db_ids");
     console.log(db_ids);
     
     for (var i = 0; metadata_dict_by_project[project].length > i; i += 1)
     {
       console.log("111 =====");
-      // console.log("metadata_dict_by_project[project][i]");
-      // console.log(metadata_dict_by_project[project][i]);
       
       var dataset = correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);      
       var this_dataset = get_this_dataset_id(db_ids, dataset);
@@ -252,7 +247,7 @@ function format_required_metadata_info(db_ids)
         var dataset_id = this_dataset[0].dataset_id;
         var altitude = metadata_dict_by_project[project][i]["altitude"];
         var assigned_from_geo = metadata_dict_by_project[project][i]["assigned_from_geo"];
-        var collection_date = metadata_dict_by_project[project][i]["collection_date"];
+        var collection_date = correct_db_data(metadata_dict_by_project[project][i]["collection_date"]);
         var depth = metadata_dict_by_project[project][i]["depth"];
         var country = metadata_dict_by_project[project][i]["country"];
         var elevation = metadata_dict_by_project[project][i]["elevation"];
@@ -294,10 +289,13 @@ function call_insert_required_fields_into_db(insert_into_required_metadata_info_
       console.log(results);    
     }
   });
-  
-  
 }
 
+function correct_db_data(collection_date)
+{
+  var d = new Date(Date.parse(collection_date));
+  return d.toISOString().replace(/T.+/, '');
+}
 
 function do_smth_w_data_hash(csv_data_hash)
 {
