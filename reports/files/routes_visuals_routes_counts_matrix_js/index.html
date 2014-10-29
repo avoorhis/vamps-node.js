@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">41.71</p>
+      <p class="stat">37.53</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">583</p>
+      <p class="stat">582</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">64.77</p>
+      <p class="stat">62.28</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.33</p>
+      <p class="stat">3.40</p>
     </div>
   </div>
 </div>
@@ -224,14 +224,14 @@ module.exports = {
 		  
 		  var matrix_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_count_matrix.biom&#039;;
 		    
- 			console.log(&#039;Writing matrix file&#039;);
- 			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
- 			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
+			console.log(&#039;Writing matrix file&#039;);
+			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
+			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
 
 			return biome_matrix;
 
 			function onlyUnique(value, index, self) { 
-		    return self.indexOf(value) === index;
+	    	return self.indexOf(value) === index;
 			}
 
 		},
@@ -239,90 +239,90 @@ module.exports = {
 		//
 		// F I L L  I N  C O U N T S  M A T R I X
 		//
-		fill_in_counts_matrix: function(selection_obj, field) {
-			// This function creates a counts matrix using only the dataset_ids (no names)
-			// and fills it in with zeros where appropriate.
-			// when returned this matrix becomes part of the selection_obj
-			// FORMAT:
-			// counts_matrix:{&quot;82&quot;:[4,2,2],&quot;84&quot;:[0,0,1],&quot;137&quot;:[0,0,1],&quot;214&quot;:[272,401,430]}}
+// 		fill_in_counts_matrix: function(selection_obj, field) {
+// 			// This function creates a counts matrix using only the dataset_ids (no names)
+// 			// and fills it in with zeros where appropriate.
+// 			// when returned this matrix becomes part of the selection_obj
+// 			// FORMAT:
+// 			// counts_matrix:{&quot;82&quot;:[4,2,2],&quot;84&quot;:[0,0,1],&quot;137&quot;:[0,0,1],&quot;214&quot;:[272,401,430]}}
 
-		  //selection_obj = JSON.parse(selection_obj);
+// 		  //selection_obj = JSON.parse(selection_obj);
 		  
-		  var matrix = {};  
+// 		  var matrix = {};  
 		  
-		  var dataset_ids = selection_obj.dataset_ids;
-		  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
-		  var seq_freqs   = selection_obj.seq_freqs;      
-		  //console.log(&#039;&#039;)
-		  //    seq_ids  : [id1,id2,id3...],
-		  //    tax_id1 : [tct1,0,tid3...],
-		  //    tax_id2 : [tct4,tct5,tct6...],
-		  //    tax_id3 : [tct7,tct8,0...]
-		  //    ....
-		  //  }
+// 		  var dataset_ids = selection_obj.dataset_ids;
+// 		  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
+// 		  var seq_freqs   = selection_obj.seq_freqs;      
+// 		  //console.log(&#039;&#039;)
+// 		  //    seq_ids  : [id1,id2,id3...],
+// 		  //    tax_id1 : [tct1,0,tid3...],
+// 		  //    tax_id2 : [tct4,tct5,tct6...],
+// 		  //    tax_id3 : [tct7,tct8,0...]
+// 		  //    ....
+// 		  //  }
 
-		  //var old_sid = &#039;x&#039;;
-		  //var tids = [96,214,82,214,137];
-		  //var vals = [2,103,8,203,3];
+// 		  //var old_sid = &#039;x&#039;;
+// 		  //var tids = [96,214,82,214,137];
+// 		  //var vals = [2,103,8,203,3];
 
-		  // for (i=0; i &lt; tids.length; i++) {
-		  //   id = tids[i]
-		  //   if (id in tmp){
-		  //     tmp[id][0] += vals[i]
-		  //   } else {
-		  //     tmp[id] = [vals[i]]
-		  //   }
-		  // }
-		  var counts = {};
-		  var unit_id_lookup = {};
-		  var unit_ids = [];
-		  var unit_id;
-		  var tmp;
+// 		  // for (i=0; i &lt; tids.length; i++) {
+// 		  //   id = tids[i]
+// 		  //   if (id in tmp){
+// 		  //     tmp[id][0] += vals[i]
+// 		  //   } else {
+// 		  //     tmp[id] = [vals[i]]
+// 		  //   }
+// 		  // }
+// 		  var counts = {};
+// 		  var unit_id_lookup = {};
+// 		  var unit_ids = [];
+// 		  var unit_id;
+// 		  var tmp;
 		  
-		  for (var n=0; n &lt; unit_assoc.length; n++) {
+// 		  for (var n=0; n &lt; unit_assoc.length; n++) {
 
-		        unit_ids = unit_assoc[n];
-		        tmp = {};
-		        counts[dataset_ids[n]] = {};
-		        for (var i=0; i &lt; unit_ids.length; i++) {
-		            unit_id = unit_ids[i];
-		            unit_id_lookup[unit_id]=1;
-		            if (unit_id in tmp){
-		              tmp[ unit_id ] += seq_freqs[n][i];
-		            } else {
-		              tmp[ unit_id ] = seq_freqs[n][i];
-		            }
-		        }
-		        counts[ dataset_ids[n] ]=tmp;
-		  }
-		  //console.log(JSON.stringify(counts,null,4));
-		 //console.log(unit_id_lookup);
-		// { &#039;82&#039;: 8, &#039;96&#039;: 2, &#039;137&#039;: 3, &#039;214&#039;: 306 }
-		// { &#039;82&#039;: 4, &#039;96&#039;: 2, &#039;214&#039;: 33 }
-		// { &#039;82&#039;: 1, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 277 }
-		// { &#039;82&#039;: 6, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 596 }
-		// { &#039;82&#039;: 1, &#039;84&#039;: 4, &#039;96&#039;: 2, &#039;112&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 75 }
-		// { &#039;82&#039;: 2, &#039;96&#039;: 1, &#039;112&#039;: 1, &#039;214&#039;: 331 }
-		  //var mtx = &quot;\t&quot;;
+// 		        unit_ids = unit_assoc[n];
+// 		        tmp = {};
+// 		        counts[dataset_ids[n]] = {};
+// 		        for (var i=0; i &lt; unit_ids.length; i++) {
+// 		            unit_id = unit_ids[i];
+// 		            unit_id_lookup[unit_id]=1;
+// 		            if (unit_id in tmp){
+// 		              tmp[ unit_id ] += seq_freqs[n][i];
+// 		            } else {
+// 		              tmp[ unit_id ] = seq_freqs[n][i];
+// 		            }
+// 		        }
+// 		        counts[ dataset_ids[n] ]=tmp;
+// 		  }
+// 		  //console.log(JSON.stringify(counts,null,4));
+// 		 //console.log(unit_id_lookup);
+// 		// { &#039;82&#039;: 8, &#039;96&#039;: 2, &#039;137&#039;: 3, &#039;214&#039;: 306 }
+// 		// { &#039;82&#039;: 4, &#039;96&#039;: 2, &#039;214&#039;: 33 }
+// 		// { &#039;82&#039;: 1, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 277 }
+// 		// { &#039;82&#039;: 6, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 596 }
+// 		// { &#039;82&#039;: 1, &#039;84&#039;: 4, &#039;96&#039;: 2, &#039;112&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 75 }
+// 		// { &#039;82&#039;: 2, &#039;96&#039;: 1, &#039;112&#039;: 1, &#039;214&#039;: 331 }
+// 		  //var mtx = &quot;\t&quot;;
 		  
-		  //for(did in dataset_ids) {
-		  for (var uid in unit_id_lookup) {  
-		    matrix[uid]=[];
+// 		  //for(did in dataset_ids) {
+// 		  for (var uid in unit_id_lookup) {  
+// 		    matrix[uid]=[];
 		    
-		    for (var d in dataset_ids) { // this is correct order
-		    	did = dataset_ids[d];
+// 		    for (var d in dataset_ids) { // this is correct order
+// 		    	did = dataset_ids[d];
 
-		      if(uid in counts[did]){
-		        c = counts[did][uid];
-		      }else{
-		        c = 0;
-		      }
-		      matrix[uid].push(c);
+// 		      if(uid in counts[did]){
+// 		        c = counts[did][uid];
+// 		      }else{
+// 		        c = 0;
+// 		      }
+// 		      matrix[uid].push(c);
 
-		    }
-		  }
-		  return matrix;
-		},
+// 		    }
+// 		  }
+// 		  return matrix;
+// 		},
 
 	
 
@@ -354,7 +354,6 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 		max = 0;
 	}else{
 		for(n in biome_matrix.columns) {
-		  	console.log(biome_matrix.columns[n].id);
 		  	max_count[biome_matrix.columns[n].id] = 0;
 		  	for(d in biome_matrix.data) {
 		  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
@@ -369,7 +368,7 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 		}
 	}
 	biome_matrix.max_dataset_count = max;
-	console.log(max_count);
+	//console.log(max_count);
 	return(biome_matrix);
 }
 //
@@ -392,21 +391,21 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 //
 //  CREATE UNIT NAME LOOKUP
 //
-function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
+// function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
  	
- 	if(name in unit_name_lookup) {
-    for (var c in counts) {
-      unit_name_lookup[name][c] += counts[c];
-    }
-  }else{
-    unit_name_lookup[name] = [];
-    for (var c in counts) {
-      unit_name_lookup[name].push(counts[c]);
-    }
-  }
-  return unit_name_lookup;
+//  	if(name in unit_name_lookup) {
+//     for (var c in counts) {
+//       unit_name_lookup[name][c] += counts[c];
+//     }
+//   }else{
+//     unit_name_lookup[name] = [];
+//     for (var c in counts) {
+//       unit_name_lookup[name].push(counts[c]);
+//     }
+//   }
+//   return unit_name_lookup;
 
-}
+// }
 //
 //
 //
@@ -438,31 +437,31 @@ function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
 //
 // CREATE TEXT MATRIX
 //
-function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with_names) {
+// function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with_names) {
 
-		// 
-		// MTX  for input to R scripts
-		//
-		var mtx = &#039;&#039;;
-	  for (var did in dataset_ids) {
-	    console.log(dataset_ids[did]);
-	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
-	    mtx += &quot;\t&quot; + dataset_names.names[ index ];
-	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
-	  }
-	  mtx += &quot;\n&quot;;
+// 		// 
+// 		// MTX  for input to R scripts
+// 		//
+// 		var mtx = &#039;&#039;;
+// 	  for (var did in dataset_ids) {
+	    
+// 	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
+// 	    mtx += &quot;\t&quot; + dataset_names.names[ index ];
+// 	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
+// 	  }
+// 	  mtx += &quot;\n&quot;;
 	  
-	  matrix_with_names.unit_names = unit_names;
+// 	  matrix_with_names.unit_names = unit_names;
 	  
-	  for(var uname in unit_names) {
-	    mtx += uname;
-	    for (var c in unit_names[uname]) {
-	      mtx += &quot;\t&quot; + unit_names[uname][c].toString();
-	    }
-	    mtx += &quot;\n&quot;;
-	  }
-	  return mtx;
-}
+// 	  for(var uname in unit_names) {
+// 	    mtx += uname;
+// 	    for (var c in unit_names[uname]) {
+// 	      mtx += &quot;\t&quot; + unit_names[uname][c].toString();
+// 	    }
+// 	    mtx += &quot;\n&quot;;
+// 	  }
+// 	  return mtx;
+// }
 //
 //  A S S E M B L E  T A X A
 //
