@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">59.52</p>
+      <p class="stat">59.40</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">758</p>
+      <p class="stat">788</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">60.29</p>
+      <p class="stat">60.48</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.94</p>
+      <p class="stat">7.23</p>
     </div>
   </div>
 </div>
@@ -174,6 +174,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   
     unit_field = &#039;silva_taxonomy_info_per_seq_id&#039;;
     unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    console.log(unit_name_query);
     
   }else if(uitems[0] === &#039;otus&#039;) {
     unit_field = &#039;gg_otu_id&#039;;
@@ -191,6 +192,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
+   console.log(&#039;visual_post_items:&#039;);
    console.log(visual_post_items);
   
   // Get matrix data here
@@ -583,30 +585,32 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var biom_file,R_command;
+  var biom_file, custom_biom_file, R_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+infile_name);
-  var script_file = path.resolve(__dirname, &#039;../../public/scripts/distance.R&#039;);
-
+  var dist_script_file = path.resolve(__dirname, &#039;../../public/scripts/distance.R&#039;);
+  //var dist_script_file = path.resolve(__dirname, &#039;../../public/scripts/distance.py&#039;);
   if(values_updated) {
     fs.readFile(infile, &#039;utf8&#039;, function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-      biom_file = ts+&#039;_count_matrix_cust_heat.biom&#039;;
-      R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
-      console.log(R_command);
+      custom_biom_file = ts+&#039;_count_matrix_cust_heat.biom&#039;;
+      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
+      //shell_command = [dist_script_file, &#039;--in&#039;, custom_biom_file, &#039;--metric&#039;, visual_post_items.selected_distance].join(&#039; &#039;);
+      console.log(shell_command);
       // must write custom file for R script
-      COMMON.write_file( &#039;../../tmp/&#039;+biom_file, JSON.stringify(mtx,null,2) );  
+      COMMON.write_file( &#039;../../tmp/&#039;+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log(&#039;Writing/Using custom matrix file&#039;);
-      run_R_cmd(req,res,  ts, R_command, &#039;heatmap&#039;);
+      run_script_cmd(req,res,  ts, command, &#039;heatmap&#039;);
       
     });
   }else{
     biom_file = infile_name;
-    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
-    console.log(R_command);
+    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
+    //shell_command = [dist_script_file, &#039;--in&#039;, biom_file, &#039;--metric&#039;, visual_post_items.selected_distance].join(&#039; &#039;);
+    console.log(shell_command);
     console.log(&#039;Using original matrix file&#039;);
-    run_R_cmd(req,res,  ts, R_command, &#039;heatmap&#039;);
+    run_script_cmd(req,res,  ts, shell_command, &#039;heatmap&#039;);
 
   } 
  
@@ -622,24 +626,27 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
   var biom_file,R_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+infile_name);
-  var script_file = path.resolve(__dirname, &#039;../../public/scripts/dendrogram.R&#039;);
+  var dend_script_file = path.resolve(__dirname, &#039;../../public/scripts/dendrogram.R&#039;);
+  //var dist_script_file = path.resolve(__dirname, &#039;../../public/scripts/distance.py&#039;);
+  //var dend_script_file = path.resolve(__dirname, &#039;../../public/scripts/dendrogram.py&#039;);
   if(values_updated) {
     fs.readFile(infile, &#039;utf8&#039;, function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       biom_file = ts+&#039;_count_matrix_cust_dend.biom&#039;;
-      R_command = req.C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + biom_file + &#039; &#039; + visual_post_items.selected_distance;
-      console.log(R_command);
+      shell_command = [req.C.RSCRIPT_CMD,dend_script_file,biom_file,visual_post_items.selected_distance].join(&#039; &#039;);
+      console.log(shell_command);
       COMMON.write_file( &#039;../../tmp/&#039;+biom_file, JSON.stringify(mtx,null,2) );  
       console.log(&#039;Writing/Using cust matrix file&#039;);
-      run_R_cmd(req, res, ts, R_command, &#039;dendrogram&#039;);
+      run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
     });
   }else {
     biom_file = infile_name;
-    R_command = [req.C.RSCRIPT_CMD, script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
-    console.log(R_command);
+    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(&#039; &#039;);
+    //shell_command = [dist_script_file,&#039;--in&#039;, biom_file, &#039;--metric&#039;,visual_post_items.selected_distance,&#039;|&#039;,dend_script_file, &#039;-&#039;].join(&#039; &#039;);
+    console.log(shell_command);
     console.log(&#039;Using original matrix file&#039;);
-    run_R_cmd(req, res, ts, R_command, &#039;dendrogram&#039;);
+    run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
   } 
 
 });
@@ -651,7 +658,7 @@ router.get(&#039;/user_data/pcoa&#039;, function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
-  var biom_file,R_command;
+  var biom_file,shell_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   //var metafile_name = ts+&#039;_metadata.txt&#039;
   var biom_file = path.resolve(__dirname, &#039;../../tmp/&#039;+infile_name);
@@ -660,12 +667,12 @@ router.get(&#039;/user_data/pcoa&#039;, function(req, res) {
   //var metadata_file = path.resolve(__dirname, &#039;../../tmp/&#039;+metafile_name);
   //var name_on_graph= &#039;no&#039;;
     
-  //command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(&#039; &#039;);
-  command = [script_file, &#039;--mtx&#039;, biom_file, &#039;--calculate_pcoa&#039;,&#039;--metric&#039;, visual_post_items.selected_distance,&#039;--to_output&#039;,&#039;pcoa&#039;,].join(&#039; &#039;);
-  console.log(command);
+  //shell_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(&#039; &#039;);
+  shell_command = [script_file, &#039;--mtx&#039;, biom_file, &#039;--calculate_pcoa&#039;,&#039;--metric&#039;, visual_post_items.selected_distance,&#039;--to_output&#039;,&#039;pcoa&#039;,].join(&#039; &#039;);
+  console.log(shell_command);
   console.log(&#039;Using original matrix file&#039;);
   var exec = require(&#039;child_process&#039;).exec;
-  exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+  exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
       if(stderr){console.log(stderr);}
       html=&#039;&#039;;
       //console.log(&#039;parsing json&#039;)
@@ -706,7 +713,29 @@ router.get(&#039;/user_data/frequency_heatmap&#039;, function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = check_initial_status(myurl);  
+  res.render(&#039;visuals/user_data/frequency_heatmap&#039;, {
+            title: &#039;VAMPS Frequency Heatmap&#039;,
+            timestamp: ts || &#039;default_timestamp&#039;,
+            html : &quot;&lt;h2&gt;Not Coded Yet&lt;/h2&gt;&quot;,
+            user: req.user
+      });
+ 
+
+});
+//
+//  M E T A D A T A  T A B L E
+//
+router.get(&#039;/user_data/metadata_table&#039;, function(req, res) {
+  var myurl = url.parse(req.url, true);
   
+  var ts    = myurl.query.ts;
+  var values_updated = check_initial_status(myurl);  
+  res.render(&#039;visuals/user_data/metadata_table&#039;, {
+            title: &#039;VAMPS Metadata Table&#039;,
+            timestamp: ts || &#039;default_timestamp&#039;,
+            html : &quot;&lt;h2&gt;Not Coded Yet&lt;/h2&gt;&quot;,
+            user: req.user
+      });
  
 
 });
@@ -807,7 +836,7 @@ function check_initial_status(url) {
 //
 //
 //
-function run_R_cmd(req,res, ts, R_command, visual_name) {
+function run_script_cmd(req,res, ts, command, visual_name) {
     var exec = require(&#039;child_process&#039;).exec;
     var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border center_table&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
     var title = &#039;VAMPS&#039;;
@@ -816,7 +845,8 @@ function run_R_cmd(req,res, ts, R_command, visual_name) {
     html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
 
-    exec(R_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+
       if(stderr){console.log(stderr);}
       stdout = stdout.trim();
       console.log(stdout);
