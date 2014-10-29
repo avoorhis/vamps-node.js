@@ -2,6 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 var COMMON  = require('./routes_common');
+var C = require('../../public/constants');
 // biome format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
 // {
 //     "id":null,
@@ -39,9 +40,9 @@ var COMMON  = require('./routes_common');
 module.exports = {
 
 
-		get_biome_matrix: function(chosen_id_name_hash, post_items, sqlrows) {
+		get_biome_matrix: function(chosen_id_name_hash, post_items) {
 			var date = new Date();
-			
+			var did,rank,db_tax_id,node_id,parent_id,id,tax_name,cnt;
 			biome_matrix = {
 				id: post_items.ts,
 				format: "Biological Observation Matrix",
@@ -62,72 +63,170 @@ module.exports = {
 			var ukeys = [];
 			var unit_name_lookup_per_dataset = {};
 		  //var unit_id_lookup = {};
-			if(sqlrows.length === 0) {
-				ukeys = undefined;
-			}else {
-
-				for (var r=0; r < sqlrows.length; r++){
-
-					tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
-
-				    var did  = sqlrows[r].dataset_id;
-				    var cnt  = sqlrows[r].seq_count;
-				    //var uid  = sqlrows[r].uid;
-				    //var uname = sqlrows[r].tax;
-				    var uname = tax;
-			    
-					//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-					unit_name_lookup[uname] = 1;
-					ukeys.push(uname);
-
-					//unit_name_lookup_per_dataset[did][uid] = sumcounts
-				  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-				  	if(did in unit_name_lookup_per_dataset) {
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+			// TESTING
+			// data from DB or JSON_file or HTF5
+			//var read_choices = ['DB','JSON','HTF5'];
+			//var read_from = read_choices[0];
+		  //if(read_from === 'JSON') {
+		  for (var n in chosen_id_name_hash.ids) { // correct order
+				  did = chosen_id_name_hash.ids[n];				  
+				  rank = post_items.tax_depth;
+				  //console.log('did '+did+' rank: '+rank);
+				  //console.log(TaxaCounts[did][rank])				  
+				  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+				  	
+				  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+				  	node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id	;			  	
+				  	parent_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].parent_id;
+				  	tax_name='';
+				  	//console.log('RR '+C.RANKS.indexOf(rank))				  	
+				  	id = node_id;
+				  	while(id !== 0) {  				  		
+				  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[id].taxon + ';' + tax_name;
+				  		id = new_taxonomy.taxa_tree_dict_map_by_id[id].parent_id;
+				  	}
+				  	tax_name = tax_name.replace(/;+$/,'');  // remove trailing ';'
+				  					  	
+				  	cnt = 0
+				  	if(did in taxa_counts) {
+					  	if(rank in taxa_counts[did]) {
+						  	if(db_tax_id in taxa_counts[did][rank]) {
+						  		cnt = taxa_counts[did][rank][db_tax_id];				  		
+						  	}
+					  	}
+				  	}
+				  	
+				  	//console.log('ds '+ds+'tax '+name+' - count '+count)
+				  	//console.log(new_taxonomy.taxa_tree_dict_map_by_rank[rank][r])	
+				  	//console.log(tax_name);
+				  	unit_name_lookup[tax_name] = 1;
+						ukeys.push(tax_name);
+						if(did in unit_name_lookup_per_dataset) {
+				  		if(tax_name in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][tax_name] += parseInt(cnt);
 				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  			unit_name_lookup_per_dataset[did][tax_name] = parseInt(cnt);
 				  		}
 
 				  	}else{
 				  		unit_name_lookup_per_dataset[did] = {};
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+				  		if(tax_name in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][tax_name] += parseInt(cnt);
 
 				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  			unit_name_lookup_per_dataset[did][tax_name] = parseInt(cnt);
 				  		}
 				  	}
 			   
 			    }
 			    var unit_name_counts={};
-				  for(uname in unit_name_lookup){
-				  	unit_name_counts[uname]=[];
+				  for(tax_name in unit_name_lookup){
+				  	unit_name_counts[tax_name]=[];
 				  }
 				  for (var n in chosen_id_name_hash.ids) { // correct order
 				  	did = chosen_id_name_hash.ids[n];
 				  	
-				  	for(uname in unit_name_lookup) {
-				  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
-				  			cnt = unit_name_lookup_per_dataset[did][uname];
-				  			unit_name_counts[uname].push(cnt);
+				  	for(tax_name in unit_name_lookup) {
+				  		if(did in unit_name_lookup_per_dataset && tax_name in unit_name_lookup_per_dataset[did]) {
+				  			cnt = unit_name_lookup_per_dataset[did][tax_name];
+				  			unit_name_counts[tax_name].push(cnt);
 
 				  		} else {
-				  			unit_name_counts[uname].push(0);
+				  			unit_name_counts[tax_name].push(0);
 				  		}
 				  	}
 				  }
-				  ukeys.push(uname);
+				  ukeys.push(tax_name);
 				  ukeys = ukeys.filter(onlyUnique);
 				  ukeys.sort();
 
-
-
 			}
+
+			// remove empty rows:					
+			var empty_row_name_collector = [];
+  		for(var taxname in unit_name_counts) {
+  			var sum = 0;
+  			for(var c in unit_name_counts[taxname]){
+  				sum += unit_name_counts[taxname][c];
+  				//console.log(k);
+  			}
+  			if(sum===0){
+  				// just need to remove names from ukeys and zero rows
+  				// will be removed from data rows in create_biom_matrix()
+  				var idx = ukeys.indexOf(taxname);
+  				ukeys.splice(idx,1);
+  			}		  			
+  		}
+
+		  		
+
+
+			// if(sqlrows.length === 0) {
+			// 	ukeys = undefined;
+			// }else {
+
+			// 	for (var r=0; r < sqlrows.length; r++){
+				
+			// 		tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
+
+			// 	    var did  = sqlrows[r].dataset_id;
+			// 	    var cnt  = sqlrows[r].seq_count;
+			// 	    //var uid  = sqlrows[r].uid;
+			// 	    //var uname = sqlrows[r].tax;
+			// 	    var uname = tax;
+			    
+			// 		//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
+			// 		unit_name_lookup[uname] = 1;
+			// 		ukeys.push(uname);
+
+			// 		//unit_name_lookup_per_dataset[did][uid] = sumcounts
+			// 	  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
+			// 	  	if(did in unit_name_lookup_per_dataset) {
+			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+			// 	  		}else{
+			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+			// 	  		}
+
+			// 	  	}else{
+			// 	  		unit_name_lookup_per_dataset[did] = {};
+			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+
+			// 	  		}else{
+			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+			// 	  		}
+			// 	  	}
+			   
+			//     }
+			//     var unit_name_counts={};
+			// 	  for(uname in unit_name_lookup){
+			// 	  	unit_name_counts[uname]=[];
+			// 	  }
+			// 	  for (var n in chosen_id_name_hash.ids) { // correct order
+			// 	  	did = chosen_id_name_hash.ids[n];
+				  	
+			// 	  	for(uname in unit_name_lookup) {
+			// 	  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			cnt = unit_name_lookup_per_dataset[did][uname];
+			// 	  			unit_name_counts[uname].push(cnt);
+
+			// 	  		} else {
+			// 	  			unit_name_counts[uname].push(0);
+			// 	  		}
+			// 	  	}
+			// 	  }
+			// 	  ukeys.push(uname);
+			// 	  ukeys = ukeys.filter(onlyUnique);
+			// 	  ukeys.sort();
+
+
+
+			// }
 
 
 		  
-		  //console.log(unit_name_lookup_per_dataset);
+		  //console.log(unit_name_counts);
 		  
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
@@ -374,213 +473,213 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 //
 //  A S S E M B L E  T A X A
 //
-function assemble_taxa(depth, dict, row) {
-				var tax,domain,phylum,klass,order,family,genus,species,strain;
-				var d_id = row.domain_id+"_domain";	
-				//console.log('d_id '+d_id.toString())	      	      
-	      if(d_id in dict){
-	      	domain = dict[d_id]["taxon"];
-	      }else{
-	      	domain = 'unknown';
-	      }
-	      tax = domain;
-				if(depth === 'phylum') {
-		      var p_id = row.phylum_id+"_phylum";		
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      //console.log(domain+';'+phylum)
-		      tax = domain+';'+phylum;
-		    }else if(depth === 'class' || depth === 'klass') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass)
-		      tax = domain+';'+phylum+';'+klass;
-		    }else if(depth === 'order') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		    	var o_id = row.order_id+"_order";	
+// function assemble_taxa(depth, dict, row) {
+// 				var tax,domain,phylum,klass,order,family,genus,species,strain;
+// 				var d_id = row.domain_id+"_domain";	
+// 				//console.log('d_id '+d_id.toString())	      	      
+// 	      if(d_id in dict){
+// 	      	domain = dict[d_id]["taxon"];
+// 	      }else{
+// 	      	domain = 'unknown';
+// 	      }
+// 	      tax = domain;
+// 				if(depth === 'phylum') {
+// 		      var p_id = row.phylum_id+"_phylum";		
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum)
+// 		      tax = domain+';'+phylum;
+// 		    }else if(depth === 'class' || depth === 'klass') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass)
+// 		      tax = domain+';'+phylum+';'+klass;
+// 		    }else if(depth === 'order') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		    	var o_id = row.order_id+"_order";	
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id]["taxon"];
-		      }else{
-		      	order = 'order_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass+';'+order);
-		      tax = domain+';'+phylum+';'+klass+';'+order;
-		    }else if(depth === 'family') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		    	var o_id = row.order_id+"_order";	
-		    	var f_id = row.family_id+"_family";
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id]["taxon"];
+// 		      }else{
+// 		      	order = 'order_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass+';'+order);
+// 		      tax = domain+';'+phylum+';'+klass+';'+order;
+// 		    }else if(depth === 'family') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		    	var o_id = row.order_id+"_order";	
+// 		    	var f_id = row.family_id+"_family";
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id]["taxon"];
-		      }else{
-		      	order = 'order_NA';
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id]["taxon"];
-		      }else{
-		      	family = 'family_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family);
-		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family;
-		    }else if(depth === 'genus') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		    	var o_id = row.order_id+"_order";	
-		    	var f_id = row.family_id+"_family";
-		    	var g_id = row.genus_id+"_genus";
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id]["taxon"];
+// 		      }else{
+// 		      	order = 'order_NA';
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id]["taxon"];
+// 		      }else{
+// 		      	family = 'family_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family);
+// 		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family;
+// 		    }else if(depth === 'genus') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		    	var o_id = row.order_id+"_order";	
+// 		    	var f_id = row.family_id+"_family";
+// 		    	var g_id = row.genus_id+"_genus";
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id]["taxon"];
-		      }else{
-		      	order = 'order_NA';
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id]["taxon"];
-		      }else{
-		      	family = 'family_NA';
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id]["taxon"];
-		      }else{
-		      	genus = 'genus_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus);
-		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus;
-		    }else if(depth === 'species') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		    	var o_id = row.order_id+"_order";	
-		    	var f_id = row.family_id+"_family";
-		    	var g_id = row.genus_id+"_genus";
-		    	var s_id = row.species_id+"_species";
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id]["taxon"];
-		      }else{
-		      	order = 'order_NA';
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id]["taxon"];
-		      }else{
-		      	family = 'family_NA';
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id]["taxon"];
-		      }else{
-		      	genus = 'genus_NA';
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id]["taxon"];
-		      }else{
-		      	species = 'species_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species);
-		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species;
-		    }else if(depth === 'strain') {
-		    	var p_id = row.phylum_id+"_phylum";	
-		    	var k_id = row.klass_id+"_klass";	
-		    	var o_id = row.order_id+"_order";	
-		    	var f_id = row.family_id+"_family";
-		    	var g_id = row.genus_id+"_genus";
-		    	var s_id = row.species_id+"_species";
-		    	var st_id = row.strain_id+"_strain";
-		      if(p_id in dict){
-		      	phylum = dict[p_id]["taxon"];
-		      }else{
-		      	phylum = 'phylum_NA';
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id]["taxon"];
-		      }else{
-		      	klass = 'class_NA';
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id]["taxon"];
-		      }else{
-		      	order = 'order_NA';
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id]["taxon"];
-		      }else{
-		      	family = 'family_NA';
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id]["taxon"];
-		      }else{
-		      	genus = 'genus_NA';
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id]["taxon"];
-		      }else{
-		      	species = 'species_NA';
-		      }
-		      if(st_id in dict){
-		      	strain = dict[st_id]["taxon"];
-		      }else{
-		      	strain = 'strain_NA';
-		      }
-		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species+';'+strain);
-		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species+';'+strain;
-		    }
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id]["taxon"];
+// 		      }else{
+// 		      	order = 'order_NA';
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id]["taxon"];
+// 		      }else{
+// 		      	family = 'family_NA';
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id]["taxon"];
+// 		      }else{
+// 		      	genus = 'genus_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus);
+// 		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus;
+// 		    }else if(depth === 'species') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		    	var o_id = row.order_id+"_order";	
+// 		    	var f_id = row.family_id+"_family";
+// 		    	var g_id = row.genus_id+"_genus";
+// 		    	var s_id = row.species_id+"_species";
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id]["taxon"];
+// 		      }else{
+// 		      	order = 'order_NA';
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id]["taxon"];
+// 		      }else{
+// 		      	family = 'family_NA';
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id]["taxon"];
+// 		      }else{
+// 		      	genus = 'genus_NA';
+// 		      }
+// 		      if(s_id in dict){
+// 		      	species = dict[s_id]["taxon"];
+// 		      }else{
+// 		      	species = 'species_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species);
+// 		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species;
+// 		    }else if(depth === 'strain') {
+// 		    	var p_id = row.phylum_id+"_phylum";	
+// 		    	var k_id = row.klass_id+"_klass";	
+// 		    	var o_id = row.order_id+"_order";	
+// 		    	var f_id = row.family_id+"_family";
+// 		    	var g_id = row.genus_id+"_genus";
+// 		    	var s_id = row.species_id+"_species";
+// 		    	var st_id = row.strain_id+"_strain";
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id]["taxon"];
+// 		      }else{
+// 		      	phylum = 'phylum_NA';
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id]["taxon"];
+// 		      }else{
+// 		      	klass = 'class_NA';
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id]["taxon"];
+// 		      }else{
+// 		      	order = 'order_NA';
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id]["taxon"];
+// 		      }else{
+// 		      	family = 'family_NA';
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id]["taxon"];
+// 		      }else{
+// 		      	genus = 'genus_NA';
+// 		      }
+// 		      if(s_id in dict){
+// 		      	species = dict[s_id]["taxon"];
+// 		      }else{
+// 		      	species = 'species_NA';
+// 		      }
+// 		      if(st_id in dict){
+// 		      	strain = dict[st_id]["taxon"];
+// 		      }else{
+// 		      	strain = 'strain_NA';
+// 		      }
+// 		      //console.log(domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species+';'+strain);
+// 		      tax = domain+';'+phylum+';'+klass+';'+order+';'+family+';'+genus+';'+species+';'+strain;
+// 		    }
 
-		    return tax;
+// 		    return tax;
 
-}
+// }
 // function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
 // 		//
 // 	  // CSV2

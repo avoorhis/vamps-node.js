@@ -6,7 +6,7 @@ var COMMON  = require('./routes_common');
 module.exports = {
 
 
-		write_metadata_file: function(chosen_id_name_hash, post_items, sqlrows) {
+		write_metadata_file: function(chosen_id_name_hash, post_items) {
 			//console.log('in metadata')
 			var test_metadata = ['horses','donkeys'];
 			//var txt = "project_dataset\tproject\tdataset\n";
