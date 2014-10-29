@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">28.59</p>
+      <p class="stat">28.60</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">120</p>
+      <p class="stat">133</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.07</p>
+      <p class="stat">7.04</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.25</p>
+      <p class="stat">2.26</p>
     </div>
   </div>
 </div>
@@ -123,23 +123,36 @@ config.NORMALIZATIONCHOICES = { choices: [
         {id: &#039;max&#039;,             show: &#039;Normalized to the Maximum Sample&#039;},
         {id: &#039;freq&#039;,            show: &#039;Normalized to Frequency&#039;}
     ]};
+
+   
 config.DISTANCECHOICES = { choices: [
+        // both R and python
         {id: &#039;morisita_horn&#039;,   show: &#039;Morisita-Horn&#039;},
-        {id: &#039;jaccard&#039;,         show: &#039;Jaccard&#039;     },
-        {id: &#039;yue_clayton&#039;,     show: &#039;Yue-Clayton&#039; },
         {id: &#039;bray_curtis&#039;,     show: &#039;Bray-Curtis&#039; },
         {id: &#039;manhattan&#039;,       show: &#039;Manhattan&#039;   },
-        {id: &#039;raup&#039;,            show: &#039;Raup&#039;        },
         {id: &#039;gower&#039;,           show: &#039;Gower&#039;       },
         {id: &#039;euclidean&#039;,       show: &#039;Euclidean&#039;   },
         {id: &#039;canberra&#039;,        show: &#039;Canberra&#039;    },
         {id: &#039;kulczynski&#039;,      show: &#039;Kulczynski&#039;  },
+        {id: &#039;pearson&#039;,         show: &#039;Pearson&#039;     },
+        {id: &#039;spearman&#039;,        show: &#039;Spearman&#039;    },
+// R only
+        {id: &#039;correlation&#039;,     show: &#039;Correlation&#039; },
         {id: &#039;mountford&#039;,       show: &#039;Mountford&#039;   },
         {id: &#039;chao_j&#039;,          show: &#039;Chao J&#039;      },
         {id: &#039;chao_s&#039;,          show: &#039;Chao S&#039;      },
-        {id: &#039;pearson&#039;,         show: &#039;Pearson&#039;     },
-        {id: &#039;correlation&#039;,     show: &#039;Correlation&#039; },
-        {id: &#039;spearman&#039;,        show: &#039;Spearman&#039;    }
+        {id: &#039;raup&#039;,            show: &#039;Raup&#039;        },
+        {id: &#039;jaccard&#039;,         show: &#039;Jaccard&#039;     },
+        {id: &#039;yue_clayton&#039;,     show: &#039;Yue-Clayton&#039; }
+// python distances:
+
+        // {id: &#039;abund_jaccard&#039;,         show: &#039;Jaccard  - Abundance&#039;     },
+        // {id: &#039;binary_jaccard&#039;,        show: &#039;Jaccard - Binary&#039;     },
+        // {id: &#039;soergel&#039;,         show: &#039;Soergel&#039;     },
+        // {id: &#039;hellinger&#039;,         show: &#039;Hellinger&#039;     },
+        // {id: &#039;chord&#039;,         show: &#039;chord&#039;     },
+        // {id: &#039;chisq&#039;,         show: &#039;Chisq&#039;     }
+
     ]};
 
 // This List MUST match the fields in sequence_uniq_infos
@@ -159,7 +172,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:&#039;Dendrograms&#039;,       file:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;   },
     {name:&#039;PCoA Plots&#039;,        file:&#039;/images/visuals/pcoa.png&#039;,        link:&#039;user_data/pcoa&#039;   },
     {name:&#039;Counts Table&#039;,      file:&#039;/images/visuals/counts_table.png&#039;, link:&#039;user_data/counts_table&#039;   },
-    {name:&#039;Metadata Table&#039;,    file:&#039;&#039;, link:&#039;&#039;   }
+    {name:&#039;Metadata Table&#039;,    file:&#039;&#039;, link:&#039;user_data/metadata_table&#039;    }
     ]};
     
 config.required_metadata_fields = [&quot;dataset_id&quot;, &quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;depth&quot;, &quot;country&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;temp&quot;, &quot;salinity&quot;, &quot;diss_oxygen&quot;, &quot;public&quot;];
