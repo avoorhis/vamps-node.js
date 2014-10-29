@@ -232,14 +232,43 @@ dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevat
 function format_required_metadata_info(db_ids)
 {
   var insert_into_required_metadata_info_txt = [];
-  for (var aa in metadata_dict_by_project)
+  for (var project in metadata_dict_by_project)
   {
-    console.log("111 =====");
-    console.log("metadata_dict_by_project[aa]");
-    console.log(metadata_dict_by_project[aa]);
+    // console.log("111 =====");
+    // console.log("metadata_dict_by_project[project]");
+    // console.log(metadata_dict_by_project[project]);
     console.log("db_ids");
     console.log(db_ids);
     
+    for (var i = 0; metadata_dict_by_project[project].length > i; i += 1)
+    {
+      console.log("111 =====");
+      // console.log("metadata_dict_by_project[project][i]");
+      // console.log(metadata_dict_by_project[project][i]);
+      
+      // dataset_id = metadata_dict_by_project[project][i]["sample_name"];
+      altitude = metadata_dict_by_project[project][i]["altitude"];
+      assigned_from_geo = metadata_dict_by_project[project][i]["assigned_from_geo"];
+      collection_date = metadata_dict_by_project[project][i]["collection_date"];
+      depth = metadata_dict_by_project[project][i]["depth"];
+      country = metadata_dict_by_project[project][i]["country"];
+      elevation = metadata_dict_by_project[project][i]["elevation"];
+      env_biome = metadata_dict_by_project[project][i]["env_biome"];
+      env_feature = metadata_dict_by_project[project][i]["env_feature"];
+      env_matter = metadata_dict_by_project[project][i]["env_matter"];
+      latitude = metadata_dict_by_project[project][i]["latitude"];
+      longitude = metadata_dict_by_project[project][i]["longitude"];
+      temp = metadata_dict_by_project[project][i]["temp"];
+      salinity = metadata_dict_by_project[project][i]["salinity"];
+      diss_oxygen = metadata_dict_by_project[project][i]["diss_oxygen"];
+      public = metadata_dict_by_project[project][i]["public"];      
+      console.log('(metadata_dict_by_project[project][i]["latitude"])');
+      console.log(latitude);
+      
+    }
+    
+    
+
     // var filteredprojects = get_this_project(db_ids, project);
     // project_id = filteredprojects[0].project_id;
     // for (var i = 0; custom_column_names.length > i; i += 1)
