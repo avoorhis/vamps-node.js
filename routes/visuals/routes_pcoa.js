@@ -218,7 +218,7 @@ module.exports = {
 				    					.text('metadata name: '+mdata_name);     
 								  }
 
-								  if(v == 2) {
+								  if(v == 2 && Object.keys(mdata_name_value_lookup[mdata_name]).length <= 14) {
 								  	// add legend to right hand graph
 										var legend = g.append("g")
 										  .attr("class", "legend")
