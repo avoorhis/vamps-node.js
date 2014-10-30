@@ -36,7 +36,7 @@ function show_post_array(body) {
 //
 $(document).ready(function(){
     $('#download_fasta').click(function(){
-       alert('Not Attached yet')
+        alert('Not Attached yet')
         return false;
     });
 });
@@ -45,7 +45,7 @@ $(document).ready(function(){
 //
 $(document).ready(function(){
     $('#ds_save_order_btn').click(function(){
-       alert('Not Attached yet')
+        alert('Not Attached yet')
         return false;
     });
 });
