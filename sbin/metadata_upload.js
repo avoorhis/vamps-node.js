@@ -8,10 +8,10 @@
 * create a custom metadata table, using project_id, custom_metadata_fields and the additional columns info
 * The object should have methods:
 *   get required field names from db (for now from constants)
-* get required field info from csv
+*   get required field info from csv
 *   get custom field names etc. from csv
 *   put custom field names into db
-* create a custom table
+* create a custom table for this project
 * put required info in db
 * put custom info in db
 */
@@ -147,15 +147,79 @@ function work_with_ids_from_db()
         else
         {
           // todo: add ids to dict, use for custom and requireds
+          update_metadata_dict_by_project(results);
+          
+          
+          
           insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
           call_insert_custom_fields_into_db(insert_into_custom_fields_txt);
           insert_into_required_metadata_info_txt = format_required_metadata_info(results);
-          call_insert_required_fields_into_db(insert_into_required_metadata_info_txt);          
+          call_insert_required_fields_into_db(insert_into_required_metadata_info_txt);    
+          // console.log("000000");
+          // console.log(results);
+          // console.log("111111");
+
         }
       });
     }
   }
 }
+
+function update_metadata_dict_by_project(results)
+{
+  mdb_ids = {}
+  metadata_dict_by_project_w_ids = {}
+  console.log("000000");
+  console.log(results);
+  console.log("111111");
+  
+  console.log(metadata_dict_by_project);
+  
+  for (var i = 0; results.length > i; i += 1)
+  {
+    if (results[i])
+    {    
+      console.log("EEEE");
+      console.log(results[i].dataset);
+      project = results[i].project;
+      var metadata_arr_by_project = metadata_dict_by_project[project];
+      for (var i = 0; metadata_arr_by_project.length > i; i += 1)
+      {        
+        console.log("======");
+        sample_name = correct_dataset_name(metadata_arr_by_project[i].sample_name);
+        res = get_this_dataset(results, sample_name);
+        if (res[0])
+        {
+          console.log(res[0].dataset_id);
+          console.log("222222");
+          console.log(metadata_arr_by_project[i]);     
+          metadata_arr_by_project[i].dataset_id = res[0].dataset_id;
+          metadata_arr_by_project[i].correct_dataset_name = sample_name;          
+        }
+      }
+      console.log("99999");
+      console.log(metadata_arr_by_project);     
+      mdb_ids[project] = {project_id: results[i].project_id, csv_data: metadata_dict_by_project[project]};
+    }
+  }
+  // for (var project in metadata_dict_by_project)
+  // {
+    // console.log("======");
+  // 
+  //   console.log(metadata_dict_by_project[project]);
+    // console.log("333333");
+    // console.log(mdb_ids["KCK_LSM_Bv6"].csv_data);
+  //   
+  //   // metadata_dict_by_project_w_ids = add_to_dict(metadata_dict_by_project_w_ids, project, metadata_dict_by_project[project]);
+  // 
+  // }
+  
+}
+// for (var project in metadata_dict_by_project)
+// {
+//   var filteredprojects = get_this_project(db_ids, project);
+//   project_id = filteredprojects[0].project_id;
+
 
 function get_this_project(db_ids, project)
 {
@@ -164,15 +228,10 @@ function get_this_project(db_ids, project)
   });
 }
 
-function get_this_dataset_id(db_ids, dataset)
+function get_this_dataset(db_ids, dataset)
 {
   return db_ids.filter(function(obj) {
-    return (obj.dataset === dataset);
-    
-    // if(obj.dataset === dataset)
-    //{
-    //  return obj.dataset_id;      
-    //}
+    return (obj.dataset === dataset);    
   });
 }
 
@@ -240,7 +299,7 @@ function format_required_metadata_info(db_ids)
       // console.log("111 =====");
       
       var dataset = correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);      
-      var this_dataset = get_this_dataset_id(db_ids, dataset);
+      var this_dataset = get_this_dataset(db_ids, dataset);
       var dataset_id = "";
       if (this_dataset[0])
       {
@@ -295,6 +354,18 @@ function correct_db_data(collection_date)
 {
   var d = new Date(Date.parse(collection_date));
   return d.toISOString().replace(/T.+/, '');
+}
+
+/* create a custom table for this project
+ * read data from custom_metadata_fields
+ * create table
+ * put in data from csv
+*/
+
+function get_custom_fields_names(project_id)
+{
+  csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, results)
+  {});
 }
 
 function do_smth_w_data_hash(csv_data_hash)
