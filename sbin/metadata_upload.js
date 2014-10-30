@@ -165,55 +165,74 @@ function work_with_ids_from_db()
   }
 }
 
-function update_metadata_dict_by_project(results)
+function add_ids_to_metadata(db_ids, metadata_from_csv)
+{
+  // metadata_arr_by_project = [];
+  for (var k = 0; metadata_from_csv.length > k; k += 1)
+  {        
+    console.log("222222");
+    console.log(metadata_from_csv[k]);     
+    sample_name = correct_dataset_name(metadata_from_csv[k].sample_name);
+    console.log("4444 sample_name");
+    console.log(sample_name);
+    res = get_this_dataset(db_ids, sample_name);
+    console.log("4444 res");
+    console.log(res);
+    if (res[0])
+    {
+      // console.log(res[0].dataset_id);
+    //   // console.log("222222");
+    //   // console.log(metadata_arr_by_project[i]);     
+      metadata_from_csv[k].dataset_id = res[0].dataset_id;
+      metadata_from_csv[k].correct_dataset_name = sample_name;          
+    }
+  }
+  console.log("55555 metadata_from_csv");
+  console.log(metadata_from_csv);
+  return metadata_from_csv;
+}
+
+function update_metadata_dict_by_project(db_id_results)
 {
   mdb_ids = {}
   metadata_dict_by_project_w_ids = {}
   console.log("000000");
-  console.log(results);
+  console.log(db_id_results);
   console.log("111111");
-  
   console.log(metadata_dict_by_project);
   
-  for (var i = 0; results.length > i; i += 1)
+  // for (var i = 0; metadata_dict_by_project.length > i; i += 1)
+  for (var project in metadata_dict_by_project)
   {
-    if (results[i])
+    if (metadata_dict_by_project[project])
     {    
       console.log("EEEE");
-      console.log(results[i].dataset);
-      project = results[i].project;
-      var metadata_arr_by_project = metadata_dict_by_project[project];
-      for (var i = 0; metadata_arr_by_project.length > i; i += 1)
-      {        
-        console.log("======");
-        sample_name = correct_dataset_name(metadata_arr_by_project[i].sample_name);
-        res = get_this_dataset(results, sample_name);
-        if (res[0])
-        {
-          console.log(res[0].dataset_id);
-          console.log("222222");
-          console.log(metadata_arr_by_project[i]);     
-          metadata_arr_by_project[i].dataset_id = res[0].dataset_id;
-          metadata_arr_by_project[i].correct_dataset_name = sample_name;          
-        }
-      }
-      console.log("99999");
-      console.log(metadata_arr_by_project);     
-      mdb_ids[project] = {project_id: results[i].project_id, csv_data: metadata_dict_by_project[project]};
+      console.log(metadata_dict_by_project[project]);
+      metadata_arr_by_project = add_ids_to_metadata(db_id_results, metadata_dict_by_project[project]);
+      // project = db_id_results[i].project;
+      // var metadata_arr_by_project = metadata_dict_by_project[project];
+      // add_ids_to_metadata(db_id_results, metadata_arr_by_project);
+      // for (var k = 0; metadata_arr_by_project.length > k; k += 1)
+      // {        
+      //   console.log("======");
+      //   sample_name = correct_dataset_name(metadata_arr_by_project[i].sample_name);
+      //   res = get_this_dataset(db_id_results, sample_name);
+      //   if (res[0])
+      //   {
+      //     // console.log(res[0].dataset_id);
+      //     // console.log("222222");
+      //     // console.log(metadata_arr_by_project[i]);     
+      //     metadata_arr_by_project[i].dataset_id = res[0].dataset_id;
+      //     metadata_arr_by_project[i].correct_dataset_name = sample_name;          
+      //   }
+      // }
+      // console.log("888");
+      // console.log(metadata_arr_by_project);     
+      // mdb_ids[project] = {project_id: results[i].project_id, csv_data: metadata_arr_by_project[project]};
     }
-  }
-  // for (var project in metadata_dict_by_project)
-  // {
-    // console.log("======");
-  // 
-  //   console.log(metadata_dict_by_project[project]);
-    // console.log("333333");
-    // console.log(mdb_ids["KCK_LSM_Bv6"].csv_data);
-  //   
-  //   // metadata_dict_by_project_w_ids = add_to_dict(metadata_dict_by_project_w_ids, project, metadata_dict_by_project[project]);
-  // 
-  // }
-  
+  }  
+  console.log("99999");
+  // console.log(mdb_ids);     
 }
 // for (var project in metadata_dict_by_project)
 // {
