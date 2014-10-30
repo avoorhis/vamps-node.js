@@ -167,34 +167,32 @@ function work_with_ids_from_db()
 
 function add_ids_to_metadata(db_ids, metadata_from_csv)
 {
-  // metadata_arr_by_project = [];
   for (var k = 0; metadata_from_csv.length > k; k += 1)
   {        
-    console.log("222222");
-    console.log(metadata_from_csv[k]);     
     sample_name = correct_dataset_name(metadata_from_csv[k].sample_name);
-    console.log("4444 sample_name");
-    console.log(sample_name);
     res = get_this_dataset(db_ids, sample_name);
-    console.log("4444 res");
-    console.log(res);
-    if (res[0])
+    if (res[0] && (metadata_from_csv[k]["TITLE"] === res[0].project))
     {
-      // console.log(res[0].dataset_id);
-    //   // console.log("222222");
-    //   // console.log(metadata_arr_by_project[i]);     
+      // console.log("000000");
+      // console.log("res[0]");
+      // console.log(res[0]);
+      // console.log("metadata_from_csv[k]");
+      // console.log(metadata_from_csv[k]);
+      
+      metadata_from_csv[k].project_id = res[0].project_id;
       metadata_from_csv[k].dataset_id = res[0].dataset_id;
-      metadata_from_csv[k].correct_dataset_name = sample_name;          
+      metadata_from_csv[k].correct_dataset_name = sample_name;  
     }
   }
-  console.log("55555 metadata_from_csv");
-  console.log(metadata_from_csv);
+  // console.log("JJJJJJ");
+  // console.log("metadata_from_csv");
+  // console.log(metadata_from_csv);
+  
   return metadata_from_csv;
 }
 
 function update_metadata_dict_by_project(db_id_results)
 {
-  mdb_ids = {}
   metadata_dict_by_project_w_ids = {}
   console.log("000000");
   console.log(db_id_results);
@@ -209,6 +207,11 @@ function update_metadata_dict_by_project(db_id_results)
       console.log("EEEE");
       console.log(metadata_dict_by_project[project]);
       metadata_arr_by_project = add_ids_to_metadata(db_id_results, metadata_dict_by_project[project]);
+      console.log("MMMMM");
+      console.log(metadata_arr_by_project);
+      // if()
+      // metadata_dict_by_project_w_ids[project] = {project_id: results[i].project_id, csv_data: metadata_arr_by_project[project]};
+      
       // project = db_id_results[i].project;
       // var metadata_arr_by_project = metadata_dict_by_project[project];
       // add_ids_to_metadata(db_id_results, metadata_arr_by_project);
