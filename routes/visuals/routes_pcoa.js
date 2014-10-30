@@ -177,7 +177,7 @@ module.exports = {
 									  .enter().append("circle")  // create a new circle for each value
 									      .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
 									      .attr("cx", function (d,i) { return x(xdata[i]); } ) // translate x value
-									      .attr("r", 4) // radius of circle
+									      .attr("r", 2) // radius of circle
 									      //.style("opacity", 0.6) // opacity of circle
 									      .attr("id",function(d,i) {
 									      		var ret_str = matrix.names[i]+'-|-'+mdata_name+'-|-'+mdata_name_ds_lookup[mdata_name][matrix.names[i]];
