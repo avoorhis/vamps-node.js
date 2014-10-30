@@ -86,9 +86,10 @@ if (typeof get_graphics !=="undefined")
     }
     if (unit_selection === 'tax_silva108_custom')
     {
-      get_graphics_form.submit();
-      //msg = 'You must select some custom taxa';
-      //var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
+      msg = 'You must select some custom taxa';
+      var taxa_checked = check_form(get_graphics_form, msg, "custom_taxa");
+      //get_graphics_form.submit();
+      
     }
     if (taxa_checked)
     {
