@@ -70,6 +70,8 @@ router.post('/view_selection',  function(req, res) {
   visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
   visual_post_items.domains                      = req.body.domains      || ['NA'];
   visual_post_items.custom_taxa                  = req.body.custom_taxa  || ['NA'];
+  // in the unusual event that a single checkbox is selected... must change from string to list:
+  if(typeof visual_post_items.custom_taxa !== 'object') {visual_post_items.custom_taxa = [visual_post_items.custom_taxa]; }
   visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
@@ -93,7 +95,7 @@ router.post('/view_selection',  function(req, res) {
     unit_field = 'med_node_id';
     //unit_name_query = COMMON.get_med_query( req.db, uitems, selection_obj, visual_post_items );
   }else{
-    console.log('ERROR--RORRE');
+    console.log('ERROR--RORRE BAD Unit items in view_selection');
   }
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
