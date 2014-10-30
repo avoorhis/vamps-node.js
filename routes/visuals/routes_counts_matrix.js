@@ -128,8 +128,8 @@ module.exports = {
 
 
 		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
-		  console.log(unit_name_counts);
-		  console.log(ukeys);
+		  //console.log(unit_name_counts);
+		  //console.log(ukeys);
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
 		  matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
@@ -237,7 +237,7 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
   	return cnt
 }
 //
-//  C R E A T  C O N C A T E N A T E D  T A X  N A M E
+//  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //
 function create_concatenated_tax_name(node_id) {		
 		var tax_name = '';					  	
