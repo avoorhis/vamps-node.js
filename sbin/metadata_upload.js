@@ -50,7 +50,7 @@ function add_to_dict(dict, key, value)
   {
     dict[key] = [];
   }
-  dict[key].push(value);    
+  dict[key].push(value);
   return dict;
 }
 
@@ -147,14 +147,14 @@ function work_with_ids_from_db()
         else
         {
           // todo: add ids to dict, use for custom and requireds
-          update_metadata_dict_by_project(results);
-          
-          
-          
-          insert_into_custom_fields_txt = format_custom_metadata_fields_info(results);
+          metadata_dict_by_project_w_ids = update_metadata_dict_by_project(results);
+
+
+
+          insert_into_custom_fields_txt = format_custom_metadata_fields_info(metadata_dict_by_project_w_ids);
           call_insert_custom_fields_into_db(insert_into_custom_fields_txt);
           insert_into_required_metadata_info_txt = format_required_metadata_info(results);
-          call_insert_required_fields_into_db(insert_into_required_metadata_info_txt);    
+          call_insert_required_fields_into_db(insert_into_required_metadata_info_txt);
           // console.log("000000");
           // console.log(results);
           // console.log("111111");
@@ -168,7 +168,7 @@ function work_with_ids_from_db()
 function add_ids_to_metadata(db_ids, metadata_from_csv)
 {
   for (var k = 0; metadata_from_csv.length > k; k += 1)
-  {        
+  {
     sample_name = correct_dataset_name(metadata_from_csv[k].sample_name);
     res = get_this_dataset(db_ids, sample_name);
     if (res[0] && (metadata_from_csv[k]["TITLE"] === res[0].project))
@@ -178,69 +178,46 @@ function add_ids_to_metadata(db_ids, metadata_from_csv)
       // console.log(res[0]);
       // console.log("metadata_from_csv[k]");
       // console.log(metadata_from_csv[k]);
-      
+
       metadata_from_csv[k].project_id = res[0].project_id;
       metadata_from_csv[k].dataset_id = res[0].dataset_id;
-      metadata_from_csv[k].correct_dataset_name = sample_name;  
+      metadata_from_csv[k].correct_dataset_name = sample_name;
     }
   }
   // console.log("JJJJJJ");
   // console.log("metadata_from_csv");
   // console.log(metadata_from_csv);
-  
+
   return metadata_from_csv;
 }
 
 function update_metadata_dict_by_project(db_id_results)
 {
-  metadata_dict_by_project_w_ids = {}
-  console.log("000000");
-  console.log(db_id_results);
-  console.log("111111");
-  console.log(metadata_dict_by_project);
-  
+  var metadata_dict_by_project_w_ids = {}
+  // console.log("000000");
+  // console.log(db_id_results);
+  // console.log("111111");
+  // console.log(metadata_dict_by_project);
+
   // for (var i = 0; metadata_dict_by_project.length > i; i += 1)
   for (var project in metadata_dict_by_project)
   {
     if (metadata_dict_by_project[project])
-    {    
-      console.log("EEEE");
-      console.log(metadata_dict_by_project[project]);
-      metadata_arr_by_project = add_ids_to_metadata(db_id_results, metadata_dict_by_project[project]);
-      console.log("MMMMM");
-      console.log(metadata_arr_by_project);
-      // if()
-      // metadata_dict_by_project_w_ids[project] = {project_id: results[i].project_id, csv_data: metadata_arr_by_project[project]};
-      
-      // project = db_id_results[i].project;
-      // var metadata_arr_by_project = metadata_dict_by_project[project];
-      // add_ids_to_metadata(db_id_results, metadata_arr_by_project);
-      // for (var k = 0; metadata_arr_by_project.length > k; k += 1)
-      // {        
-      //   console.log("======");
-      //   sample_name = correct_dataset_name(metadata_arr_by_project[i].sample_name);
-      //   res = get_this_dataset(db_id_results, sample_name);
-      //   if (res[0])
-      //   {
-      //     // console.log(res[0].dataset_id);
-      //     // console.log("222222");
-      //     // console.log(metadata_arr_by_project[i]);     
-      //     metadata_arr_by_project[i].dataset_id = res[0].dataset_id;
-      //     metadata_arr_by_project[i].correct_dataset_name = sample_name;          
-      //   }
-      // }
-      // console.log("888");
-      // console.log(metadata_arr_by_project);     
-      // mdb_ids[project] = {project_id: results[i].project_id, csv_data: metadata_arr_by_project[project]};
+    {
+      // console.log("EEEE");
+      // console.log(metadata_dict_by_project[project]);
+      var metadata_arr_by_project = add_ids_to_metadata(db_id_results, metadata_dict_by_project[project]);
+      var res = get_this_project(db_id_results, project);
+
+      metadata_dict_by_project_w_ids[project] = {project_id: res[0].project_id, metadata: metadata_arr_by_project};
     }
-  }  
-  console.log("99999");
-  // console.log(mdb_ids);     
+  }
+  // console.log("99999");
+  // console.log("MMMMM");
+  // console.log(metadata_dict_by_project_w_ids["KCK_LSM_Bv6"]);
+  //
+  return metadata_dict_by_project_w_ids;
 }
-// for (var project in metadata_dict_by_project)
-// {
-//   var filteredprojects = get_this_project(db_ids, project);
-//   project_id = filteredprojects[0].project_id;
 
 
 function get_this_project(db_ids, project)
@@ -253,7 +230,7 @@ function get_this_project(db_ids, project)
 function get_this_dataset(db_ids, dataset)
 {
   return db_ids.filter(function(obj) {
-    return (obj.dataset === dataset);    
+    return (obj.dataset === dataset);
   });
 }
 
@@ -266,28 +243,41 @@ function call_insert_custom_fields_into_db(insert_into_custom_fields_txt)
       throw err; // or return an error message, or something
     else
     {
-      console.log("insert_custom_field_names results");    
-      console.log(results);    
+      console.log("insert_custom_field_names results");
+      console.log(results);
     }
   });
 }
 
-function format_custom_metadata_fields_info(db_ids)
+function format_custom_metadata_fields_info(metadata_dict_by_project_w_ids)
 {
   var insert_into_custom_fields_txt = [];
-  for (var project in metadata_dict_by_project)
+  for (var project in metadata_dict_by_project_w_ids)
   {
-    var filteredprojects = get_this_project(db_ids, project);
-    project_id = filteredprojects[0].project_id;
+    // var filteredprojects = get_this_project(db_ids, project);
+    // project_id = filteredprojects[0].project_id;
+    // metadata
     // separate, use above for required too
-    for (var i = 0; custom_column_names.length > i; i += 1)
+    // console.log("IIIIII");
+    // console.log(metadata_dict_by_project_w_ids[project]);
+    if (metadata_dict_by_project_w_ids[project])
     {
-        field_name = custom_column_names[i];
-        example = custom_column_examples[project][field_name];
-        into_db = project_id + ", '" + field_name + "', '" + example + "'";
-        insert_into_custom_fields_txt.push(into_db);
+      project_id = metadata_dict_by_project_w_ids[project].project_id;
+      // console.log("LLLLL");
+      // console.log(project_id);
+
+      for (var i = 0; custom_column_names.length > i; i += 1)
+      {
+          field_name = custom_column_names[i];
+          example = custom_column_examples[project][field_name];
+          into_db = project_id + ", '" + field_name + "', '" + example + "'";
+          insert_into_custom_fields_txt.push(into_db);
+      }
     }
-  }  
+  }
+  // console.log("SSSSS");
+  // console.log(insert_into_custom_fields_txt);
+
   return insert_into_custom_fields_txt;
 }
 
@@ -299,7 +289,7 @@ function custom_fields(csv_data_hash)
   custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log("custom_column_examples 333");
   // console.log(custom_column_examples);
-  
+
 }
 
 
@@ -315,12 +305,12 @@ function format_required_metadata_info(db_ids)
   {
     console.log("db_ids");
     console.log(db_ids);
-    
+
     for (var i = 0; metadata_dict_by_project[project].length > i; i += 1)
     {
       // console.log("111 =====");
-      
-      var dataset = correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);      
+
+      var dataset = correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);
       var this_dataset = get_this_dataset(db_ids, dataset);
       var dataset_id = "";
       if (this_dataset[0])
@@ -340,11 +330,11 @@ function format_required_metadata_info(db_ids)
         var temp = metadata_dict_by_project[project][i]["temp"];
         var salinity = metadata_dict_by_project[project][i]["salinity"];
         var diss_oxygen = metadata_dict_by_project[project][i]["diss_oxygen"];
-        var is_public = metadata_dict_by_project[project][i]["public"];      
-        
+        var is_public = metadata_dict_by_project[project][i]["public"];
+
         var into_db = dataset_id + ", " + altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_matter + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
         insert_into_required_metadata_info_txt.push(into_db);
-        
+
       }
       else
       {
@@ -354,7 +344,7 @@ function format_required_metadata_info(db_ids)
   }
   // console.log("7777 insert_into_required_metadata_info_txt");
   // console.log(insert_into_required_metadata_info_txt);
-  // 
+  //
   return insert_into_required_metadata_info_txt;
 }
 
@@ -366,8 +356,8 @@ function call_insert_required_fields_into_db(insert_into_required_metadata_info_
       throw err; // or return an error message, or something
     else
     {
-      console.log("insert_required_field_names results");    
-      console.log(results);    
+      console.log("insert_required_field_names results");
+      console.log(results);
     }
   });
 }
@@ -400,12 +390,12 @@ function do_smth_w_data_hash(csv_data_hash)
   // console.log("=====");
   // console.log("metadata_dict_by_pr_dataset");
   // console.log(metadata_dict_by_pr_dataset);
-  
+
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
-  
+
   custom_fields(csv_data_hash);
   work_with_ids_from_db();
-  
+
 }
 
 
