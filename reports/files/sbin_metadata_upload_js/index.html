@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">69.50</p>
+      <p class="stat">69.80</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">447</p>
+      <p class="stat">441</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">43.58</p>
+      <p class="stat">45.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.42</p>
+      <p class="stat">3.37</p>
     </div>
   </div>
 </div>
@@ -162,8 +162,8 @@ function make_metadata_dict_by_project(csv_data_hash)
 {
   metadata_dict_by_project = {};
 
-  for (var n = 0; csv_data_hash.length &gt; n; n += 1) {
-    var project = csv_data_hash[n][&#039;TITLE&#039;];
+  for (var i = 0; csv_data_hash.length &gt; i; i += 1) {
+    var project = csv_data_hash[i][&#039;TITLE&#039;];
     metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, csv_data_hash[i]);
   }
   return metadata_dict_by_project;
@@ -481,12 +481,12 @@ function collect_custom_fields_names_into_arr(custom_fields_names)
   for (var k = 0; custom_fields_names.length &gt; k; k += 1)
   {
     field_name = custom_fields_names[k].field_name;
-    custom_fields_names_arr.push(field_name)
+    custom_fields_names_arr.push(field_name);
   }
   return custom_fields_names_arr;
 }
 
-
+// todo: refactoring - simplify
 function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
 {
   var custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
@@ -505,20 +505,14 @@ function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
     if (project_id !== undefined)
     {
       var values = get_values(this_entry, custom_fields_names_arr);
-      if (i === 0)
-      {
-        insert_into_custom_metadata_info_query += &quot;(&quot; + values + &quot;)&quot;;
-      }
-      else
-      {
-        insert_into_custom_metadata_info_query += &quot;, (&quot; +  values + &quot;)&quot;;
-      }      
+      i === 0 ? comma = &quot;&quot; : comma = &quot;, &quot;; 
+      insert_into_custom_metadata_info_query += comma + &quot;(&quot; + values + &quot;)&quot;;
     }
   }
-    console.log(&quot;555 =====&quot;);
-    console.log(&quot;insert_into_custom_metadata_info_query&quot;);
-    console.log(insert_into_custom_metadata_info_query);    
-    return insert_into_custom_metadata_info_query;
+  // console.log(&quot;555 =====&quot;);
+  // console.log(&quot;insert_into_custom_metadata_info_query&quot;);
+  // console.log(insert_into_custom_metadata_info_query);    
+  return insert_into_custom_metadata_info_query;
 }
 
 function get_values(this_entry, custom_fields_names_arr)
@@ -527,7 +521,7 @@ function get_values(this_entry, custom_fields_names_arr)
   values = &quot;&#039;&quot; + this_entry[custom_fields_names_arr[0]] + &quot;&#039;&quot;; // to avoid an extra comma
   for (var i = 1; custom_fields_names_arr.length &gt; i; i += 1)
   {
-     values += &quot;, &#039;&quot; + this_entry[custom_fields_names_arr[i]] + &quot;&#039;&quot;
+     values += &quot;, &#039;&quot; + this_entry[custom_fields_names_arr[i]] + &quot;&#039;&quot;;
   }
   return values;
 }
