@@ -7,45 +7,60 @@
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Re-Order Datasets</div>
       
-<div id='show_selected_datasets_divx' class=''>
+<div id='' class=''>
 Here are your <%= items.names.length %> selected datasets:<br>
 
 <div id='' class='small_font'>
-<table>
-  <tr><td>Original Order</td><td>Drag to Re-Order</td></tr>
-  <tr><td class='td_top'>
-    <table border='1' id='' class='small_font center_table' >
-    <% for (var i in items.names){ %>
-        <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
-    <% } %>
-    </table>
-</td><td>
-    <table border='1' id='drag_table' class='small_font center_table' >
-    <% for (var i in items.names){ %>
-        <tr><td class='dragHandle'>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
-    <% } %> 
-
-    </table>
-    <div id='ds_save_order_div'><input type='button' id='ds_save_order_btn' class='' value='Save Order'></div>
-</td>
-<td class='td_top'>
+<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
     <table>
-      <tr><td class='small_font'>Drag rows to re-order<br>OR</td></tr>
-    
-      <tr><td class='small_font'><input type='button' value='Alphabetize'><br>OR</td></tr>
-      <tr><td class='small_font'>Select distance metric<br>to cluster by:<br>
+      <tr><td>Original Order</td><td>Drag to Re-Order</td></tr>
+      <tr><td class='td_top'>
+        <table border='1' id='' class='small_font center_table' >
+        <% for (var i in items.names){ %>
+            <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
+        <% } %>
+        </table>
+    </td><td>
+        
+        <table border='1' id='drag_table' class='small_font center_table' >
+        <% for (var i in items.names){ %>
+            <tr>
+              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
+                <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > 
+                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
+              </td>
+            </tr>
+        <% } %> 
+        </table>
 
-                    <select name='selected_heatmap_distance' class='small_font'>
-                    <% for(d in distrows ) { %>
-                      <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
-                    <% } %>
-                    </select>   
-      <br>OR</td></tr> 
-      <tr><td class='small_font'><input type='button' value='Reset Order'></td></tr>            
+        <div id='ds_save_order_div' class='small_font'><input type='submit' id='save_order_btn' class='' value='Save Order and Return'>
+        
+       
+        </div>
+
+    </td>
+    <td class='td_top'>
+        
+        <table border='1' class='single_border '>
+          <tr><td class='small_font'>Drag rows to re-order<br>OR</td></tr>
+        
+          <tr><td class='small_font'><input type='button' value='Alphabetize'><br>OR</td></tr>
+          <tr><td class='small_font'>Select distance metric<br>to cluster by:<br>
+
+                        <select name='selected_heatmap_distance' class='small_font'>
+                        <% for(d in distrows ) { %>
+                          <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
+                        <% } %>
+                        </select>   
+          <br>OR</td></tr> 
+          <tr><td class='small_font'><input type='button' value='Reset Order'></td></tr>            
+        </table>
+        
+    </td>
+    </tr>
     </table>
-</td>
-</tr>
-</table>
+  
+</form>
 
 </div>
 
