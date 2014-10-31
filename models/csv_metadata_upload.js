@@ -45,6 +45,16 @@ function make_insert_required_field_names_query(insert_into_required_fields_info
   return insert_required_field_names_query;
 }
 
+function make_get_custom_fields_query(project_id)
+{
+  var get_custom_fields_query = "SELECT DISTINCT field_name, field_type \
+    FROM custom_metadata_fields \
+    WHERE project_id = '" + project_id + "' \
+  ";
+   console.log('get_custom_fields_query:');
+   console.log(get_custom_fields_query);
+   return get_custom_fields_query;
+}
 
 
 // public
@@ -84,4 +94,10 @@ csvMetadataUpload.prototype.insert_required_field_names = function(insert_into_r
   });
 };
 
-
+csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, callback) 
+{
+  get_custom_fields_names_query = make_get_custom_fields_query(project_id);
+  connection.query(get_custom_fields_names_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
