@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">37.53</p>
+      <p class="stat">54.10</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">582</p>
+      <p class="stat">293</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">62.28</p>
+      <p class="stat">40.91</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.40</p>
+      <p class="stat">1.92</p>
     </div>
   </div>
 </div>
@@ -92,7 +92,9 @@
     <textarea id="file-source" class="col-md-12">// counts_matrix.js
 var path = require(&#039;path&#039;);
 var fs = require(&#039;fs&#039;);
+//var hdf5 = require(&#039;hdf5&#039;);
 var COMMON  = require(&#039;./routes_common&#039;);
+var C = require(&#039;../../public/constants&#039;);
 // biome format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
 // {
 //     &quot;id&quot;:null,
@@ -130,99 +132,98 @@ var COMMON  = require(&#039;./routes_common&#039;);
 module.exports = {
 
 
-		get_biome_matrix: function(chosen_id_name_hash, post_items, sqlrows) {
+		get_biome_matrix: function(chosen_id_name_hash, post_items) {
 			var date = new Date();
-			
+			var did,rank,db_tax_id,node_id,cnt,matrix_file;
 			biome_matrix = {
-				id: post_items.ts,
-				format: &quot;Biological Observation Matrix&quot;,
-				units: post_items.unit_choice,
-				generated_by:&quot;VAMPS-NodeJS Version 2.0&quot;,
-				date: date.toISOString(),
-				rows:[],												// taxonomy (or OTUs, MED nodes) names
-				columns:[],											// ORDERED dataset names
-				column_totals:[],								// ORDERED datasets count sums
-				max_dataset_count:0,						// maximum dataset count
-				matrix_type: &#039;dense&#039;,
-    			matrix_element_type: &#039;int&#039;,
-     			shape: [],									// [row_count, col_count]
-     			data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
-     		};
+					id: post_items.ts,
+					format: &quot;Biological Observation Matrix&quot;,
+					units: post_items.unit_choice,
+					generated_by:&quot;VAMPS-NodeJS Version 2.0&quot;,
+					date: date.toISOString(),
+					rows:[],												// taxonomy (or OTUs, MED nodes) names
+					columns:[],											// ORDERED dataset names
+					column_totals:[],								// ORDERED datasets count sums
+					max_dataset_count:0,						// maximum dataset count
+					matrix_type: &#039;dense&#039;,
+	    			matrix_element_type: &#039;int&#039;,
+	     			shape: [],									// [row_count, col_count]
+	     			data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+	     		};
 			
-			var unit_name_lookup = {};
 			var ukeys = [];
+			var unit_name_lookup = {};
 			var unit_name_lookup_per_dataset = {};
-		  //var unit_id_lookup = {};
-			if(sqlrows.length === 0) {
-				ukeys = undefined;
-			}else {
+			var unit_name_counts = {};
+		  
+			// TESTING
+			// data from DB or JSON_file or HTF5
+			//var read_choices = [&#039;DB&#039;,&#039;JSON&#039;,&#039;HTF5&#039;];
+			//var read_from = read_choices[0];
+		  //if(read_from === &#039;JSON&#039;) {
+				  
+		  for (var n in chosen_id_name_hash.ids) { // has correct order
+				  
+				  did = chosen_id_name_hash.ids[n];	
 
-				for (var r=0; r &lt; sqlrows.length; r++){
+				  if(post_items.unit_choice === &#039;tax_silva108_simple&#039;) {
 
-					tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
+						  rank = post_items.tax_depth;
+						  //console.log(&#039;did &#039;+did+&#039; rank: &#039;+rank);
+						  		  
+						  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+						  	
+						  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+						  	node_id   = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;	
+						  	
+								var tax_long_name = create_concatenated_tax_name(node_id);	
+								unit_name_lookup[tax_long_name] = 1;					  	
+						  	ukeys.push(tax_long_name);	
 
-				    var did  = sqlrows[r].dataset_id;
-				    var cnt  = sqlrows[r].seq_count;
-				    //var uid  = sqlrows[r].uid;
-				    //var uname = sqlrows[r].tax;
-				    var uname = tax;
-			    
-					//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-					unit_name_lookup[uname] = 1;
-					ukeys.push(uname);
+						  	cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);		// This uses TaxaCounts created in app.js from JSON file  	
+						  	
+						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);		 	
+					   
+					    }	
 
-					//unit_name_lookup_per_dataset[did][uid] = sumcounts
-				  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-				  	if(did in unit_name_lookup_per_dataset) {
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-				  		}
+			    }else if(post_items.unit_choice === &#039;tax_silva108_custom&#039;){
 
-				  	}else{
-				  		unit_name_lookup_per_dataset[did] = {};
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+			    		for(var t in post_items.custom_taxa) {
+							 		//console.log(post_items.custom_taxa[t])
+							 		var name_and_rank  = post_items.custom_taxa[t]
+							 		var items          = name_and_rank.split(&#039;_&#039;);
+							 		var tax_short_name = items[0];							 		
+							 		rank           = items[1];
+							 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
+							 		node_id   = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
+							 		
+							 		var tax_long_name = create_concatenated_tax_name(node_id);
+							 		unit_name_lookup[tax_long_name] = 1;
+									ukeys.push(tax_long_name);
 
-				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-				  		}
-				  	}
-			   
-			    }
-			    var unit_name_counts={};
-				  for(uname in unit_name_lookup){
-				  	unit_name_counts[uname]=[];
-				  }
-				  for (var n in chosen_id_name_hash.ids) { // correct order
-				  	did = chosen_id_name_hash.ids[n];
-				  	
-				  	for(uname in unit_name_lookup) {
-				  		if(did in unit_name_lookup_per_dataset &amp;&amp; uname in unit_name_lookup_per_dataset[did]) {
-				  			cnt = unit_name_lookup_per_dataset[did][uname];
-				  			unit_name_counts[uname].push(cnt);
-
-				  		} else {
-				  			unit_name_counts[uname].push(0);
-				  		}
-				  	}
-				  }
-				  ukeys.push(uname);
-				  ukeys = ukeys.filter(onlyUnique);
-				  ukeys.sort();
+							 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
+							  	
+							  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);						   
+						  
+						  }  // END :: for(t in post_items.custom_taxa) {				
 
 
-
+			    }				    
 			}
+			ukeys = ukeys.filter(onlyUnique);
+		  ukeys.sort();
+
+			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);	
+			
+			ukeys = remove_empty_rows(unit_name_counts, ukeys);	
 
 
-		  
-		  //console.log(unit_name_lookup_per_dataset);
-		  
+		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
+		  //console.log(unit_name_counts);
+		  //console.log(ukeys);
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
-		  var matrix_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_count_matrix.biom&#039;;
+		  matrix_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_count_matrix.biom&#039;;
 		    
 			console.log(&#039;Writing matrix file&#039;);
 			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
@@ -236,99 +237,110 @@ module.exports = {
 
 		},
 
-		//
-		// F I L L  I N  C O U N T S  M A T R I X
-		//
-// 		fill_in_counts_matrix: function(selection_obj, field) {
-// 			// This function creates a counts matrix using only the dataset_ids (no names)
-// 			// and fills it in with zeros where appropriate.
-// 			// when returned this matrix becomes part of the selection_obj
-// 			// FORMAT:
-// 			// counts_matrix:{&quot;82&quot;:[4,2,2],&quot;84&quot;:[0,0,1],&quot;137&quot;:[0,0,1],&quot;214&quot;:[272,401,430]}}
-
-// 		  //selection_obj = JSON.parse(selection_obj);
-		  
-// 		  var matrix = {};  
-		  
-// 		  var dataset_ids = selection_obj.dataset_ids;
-// 		  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
-// 		  var seq_freqs   = selection_obj.seq_freqs;      
-// 		  //console.log(&#039;&#039;)
-// 		  //    seq_ids  : [id1,id2,id3...],
-// 		  //    tax_id1 : [tct1,0,tid3...],
-// 		  //    tax_id2 : [tct4,tct5,tct6...],
-// 		  //    tax_id3 : [tct7,tct8,0...]
-// 		  //    ....
-// 		  //  }
-
-// 		  //var old_sid = &#039;x&#039;;
-// 		  //var tids = [96,214,82,214,137];
-// 		  //var vals = [2,103,8,203,3];
-
-// 		  // for (i=0; i &lt; tids.length; i++) {
-// 		  //   id = tids[i]
-// 		  //   if (id in tmp){
-// 		  //     tmp[id][0] += vals[i]
-// 		  //   } else {
-// 		  //     tmp[id] = [vals[i]]
-// 		  //   }
-// 		  // }
-// 		  var counts = {};
-// 		  var unit_id_lookup = {};
-// 		  var unit_ids = [];
-// 		  var unit_id;
-// 		  var tmp;
-		  
-// 		  for (var n=0; n &lt; unit_assoc.length; n++) {
-
-// 		        unit_ids = unit_assoc[n];
-// 		        tmp = {};
-// 		        counts[dataset_ids[n]] = {};
-// 		        for (var i=0; i &lt; unit_ids.length; i++) {
-// 		            unit_id = unit_ids[i];
-// 		            unit_id_lookup[unit_id]=1;
-// 		            if (unit_id in tmp){
-// 		              tmp[ unit_id ] += seq_freqs[n][i];
-// 		            } else {
-// 		              tmp[ unit_id ] = seq_freqs[n][i];
-// 		            }
-// 		        }
-// 		        counts[ dataset_ids[n] ]=tmp;
-// 		  }
-// 		  //console.log(JSON.stringify(counts,null,4));
-// 		 //console.log(unit_id_lookup);
-// 		// { &#039;82&#039;: 8, &#039;96&#039;: 2, &#039;137&#039;: 3, &#039;214&#039;: 306 }
-// 		// { &#039;82&#039;: 4, &#039;96&#039;: 2, &#039;214&#039;: 33 }
-// 		// { &#039;82&#039;: 1, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 277 }
-// 		// { &#039;82&#039;: 6, &#039;96&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 596 }
-// 		// { &#039;82&#039;: 1, &#039;84&#039;: 4, &#039;96&#039;: 2, &#039;112&#039;: 1, &#039;137&#039;: 1, &#039;214&#039;: 75 }
-// 		// { &#039;82&#039;: 2, &#039;96&#039;: 1, &#039;112&#039;: 1, &#039;214&#039;: 331 }
-// 		  //var mtx = &quot;\t&quot;;
-		  
-// 		  //for(did in dataset_ids) {
-// 		  for (var uid in unit_id_lookup) {  
-// 		    matrix[uid]=[];
-		    
-// 		    for (var d in dataset_ids) { // this is correct order
-// 		    	did = dataset_ids[d];
-
-// 		      if(uid in counts[did]){
-// 		        c = counts[did][uid];
-// 		      }else{
-// 		        c = 0;
-// 		      }
-// 		      matrix[uid].push(c);
-
-// 		    }
-// 		  }
-// 		  return matrix;
-// 		},
 
 	
 
 };
 //
+//  R E M O V E  E M P T Y  R O W S
 //
+function remove_empty_rows(taxa_counts, ukeys) {
+		// remove empty rows:					
+		
+		for(var taxname in taxa_counts) {
+			var sum = 0;
+			for(var c in taxa_counts[taxname]){
+				sum += taxa_counts[taxname][c];
+				//console.log(k);
+			}
+			if(sum===0){
+				// just need to remove names from ukeys and zero rows
+				// will be removed from data rows in create_biom_matrix()
+				var idx = ukeys.indexOf(taxname);
+				ukeys.splice(idx,1);
+			}		  			
+		}
+		return ukeys;
+
+}
+//
+//	C R E A T E  U N I T  N A M E  C O U N T S
+//
+function create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset) {
+		
+		var taxa_counts={};
+	  
+	  for(tax_name in unit_name_lookup){
+	  	taxa_counts[tax_name]=[];
+	  }	
+	  
+	  
+		for (var n in chosen_id_name_hash.ids) { // correct order
+	  	did = chosen_id_name_hash.ids[n];				  	
+	  	for(var tax_name in unit_name_lookup) {
+	  		if(did in unit_name_lookup_per_dataset &amp;&amp; tax_name in unit_name_lookup_per_dataset[did]) {
+	  			cnt = unit_name_lookup_per_dataset[did][tax_name];
+	  			taxa_counts[tax_name].push(cnt);
+	  		} else {
+	  			taxa_counts[tax_name].push(0);
+	  		}
+	  	}
+	  }
+	  return taxa_counts;
+}
+//
+//	F I L L I N  N A M E  L O O K U P  P E R  D S
+//
+function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
+	
+		
+										
+		if(did in lookup) {
+  		if(tax_name in lookup[did]) {
+  			lookup[did][tax_name] += parseInt(cnt);
+  		}else{
+  			lookup[did][tax_name] = parseInt(cnt);
+  		}
+
+  	}else{
+  		lookup[did] = {};
+  		if(tax_name in lookup[did]) {
+  			lookup[did][tax_name] += parseInt(cnt);
+
+  		}else{
+  			lookup[did][tax_name] = parseInt(cnt);
+  		}
+  	}
+  	return lookup;
+}
+//
+//  F I N D  C O U N T  P E R  D S  A N D  R A N K
+//
+function find_count_per_ds_and_rank(did, rank, db_tax_id) {
+		var cnt = 0
+  	if(did in TaxaCounts) {
+	  	if(rank in TaxaCounts[did]) {
+		  	if(db_tax_id in TaxaCounts[did][rank]) {
+		  		cnt = TaxaCounts[did][rank][db_tax_id];				  		
+		  	}
+	  	}
+  	}
+  	return cnt
+}
+//
+//  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
+//
+function create_concatenated_tax_name(node_id) {		
+		var tax_name = &#039;&#039;;					  	
+  	while(node_id !== 0) {  				  		
+  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + &#039;;&#039; + tax_name;
+  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
+  	}
+  	return tax_name.replace(/;+$/,&#039;&#039;);  // remove trailing &#039;;&#039;
+
+}
+//
+//	C R E A T E  B I O M E  M A T R I X
 //
 function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
 	
@@ -339,7 +351,7 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 	    biome_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
-	for(uk in ukeys) {
+	for(var uk in ukeys) {
 		
 		biome_matrix.rows.push({ id: ukeys[uk], metadata: {} });
 		
@@ -349,18 +361,18 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 	biome_matrix.shape = [biome_matrix.rows.length, biome_matrix.columns.length];
 	
 	var max_count = {};
-	
+	var max;
 	if(ukeys === undefined) {
 		max = 0;
 	}else{
-		for(n in biome_matrix.columns) {
+		for(var n in biome_matrix.columns) {
 		  	max_count[biome_matrix.columns[n].id] = 0;
 		  	for(d in biome_matrix.data) {
 		  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
 		  	}
 		}
-		var max = 0;
-		for(n in chosen_id_name_hash.names) { 		// correct order
+		max = 0;
+		for(var n in chosen_id_name_hash.names) { 		// correct order
 		  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
 		  	if(max_count[chosen_id_name_hash.names[n]] &gt; max){
 		  		max = max_count[chosen_id_name_hash.names[n]];
@@ -370,327 +382,7 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 	biome_matrix.max_dataset_count = max;
 	//console.log(max_count);
 	return(biome_matrix);
-}
-//
-//  CREATE UNIT ID LOOKUP
-//
-// function create_unit_id_lookup( uid, counts, unit_id_lookup ) {
-	 	
-// 	 	if(uid in unit_id_lookup) {
-//       for (var c in counts) {
-//         unit_id_lookup[uid][c] += counts[c]
-//       }
-//     }else{
-//       unit_id_lookup[uid] = []
-//       for (var c in counts) {
-//         unit_id_lookup[uid].push(counts[c])
-//       }
-//     }
-//     return unit_id_lookup
-// }
-//
-//  CREATE UNIT NAME LOOKUP
-//
-// function create_unit_name_lookup( did, name, counts, unit_name_lookup ) {
- 	
-//  	if(name in unit_name_lookup) {
-//     for (var c in counts) {
-//       unit_name_lookup[name][c] += counts[c];
-//     }
-//   }else{
-//     unit_name_lookup[name] = [];
-//     for (var c in counts) {
-//       unit_name_lookup[name].push(counts[c]);
-//     }
-//   }
-//   return unit_name_lookup;
-
-// }
-//
-//
-//
-//function create_json_id_matrix(mtx) {
-//	return JSON.stringify(mtx)+&quot;\n&quot;;
-//}
-//
-//  CREATE CSV ID MATRIX
-//
-// function create_csv_id_matrix( unit_ids, dataset_ids ) {
-// 		//
-// 		// CSV3
-// 		//
-// 	  var csv = &#039;DatasetId&#039;;   // for D3.js stackbars
-// 		for(var uid in unit_ids) {
-// 			csv += &#039;,&#039;+uid;
-// 		}
-// 		csv += &quot;\n&quot;;
-// 		for (var did in dataset_ids) {  // in correct order
-			
-// 	    csv += dataset_ids[did];
-// 	    for(var uid in unit_ids){  // 
-// 	    	csv += &#039;,&#039;+ unit_ids[uid][did]
-// 	    }
-// 	    csv += &quot;\n&quot;;
-// 		}
-// 		return csv;
-// }
-//
-// CREATE TEXT MATRIX
-//
-// function create_text_matrix( unit_names, dataset_names, dataset_ids, matrix_with_names) {
-
-// 		// 
-// 		// MTX  for input to R scripts
-// 		//
-// 		var mtx = &#039;&#039;;
-// 	  for (var did in dataset_ids) {
-	    
-// 	    var index = dataset_names.ids.indexOf( dataset_ids[did] );
-// 	    mtx += &quot;\t&quot; + dataset_names.names[ index ];
-// 	    matrix_with_names.dataset_names.push(dataset_names.names[ index ]);
-// 	  }
-// 	  mtx += &quot;\n&quot;;
-	  
-// 	  matrix_with_names.unit_names = unit_names;
-	  
-// 	  for(var uname in unit_names) {
-// 	    mtx += uname;
-// 	    for (var c in unit_names[uname]) {
-// 	      mtx += &quot;\t&quot; + unit_names[uname][c].toString();
-// 	    }
-// 	    mtx += &quot;\n&quot;;
-// 	  }
-// 	  return mtx;
-// }
-//
-//  A S S E M B L E  T A X A
-//
-function assemble_taxa(depth, dict, row) {
-				var tax,domain,phylum,klass,order,family,genus,species,strain;
-				var d_id = row.domain_id+&quot;_domain&quot;;	
-				//console.log(&#039;d_id &#039;+d_id.toString())	      	      
-	      if(d_id in dict){
-	      	domain = dict[d_id][&quot;taxon&quot;];
-	      }else{
-	      	domain = &#039;unknown&#039;;
-	      }
-	      tax = domain;
-				if(depth === &#039;phylum&#039;) {
-		      var p_id = row.phylum_id+&quot;_phylum&quot;;		
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum)
-		      tax = domain+&#039;;&#039;+phylum;
-		    }else if(depth === &#039;class&#039; || depth === &#039;klass&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass)
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass;
-		    }else if(depth === &#039;order&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order;
-		    }else if(depth === &#039;family&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family;
-		    }else if(depth === &#039;genus&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
-		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus;
-		    }else if(depth === &#039;species&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
-		    	var s_id = row.species_id+&quot;_species&quot;;
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id][&quot;taxon&quot;];
-		      }else{
-		      	species = &#039;species_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species;
-		    }else if(depth === &#039;strain&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
-		    	var s_id = row.species_id+&quot;_species&quot;;
-		    	var st_id = row.strain_id+&quot;_strain&quot;;
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id][&quot;taxon&quot;];
-		      }else{
-		      	species = &#039;species_NA&#039;;
-		      }
-		      if(st_id in dict){
-		      	strain = dict[st_id][&quot;taxon&quot;];
-		      }else{
-		      	strain = &#039;strain_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain;
-		    }
-
-		    return tax;
-
-}
-// function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
-// 		//
-// 	  // CSV2
-// 	  //		  
-// 	  var csv = &#039;DatasetName&#039;;   // for D3.js stackbars
-// 	  for(var uname in unit_names) {
-// 			csv += &#039;,&#039;+uname;
-// 		}
-// 		csv += &quot;\n&quot;;
-// 		for (var did in dataset_ids) {  // in correct order
-// 			var index = dataset_names.ids.indexOf( dataset_ids[did] );
-// 	    csv += dataset_names.names[ index ];
-// 	    for(var uname in unit_names){  // 
-// 	    	csv += &#039;,&#039;+ unit_names[uname][did]
-// 	    }
-// 	    csv += &quot;\n&quot;;
-// 		}
-// 		return csv;
-// }</textarea>
+}</textarea>
   </div>
 </div>
 
