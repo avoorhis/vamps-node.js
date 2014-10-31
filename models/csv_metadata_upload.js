@@ -56,6 +56,25 @@ function make_get_custom_fields_query(project_id)
    return get_custom_fields_query;
 }
 
+//todo: move to models
+function make_create_custom_query(custom_fields, project_id)
+{
+  var table_name = "custom_metadata_" + project_id;
+  var create_custom_query = "CREATE TABLE IF NOT EXISTS " + table_name;
+      create_custom_query += "( " + table_name + "_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, ";
+      create_custom_query += "project_id int(11) unsigned NOT NULL";
+  for (var i = 0; custom_fields.length > i; i += 1)
+  {
+   create_custom_query += ", " + custom_fields[i].field_name + " " + custom_fields[i].field_type + " NOT NULL";
+  }
+  create_custom_query += ", KEY project_id (project_id),";
+  create_custom_query += "FOREIGN KEY (project_id) REFERENCES project (project_id) ON UPDATE CASCADE ";
+  create_custom_query += ")";
+  console.log('create_custom_query:');
+  console.log(create_custom_query);
+  
+  return create_custom_query;
+}
 
 // public
 
@@ -98,6 +117,14 @@ csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, ca
 {
   get_custom_fields_names_query = make_get_custom_fields_query(project_id);
   connection.query(get_custom_fields_names_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, project_id, callback) 
+{
+  create_custom_query = make_create_custom_query(custom_fields, project_id)
+  connection.query(create_custom_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
