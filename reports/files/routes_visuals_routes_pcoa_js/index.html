@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.08</p>
+      <p class="stat">52.85</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">36.11</p>
+      <p class="stat">39.81</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.61</p>
+      <p class="stat">2.65</p>
     </div>
   </div>
 </div>
@@ -268,7 +268,7 @@ module.exports = {
 									  .enter().append(&quot;circle&quot;)  // create a new circle for each value
 									      .attr(&quot;cy&quot;, function (d) { return y(d); } ) // translate y value to a pixel
 									      .attr(&quot;cx&quot;, function (d,i) { return x(xdata[i]); } ) // translate x value
-									      .attr(&quot;r&quot;, 4) // radius of circle
+									      .attr(&quot;r&quot;, 2) // radius of circle
 									      //.style(&quot;opacity&quot;, 0.6) // opacity of circle
 									      .attr(&quot;id&quot;,function(d,i) {
 									      		var ret_str = matrix.names[i]+&#039;-|-&#039;+mdata_name+&#039;-|-&#039;+mdata_name_ds_lookup[mdata_name][matrix.names[i]];
@@ -309,7 +309,7 @@ module.exports = {
 				    					.text(&#039;metadata name: &#039;+mdata_name);     
 								  }
 
-								  if(v == 2) {
+								  if(v == 2 &amp;&amp; Object.keys(mdata_name_value_lookup[mdata_name]).length &lt;= 14) {
 								  	// add legend to right hand graph
 										var legend = g.append(&quot;g&quot;)
 										  .attr(&quot;class&quot;, &quot;legend&quot;)
