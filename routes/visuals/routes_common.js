@@ -3,7 +3,8 @@ var path = require('path');
 var fs = require('fs');
 var extend = require('util')._extend;
 var C = require('../../public/constants');
-
+var HMAP    = require('./routes_distance_heatmap');
+var DEND    = require('./routes_dendrogram');
 
 module.exports = {
 
@@ -299,7 +300,101 @@ module.exports = {
 
     //console.log('returning custom_count_matrix');
     return custom_count_matrix;
+  },
+
+  run_script_cmd: function (req,res, ts, command, visual_name) {
+    var exec = require('child_process').exec;
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
+    var title = 'VAMPS';
+    html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
+
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+
+      if(stderr){console.log(stderr);}
+      stdout = stdout.trim();
+      console.log(stdout);
+      if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
+        html += '<div>Error -- No distances were calculated.</div>';
+      }else{
+        if(visual_name === 'heatmap') {
+          var dm = HMAP.create_distance_matrix(stdout);
+          console.log(dm)
+          title += ' Heatmap';
+          html  += HMAP.create_hm_html(dm);  
+        }else if(visual_name === 'dendrogram') {
+          html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+          title += ' Dendrogram';
+        }else{
+
+        }
+        
+      }
+
+      res.render('visuals/user_data/'+visual_name, {
+            title: title,
+            timestamp: ts || 'default_timestamp',
+            html : html,
+            user: req.user
+      });
+      
+
+    });
+},
+//
+//
+//
+create_chosen_id_name_hash: function(dataset_ids) {
+  // dataset_ids is list of strings of form:
+  // ID--PROJECTNAME--DATASETNAME
+  var chosen_id_name_hash    = {};
+  chosen_id_name_hash.ids    = [];
+  chosen_id_name_hash.names  = [];
+  //console.log('req.body.dataset_ids')
+  //console.log(req.body.dataset_ids)
+  for (var n=0; n < dataset_ids.length; n++){
+    var items = dataset_ids[n].split('--');
+    chosen_id_name_hash.ids.push(items[0]);
+    chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
   }
+  return chosen_id_name_hash;
+},
+//
+//
+//
+check_initial_status: function(url) {
+
+  var values_updated;
+  var min,max,norm,dist;
+  // these only seen in url after page first rendered
+  if(url.query.min_range === undefined) {
+    min   = 0;
+    max   = 100;
+    norm  = 'none';
+    dist  = 'morisita_horn';  // default distance    
+    values_updated = false;
+  } else {
+    min   = url.query.min_range  || 0;
+    max   = url.query.max_range  || 100;
+    norm  = url.query.norm       ||  'none';
+    dist  = url.query.selected_distance || 'morisita_horn';  // default distance    
+    values_updated = true;    
+  }
+
+  if(Number(max) <= Number(min)) {min=0;max=100;} 
+  visual_post_items.min_range = Number(min);
+  visual_post_items.max_range = Number(max);
+  visual_post_items.normalization = norm;
+  visual_post_items.selected_distance = dist;
+  
+  //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
+  if(Number(min)===0 && Number(max)===100 && norm==='none') {
+    values_updated = false;  // return to initial state
+  }
+  return values_updated;
+}
 
 };   // end module.exports
 

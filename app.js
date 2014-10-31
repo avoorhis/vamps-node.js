@@ -15,7 +15,7 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var flash = require('connect-flash');
+var flash = require('express-flash');
 var passport = require('passport');
 var db = require('mysql');
 // without var declaration connection is global
@@ -47,6 +47,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
+  //app.use(express.session({ cookie: { maxAge: 60000 }}));
+ // app.use(flash());
 app.use(compression());
 /**
  * maxAge used to cache the content, # msec
@@ -61,7 +63,7 @@ app.use('public/stylesheets', express.static(path.join(__dirname, '/public/style
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
-//app.use(session({ secret: 'keyboard cat'})); // session secret
+app.use(session({ secret: 'keyboard cat'})); // session secret
 app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -96,39 +98,7 @@ app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 
-// todo: Andy, shouldn't it be in a module?
-app.post('/download/:ts/:file_type', function(req, res){
-  console.log(req.params.ts);
-  console.log(req.params.file_type);
-  if(req.params.file_type === 'counts_matrix') {
-    var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
-    res.download(file); // Set disposition and send it.
-  }else if(req.params.file_type === 'fasta') {
-    console.log(req.body.ids);
-    var dataset_ids = JSON.parse(req.body.ids);
-    var qSelectSeqs = "SELECT project, dataset, sequence_id, UNCOMPRESS(sequence_comp) as seq FROM sequence_pdr_info";
-    qSelectSeqs +=    "  JOIN dataset  using(dataset_id)";
-    qSelectSeqs +=    "  JOIN project  using(project_id)";
-    qSelectSeqs +=    "  JOIN sequence using(sequence_id)";
-    qSelectSeqs +=    "  WHERE dataset_id in (" + dataset_ids + ")";
-    console.log(qSelectSeqs);
-    req.db.query(qSelectSeqs, function(err, rows, fields){
-        if (err)  {
-          throw err;
-        } else {
-            var filename = req.params.ts+'.fa';
-            res.setHeader('Content-disposition', 'attachment; filename='+filename+'');
-            res.setHeader('Content-type', 'text/plain');
-            res.charset = 'UTF-8';
-            for (var k=0, len=rows.length; k < len; k++){
-                res.write(">"+rows[k].sequence_id+'|project='+rows[k].project+'|dataset='+rows[k].dataset+'\n');
-                res.write(rows[k].seq+'\n');
-            }
-            res.end();
-        }
-    });
-  }
-});
+
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){
@@ -195,7 +165,8 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // GLOBAL if leave off 'var':
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-TaxaCounts  = require('./public/scripts/tax_counts_lookup.json');
+TaxaCounts     = require('./public/scripts/tax_counts_lookup.json');
+MetadataValues = require('./public/scripts/metadata.json');
 //console.log(TaxaCounts)
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
