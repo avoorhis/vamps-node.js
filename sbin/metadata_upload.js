@@ -316,10 +316,9 @@ function format_required_metadata_info(metadata_dict_by_project_w_ids)
       // correct_dataset_name(metadata_dict_by_project[project][i]["sample_name"]);
       // var this_dataset = get_this_dataset(db_ids, dataset);
       // var dataset_id = "";
-      // if (this_dataset[0])
-      // {
-        dataset_id = this_entry.dataset_id;
-        // this_dataset[0].dataset_id;
+      dataset_id = this_entry.dataset_id;
+      if (dataset_id != undefined)
+      // this_dataset[0].dataset_id;
         var altitude = this_entry["altitude"];
         var assigned_from_geo = this_entry["assigned_from_geo"];
         if (this_entry["collection_date"] != "unknown")
@@ -341,12 +340,11 @@ function format_required_metadata_info(metadata_dict_by_project_w_ids)
 
         var into_db = dataset_id + ", " + altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_matter + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
         insert_into_required_metadata_info_txt.push(into_db);
-
-      // }
-      // else
-      // {
-      //   console.log("Add this dataset to db: " + dataset);
-      // }
+      }
+      else
+      {
+        console.log("Add this dataset to db: " + dataset);
+      }
     }
   }
   // console.log("7777 insert_into_required_metadata_info_txt");
