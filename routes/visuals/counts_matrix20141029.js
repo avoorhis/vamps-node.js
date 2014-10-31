@@ -161,69 +161,7 @@ module.exports = {
 		  		
 
 
-			// if(sqlrows.length === 0) {
-			// 	ukeys = undefined;
-			// }else {
-
-			// 	for (var r=0; r < sqlrows.length; r++){
-				
-			// 		tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
-
-			// 	    var did  = sqlrows[r].dataset_id;
-			// 	    var cnt  = sqlrows[r].seq_count;
-			// 	    //var uid  = sqlrows[r].uid;
-			// 	    //var uname = sqlrows[r].tax;
-			// 	    var uname = tax;
-			    
-			// 		//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-			// 		unit_name_lookup[uname] = 1;
-			// 		ukeys.push(uname);
-
-			// 		//unit_name_lookup_per_dataset[did][uid] = sumcounts
-			// 	  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-			// 	  	if(did in unit_name_lookup_per_dataset) {
-			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
-			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-			// 	  		}else{
-			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-			// 	  		}
-
-			// 	  	}else{
-			// 	  		unit_name_lookup_per_dataset[did] = {};
-			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
-			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
-
-			// 	  		}else{
-			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
-			// 	  		}
-			// 	  	}
-			   
-			//     }
-			//     var unit_name_counts={};
-			// 	  for(uname in unit_name_lookup){
-			// 	  	unit_name_counts[uname]=[];
-			// 	  }
-			// 	  for (var n in chosen_id_name_hash.ids) { // correct order
-			// 	  	did = chosen_id_name_hash.ids[n];
-				  	
-			// 	  	for(uname in unit_name_lookup) {
-			// 	  		if(did in unit_name_lookup_per_dataset && uname in unit_name_lookup_per_dataset[did]) {
-			// 	  			cnt = unit_name_lookup_per_dataset[did][uname];
-			// 	  			unit_name_counts[uname].push(cnt);
-
-			// 	  		} else {
-			// 	  			unit_name_counts[uname].push(0);
-			// 	  		}
-			// 	  	}
-			// 	  }
-			// 	  ukeys.push(uname);
-			// 	  ukeys = ukeys.filter(onlyUnique);
-			// 	  ukeys.sort();
-
-
-
-			// }
-
+	
 
 		  
 		  //console.log(unit_name_counts);
@@ -244,97 +182,9 @@ module.exports = {
 
 		},
 
-		//
-		// F I L L  I N  C O U N T S  M A T R I X
-		//
-// 		fill_in_counts_matrix: function(selection_obj, field) {
-// 			// This function creates a counts matrix using only the dataset_ids (no names)
-// 			// and fills it in with zeros where appropriate.
-// 			// when returned this matrix becomes part of the selection_obj
-// 			// FORMAT:
-// 			// counts_matrix:{"82":[4,2,2],"84":[0,0,1],"137":[0,0,1],"214":[272,401,430]}}
 
-// 		  //selection_obj = JSON.parse(selection_obj);
-		  
-// 		  var matrix = {};  
-		  
-// 		  var dataset_ids = selection_obj.dataset_ids;
-// 		  var unit_assoc  = selection_obj.unit_assoc[field];  // TODO: change depending on user selection
-// 		  var seq_freqs   = selection_obj.seq_freqs;      
-// 		  //console.log('')
-// 		  //    seq_ids  : [id1,id2,id3...],
-// 		  //    tax_id1 : [tct1,0,tid3...],
-// 		  //    tax_id2 : [tct4,tct5,tct6...],
-// 		  //    tax_id3 : [tct7,tct8,0...]
-// 		  //    ....
-// 		  //  }
 
-// 		  //var old_sid = 'x';
-// 		  //var tids = [96,214,82,214,137];
-// 		  //var vals = [2,103,8,203,3];
 
-// 		  // for (i=0; i < tids.length; i++) {
-// 		  //   id = tids[i]
-// 		  //   if (id in tmp){
-// 		  //     tmp[id][0] += vals[i]
-// 		  //   } else {
-// 		  //     tmp[id] = [vals[i]]
-// 		  //   }
-// 		  // }
-// 		  var counts = {};
-// 		  var unit_id_lookup = {};
-// 		  var unit_ids = [];
-// 		  var unit_id;
-// 		  var tmp;
-		  
-// 		  for (var n=0; n < unit_assoc.length; n++) {
-
-// 		        unit_ids = unit_assoc[n];
-// 		        tmp = {};
-// 		        counts[dataset_ids[n]] = {};
-// 		        for (var i=0; i < unit_ids.length; i++) {
-// 		            unit_id = unit_ids[i];
-// 		            unit_id_lookup[unit_id]=1;
-// 		            if (unit_id in tmp){
-// 		              tmp[ unit_id ] += seq_freqs[n][i];
-// 		            } else {
-// 		              tmp[ unit_id ] = seq_freqs[n][i];
-// 		            }
-// 		        }
-// 		        counts[ dataset_ids[n] ]=tmp;
-// 		  }
-// 		  //console.log(JSON.stringify(counts,null,4));
-// 		 //console.log(unit_id_lookup);
-// 		// { '82': 8, '96': 2, '137': 3, '214': 306 }
-// 		// { '82': 4, '96': 2, '214': 33 }
-// 		// { '82': 1, '96': 1, '137': 1, '214': 277 }
-// 		// { '82': 6, '96': 1, '137': 1, '214': 596 }
-// 		// { '82': 1, '84': 4, '96': 2, '112': 1, '137': 1, '214': 75 }
-// 		// { '82': 2, '96': 1, '112': 1, '214': 331 }
-// 		  //var mtx = "\t";
-		  
-// 		  //for(did in dataset_ids) {
-// 		  for (var uid in unit_id_lookup) {  
-// 		    matrix[uid]=[];
-		    
-// 		    for (var d in dataset_ids) { // this is correct order
-// 		    	did = dataset_ids[d];
-
-// 		      if(uid in counts[did]){
-// 		        c = counts[did][uid];
-// 		      }else{
-// 		        c = 0;
-// 		      }
-// 		      matrix[uid].push(c);
-
-// 		    }
-// 		  }
-// 		  return matrix;
-// 		},
-
-	
-
-};
 //
 //
 //
