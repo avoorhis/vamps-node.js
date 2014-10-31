@@ -70,9 +70,9 @@ function make_create_custom_query(custom_fields, project_id)
   {
    create_custom_query += ", " + custom_fields[i].field_name + " " + custom_fields[i].field_type + " NOT NULL";
   }
-  for (var i = 0; custom_fields.slice(0,14).length > i; i += 1)
+  for (var k = 0; custom_fields.slice(0,14).length > k; k += 1)
   {
-   unique_key_fields +=  ", " + custom_fields[i].field_name; 
+   unique_key_fields +=  ", " + custom_fields[k].field_name; 
   }
   create_custom_query += ", KEY project_id (project_id)";
   create_custom_query += ", KEY dataset_id (dataset_id)";
@@ -133,7 +133,7 @@ csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, ca
 
 csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, project_id, callback) 
 {
-  create_custom_query = make_create_custom_query(custom_fields, project_id)
+  create_custom_query = make_create_custom_query(custom_fields, project_id);
   connection.query(create_custom_query, function (err, rows, fields) {
     callback(err, rows);
   });

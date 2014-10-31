@@ -378,12 +378,7 @@ function call_insert_into_custom_metadata_info(insert_into_custom_metadata_info_
     else
     {
       console.log("insert_into_custom_metadata_info: ");
-      console.log(results);
-      
-      // if (results.warningCount === 1)
-      // {
-      //   console.log("Warning: Please check " + table_name + " table, it seems to exist already.");
-      // }
+      console.log(results);      
     }
   });
 }
@@ -395,12 +390,12 @@ function collect_custom_fields_names_into_arr(custom_fields_names)
   for (var k = 0; custom_fields_names.length > k; k += 1)
   {
     field_name = custom_fields_names[k].field_name;
-    custom_fields_names_arr.push(field_name)
+    custom_fields_names_arr.push(field_name);
   }
   return custom_fields_names_arr;
 }
 
-
+// todo: refactoring - simplify
 function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
 {
   var custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
@@ -429,10 +424,10 @@ function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
       }      
     }
   }
-    console.log("555 =====");
-    console.log("insert_into_custom_metadata_info_query");
-    console.log(insert_into_custom_metadata_info_query);    
-    return insert_into_custom_metadata_info_query;
+  // console.log("555 =====");
+  // console.log("insert_into_custom_metadata_info_query");
+  // console.log(insert_into_custom_metadata_info_query);    
+  return insert_into_custom_metadata_info_query;
 }
 
 function get_values(this_entry, custom_fields_names_arr)
@@ -441,7 +436,7 @@ function get_values(this_entry, custom_fields_names_arr)
   values = "'" + this_entry[custom_fields_names_arr[0]] + "'"; // to avoid an extra comma
   for (var i = 1; custom_fields_names_arr.length > i; i += 1)
   {
-     values += ", '" + this_entry[custom_fields_names_arr[i]] + "'"
+     values += ", '" + this_entry[custom_fields_names_arr[i]] + "'";
   }
   return values;
 }
