@@ -372,70 +372,58 @@ function call_make_custom_table_per_pr(custom_fields_names, project_id)
 
 function collect_custom_fields_names_into_arr(custom_fields_names)
 {
-  custom_fields_names_arr = [];
-  helpers.start = process.hrtime();  
-  Object.keys(custom_fields_names).forEach(function (key) {
-    custom_fields_names_arr.push(custom_fields_names[key].field_name);
-  });
-  helpers.elapsed_time("This is the running time for 999");
-  /* 0 s, 0.064 ms - This is the running time for 999
-   0 s, 0.070 ms - This is the running time for 999
-   0 s, 0.069 ms - This is the running time for 999
-   
-   */
-  
-  console.log("999 =====");
-  console.log("custom_fields_names_arr");
-  console.log(custom_fields_names_arr);  
-  custom_fields_names_arr = [];
-  
-  helpers.start = process.hrtime();  
+  var custom_fields_names_arr = [];
   for (var k = 0; custom_fields_names.length > k; k += 1)
   {
     field_name = custom_fields_names[k].field_name;
     custom_fields_names_arr.push(field_name)
   }
-  helpers.elapsed_time("This is the running time for 3333");
-  /* 0 s, 0.053 ms - This is the running time for 3333
-   0 s, 0.036 ms - This is the running time for 3333
-   0 s, 0.026 ms - This is the running time for 3333
-   
-   */
-  
-  console.log("3333 =====");
-  console.log("custom_fields_names_arr");
-  console.log(custom_fields_names_arr);  
+  return custom_fields_names_arr;
 }
 
 
 function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
 {
   var insert_into_custom_metadata_info_txt = [];
+  collect_custom_fields_names_into_arr(custom_fields_names)
+ 
   console.log("1111 =====");
-  console.log(table_name)
-  collect_custom_fields_names_into_arr(custom_fields_names);
-  for (var k = 0; custom_fields_names.length > k; k += 1)
+  console.log(table_name);
+  
+  custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
+  var fields = "'" + custom_fields_names_arr.join("', '") + "'";
+  
+  var my_query = "INSERT IGNORE INTO table (" + fields + ") VALUES"
+    
+  for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
   {
-    field_name = custom_fields_names[k].field_name;
-    console.log("3333 =====");
-    console.log("custom_fields_names[k].field_name");
-    console.log(field_name);
-    
-    for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
-    {
-      var this_entry = metadata_dict_w_ids[i];
-      console.log("444 =====");
-      console.log("this_entry[field_name]");
-      console.log(this_entry[field_name]);
+    var this_entry = metadata_dict_w_ids[i];
 
-      var dataset_id = this_entry.dataset_id;
-      // "INSERT INTO table (id,Col1,Col2) VALUES (1,1,1),(2,2,3),(3,9,3),(4,10,12)"
+    var dataset_id = this_entry.dataset_id;
+    var values = get_values(this_entry, custom_fields_names_arr);
+    // "INSERT INTO table (id,Col1,Col2) VALUES (1,1,1),(2,2,3),(3,9,3),(4,10,12)"
 
-      // var dataset = this_entry.correct_dataset_name;
-      // var dataset_id = this_entry.dataset_id;
-    }
-    
+    // var dataset = this_entry.correct_dataset_name;
+    // var dataset_id = this_entry.dataset_id;
   }
+    
+}
+
+function get_values(this_entry, custom_fields_names_arr)
+{
+  var values = "";
+  console.log("444 =====");
+  console.log("this_entry");
+  console.log(this_entry);
+  values = "'" + this_entry[custom_fields_names_arr[0]] + "'"; // to avoid an extra comma
+  for (var i = 1; custom_fields_names_arr.length > i; i += 1)
+  {
+     values += ", '" + this_entry[custom_fields_names_arr[i]] + "'"
+  }
+  console.log("555 =====");
+  console.log("values");
+  console.log(values);
+  return get_values;
 }
 
 function do_smth_w_data_hash(csv_data_hash)
