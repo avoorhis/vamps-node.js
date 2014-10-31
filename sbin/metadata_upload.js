@@ -160,6 +160,7 @@ function work_with_ids_from_db()
           // console.log("000000");
           // console.log(results);
           // console.log("111111");
+          make_custom_table_per_project(metadata_dict_by_project_w_ids[project]);
 
         }
       });
@@ -328,8 +329,6 @@ function call_insert_required_fields_into_db(insert_into_required_metadata_info_
 
 function correct_db_data(collection_date)
 {
-  // console.log("CCCCC collection_date");
-  // console.log(collection_date);
   var d = new Date(Date.parse(collection_date));
   return d.toISOString().replace(/T.+/, '');
 }
@@ -343,7 +342,21 @@ function correct_db_data(collection_date)
 function get_custom_fields_names(project_id)
 {
   csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, results)
-  {});
+  {
+    console.log("7777");
+    console.log("results");
+    console.log(results);
+  });
+}
+
+function make_custom_table_per_project(metadata_dict)
+{
+  console.log("999 =====");
+  console.log("metadata_dict");
+  console.log(metadata_dict);
+  
+  
+ get_custom_fields_names(metadata_dict.project_id); 
 }
 
 function do_smth_w_data_hash(csv_data_hash)
