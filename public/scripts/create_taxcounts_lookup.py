@@ -12,7 +12,7 @@ import MySQLdb
 import json
 
 hostname = 'localhost'
-username =  'ruby'
+username = 'ruby'
 password = 'ruby'
 database = "vamps_js_development"
 out_file = "tax_counts.json"
