@@ -1,4 +1,3 @@
-/*
 // counts_matrix.js
 var path = require('path');
 var fs = require('fs');
@@ -551,4 +550,3 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 // 		return csv;
 // }
 
-*/
