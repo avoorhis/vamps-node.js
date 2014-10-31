@@ -15,6 +15,7 @@
 * create a custom table for this project
 * put custom info in db
 */
+var helpers = require('../routes/helpers/helpers');
 
 var csvMetadataUpload = require('../models/csv_metadata_upload.js');
 var csv_metadata_db = new csvMetadataUpload();
@@ -160,8 +161,10 @@ function work_with_ids_from_db()
           // console.log("000000");
           // console.log(results);
           // console.log("111111");
-          make_custom_table_per_project(metadata_dict_by_project_w_ids[project]);
-
+          make_custom_table(metadata_dict_by_project_w_ids[project]);
+          // insert_into_custom_table_txt = format_custom_metadata_info(metadata_dict_by_project_w_ids[project].metadata);
+          // call_insert_custom_fields_into_db(insert_into_custom_fields_txt);          
+          
         }
       });
     }
@@ -339,36 +342,100 @@ function correct_db_data(collection_date)
  * put in data from csv
 */
 
-function get_custom_fields_names(project_id)
+function make_custom_table(project_metadata_dict_w_ids)
 {
-  csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, custom_fields_names)
+  var project_id = project_metadata_dict_w_ids.project_id;
+  var metadata = project_metadata_dict_w_ids.metadata;
+  csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)
   {
-    csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
-    {
-      if (err)
-        throw err; // or return an error message, or something
-      else
-      {
-        console.log("7777");
-        console.log("results");
-        console.log(results);
-        if (results.warningCount === 1)
-        {
-          console.log("Warning: Please check custom_metadata_" + project_id + " table, it seems to exist already.");
-        }
-      }
-    });
+    table_name = "custom_metadata_" + project_id;    
+    call_make_custom_table_per_pr(custom_fields_names, project_id);
+    format_custom_metadata_info(custom_fields_names, metadata);
   });
 }
 
-function make_custom_table_per_project(metadata_dict)
+function call_make_custom_table_per_pr(custom_fields_names, project_id)
 {
-//  console.log("999 =====");
-//  console.log("metadata_dict");
-//  console.log(metadata_dict);
+  csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+  {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+    {
+      if (results.warningCount === 1)
+      {
+        console.log("Warning: Please check " + table_name + " table, it seems to exist already.");
+      }
+    }
+  });
+}
+
+function collect_custom_fields_names_into_arr(custom_fields_names)
+{
+  custom_fields_names_arr = [];
+  helpers.start = process.hrtime();  
+  Object.keys(custom_fields_names).forEach(function (key) {
+    custom_fields_names_arr.push(custom_fields_names[key].field_name);
+  });
+  helpers.elapsed_time("This is the running time for 999");
+  /* 0 s, 0.064 ms - This is the running time for 999
+   0 s, 0.070 ms - This is the running time for 999
+   0 s, 0.069 ms - This is the running time for 999
+   
+   */
   
+  console.log("999 =====");
+  console.log("custom_fields_names_arr");
+  console.log(custom_fields_names_arr);  
+  custom_fields_names_arr = [];
   
- get_custom_fields_names(metadata_dict.project_id); 
+  helpers.start = process.hrtime();  
+  for (var k = 0; custom_fields_names.length > k; k += 1)
+  {
+    field_name = custom_fields_names[k].field_name;
+    custom_fields_names_arr.push(field_name)
+  }
+  helpers.elapsed_time("This is the running time for 3333");
+  /* 0 s, 0.053 ms - This is the running time for 3333
+   0 s, 0.036 ms - This is the running time for 3333
+   0 s, 0.026 ms - This is the running time for 3333
+   
+   */
+  
+  console.log("3333 =====");
+  console.log("custom_fields_names_arr");
+  console.log(custom_fields_names_arr);  
+}
+
+
+function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
+{
+  var insert_into_custom_metadata_info_txt = [];
+  console.log("1111 =====");
+  console.log(table_name)
+  collect_custom_fields_names_into_arr(custom_fields_names);
+  for (var k = 0; custom_fields_names.length > k; k += 1)
+  {
+    field_name = custom_fields_names[k].field_name;
+    console.log("3333 =====");
+    console.log("custom_fields_names[k].field_name");
+    console.log(field_name);
+    
+    for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
+    {
+      var this_entry = metadata_dict_w_ids[i];
+      console.log("444 =====");
+      console.log("this_entry[field_name]");
+      console.log(this_entry[field_name]);
+
+      var dataset_id = this_entry.dataset_id;
+      // "INSERT INTO table (id,Col1,Col2) VALUES (1,1,1),(2,2,3),(3,9,3),(4,10,12)"
+
+      // var dataset = this_entry.correct_dataset_name;
+      // var dataset_id = this_entry.dataset_id;
+    }
+    
+  }
 }
 
 function do_smth_w_data_hash(csv_data_hash)
