@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">59.40</p>
+      <p class="stat">58.74</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">788</p>
+      <p class="stat">787</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">60.48</p>
+      <p class="stat">62.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">7.23</p>
+      <p class="stat">7.25</p>
     </div>
   </div>
 </div>
@@ -143,6 +143,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   console.log(&#039;req.body&#039;);
   console.log(req.body);
   console.log(&#039;req.body&#039;);
+  //console.log(TaxaCounts[&#039;27&#039;])
   //console.log(&#039;1&#039;);
   //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   
@@ -160,6 +161,8 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   visual_post_items.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
   visual_post_items.domains                      = req.body.domains      || [&#039;NA&#039;];
   visual_post_items.custom_taxa                  = req.body.custom_taxa  || [&#039;NA&#039;];
+  // in the unusual event that a single checkbox is selected... must change from string to list:
+  if(typeof visual_post_items.custom_taxa !== &#039;object&#039;) {visual_post_items.custom_taxa = [visual_post_items.custom_taxa]; }
   visual_post_items.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
   visual_post_items.min_range                    = 0;
   visual_post_items.max_range                    = 100;
@@ -173,8 +176,8 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   if (uitems[0] === &#039;tax&#039;){  // covers both simple and custom
   
     unit_field = &#039;silva_taxonomy_info_per_seq_id&#039;;
-    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    console.log(unit_name_query);
+    //unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    //console.log(unit_name_query);
     
   }else if(uitems[0] === &#039;otus&#039;) {
     unit_field = &#039;gg_otu_id&#039;;
@@ -183,7 +186,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
     unit_field = &#039;med_node_id&#039;;
     //unit_name_query = COMMON.get_med_query( req.db, uitems, selection_obj, visual_post_items );
   }else{
-    console.log(&#039;ERROR--RORRE&#039;);
+    console.log(&#039;ERROR--RORRE BAD Unit items in view_selection&#039;);
   }
   //console.log(&#039;MAP:::&#039;);
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
@@ -192,33 +195,24 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-   console.log(&#039;visual_post_items:&#039;);
-   console.log(visual_post_items);
+  console.log(&#039;visual_post_items:&#039;);
+  console.log(visual_post_items);
   
-  // Get matrix data here
-  // The visuals have been selected so now we need to create them
-  // so they can be shown fast when selected
-  //console.log(JSON.stringify(selection_obj));
-  req.db.query(unit_name_query, function(err, rows, fields){
-    if (err) {
-      throw err;
-    } else {   
-      var timestamp = +new Date();  // millisecs since the epoch!
-      var user = req.user || &#039;no-user&#039;;
-      timestamp = user + &#039;_&#039; + timestamp;
-      visual_post_items.ts = timestamp;
+ 
+  var timestamp = +new Date();  // millisecs since the epoch!
+  var user = req.user || &#039;no-user&#039;;
+  timestamp = user + &#039;_&#039; + timestamp;
+  visual_post_items.ts = timestamp;
 
-      // this function: output_matrix writes various counts matrices to files for *possible* use later by R or D3
-      // It also reurns a JSON count_matrix
-      //count_matrix = MTX.output_matrix( &#039;to_file_and_console&#039;, timestamp, selection_obj, chosen_id_name_hash, rows );   // matrix to have names of datasets and units for display  -- not ids
-      
+ 
 
 
-      biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
-      visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
-      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-      GLOBAL.metadata = metadata;
-      console.log(biome_matrix);
+  biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+  metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+  GLOBAL.metadata = metadata;
+  
+  console.log(biome_matrix);
 
       // This is what matrix looks like (a different matrix is written to file)
       // { 
@@ -241,7 +235,7 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
       
      
      
-      res.render(&#039;visuals/view_selection&#039;, { 
+  res.render(&#039;visuals/view_selection&#039;, { 
                                   title   : &#039;VAMPS: Visuals Select&#039;,
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix :              JSON.stringify(biome_matrix),
@@ -250,8 +244,8 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
                                   user   :              req.user
                    });
     
-    }
-  });
+  //  }
+ // });
  
  
 });
@@ -413,7 +407,12 @@ router.get(&#039;/index_visuals&#039;,  function(req, res) {
 //
 router.get(&#039;/reorder_datasets&#039;, function(req, res) {
   console.log(&#039;TODO::TODO reorder datasets&#039;);
-  console.log(selection_obj);
+  res.render(&#039;visuals/reorder_datasets&#039;, { 
+                                title   : &#039;VAMPS: Reorder Datasets&#039;,
+                                chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+                                constants    : JSON.stringify(req.C),
+                                user: req.user
+                            });
   //console.log(chosen_id_name_hash)
 });
 //
