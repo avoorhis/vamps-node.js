@@ -390,40 +390,53 @@ function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
   console.log("1111 =====");
   console.log(table_name);
   
-  custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
-  var fields = "'" + custom_fields_names_arr.join("', '") + "'";
+  var custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
+  custom_fields_names_arr.unshift("dataset_id");
+  custom_fields_names_arr.unshift("project_id");
   
-  var my_query = "INSERT IGNORE INTO table (" + fields + ") VALUES"
+  var fields = custom_fields_names_arr.join(", ");
+  
+  var my_query = "INSERT IGNORE INTO " + table_name + " (" + fields + ") VALUES ";
     
   for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
   {
     var this_entry = metadata_dict_w_ids[i];
 
-    var dataset_id = this_entry.dataset_id;
-    var values = get_values(this_entry, custom_fields_names_arr);
+    // var dataset_id = this_entry.dataset_id;
+    var project_id = this_entry.project_id;
+    if (project_id !== undefined)
+    {
+      var values = get_values(this_entry, custom_fields_names_arr);
+      if (i === 0)
+      {
+        my_query += "(" + values + ")";
+      }
+      else
+      {
+        my_query += ", (" +  values + ")";
+      }
+      
+    }
     // "INSERT INTO table (id,Col1,Col2) VALUES (1,1,1),(2,2,3),(3,9,3),(4,10,12)"
 
     // var dataset = this_entry.correct_dataset_name;
     // var dataset_id = this_entry.dataset_id;
   }
+    console.log("555 =====");
+    console.log("my_query");
+    console.log(my_query);
     
 }
 
 function get_values(this_entry, custom_fields_names_arr)
 {
   var values = "";
-  console.log("444 =====");
-  console.log("this_entry");
-  console.log(this_entry);
   values = "'" + this_entry[custom_fields_names_arr[0]] + "'"; // to avoid an extra comma
   for (var i = 1; custom_fields_names_arr.length > i; i += 1)
   {
      values += ", '" + this_entry[custom_fields_names_arr[i]] + "'"
   }
-  console.log("555 =====");
-  console.log("values");
-  console.log(values);
-  return get_values;
+  return values;
 }
 
 function do_smth_w_data_hash(csv_data_hash)
