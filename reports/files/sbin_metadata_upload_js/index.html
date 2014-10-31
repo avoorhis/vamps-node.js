@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">69.88</p>
+      <p class="stat">70.23</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">360</p>
+      <p class="stat">351</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,7 +62,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">42.68</p>
+      <p class="stat">42.71</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -182,11 +182,14 @@ function make_dict_by_project_datasets(csv_data_hash)
   {
     var project = csv_data_hash[row_obj][&#039;TITLE&#039;];
     var dataset = csv_data_hash[row_obj][&#039;sample_name&#039;];
-    if (dataset)
+    if (dataset !== undefined)
     {
       dataset = correct_dataset_name(dataset);
     }
-    project_datasets = add_to_dict(project_datasets, project, dataset);
+    if (project !== undefined)
+    {
+      project_datasets = add_to_dict(project_datasets, project, dataset); 
+    }
   }
   return project_datasets;
 }
@@ -227,8 +230,9 @@ function work_with_ids_from_db()
 
   for (var project in project_datasets)
   {
-    if (project != &quot;undefined&quot;)
+    if ((project !== undefined) &amp;&amp; (project !== &quot;undefined&quot;))
     {
+      
       var datasets = &quot;&#039;&quot; + project_datasets[project].join(&quot;&#039;, &#039;&quot;) + &quot;&#039;&quot;;
 
       csv_metadata_db.get_dataset_ids(project, datasets, function work_with_dataset_id(err, results)
@@ -240,9 +244,7 @@ function work_with_ids_from_db()
           // todo: add ids to dict, use for custom and requireds
           metadata_dict_by_project_w_ids = update_metadata_dict_by_project(results);
 
-
-
-          insert_into_custom_fields_txt = format_custom_metadata_fields_info(metadata_dict_by_project_w_ids);
+          insert_into_custom_fields_txt = format_custom_metadata_fields_info(metadata_dict_by_project_w_ids[project]);
           call_insert_custom_fields_into_db(insert_into_custom_fields_txt);          
           insert_into_required_metadata_info_txt = format_required_metadata_info(metadata_dict_by_project_w_ids[project].metadata);
           call_insert_required_fields_into_db(insert_into_required_metadata_info_txt);
@@ -253,6 +255,13 @@ function work_with_ids_from_db()
         }
       });
     }
+    // else
+    // {
+    //   console.log(&quot;8888 =====&quot;);
+    //   console.log(&quot;project&quot;);
+    //   console.log(project);
+    //   
+    // }
   }
 }
 
@@ -318,31 +327,17 @@ function call_insert_custom_fields_into_db(insert_into_custom_fields_txt)
   });
 }
 
-function format_custom_metadata_fields_info(metadata_dict_by_project_w_ids)
+function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 {
   var insert_into_custom_fields_txt = [];
-  for (var project in metadata_dict_by_project_w_ids)
+  var project = metadata_by_project_w_ids.metadata[0][&quot;TITLE&quot;]
+  var project_id = metadata_by_project_w_ids.project_id;
+  for (var i = 0; custom_column_names.length &gt; i; i += 1)
   {
-    // var filteredprojects = get_this_project(db_ids, project);
-    // project_id = filteredprojects[0].project_id;
-    // metadata
-    // separate, use above for required too
-    // console.log(&quot;IIIIII&quot;);
-    // console.log(metadata_dict_by_project_w_ids[project]);
-    if (metadata_dict_by_project_w_ids[project])
-    {
-      project_id = metadata_dict_by_project_w_ids[project].project_id;
-      // console.log(&quot;LLLLL&quot;);
-      // console.log(project_id);
-
-      for (var i = 0; custom_column_names.length &gt; i; i += 1)
-      {
-          field_name = custom_column_names[i];
-          example = custom_column_examples[project][field_name];
-          into_db = project_id + &quot;, &#039;&quot; + field_name + &quot;&#039;, &#039;&quot; + example + &quot;&#039;&quot;;
-          insert_into_custom_fields_txt.push(into_db);
-      }
-    }
+      var field_name = custom_column_names[i];
+      var example = custom_column_examples[project][field_name];
+      var into_db = project_id + &quot;, &#039;&quot; + field_name + &quot;&#039;, &#039;&quot; + example + &quot;&#039;&quot;;
+      insert_into_custom_fields_txt.push(into_db);
   }
   // console.log(&quot;SSSSS&quot;);
   // console.log(insert_into_custom_fields_txt);
@@ -369,11 +364,7 @@ dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevat
 
 function format_required_metadata_info(metadata_dict_w_ids)
 {
-  var insert_into_required_metadata_info_txt = {};
-  console.log(&quot;111 =====&quot;);
-  console.log(&quot;metadata_dict_w_ids&quot;);
-  console.log(metadata_dict_w_ids);
-
+  var insert_into_required_metadata_info_txt = [];
     for (var i = 0; metadata_dict_w_ids.length &gt; i; i += 1)
     {
       this_entry = metadata_dict_w_ids[i];
