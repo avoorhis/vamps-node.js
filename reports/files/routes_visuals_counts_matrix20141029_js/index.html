@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Plato - routes/visuals/routes_counts_matrix.js</title>
+  <title>Plato - routes/visuals/counts_matrix20141029.js</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
@@ -36,7 +36,7 @@
 
 <div class="jumbotron">
   <div class="container">
-    <h1>routes/visuals/routes_counts_matrix.js</h1>
+    <h1>routes/visuals/counts_matrix20141029.js</h1>
   </div>
 </div>
 
@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">37.53</p>
+      <p class="stat">43.88</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">582</p>
+      <p class="stat">380</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">62.28</p>
+      <p class="stat">38.92</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.40</p>
+      <p class="stat">1.54</p>
     </div>
   </div>
 </div>
@@ -93,6 +93,7 @@
 var path = require(&#039;path&#039;);
 var fs = require(&#039;fs&#039;);
 var COMMON  = require(&#039;./routes_common&#039;);
+var C = require(&#039;../../public/constants&#039;);
 // biome format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
 // {
 //     &quot;id&quot;:null,
@@ -130,9 +131,9 @@ var COMMON  = require(&#039;./routes_common&#039;);
 module.exports = {
 
 
-		get_biome_matrix: function(chosen_id_name_hash, post_items, sqlrows) {
+		get_biome_matrix: function(chosen_id_name_hash, post_items) {
 			var date = new Date();
-			
+			var did,rank,db_tax_id,node_id,parent_id,id,tax_name,cnt;
 			biome_matrix = {
 				id: post_items.ts,
 				format: &quot;Biological Observation Matrix&quot;,
@@ -153,72 +154,170 @@ module.exports = {
 			var ukeys = [];
 			var unit_name_lookup_per_dataset = {};
 		  //var unit_id_lookup = {};
-			if(sqlrows.length === 0) {
-				ukeys = undefined;
-			}else {
-
-				for (var r=0; r &lt; sqlrows.length; r++){
-
-					tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
-
-				    var did  = sqlrows[r].dataset_id;
-				    var cnt  = sqlrows[r].seq_count;
-				    //var uid  = sqlrows[r].uid;
-				    //var uname = sqlrows[r].tax;
-				    var uname = tax;
-			    
-					//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
-					unit_name_lookup[uname] = 1;
-					ukeys.push(uname);
-
-					//unit_name_lookup_per_dataset[did][uid] = sumcounts
-				  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
-				  	if(did in unit_name_lookup_per_dataset) {
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+			// TESTING
+			// data from DB or JSON_file or HTF5
+			//var read_choices = [&#039;DB&#039;,&#039;JSON&#039;,&#039;HTF5&#039;];
+			//var read_from = read_choices[0];
+		  //if(read_from === &#039;JSON&#039;) {
+		  for (var n in chosen_id_name_hash.ids) { // correct order
+				  did = chosen_id_name_hash.ids[n];				  
+				  rank = post_items.tax_depth;
+				  //console.log(&#039;did &#039;+did+&#039; rank: &#039;+rank);
+				  //console.log(TaxaCounts[did][rank])				  
+				  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+				  	
+				  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+				  	node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id	;			  	
+				  	parent_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].parent_id;
+				  	tax_name=&#039;&#039;;
+				  	//console.log(&#039;RR &#039;+C.RANKS.indexOf(rank))				  	
+				  	id = node_id;
+				  	while(id !== 0) {  				  		
+				  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[id].taxon + &#039;;&#039; + tax_name;
+				  		id = new_taxonomy.taxa_tree_dict_map_by_id[id].parent_id;
+				  	}
+				  	tax_name = tax_name.replace(/;+$/,&#039;&#039;);  // remove trailing &#039;;&#039;
+				  					  	
+				  	cnt = 0
+				  	if(did in taxa_counts) {
+					  	if(rank in taxa_counts[did]) {
+						  	if(db_tax_id in taxa_counts[did][rank]) {
+						  		cnt = taxa_counts[did][rank][db_tax_id];				  		
+						  	}
+					  	}
+				  	}
+				  	
+				  	//console.log(&#039;ds &#039;+ds+&#039;tax &#039;+name+&#039; - count &#039;+count)
+				  	//console.log(new_taxonomy.taxa_tree_dict_map_by_rank[rank][r])	
+				  	//console.log(tax_name);
+				  	unit_name_lookup[tax_name] = 1;
+						ukeys.push(tax_name);
+						if(did in unit_name_lookup_per_dataset) {
+				  		if(tax_name in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][tax_name] += parseInt(cnt);
 				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  			unit_name_lookup_per_dataset[did][tax_name] = parseInt(cnt);
 				  		}
 
 				  	}else{
 				  		unit_name_lookup_per_dataset[did] = {};
-				  		if(uname in unit_name_lookup_per_dataset[did]) {
-				  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+				  		if(tax_name in unit_name_lookup_per_dataset[did]) {
+				  			unit_name_lookup_per_dataset[did][tax_name] += parseInt(cnt);
 
 				  		}else{
-				  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+				  			unit_name_lookup_per_dataset[did][tax_name] = parseInt(cnt);
 				  		}
 				  	}
 			   
 			    }
 			    var unit_name_counts={};
-				  for(uname in unit_name_lookup){
-				  	unit_name_counts[uname]=[];
+				  for(tax_name in unit_name_lookup){
+				  	unit_name_counts[tax_name]=[];
 				  }
 				  for (var n in chosen_id_name_hash.ids) { // correct order
 				  	did = chosen_id_name_hash.ids[n];
 				  	
-				  	for(uname in unit_name_lookup) {
-				  		if(did in unit_name_lookup_per_dataset &amp;&amp; uname in unit_name_lookup_per_dataset[did]) {
-				  			cnt = unit_name_lookup_per_dataset[did][uname];
-				  			unit_name_counts[uname].push(cnt);
+				  	for(tax_name in unit_name_lookup) {
+				  		if(did in unit_name_lookup_per_dataset &amp;&amp; tax_name in unit_name_lookup_per_dataset[did]) {
+				  			cnt = unit_name_lookup_per_dataset[did][tax_name];
+				  			unit_name_counts[tax_name].push(cnt);
 
 				  		} else {
-				  			unit_name_counts[uname].push(0);
+				  			unit_name_counts[tax_name].push(0);
 				  		}
 				  	}
 				  }
-				  ukeys.push(uname);
+				  ukeys.push(tax_name);
 				  ukeys = ukeys.filter(onlyUnique);
 				  ukeys.sort();
 
-
-
 			}
+
+			// remove empty rows:					
+			var empty_row_name_collector = [];
+  		for(var taxname in unit_name_counts) {
+  			var sum = 0;
+  			for(var c in unit_name_counts[taxname]){
+  				sum += unit_name_counts[taxname][c];
+  				//console.log(k);
+  			}
+  			if(sum===0){
+  				// just need to remove names from ukeys and zero rows
+  				// will be removed from data rows in create_biom_matrix()
+  				var idx = ukeys.indexOf(taxname);
+  				ukeys.splice(idx,1);
+  			}		  			
+  		}
+
+		  		
+
+
+			// if(sqlrows.length === 0) {
+			// 	ukeys = undefined;
+			// }else {
+
+			// 	for (var r=0; r &lt; sqlrows.length; r++){
+				
+			// 		tax = assemble_taxa(post_items.tax_depth, new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank, sqlrows[r]);
+
+			// 	    var did  = sqlrows[r].dataset_id;
+			// 	    var cnt  = sqlrows[r].seq_count;
+			// 	    //var uid  = sqlrows[r].uid;
+			// 	    //var uname = sqlrows[r].tax;
+			// 	    var uname = tax;
+			    
+			// 		//unit_id_lookup   = create_unit_id_lookup( uid, counts, unit_id_lookup );
+			// 		unit_name_lookup[uname] = 1;
+			// 		ukeys.push(uname);
+
+			// 		//unit_name_lookup_per_dataset[did][uid] = sumcounts
+			// 	  	//unit_name_lookup = create_unit_name_lookup_per_dataset( did, uname, counts, unit_name_lookup);
+			// 	  	if(did in unit_name_lookup_per_dataset) {
+			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+			// 	  		}else{
+			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+			// 	  		}
+
+			// 	  	}else{
+			// 	  		unit_name_lookup_per_dataset[did] = {};
+			// 	  		if(uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			unit_name_lookup_per_dataset[did][uname] += parseInt(cnt);
+
+			// 	  		}else{
+			// 	  			unit_name_lookup_per_dataset[did][uname] = parseInt(cnt);
+			// 	  		}
+			// 	  	}
+			   
+			//     }
+			//     var unit_name_counts={};
+			// 	  for(uname in unit_name_lookup){
+			// 	  	unit_name_counts[uname]=[];
+			// 	  }
+			// 	  for (var n in chosen_id_name_hash.ids) { // correct order
+			// 	  	did = chosen_id_name_hash.ids[n];
+				  	
+			// 	  	for(uname in unit_name_lookup) {
+			// 	  		if(did in unit_name_lookup_per_dataset &amp;&amp; uname in unit_name_lookup_per_dataset[did]) {
+			// 	  			cnt = unit_name_lookup_per_dataset[did][uname];
+			// 	  			unit_name_counts[uname].push(cnt);
+
+			// 	  		} else {
+			// 	  			unit_name_counts[uname].push(0);
+			// 	  		}
+			// 	  	}
+			// 	  }
+			// 	  ukeys.push(uname);
+			// 	  ukeys = ukeys.filter(onlyUnique);
+			// 	  ukeys.sort();
+
+
+
+			// }
 
 
 		  
-		  //console.log(unit_name_lookup_per_dataset);
+		  //console.log(unit_name_counts);
 		  
 		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
@@ -465,213 +564,213 @@ function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_na
 //
 //  A S S E M B L E  T A X A
 //
-function assemble_taxa(depth, dict, row) {
-				var tax,domain,phylum,klass,order,family,genus,species,strain;
-				var d_id = row.domain_id+&quot;_domain&quot;;	
-				//console.log(&#039;d_id &#039;+d_id.toString())	      	      
-	      if(d_id in dict){
-	      	domain = dict[d_id][&quot;taxon&quot;];
-	      }else{
-	      	domain = &#039;unknown&#039;;
-	      }
-	      tax = domain;
-				if(depth === &#039;phylum&#039;) {
-		      var p_id = row.phylum_id+&quot;_phylum&quot;;		
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum)
-		      tax = domain+&#039;;&#039;+phylum;
-		    }else if(depth === &#039;class&#039; || depth === &#039;klass&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass)
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass;
-		    }else if(depth === &#039;order&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
+// function assemble_taxa(depth, dict, row) {
+// 				var tax,domain,phylum,klass,order,family,genus,species,strain;
+// 				var d_id = row.domain_id+&quot;_domain&quot;;	
+// 				//console.log(&#039;d_id &#039;+d_id.toString())	      	      
+// 	      if(d_id in dict){
+// 	      	domain = dict[d_id][&quot;taxon&quot;];
+// 	      }else{
+// 	      	domain = &#039;unknown&#039;;
+// 	      }
+// 	      tax = domain;
+// 				if(depth === &#039;phylum&#039;) {
+// 		      var p_id = row.phylum_id+&quot;_phylum&quot;;		
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum)
+// 		      tax = domain+&#039;;&#039;+phylum;
+// 		    }else if(depth === &#039;class&#039; || depth === &#039;klass&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass)
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass;
+// 		    }else if(depth === &#039;order&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		    	var o_id = row.order_id+&quot;_order&quot;;	
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order;
-		    }else if(depth === &#039;family&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	order = &#039;order_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order);
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order;
+// 		    }else if(depth === &#039;family&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		    	var o_id = row.order_id+&quot;_order&quot;;	
+// 		    	var f_id = row.family_id+&quot;_family&quot;;
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family;
-		    }else if(depth === &#039;genus&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	order = &#039;order_NA&#039;;
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	family = &#039;family_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family);
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family;
+// 		    }else if(depth === &#039;genus&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		    	var o_id = row.order_id+&quot;_order&quot;;	
+// 		    	var f_id = row.family_id+&quot;_family&quot;;
+// 		    	var g_id = row.genus_id+&quot;_genus&quot;;
 		    	
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus;
-		    }else if(depth === &#039;species&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
-		    	var s_id = row.species_id+&quot;_species&quot;;
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id][&quot;taxon&quot;];
-		      }else{
-		      	species = &#039;species_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species;
-		    }else if(depth === &#039;strain&#039;) {
-		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
-		    	var k_id = row.klass_id+&quot;_klass&quot;;	
-		    	var o_id = row.order_id+&quot;_order&quot;;	
-		    	var f_id = row.family_id+&quot;_family&quot;;
-		    	var g_id = row.genus_id+&quot;_genus&quot;;
-		    	var s_id = row.species_id+&quot;_species&quot;;
-		    	var st_id = row.strain_id+&quot;_strain&quot;;
-		      if(p_id in dict){
-		      	phylum = dict[p_id][&quot;taxon&quot;];
-		      }else{
-		      	phylum = &#039;phylum_NA&#039;;
-		      }
-		      if(k_id in dict){
-		      	klass = dict[k_id][&quot;taxon&quot;];
-		      }else{
-		      	klass = &#039;class_NA&#039;;
-		      }
-		      if(o_id in dict){
-		      	order = dict[o_id][&quot;taxon&quot;];
-		      }else{
-		      	order = &#039;order_NA&#039;;
-		      }
-		      if(f_id in dict){
-		      	family = dict[f_id][&quot;taxon&quot;];
-		      }else{
-		      	family = &#039;family_NA&#039;;
-		      }
-		      if(g_id in dict){
-		      	genus = dict[g_id][&quot;taxon&quot;];
-		      }else{
-		      	genus = &#039;genus_NA&#039;;
-		      }
-		      if(s_id in dict){
-		      	species = dict[s_id][&quot;taxon&quot;];
-		      }else{
-		      	species = &#039;species_NA&#039;;
-		      }
-		      if(st_id in dict){
-		      	strain = dict[st_id][&quot;taxon&quot;];
-		      }else{
-		      	strain = &#039;strain_NA&#039;;
-		      }
-		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain);
-		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain;
-		    }
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	order = &#039;order_NA&#039;;
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	family = &#039;family_NA&#039;;
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	genus = &#039;genus_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus);
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus;
+// 		    }else if(depth === &#039;species&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		    	var o_id = row.order_id+&quot;_order&quot;;	
+// 		    	var f_id = row.family_id+&quot;_family&quot;;
+// 		    	var g_id = row.genus_id+&quot;_genus&quot;;
+// 		    	var s_id = row.species_id+&quot;_species&quot;;
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	order = &#039;order_NA&#039;;
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	family = &#039;family_NA&#039;;
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	genus = &#039;genus_NA&#039;;
+// 		      }
+// 		      if(s_id in dict){
+// 		      	species = dict[s_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	species = &#039;species_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species);
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species;
+// 		    }else if(depth === &#039;strain&#039;) {
+// 		    	var p_id = row.phylum_id+&quot;_phylum&quot;;	
+// 		    	var k_id = row.klass_id+&quot;_klass&quot;;	
+// 		    	var o_id = row.order_id+&quot;_order&quot;;	
+// 		    	var f_id = row.family_id+&quot;_family&quot;;
+// 		    	var g_id = row.genus_id+&quot;_genus&quot;;
+// 		    	var s_id = row.species_id+&quot;_species&quot;;
+// 		    	var st_id = row.strain_id+&quot;_strain&quot;;
+// 		      if(p_id in dict){
+// 		      	phylum = dict[p_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	phylum = &#039;phylum_NA&#039;;
+// 		      }
+// 		      if(k_id in dict){
+// 		      	klass = dict[k_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	klass = &#039;class_NA&#039;;
+// 		      }
+// 		      if(o_id in dict){
+// 		      	order = dict[o_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	order = &#039;order_NA&#039;;
+// 		      }
+// 		      if(f_id in dict){
+// 		      	family = dict[f_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	family = &#039;family_NA&#039;;
+// 		      }
+// 		      if(g_id in dict){
+// 		      	genus = dict[g_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	genus = &#039;genus_NA&#039;;
+// 		      }
+// 		      if(s_id in dict){
+// 		      	species = dict[s_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	species = &#039;species_NA&#039;;
+// 		      }
+// 		      if(st_id in dict){
+// 		      	strain = dict[st_id][&quot;taxon&quot;];
+// 		      }else{
+// 		      	strain = &#039;strain_NA&#039;;
+// 		      }
+// 		      //console.log(domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain);
+// 		      tax = domain+&#039;;&#039;+phylum+&#039;;&#039;+klass+&#039;;&#039;+order+&#039;;&#039;+family+&#039;;&#039;+genus+&#039;;&#039;+species+&#039;;&#039;+strain;
+// 		    }
 
-		    return tax;
+// 		    return tax;
 
-}
+// }
 // function create_csv_text_matrix( unit_names, dataset_names, dataset_ids ) {
 // 		//
 // 	  // CSV2
