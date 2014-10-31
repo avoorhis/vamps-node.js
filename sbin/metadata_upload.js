@@ -414,14 +414,8 @@ function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
     if (project_id !== undefined)
     {
       var values = get_values(this_entry, custom_fields_names_arr);
-      if (i === 0)
-      {
-        insert_into_custom_metadata_info_query += "(" + values + ")";
-      }
-      else
-      {
-        insert_into_custom_metadata_info_query += ", (" +  values + ")";
-      }      
+      i === 0 ? comma = "" : comma = ", "; 
+      insert_into_custom_metadata_info_query += comma + "(" + values + ")";
     }
   }
   // console.log("555 =====");
