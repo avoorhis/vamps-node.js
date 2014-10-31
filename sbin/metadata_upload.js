@@ -341,19 +341,31 @@ function correct_db_data(collection_date)
 
 function get_custom_fields_names(project_id)
 {
-  csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, results)
+  csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, custom_fields_names)
   {
-    console.log("7777");
-    console.log("results");
-    console.log(results);
+    csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+    {
+      if (err)
+        throw err; // or return an error message, or something
+      else
+      {
+        console.log("7777");
+        console.log("results");
+        console.log(results);
+        if (results.warningCount === 1)
+        {
+          console.log("Warning: Please check custom_metadata_" + project_id + " table, it seems to exist already.");
+        }
+      }
+    });
   });
 }
 
 function make_custom_table_per_project(metadata_dict)
 {
-  console.log("999 =====");
-  console.log("metadata_dict");
-  console.log(metadata_dict);
+//  console.log("999 =====");
+//  console.log("metadata_dict");
+//  console.log(metadata_dict);
   
   
  get_custom_fields_names(metadata_dict.project_id); 
