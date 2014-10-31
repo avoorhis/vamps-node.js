@@ -138,3 +138,12 @@ csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, p
     callback(err, rows);
   });
 };
+
+csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(insert_into_custom_metadata_info_query, callback) 
+{
+  connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+
