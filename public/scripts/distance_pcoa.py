@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # ./pcoa.py --mtx node_matrix.mtx --meta node_metadata.txt
 
