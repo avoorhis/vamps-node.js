@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.58</p>
+      <p class="stat">54.71</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">303</p>
+      <p class="stat">398</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">55.80</p>
+      <p class="stat">57.76</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.04</p>
+      <p class="stat">4.20</p>
     </div>
   </div>
 </div>
@@ -94,7 +94,8 @@ var path = require(&#039;path&#039;);
 var fs = require(&#039;fs&#039;);
 var extend = require(&#039;util&#039;)._extend;
 var C = require(&#039;../../public/constants&#039;);
-
+var HMAP    = require(&#039;./routes_distance_heatmap&#039;);
+var DEND    = require(&#039;./routes_dendrogram&#039;);
 
 module.exports = {
 
@@ -390,7 +391,101 @@ module.exports = {
 
     //console.log(&#039;returning custom_count_matrix&#039;);
     return custom_count_matrix;
+  },
+
+  run_script_cmd: function (req,res, ts, command, visual_name) {
+    var exec = require(&#039;child_process&#039;).exec;
+    var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border center_table&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
+    var title = &#039;VAMPS&#039;;
+    html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += &#039;&lt;/td&gt;&lt;td&gt;&#039;;
+    html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
+
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+
+      if(stderr){console.log(stderr);}
+      stdout = stdout.trim();
+      console.log(stdout);
+      if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
+        html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
+      }else{
+        if(visual_name === &#039;heatmap&#039;) {
+          var dm = HMAP.create_distance_matrix(stdout);
+          console.log(dm)
+          title += &#039; Heatmap&#039;;
+          html  += HMAP.create_hm_html(dm);  
+        }else if(visual_name === &#039;dendrogram&#039;) {
+          html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+          title += &#039; Dendrogram&#039;;
+        }else{
+
+        }
+        
+      }
+
+      res.render(&#039;visuals/user_data/&#039;+visual_name, {
+            title: title,
+            timestamp: ts || &#039;default_timestamp&#039;,
+            html : html,
+            user: req.user
+      });
+      
+
+    });
+},
+//
+//
+//
+create_chosen_id_name_hash: function(dataset_ids) {
+  // dataset_ids is list of strings of form:
+  // ID--PROJECTNAME--DATASETNAME
+  var chosen_id_name_hash    = {};
+  chosen_id_name_hash.ids    = [];
+  chosen_id_name_hash.names  = [];
+  //console.log(&#039;req.body.dataset_ids&#039;)
+  //console.log(req.body.dataset_ids)
+  for (var n=0; n &lt; dataset_ids.length; n++){
+    var items = dataset_ids[n].split(&#039;--&#039;);
+    chosen_id_name_hash.ids.push(items[0]);
+    chosen_id_name_hash.names.push(items[1]+&#039;--&#039;+items[2]);
   }
+  return chosen_id_name_hash;
+},
+//
+//
+//
+check_initial_status: function(url) {
+
+  var values_updated;
+  var min,max,norm,dist;
+  // these only seen in url after page first rendered
+  if(url.query.min_range === undefined) {
+    min   = 0;
+    max   = 100;
+    norm  = &#039;none&#039;;
+    dist  = &#039;morisita_horn&#039;;  // default distance    
+    values_updated = false;
+  } else {
+    min   = url.query.min_range  || 0;
+    max   = url.query.max_range  || 100;
+    norm  = url.query.norm       ||  &#039;none&#039;;
+    dist  = url.query.selected_distance || &#039;morisita_horn&#039;;  // default distance    
+    values_updated = true;    
+  }
+
+  if(Number(max) &lt;= Number(min)) {min=0;max=100;} 
+  visual_post_items.min_range = Number(min);
+  visual_post_items.max_range = Number(max);
+  visual_post_items.normalization = norm;
+  visual_post_items.selected_distance = dist;
+  
+  //console.log(&#039;min &#039;+min.toString()+&#039; max &#039;+max.toString()+&#039; norm &#039;+norm)
+  if(Number(min)===0 &amp;&amp; Number(max)===100 &amp;&amp; norm===&#039;none&#039;) {
+    values_updated = false;  // return to initial state
+  }
+  return values_updated;
+}
 
 };   // end module.exports</textarea>
   </div>

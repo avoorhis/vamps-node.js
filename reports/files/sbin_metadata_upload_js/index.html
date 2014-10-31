@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">70.23</p>
+      <p class="stat">70.40</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">42.71</p>
+      <p class="stat">41.04</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.58</p>
+      <p class="stat">2.56</p>
     </div>
   </div>
 </div>
@@ -330,7 +330,7 @@ function call_insert_custom_fields_into_db(insert_into_custom_fields_txt)
 function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 {
   var insert_into_custom_fields_txt = [];
-  var project = metadata_by_project_w_ids.metadata[0][&quot;TITLE&quot;]
+  var project = metadata_by_project_w_ids.metadata[0][&quot;TITLE&quot;];
   var project_id = metadata_by_project_w_ids.project_id;
   for (var i = 0; custom_column_names.length &gt; i; i += 1)
   {
@@ -365,41 +365,41 @@ dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevat
 function format_required_metadata_info(metadata_dict_w_ids)
 {
   var insert_into_required_metadata_info_txt = [];
-    for (var i = 0; metadata_dict_w_ids.length &gt; i; i += 1)
+  for (var i = 0; metadata_dict_w_ids.length &gt; i; i += 1)
+  {
+    this_entry = metadata_dict_w_ids[i];
+    var dataset = this_entry.correct_dataset_name;
+    dataset_id = this_entry.dataset_id;
+    if (dataset_id !== undefined)
     {
-      this_entry = metadata_dict_w_ids[i];
-      var dataset = this_entry.correct_dataset_name;
-      dataset_id = this_entry.dataset_id;
-      if (dataset_id !== undefined)
-      {
-        var altitude = this_entry[&quot;altitude&quot;];
-        var assigned_from_geo = this_entry[&quot;assigned_from_geo&quot;];
-        var collection_date = &quot;&quot;;
-        if (this_entry[&quot;collection_date&quot;] != &quot;unknown&quot;)
-        {
-          collection_date = correct_db_data(this_entry[&quot;collection_date&quot;]);
-        }
-        var depth = this_entry[&quot;depth&quot;];
-        var country = this_entry[&quot;country&quot;];
-        var elevation = this_entry[&quot;elevation&quot;];
-        var env_biome = this_entry[&quot;env_biome&quot;];
-        var env_feature = this_entry[&quot;env_feature&quot;];
-        var env_matter = this_entry[&quot;env_matter&quot;];
-        var latitude = this_entry[&quot;latitude&quot;];
-        var longitude = this_entry[&quot;longitude&quot;];
-        var temp = this_entry[&quot;temp&quot;];
-        var salinity = this_entry[&quot;salinity&quot;];
-        var diss_oxygen = this_entry[&quot;diss_oxygen&quot;];
-        var is_public = this_entry[&quot;public&quot;];
+      var altitude = this_entry[&quot;altitude&quot;];
+      var assigned_from_geo = this_entry[&quot;assigned_from_geo&quot;];
+      var collection_date = &quot;&quot;;
+      // if (this_entry[&quot;collection_date&quot;] != &quot;unknown&quot;)
+      // {
+        collection_date = correct_db_data(this_entry[&quot;collection_date&quot;]);
+      // }
+      var depth = this_entry[&quot;depth&quot;];
+      var country = this_entry[&quot;country&quot;];
+      var elevation = this_entry[&quot;elevation&quot;];
+      var env_biome = this_entry[&quot;env_biome&quot;];
+      var env_feature = this_entry[&quot;env_feature&quot;];
+      var env_matter = this_entry[&quot;env_matter&quot;];
+      var latitude = this_entry[&quot;latitude&quot;];
+      var longitude = this_entry[&quot;longitude&quot;];
+      var temp = this_entry[&quot;temp&quot;];
+      var salinity = this_entry[&quot;salinity&quot;];
+      var diss_oxygen = this_entry[&quot;diss_oxygen&quot;];
+      var is_public = this_entry[&quot;public&quot;];
 
-        var into_db = dataset_id + &quot;, &quot; + altitude + &quot;, &#039;&quot; + assigned_from_geo + &quot;&#039;, &#039;&quot; + collection_date + &quot;&#039;, &quot; + depth + &quot;, &#039;&quot; + country + &quot;&#039;, &quot; + elevation + &quot;, &#039;&quot; + env_biome + &quot;&#039;, &#039;&quot; + env_feature + &quot;&#039;, &#039;&quot; + env_matter + &quot;&#039;, &quot; + latitude + &quot;, &quot; + longitude + &quot;, &quot; + temp + &quot;, &quot; + salinity + &quot;, &quot; + diss_oxygen + &quot;, &#039;&quot; + is_public + &quot;&#039;&quot;;
-        insert_into_required_metadata_info_txt.push(into_db);
-      }
-      else
-      {
-        console.log(&quot;ERROR: Add this dataset to db: &quot; + this_entry.sample_name);
-      }
+      var into_db = dataset_id + &quot;, &quot; + altitude + &quot;, &#039;&quot; + assigned_from_geo + &quot;&#039;, &#039;&quot; + collection_date + &quot;&#039;, &quot; + depth + &quot;, &#039;&quot; + country + &quot;&#039;, &quot; + elevation + &quot;, &#039;&quot; + env_biome + &quot;&#039;, &#039;&quot; + env_feature + &quot;&#039;, &#039;&quot; + env_matter + &quot;&#039;, &quot; + latitude + &quot;, &quot; + longitude + &quot;, &quot; + temp + &quot;, &quot; + salinity + &quot;, &quot; + diss_oxygen + &quot;, &#039;&quot; + is_public + &quot;&#039;&quot;;
+      insert_into_required_metadata_info_txt.push(into_db);
     }
+    else
+    {
+      console.log(&quot;ERROR: Add this dataset to db: &quot; + this_entry.sample_name);
+    }
+  }
   return insert_into_required_metadata_info_txt;
 }
 

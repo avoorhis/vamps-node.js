@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">137</p>
+      <p class="stat">93</p>
     </div>
   </div>
   <div class="row historical">
@@ -98,50 +98,7 @@ var COMMON  = require(&#039;./routes_common&#039;);
 var C = require(&#039;../../public/constants&#039;);
 
 module.exports = {
-		//
-		// CREATE HEATMAP HTML
-		//
-		// create_heatmap_html: function( ts, obj ) {
-		//   // write distance file using R
-		//   // The stdout from R script will be used and parsed
-		//   // to create distance_matrix JSON Object
-		//   //console.log(JSON.stringify(body.selection_obj.counts_matrix))
-		//   //console.log(matrix)
-		//   var exec = require(&#039;child_process&#039;).exec;
-		//   var env = process.env
-		//   var out_file = &#039;../../tmp/&#039;+ts+&#039;_heatmap.html&#039;;
-		//   var items;
-		//   var dname;
-		//   var matrix_input_file = path.resolve(__dirname, &#039;../../tmp/&#039;+ts+&#039;_text_matrix.mtx&#039;);
-		//   var script_file = path.resolve(__dirname, &#039;../../public/scripts/distance.R&#039;);
-
-		//   //var RCall  = [&#039;--no-restore&#039;,&#039;--no-save&#039;, script_file, matrix_file, &#039;horn&#039;];
-		//   var command = C.RSCRIPT_CMD + &#039; &#039; + script_file + &#039; &#039; + matrix_input_file + &#039; &#039; + obj.selected_heatmap_distance;
-		//   console.log(&#039;R command: &#039; + command);
-		//   exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-		//     stdout = stdout.trim();
-		//     //console.log(stderr)
-		//     //console.log(error)
-		//     console.log(&#039;--&gt;&#039;+stdout+&#039;&lt;--&#039;)
-		    
-		//     if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039;) {
-
-		//     	var html = &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;
-
-		//     }else{
-		//     	var dm = create_distance_matrix(stdout);
-		    	
-		//     	var html = create_hm_html(dm);
-		//     }
-		    
-		    
-		//     // this is to write the html to show the colored heatmap
-		//     // input should be the html itself
-		//     COMMON.write_file(out_file,html);
-
-		//   });
-
-		// },
+		
 		//
 		//  CREATE DISTANCE MATRIX
 		//
@@ -180,8 +137,7 @@ module.exports = {
 
 		//
 		//  CREATE HTML
-		//
-	
+		//	
 		create_hm_html: function (dm) {
 
 			
