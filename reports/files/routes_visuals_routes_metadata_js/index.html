@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">14.63</p>
+      <p class="stat">14.80</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.28</p>
+      <p class="stat">0.27</p>
     </div>
   </div>
 </div>
@@ -97,9 +97,9 @@ var COMMON  = require(&#039;./routes_common&#039;);
 module.exports = {
 
 
-		write_metadata_file: function(chosen_id_name_hash, post_items, sqlrows) {
+		write_metadata_file: function(chosen_id_name_hash, post_items) {
 			//console.log(&#039;in metadata&#039;)
-			var test_metadata = [&#039;horses&#039;,&#039;donkeys&#039;];
+			var test_metadata = [&#039;horse&#039;,&#039;donkey&#039;];
 			//var txt = &quot;project_dataset\tproject\tdataset\n&quot;;
 			var txt = &quot;project_dataset\tproject\tdataset\ttest_color_grouping\n&quot;;
 			var meta_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_metadata.txt&#039;;
@@ -114,7 +114,7 @@ module.exports = {
 					var c = test_metadata[1]
 				}
 				txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] +&quot;\t&quot;+c+ &quot;\n&quot;;  // just put project and dataset in here for now				
-				metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1],&#039;test_color_group&#039;:c});
+				metadata.push({&#039;test_color_group&#039;:c,&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1]});
 
 				//txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] + &quot;\n&quot;;  // just put project and dataset in here for now				
 				//metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1]});
