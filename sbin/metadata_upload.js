@@ -276,9 +276,9 @@ function format_required_metadata_info(metadata_dict_w_ids)
   var insert_into_required_metadata_info_txt = [];
   for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
   {
-    this_entry = metadata_dict_w_ids[i];
+    var this_entry = metadata_dict_w_ids[i];
     var dataset = this_entry.correct_dataset_name;
-    dataset_id = this_entry.dataset_id;
+    var dataset_id = this_entry.dataset_id;
     if (dataset_id !== undefined)
     {
       var altitude = this_entry["altitude"];
