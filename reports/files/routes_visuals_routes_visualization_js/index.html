@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">58.74</p>
+      <p class="stat">60.39</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">787</p>
+      <p class="stat">686</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">62.54</p>
+      <p class="stat">48.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">7.25</p>
+      <p class="stat">6.04</p>
     </div>
   </div>
 </div>
@@ -148,46 +148,44 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
   
   //req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
-  //console.log(&#039;2&#039;);
   
-  var visual_post_items = {};
-  GLOBAL.visual_post_items = visual_post_items;
-  visual_post_items.unit_choice                  = req.body.unit_choice;
-  //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
-  visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
-  visual_post_items.normalization                = req.body.normalization || &#039;none&#039;;
-  visual_post_items.visuals                      = req.body.visuals;
-  visual_post_items.selected_distance            = req.body.selected_distance || &#039;morisita_horn&#039;;
-  visual_post_items.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
-  visual_post_items.domains                      = req.body.domains      || [&#039;NA&#039;];
-  visual_post_items.custom_taxa                  = req.body.custom_taxa  || [&#039;NA&#039;];
-  // in the unusual event that a single checkbox is selected... must change from string to list:
-  if(typeof visual_post_items.custom_taxa !== &#039;object&#039;) {visual_post_items.custom_taxa = [visual_post_items.custom_taxa]; }
-  visual_post_items.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
-  visual_post_items.min_range                    = 0;
-  visual_post_items.max_range                    = 100;
-  visual_post_items.metadata                     = req.body.metadata  || [];
+  if(req.body.ds_order === undefined) {
+      // GLOBAL Variable
+      visual_post_items = {};
+      
+      visual_post_items.unit_choice                  = req.body.unit_choice;
+      //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
+      visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
+      visual_post_items.normalization                = req.body.normalization || &#039;none&#039;;
+      visual_post_items.visuals                      = req.body.visuals;
+      visual_post_items.selected_distance            = req.body.selected_distance || &#039;morisita_horn&#039;;
+      visual_post_items.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
+      visual_post_items.domains                      = req.body.domains      || [&#039;NA&#039;];
+      visual_post_items.custom_taxa                  = req.body.custom_taxa  || [&#039;NA&#039;];
+      // in the unusual event that a single custom checkbox is selected --&gt; must change from string to list:
+      if(typeof visual_post_items.custom_taxa !== &#039;object&#039;) {visual_post_items.custom_taxa = [visual_post_items.custom_taxa]; }
+      visual_post_items.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
+      visual_post_items.min_range                    = 0;
+      visual_post_items.max_range                    = 100;
+      visual_post_items.metadata                     = req.body.selected_metadata  || [];
 
-  var sample_metadata = req.C.sample_metadata;
-  
-  var uitems = visual_post_items.unit_choice.split(&#039;_&#039;);
-  var unit_name_query = &#039;&#039;;
-  var unit_field;
-  if (uitems[0] === &#039;tax&#039;){  // covers both simple and custom
-  
-    unit_field = &#039;silva_taxonomy_info_per_seq_id&#039;;
-    //unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    //console.log(unit_name_query);
-    
-  }else if(uitems[0] === &#039;otus&#039;) {
-    unit_field = &#039;gg_otu_id&#039;;
-    //unit_name_query = COMMON.get_otus_query( req.db, uitems, selection_obj, visual_post_items );
-  }else if(uitems[0] === &#039;med_nodes&#039;) {
-    unit_field = &#039;med_node_id&#039;;
-    //unit_name_query = COMMON.get_med_query( req.db, uitems, selection_obj, visual_post_items );
+      var timestamp = +new Date();  // millisecs since the epoch!
+      var user = req.user || &#039;no-user&#039;;
+      timestamp = user + &#039;_&#039; + timestamp;
+      visual_post_items.ts = timestamp;
+
+
   }else{
-    console.log(&#039;ERROR--RORRE BAD Unit items in view_selection&#039;);
+
+      chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.ds_order);      
+      
   }
+    
+  
+  biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+  metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+  console.log(metadata)
   //console.log(&#039;MAP:::&#039;);
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[&quot;724_class&quot;][&quot;taxon&quot;])
@@ -195,22 +193,9 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-  console.log(&#039;visual_post_items:&#039;);
-  console.log(visual_post_items);
-  
- 
-  var timestamp = +new Date();  // millisecs since the epoch!
-  var user = req.user || &#039;no-user&#039;;
-  timestamp = user + &#039;_&#039; + timestamp;
-  visual_post_items.ts = timestamp;
-
- 
-
-
-  biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
-  visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
-  metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-  GLOBAL.metadata = metadata;
+  console.log(&#039;visual_post_items:&gt;&gt;&#039;);
+  console.log(visual_post_items); 
+  console.log(&#039;&lt;&lt;visual_post_items:&#039;);
   
   console.log(biome_matrix);
 
@@ -233,15 +218,16 @@ router.post(&#039;/view_selection&#039;,  function(req, res) {
       //console.warn(util.inspect(matrix));
       //console.log(dataset_accumulator)
       
-     
-     
+   
+     req.flash(&#039;info&#039;, &#039;Datasets are updated!&#039;)
   res.render(&#039;visuals/view_selection&#039;, { 
-                                  title   : &#039;VAMPS: Visuals Select&#039;,
+                                  title   : &#039;VAMPS: Visuals Selection&#039;,
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix :              JSON.stringify(biome_matrix),
                                   constants :           JSON.stringify(req.C),
-                                  timestamp :           timestamp,           // for creating unique files/pages                            
-                                  user   :              req.user
+                                  timestamp :           visual_post_items.ts,           // for creating unique files/pages                            
+                                  user   :              req.user,
+                                  messages: req.flash(&#039;info&#039;)
                    });
     
   //  }
@@ -307,23 +293,11 @@ router.post(&#039;/unit_selection&#039;,  function(req, res) {
 
   var available_units = req.C.AVAILABLE_UNITS; // [&#039;med_node_id&#039;,&#039;otu_id&#039;,&#039;taxonomy_gg_id&#039;]
 
-  //for (var i=0; i &lt; available_units.length; i++){
-  //  accumulator.unit_assoc[available_units[i]]=[];
-  //}
-
-
-  // dataset selection +/- is checked in routes/visualization.js: check_for_no_datasets()
+ 
   //console.log(req.body);
-  var chosen_id_name_hash    = {};
-  chosen_id_name_hash.ids    = [];
-  chosen_id_name_hash.names  = [];
-  //console.log(&#039;req.body.dataset_ids&#039;)
-  //console.log(req.body.dataset_ids)
-  for (var n=0; n &lt; req.body.dataset_ids.length; n++){
-    var items = req.body.dataset_ids[n].split(&#039;--&#039;);
-    chosen_id_name_hash.ids.push(items[0]);
-    chosen_id_name_hash.names.push(items[1]+&#039;--&#039;+items[2]);
-  }
+  // GLOBAL Variable
+  chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.dataset_ids);
+ 
   //console.log(&#039;chosen_id_name_hash&#039;)
   //console.log(chosen_id_name_hash)
   // // benchmarking
@@ -349,17 +323,12 @@ router.post(&#039;/unit_selection&#039;,  function(req, res) {
                       &#039;meta_10&#039;,&#039;meta_11&#039;,&#039;meta_12&#039;,&#039;meta_13&#039;,&#039;meta_14&#039;,
                       &#039;meta_15&#039;,&#039;meta_16&#039;,&#039;meta_17&#039;  ];
    
-//    GLOBAL.selection_obj = accumulator;
 
-    GLOBAL.chosen_id_name_hash = chosen_id_name_hash;
-    console.log(&#039;selection_obj--&gt;&#039;);
-    //console.log(JSON.stringify(accumulator));
-    console.log(&#039;&lt;--selection_obj&#039;);
+   
     console.log(&#039;chosen_id_name_hash--&gt;&#039;);
     //console.log(chosen_id_name_hash);
     console.log(&#039;&lt;--chosen_id_name_hash&#039;);
-    helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 3 Before Page Render But after Query/Calc &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
- 
+    
 
     res.render(&#039;visuals/unit_selection&#039;, {   
                     title: &#039;VAMPS: Units Selection&#039;,
@@ -369,14 +338,10 @@ router.post(&#039;/unit_selection&#039;,  function(req, res) {
                     user         : req.user
     });  // end render
     // benchmarking
-    helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4 After Page Render &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
-
-//  });  // end db query   
-   
+    helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4 After Page Render &lt;&lt;&lt;&lt;&lt;&lt;&quot;);   
    
 
-   // benchmarking
-   helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 1 Before Page Render and Query &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
+  
 
 
 }); // end fxn
@@ -406,7 +371,7 @@ router.get(&#039;/index_visuals&#039;,  function(req, res) {
 //
 //
 router.get(&#039;/reorder_datasets&#039;, function(req, res) {
-  console.log(&#039;TODO::TODO reorder datasets&#039;);
+  
   res.render(&#039;visuals/reorder_datasets&#039;, { 
                                 title   : &#039;VAMPS: Reorder Datasets&#039;,
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
@@ -415,6 +380,19 @@ router.get(&#039;/reorder_datasets&#039;, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
+// router.post(&#039;/reorder_datasets&#039;, function(req, res) {  
+//   // here must recreate chosen_id_name_hash
+  
+  
+
+//   res.render(&#039;visuals/reorder_datasets&#039;, { 
+//                                 title   : &#039;VAMPS: Reorder Datasets&#039;,
+//                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+//                                 constants    : JSON.stringify(req.C),
+//                                 user: req.user
+//                             });
+//   //console.log(chosen_id_name_hash)
+// });
 //
 //  C O U N T S  T A B L E
 //
@@ -422,7 +400,7 @@ router.get(&#039;/user_data/counts_table&#039;, function(req, res) {
   
   var myurl = url.parse(req.url, true);
   var ts   = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
 
 
   var infile = &#039;../../tmp/&#039;+ts+&#039;_count_matrix.biom&#039;;
@@ -482,7 +460,7 @@ router.get(&#039;/user_data/barcharts&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   
   var infile = &#039;../../tmp/&#039;+ts+&#039;_count_matrix.biom&#039;;
   fs.readFile(path.resolve(__dirname, infile), &#039;UTF-8&#039;, function (err, file_contents) {
@@ -522,7 +500,7 @@ router.get(&#039;/user_data/piecharts&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   //console.log(myurl)
   var ts = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
  
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+ts+&#039;_count_matrix.biom&#039;);
   console.log(&#039;in create_piecharts_html: &#039; + infile);
@@ -583,7 +561,7 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   var biom_file, custom_biom_file, R_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+infile_name);
@@ -600,7 +578,7 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
       // must write custom file for R script
       COMMON.write_file( &#039;../../tmp/&#039;+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log(&#039;Writing/Using custom matrix file&#039;);
-      run_script_cmd(req,res,  ts, command, &#039;heatmap&#039;);
+      COMMON.run_script_cmd(req,res,  ts, command, &#039;heatmap&#039;);
       
     });
   }else{
@@ -609,7 +587,7 @@ router.get(&#039;/user_data/heatmap&#039;, function(req, res) {
     //shell_command = [dist_script_file, &#039;--in&#039;, biom_file, &#039;--metric&#039;, visual_post_items.selected_distance].join(&#039; &#039;);
     console.log(shell_command);
     console.log(&#039;Using original matrix file&#039;);
-    run_script_cmd(req,res,  ts, shell_command, &#039;heatmap&#039;);
+    COMMON.run_script_cmd(req,res,  ts, shell_command, &#039;heatmap&#039;);
 
   } 
  
@@ -621,7 +599,7 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   var biom_file,R_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   var infile = path.join(__dirname, &#039;../../tmp/&#039;+infile_name);
@@ -637,7 +615,7 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
       console.log(shell_command);
       COMMON.write_file( &#039;../../tmp/&#039;+biom_file, JSON.stringify(mtx,null,2) );  
       console.log(&#039;Writing/Using cust matrix file&#039;);
-      run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
+      COMMON.run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
     });
   }else {
     biom_file = infile_name;
@@ -645,7 +623,7 @@ router.get(&#039;/user_data/dendrogram&#039;, function(req, res) {
     //shell_command = [dist_script_file,&#039;--in&#039;, biom_file, &#039;--metric&#039;,visual_post_items.selected_distance,&#039;|&#039;,dend_script_file, &#039;-&#039;].join(&#039; &#039;);
     console.log(shell_command);
     console.log(&#039;Using original matrix file&#039;);
-    run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
+    COMMON.run_script_cmd(req, res, ts, shell_command, &#039;dendrogram&#039;);
   } 
 
 });
@@ -656,7 +634,7 @@ router.get(&#039;/user_data/pcoa&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   var biom_file,shell_command;
   var infile_name = ts+&#039;_count_matrix.biom&#039;;
   //var metafile_name = ts+&#039;_metadata.txt&#039;
@@ -711,7 +689,7 @@ router.get(&#039;/user_data/frequency_heatmap&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   res.render(&#039;visuals/user_data/frequency_heatmap&#039;, {
             title: &#039;VAMPS Frequency Heatmap&#039;,
             timestamp: ts || &#039;default_timestamp&#039;,
@@ -728,7 +706,7 @@ router.get(&#039;/user_data/metadata_table&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = check_initial_status(myurl);  
+  var values_updated = COMMON.check_initial_status(myurl);  
   res.render(&#039;visuals/user_data/metadata_table&#039;, {
             title: &#039;VAMPS Metadata Table&#039;,
             timestamp: ts || &#039;default_timestamp&#039;,
@@ -797,85 +775,11 @@ function IsJsonString(str) {
     }
     return true;
 }
-//
-//
-//
-function check_initial_status(url) {
 
-  var values_updated;
-  var min,max,norm,dist;
-  // these only seen in url after page first rendered
-  if(url.query.min_range === undefined) {
-    min   = 0;
-    max   = 100;
-    norm  = &#039;none&#039;;
-    dist  = &#039;morisita_horn&#039;;  // default distance    
-    values_updated = false;
-  } else {
-    min   = url.query.min_range  || 0;
-    max   = url.query.max_range  || 100;
-    norm  = url.query.norm       ||  &#039;none&#039;;
-    dist  = url.query.selected_distance || &#039;morisita_horn&#039;;  // default distance    
-    values_updated = true;    
-  }
-
-  if(Number(max) &lt;= Number(min)) {min=0;max=100;} 
-  visual_post_items.min_range = Number(min);
-  visual_post_items.max_range = Number(max);
-  visual_post_items.normalization = norm;
-  visual_post_items.selected_distance = dist;
-  
-  //console.log(&#039;min &#039;+min.toString()+&#039; max &#039;+max.toString()+&#039; norm &#039;+norm)
-  if(Number(min)===0 &amp;&amp; Number(max)===100 &amp;&amp; norm===&#039;none&#039;) {
-    values_updated = false;  // return to initial state
-  }
-  return values_updated;
-}
 
 //
 //
-//
-function run_script_cmd(req,res, ts, command, visual_name) {
-    var exec = require(&#039;child_process&#039;).exec;
-    var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border center_table&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
-    var title = &#039;VAMPS&#039;;
-    html += COMMON.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += &#039;&lt;/td&gt;&lt;td&gt;&#039;;
-    html += COMMON.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
-
-    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-
-      if(stderr){console.log(stderr);}
-      stdout = stdout.trim();
-      console.log(stdout);
-      if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
-        html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-      }else{
-        if(visual_name === &#039;heatmap&#039;) {
-          var dm = HMAP.create_distance_matrix(stdout);
-          console.log(dm)
-          title += &#039; Heatmap&#039;;
-          html  += HMAP.create_hm_html(dm);  
-        }else if(visual_name === &#039;dendrogram&#039;) {
-          html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-          title += &#039; Dendrogram&#039;;
-        }else{
-
-        }
-        
-      }
-
-      res.render(&#039;visuals/user_data/&#039;+visual_name, {
-            title: title,
-            timestamp: ts || &#039;default_timestamp&#039;,
-            html : html,
-            user: req.user
-      });
-      
-
-    });
-}</textarea>
+//</textarea>
   </div>
 </div>
 
