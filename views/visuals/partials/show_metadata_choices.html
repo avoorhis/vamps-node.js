@@ -1,10 +1,11 @@
-<%    var md = metadata %>
+<%    var md_req  = md_required %>
+<%    var md_cust = [] %>
 <% no_of_rows = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
-
+<hr>Required Fields:
 <table class='tiny_font'><tr>
-    <% for (i in md) { %>       
-       <td><input type='checkbox' name='selected_metadata[]' value='<%= md[i] %>'><%= md[i] %></td>
+    <% for (i in md_req) { %>       
+       <td><input type='checkbox' name='selected_metadata[]' value='<%= md_req[i] %>'><%= md_req[i] %></td>
        
        <% if(i % no_of_rows === no_of_rows-1) { %>  
        	   		
@@ -12,4 +13,17 @@
        <% } %>            
     <% } %>
 </tr></table>
+<hr>Custom Fields:
+<table class='tiny_font'><tr>
+    <% for (i in md_cust) { %>       
+       <td><input type='checkbox' name='selected_metadata[]' value='<%= md_cust[i] %>'><%= md_cust[i] %></td>
+       
+       <% if(i % no_of_rows === no_of_rows-1) { %>  
+       	   		
+     			</tr><tr>
+       <% } %>            
+    <% } %>
+</tr></table>
+<hr>
+
 
