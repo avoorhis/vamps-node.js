@@ -243,7 +243,7 @@ router.post('/unit_selection',  function(req, res) {
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     constants    : JSON.stringify(req.C),
-                    metadata: metadata_names,  // should contain all the items that selected datasets have
+                    md_required: req.C.required_metadata_fields,  // should contain all the items that selected datasets have
                     user         : req.user
     });  // end render
     // benchmarking
@@ -481,13 +481,13 @@ router.get('/user_data/heatmap', function(req, res) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       custom_biom_file = ts+'_count_matrix_cust_heat.biom';
-      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
       //shell_command = [dist_script_file, '--in', custom_biom_file, '--metric', visual_post_items.selected_distance].join(' ');
       console.log(shell_command);
       // must write custom file for R script
       COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using custom matrix file');
-      COMMON.run_script_cmd(req,res,  ts, command, 'heatmap');
+      COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
       
     });
   }else{
@@ -519,8 +519,8 @@ router.get('/user_data/dendrogram', function(req, res) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-      biom_file = ts+'_count_matrix_cust_dend.biom';
-      shell_command = [req.C.RSCRIPT_CMD,dend_script_file,biom_file,visual_post_items.selected_distance].join(' ');
+      custom_biom_file = ts+'_count_matrix_cust_dend.biom';
+      shell_command = [req.C.RSCRIPT_CMD,dend_script_file,custom_biom_file,visual_post_items.selected_distance].join(' ');
       console.log(shell_command);
       COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using cust matrix file');

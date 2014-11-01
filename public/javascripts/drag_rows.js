@@ -34,8 +34,8 @@
 	            direction = 'down';
 	          }
             
-            fromColIndex = fromRowIndex;
-            toColIndex = toRowIndex;
+            fromColIndex = fromRowIndex+1;
+            toColIndex = toRowIndex+1;
 
             for (var i=0; i < rows.length;i++){
                var row = rows[i];
