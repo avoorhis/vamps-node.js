@@ -56,20 +56,21 @@ module.exports = {
 		    //html += selection_html;
 		    //html += "<div class='' id='distance_heatmap_div center_table' >";
 		    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >";
-		    html += "<tr class='nodrag nodrop' ><td>";
+		    html += "<tr class='nodrag nodrop' ><td></td><td>";
 		    html += "<div class='blue'>Similar</div>";
 		    html += "<div class='red'>Dissimilar</div>";
 		    html += "<div id='ds_save_order_div'><input type='button' id='ds_save_order_btn' class='' value='Save Order'></div>";
 		    html += '</td>';
 
 		    for(i=1;i<=Object.keys(dm).length;i++) {
-		      html += "<td>"+i.toString()+'</td>';
+		      //html += "<td>"+i.toString()+'</td>';
+		      html += "<td><div class='cell'></div></td>";
 		    }
 		    html += '</tr>';
 		    var n=1;
 		    for(x_dname in dm) {
 		      html += "<tr id='"+x_dname+"'>";
-		      html += "<td id='"+x_dname+"' class='dragHandle' >"+n.toString()+' '+x_dname+'</td>';
+		      html += "<td  id='"+x_dname+"' class='dragHandle'>"+n.toString()+"</td><td class='dragHandle ds_cell' >"+x_dname+"</td>";
 		      for(y_dname in dm) {
 		      	
 		        if(x_dname === y_dname){
@@ -77,7 +78,8 @@ module.exports = {
 		        }else{
 		        	var id = x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname];
 		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 );
-		        	html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	//html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'></td>";
 		        }		        
 		      }
 		      html += '</tr>';
