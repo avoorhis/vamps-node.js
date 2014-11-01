@@ -42,13 +42,9 @@ app.set('view engine', 'html');
 // MIDDLEWARE  <-- must be in correct order:
 app.use(favicon());
 app.use(logger('dev'));
-app.use(bodyParser({limit: 1024000000 })); // 1024MB
+//app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-
-  //app.use(express.session({ cookie: { maxAge: 60000 }}));
- // app.use(flash());
 app.use(compression());
 /**
  * maxAge used to cache the content, # msec
@@ -63,7 +59,7 @@ app.use('public/stylesheets', express.static(path.join(__dirname, '/public/style
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
-app.use(session({ secret: 'keyboard cat'})); // session secret
+//app.use(session({ secret: 'keyboard cat'})); // session secret
 app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
