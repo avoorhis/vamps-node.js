@@ -55,7 +55,7 @@ module.exports = {
 		    
 		    //html += "<div class='' id='distance_heatmap_div center_table' >";
 		    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >";
-		    html += "<tr class='nodrag nodrop' ><td>";
+		    html += "<tr class='nodrag nodrop' ><td></td><td>";
 		    html += "<div class='blue'>Similar</div>";
 		    html += "<div class='red'>Dissimilar</div>";
 		    html += "<div id='ds_save_order_div'><input type='button' id='ds_save_order_btn' class='' value='Save Order'></div>";
@@ -63,13 +63,13 @@ module.exports = {
 
 		    for(i=1;i<=Object.keys(dm).length;i++) {
 		      //html += "<td>"+i.toString()+'</td>';
-		      html += "<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+		      html += "<td><div class='cell'></div></td>";
 		    }
 		    html += '</tr>';
 		    var n=1;
 		    for(x_dname in dm) {
 		      html += "<tr id='"+x_dname+"'>";
-		      html += "<td id='"+x_dname+"' class='dragHandle' >"+n.toString()+' '+x_dname+'</td>';
+		      html += "<td  id='"+x_dname+"' class='dragHandle'>"+n.toString()+"</td><td class='dragHandle ds_cell' >"+x_dname+"</td>";
 		      for(y_dname in dm) {
 		      	
 		        if(x_dname === y_dname){
