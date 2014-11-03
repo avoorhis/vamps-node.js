@@ -87,9 +87,9 @@ router.post('/view_selection',  function(req, res) {
       chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.ds_order);          
   }
     
-  
-  biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
-  visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+  // GLOBAL
+  biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
   metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
   console.log(metadata);
   //console.log('MAP:::');
@@ -103,7 +103,7 @@ router.post('/view_selection',  function(req, res) {
   console.log(visual_post_items); 
   console.log('<<visual_post_items:');
   
-  console.log(biome_matrix);
+  console.log(biom_matrix);
 
       // This is what matrix looks like (a different matrix is written to file)
       // { 
@@ -129,7 +129,7 @@ router.post('/view_selection',  function(req, res) {
   res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Selection',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix :              JSON.stringify(biome_matrix),
+                                  matrix :              JSON.stringify(biom_matrix),
                                   constants :           JSON.stringify(req.C),
                                   timestamp :           visual_post_items.ts,           // for creating unique files/pages                            
                                   user   :              req.user,
@@ -211,17 +211,17 @@ router.post('/view_selection_old',  function(req, res) {
       timestamp = user + '_' + timestamp;
       visual_post_items.ts = timestamp;
 
-   
-      biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
-      visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+      // GLOBAL
+      biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
+      visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
       metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-      GLOBAL.metadata = metadata;
+      
            
      
       res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Select',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix :              JSON.stringify(biome_matrix),
+                                  matrix :              JSON.stringify(biom_matrix),
                                   constants :           JSON.stringify(req.C),
                                   timestamp :           timestamp,           // for creating unique files/pages                            
                                   user   :              req.user
@@ -287,24 +287,21 @@ router.post('/unit_selection',  function(req, res) {
    
 
    
-    console.log('chosen_id_name_hash-->');
-    //console.log(chosen_id_name_hash);
-    console.log('<--chosen_id_name_hash');
+  console.log('chosen_id_name_hash-->');
+  console.log(chosen_id_name_hash);
+  console.log('<--chosen_id_name_hash');
     
 
-    res.render('visuals/unit_selection', {   
+  res.render('visuals/unit_selection', {   
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     constants    : JSON.stringify(req.C),
                     md_required: req.C.required_metadata_fields,  // should contain all the items that selected datasets have
                     user         : req.user
-    });  // end render
+  });  // end render
     // benchmarking
-    helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");   
+  helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");   
    
-
-  
-
 
 }); // end fxn
 
@@ -360,24 +357,15 @@ router.get('/reorder_datasets', function(req, res) {
 //
 router.get('/user_data/counts_table', function(req, res) {
   
-  var myurl = url.parse(req.url, true);
-  var ts   = myurl.query.ts;
-  var values_updated = COMMON.check_initial_status(myurl);  
+    var myurl = url.parse(req.url, true);
+    var ts   = myurl.query.ts;
+    var values_updated = COMMON.check_initial_status(myurl);  
 
-
-  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
-  
-  // fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-  //   if (err) {
-  //     console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
-  //   }
-  //   var mtx = JSON.parse(file_contents);
-  mtx = biome_matrix
+    var mtx = biom_matrix
     if(values_updated) {
-      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
     }
-    console.log('after cust');
-    
+    //console.log('after cust');
 
     var html = "<table border='1' class='single_border center_table'><tr><td>";
     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
@@ -408,33 +396,28 @@ router.get('/user_data/counts_table', function(req, res) {
     } 
     html += '</tr>';
     html += '</table>';
+
     res.render('visuals/user_data/counts_table', {
       title: 'VAMPS Counts Table',
       timestamp: ts || 'default_timestamp',
       html : html,
       user: req.user
     });
- // });
 });
 
 //
 // B A R C H A R T S
 //
 router.get('/user_data/barcharts', function(req, res) {
-  var myurl = url.parse(req.url, true);
-  //console.log(myurl)
-  var ts = myurl.query.ts;
-  var values_updated = COMMON.check_initial_status(myurl);  
+    var myurl = url.parse(req.url, true);
+    //console.log(myurl)
+    var ts = myurl.query.ts;
+    var values_updated = COMMON.check_initial_status(myurl);  
   
-  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
-//  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-//    if (err) {
-//      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
-//    }
-//    var mtx = JSON.parse(file_contents);
-    var mtx = biome_matrix;
+
+    var mtx = biom_matrix;
     if(values_updated) {
-      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
     }
      
     var html = '<table border="1" class="single_border center_table"><tr><td>';
@@ -443,7 +426,6 @@ router.get('/user_data/barcharts', function(req, res) {
     html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
    
-
     //var BCHARTS = require('./routes_bar_charts_states');
     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
 
@@ -454,26 +436,20 @@ router.get('/user_data/barcharts', function(req, res) {
           user: req.user
         });
 
-//  });
 });
 
 //
 // P I E C H A R T S
 //
 router.get('/user_data/piecharts', function(req, res) {
-  var myurl = url.parse(req.url, true);
-  //console.log(myurl)
-  var ts = myurl.query.ts;
-  var values_updated = COMMON.check_initial_status(myurl);  
- 
- // var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
- // console.log('in create_piecharts_html: ' + infile);
-
- // fs.readFile(infile, 'utf8', function (err, json) {
- //   var mtx = JSON.parse(json);
-    var mtx = biome_matrix;
+    var myurl = url.parse(req.url, true);
+    //console.log(myurl)
+    var ts = myurl.query.ts;
+    var values_updated = COMMON.check_initial_status(myurl);  
+   
+    var mtx = biom_matrix;
     if(values_updated) {
-      mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
     }
 
     var html = '<table border="1" class="single_border center_table"><tr><td>';
@@ -491,18 +467,17 @@ router.get('/user_data/piecharts', function(req, res) {
           user: req.user
         });
 
-//  });
 });
 //
 // P I E C H A R T  -- S I N G L E
 //
 router.get('/user_data/piechart_single', function(req, res) {
-  var myurl = url.parse(req.url, true);
-  //console.log(myurl)
-  var ts = myurl.query.ts;
-  var ds = myurl.query.ds;
+    var myurl = url.parse(req.url, true);
+    //console.log(myurl)
+    var ts = myurl.query.ts;
+    var ds = myurl.query.ds;
 
-  var html = '<table border="1" class="single_border center_table"><tr><td>';
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
@@ -512,22 +487,23 @@ router.get('/user_data/piechart_single', function(req, res) {
           subtitle: ds,
           timestamp: ts || 'default_timestamp',
           dataset: ds,
-          html: html,
+          html: html+"<h2>Not Coded Yet</h2>",
           user: req.user
         });
 
- 
 });
 
 //
 //   H E A T M A P
 //
 router.get('/user_data/heatmap', function(req, res) {
+  // Currently heatmap uses R which needs file input
+
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
-  var biome_file, custom_biom_file, R_command;
+  var biom_file, custom_biom_file, R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
   var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
@@ -535,8 +511,8 @@ router.get('/user_data/heatmap', function(req, res) {
   if(values_updated) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
-      //var mtx = biome_matrix;
-      COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      //var mtx = biom_matrix;
+      MTX.get_custom_biom_matrix(visual_post_items, mtx);
       custom_biom_file = ts+'_count_matrix_cust_heat.biom';
       shell_command = [req.C.RSCRIPT_CMD, dist_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
       //shell_command = [dist_script_file, '--in', custom_biom_file, '--metric', visual_post_items.selected_distance].join(' ');
@@ -545,17 +521,16 @@ router.get('/user_data/heatmap', function(req, res) {
       COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using custom matrix file');
       COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
-      
     });
   }else{
-    biome_file = infile_name;
-    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biome_file, visual_post_items.selected_distance].join(' ');
+    biom_file = infile_name;
+    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
     //shell_command = [dist_script_file, '--in', biom_file, '--metric', visual_post_items.selected_distance].join(' ');
     console.log(shell_command);
     console.log('Using original matrix file');
     COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
-
   } 
+  
  
 });
 //
@@ -575,7 +550,7 @@ router.get('/user_data/dendrogram', function(req, res) {
   if(values_updated) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
-      COMMON.get_custom_biome_matrix(visual_post_items, mtx);
+      MTX.get_custom_biom_matrix(visual_post_items, mtx);
       custom_biom_file = ts+'_count_matrix_cust_dend.biom';
       shell_command = [req.C.RSCRIPT_CMD, dend_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
       console.log(shell_command);
@@ -584,9 +559,9 @@ router.get('/user_data/dendrogram', function(req, res) {
       COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
     });
   }else {
-    biome_file = infile_name;
-    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biome_file, visual_post_items.selected_distance].join(' ');
-    //shell_command = [dist_script_file,'--in', biome_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
+    biom_file = infile_name;
+    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+    //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
     console.log(shell_command);
     console.log('Using original matrix file');
     COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
@@ -656,10 +631,15 @@ router.get('/user_data/frequency_heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
+  var html = '<table border="1" class="single_border center_table"><tr><td>';
+  html += COMMON.get_selection_markup('frequency_heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+  html += '</td><td>';
+  html += COMMON.get_choices_markup('frequency_heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+  html += '</td></tr></table>';
   res.render('visuals/user_data/frequency_heatmap', {
             title: 'VAMPS Frequency Heatmap',
             timestamp: ts || 'default_timestamp',
-            html : "<h2>Not Coded Yet</h2>",
+            html : html+"<h2>Not Coded Yet</h2>",
             user: req.user
       });
  
