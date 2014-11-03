@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">70.40</p>
+      <p class="stat">69.80</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">351</p>
+      <p class="stat">441</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">41.04</p>
+      <p class="stat">45.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.56</p>
+      <p class="stat">3.37</p>
     </div>
   </div>
 </div>
@@ -106,6 +106,7 @@
 * create a custom table for this project
 * put custom info in db
 */
+var helpers = require(&#039;../routes/helpers/helpers&#039;);
 
 var csvMetadataUpload = require(&#039;../models/csv_metadata_upload.js&#039;);
 var csv_metadata_db = new csvMetadataUpload();
@@ -251,7 +252,8 @@ function work_with_ids_from_db()
           // console.log(&quot;000000&quot;);
           // console.log(results);
           // console.log(&quot;111111&quot;);
-
+          make_custom_table(metadata_dict_by_project_w_ids[project]);
+          
         }
       });
     }
@@ -367,9 +369,9 @@ function format_required_metadata_info(metadata_dict_w_ids)
   var insert_into_required_metadata_info_txt = [];
   for (var i = 0; metadata_dict_w_ids.length &gt; i; i += 1)
   {
-    this_entry = metadata_dict_w_ids[i];
+    var this_entry = metadata_dict_w_ids[i];
     var dataset = this_entry.correct_dataset_name;
-    dataset_id = this_entry.dataset_id;
+    var dataset_id = this_entry.dataset_id;
     if (dataset_id !== undefined)
     {
       var altitude = this_entry[&quot;altitude&quot;];
@@ -419,8 +421,6 @@ function call_insert_required_fields_into_db(insert_into_required_metadata_info_
 
 function correct_db_data(collection_date)
 {
-  // console.log(&quot;CCCCC collection_date&quot;);
-  // console.log(collection_date);
   var d = new Date(Date.parse(collection_date));
   return d.toISOString().replace(/T.+/, &#039;&#039;);
 }
@@ -431,10 +431,99 @@ function correct_db_data(collection_date)
  * put in data from csv
 */
 
-function get_custom_fields_names(project_id)
+function make_custom_table(project_metadata_dict_w_ids)
 {
-  csv_metadata_db.select_custom_fields_names(project_id, function insert_db(err, results)
-  {});
+  var project_id = project_metadata_dict_w_ids.project_id;
+  var metadata = project_metadata_dict_w_ids.metadata;
+  csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)
+  {
+    table_name = &quot;custom_metadata_&quot; + project_id;    
+    call_make_custom_table_per_pr(custom_fields_names, project_id);
+    insert_into_custom_metadata_info_query = format_custom_metadata_info(custom_fields_names, metadata);
+    call_insert_into_custom_metadata_info(insert_into_custom_metadata_info_query);
+  });
+}
+
+function call_make_custom_table_per_pr(custom_fields_names, project_id)
+{
+  csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+  {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+    {
+      if (results.warningCount === 1)
+      {
+        console.log(&quot;Warning: Please check &quot; + table_name + &quot; table, it seems to exist already.&quot;);
+      }
+    }
+  });
+}
+
+function call_insert_into_custom_metadata_info(insert_into_custom_metadata_info_query)
+{
+  csv_metadata_db.insert_into_custom_metadata_per_pr(insert_into_custom_metadata_info_query, function insert_into_custom_metadata(err, results)
+  {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+    {
+      console.log(&quot;insert_into_custom_metadata_info: &quot;);
+      console.log(results);      
+    }
+  });
+}
+
+
+function collect_custom_fields_names_into_arr(custom_fields_names)
+{
+  var custom_fields_names_arr = [];
+  for (var k = 0; custom_fields_names.length &gt; k; k += 1)
+  {
+    field_name = custom_fields_names[k].field_name;
+    custom_fields_names_arr.push(field_name);
+  }
+  return custom_fields_names_arr;
+}
+
+// todo: refactoring - simplify
+function format_custom_metadata_info(custom_fields_names, metadata_dict_w_ids)
+{
+  var custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
+  custom_fields_names_arr.unshift(&quot;dataset_id&quot;);
+  custom_fields_names_arr.unshift(&quot;project_id&quot;);
+  
+  var fields = custom_fields_names_arr.join(&quot;, &quot;);
+  
+  var insert_into_custom_metadata_info_query = &quot;INSERT IGNORE INTO &quot; + table_name + &quot; (&quot; + fields + &quot;) VALUES &quot;;
+    
+  for (var i = 0; metadata_dict_w_ids.length &gt; i; i += 1)
+  {
+    var this_entry = metadata_dict_w_ids[i];
+
+    var project_id = this_entry.project_id;
+    if (project_id !== undefined)
+    {
+      var values = get_values(this_entry, custom_fields_names_arr);
+      i === 0 ? comma = &quot;&quot; : comma = &quot;, &quot;; 
+      insert_into_custom_metadata_info_query += comma + &quot;(&quot; + values + &quot;)&quot;;
+    }
+  }
+  // console.log(&quot;555 =====&quot;);
+  // console.log(&quot;insert_into_custom_metadata_info_query&quot;);
+  // console.log(insert_into_custom_metadata_info_query);    
+  return insert_into_custom_metadata_info_query;
+}
+
+function get_values(this_entry, custom_fields_names_arr)
+{
+  var values = &quot;&quot;;
+  values = &quot;&#039;&quot; + this_entry[custom_fields_names_arr[0]] + &quot;&#039;&quot;; // to avoid an extra comma
+  for (var i = 1; custom_fields_names_arr.length &gt; i; i += 1)
+  {
+     values += &quot;, &#039;&quot; + this_entry[custom_fields_names_arr[i]] + &quot;&#039;&quot;;
+  }
+  return values;
 }
 
 function do_smth_w_data_hash(csv_data_hash)
