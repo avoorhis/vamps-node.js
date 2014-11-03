@@ -83,18 +83,15 @@ router.post('/view_selection',  function(req, res) {
       timestamp = user + '_' + timestamp;
       visual_post_items.ts = timestamp;
 
-
-  }else{
-
-      chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.ds_order);      
-      
+  }else {
+      chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.ds_order);          
   }
     
   
   biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
   metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-  console.log(metadata)
+  console.log(metadata);
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
@@ -128,7 +125,7 @@ router.post('/view_selection',  function(req, res) {
       //console.log(dataset_accumulator)
       
    
-     req.flash('info', 'Datasets are updated!')
+  req.flash('info', 'Datasets are updated!')
   res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Selection',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
@@ -145,6 +142,96 @@ router.post('/view_selection',  function(req, res) {
  
 });
 
+//
+// OLD CODE OLD CODE OLD CODE OLD CODE
+//
+router.post('/view_selection_old',  function(req, res) {
+ //
+ // OLD CODE OLD CODE OLD CODE OLD CODE
+ //
+  console.log('req.body');
+  console.log(req.body);
+  console.log('req.body');
+  //console.log('1');
+  //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
+  
+  //req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
+  //console.log('2');
+  
+  var visual_post_items = {};
+  GLOBAL.visual_post_items = visual_post_items;
+  visual_post_items.unit_choice                  = req.body.unit_choice;
+  //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
+  visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
+  visual_post_items.normalization                = req.body.normalization || 'none';
+  visual_post_items.visuals                      = req.body.visuals;
+  visual_post_items.selected_distance            = req.body.selected_distance || 'morisita_horn';
+  visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
+  visual_post_items.domains                      = req.body.domains      || ['NA'];
+  visual_post_items.custom_taxa                  = req.body.custom_taxa  || ['NA'];
+  visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
+  visual_post_items.min_range                    = 0;
+  visual_post_items.max_range                    = 100;
+  visual_post_items.metadata                     = req.body.metadata  || [];
+
+  var sample_metadata = req.C.sample_metadata;
+  
+  var uitems = visual_post_items.unit_choice.split('_');
+  var unit_name_query = '';
+  var unit_field;
+  if (uitems[0] === 'tax'){  // covers both simple and custom
+  
+    unit_field = 'silva_taxonomy_info_per_seq_id';
+    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
+    console.log(unit_name_query);
+    
+  }else if(uitems[0] === 'otus') {
+    unit_field = 'gg_otu_id';
+    
+  }else if(uitems[0] === 'med_nodes') {
+    unit_field = 'med_node_id';
+   
+  }else{
+    console.log('ERROR--RORRE');
+  }
+  
+   console.log('visual_post_items:');
+   console.log(visual_post_items);
+  
+  // Get matrix data here
+  // The visuals have been selected so now we need to create them
+  // so they can be shown fast when selected
+  //console.log(JSON.stringify(selection_obj));
+  req.db.query(unit_name_query, function(err, rows, fields){
+    if (err) {
+      throw err;
+    } else {   
+      var timestamp = +new Date();  // millisecs since the epoch!
+      var user = req.user || 'no-user';
+      timestamp = user + '_' + timestamp;
+      visual_post_items.ts = timestamp;
+
+   
+      biome_matrix = MTX.get_biome_matrix(chosen_id_name_hash, visual_post_items, rows);
+      visual_post_items.max_ds_count = biome_matrix.max_dataset_count;
+      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
+      GLOBAL.metadata = metadata;
+           
+     
+      res.render('visuals/view_selection', { 
+                                  title   : 'VAMPS: Visuals Select',
+                                  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+                                  matrix :              JSON.stringify(biome_matrix),
+                                  constants :           JSON.stringify(req.C),
+                                  timestamp :           timestamp,           // for creating unique files/pages                            
+                                  user   :              req.user
+                   });
+    
+    }
+  });
+ 
+ 
+});
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
@@ -312,12 +399,14 @@ router.get('/user_data/counts_table', function(req, res) {
   var values_updated = COMMON.check_initial_status(myurl);  
 
 
-  var infile = '../../tmp/'+ts+'_count_matrix.biom';
-  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-    if (err) {
-      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
-    }
-    var mtx = JSON.parse(file_contents);
+  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
+  
+  // fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
+  //   if (err) {
+  //     console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
+  //   }
+  //   var mtx = JSON.parse(file_contents);
+  mtx = biome_matrix
     if(values_updated) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
@@ -359,7 +448,7 @@ router.get('/user_data/counts_table', function(req, res) {
       html : html,
       user: req.user
     });
-  });
+ // });
 });
 
 //
@@ -371,13 +460,13 @@ router.get('/user_data/barcharts', function(req, res) {
   var ts = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
   
-  var infile = '../../tmp/'+ts+'_count_matrix.biom';
-  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
-    if (err) {
-      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
-    }
-    var mtx = JSON.parse(file_contents);
-
+  //var infile = '../../tmp/'+ts+'_count_matrix.biom';
+//  fs.readFile(path.resolve(__dirname, infile), 'UTF-8', function (err, file_contents) {
+//    if (err) {
+//      console.log('Could not read file: ' + infile + '\nHere is the error: '+ err);
+//    }
+//    var mtx = JSON.parse(file_contents);
+    var mtx = biome_matrix;
     if(values_updated) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
@@ -399,7 +488,7 @@ router.get('/user_data/barcharts', function(req, res) {
           user: req.user
         });
 
-  });
+//  });
 });
 
 //
@@ -411,11 +500,12 @@ router.get('/user_data/piecharts', function(req, res) {
   var ts = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
  
-  var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
-  console.log('in create_piecharts_html: ' + infile);
+ // var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
+ // console.log('in create_piecharts_html: ' + infile);
 
-  fs.readFile(infile, 'utf8', function (err, json) {
-    var mtx = JSON.parse(json);
+ // fs.readFile(infile, 'utf8', function (err, json) {
+ //   var mtx = JSON.parse(json);
+    var mtx = biome_matrix;
     if(values_updated) {
       mtx = COMMON.get_custom_biome_matrix(visual_post_items, mtx);
     }
@@ -435,7 +525,7 @@ router.get('/user_data/piecharts', function(req, res) {
           user: req.user
         });
 
-  });
+//  });
 });
 //
 // P I E C H A R T  -- S I N G L E
@@ -471,7 +561,7 @@ router.get('/user_data/heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
-  var biom_file, custom_biom_file, R_command;
+  var biome_file, custom_biom_file, R_command;
   var infile_name = ts+'_count_matrix.biom';
   var infile = path.join(__dirname, '../../tmp/'+infile_name);
   var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
@@ -479,9 +569,10 @@ router.get('/user_data/heatmap', function(req, res) {
   if(values_updated) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
+      //var mtx = biome_matrix;
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
       custom_biom_file = ts+'_count_matrix_cust_heat.biom';
-      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
       //shell_command = [dist_script_file, '--in', custom_biom_file, '--metric', visual_post_items.selected_distance].join(' ');
       console.log(shell_command);
       // must write custom file for R script
@@ -491,8 +582,8 @@ router.get('/user_data/heatmap', function(req, res) {
       
     });
   }else{
-    biom_file = infile_name;
-    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
+    biome_file = infile_name;
+    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biome_file, visual_post_items.selected_distance].join(' ');
     //shell_command = [dist_script_file, '--in', biom_file, '--metric', visual_post_items.selected_distance].join(' ');
     console.log(shell_command);
     console.log('Using original matrix file');
@@ -519,17 +610,17 @@ router.get('/user_data/dendrogram', function(req, res) {
     fs.readFile(infile, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
       COMMON.get_custom_biome_matrix(visual_post_items, mtx);
-      biom_file = ts+'_count_matrix_cust_dend.biom';
-      shell_command = [req.C.RSCRIPT_CMD,dend_script_file,biom_file,visual_post_items.selected_distance].join(' ');
+      custom_biom_file = ts+'_count_matrix_cust_dend.biom';
+      shell_command = [req.C.RSCRIPT_CMD, dend_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
       console.log(shell_command);
-      COMMON.write_file( '../../tmp/'+biom_file, JSON.stringify(mtx,null,2) );  
+      COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using cust matrix file');
       COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
     });
   }else {
-    biom_file = infile_name;
-    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
-    //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
+    biome_file = infile_name;
+    shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biome_file, visual_post_items.selected_distance].join(' ');
+    //shell_command = [dist_script_file,'--in', biome_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
     console.log(shell_command);
     console.log('Using original matrix file');
     COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
