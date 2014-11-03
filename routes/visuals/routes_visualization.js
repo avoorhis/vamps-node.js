@@ -330,7 +330,7 @@ router.post('/unit_selection',  function(req, res) {
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     constants    : JSON.stringify(req.C),
-                    metadata: metadata_names,  // should contain all the items that selected datasets have
+                    md_required: req.C.required_metadata_fields,  // should contain all the items that selected datasets have
                     user         : req.user
     });  // end render
     // benchmarking
@@ -578,7 +578,7 @@ router.get('/user_data/heatmap', function(req, res) {
       // must write custom file for R script
       COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
       console.log('Writing/Using custom matrix file');
-      COMMON.run_script_cmd(req,res,  ts, command, 'heatmap');
+      COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
       
     });
   }else{
