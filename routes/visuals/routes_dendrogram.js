@@ -2,7 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 var xmldom = require('xmldom');
-
+var d3 = require("d3");
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
 
@@ -76,12 +76,12 @@ module.exports = {
 		//
 	
 		create_dendrogram_html: function (newick,ds_count) {
+			//console.log(newick);
 
 			var Newick    = require('../../public/javascripts/newick');
 		  var Phylogram = require('../../public/javascripts/d3.phylogram');
 		  var newick  = Newick.parse(newick);
-		  //console.log(newick);
-
+		  
 	    var newickNodes = [];
       function buildNewickNodes(node, callback) {
         newickNodes.push(node);
