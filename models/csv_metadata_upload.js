@@ -86,15 +86,46 @@ function make_create_custom_query(custom_fields, project_id)
   return create_custom_query;
 }
 
-function make_insert_custom_info_query()
+function get_values(this_entry, custom_fields_names_arr)
 {
-  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( " + insert_into_required_fields_info[0] + " )";
-  
-  for (var i = 1; insert_into_required_fields_info.length > i; i += 1)
+  var values = "";
+  values = "'" + this_entry[custom_fields_names_arr[0]] + "'"; // to avoid an extra comma
+  for (var i = 1; custom_fields_names_arr.length > i; i += 1)
   {
-    insert_required_field_names_query += ", ( " + insert_into_required_fields_info[i] + " ) ";
+     values += ", '" + this_entry[custom_fields_names_arr[i]] + "'";
   }
-  return insert_required_field_names_query;
+  return values;
+}
+
+function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr)
+{
+  console.log("99999 =====");
+  console.log("metadata_dict_w_ids");
+  console.log(metadata_dict_w_ids);    
+  console.log("table_name");
+  console.log(table_name);    
+  console.log("custom_fields_names_arr");
+  console.log(custom_fields_names_arr);    
+  
+  var fields = custom_fields_names_arr.join(", ");
+  
+  var insert_into_custom_metadata_info_query = "INSERT IGNORE INTO " + table_name + " (" + fields + ") VALUES ";
+  for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
+  {
+    var this_entry = metadata_dict_w_ids[i];
+
+    var project_id = this_entry.project_id;
+    if (project_id !== undefined)
+    {
+      var values = get_values(this_entry, custom_fields_names_arr);
+      i === 0 ? comma = "" : comma = ", "; 
+      insert_into_custom_metadata_info_query += comma + "(" + values + ")";
+    }
+  }
+  console.log("555 =====");
+  console.log("insert_into_custom_metadata_info_query");
+  console.log(insert_into_custom_metadata_info_query);    
+  return insert_into_custom_metadata_info_query;
 }
 
 
@@ -151,11 +182,18 @@ csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, p
   });
 };
 
-csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(insert_into_custom_metadata_info_query, callback) 
+// csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(insert_into_custom_metadata_info_query, callback) 
+// {
+//   connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
+//     callback(err, rows);
+//   });
+// };
+
+csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(project_metadata_dict_w_ids, table_name, custom_fields_names_arr, callback) 
 {
+  insert_into_custom_metadata_info_query = make_insert_custom_info_query(project_metadata_dict_w_ids.metadata, table_name, custom_fields_names_arr)
   connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };
-
 
