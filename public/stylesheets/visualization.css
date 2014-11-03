@@ -132,10 +132,18 @@
 #ds_save_order_div {
     display: inline-block;
 }
-.heat_map_td {
-  width: '10' ;
-  height: '10';
+.heat_map_td{
+  width: 15px ;
+  height: 10px;
+
   cursor:pointer;
+}
+.cell {
+    width: 15px;
+}
+.ds_cell {
+   text-align:right;
+    white-space: nowrap
 }
 .heatmap_table {
     border-collapse:collapse;
