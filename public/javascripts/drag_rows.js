@@ -33,9 +33,12 @@
             if(toRowIndex > fromRowIndex) {
 	            direction = 'down';
 	          }
-            
-            fromColIndex = fromRowIndex;
-            toColIndex = toRowIndex;
+
+            // start counting at 1 not zero
+            var first_data_row = 2; 
+            var first_data_col = 3;  
+            fromColIndex = fromRowIndex + (first_data_col - first_data_row);
+            toColIndex   = toRowIndex   + (first_data_col - first_data_row);
 
             for (var i=0; i < rows.length;i++){
                var row = rows[i];

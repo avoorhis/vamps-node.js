@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">79.32</p>
+      <p class="stat">75.57</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">94</p>
+      <p class="stat">138</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">15.98</p>
+      <p class="stat">16.71</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.54</p>
+      <p class="stat">0.99</p>
     </div>
   </div>
 </div>
@@ -147,6 +147,35 @@ function make_get_custom_fields_query(project_id)
    return get_custom_fields_query;
 }
 
+//todo: move to models
+function make_create_custom_query(custom_fields, project_id)
+{
+  var table_name = &quot;custom_metadata_&quot; + project_id;
+  var create_custom_query = &quot;CREATE TABLE IF NOT EXISTS &quot; + table_name;
+      create_custom_query += &quot;( &quot; + table_name + &quot;_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, &quot;;
+      create_custom_query += &quot;project_id int(11) unsigned NOT NULL, &quot;;
+      create_custom_query += &quot;dataset_id int(11) unsigned NOT NULL&quot;;
+  var unique_key_fields =  &quot;project_id &quot;; 
+      unique_key_fields +=  &quot;, dataset_id&quot;; 
+  for (var i = 0; custom_fields.length &gt; i; i += 1)
+  {
+   create_custom_query += &quot;, &quot; + custom_fields[i].field_name + &quot; &quot; + custom_fields[i].field_type + &quot; NOT NULL&quot;;
+  }
+  for (var k = 0; custom_fields.slice(0,14).length &gt; k; k += 1)
+  {
+   unique_key_fields +=  &quot;, &quot; + custom_fields[k].field_name; 
+  }
+  create_custom_query += &quot;, KEY project_id (project_id)&quot;;
+  create_custom_query += &quot;, KEY dataset_id (dataset_id)&quot;;
+  create_custom_query += &quot;, UNIQUE KEY unique_key (&quot; + unique_key_fields + &quot;)&quot;;
+  create_custom_query += &quot;, FOREIGN KEY (project_id) REFERENCES project (project_id) ON UPDATE CASCADE &quot;;
+  create_custom_query += &quot;, FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE &quot;;
+  create_custom_query += &quot;)&quot;;
+  console.log(&#039;create_custom_query:&#039;);
+  console.log(create_custom_query);
+  
+  return create_custom_query;
+}
 
 // public
 
@@ -189,6 +218,21 @@ csvMetadataUpload.prototype.select_custom_fields_names = function(project_id, ca
 {
   get_custom_fields_names_query = make_get_custom_fields_query(project_id);
   connection.query(get_custom_fields_names_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, project_id, callback) 
+{
+  create_custom_query = make_create_custom_query(custom_fields, project_id);
+  connection.query(create_custom_query, function (err, rows, fields) {
+    callback(err, rows);
+  });
+};
+
+csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(insert_into_custom_metadata_info_query, callback) 
+{
+  connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };</textarea>
