@@ -36,21 +36,15 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   // console.log(insert_into_custom_fields_info);
 
   var insert_custom_field_names_query = "INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES " + combine_values(insert_into_custom_fields_info);
-  
-  // insert_custom_field_names_query += combine_values(insert_into_custom_fields_info);
-  
+    
   return insert_custom_field_names_query;
 }
 
 function make_insert_required_field_names_query(insert_into_required_fields_info)
 {
 
-  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ";
+  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES " + combine_values(insert_into_required_fields_info);
 
-  for (var i = 0; insert_into_required_fields_info.length > i; i += 1)
-  {
-    insert_required_field_names_query += get_comma(i) + "( " + insert_into_required_fields_info[i] + " ) ";
-  }
   return insert_required_field_names_query;
 }
 
