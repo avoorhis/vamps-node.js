@@ -366,12 +366,12 @@ function make_custom_table(project_metadata_dict_w_ids)
 {
   var project_id = project_metadata_dict_w_ids.project_id;
   var metadata = project_metadata_dict_w_ids.metadata;
+  var table_name = "custom_metadata_" + project_id;    
   csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)
   {
-    table_name = "custom_metadata_" + project_id;    
     call_make_custom_table_per_pr(custom_fields_names, project_id);
     custom_fields_names_arr = format_custom_fields_names(custom_fields_names, metadata);
-    call_insert_into_custom_metadata_info(project_metadata_dict_w_ids, table_name, custom_fields_names_arr);
+    call_insert_into_custom_metadata_info(metadata, table_name, custom_fields_names_arr);
   });
 }
 
@@ -417,44 +417,14 @@ function collect_custom_fields_names_into_arr(custom_fields_names)
   return custom_fields_names_arr;
 }
 
-// todo: refactoring - simplify
 function format_custom_fields_names(custom_fields_names)
 {
   var custom_fields_names_arr = collect_custom_fields_names_into_arr(custom_fields_names);
   custom_fields_names_arr.unshift("dataset_id");
   custom_fields_names_arr.unshift("project_id");
   
-  
-  // var insert_into_custom_metadata_info_query = "INSERT IGNORE INTO " + table_name + " (" + fields + ") VALUES ";
-    
-  // for (var i = 0; metadata_dict_w_ids.length > i; i += 1)
-  // {
-  //   var this_entry = metadata_dict_w_ids[i];
-  // 
-  //   var project_id = this_entry.project_id;
-  //   if (project_id !== undefined)
-  //   {
-  //     var values = get_values(this_entry, custom_fields_names_arr);
-  //     i === 0 ? comma = "" : comma = ", "; 
-  //     insert_into_custom_metadata_info_query += comma + "(" + values + ")";
-  //   }
-  // }
-  // console.log("555 =====");
-  // console.log("insert_into_custom_metadata_info_query");
-  // console.log(insert_into_custom_metadata_info_query);    
   return custom_fields_names_arr;
 }
-
-// function get_values(this_entry, custom_fields_names_arr)
-// {
-//   var values = "";
-//   values = "'" + this_entry[custom_fields_names_arr[0]] + "'"; // to avoid an extra comma
-//   for (var i = 1; custom_fields_names_arr.length > i; i += 1)
-//   {
-//      values += ", '" + this_entry[custom_fields_names_arr[i]] + "'";
-//   }
-//   return values;
-// }
 
 function do_smth_w_data_hash(csv_data_hash)
 {
