@@ -61,6 +61,15 @@ function get_csv_filename()
 }
 
 var input = fs.createReadStream(get_csv_filename());
+// todo: use in transform pipe, close when done
+// https://github.com/wdavidw/node-csv-parse
+// input.on('finish', function() {
+//   console.log('ok: csv metadata');
+//   // this.end();
+//   
+//   // return handler(null);
+//   // return null;
+// });
 
 parser_hash = parse({columns: true}, function(err, data){
   do_smth_w_data_hash(data);  
@@ -440,12 +449,13 @@ function do_smth_w_data_hash(csv_data_hash)
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
 
   custom_fields(csv_data_hash);
-  work_with_ids_from_db();
-
+  work_with_ids_from_db();  
 }
 
-
 // input.pipe(parser);
-input.pipe(parser_hash);
+
+input.pipe(parser_hash)
+// .pipe(process.stdout);
+// input.push(null);  
 
 // connection.destroy( );
