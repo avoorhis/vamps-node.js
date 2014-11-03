@@ -219,88 +219,7 @@ module.exports = {
     return "#" + '000000'.substring(0, 6 - color.length) + color;
   },
   
-  //
-  // GET CUSTOM BIOME MATRIX
-  //
-  get_custom_biome_matrix: function(visual_post_items, mtx) {
-    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
-    
-    var max_cnt = visual_post_items.max_ds_count,
-        min     = visual_post_items.min_range,
-        max     = visual_post_items.max_range,
-        norm    = visual_post_items.normalization;
-
-    //console.log('in custom biome '+max_cnt.toString());
-        
-        // Adjust for percent limit change  
-        var new_counts = [];
-        var new_units = [];
-        for(var c in custom_count_matrix.data) {
-          
-          var got_one = false;
-          for(var k in custom_count_matrix.data[c]) {
-            var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
-            if(thispct > min && thispct < max){
-              got_one = true;
-            }
-          }      
-          
-          if(got_one){
-            new_counts.push(custom_count_matrix.data[c]);
-            new_units.push(custom_count_matrix.rows[c]);
-          }else{
-            console.log('rejecting '+custom_count_matrix.rows[c].id);
-          }
-        }
-        custom_count_matrix.data = new_counts;
-        custom_count_matrix.rows = new_units;
-                
-
-        // Adjust for normalization
-        var tmp = [];
-        if (norm === 'max') {
-            for(var c in custom_count_matrix.data) {
-              var new_counts = [];
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );                  
-              }    
-              tmp.push(new_counts);              
-            }
-            custom_count_matrix.data = tmp;
-        }else if(norm === 'freq'){
-            for(var c in custom_count_matrix.data) {              
-              var new_counts = [];
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );                    
-              }    
-              tmp.push(new_counts);
-            }
-            custom_count_matrix.data = tmp;
-        }else{
-          // nothing here
-        }
-
-        // re-calculate totals
-        var tots = [];
-        var tmp = {};
-        for(var c in custom_count_matrix.data) {
-          for(var k in custom_count_matrix.data[c]) {
-            if(k in tmp){
-              tmp[k] += custom_count_matrix.data[c][k];
-            }else{
-              tmp[k] = custom_count_matrix.data[c][k];
-            }            
-          }
-        }
-        for(var k in custom_count_matrix.columns){
-          tots.push(tmp[k]);
-        }
-        custom_count_matrix.column_totals = tots;
-        custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
-
-    //console.log('returning custom_count_matrix');
-    return custom_count_matrix;
-  },
+ 
 
   run_script_cmd: function (req,res, ts, command, visual_name) {
     var exec = require('child_process').exec;
@@ -325,6 +244,7 @@ module.exports = {
           title += ' Heatmap';
           html  += HMAP.create_hm_html(dm);  
         }else if(visual_name === 'dendrogram') {
+          
           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
           title += ' Dendrogram';
         }else{

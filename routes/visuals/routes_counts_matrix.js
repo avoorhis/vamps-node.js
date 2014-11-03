@@ -4,7 +4,7 @@ var fs = require('fs');
 //var hdf5 = require('hdf5');
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
-// biome format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
+// biom format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
 // {
 //     "id":null,
 //     "format": "Biological Observation Matrix 0.9.1-dev",
@@ -41,10 +41,10 @@ var C = require('../../public/constants');
 module.exports = {
 
 
-		get_biome_matrix: function(chosen_id_name_hash, post_items) {
+		get_biom_matrix: function(chosen_id_name_hash, post_items) {
 			var date = new Date();
 			var did,rank,db_tax_id,node_id,cnt,matrix_file;
-			biome_matrix = {
+			biom_matrix = {
 					id: post_items.ts,
 					format: "Biological Observation Matrix",
 					units: post_items.unit_choice,
@@ -130,15 +130,15 @@ module.exports = {
 		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 		  //console.log(unit_name_counts);
 		  //console.log(ukeys);
-		  biome_matrix 	= create_biome_matrix( biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
+		  biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
 		  matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
 		    
 			console.log('Writing matrix file');
-			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
-			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
+			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
+			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 
-			return biome_matrix;
+			return biom_matrix;
 
 			function onlyUnique(value, index, self) { 
 	    	return self.indexOf(value) === index;
@@ -146,10 +146,93 @@ module.exports = {
 
 		},
 
+		 //
+  // GET CUSTOM BIOM MATRIX
+  //
+  get_custom_biom_matrix: function(visual_post_items, mtx) {
+    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
+    
+    var max_cnt = visual_post_items.max_ds_count,
+        min     = visual_post_items.min_range,
+        max     = visual_post_items.max_range,
+        norm    = visual_post_items.normalization;
 
+    //console.log('in custom biom '+max_cnt.toString());
+        
+        // Adjust for percent limit change  
+        var new_counts = [];
+        var new_units = [];
+        for(var c in custom_count_matrix.data) {
+          
+          var got_one = false;
+          for(var k in custom_count_matrix.data[c]) {
+            var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
+            if(thispct > min && thispct < max){
+              got_one = true;
+            }
+          }      
+          
+          if(got_one){
+            new_counts.push(custom_count_matrix.data[c]);
+            new_units.push(custom_count_matrix.rows[c]);
+          }else{
+            console.log('rejecting '+custom_count_matrix.rows[c].id);
+          }
+        }
+        custom_count_matrix.data = new_counts;
+        custom_count_matrix.rows = new_units;
+                
+
+        // Adjust for normalization
+        var tmp = [];
+        if (norm === 'max') {
+            for(var c in custom_count_matrix.data) {
+              var new_counts = [];
+              for(var k in custom_count_matrix.data[c]) {                
+                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );                  
+              }    
+              tmp.push(new_counts);              
+            }
+            custom_count_matrix.data = tmp;
+        }else if(norm === 'freq'){
+            for(var c in custom_count_matrix.data) {              
+              var new_counts = [];
+              for(var k in custom_count_matrix.data[c]) {                
+                  new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );                    
+              }    
+              tmp.push(new_counts);
+            }
+            custom_count_matrix.data = tmp;
+        }else{
+          // nothing here
+        }
+
+        // re-calculate totals
+        var tots = [];
+        var tmp = {};
+        for(var c in custom_count_matrix.data) {
+          for(var k in custom_count_matrix.data[c]) {
+            if(k in tmp){
+              tmp[k] += custom_count_matrix.data[c][k];
+            }else{
+              tmp[k] = custom_count_matrix.data[c][k];
+            }            
+          }
+        }
+        for(var k in custom_count_matrix.columns){
+          tots.push(tmp[k]);
+        }
+        custom_count_matrix.column_totals = tots;
+        custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
+
+    //console.log('returning custom_count_matrix');
+    return custom_count_matrix;
+  },
 	
 
 };
+
+
 //
 //  R E M O V E  E M P T Y  R O W S
 //
@@ -251,46 +334,46 @@ function create_concatenated_tax_name(node_id) {
 //
 //	C R E A T E  B I O M E  M A T R I X
 //
-function create_biome_matrix(biome_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
+function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
 	
 	//console.log(ukeys);  // uname:
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biome_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
+	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
 		
-		biome_matrix.rows.push({ id: ukeys[uk], metadata: {} });
+		biom_matrix.rows.push({ id: ukeys[uk], metadata: {} });
 		
-		biome_matrix.data.push(unit_name_counts[ukeys[uk]]);
+		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
 
-	biome_matrix.shape = [biome_matrix.rows.length, biome_matrix.columns.length];
+	biom_matrix.shape = [biom_matrix.rows.length, biom_matrix.columns.length];
 	
 	var max_count = {};
 	var max;
 	if(ukeys === undefined) {
 		max = 0;
 	}else{
-		for(var n in biome_matrix.columns) {
-		  	max_count[biome_matrix.columns[n].id] = 0;
-		  	for(d in biome_matrix.data) {
-		  		max_count[biome_matrix.columns[n].id] += biome_matrix.data[d][n];
+		for(var n in biom_matrix.columns) {
+		  	max_count[biom_matrix.columns[n].id] = 0;
+		  	for(d in biom_matrix.data) {
+		  		max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
 		  	}
 		}
 		max = 0;
 		for(var n in chosen_id_name_hash.names) { 		// correct order
-		  	biome_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
+		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
 		  	if(max_count[chosen_id_name_hash.names[n]] > max){
 		  		max = max_count[chosen_id_name_hash.names[n]];
 		  	}
 		}
 	}
-	biome_matrix.max_dataset_count = max;
+	biom_matrix.max_dataset_count = max;
 	//console.log(max_count);
-	return(biome_matrix);
+	return(biom_matrix);
 }
 
 
