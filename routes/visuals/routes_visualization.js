@@ -125,7 +125,7 @@ router.post('/view_selection',  function(req, res) {
       //console.log(dataset_accumulator)
       
    
-  req.flash('info', 'Datasets are updated!')
+  //req.flash('info', 'Datasets are updated!')
   res.render('visuals/view_selection', { 
                                   title   : 'VAMPS: Visuals Selection',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
@@ -133,7 +133,7 @@ router.post('/view_selection',  function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   timestamp :           visual_post_items.ts,           // for creating unique files/pages                            
                                   user   :              req.user,
-                                  messages: req.flash('info')
+                                  messages: {}
                    });
     
   //  }
@@ -236,31 +236,7 @@ router.post('/view_selection_old',  function(req, res) {
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
 router.post('/unit_selection',  function(req, res) {
-  // This page (unit_selection) comes after the datasets have been selected
-  // it should only be reached by POST from the previous index_visuals page.
-  // It should be protected by the isLoggedIn function (below).
-  // Currently I have removed the isLoggedIn function from the function call
-  // because the program is easier to test without it (you don't have to be logged in)
-  // This function call will look like this when in place:
-  //            router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
-  // The logic here is from the selected datasets to create an object that
-  // holds the datasetIDs in a certain order. The object also holds the sequence_ids,sequence_counts
-  // for each dataset in the same order. The associated unitIDs are also in the object in the same order>
-  // {
-  //  dataset_ids:["122","136","162"],
-  //  seq_ids: [ [1002,1004,1005], [1002,1004,1005], [1002,1005,1007] ],
-  //  seq_freqs: [ [94,4,178], [32,1,89], [625,1024,2] ],
-  //  unit_assoc: {
-  //          "tax_silva108_id": [ [214,82,214], [214,82,214], [214,214,137] ],
-  //          "tax_gg_id":[ [null,null,null], [null,null,null], [null,null,null] ],
-  //          "med_node_id":[ [null,null,null], [null,null,null], [null,null,null] ],
-  //          "otu_id":[ [null,null,null], [null,null,null], [null,null,null] ]
-  //          }
-  // }
-  // I use the GLOBAL keyword below to make this object a global variable:
-  // selection_obj  <-- this is the main object containg the IDs
-  // Question: can I attach this to the post variable (req.body) or do I need it as GLOBAL?
-  //        Currently it is both
+  
   // TESTING:
   //    There should be one or more datasets shown in list
   //    The Submit button should return with an alert error if no display checkboxes are checked
@@ -272,25 +248,15 @@ router.post('/unit_selection',  function(req, res) {
   //console.log('START BODY>> in route/visualization.js /unit_selection');
   //console.log(JSON.stringify(req.body));
   //console.log('<<END BODY');
-  var db = req.db;
-  var dsets = {};
-  var selection_obj = {
-    dataset_ids : [],
-    //seq_ids     : [],
-    seq_freqs   : [],
-    unit_assoc  : {}
-  };
-  var accumulator = {
-    dataset_ids : [],
-    //seq_ids     : [],
-    seq_freqs   : [],
-    unit_assoc  : {}
-  };
+  console.log('req.body');
+  console.log(req.body);
+  console.log('req.body');
 
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
  
   //console.log(req.body);
+
   // GLOBAL Variable
   chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.dataset_ids);
  
