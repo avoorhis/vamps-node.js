@@ -52,8 +52,7 @@ module.exports = {
 			
 		    //console.log(dm);
 		    var html = '';
-		    //var selection_html = COMMON.get_selection_markup('heatmap', body); 
-		    //html += selection_html;
+		    
 		    //html += "<div class='' id='distance_heatmap_div center_table' >";
 		    html += "<table border='1' id='drag_table' class='heatmap_table center_table' >";
 		    html += "<tr class='nodrag nodrop' ><td>";
@@ -63,7 +62,8 @@ module.exports = {
 		    html += '</td>';
 
 		    for(i=1;i<=Object.keys(dm).length;i++) {
-		      html += "<td>"+i.toString()+'</td>';
+		      //html += "<td>"+i.toString()+'</td>';
+		      html += "<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
 		    }
 		    html += '</tr>';
 		    var n=1;
@@ -77,7 +77,8 @@ module.exports = {
 		        }else{
 		        	var id = x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname];
 		        	var svalue = Math.round( dm[x_dname][y_dname] * 15 );
-		        	html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	//html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'>"+dm[x_dname][y_dname]+"</td>";
+		        	html += "<td id='"+id+"' class='heat_map_td tooltip' bgcolor='#"+C.HEATMAP_COLORS[svalue]+"'></td>";
 		        }		        
 		      }
 		      html += '</tr>';
