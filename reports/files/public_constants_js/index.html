@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">28.60</p>
+      <p class="stat">34.12</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">133</p>
+      <p class="stat">93</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.04</p>
+      <p class="stat">5.81</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.26</p>
+      <p class="stat">1.46</p>
     </div>
   </div>
 </div>
@@ -175,51 +175,11 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:&#039;Metadata Table&#039;,    file:&#039;&#039;, link:&#039;user_data/metadata_table&#039;    }
     ]};
     
-config.required_metadata_fields = [&quot;dataset_id&quot;, &quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;depth&quot;, &quot;country&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;temp&quot;, &quot;salinity&quot;, &quot;diss_oxygen&quot;, &quot;public&quot;];
+config.required_metadata_fields = [ &quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;depth&quot;, &quot;country&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;temp&quot;, &quot;salinity&quot;, &quot;diss_oxygen&quot;, &quot;public&quot;];
 
-//diss_oxygen ammonium  chlorophyll
-config.sample_metadata = {   
-      &#039;HMP_204_Bv4v5--204_10_GG_26Jan12_H&#039;: [ 
-                          {name: &#039;patientID&#039;,     value:&#039;32&#039;},
-                          {name: &#039;sample_location&#039;,value:&#039;south&#039;},
-                          {name: &#039;temperature&#039;,    value:&#039;101.2&#039;},
-                          {name: &#039;latitude&#039;,       value:&#039;30.3&#039;},
-                          {name: &#039;longitude&#039; ,     value:&#039;-57.23&#039;},
-                          {name: &#039;description&#039;,    value:&#039;test meta-1&#039;},
-                          {name: &#039;body_site&#039;,      value:&#039;L hip&#039;},
-                          {name: &#039;collection_date&#039;,value:&#039;2014-09-14&#039;},
-                          {name: &#039;sample_size&#039;,    value:&#039;10&#039;},
-                          {name: &#039;phosphate&#039; ,     value:&#039;3.1&#039;},
-                          {name: &#039;study_center&#039;,    value:&#039;There&#039;}
-                        ],
 
-    &#039;HMP_204_Bv4v5--204_10_M_26Jan12_H&#039;:   [ 
-                          {name: &#039;patientID&#039;,     value:&#039;33&#039;},
-                          {name: &#039;sample_location&#039;,      value:&#039;south&#039;},
-                          {name: &#039;temperature&#039;,    value:&#039;98.9&#039;},
-                          {name: &#039;latitude&#039;,       value:&#039;30.3&#039;},
-                          {name: &#039;longitude&#039;,      value:&#039;-57.23&#039;},
-                          {name: &#039;description&#039;,    value:&#039;test mata-2&#039;},
-                          {name: &#039;body_site&#039;,      value:&#039;R foot&#039;},
-                          {name: &#039;collection_date&#039;,value:&#039;2014-09-09&#039;},
-                          {name: &#039;sample_size&#039;,    value:&#039;44&#039;},
-                          {name: &#039;phosphate&#039;,      value:&#039;4.3&#039;},
-                          {name: &#039;study_center&#039;,    value:&#039;Not here&#039;}
-                        ],
-    &#039;HMP_204_Bv4v5--204_12_GG_09Mar11_P&#039;:  [ 
-                          {name: &#039;patientID&#039;,       value:&#039;34&#039;},
-                          {name: &#039;sample_location&#039;,value:&#039;east&#039;},
-                          {name: &#039;temperature&#039;,    value:&#039;100.1&#039;},
-                          {name: &#039;latitude&#039;,       value:&#039;30.3&#039;},
-                          {name: &#039;longitude&#039;,      value:&#039;-57.23&#039;},
-                          {name: &#039;description&#039;,    value:&#039;test meta-3&#039;},
-                          {name: &#039;body_site&#039;,      value:&#039;R leg&#039;},
-                          {name: &#039;collection_date&#039;,value:&#039;2014-09-14&#039;},
-                          {name: &#039;sample_size&#039;,    value:&#039;14&#039;},
-                          {name: &#039;phosphate&#039;,      value:&#039;3.2&#039;},
-                          {name: &#039;study_center&#039;,    value:&#039;Here&#039;}
-                        ]                      
-  };
+
+
 
 module.exports = config;</textarea>
   </div>

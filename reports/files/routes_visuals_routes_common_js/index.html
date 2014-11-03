@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.71</p>
+      <p class="stat">57.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">398</p>
+      <p class="stat">319</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">57.76</p>
+      <p class="stat">48.36</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.20</p>
+      <p class="stat">3.26</p>
     </div>
   </div>
 </div>
@@ -310,88 +310,7 @@ module.exports = {
     return &quot;#&quot; + &#039;000000&#039;.substring(0, 6 - color.length) + color;
   },
   
-  //
-  // GET CUSTOM BIOME MATRIX
-  //
-  get_custom_biome_matrix: function(visual_post_items, mtx) {
-    var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
-    
-    var max_cnt = visual_post_items.max_ds_count,
-        min     = visual_post_items.min_range,
-        max     = visual_post_items.max_range,
-        norm    = visual_post_items.normalization;
-
-    //console.log(&#039;in custom biome &#039;+max_cnt.toString());
-        
-        // Adjust for percent limit change  
-        var new_counts = [];
-        var new_units = [];
-        for(var c in custom_count_matrix.data) {
-          
-          var got_one = false;
-          for(var k in custom_count_matrix.data[c]) {
-            var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
-            if(thispct &gt; min &amp;&amp; thispct &lt; max){
-              got_one = true;
-            }
-          }      
-          
-          if(got_one){
-            new_counts.push(custom_count_matrix.data[c]);
-            new_units.push(custom_count_matrix.rows[c]);
-          }else{
-            console.log(&#039;rejecting &#039;+custom_count_matrix.rows[c].id);
-          }
-        }
-        custom_count_matrix.data = new_counts;
-        custom_count_matrix.rows = new_units;
-                
-
-        // Adjust for normalization
-        var tmp = [];
-        if (norm === &#039;max&#039;) {
-            for(var c in custom_count_matrix.data) {
-              var new_counts = [];
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );                  
-              }    
-              tmp.push(new_counts);              
-            }
-            custom_count_matrix.data = tmp;
-        }else if(norm === &#039;freq&#039;){
-            for(var c in custom_count_matrix.data) {              
-              var new_counts = [];
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );                    
-              }    
-              tmp.push(new_counts);
-            }
-            custom_count_matrix.data = tmp;
-        }else{
-          // nothing here
-        }
-
-        // re-calculate totals
-        var tots = [];
-        var tmp = {};
-        for(var c in custom_count_matrix.data) {
-          for(var k in custom_count_matrix.data[c]) {
-            if(k in tmp){
-              tmp[k] += custom_count_matrix.data[c][k];
-            }else{
-              tmp[k] = custom_count_matrix.data[c][k];
-            }            
-          }
-        }
-        for(var k in custom_count_matrix.columns){
-          tots.push(tmp[k]);
-        }
-        custom_count_matrix.column_totals = tots;
-        custom_count_matrix.shape = [ custom_count_matrix.rows.length, custom_count_matrix.columns.length ];
-
-    //console.log(&#039;returning custom_count_matrix&#039;);
-    return custom_count_matrix;
-  },
+ 
 
   run_script_cmd: function (req,res, ts, command, visual_name) {
     var exec = require(&#039;child_process&#039;).exec;
@@ -416,6 +335,7 @@ module.exports = {
           title += &#039; Heatmap&#039;;
           html  += HMAP.create_hm_html(dm);  
         }else if(visual_name === &#039;dendrogram&#039;) {
+          
           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
           title += &#039; Dendrogram&#039;;
         }else{
@@ -439,6 +359,7 @@ module.exports = {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   // dataset_ids is list of strings of form:
+  console.log(dataset_ids);
   // ID--PROJECTNAME--DATASETNAME
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
