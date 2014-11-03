@@ -86,6 +86,18 @@ function make_create_custom_query(custom_fields, project_id)
   return create_custom_query;
 }
 
+function make_insert_custom_info_query()
+{
+  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( " + insert_into_required_fields_info[0] + " )";
+  
+  for (var i = 1; insert_into_required_fields_info.length > i; i += 1)
+  {
+    insert_required_field_names_query += ", ( " + insert_into_required_fields_info[i] + " ) ";
+  }
+  return insert_required_field_names_query;
+}
+
+
 // public
 
 module.exports = csvMetadataUpload;
