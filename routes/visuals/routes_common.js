@@ -348,6 +348,7 @@ module.exports = {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   // dataset_ids is list of strings of form:
+  console.log(dataset_ids);
   // ID--PROJECTNAME--DATASETNAME
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
