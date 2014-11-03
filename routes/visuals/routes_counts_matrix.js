@@ -136,7 +136,7 @@ module.exports = {
 		    
 			console.log('Writing matrix file');
 			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix) );
-			COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
+			//COMMON.write_file( matrix_file, JSON.stringify(biome_matrix,null,2) );
 
 			return biome_matrix;
 
