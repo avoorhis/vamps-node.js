@@ -182,16 +182,9 @@ csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, p
   });
 };
 
-// csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(insert_into_custom_metadata_info_query, callback) 
-// {
-//   connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
-//     callback(err, rows);
-//   });
-// };
-
-csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(project_metadata_dict_w_ids, table_name, custom_fields_names_arr, callback) 
+csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(metadata_dict_w_ids, table_name, custom_fields_names_arr, callback) 
 {
-  insert_into_custom_metadata_info_query = make_insert_custom_info_query(project_metadata_dict_w_ids.metadata, table_name, custom_fields_names_arr)
+  insert_into_custom_metadata_info_query = make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr)
   connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
