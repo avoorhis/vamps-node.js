@@ -1,3 +1,4 @@
+var d3 = require("d3");
 /*
   d3.phylogram.js
   Wrapper around a d3-based phylogram (tree where branch lengths are scaled)
