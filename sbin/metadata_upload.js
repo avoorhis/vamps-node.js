@@ -38,11 +38,11 @@ var metadata_dict_by_pr_dataset = {};
 
 function usage()
 {
-  console.log("This script puts metadata in the Qiita format into the database.")
-  console.log("It adds data to required_metadata_info and custom_metadata_fields")
-  console.log("and creates a custom metadata table per project (like 'custom_metadata_18')")
-  console.log("Please provide a path to a csv file in the command line.")
-  console.log("Example: node sbin/metadata_upload.js ./data/KCK_LSM_Bv6_qii.csv")
+  console.log("This script puts metadata in the Qiita format into the database.");
+  console.log("It adds data to required_metadata_info and custom_metadata_fields");
+  console.log("and creates a custom metadata table per project (like 'custom_metadata_18')");
+  console.log("Please provide a path to a csv file in the command line.");
+  console.log("Example: node sbin/metadata_upload.js ./data/KCK_LSM_Bv6_qii.csv");
 }
 
 function get_csv_filename()
@@ -369,13 +369,13 @@ function make_custom_table(project_metadata_dict_w_ids)
   var table_name = "custom_metadata_" + project_id;    
   csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)
   {
-    call_make_custom_table_per_pr(custom_fields_names, project_id);
+    call_make_custom_table_per_pr(custom_fields_names, project_id, table_name);
     custom_fields_names_arr = format_custom_fields_names(custom_fields_names, metadata);
     call_insert_into_custom_metadata_info(metadata, table_name, custom_fields_names_arr);
   });
 }
 
-function call_make_custom_table_per_pr(custom_fields_names, project_id)
+function call_make_custom_table_per_pr(custom_fields_names, project_id, table_name)
 {
   csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
   {

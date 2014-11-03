@@ -15,8 +15,8 @@ function make_db_id_query(project, datasets)
     WHERE dataset in (" + datasets + ") \
     AND project = '" + project + "' \
   ";
-   console.log('get_dataset_id_query:');
-   console.log(get_dataset_id_query);
+   // console.log('get_dataset_id_query:');
+   // console.log(get_dataset_id_query);
    return get_dataset_id_query;
 }
 
@@ -36,11 +36,13 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
 
 function make_insert_required_field_names_query(insert_into_required_fields_info)
 {
-  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( " + insert_into_required_fields_info[0] + " )";
-  
-  for (var i = 1; insert_into_required_fields_info.length > i; i += 1)
+  // var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( " + insert_into_required_fields_info[0] + " )";
+
+  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ";
+
+  for (var i = 0; insert_into_required_fields_info.length > i; i += 1)
   {
-    insert_required_field_names_query += ", ( " + insert_into_required_fields_info[i] + " ) ";
+    insert_required_field_names_query += get_comma(i) + "( " + insert_into_required_fields_info[i] + " ) ";
   }
   return insert_required_field_names_query;
 }
@@ -51,8 +53,8 @@ function make_get_custom_fields_query(project_id)
     FROM custom_metadata_fields \
     WHERE project_id = '" + project_id + "' \
   ";
-   console.log('get_custom_fields_query:');
-   console.log(get_custom_fields_query);
+   // console.log('get_custom_fields_query:');
+   // console.log(get_custom_fields_query);
    return get_custom_fields_query;
 }
 
@@ -80,8 +82,8 @@ function make_create_custom_query(custom_fields, project_id)
   create_custom_query += ", FOREIGN KEY (project_id) REFERENCES project (project_id) ON UPDATE CASCADE ";
   create_custom_query += ", FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE ";
   create_custom_query += ")";
-  console.log('create_custom_query:');
-  console.log(create_custom_query);
+  // console.log('create_custom_query:');
+  // console.log(create_custom_query);
   
   return create_custom_query;
 }
@@ -97,16 +99,16 @@ function get_values(this_entry, custom_fields_names_arr)
   return values;
 }
 
+function get_comma(i)
+{
+  comma = ", ";
+  if (i === 0) 
+    comma = "";
+  return comma;
+}
+
 function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr)
 {
-  console.log("99999 =====");
-  console.log("metadata_dict_w_ids");
-  console.log(metadata_dict_w_ids);    
-  console.log("table_name");
-  console.log(table_name);    
-  console.log("custom_fields_names_arr");
-  console.log(custom_fields_names_arr);    
-  
   var fields = custom_fields_names_arr.join(", ");
   
   var insert_into_custom_metadata_info_query = "INSERT IGNORE INTO " + table_name + " (" + fields + ") VALUES ";
@@ -118,13 +120,12 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
     if (project_id !== undefined)
     {
       var values = get_values(this_entry, custom_fields_names_arr);
-      i === 0 ? comma = "" : comma = ", "; 
-      insert_into_custom_metadata_info_query += comma + "(" + values + ")";
+      insert_into_custom_metadata_info_query += get_comma(i) + "(" + values + ")";
     }
   }
-  console.log("555 =====");
-  console.log("insert_into_custom_metadata_info_query");
-  console.log(insert_into_custom_metadata_info_query);    
+  // console.log("555 =====");
+  // console.log("insert_into_custom_metadata_info_query");
+  // console.log(insert_into_custom_metadata_info_query);    
   return insert_into_custom_metadata_info_query;
 }
 
@@ -147,8 +148,8 @@ csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callba
 csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
 {
   var insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
-  console.log('insert_into_custom_fields_info_query:');
-  console.log(insert_into_custom_fields_info_query);
+  // console.log('insert_into_custom_fields_info_query:');
+  // console.log(insert_into_custom_fields_info_query);
   
   connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
@@ -158,9 +159,9 @@ csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_cus
 csvMetadataUpload.prototype.insert_required_field_names = function(insert_into_required_fields_info, callback) 
 {
   var insert_into_required_fields_info_query = make_insert_required_field_names_query(insert_into_required_fields_info);
-  console.log('888 insert_into_required_fields_info_query:');
-  console.log(insert_into_required_fields_info_query);
-  
+  // console.log('888 insert_into_required_fields_info_query:');
+  // console.log(insert_into_required_fields_info_query);
+  // 
   connection.query(insert_into_required_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
@@ -184,7 +185,7 @@ csvMetadataUpload.prototype.make_custom_table_per_pr = function(custom_fields, p
 
 csvMetadataUpload.prototype.insert_into_custom_metadata_per_pr = function(metadata_dict_w_ids, table_name, custom_fields_names_arr, callback) 
 {
-  insert_into_custom_metadata_info_query = make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr)
+  insert_into_custom_metadata_info_query = make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_fields_names_arr);
   connection.query(insert_into_custom_metadata_info_query, function (err, rows, fields) {
     callback(err, rows);
   });
