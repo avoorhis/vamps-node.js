@@ -34,10 +34,37 @@ var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON
 
 var metadata_dict_by_pr_dataset = {};
 
-var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
+// todo:
+process.argv.forEach(function (val, index, array) {
+  console.log("III:" + index + ': ' + val);
+});
+
+function usage()
+{
+  console.log("Please provide a path to a csv file in the command line.")
+  console.log("Example: node sbin/metadata_upload.js ./data/KCK_LSM_Bv6_qii.csv")
+}
+
+function get_csv_filename()
+{
+  // var my_args = process.argv.slice(2);
+  
+  if (process.argv.length === 3)
+  {
+    return process.argv[2];    
+  }
+  else
+  {
+    usage();
+    process.exit(0);
+  }
+}
+// var input = fs.createReadStream('./data/KCK_LSM_Bv6_qii.csv');
+var csv_filename = get_csv_filename();
+var input = fs.createReadStream(csv_filename);
 
 parser_hash = parse({columns: true}, function(err, data){
-  do_smth_w_data_hash(data);
+  do_smth_w_data_hash(data);  
 });
 
 Array.prototype.diff = function(a) {
