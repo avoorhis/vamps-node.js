@@ -112,6 +112,17 @@
     padding-right:20px;
 
 }
+#metadata_table {
+    background: #8FBC8F;
+    font-size:small;
+    border-collapse: collapse;
+    margin-right:20px;
+    padding-right:20px;
+    height:700px;
+    
+    overflow:auto;
+
+}
 .blue {
     background:blue;
     width:60px;

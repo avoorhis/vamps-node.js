@@ -86,152 +86,83 @@ router.post('/view_selection',  function(req, res) {
   }else {
       chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.ds_order);          
   }
-    
-  // GLOBAL
-  biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-  visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-  metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-  console.log(metadata);
-  //console.log('MAP:::');
-  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
-  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
-
   //
-  //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
-  // {unit_id:[cnt1,cnt2...] // counts are in ds order
-  console.log('visual_post_items:>>');
-  console.log(visual_post_items); 
-  console.log('<<visual_post_items:');
-  
-  console.log(biom_matrix);
+  //
+  //
+  var data_source_testing = 'json';   // options: json, db, hdf5
+  helpers.start = process.hrtime();
+  helpers.elapsed_time("START: in view_selection using data_source_testing= "+data_source_testing+" -->>>>>>");
+  //
+  //
+  //
+  if(data_source_testing == 'json') {
+    // GLOBAL
+    biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+    visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
+    metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+    
+    //console.log(metadata);
+    //console.log('MAP:::');
+    //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
+    //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
 
-      // This is what matrix looks like (a different matrix is written to file)
-      // { 
-      //  dataset_names: 
-      //    [ 'SLM_NIH_Bv4v5--03_Junction_City_East',
-      //      'SLM_NIH_Bv4v5--02_Spencer',
-      //      'SLM_NIH_Bv4v5--01_Boonville' 
-      //    ],
-      //  unit_names: 
-      //    { 'Bacteria;Proteobacteria': [ 4, 2, 4 ],
-      //      'Bacteria;Bacteroidetes': [ 272, 401, 430 ] 
-      //    } 
-      //  }
-
-      //req.body.matrix = JSON.stringify(matrix);
-      //console.log('CM')
-      //console.log(JSON.stringify(count_matrix));
-      //console.warn(util.inspect(matrix));
-      //console.log(dataset_accumulator)
-      
-   
-  //req.flash('info', 'Datasets are updated!')
-  res.render('visuals/view_selection', { 
-                                  title   : 'VAMPS: Visuals Selection',
+    //
+    //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
+    // {unit_id:[cnt1,cnt2...] // counts are in ds order
+    console.log('visual_post_items:>>');
+    console.log(visual_post_items); 
+    console.log('<<visual_post_items:');
+    //console.log(biom_matrix);        
+     
+    //req.flash('info', 'Datasets are updated!')
+    res.render('visuals/view_selection', { 
+                                  title     :           'VAMPS: Visuals Select',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix :              JSON.stringify(biom_matrix),
+                                  matrix    :           JSON.stringify(biom_matrix),
                                   constants :           JSON.stringify(req.C),
-                                  timestamp :           visual_post_items.ts,           // for creating unique files/pages                            
-                                  user   :              req.user,
+                                  timestamp :           visual_post_items.ts,          // for creating unique files/pages                            
+                                  user      :           req.user,
                                   messages: {}
                    });
-    
-  //  }
- // });
- 
- 
-});
-
-//
-// OLD CODE OLD CODE OLD CODE OLD CODE
-//
-router.post('/view_selection_old',  function(req, res) {
- //
- // OLD CODE OLD CODE OLD CODE OLD CODE
- //
-  console.log('req.body');
-  console.log(req.body);
-  console.log('req.body');
-  //console.log('1');
-  //req.body.selection_obj       = JSON.parse(req.body.selection_obj);
+    helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<"); 
   
-  //req.body.chosen_id_name_hash = JSON.parse(req.body.chosen_id_name_hash);
-  //console.log('2');
-  
-  var visual_post_items = {};
-  GLOBAL.visual_post_items = visual_post_items;
-  visual_post_items.unit_choice                  = req.body.unit_choice;
-  //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
-  visual_post_items.no_of_datasets               = chosen_id_name_hash.ids.length;
-  visual_post_items.normalization                = req.body.normalization || 'none';
-  visual_post_items.visuals                      = req.body.visuals;
-  visual_post_items.selected_distance            = req.body.selected_distance || 'morisita_horn';
-  visual_post_items.tax_depth                    = req.body.tax_depth    || 'custom';
-  visual_post_items.domains                      = req.body.domains      || ['NA'];
-  visual_post_items.custom_taxa                  = req.body.custom_taxa  || ['NA'];
-  visual_post_items.include_nas                  = req.body.include_nas  || 'yes';
-  visual_post_items.min_range                    = 0;
-  visual_post_items.max_range                    = 100;
-  visual_post_items.metadata                     = req.body.metadata  || [];
-
-  var sample_metadata = req.C.sample_metadata;
-  
-  var uitems = visual_post_items.unit_choice.split('_');
-  var unit_name_query = '';
-  var unit_field;
-  if (uitems[0] === 'tax'){  // covers both simple and custom
-  
-    unit_field = 'silva_taxonomy_info_per_seq_id';
+  }else if(data_source_testing == 'db') {
+    var uitems = visual_post_items.unit_choice.split('_');
     unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    console.log(unit_name_query);
+    req.db.query(unit_name_query, function(err, rows, fields){
+        if (err) {
+          throw err;
+        } else {   
+          
+
+          // GLOBAL
+          biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
+          visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
+          metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
+          
+          res.render('visuals/view_selection', { 
+                                      title     :           'VAMPS: Visuals Select',
+                                      chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+                                      matrix    :           JSON.stringify(biom_matrix),
+                                      constants :           JSON.stringify(req.C),
+                                      timestamp :           visual_post_items.ts,          // for creating unique files/pages                            
+                                      user      :           req.user,
+                                      messages: {}
+                       });
+          
+        }
+        helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<"); 
+    });
     
-  }else if(uitems[0] === 'otus') {
-    unit_field = 'gg_otu_id';
-    
-  }else if(uitems[0] === 'med_nodes') {
-    unit_field = 'med_node_id';
-   
-  }else{
-    console.log('ERROR--RORRE');
+
+  }else if(data_source_testing == 'hdf5') {
+    // TODO TODO
   }
   
-   console.log('visual_post_items:');
-   console.log(visual_post_items);
-  
-  // Get matrix data here
-  // The visuals have been selected so now we need to create them
-  // so they can be shown fast when selected
-  //console.log(JSON.stringify(selection_obj));
-  req.db.query(unit_name_query, function(err, rows, fields){
-    if (err) {
-      throw err;
-    } else {   
-      var timestamp = +new Date();  // millisecs since the epoch!
-      var user = req.user || 'no-user';
-      timestamp = user + '_' + timestamp;
-      visual_post_items.ts = timestamp;
-
-      // GLOBAL
-      biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
-      visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-      metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-      
-           
-     
-      res.render('visuals/view_selection', { 
-                                  title   : 'VAMPS: Visuals Select',
-                                  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix :              JSON.stringify(biom_matrix),
-                                  constants :           JSON.stringify(req.C),
-                                  timestamp :           timestamp,           // for creating unique files/pages                            
-                                  user   :              req.user
-                   });
-    
-    }
-  });
- 
  
 });
+
+
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 //router.post('/unit_selection', isLoggedIn, function(req, res) {
@@ -258,8 +189,8 @@ router.post('/unit_selection',  function(req, res) {
   //console.log(req.body);
 
   // GLOBAL Variable
-  chosen_id_name_hash = COMMON.create_chosen_id_name_hash(req.body.dataset_ids);
- 
+  chosen_id_name_hash       = COMMON.create_chosen_id_name_hash(req.body.dataset_ids);
+  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
   //console.log('chosen_id_name_hash')
   //console.log(chosen_id_name_hash)
   // // benchmarking
@@ -278,15 +209,7 @@ router.post('/unit_selection',  function(req, res) {
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   
-  var metadata_names = ['patientID',  'sample_location', 'temperature',
-                      'diss_oxygen', 'ammonium',  'chlorophyll',
-                      'latitude', 'longitude', 'description', 'body_site', 
-                      'collection_date', 'sample_size', 'study_center',
-                      'meta_10','meta_11','meta_12','meta_13','meta_14',
-                      'meta_15','meta_16','meta_17'  ];
-   
-
-   
+     
   console.log('chosen_id_name_hash-->');
   console.log(chosen_id_name_hash);
   console.log('<--chosen_id_name_hash');
@@ -296,7 +219,7 @@ router.post('/unit_selection',  function(req, res) {
                     title: 'VAMPS: Units Selection',
                     chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                     constants    : JSON.stringify(req.C),
-                    md_required: req.C.required_metadata_fields,  // should contain all the items that selected datasets have
+                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
                     user         : req.user
   });  // end render
     // benchmarking
@@ -339,19 +262,7 @@ router.get('/reorder_datasets', function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-// router.post('/reorder_datasets', function(req, res) {  
-//   // here must recreate chosen_id_name_hash
-  
-  
 
-//   res.render('visuals/reorder_datasets', { 
-//                                 title   : 'VAMPS: Reorder Datasets',
-//                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-//                                 constants    : JSON.stringify(req.C),
-//                                 user: req.user
-//                             });
-//   //console.log(chosen_id_name_hash)
-// });
 //
 //  C O U N T S  T A B L E
 //
@@ -587,6 +498,7 @@ router.get('/user_data/pcoa', function(req, res) {
     
   //shell_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
   shell_command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
+  //shell_command = [script_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',JSON.stringify(biom_matrix), ].join(' ');
   console.log(shell_command);
   console.log('Using original matrix file');
   var exec = require('child_process').exec;
@@ -607,7 +519,7 @@ router.get('/user_data/pcoa', function(req, res) {
           html += COMMON.get_choices_markup('pcoa', visual_post_items);      // block for controls to normalize, change tax percentages or distance
           html += '</td></tr></table>';
           //html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
-          html += PCOA.create_pcoa_graphs(stdout)
+          html += PCOA.create_pcoa_graphs(stdout);
         
       }
 
@@ -652,11 +564,12 @@ router.get('/user_data/metadata_table', function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-  var values_updated = COMMON.check_initial_status(myurl);  
+   
+  html = META.create_metadata_table(chosen_id_name_hash, visual_post_items);
   res.render('visuals/user_data/metadata_table', {
             title: 'VAMPS Metadata Table',
             timestamp: ts || 'default_timestamp',
-            html : "<h2>Not Coded Yet</h2>",
+            html : html,
             user: req.user
       });
  
