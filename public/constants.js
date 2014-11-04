@@ -84,7 +84,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Metadata Table',    file:'', link:'user_data/metadata_table'    }
     ]};
     
-config.required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
+config.REQ_METADATA_FIELDS = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
 
 
 
