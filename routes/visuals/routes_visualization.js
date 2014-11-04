@@ -341,7 +341,7 @@ router.get('/user_data/barcharts', function(req, res) {
     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
 
     res.render('visuals/user_data/barcharts', {
-          title: 'VAMPS BarCharts',
+          title: 'VAMPS StackbarCharts',
           timestamp: ts || 'default_timestamp',
           html : html,
           user: req.user
@@ -409,7 +409,7 @@ router.get('/user_data/piechart_single', function(req, res) {
 //
 router.get('/user_data/heatmap', function(req, res) {
   // Currently heatmap uses R which needs file input
-
+  
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
@@ -543,6 +543,7 @@ router.get('/user_data/frequency_heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
+  
   var html = '<table border="1" class="single_border center_table"><tr><td>';
   html += COMMON.get_selection_markup('frequency_heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
   html += '</td><td>';
@@ -575,6 +576,28 @@ router.get('/user_data/metadata_table', function(req, res) {
  
 
 });
+//
+//  G E O S P A T I A L
+//
+router.get('/user_data/geospatial', function(req, res) {
+  var myurl = url.parse(req.url, true);
+  
+  var ts    = myurl.query.ts;
+   
+  var html = '<table border="1" class="single_border center_table"><tr><td>';
+  html += COMMON.get_selection_markup('geospatial', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+  html += '</td><td>';
+  html += COMMON.get_choices_markup('geospatial', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+  html += '</td></tr></table>';
+  res.render('visuals/user_data/geospatial', {
+            title: 'VAMPS Geospatial Data',
+            timestamp: ts || 'default_timestamp',
+            html : html+"<h2>Not Coded Yet</h2>",
+            user: req.user
+      });
+ 
+
+});
 /*
 *   PARTIALS
 *      These six partials all belong to the unit_selection page
@@ -599,7 +622,14 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 //     start = process.hrtime(); // reset the timer
 // };
-
+router.get('/partials/load_metadata',  function(req, res) {
+  var myurl = url.parse(req.url, true);
+  var load = myurl.query.load  || 'all'   // either 'all' or 'selected'
+  res.render('visuals/partials/load_metadata', 
+    { title   : 'metadata_table',
+      load  : load
+  });
+});
 router.get('/partials/tax_silva108_custom',  function(req, res) {
   res.render('visuals/partials/tax_silva108_custom', 
     { title   : 'Silva(v108) Custom Taxonomy Selection'});
