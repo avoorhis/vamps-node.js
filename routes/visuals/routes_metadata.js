@@ -71,7 +71,7 @@ module.exports = {
 
 
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
-				var html = "<div id='metadata_table'><table border='1' class='single_border center_table'>";
+				var html = "<table border='1' class='single_border center_table'>";
 				html += "<tr><th>Dataset</th><th>Name</th><th>Value</th></tr>";
 				var found_metadata = false;
 				for(i in chosen_id_name_hash.ids) {
@@ -85,7 +85,7 @@ module.exports = {
 							}
 						}
 				}
-				html += "</table></div>";
+				html += "</table>";
 				if( ! found_metadata){
 					html = "<h2>No Metadata Found</h2>";
 				}if( visual_post_items.metadata.length === 0){
