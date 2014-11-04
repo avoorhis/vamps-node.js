@@ -11,10 +11,22 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
     res.render('index', { title: 'VAMPS Home Page', user: req.user });
   });
 
-  /* GET Hello World page. */
+  /* GET Overview page. */
   router.get('/overview', function(req, res) {
       res.render('overview', { title: 'Overview of the VAMPS Project', user: req.user });
   });
+
+  /* GET Search page. */
+  router.get('/search', function(req, res) {
+      res.render('search', { title: 'Search VAMPS datasets', 
+      											 user: req.user 
+      											});
+  });
+
+
+
+
+
 });
 
 module.exports = router;
