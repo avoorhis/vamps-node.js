@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">427</p>
+      <p class="stat">439</p>
     </div>
   </div>
   <div class="row historical">
@@ -152,6 +152,15 @@ function get_csv_filename()
 }
 
 var input = fs.createReadStream(get_csv_filename());
+// todo: use in transform pipe, close when done
+// https://github.com/wdavidw/node-csv-parse
+// input.on(&#039;finish&#039;, function() {
+//   console.log(&#039;ok: csv metadata&#039;);
+//   // this.end();
+//   
+//   // return handler(null);
+//   // return null;
+// });
 
 parser_hash = parse({columns: true}, function(err, data){
   do_smth_w_data_hash(data);  
@@ -531,13 +540,14 @@ function do_smth_w_data_hash(csv_data_hash)
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
 
   custom_fields(csv_data_hash);
-  work_with_ids_from_db();
-
+  work_with_ids_from_db();  
 }
 
-
 // input.pipe(parser);
-input.pipe(parser_hash);
+
+input.pipe(parser_hash)
+// .pipe(process.stdout);
+// input.push(null);  
 
 // connection.destroy( );</textarea>
   </div>

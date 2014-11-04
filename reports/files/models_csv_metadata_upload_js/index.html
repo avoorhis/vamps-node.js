@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">74.99</p>
+      <p class="stat">75.93</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">182</p>
+      <p class="stat">184</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">23.10</p>
+      <p class="stat">22.47</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.24</p>
+      <p class="stat">1.20</p>
     </div>
   </div>
 </div>
@@ -111,28 +111,31 @@ function make_db_id_query(project, datasets)
    return get_dataset_id_query;
 }
 
+function combine_values(data_arr)
+{
+  var query = &quot;&quot;;
+  for (var i = 0; data_arr.length &gt; i; i += 1)
+  {
+    query += get_comma(i) + &quot;( &quot; + data_arr[i] + &quot; ) &quot;;
+  }
+  return query;
+}
+
 function make_insert_custom_field_names_query(insert_into_custom_fields_info)
 {
   // console.log(&#039;QQQQ insert_into_custom_fields_info:&#039;);
   // console.log(insert_into_custom_fields_info);
 
-  var insert_custom_field_names_query = &quot;INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES ( &quot; + insert_into_custom_fields_info[0] + &quot; )&quot;;
-  
-  for (var i = 1; insert_into_custom_fields_info.length &gt; i; i += 1)
-  {
-    insert_custom_field_names_query += &quot;, ( &quot; + insert_into_custom_fields_info[i] + &quot; ) &quot;;
-  }
+  var insert_custom_field_names_query = &quot;INSERT IGNORE INTO custom_metadata_fields (project_id, field_name, example) VALUES &quot; + combine_values(insert_into_custom_fields_info);
+    
   return insert_custom_field_names_query;
 }
 
 function make_insert_required_field_names_query(insert_into_required_fields_info)
 {
-  var insert_required_field_names_query = &quot;INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES ( &quot; + insert_into_required_fields_info[0] + &quot; )&quot;;
-  
-  for (var i = 1; insert_into_required_fields_info.length &gt; i; i += 1)
-  {
-    insert_required_field_names_query += &quot;, ( &quot; + insert_into_required_fields_info[i] + &quot; ) &quot;;
-  }
+
+  var insert_required_field_names_query = &quot;INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES &quot; + combine_values(insert_into_required_fields_info);
+
   return insert_required_field_names_query;
 }
 
@@ -209,8 +212,7 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
     if (project_id !== undefined)
     {
       var values = get_values(this_entry, custom_fields_names_arr);
-      comma = get_comma(i);
-      insert_into_custom_metadata_info_query += comma + &quot;(&quot; + values + &quot;)&quot;;
+      insert_into_custom_metadata_info_query += get_comma(i) + &quot;(&quot; + values + &quot;)&quot;;
     }
   }
   // console.log(&quot;555 =====&quot;);
