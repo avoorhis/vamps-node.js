@@ -14,11 +14,12 @@ from pprint import pprint
 
 from cogent.maths import distance_transform as dt
 
+#data = json.load(sys.stdin)
 
 def distance(args):
 	
-	json_data = open(args.matrix_file)
 	
+	json_data = open(args.matrix_file)
 	data = json.load(json_data)
 	json_data.close()						
 
