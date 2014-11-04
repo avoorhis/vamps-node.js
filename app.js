@@ -197,7 +197,7 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // script: /public/scripts/create_taxcounts_lookup.py
 TaxaCounts     = require('./public/json/tax_counts_lookup.json');
 MetadataValues = require('./public/json/metadata_all.json');
-console.log(MetadataValues)
+//console.log(MetadataValues)
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
