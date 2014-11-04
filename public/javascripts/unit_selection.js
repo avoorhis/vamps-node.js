@@ -7,6 +7,20 @@ if (typeof toggle_taxa_btn !=="undefined") {
   });
 }
 
+toggle_meta_r_btn = document.getElementById('toggle_meta_r_btn');
+if (typeof toggle_meta_r_btn !=="undefined") {
+  toggle_meta_r_btn.addEventListener('click', function () {
+      toggle_required_metadata();
+  });
+}
+
+toggle_meta_c_btn = document.getElementById('toggle_meta_c_btn');
+if (typeof toggle_meta_c_btn !=="undefined") {
+  toggle_meta_c_btn.addEventListener('click', function () {
+      toggle_custom_metadata();
+  });
+}
+
 $(document).ready(function(){
     $("#unit_selection_name").on("change", get_requested_units_selection_box);
 });
@@ -33,7 +47,50 @@ function toggle_simple_taxa()
     }
   }
 }
-
+//
+// TOGGLE_REQUIRED_METADATA
+//
+function toggle_required_metadata()
+{
+  // page: unit_selection
+  // units: taxonomy
+  // toggles domain checkboxes on/off
+  var boxes = document.getElementsByClassName('required_meta_ckbx');
+  var i;
+  if (boxes[0].checked === false) {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = true;
+          document.getElementById('toggle_meta_r_btn').checked = true;
+      }
+  } else {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = false;
+          document.getElementById('toggle_meta_r_btn').checked = false;
+    }
+  }
+}
+//
+// TOGGLE_CUSTOM_METADATA
+//
+function toggle_custom_metadata()
+{
+  // page: unit_selection
+  // units: taxonomy
+  // toggles domain checkboxes on/off
+  var boxes = document.getElementsByClassName('custom_meta_ckbx');
+  var i;
+  if (boxes[0].checked === false) {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = true;
+          document.getElementById('toggle_meta_c_btn').checked = true;
+      }
+  } else {
+      for (i = 0; i < boxes.length; i++) {
+          boxes[i].checked = false;
+          document.getElementById('toggle_meta_c_btn').checked = false;
+    }
+  }
+}
 
 //
 // GET REQUESTED UNITS SELECTION BOX

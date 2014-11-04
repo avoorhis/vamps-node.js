@@ -56,11 +56,15 @@ def go_required_metadata():
 				req_metadata_lookup[did][name] = str(value)
 				
 	
-	return req_metadata_lookup
+	json_str = json.dumps(req_metadata_lookup)		
+	#print(json_str)
+	f = open(out_file,'w')
+	f.write(json_str+"\n")
+	f.close()
 
 	
 	
-def go_custom_metadata(metadata_lookup):
+def go_custom_metadata():
 	
 	cust_pquery = "SELECT project_id,field_name from custom_metadata_fields order by field_name"
 	pid_collection = {}
@@ -82,29 +86,29 @@ def go_custom_metadata(metadata_lookup):
 		cust_dquery = "SELECT " + ','.join(fields) + " from " + table
 		print cust_dquery
 		cur.execute(cust_dquery)
-		
+		n = 1
 		print
 		for row in cur.fetchall():
+			if len(fields) <= n:
+				break
+			print n,fields[n],row[n]
 			did = row[0]
-			n = 1
-			for field in pid_collection[pid]:
+			
+			name = fields[n]
+			value = row[n]
+			n += 1
 
-				print did,n,field,row[n]
-				name = field
-				value = str(row[n])
-				
-
-				if did in metadata_lookup:				
-				 	metadata_lookup[did][name] = value
-				else:
-					metadata_lookup[did] = {}
-					metadata_lookup[did][name] = value
-				n += 1
-
-	out_file = "metadata.json"
+			if did in cust_metadata_lookup:				
+					cust_metadata_lookup[did][name] = str(value)
+			else:
+				cust_metadata_lookup[did] = {}
+				cust_metadata_lookup[did][name] = str(value)
 	
 
-	json_str = json.dumps(metadata_lookup)		
+	out_file = "metadata_custom.json"
+	
+
+	json_str = json.dumps(cust_metadata_lookup)		
 	print(json_str)
 	f = open(out_file,'w')
 	f.write(json_str+"\n")
@@ -125,5 +129,5 @@ if __name__ == '__main__':
  	 	
 	
 	data = go_required_metadata() 
-	data = go_custom_metadata(data)
+	data = go_custom_metadata()
 	
