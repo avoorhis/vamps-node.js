@@ -112,16 +112,24 @@
     padding-right:20px;
 
 }
-#metadata_table {
-    background: #8FBC8F;
-    font-size:small;
-    border-collapse: collapse;
+#metadata_table_div {
+    
     margin-right:20px;
     padding-right:20px;
     height:700px;
-    
     overflow:auto;
 
+}
+
+#metadata_table {
+    font-size:small;
+    background: #8FBC8F;
+}
+#metadata_table th {
+    background: ivory;
+}
+#md_select_phrase1 {
+    font-weight:bold;
 }
 .blue {
     background:blue;
