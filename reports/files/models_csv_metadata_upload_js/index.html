@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">75.93</p>
+      <p class="stat">75.35</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">184</p>
+      <p class="stat">197</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">22.47</p>
+      <p class="stat">23.19</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.20</p>
+      <p class="stat">1.32</p>
     </div>
   </div>
 </div>
@@ -131,12 +131,24 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   return insert_custom_field_names_query;
 }
 
-function make_insert_required_field_names_query(insert_into_required_fields_info)
+function make_insert_required_field_names_query(required_field_names, insert_into_required_fields_info)
 {
 
-  var insert_required_field_names_query = &quot;INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES &quot; + combine_values(insert_into_required_fields_info);
+  var insert_required_field_names_query = &quot;INSERT IGNORE INTO required_metadata_info (&quot; + required_field_names + &quot;) VALUES &quot; + combine_values(insert_into_required_fields_info);
 
   return insert_required_field_names_query;
+}
+
+function make_required_field_names_list(req_fields)
+{
+  var required_field_names = &quot;&quot;;
+  req_fields.unshift(&quot;dataset_id&quot;);
+  
+  for (var i = 0; req_fields.length &gt; i; i += 1)
+  {
+    required_field_names += get_comma(i) + req_fields[i];
+  }  
+  return required_field_names;
 }
 
 function make_get_custom_fields_query(project_id)
@@ -215,7 +227,7 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
       insert_into_custom_metadata_info_query += get_comma(i) + &quot;(&quot; + values + &quot;)&quot;;
     }
   }
-  // console.log(&quot;555 =====&quot;);
+  // console.log(&quot;TTT =====&quot;);
   // console.log(&quot;insert_into_custom_metadata_info_query&quot;);
   // console.log(insert_into_custom_metadata_info_query);    
   return insert_into_custom_metadata_info_query;
@@ -248,9 +260,10 @@ csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_cus
   });
 };
 
-csvMetadataUpload.prototype.insert_required_field_names = function(insert_into_required_fields_info, callback) 
+csvMetadataUpload.prototype.insert_required_field_names = function(req_fields, insert_into_required_fields_info, callback) 
 {
-  var insert_into_required_fields_info_query = make_insert_required_field_names_query(insert_into_required_fields_info);
+  var required_field_names = make_required_field_names_list(req_fields);
+  var insert_into_required_fields_info_query = make_insert_required_field_names_query(required_field_names, insert_into_required_fields_info);
   // console.log(&#039;888 insert_into_required_fields_info_query:&#039;);
   // console.log(insert_into_required_fields_info_query);
   // 
