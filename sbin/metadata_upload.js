@@ -31,7 +31,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var constants = require('../public/constants');
 
-var req_fields = constants.required_metadata_fields;
+var req_fields = constants.REQ_METADATA_FIELDS;
 var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'TITLE'];
 
 var metadata_dict_by_pr_dataset = {};
