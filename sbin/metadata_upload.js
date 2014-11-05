@@ -3,7 +3,7 @@
 /**
 * Read csv into an object
 * get field/column names and info into custom_metadata_fields (mixs_field_description)
-* Convert 'sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON_ID', 'common_name', 'TITLE' into dataset_id
+* Convert 'sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON_ID', 'common_name', 'title' into dataset_id
 * Put data into required_metadata_info
 * create a custom metadata table, using project_id, custom_metadata_fields and the additional columns info
 * The object should have methods:
@@ -32,7 +32,7 @@ var parse = require('csv-parse');
 var constants = require('../public/constants');
 
 var req_fields = constants.REQ_METADATA_FIELDS;
-var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'TITLE'];
+var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'title'];
 
 var metadata_dict_by_pr_dataset = {};
 
@@ -96,7 +96,7 @@ function make_metadata_dict_by_pr_dataset(csv_data_hash)
 
   for (var i = 0; csv_data_hash.length > i; i += 1) {
     var dataset = csv_data_hash[i]['sample_name'];
-    var project = csv_data_hash[i]['TITLE'];
+    var project = csv_data_hash[i]['title'];
     metadata_dict_by_pr_dataset[project + "--" + dataset] = csv_data_hash[i];
   }
   return metadata_dict_by_pr_dataset;
@@ -107,7 +107,7 @@ function make_metadata_dict_by_project(csv_data_hash)
   metadata_dict_by_project = {};
 
   for (var i = 0; csv_data_hash.length > i; i += 1) {
-    var project = csv_data_hash[i]['TITLE'];
+    var project = csv_data_hash[i]['title'];
     metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, csv_data_hash[i]);
   }
   return metadata_dict_by_project;
@@ -125,7 +125,7 @@ function make_dict_by_project_datasets(csv_data_hash)
 
   for(var row_obj in csv_data_hash)
   {
-    var project = csv_data_hash[row_obj]['TITLE'];
+    var project = csv_data_hash[row_obj]['title'];
     var dataset = csv_data_hash[row_obj]['sample_name'];
     if (dataset !== undefined)
     {
@@ -167,11 +167,11 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
   return custom_column_examples;
 }
 
-function work_with_ids_from_db()
+function work_with_ids_from_db(project_datasets)
 {
-  // console.log("000000");
-  // console.log(project_datasets);
-  // console.log("111111");
+  console.log("000000");
+  console.log(project_datasets);
+  console.log("111111");
 
   for (var project in project_datasets)
   {
@@ -213,7 +213,7 @@ function add_ids_to_metadata(db_ids, metadata_from_csv)
   {
     sample_name = correct_dataset_name(metadata_from_csv[k].sample_name);
     res = get_this_dataset(db_ids, sample_name);
-    if (res[0] && (metadata_from_csv[k]["TITLE"] === res[0].project))
+    if (res[0] && (metadata_from_csv[k]["title"] === res[0].project))
     {
       metadata_from_csv[k].project_id = res[0].project_id;
       metadata_from_csv[k].dataset_id = res[0].dataset_id;
@@ -272,7 +272,7 @@ function call_insert_custom_fields_into_db(insert_into_custom_fields_txt)
 function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 {
   var insert_into_custom_fields_txt = [];
-  var project = metadata_by_project_w_ids.metadata[0]["TITLE"];
+  var project = metadata_by_project_w_ids.metadata[0]["title"];
   var project_id = metadata_by_project_w_ids.project_id;
   for (var i = 0; custom_column_names.length > i; i += 1)
   {
@@ -290,12 +290,11 @@ function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 function custom_fields(csv_data_hash)
 {
   custom_column_names = get_custom_columns_from_csv(csv_data_hash);
-  // console.log("custom_column_names");
+  // console.log("OOO custom_column_names");
   // console.log(custom_column_names);
   custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log("custom_column_examples 333");
   // console.log(custom_column_examples);
-
 }
 
 function get_comma(i)
@@ -474,21 +473,53 @@ function format_custom_fields_names(custom_fields_names)
   return custom_fields_names_arr;
 }
 
-function do_smth_w_data_hash(csv_data_hash)
+function to_lower_case(csv_data_hash_raw)
 {
   // console.log("===== CCC ");
-  // console.log("csv_data_hash[0]");
-  // console.log(csv_data_hash[0]);
+  // console.log("csv_data_hash_raw");
+  // console.log(csv_data_hash_raw);
+  var csv_data_hash = [];
+  for (var i = 0; csv_data_hash_raw.length > i; i += 1)
+  {
+    var temp_hash = {};
+    // console.log("===== DDDD ");
+    // console.log(i);
+    // console.log("csv_data_hash_raw[i]");
+    // console.log(csv_data_hash_raw[i]);
+    for (key in csv_data_hash_raw[i])
+    {
+      temp_hash[key.toLowerCase()] = csv_data_hash_raw[i][key];
+    }          
+    // console.log("===== CCC ");
+    // console.log("temp_hash");
+    // console.log(temp_hash);
+    csv_data_hash[i] = temp_hash;
+  }
+  // console.log("===== CCC ");
+  // console.log("csv_data_hash");
+  // console.log(csv_data_hash);
+  return csv_data_hash;
+}
+
+function do_smth_w_data_hash(csv_data_hash_raw)
+{
+  // console.log("===== HHH ");
+  // console.log("csv_data_hash");
+  // console.log(csv_data_hash);
+  csv_data_hash = to_lower_case(csv_data_hash_raw);
   metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
   metadata_dict_by_pr_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
-  // console.log("=====");
+  // console.log("MMM =====");
   // console.log("metadata_dict_by_pr_dataset");
   // console.log(metadata_dict_by_pr_dataset);
 
   project_datasets = make_dict_by_project_datasets(csv_data_hash);
+  console.log("MMM =====");
+  console.log("project_datasets");
+  console.log(project_datasets);
 
   custom_fields(csv_data_hash);
-  work_with_ids_from_db();  
+  work_with_ids_from_db(project_datasets);  
 }
 
 // input.pipe(parser);
