@@ -513,10 +513,10 @@ function do_smth_w_data_hash(csv_data_hash_raw)
   // console.log("metadata_dict_by_pr_dataset");
   // console.log(metadata_dict_by_pr_dataset);
 
-  project_datasets = make_dict_by_project_datasets(csv_data_hash);
-  console.log("MMM =====");
-  console.log("project_datasets");
-  console.log(project_datasets);
+  var project_datasets = make_dict_by_project_datasets(csv_data_hash);
+  // console.log("MMM =====");
+  // console.log("project_datasets");
+  // console.log(project_datasets);
 
   custom_fields(csv_data_hash);
   work_with_ids_from_db(project_datasets);  
