@@ -141,7 +141,7 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
       insert_into_custom_metadata_info_query += get_comma(i) + "(" + values + ")";
     }
   }
-  // console.log("555 =====");
+  console.log("TTT =====");
   console.log("insert_into_custom_metadata_info_query");
   console.log(insert_into_custom_metadata_info_query);    
   return insert_into_custom_metadata_info_query;
