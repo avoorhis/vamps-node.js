@@ -77,7 +77,7 @@ module.exports = {
 			  var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
 				//console.log(svgGraph[0][0]);
 				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-				console.log(svgXML);
+				//console.log(svgXML);
 				//return '<h1>start</h1>'+svgXML;
 				html = "<div id='' class='center'>"+svgXML+"</div>";
 				
