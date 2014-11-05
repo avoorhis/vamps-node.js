@@ -5,11 +5,14 @@
 For Selected Datasets: <span id='md_select_phrase1'>Showing Selected Metadata Only</span><br>
 <input type='checkbox' id='toggle_metadata' name='md_ckbx_toggle'  value='all' \><span id='md_select_phrase2'>Show All Metadata</span>
 
-<div id='metadata_table'><%- html %></div>
+<div id='metadata_table_div'><%- html %></div>
 
 
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
-<script src="/javascripts/jquery.tooltip.js"></script>
+<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
+<script>
+  new Tablesort(document.getElementById('metadata_table'));
+</script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/metadata.js"></script>
 

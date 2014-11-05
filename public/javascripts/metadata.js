@@ -1,4 +1,6 @@
 
+
+
 toggle_metadata = document.getElementById('toggle_metadata');
 if (typeof toggle_metadata !=="undefined") {
   toggle_metadata.addEventListener('click', function () {
@@ -29,17 +31,15 @@ function toggle_metadata_view()
           load = 'selected'
   }
 
-	var xmlhttp = new XMLHttpRequest();
-  
+	var xmlhttp = new XMLHttpRequest();  
   xmlhttp.open("GET", '/visuals/partials/load_metadata?load='+load);
   xmlhttp.onreadystatechange = function() {
 
-         if (xmlhttp.readyState == 4 ) {
+        if (xmlhttp.readyState == 4 ) {
            var string = xmlhttp.responseText;
-
-           document.getElementById('metadata_table').innerHTML = string;
-           
-         }
+           document.getElementById('metadata_table_div').innerHTML = string;
+           new Tablesort(document.getElementById('metadata_table'));
+        }
   };
   xmlhttp.send();
 
