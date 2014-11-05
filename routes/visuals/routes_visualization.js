@@ -627,8 +627,8 @@ router.get('/partials/load_metadata',  function(req, res) {
   var load = myurl.query.load  || 'all'   // either 'all' or 'selected'
   res.render('visuals/partials/load_metadata', 
     { title   : 'metadata_table',
-      load  : load
-  });
+      load    : load
+    });
 });
 router.get('/partials/tax_silva108_custom',  function(req, res) {
   res.render('visuals/partials/tax_silva108_custom', 
