@@ -153,7 +153,7 @@ function get_custom_columns_from_csv(csv_data_hash)
 function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names)
 {
   var custom_column_examples = {};
-  for(var project in metadata_dict_by_project)
+  for (var project in metadata_dict_by_project)
   {
     // console.log("555");
     // console.log(metadata_dict_by_project[project]);
@@ -169,9 +169,9 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
 
 function work_with_ids_from_db(project_datasets)
 {
-  console.log("000000");
-  console.log(project_datasets);
-  console.log("111111");
+  // console.log("000000");
+  // console.log(project_datasets);
+  // console.log("111111");
 
   for (var project in project_datasets)
   {
@@ -308,16 +308,16 @@ function get_comma(i)
 // * put required info in db
 function combine_required_data(this_entry)
 {
-  console.log("RRR req_fields:");
-  console.log(req_fields);
+  // console.log("RRR req_fields:");
+  // console.log(req_fields);
   
   var into_db = "";
-  var quot = "'";
+  var quote = "'";
   for (var i = 0; req_fields.length > i; i += 1)
   {
-    console.log("FFF req_fields[i]:");
-    console.log(req_fields[i]);
-    into_db += get_comma(i) + quot + this_entry[req_fields[i]] + quot;
+    // console.log("FFF req_fields[i]:");
+    // console.log(req_fields[i]);
+    into_db += get_comma(i) + quote + this_entry[req_fields[i]] + quote;
   }
   // var altitude = this_entry["altitude"];
   // var assigned_from_geo = this_entry["assigned_from_geo"];
@@ -337,8 +337,8 @@ function combine_required_data(this_entry)
   // var is_public = this_entry["public"];
 
   // into_db = altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_matter + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
-  console.log("IIIII into_db:");
-  console.log(into_db);
+  // console.log("IIIII into_db:");
+  // console.log(into_db);
   
   return into_db;
 }
@@ -475,9 +475,6 @@ function format_custom_fields_names(custom_fields_names)
 
 function to_lower_case(csv_data_hash_raw)
 {
-  // console.log("===== CCC ");
-  // console.log("csv_data_hash_raw");
-  // console.log(csv_data_hash_raw);
   var csv_data_hash = [];
   for (var i = 0; csv_data_hash_raw.length > i; i += 1)
   {
@@ -486,18 +483,12 @@ function to_lower_case(csv_data_hash_raw)
     // console.log(i);
     // console.log("csv_data_hash_raw[i]");
     // console.log(csv_data_hash_raw[i]);
-    for (key in csv_data_hash_raw[i])
+    for (var key in csv_data_hash_raw[i])
     {
       temp_hash[key.toLowerCase()] = csv_data_hash_raw[i][key];
     }          
-    // console.log("===== CCC ");
-    // console.log("temp_hash");
-    // console.log(temp_hash);
     csv_data_hash[i] = temp_hash;
   }
-  // console.log("===== CCC ");
-  // console.log("csv_data_hash");
-  // console.log(csv_data_hash);
   return csv_data_hash;
 }
 
@@ -509,14 +500,8 @@ function do_smth_w_data_hash(csv_data_hash_raw)
   csv_data_hash = to_lower_case(csv_data_hash_raw);
   metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
   metadata_dict_by_pr_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
-  // console.log("MMM =====");
-  // console.log("metadata_dict_by_pr_dataset");
-  // console.log(metadata_dict_by_pr_dataset);
 
   var project_datasets = make_dict_by_project_datasets(csv_data_hash);
-  // console.log("MMM =====");
-  // console.log("project_datasets");
-  // console.log(project_datasets);
 
   custom_fields(csv_data_hash);
   work_with_ids_from_db(project_datasets);  
@@ -525,7 +510,7 @@ function do_smth_w_data_hash(csv_data_hash_raw)
 // input.pipe(parser);
 
 // http://nicolashery.com/parse-data-files-using-nodejs-streams/
-input.pipe(parser_hash)
+input.pipe(parser_hash);
 // .pipe(process.stdout);
 // input.push(null);  
 

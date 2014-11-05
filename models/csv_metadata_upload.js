@@ -55,14 +55,9 @@ function make_required_field_names_list(req_fields)
   
   for (var i = 0; req_fields.length > i; i += 1)
   {
-    console.log("FFF req_fields[i]:");
-    console.log(req_fields[i]);
     required_field_names += get_comma(i) + req_fields[i];
-  }
-  console.log('NNNNN required_field_names:');
-  console.log(required_field_names);
-  
-  return required_field_names
+  }  
+  return required_field_names;
 }
 
 function make_get_custom_fields_query(project_id)
@@ -141,9 +136,9 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
       insert_into_custom_metadata_info_query += get_comma(i) + "(" + values + ")";
     }
   }
-  console.log("TTT =====");
-  console.log("insert_into_custom_metadata_info_query");
-  console.log(insert_into_custom_metadata_info_query);    
+  // console.log("TTT =====");
+  // console.log("insert_into_custom_metadata_info_query");
+  // console.log(insert_into_custom_metadata_info_query);    
   return insert_into_custom_metadata_info_query;
 }
 
@@ -166,8 +161,8 @@ csvMetadataUpload.prototype.get_dataset_ids = function(project, datasets, callba
 csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_custom_fields_info, callback) 
 {
   var insert_into_custom_fields_info_query = make_insert_custom_field_names_query(insert_into_custom_fields_info);
-  console.log('insert_into_custom_fields_info_query:');
-  console.log(insert_into_custom_fields_info_query);
+  // console.log('insert_into_custom_fields_info_query:');
+  // console.log(insert_into_custom_fields_info_query);
   
   connection.query(insert_into_custom_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
@@ -178,8 +173,8 @@ csvMetadataUpload.prototype.insert_required_field_names = function(req_fields, i
 {
   var required_field_names = make_required_field_names_list(req_fields);
   var insert_into_required_fields_info_query = make_insert_required_field_names_query(required_field_names, insert_into_required_fields_info);
-  console.log('888 insert_into_required_fields_info_query:');
-  console.log(insert_into_required_fields_info_query);
+  // console.log('888 insert_into_required_fields_info_query:');
+  // console.log(insert_into_required_fields_info_query);
   // 
   connection.query(insert_into_required_fields_info_query, function (err, rows, fields) {
     callback(err, rows);
