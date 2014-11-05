@@ -75,15 +75,16 @@ config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "specie
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Distance Heatmap',  file:'/images/visuals/heatmap.png',     link:'user_data/heatmap'     },
-    {name:'Frequency Heatmap',  file:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap' },
-    {name:'Bar Charts',        file:'/images/visuals/barcharts.png',   link:'user_data/barcharts'     },
+    {name:'Frequency Heatmap', file:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap' },
+    {name:'Stackbar Charts',   file:'/images/visuals/barcharts.png',   link:'user_data/barcharts'     },
     {name:'Pie Charts',        file:'/images/visuals/pie_charts.png',  link:'user_data/piecharts'   },
     {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram'   },
-    {name:'PCoA Plots',        file:'/images/visuals/pcoa.png',        link:'user_data/pcoa'   },
-    {name:'Counts Table',      file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
-    {name:'Metadata Table',    file:'', link:'user_data/metadata_table'    }
+    {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa'   },
+    {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
+    {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table'    },
+    {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial'    }
     ]};
     
-config.required_metadata_fields = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
+config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 
 module.exports = config;
