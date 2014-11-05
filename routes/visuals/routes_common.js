@@ -285,6 +285,32 @@ create_chosen_id_name_hash: function(dataset_ids) {
 //
 //
 //
+get_custom_meta_selection: function(dataset_ids) {
+    req_metadata = C.REQ_METADATA_FIELDS;
+    //console.log('req_metadata '+req_metadata)
+    fields_lookup = {}
+    for(i in dataset_ids) {      
+      id = dataset_ids[i]
+      //console.log('id '+ id)
+      if(id in MetadataValues) {
+        for(field in MetadataValues[id]) {
+          
+          //console.log('field_name '+field)
+          if(req_metadata.indexOf(field) === -1) {
+            //console.log('PUT IN CUSTOM '+field)
+            fields_lookup[field] = 1;
+          }else{
+            //console.log('IN REQ '+field)
+          }
+        }
+      }
+
+    }
+    return fields_lookup
+},
+//
+//
+//
 check_initial_status: function(url) {
 
   var values_updated;

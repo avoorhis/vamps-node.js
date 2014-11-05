@@ -51,7 +51,9 @@ module.exports = {
 				
 				for(n in metadata_names) {				
 					var name = metadata_names[n];
-					line[name] = MetadataValues[did][name];						
+					if(did in MetadataValues) {
+						line[name] = MetadataValues[did][name];
+					}						
 				}
 				line.project_dataset = pjds;
 				line.project = tmp[0];
@@ -64,5 +66,37 @@ module.exports = {
 			return metadata
 
 
+		},
+
+
+
+		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
+				var html = "<table border='1' id='metadata_table' class='single_border center_table'>";
+				html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
+				var found_metadata = false;
+				for(i in chosen_id_name_hash.ids) {
+						var did = chosen_id_name_hash.ids[i];
+						var ds = chosen_id_name_hash.names[i];
+						for(md_name in MetadataValues[did]) {					
+							var md_value = MetadataValues[did][md_name];
+							if(visual_post_items.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
+									html += "<tr><td>"+ds+"</td><td>"+md_name+"</td><td>"+md_value+"</td></tr>";
+									found_metadata = true;
+							}
+						}
+				}
+				html += "</tbody></table>";
+				
+				
+				if( ! found_metadata){
+					html = "<h2>No Metadata Found</h2>";
+				}if( visual_post_items.metadata.length === 0){
+					html = "<h2>No Metadata Selected</h2>";
+				}
+				
+				return html;
 		}
+
+		
 }
+

@@ -33,7 +33,7 @@ module.exports = {
   			myjson_obj.values.push(tmp[x]);
   		}
   		
-			console.log(myjson_obj);
+			//console.log(myjson_obj);
 
   		var unit_list = [];
 			for(o in mtx.rows){
