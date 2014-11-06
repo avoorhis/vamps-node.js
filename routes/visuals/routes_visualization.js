@@ -21,7 +21,7 @@ var DEND    = require('./routes_dendrogram');
 var BCHARTS = require('./routes_bar_charts');
 var PCHARTS = require('./routes_pie_charts');
 //var CTABLE  = require('./routes_counts_table');
-
+var PythonShell = require('python-shell');
 var app = express();
 
 // // init_node var node_class = 
@@ -97,6 +97,7 @@ router.post('/view_selection',  function(req, res) {
   //
   if(data_source_testing == 'json') {
     // GLOBAL
+    distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
     metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
@@ -136,6 +137,7 @@ router.post('/view_selection',  function(req, res) {
           
 
           // GLOBAL
+          distance_matrix = {};
           biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
           visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
           metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
@@ -408,40 +410,32 @@ router.get('/user_data/piechart_single', function(req, res) {
 //   H E A T M A P
 //
 router.get('/user_data/heatmap', function(req, res) {
-  // Currently heatmap uses R which needs file input
-  
+    
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
   var biom_file, custom_biom_file, R_command;
-  var infile_name = ts+'_count_matrix.biom';
-  var infile = path.join(__dirname, '../../tmp/'+infile_name);
-  var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.R');
-  //var dist_script_file = path.resolve(__dirname, '../../public/scripts/distance.py');
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+   
+
   if(values_updated) {
-    fs.readFile(infile, 'utf8', function (err, json) {
+    fs.readFile(biom_file, 'utf8', function (err, json) {
       var mtx = JSON.parse(json);
-      //var mtx = biom_matrix;
-      MTX.get_custom_biom_matrix(visual_post_items, mtx);
-      custom_biom_file = ts+'_count_matrix_cust_heat.biom';
-      shell_command = [req.C.RSCRIPT_CMD, dist_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
-      //shell_command = [dist_script_file, '--in', custom_biom_file, '--metric', visual_post_items.selected_distance].join(' ');
-      console.log(shell_command);
-      // must write custom file for R script
-      COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
+      custom_count_mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
+      custom_biom_file_name = ts+'_count_matrix_cust_heat.biom';
+      custom_biom_file = path.join(__dirname, '../../tmp/'+custom_biom_file_name);
+      //console.log(custom_count_mtx)
+      COMMON.write_file( custom_biom_file, JSON.stringify(custom_count_mtx,null,2) );  
       console.log('Writing/Using custom matrix file');
-      COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
+      COMMON.run_pyscript_cmd(req, res, ts, custom_biom_file, 'heatmap', visual_post_items.selected_distance);
     });
   }else{
-    biom_file = infile_name;
-    shell_command = [req.C.RSCRIPT_CMD, dist_script_file, biom_file, visual_post_items.selected_distance].join(' ');
-    //shell_command = [dist_script_file, '--in', biom_file, '--metric', visual_post_items.selected_distance].join(' ');
-    console.log(shell_command);
     console.log('Using original matrix file');
-    COMMON.run_script_cmd(req,res,  ts, shell_command, 'heatmap');
+    COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', visual_post_items.selected_distance);
   } 
-  
+ 
  
 });
 //
@@ -495,7 +489,8 @@ router.get('/user_data/pcoa', function(req, res) {
   var script_file = path.resolve(__dirname, '../../public/scripts/distance_pcoa.py');
   //var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
   //var name_on_graph= 'no';
-    
+    console.log('DM')
+    console.log(distance_matrix)
   //shell_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance, name_on_graph].join(' ');
   shell_command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
   //shell_command = [script_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',JSON.stringify(biom_matrix), ].join(' ');
