@@ -3,36 +3,50 @@ var async = require('async'),
     should = require('should'),
     app = require('../app'),
     connection = require('../config/database-test');
-var express = require('express');
-var passport = require('passport');
-// var helpers = require('../routes/helpers/helpers');
-var mycsv = require('ya-csv');
-console.log(__dirname);
-var csvUpload = require('../sbin/metadata_upload');
-// var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
-var csv_filename = __dirname + '/../data/KCK_LSM_Bv6_qii.csv';
-// var csv_filename = __dirname + '/crazy.csv';
-console.log('csv_filename');
-console.log(csv_filename);
+var passportStub = require('passport-stub');
+var helpers = require('../routes/helpers/helpers');
 
-describe('csvUpload', function(){
-  it('Check csv', function(done){
+var csvMetadataUpload = require('../models/csv_metadata_upload.js');
+var csv_metadata_db = new csvMetadataUpload();
 
-    var myCSV = new csvUpload(csv_filename);
-    console.log("FROM spec!");
-    // console.log(myCSV);
-    
-    // myCSV(csv_filename, function(err, results) {
-    //   if (err) {
-    //     // error handling
-    //     // return ...
-    //   }
-    //   // nominal case: use results that contains csv_datas !
-    //   console.log("URA111:");
-    //   console.dir(results);
-    // });
-    
-    // myCSV();
-  });
+beforeEach(function() {
+  passportStub.logout();    
 });
 
+before(function() {
+
+  // passportStub.logout();    
+
+  /*jshint multistr: true */
+  connection.query("DROP table if exists custom_metadata_18", function(err, rows, fields) {
+    if (err) {throw err;}
+  });
+
+  connection.query("TRUNCATE table custom_metadata_fields", function(err, rows, fields) {
+    if (err) {throw err;}
+  });
+
+  connection.query("TRUNCATE table required_metadata_info", function(err, rows, fields) {
+    if (err) {throw err;}
+  });
+
+  console.log('before every test');
+});
+
+// describe('csv_metadata_model', function(){
+// 
+//   it('get_dataset_ids', function (done) {
+// 
+//       this.timeout(5000);
+//       async.series([
+//         function (cb) {
+//           connection.query('SELECT * FROM user WHERE username="TEST"'+
+//                 ' AND email="TEST"',function(err,results){
+//               results.length.should.not.equal(0);
+//               done();
+//             });
+//         }
+//       ], done);
+//     });
+// 
+// });
