@@ -40,19 +40,18 @@
             <% var file = thumbs[n].file %>
             <% var name = thumbs[n].name %>
             <% var link = thumbs[n].link %>
-            <% var img_w = 170 %>
-            <% var cols = 3 %>
+            <% var cols = 5 %>
             <% if(mtx.shape[1] === 1  && (name === 'Distance Heatmap' || name === 'Dendrograms' )) { %>
               <td class='td_top'><%= name %><br><br>Not Available</td>
             <% } else { %>
               <% if(disable_thumbs) { %>
                   <td class='td_top'><%= name %><br>
-                    <img src='<%= file %>' border='0' alt='<%= name %>' width='<%= img_w %>'>
+                    <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
                   </td>
               <% }else{ %>
                   <td class='td_top'><%= name %><br>
                     <a href='<%= link %>?ts=<%= ts %>' target='<%= ts %>_<%= name %>' >
-                      <img src='<%= file %>' border='0' alt='<%= name %>' width='<%= img_w %>'>
+                      <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
                     </a> 
                   </td>
               <% } %>
