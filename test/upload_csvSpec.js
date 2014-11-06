@@ -79,7 +79,7 @@ describe('csv_metadata_model', function(){
   });
 
 
-  it('get_dataset_ids', function (done) {
+  it('insert_custom_field_names', function (done) {
     insert_into_custom_fields_txt = [ '18, \'habitat\', \'salt marsh\'',
       '18, \'temp\', \'25.2\'',
       '18, \'salinity\', \'29.4\'',
@@ -124,7 +124,7 @@ describe('csv_metadata_model', function(){
   });
 
 
-  it('get_dataset_ids', function (done) {
+  it('insert_required_field_names', function (done) {
     req_fields = [ 'altitude',
       'assigned_from_geo',
       'collection_date',
@@ -164,7 +164,7 @@ describe('csv_metadata_model', function(){
   });
 
 
-it('get_dataset_ids', function (done) {
+  it('select_custom_fields_names', function (done) {
   project_id = 18;
   this.timeout(5000);
   async.series([
@@ -203,6 +203,75 @@ it('get_dataset_ids', function (done) {
   //   }
 
   // });
+});
+
+
+  it('make_custom_table_per_pr', function (done) {
+    custom_fields_names = [ { field_name: 'habitat', field_type: 'varchar(128)' },
+      { field_name: 'temp', field_type: 'varchar(128)' },
+      { field_name: 'salinity', field_type: 'varchar(128)' },
+      { field_name: 'diss_oxygen', field_type: 'varchar(128)' },
+      { field_name: 'collection_time', field_type: 'varchar(128)' },
+      { field_name: 'type_sample', field_type: 'varchar(128)' },
+      { field_name: 'environmental_zone', field_type: 'varchar(128)' },
+      { field_name: 'specific_conductance',
+        field_type: 'varchar(128)' },
+      { field_name: 'dissolved_oxygen2', field_type: 'varchar(128)' },
+      { field_name: 'absolute_depth_beta',
+        field_type: 'varchar(128)' },
+      { field_name: 'lat_lon', field_type: 'varchar(128)' },
+      { field_name: 'conductivity', field_type: 'varchar(128)' },
+      { field_name: 'longhurst_long_name',
+        field_type: 'varchar(128)' },
+      { field_name: 'volume_filtered', field_type: 'varchar(128)' },
+      { field_name: 'fecal_coliform', field_type: 'varchar(128)' },
+      { field_name: 'redox_state', field_type: 'varchar(128)' },
+      { field_name: 'depth_start', field_type: 'varchar(128)' },
+      { field_name: 'depth_end', field_type: 'varchar(128)' },
+      { field_name: 'iho_area', field_type: 'varchar(128)' },
+      { field_name: 'notes', field_type: 'varchar(128)' },
+      { field_name: 'precipitation', field_type: 'varchar(128)' },
+      { field_name: 'longhurst_zone', field_type: 'varchar(128)' } ];
+    table_name = "custom_metadata_18";
+  
+  this.timeout(5000);
+  async.series([
+    function (cb) 
+    {
+      csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+      {
+        if (err)
+          throw err; // or return an error message, or something
+        else
+        {
+          console.log("22222 results");
+          console.log(results);
+          res_message = 2;
+          results.serverStatus.should.equal(res_message);
+
+          res_message = 1;
+          results.warningCount.should.equal(res_message);
+
+          res_message = "";
+          results.message.should.equal(res_message);
+
+          res_message = true;
+          results.protocol41.should.equal(true);
+
+        }
+        done();
+      });
+      
+      connection.query('SELECT * FROM custom_metadata_18', function(err, results){
+          console.log("results SELECT");
+          console.log(results);
+          results.length.should.not.equal(0);
+          done();
+        });
+    }
+
+  ], done);
+
 });
 
 
