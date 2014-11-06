@@ -2,6 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 var extend = require('util')._extend;
+var PythonShell = require('python-shell');
 var C = require('../../public/constants');
 var HMAP    = require('./routes_distance_heatmap');
 var DEND    = require('./routes_dendrogram');
@@ -263,6 +264,55 @@ module.exports = {
 
     });
 },
+run_pyscript_cmd: function (req, res, ts, infile, visual_name, metric) {
+    var exec = require('child_process').exec;
+    var html = '<table border="1" class="single_border center_table"><tr><td>';
+    var title = 'VAMPS';
+    html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
+    html += '</td><td>';
+    html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
+    html += '</td></tr></table>';
+
+    var options = {
+      scriptPath: 'public/scripts',
+      args:       [ '-in', infile, '-metric', metric ], 
+    };
+
+    PythonShell.run('distance.py', options, function (err, results) {
+      if (err) throw err;
+      distance_matrix = JSON.parse(results)
+      //console.log('results: %j', distance_matrix);
+      
+      if(distance_matrix === {} || distance_matrix === 'err' || distance_matrix==='') {
+        html += '<div>Error -- No distances were calculated.</div>';
+      }else{
+        if(visual_name === 'heatmap') {
+          //var dm = HMAP.create_distance_matrix(distance_matrix);
+          //console.log(distance_matrix)
+          title += ' Heatmap';
+          html  += HMAP.create_hm_html(distance_matrix);  
+        }else if(visual_name === 'dendrogram') {
+          
+          html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+          title += ' Dendrogram';
+        }else{
+
+        }
+        
+      }
+
+      res.render('visuals/user_data/'+visual_name, {
+            title: title,
+            timestamp: ts || 'default_timestamp',
+            html : html,
+            user: req.user
+      });
+    });
+
+
+
+   
+},
 //
 //
 //
@@ -338,8 +388,10 @@ check_initial_status: function(url) {
   
   //console.log('min '+min.toString()+' max '+max.toString()+' norm '+norm)
   if(Number(min)===0 && Number(max)===100 && norm==='none') {
+    // 
     values_updated = false;  // return to initial state
   }
+  console.log('values_updated: '+values_updated.toString())
   return values_updated;
 }
 
