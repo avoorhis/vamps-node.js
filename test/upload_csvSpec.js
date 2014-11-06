@@ -113,23 +113,56 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            // console.log("UUU results")
-            // console.log(results.message)
-            // console.log("---UUU results")
             res_message = '(Records: 22  Duplicates: 22  Warnings: 0';
             results.message.should.equal(res_message);
-            // results[0].project.should.equal("KCK_LSM_Bv6");
           }
           done();
-        // connection.query('SELECT * FROM user WHERE username="TEST"'+
-        //       ' AND email="TEST"', function(err,results){
-        //     results.length.should.not.equal(0);
-        //     done();
-        //   });
         });
       }
     ], done);
 
   });
 
+
+  it('get_dataset_ids', function (done) {
+    req_fields = [ 'altitude',
+      'assigned_from_geo',
+      'collection_date',
+      'common_name',
+      'country',
+      'depth',
+      'description',
+      'elevation',
+      'env_biome',
+      'env_feature',
+      'env_matter',
+      'latitude',
+      'longitude',
+      'public',
+      'taxon_id' ];
+    insert_into_required_metadata_info_txt = [ '398, \'0\', \'y\', \'2007-07-10\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.2032\', \'saltmarsh sample 071007st5b\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:sea water\', \'41.57523333\', \'-70.63535\', \'y\', \'1504975\'',
+        '406, \'0\', \'y\', \'2008-03-18\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.0508\', \'saltmarsh sample LSM.0008.031808st6\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:brackish water\', \'41.57518333\', \'-70.6399\', \'y\', \'1504975\'']
+
+    this.timeout(5000);
+    async.series([
+      function (cb) 
+      {
+        csv_metadata_db.insert_required_field_names(req_fields, insert_into_required_metadata_info_txt, function insert_db(err, results)
+        {
+          if (err)
+            throw err; // or return an error message, or something
+          else
+          {
+            res_message = '&Records: 2  Duplicates: 2  Warnings: 0';
+            results.message.should.equal(res_message);
+          }
+          done();
+        });
+      }
+    ], done);
+
+  });
+
+
 });
+
