@@ -40,12 +40,24 @@ function make_insert_custom_field_names_query(insert_into_custom_fields_info)
   return insert_custom_field_names_query;
 }
 
-function make_insert_required_field_names_query(insert_into_required_fields_info)
+function make_insert_required_field_names_query(required_field_names, insert_into_required_fields_info)
 {
 
-  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public) VALUES " + combine_values(insert_into_required_fields_info);
+  var insert_required_field_names_query = "INSERT IGNORE INTO required_metadata_info (" + required_field_names + ") VALUES " + combine_values(insert_into_required_fields_info);
 
   return insert_required_field_names_query;
+}
+
+function make_required_field_names_list(req_fields)
+{
+  var required_field_names = "";
+  req_fields.unshift("dataset_id");
+  
+  for (var i = 0; req_fields.length > i; i += 1)
+  {
+    required_field_names += get_comma(i) + req_fields[i];
+  }  
+  return required_field_names;
 }
 
 function make_get_custom_fields_query(project_id)
@@ -124,7 +136,7 @@ function make_insert_custom_info_query(metadata_dict_w_ids, table_name, custom_f
       insert_into_custom_metadata_info_query += get_comma(i) + "(" + values + ")";
     }
   }
-  // console.log("555 =====");
+  // console.log("TTT =====");
   // console.log("insert_into_custom_metadata_info_query");
   // console.log(insert_into_custom_metadata_info_query);    
   return insert_into_custom_metadata_info_query;
@@ -157,9 +169,10 @@ csvMetadataUpload.prototype.insert_custom_field_names = function(insert_into_cus
   });
 };
 
-csvMetadataUpload.prototype.insert_required_field_names = function(insert_into_required_fields_info, callback) 
+csvMetadataUpload.prototype.insert_required_field_names = function(req_fields, insert_into_required_fields_info, callback) 
 {
-  var insert_into_required_fields_info_query = make_insert_required_field_names_query(insert_into_required_fields_info);
+  var required_field_names = make_required_field_names_list(req_fields);
+  var insert_into_required_fields_info_query = make_insert_required_field_names_query(required_field_names, insert_into_required_fields_info);
   // console.log('888 insert_into_required_fields_info_query:');
   // console.log(insert_into_required_fields_info_query);
   // 

@@ -85,10 +85,14 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial'    }
     ]};
     
+<<<<<<< HEAD
 config.REQ_METADATA_FIELDS = [ "altitude","taxon_id","common_name","description", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
 
 
 
 
+=======
+config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
+>>>>>>> b96b56807bf9ea5de5612a99b4e570dcf3b28ec3
 
 module.exports = config;

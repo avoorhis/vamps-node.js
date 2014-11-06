@@ -286,9 +286,9 @@ var CustomTaxa  = require(&#039;./routes/helpers/custom_taxa_class&#039;);
 // GLOBAL if leave off &#039;var&#039;:
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-TaxaCounts     = require(&#039;./public/scripts/tax_counts_lookup.json&#039;);
-MetadataValues = require(&#039;./public/scripts/metadata.json&#039;);
-
+TaxaCounts     = require(&#039;./public/json/tax_counts_lookup.json&#039;);
+MetadataValues = require(&#039;./public/json/metadata_all.json&#039;);
+//console.log(MetadataValues)
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
