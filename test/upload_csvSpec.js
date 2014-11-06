@@ -77,4 +77,59 @@ describe('csv_metadata_model', function(){
 
     // });
   });
+
+
+  it('get_dataset_ids', function (done) {
+    insert_into_custom_fields_txt = [ '18, \'habitat\', \'salt marsh\'',
+      '18, \'temp\', \'25.2\'',
+      '18, \'salinity\', \'29.4\'',
+      '18, \'diss_oxygen\', \'137.8125\'',
+      '18, \'collection_time\', \'10:10:00\'',
+      '18, \'type_sample\', \'saltmarsh\'',
+      '18, \'environmental_zone\', \'temperate\'',
+      '18, \'specific_conductance\', \'45.4\'',
+      '18, \'dissolved_oxygen2\', \'63.3\'',
+      '18, \'absolute_depth_beta\', \'266\'',
+      '18, \'lat_lon\', \'unknown\'',
+      '18, \'conductivity\', \'45.61\'',
+      '18, \'longhurst_long_name\', \'Coastal - NW Atlantic Shelves Province\'',
+      '18, \'volume_filtered\', \'1000\'',
+      '18, \'fecal_coliform\', \'514\'',
+      '18, \'redox_state\', \'oxic\'',
+      '18, \'depth_start\', \'0.2032\'',
+      '18, \'depth_end\', \'0.2032\'',
+      '18, \'iho_area\', \'North_Atlantic_Ocean\'',
+      '18, \'notes\', \'Little bit of light breeze int\'',
+      '18, \'precipitation\', \'0.000254\'',
+      '18, \'longhurst_zone\', \'NWCS\'' ]
+    
+    this.timeout(5000);
+    async.series([
+      function (cb) 
+      {
+        csv_metadata_db.insert_custom_field_names(insert_into_custom_fields_txt, function insert_db(err, results)
+        {
+          if (err)
+            throw err; // or return an error message, or something
+          else
+          {
+            // console.log("UUU results")
+            // console.log(results.message)
+            // console.log("---UUU results")
+            res_message = '(Records: 22  Duplicates: 22  Warnings: 0';
+            results.message.should.equal(res_message);
+            // results[0].project.should.equal("KCK_LSM_Bv6");
+          }
+          done();
+        // connection.query('SELECT * FROM user WHERE username="TEST"'+
+        //       ' AND email="TEST"', function(err,results){
+        //     results.length.should.not.equal(0);
+        //     done();
+        //   });
+        });
+      }
+    ], done);
+
+  });
+
 });
