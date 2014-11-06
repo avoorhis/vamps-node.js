@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">70.71</p>
+      <p class="stat">71.82</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">439</p>
+      <p class="stat">491</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">41.69</p>
+      <p class="stat">46.74</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.22</p>
+      <p class="stat">3.06</p>
     </div>
   </div>
 </div>
@@ -94,7 +94,7 @@
 /**
 * Read csv into an object
 * get field/column names and info into custom_metadata_fields (mixs_field_description)
-* Convert &#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &#039;DESCRIPTION&#039;, &#039;TAXON_ID&#039;, &#039;common_name&#039;, &#039;TITLE&#039; into dataset_id
+* Convert &#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &#039;DESCRIPTION&#039;, &#039;TAXON_ID&#039;, &#039;common_name&#039;, &#039;title&#039; into dataset_id
 * Put data into required_metadata_info
 * create a custom metadata table, using project_id, custom_metadata_fields and the additional columns info
 * The object should have methods:
@@ -122,8 +122,8 @@ var fs = require(&#039;fs&#039;);
 var parse = require(&#039;csv-parse&#039;);
 var constants = require(&#039;../public/constants&#039;);
 
-var req_fields = constants.required_metadata_fields;
-var fields_to_replace = [&#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &#039;DESCRIPTION&#039;, &#039;TAXON_ID&#039;, &#039;common_name&#039;, &#039;TITLE&#039;];
+var req_fields = constants.REQ_METADATA_FIELDS;
+var fields_to_replace = [&#039;sample_name&#039;, &#039;ANONYMIZED_NAME&#039;, &#039;title&#039;];
 
 var metadata_dict_by_pr_dataset = {};
 
@@ -187,7 +187,7 @@ function make_metadata_dict_by_pr_dataset(csv_data_hash)
 
   for (var i = 0; csv_data_hash.length &gt; i; i += 1) {
     var dataset = csv_data_hash[i][&#039;sample_name&#039;];
-    var project = csv_data_hash[i][&#039;TITLE&#039;];
+    var project = csv_data_hash[i][&#039;title&#039;];
     metadata_dict_by_pr_dataset[project + &quot;--&quot; + dataset] = csv_data_hash[i];
   }
   return metadata_dict_by_pr_dataset;
@@ -198,7 +198,7 @@ function make_metadata_dict_by_project(csv_data_hash)
   metadata_dict_by_project = {};
 
   for (var i = 0; csv_data_hash.length &gt; i; i += 1) {
-    var project = csv_data_hash[i][&#039;TITLE&#039;];
+    var project = csv_data_hash[i][&#039;title&#039;];
     metadata_dict_by_project = add_to_dict(metadata_dict_by_project, project, csv_data_hash[i]);
   }
   return metadata_dict_by_project;
@@ -216,7 +216,7 @@ function make_dict_by_project_datasets(csv_data_hash)
 
   for(var row_obj in csv_data_hash)
   {
-    var project = csv_data_hash[row_obj][&#039;TITLE&#039;];
+    var project = csv_data_hash[row_obj][&#039;title&#039;];
     var dataset = csv_data_hash[row_obj][&#039;sample_name&#039;];
     if (dataset !== undefined)
     {
@@ -258,7 +258,7 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
   return custom_column_examples;
 }
 
-function work_with_ids_from_db()
+function work_with_ids_from_db(project_datasets)
 {
   // console.log(&quot;000000&quot;);
   // console.log(project_datasets);
@@ -304,7 +304,7 @@ function add_ids_to_metadata(db_ids, metadata_from_csv)
   {
     sample_name = correct_dataset_name(metadata_from_csv[k].sample_name);
     res = get_this_dataset(db_ids, sample_name);
-    if (res[0] &amp;&amp; (metadata_from_csv[k][&quot;TITLE&quot;] === res[0].project))
+    if (res[0] &amp;&amp; (metadata_from_csv[k][&quot;title&quot;] === res[0].project))
     {
       metadata_from_csv[k].project_id = res[0].project_id;
       metadata_from_csv[k].dataset_id = res[0].dataset_id;
@@ -363,11 +363,11 @@ function call_insert_custom_fields_into_db(insert_into_custom_fields_txt)
 function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 {
   var insert_into_custom_fields_txt = [];
-  var project = metadata_by_project_w_ids.metadata[0][&quot;TITLE&quot;];
+  var project = metadata_by_project_w_ids.metadata[0][&quot;title&quot;];
   var project_id = metadata_by_project_w_ids.project_id;
   for (var i = 0; custom_column_names.length &gt; i; i += 1)
   {
-      var field_name = custom_column_names[i];
+      var field_name = custom_column_names[i].toLowerCase();
       var example = custom_column_examples[project][field_name];
       var into_db = project_id + &quot;, &#039;&quot; + field_name + &quot;&#039;, &#039;&quot; + example + &quot;&#039;&quot;;
       insert_into_custom_fields_txt.push(into_db);
@@ -381,19 +381,58 @@ function format_custom_metadata_fields_info(metadata_by_project_w_ids)
 function custom_fields(csv_data_hash)
 {
   custom_column_names = get_custom_columns_from_csv(csv_data_hash);
-  // console.log(&quot;custom_column_names&quot;);
+  // console.log(&quot;OOO custom_column_names&quot;);
   // console.log(custom_column_names);
   custom_column_examples = get_custom_column_examples_from_csv(metadata_dict_by_project, custom_column_names);
   // console.log(&quot;custom_column_examples 333&quot;);
   // console.log(custom_column_examples);
-
 }
 
+function get_comma(i)
+{
+  comma = &quot;, &quot;;
+  if (i === 0) 
+    comma = &quot;&quot;;
+  return comma;
+}
 
 // * put required info in db
-/*
-dataset_id, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, temp, salinity, diss_oxygen, public
-*/
+function combine_required_data(this_entry)
+{
+  // console.log(&quot;RRR req_fields:&quot;);
+  // console.log(req_fields);
+  
+  var into_db = &quot;&quot;;
+  var quote = &quot;&#039;&quot;;
+  for (var i = 0; req_fields.length &gt; i; i += 1)
+  {
+    // console.log(&quot;FFF req_fields[i]:&quot;);
+    // console.log(req_fields[i]);
+    into_db += get_comma(i) + quote + this_entry[req_fields[i]] + quote;
+  }
+  // var altitude = this_entry[&quot;altitude&quot;];
+  // var assigned_from_geo = this_entry[&quot;assigned_from_geo&quot;];
+  // var collection_date = &quot;&quot;;
+  // // if (this_entry[&quot;collection_date&quot;] != &quot;unknown&quot;)
+  // // {
+  //   collection_date = correct_db_data(this_entry[&quot;collection_date&quot;]);
+  // // }
+  // var depth = this_entry[&quot;depth&quot;];
+  // var country = this_entry[&quot;country&quot;];
+  // var elevation = this_entry[&quot;elevation&quot;];
+  // var env_biome = this_entry[&quot;env_biome&quot;];
+  // var env_feature = this_entry[&quot;env_feature&quot;];
+  // var env_matter = this_entry[&quot;env_matter&quot;];
+  // var latitude = this_entry[&quot;latitude&quot;];
+  // var longitude = this_entry[&quot;longitude&quot;];
+  // var is_public = this_entry[&quot;public&quot;];
+
+  // into_db = altitude + &quot;, &#039;&quot; + assigned_from_geo + &quot;&#039;, &#039;&quot; + collection_date + &quot;&#039;, &quot; + depth + &quot;, &#039;&quot; + country + &quot;&#039;, &quot; + elevation + &quot;, &#039;&quot; + env_biome + &quot;&#039;, &#039;&quot; + env_feature + &quot;&#039;, &#039;&quot; + env_matter + &quot;&#039;, &quot; + latitude + &quot;, &quot; + longitude + &quot;, &quot; + temp + &quot;, &quot; + salinity + &quot;, &quot; + diss_oxygen + &quot;, &#039;&quot; + is_public + &quot;&#039;&quot;;
+  // console.log(&quot;IIIII into_db:&quot;);
+  // console.log(into_db);
+  
+  return into_db;
+}
 
 function format_required_metadata_info(metadata_dict_w_ids)
 {
@@ -405,27 +444,26 @@ function format_required_metadata_info(metadata_dict_w_ids)
     var dataset_id = this_entry.dataset_id;
     if (dataset_id !== undefined)
     {
-      var altitude = this_entry[&quot;altitude&quot;];
-      var assigned_from_geo = this_entry[&quot;assigned_from_geo&quot;];
-      var collection_date = &quot;&quot;;
-      // if (this_entry[&quot;collection_date&quot;] != &quot;unknown&quot;)
-      // {
-        collection_date = correct_db_data(this_entry[&quot;collection_date&quot;]);
-      // }
-      var depth = this_entry[&quot;depth&quot;];
-      var country = this_entry[&quot;country&quot;];
-      var elevation = this_entry[&quot;elevation&quot;];
-      var env_biome = this_entry[&quot;env_biome&quot;];
-      var env_feature = this_entry[&quot;env_feature&quot;];
-      var env_matter = this_entry[&quot;env_matter&quot;];
-      var latitude = this_entry[&quot;latitude&quot;];
-      var longitude = this_entry[&quot;longitude&quot;];
-      var temp = this_entry[&quot;temp&quot;];
-      var salinity = this_entry[&quot;salinity&quot;];
-      var diss_oxygen = this_entry[&quot;diss_oxygen&quot;];
-      var is_public = this_entry[&quot;public&quot;];
-
-      var into_db = dataset_id + &quot;, &quot; + altitude + &quot;, &#039;&quot; + assigned_from_geo + &quot;&#039;, &#039;&quot; + collection_date + &quot;&#039;, &quot; + depth + &quot;, &#039;&quot; + country + &quot;&#039;, &quot; + elevation + &quot;, &#039;&quot; + env_biome + &quot;&#039;, &#039;&quot; + env_feature + &quot;&#039;, &#039;&quot; + env_matter + &quot;&#039;, &quot; + latitude + &quot;, &quot; + longitude + &quot;, &quot; + temp + &quot;, &quot; + salinity + &quot;, &quot; + diss_oxygen + &quot;, &#039;&quot; + is_public + &quot;&#039;&quot;;
+      // var into_db = combine_required_data(this_entry);
+      var into_db = dataset_id + &quot;, &quot; + combine_required_data(this_entry);
+      // var altitude = this_entry[&quot;altitude&quot;];
+      // var assigned_from_geo = this_entry[&quot;assigned_from_geo&quot;];
+      // var collection_date = &quot;&quot;;
+      // // if (this_entry[&quot;collection_date&quot;] != &quot;unknown&quot;)
+      // // {
+      //   collection_date = correct_db_data(this_entry[&quot;collection_date&quot;]);
+      // // }
+      // var depth = this_entry[&quot;depth&quot;];
+      // var country = this_entry[&quot;country&quot;];
+      // var elevation = this_entry[&quot;elevation&quot;];
+      // var env_biome = this_entry[&quot;env_biome&quot;];
+      // var env_feature = this_entry[&quot;env_feature&quot;];
+      // var env_matter = this_entry[&quot;env_matter&quot;];
+      // var latitude = this_entry[&quot;latitude&quot;];
+      // var longitude = this_entry[&quot;longitude&quot;];
+      // var is_public = this_entry[&quot;public&quot;];
+      // 
+      // var into_db = dataset_id + &quot;, &quot; + altitude + &quot;, &#039;&quot; + assigned_from_geo + &quot;&#039;, &#039;&quot; + collection_date + &quot;&#039;, &quot; + depth + &quot;, &#039;&quot; + country + &quot;&#039;, &quot; + elevation + &quot;, &#039;&quot; + env_biome + &quot;&#039;, &#039;&quot; + env_feature + &quot;&#039;, &#039;&quot; + env_matter + &quot;&#039;, &quot; + latitude + &quot;, &quot; + longitude + &quot;, &quot; + temp + &quot;, &quot; + salinity + &quot;, &quot; + diss_oxygen + &quot;, &#039;&quot; + is_public + &quot;&#039;&quot;;
       insert_into_required_metadata_info_txt.push(into_db);
     }
     else
@@ -438,7 +476,7 @@ function format_required_metadata_info(metadata_dict_w_ids)
 
 function call_insert_required_fields_into_db(insert_into_required_metadata_info_txt)
 {
-  csv_metadata_db.insert_required_field_names(insert_into_required_metadata_info_txt, function insert_db(err, results)
+  csv_metadata_db.insert_required_field_names(req_fields, insert_into_required_metadata_info_txt, function insert_db(err, results)
   {
     if (err)
       throw err; // or return an error message, or something
@@ -526,26 +564,44 @@ function format_custom_fields_names(custom_fields_names)
   return custom_fields_names_arr;
 }
 
-function do_smth_w_data_hash(csv_data_hash)
+function to_lower_case(csv_data_hash_raw)
 {
-  // console.log(&quot;=====&quot;);
-  // console.log(&quot;csv_data_hash[0]&quot;);
-  // console.log(csv_data_hash[0]);
+  var csv_data_hash = [];
+  for (var i = 0; csv_data_hash_raw.length &gt; i; i += 1)
+  {
+    var temp_hash = {};
+    // console.log(&quot;===== DDDD &quot;);
+    // console.log(i);
+    // console.log(&quot;csv_data_hash_raw[i]&quot;);
+    // console.log(csv_data_hash_raw[i]);
+    for (var key in csv_data_hash_raw[i])
+    {
+      temp_hash[key.toLowerCase()] = csv_data_hash_raw[i][key];
+    }          
+    csv_data_hash[i] = temp_hash;
+  }
+  return csv_data_hash;
+}
+
+function do_smth_w_data_hash(csv_data_hash_raw)
+{
+  // console.log(&quot;===== HHH &quot;);
+  // console.log(&quot;csv_data_hash&quot;);
+  // console.log(csv_data_hash);
+  csv_data_hash = to_lower_case(csv_data_hash_raw);
   metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
   metadata_dict_by_pr_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
-  // console.log(&quot;=====&quot;);
-  // console.log(&quot;metadata_dict_by_pr_dataset&quot;);
-  // console.log(metadata_dict_by_pr_dataset);
 
-  project_datasets = make_dict_by_project_datasets(csv_data_hash);
+  var project_datasets = make_dict_by_project_datasets(csv_data_hash);
 
   custom_fields(csv_data_hash);
-  work_with_ids_from_db();  
+  work_with_ids_from_db(project_datasets);  
 }
 
 // input.pipe(parser);
 
-input.pipe(parser_hash)
+// http://nicolashery.com/parse-data-files-using-nodejs-streams/
+input.pipe(parser_hash);
 // .pipe(process.stdout);
 // input.push(null);  
 
