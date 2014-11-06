@@ -1,0 +1,82 @@
+{
+  "data": [
+    [
+      0.018925166878562372,
+      0.0015205971799834117,
+      0.018617526890686232
+    ],
+    [
+      0.09531200002737818,
+      0.16477743986729335,
+      0.09168014675227217
+    ],
+    [
+      0.3386817748589596,
+      0.32222836604921207,
+      0.3382306345368131
+    ],
+    [
+      0.031240214439594325,
+      0.03912081835775504,
+      0.029347119152839156
+    ],
+    [
+      0.5077540138978486,
+      0.46585568150400886,
+      0.5149303760526974
+    ]
+  ],
+  "shape": [
+    5,
+    3
+  ],
+  "matrix_element_type": "int",
+  "matrix_type": "dense",
+  "max_dataset_count": 584407,
+  "column_totals": [
+    0.9919131701023431,
+    0.9935029029582527,
+    0.9928058033853081
+  ],
+  "columns": [
+    {
+      "id": "BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step",
+      "metadata": {}
+    },
+    {
+      "id": "BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step",
+      "metadata": {}
+    },
+    {
+      "id": "BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step",
+      "metadata": {}
+    }
+  ],
+  "rows": [
+    {
+      "id": "Bacteria;Actinobacteria",
+      "metadata": {}
+    },
+    {
+      "id": "Bacteria;Bacteroidetes",
+      "metadata": {}
+    },
+    {
+      "id": "Bacteria;Firmicutes",
+      "metadata": {}
+    },
+    {
+      "id": "Bacteria;Fusobacteria",
+      "metadata": {}
+    },
+    {
+      "id": "Bacteria;Proteobacteria",
+      "metadata": {}
+    }
+  ],
+  "date": "2014-11-05T20:58:47.360Z",
+  "generated_by": "VAMPS-NodeJS Version 2.0",
+  "units": "tax_silva108_simple",
+  "format": "Biological Observation Matrix",
+  "id": "no-user_1415221127360"
+}
