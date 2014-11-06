@@ -17,7 +17,7 @@ import argparse
 import json
 import csv
 from hcluster import linkage, to_tree
-from ete2 import Tree
+#from ete2 import Tree
 from pprint import pprint
 
 from cogent.maths import distance_transform as dt
@@ -51,70 +51,67 @@ def distance(args):
 	dm = np.transpose(z)
 	
 	if args.metric == 'bray_curtis':
-		distance_matrix = dt.dist_bray_curtis(dm)
+		dist = dt.dist_bray_curtis(dm)
 	elif args.metric == 'morisita_horn':
-		distance_matrix = dt.dist_morisita_horn(dm)
+		dist = dt.dist_morisita_horn(dm)
 	elif args.metric == 'canberra':
-		distance_matrix = dt.dist_canberra(dm)	
+		dist = dt.dist_canberra(dm)	
 	elif args.metric == 'chisq':
-		distance_matrix = dt.dist_chisq(dm)	
+		dist = dt.dist_chisq(dm)	
 	elif args.metric == 'chord':
-		distance_matrix = dt.dist_chord(dm)	
+		dist = dt.dist_chord(dm)	
 	elif args.metric == 'euclidean':
-		distance_matrix = dt.dist_euclidean(dm)	
+		dist = dt.dist_euclidean(dm)	
 	elif args.metric == 'gower':
-		distance_matrix = dt.dist_gower(dm)	
+		dist = dt.dist_gower(dm)	
 	elif args.metric == 'hellinger':
-		distance_matrix = dt.dist_hellinger(dm)	
+		dist = dt.dist_hellinger(dm)	
 	elif args.metric == 'kulczynski':
-		distance_matrix = dt.dist_kulczynski(dm)	
+		dist = dt.dist_kulczynski(dm)	
 	elif args.metric == 'manhattan':
-		distance_matrix = dt.dist_manhattan(dm)	
+		dist = dt.dist_manhattan(dm)	
 	elif args.metric == 'abund_jaccard':
-		distance_matrix = dt.dist_abund_jaccard(dm)	
+		dist = dt.dist_abund_jaccard(dm)	
 	elif args.metric == 'binary_jaccard':
-		distance_matrix = dt.binary_dist_jaccard(dm)	
+		dist = dt.binary_dist_jaccard(dm)	
 	elif args.metric == 'pearson':
-		distance_matrix = dt.dist_pearson(dm)	
+		dist = dt.dist_pearson(dm)	
 	elif args.metric == 'soergel':
-		distance_matrix = dt.dist_soergel(dm)	
+		dist = dt.dist_soergel(dm)	
 	elif args.metric == 'spearman':
-		distance_matrix = dt.dist_spearman_approx(dm)	
+		dist = dt.dist_spearman_approx(dm)	
 	else:  # default
-		distance_matrix = dt.dist_bray_curtis(dm)
+		dist = dt.dist_bray_curtis(dm)
 
 
-	dist = {}
-	for i,x in enumerate(distance_matrix):
-		for n,d in enumerate(distance_matrix[i]):
-			if i < n: # only needs one copy
-					dist[ (datasets[i],datasets[n]) ] = d
+	
+	#print data['columns']
+	#print dist
+	distance_matrix = {}
+	for row,line in enumerate(data['columns']):
+		name = line['id']
+		distance_matrix[name] = {}		
+		for col,d in enumerate(dist[row]):
+			#print data['columns'][col]['id']
+			distance_matrix[name][data['columns'][col]['id']] = dist[row][col]
 
-	#np.savetxt(os.path.join(args.output_dir, args.file_prefix+'_distance.mtx'), distance_matrix)
-	for i,line in enumerate(data['columns']):
-		sys.stdout.write(line['id']+'\t')
-	#print(distance_matrix[i])
-	print
-	for i,x in enumerate(distance_matrix):
-		sys.stdout.write(data['columns'][i]['id']+'\t')
-		for n,d in enumerate(distance_matrix[i]):
-			sys.stdout.write(str(distance_matrix[i][n])+'\t')	
-		print
-	print
-	print to_tree(linkage(distance_matrix, "single"))
-	print
-	print distance_matrix
-	print
-	print
-	print np.triu(distance_matrix)
-	print
+	print json.dumps(distance_matrix)
 
-	d=hierarchy.average(distance_matrix)
-	print d
-	print
-	c = hierarchy.to_tree(hierarchy.average(np.triu(distance_matrix)))
-	print c
-	#PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
+# { 'SLM_NIH_Bv6--Biofilter_005': 
+#    { 'SLM_NIH_Bv6--Biofilter_005': '0',
+#      'SLM_NIH_Bv6--Biofilter_Outflow_006': '0.015246870934763',
+#      'SLM_NIH_Bv6--Biofilter_Sand_008': '0.0198007846045586' },
+#   'SLM_NIH_Bv6--Biofilter_Outflow_006': 
+#    { 'SLM_NIH_Bv6--Biofilter_005': '0.015246870934763',
+#      'SLM_NIH_Bv6--Biofilter_Outflow_006': '0',
+#      'SLM_NIH_Bv6--Biofilter_Sand_008': '0.013683782909973' },
+#   'SLM_NIH_Bv6--Biofilter_Sand_008': 
+#    { 'SLM_NIH_Bv6--Biofilter_005': '0.0198007846045586',
+#      'SLM_NIH_Bv6--Biofilter_Outflow_006': '0.013683782909973',
+#      'SLM_NIH_Bv6--Biofilter_Sand_008': '0' } 
+#  }
+
+
 
 
 #

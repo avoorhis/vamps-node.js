@@ -11,7 +11,10 @@ router.get('/index_projects', function(req, res) {
       if (err) {
       throw err;
     } else {
-        res.render('projects/index_projects', { "all_projects" : rows, user: req.user });
+        res.render('projects/index_projects', { 
+                        title          : 'VAMPS Projects',
+                        "all_projects" : rows, 
+                        user: req.user });
       }
     });
 
@@ -25,7 +28,10 @@ router.get('/:id', function(req, res) {
       if (err)  {
       throw err;
     } else {
-        res.render('projects/profile', { project: row, user: req.user });
+        res.render('projects/profile', { 
+                                title  : 'VAMPS Project',
+                                project: row, 
+                                user   : req.user });
       }
     });
 
