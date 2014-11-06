@@ -99,6 +99,9 @@
     width: 400px;
     height:110px;
 }
+.thumb_img {
+    width:130px;
+}
 #counts_table_div {
     width: 500px;
     margin-right:20px;

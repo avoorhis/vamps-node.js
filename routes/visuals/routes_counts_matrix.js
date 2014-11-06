@@ -4,6 +4,7 @@ var fs = require('fs');
 //var hdf5 = require('hdf5');
 var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
+var extend = require('util')._extend;
 // biom format:dense: http://biom-format.org/documentation/format_versions/biom-1.0.html#example-biom-files
 // {
 //     "id":null,
