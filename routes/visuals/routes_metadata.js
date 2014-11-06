@@ -77,11 +77,12 @@ module.exports = {
 				for(i in chosen_id_name_hash.ids) {
 						var did = chosen_id_name_hash.ids[i];
 						var ds = chosen_id_name_hash.names[i];
-						for(md_name in MetadataValues[did]) {					
+						for(md_name in MetadataValues[did]) {	
+							found_metadata = true;				
 							var md_value = MetadataValues[did][md_name];
 							if(visual_post_items.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
 									html += "<tr><td>"+ds+"</td><td>"+md_name+"</td><td>"+md_value+"</td></tr>";
-									found_metadata = true;
+									
 							}
 						}
 				}
