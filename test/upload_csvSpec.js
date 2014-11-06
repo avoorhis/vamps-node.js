@@ -164,5 +164,47 @@ describe('csv_metadata_model', function(){
   });
 
 
+it('get_dataset_ids', function (done) {
+  project_id = 18;
+  this.timeout(5000);
+  async.series([
+    function (cb) 
+    {
+        csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)      
+      {
+        if (err)
+          throw err; // or return an error message, or something
+        else
+        {
+          console.log("CCC custom_fields_names")
+          console.log(custom_fields_names)
+          console.log(custom_fields_names.length)
+          custom_fields_names.length.should.equal(22);
+          // results[0].project.should.equal("KCK_LSM_Bv6");
+        }
+        done();
+      // connection.query('SELECT * FROM user WHERE username="TEST"'+
+      //       ' AND email="TEST"', function(err,results){
+      //     results.length.should.not.equal(0);
+      //     done();
+      //   });
+      });
+    }
+  ], done);
+
+  // csv_metadata_db.get_dataset_ids(project, datasets, function work_with_dataset_id(err, results)
+  // {
+  //   if (err)
+  //     throw err; // or return an error message, or something
+  //   else
+  //   {
+  //     console.log("RRR results")
+  //     console.log(results)
+  //   }
+
+  // });
+});
+
+
 });
 
