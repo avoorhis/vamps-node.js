@@ -204,42 +204,30 @@ describe('csv_metadata_model', function(){
 
 
   it('select_custom_fields_names', function (done) {
-  project_id = 18;
-  this.timeout(5000);
-  async.series([
-    function (cb) 
-    {
-        csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)      
+    project_id = 18;
+    this.timeout(5000);
+    async.series([
+      function (cb) 
       {
-        if (err)
-          throw err; // or return an error message, or something
-        else
+          csv_metadata_db.select_custom_fields_names(project_id, function get_custom_fields_names(err, custom_fields_names)      
         {
-          custom_fields_names.length.should.equal(22);
-          // results[0].project.should.equal("KCK_LSM_Bv6");
-        }
-        done();
-      // connection.query('SELECT * FROM user WHERE username="TEST"'+
-      //       ' AND email="TEST"', function(err,results){
-      //     results.length.should.not.equal(0);
-      //     done();
-      //   });
-      });
-    }
-  ], done);
-
-  // csv_metadata_db.get_dataset_ids(project, datasets, function work_with_dataset_id(err, results)
-  // {
-  //   if (err)
-  //     throw err; // or return an error message, or something
-  //   else
-  //   {
-  //     console.log("RRR results")
-  //     console.log(results)
-  //   }
-
-  // });
-});
+          if (err)
+            throw err; // or return an error message, or something
+          else
+          {
+            custom_fields_names.length.should.equal(22);
+            // results[0].project.should.equal("KCK_LSM_Bv6");
+          }
+          done();
+        // connection.query('SELECT * FROM user WHERE username="TEST"'+
+        //       ' AND email="TEST"', function(err,results){
+        //     results.length.should.not.equal(0);
+        //     done();
+        //   });
+        });
+      }
+    ], done);
+  });
 
 
   it('make_custom_table_per_pr', function (done) {
@@ -270,58 +258,46 @@ describe('csv_metadata_model', function(){
       { field_name: 'longhurst_zone', field_type: 'varchar(128)' } ];
     table_name = "custom_metadata_18";
   
-  // this.timeout(5000);
-  // async.series([
-    // function (cb) 
-    // {
-      csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+    csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
+    {
+      if (err)
+        throw err; // or return an error message, or something
+      else
       {
-        if (err)
-          throw err; // or return an error message, or something
-        else
-        {
-          // console.log("NNN make_custom_table_per_pr results"); 
-          // console.log(results); 
-          /*
-          { fieldCount: 0,
-            affectedRows: 0,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0 }
-          
-          */
-          
-          res_message = 2;
-          results.serverStatus.should.equal(res_message);
-
-          res_message = 0;
-          results.warningCount.should.equal(res_message);
-
-          res_message = "";
-          results.message.should.equal(res_message);
-        }        
+        // console.log("NNN make_custom_table_per_pr results"); 
+        // console.log(results); 
+        /*
+        { fieldCount: 0,
+          affectedRows: 0,
+          insertId: 0,
+          serverStatus: 2,
+          warningCount: 0,
+          message: '',
+          protocol41: true,
+          changedRows: 0 }
         
-        // done();
-      });
-      
-      connection.query('SHOW TABLES LIKE "custom_metadata_18"', function(err, results1){
-          // console.log("results SELECT");
-          // console.log(results1);
-          results1.length.should.equal(1);
-          results1[0]['Tables_in_vamps_js_testing (custom_metadata_18)'].should.equal('custom_metadata_18');
-          done();
-      });
-      
-      
-    // }
+        */
+        
+        res_message = 2;
+        results.serverStatus.should.equal(res_message);
 
-  // ], done);
-  // done();
-});
+        res_message = 0;
+        results.warningCount.should.equal(res_message);
 
-
+        res_message = "";
+        results.message.should.equal(res_message);
+      }        
+      
+      // done();
+    });
+    
+    connection.query('SHOW TABLES LIKE "custom_metadata_18"', function(err, results1){
+        // console.log("results SELECT");
+        // console.log(results1);
+        results1.length.should.equal(1);
+        results1[0]['Tables_in_vamps_js_testing (custom_metadata_18)'].should.equal('custom_metadata_18');
+        done();
+    });      
+  });
 });
 
