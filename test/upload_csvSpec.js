@@ -189,16 +189,6 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            console.log("NNN insert_required_field_names results"); 
-            console.log(results); 
-            /*
-            affectedRows: 2,
-            insertId: 1,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '&Records: 2  Duplicates: 0  Warnings: 0',
-            
-            */
             res_message = 2;
             results.affectedRows.should.equal(res_message);
             
@@ -225,9 +215,6 @@ describe('csv_metadata_model', function(){
           throw err; // or return an error message, or something
         else
         {
-          console.log("CCC custom_fields_names")
-          console.log(custom_fields_names)
-          console.log(custom_fields_names.length)
           custom_fields_names.length.should.equal(22);
           // results[0].project.should.equal("KCK_LSM_Bv6");
         }
@@ -283,43 +270,56 @@ describe('csv_metadata_model', function(){
       { field_name: 'longhurst_zone', field_type: 'varchar(128)' } ];
     table_name = "custom_metadata_18";
   
-  this.timeout(5000);
-  async.series([
-    function (cb) 
-    {
+  // this.timeout(5000);
+  // async.series([
+    // function (cb) 
+    // {
       csv_metadata_db.make_custom_table_per_pr(custom_fields_names, project_id, function create_custom_table(err, results)
       {
         if (err)
           throw err; // or return an error message, or something
         else
         {
-          console.log("22222 results");
-          console.log(results);
+          console.log("NNN make_custom_table_per_pr results"); 
+          console.log(results); 
+          /*
+          { fieldCount: 0,
+            affectedRows: 0,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0 }
+          
+          */
+          
           res_message = 2;
           results.serverStatus.should.equal(res_message);
 
-          res_message = 1;
+          res_message = 0;
           results.warningCount.should.equal(res_message);
 
           res_message = "";
           results.message.should.equal(res_message);
-
-          res_message = true;
-          results.protocol41.should.equal(true);
-
+          
         }
+        
+        
         done();
       });
       
-      connection.query('SELECT * FROM custom_metadata_18', function(err, results){
+      connection.query('SHOW TABLES LIKE "custom_metadata_18"', function(err, results1){
           console.log("results SELECT");
-          console.log(results);
-          results.length.should.not.equal(0);
+          console.log(results1);
+          results1.length.should.not.equal(0);
           done();
-        });
-    }
+      });
+      
+      
+    // }
 
-  ], done);
+  // ], done);
 
 });
 
