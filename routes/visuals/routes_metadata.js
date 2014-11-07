@@ -43,13 +43,13 @@ module.exports = {
 			
 			var metadata = [];
 
-			for(i in chosen_id_name_hash.names) {
+			for (var i in chosen_id_name_hash.names) {
 				var line = {};
 				var pjds = chosen_id_name_hash.names[i];
 				var tmp = pjds.split('--');
 				var did = chosen_id_name_hash.ids[i];
 				
-				for(n in metadata_names) {				
+				for (var n in metadata_names) {				
 					var name = metadata_names[n];
 					if(did in MetadataValues) {
 						line[name] = MetadataValues[did][name];
@@ -57,27 +57,23 @@ module.exports = {
 				}
 				line.project_dataset = pjds;
 				line.project = tmp[0];
-				line.dataset = tmp[1]
+				line.dataset = tmp[1];
 				metadata.push(line);
 				//txt += ds + "\t" + tmp[0] + "\t" + tmp[1] + "\n";  // just put project and dataset in here for now				
 				//metadata.push({'project_dataset':ds,'project':tmp[0],'dataset':tmp[1]});
 				
 			}
-			return metadata
-
-
+			return metadata;
 		},
-
-
 
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
 				var html = "<table border='1' id='metadata_table' class='single_border center_table'>";
 				html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
 				var found_metadata = false;
-				for(i in chosen_id_name_hash.ids) {
+				for (var i in chosen_id_name_hash.ids) {
 						var did = chosen_id_name_hash.ids[i];
 						var ds = chosen_id_name_hash.names[i];
-						for(md_name in MetadataValues[did]) {					
+						for (var md_name in MetadataValues[did]) {					
 							var md_value = MetadataValues[did][md_name];
 							if(visual_post_items.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
 									html += "<tr><td>"+ds+"</td><td>"+md_name+"</td><td>"+md_value+"</td></tr>";

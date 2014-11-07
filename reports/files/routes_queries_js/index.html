@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">47.42</p>
+      <p class="stat">47.09</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -66,7 +66,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.27</p>
+      <p class="stat">1.28</p>
     </div>
   </div>
 </div>
@@ -89,7 +89,8 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+    <textarea id="file-source" class="col-md-12">// TODO: get_taxonomy_query has depth 15! Can we simplify it, that it&#039;s no more then 3?
+var express = require(&#039;express&#039;);
 var router = express.Router();
 var C = require(&#039;../public/constants&#039;);
 module.exports = {
@@ -98,14 +99,14 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     //console.log(body);
     //selection_obj = selection_obj;
     //selection_obj = body.selection_obj;
-    
-    //   SELECT dataset_id, silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,domain,phylum) as tax 
+
+    //   SELECT dataset_id, silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,domain,phylum) as tax
     //   From sequence_pdr_info as t1
     //   JOIN sequence_uniq_info as t2 using(sequence_id)
     //   JOIN silva_taxonomy_info_per_seq as t3 using (silva_taxonomy_info_per_seq_id)
     //   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)
-    //   JOIN domain USING(domain_id) 
-    //   JOIN phylum USING(phylum_id) 
+    //   JOIN domain USING(domain_id)
+    //   JOIN phylum USING(phylum_id)
     //   WHERE dataset_id in (150,151,152,153)
 
     if (uitems[0] === &#039;tax&#039; &amp;&amp; uitems[1] === &#039;silva108&#039;){  //covers both simple and custom taxonomy
@@ -125,12 +126,12 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     // var join_genus    = &quot; JOIN genus USING(genus_id)&quot;;
     // var join_species  = &quot; JOIN species USING(species_id)&quot;;
     // var join_strain   = &quot; JOIN strain USING(strain_id)&quot;;
-    
-    if(tax_depth === &#039;custom&#039;) {
+
+    if (tax_depth === &#039;custom&#039;) {
       var idarray = get_custom_checked_ids_per_rank(post_items);
       var tmp_tax_id_in = &quot;&quot;;
       var max_rank_num = 0;
-      for(rank in idarray) {
+      for(var rank in idarray) {
         this_rank_num = C.RANKS.indexOf(rank);
         if(this_rank_num &gt; max_rank_num) {
           max_rank_num = this_rank_num;
@@ -138,11 +139,11 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
         tmp_tax_id_in += &quot; OR &quot;+rank+&quot;_id in (&quot;+idarray[rank]+&quot;)\n&quot;;
       }
       // need all the ranks up to max rank for _id and joins
-      for(n in C.RANKS.slice(0,max_rank_num+1)) {
+      for (var n in C.RANKS.slice(0,max_rank_num+1)) {
         taxids.push(C.RANKS[n] + &#039;_id&#039;);
         custom_joins += &quot; JOIN `&quot;+ C.RANKS[n] + &quot;` USING(&quot;+C.RANKS[n]+&quot;_id)\n&quot;;
       }
-      post_items.tax_depth = C.RANKS[max_rank_num]
+      post_items.tax_depth = C.RANKS[max_rank_num];
       and_domain_in += &quot; AND (\n&quot; + tmp_tax_id_in.slice(3) + &quot; )&quot;;
     } else if (tax_depth === &#039;domain&#039;) {
       //fields = [&#039;domain&#039;];
@@ -173,7 +174,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       taxids = [&#039;domain_id&#039;,&#039;phylum_id&#039;,&#039;klass_id&#039;,&#039;order_id&#039;,&#039;family_id&#039;,&#039;genus_id&#039;,&#039;species_id&#039;];
       //joins =  join_domain + join_phylum + join_klass + join_order + join_family + join_genus + join_species;
     }
-     console.log(domains) 
+     console.log(domains);
 
     var tax_query = &quot;SELECT dataset_id, seq_count, &quot; + taxids + &quot;\n&quot;;
     // var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
@@ -181,14 +182,14 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     tax_query     += &quot;   JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;;
     tax_query     += &quot;   JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;;
     tax_query     += &quot;   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;;
-    
+
 
     if (domains.length &lt; 5 &amp;&amp; domains[0] !== &#039;NA&#039;){
       domains = domains.join(&quot;&#039;,&#039;&quot;);
       and_domain_in = &quot; AND domain in (&#039;&quot;+domains+&quot;&#039;)&quot;;
       tax_query     += join_domain+&quot;\n&quot;;
     }
-    
+
     //var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, silva_taxonomy_id\n&quot;;
      //  var tax_query = &quot;SELECT dataset_id as did, seq_count, silva_taxonomy_info_per_seq_id as uid, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax\n&quot;;
      // tax_query     += &quot;   FROM sequence_pdr_info as t1\n&quot;;
@@ -198,7 +199,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
 
      //  //var tax_query = &quot;SELECT distinct silva_taxonomy_info_per_seq_id as id, concat_ws(&#039;;&#039;,&quot;+fields+&quot;) as tax FROM silva_taxonomy_info_per_seq as t1\n&quot;;
      //  //tax_query     += &quot;JOIN silva_taxonomy as t2 USING(silva_taxonomy_id)\n&quot;;
-     
+
 
     // OLD db --&gt;
     // var tax_query = &quot;SELECT dataset_id as did, seq_count,  taxonomy as tax\n&quot;;
@@ -209,22 +210,22 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     tax_query     += custom_joins;
     tax_query     += &quot; WHERE dataset_id in (&quot;+chosen_id_name_hash.ids+&quot;)\n&quot;;
     //tax_query     += &quot; WHERE silva_taxonomy_info_per_seq_id in (&quot; + unit_id_array + &quot;)\n&quot;;
-    
+
     tax_query     += and_domain_in;
 
-    
-    
+
+
     return tax_query;
 
     //
     //
-    function onlyUnique(value, index, self) { 
+    function onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
     }
     //
     //
     function get_custom_checked_ids_per_rank(post_items) {
-      console.log(&#039;in get_custom_checked_taxa&#039;)
+      console.log(&#039;in get_custom_checked_taxa&#039;);
       var tmp_array = {};
       console.log(post_items.custom_taxa);
       var value;
@@ -237,32 +238,32 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
           //var taxname = items[0];
           //var rank = items[items.length-1];
           rank = taxname.pop();
-          //taxname =  
-          console.log(value)
-          console.log(taxname)
+          //taxname =
+          console.log(value);
+          console.log(taxname);
           if(rank in tmp_array) {
-            tmp_array[rank].push(new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id)
+            tmp_array[rank].push(new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id);
           }else{
-            tmp_array[rank] = [ new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id ];          
+            tmp_array[rank] = [ new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id ];
           }
       } else {
-        for(n in post_items.custom_taxa){
+        for (var n in post_items.custom_taxa){
 
           //console.log(post_items.custom_taxa[n])
-          value = post_items.custom_taxa[n]  // +&#039;domain&#039;
+          value = post_items.custom_taxa[n];  // +&#039;domain&#039;
           taxname = value.split(&#039;_&#039;);
           //var taxname = items[0];
           //var rank = items[items.length-1];
           rank = taxname.pop();
-          //taxname =  
-          console.log(value)
-          console.log(taxname)
+          //taxname =
+          console.log(value);
+          console.log(taxname);
           if(rank in tmp_array) {
-            tmp_array[rank].push(new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id)
+            tmp_array[rank].push(new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id);
           }else{
-            tmp_array[rank] = [ new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id ];          
+            tmp_array[rank] = [ new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value].db_id ];
           }
-          
+
           //console.log(new_taxonomy.taxa_tree_dict_map_by_name_n_rank[value])
 
         }
