@@ -299,5 +299,146 @@ describe('csv_metadata_model', function(){
         done();
     });      
   });
+
+
+  it('insert_required_field_names', function (done) {
+    project_metadata_dict_w_ids = [ { sample_name: '082107st5',
+      anonymized_name: '082107st5',
+      description: 'saltmarsh sample 082107st5',
+      taxon_id: '1504975',
+      common_name: 'salt marsh metagenome',
+      title: 'KCK_LSM_Bv6',
+      altitude: '0',
+      assigned_from_geo: 'y',
+      collection_date: '8/21/2007',
+      depth: '0.1524',
+      country: 'GAZ:United States of America',
+      elevation: '0',
+      env_biome: 'ENVO:marine salt marsh biome',
+      env_feature: 'ENVO:salt marsh',
+      env_matter: 'ENVO:brackish water',
+      habitat: 'salt marsh',
+      latitude: '41.57523333',
+      longitude: '-70.63535',
+      temp: '18.8',
+      salinity: '29.7',
+      diss_oxygen: '65.625',
+      collection_time: '7:18:00',
+      public: 'y',
+      type_sample: 'saltmarsh',
+      environmental_zone: 'temperate',
+      specific_conductance: '45.69',
+      dissolved_oxygen2: '26.9',
+      absolute_depth_beta: '266',
+      lat_lon: 'unknown',
+      conductivity: '40.28',
+      longhurst_long_name: 'Coastal - NW Atlantic Shelves Province',
+      volume_filtered: 'unknown',
+      fecal_coliform: '36',
+      redox_state: 'oxic',
+      depth_start: '0.1524',
+      depth_end: '0.1524',
+      iho_area: 'North_Atlantic_Ocean',
+      notes: 'Not as mucky.  Slight flow ou',
+      precipitation: '0',
+      longhurst_zone: 'NWCS',
+      project_id: 18,
+      dataset_id: 387,
+      correct_dataset_name: '082107st5' },
+      { sample_name: 'LSM.0001.090407st4',
+        anonymized_name: 'LSM.0001.090407st4',
+        description: 'saltmarsh sample LSM.0001.090407st4',
+        taxon_id: '1504975',
+        common_name: 'salt marsh metagenome',
+        title: 'KCK_LSM_Bv6',
+        altitude: '0',
+        assigned_from_geo: 'y',
+        collection_date: '9/4/2007',
+        depth: '0.1524',
+        country: 'GAZ:United States of America',
+        elevation: '0',
+        env_biome: 'ENVO:marine salt marsh biome',
+        env_feature: 'ENVO:salt marsh',
+        env_matter: 'ENVO:brackish water',
+        habitat: 'salt marsh',
+        latitude: '41.576233',
+        longitude: '-70.6336',
+        temp: '18.9',
+        salinity: '21.2',
+        diss_oxygen: '2.5',
+        collection_time: '7:50',
+        public: 'y',
+        type_sample: 'saltmarsh',
+        environmental_zone: 'temperate',
+        specific_conductance: '33.73',
+        dissolved_oxygen2: '0.9',
+        absolute_depth_beta: '266',
+        lat_lon: 'unknown',
+        conductivity: '29.83',
+        longhurst_long_name: 'Coastal - NW Atlantic Shelves Province',
+        volume_filtered: 'unknown',
+        fecal_coliform: '80',
+        redox_state: 'oxic',
+        depth_start: '0.1524',
+        depth_end: '0.1524',
+        iho_area: 'North_Atlantic_Ocean',
+        notes: 'Very stagnant - dark, cloudy.  No film.  No breeze, buggy.',
+        precipitation: 'unknown',
+        longhurst_zone: 'NWCS',
+        project_id: 18,
+        dataset_id: 404,
+        correct_dataset_name: 'LSM_0001_090407st4' }    
+    ];
+    table_name = "custom_metadata_18";
+    custom_fields_names_arr = [ 'project_id',
+      'dataset_id',
+      'habitat',
+      'temp',
+      'salinity',
+      'diss_oxygen',
+      'collection_time',
+      'type_sample',
+      'environmental_zone',
+      'specific_conductance',
+      'dissolved_oxygen2',
+      'absolute_depth_beta',
+      'lat_lon',
+      'conductivity',
+      'longhurst_long_name',
+      'volume_filtered',
+      'fecal_coliform',
+      'redox_state',
+      'depth_start',
+      'depth_end',
+      'iho_area',
+      'notes',
+      'precipitation',
+      'longhurst_zone' ];
+    
+    
+
+    this.timeout(5000);
+    async.series([
+      function (cb) 
+      {
+        csv_metadata_db.insert_into_custom_metadata_per_pr(project_metadata_dict_w_ids, table_name, custom_fields_names_arr, function insert_into_custom_metadata(err, results)
+        {
+          if (err)
+            throw err; // or return an error message, or something
+          else
+          {
+            res_message = 2;
+            results.affectedRows.should.equal(res_message);
+            
+            res_message = '&Records: 2  Duplicates: 0  Warnings: 0';
+            results.message.should.equal(res_message);
+          }
+          done();
+        });
+      }
+    ], done);
+
+  });
+
 });
 
