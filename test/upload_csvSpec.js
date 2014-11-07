@@ -146,16 +146,6 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            console.log("NNN insert_custom_field_names results"); 
-            console.log(results); 
-            /*
-            affectedRows: 22,
-            insertId: 1,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '\'Records: 22  Duplicates: 0  Warnings: 0',
-            
-            */
             res_message = '\'Records: 22  Duplicates: 0  Warnings: 0';
             results.message.should.equal(res_message);
 
@@ -186,8 +176,8 @@ describe('csv_metadata_model', function(){
       'longitude',
       'public',
       'taxon_id' ];
-    insert_into_required_metadata_info_txt = [ '398, \'0\', \'y\', \'2007-07-10\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.2032\', \'saltmarsh sample 071007st5b\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:sea water\', \'41.57523333\', \'-70.63535\', \'y\', \'1504975\'',
-        '406, \'0\', \'y\', \'2008-03-18\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.0508\', \'saltmarsh sample LSM.0008.031808st6\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:brackish water\', \'41.57518333\', \'-70.6399\', \'y\', \'1504975\'']
+    insert_into_required_metadata_info_txt = ['392, \'0\', \'y\', \'2007-08-21\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.762\', \'saltmarsh sample 082107st7b\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:brackish water\', \'41.57415\', \'-70.64215\', \'y\', \'1504975\'',
+    '404, \'0\', \'y\', \'2007-09-04\', \'salt marsh metagenome\', \'GAZ:United States of America\', \'0.1524\', \'saltmarsh sample LSM.0001.090407st4\', \'0\', \'ENVO:marine salt marsh biome\', \'ENVO:salt marsh\', \'ENVO:brackish water\', \'41.576233\', \'-70.6336\', \'y\', \'1504975\'']
 
     this.timeout(5000);
     async.series([
@@ -199,7 +189,20 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            res_message = '&Records: 2  Duplicates: 2  Warnings: 0';
+            console.log("NNN insert_required_field_names results"); 
+            console.log(results); 
+            /*
+            affectedRows: 2,
+            insertId: 1,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '&Records: 2  Duplicates: 0  Warnings: 0',
+            
+            */
+            res_message = 2;
+            results.affectedRows.should.equal(res_message);
+            
+            res_message = '&Records: 2  Duplicates: 0  Warnings: 0';
             results.message.should.equal(res_message);
           }
           done();
