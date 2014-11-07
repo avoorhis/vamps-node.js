@@ -35,31 +35,31 @@ before(function() {
   {
     if (err) {throw err;}
     // console.log(query.sql);
-    console.log("user.insertId: " + result.insertId);
-    console.log("=========");
+    // console.log("user.insertId: " + result.insertId);
+    // console.log("=========");
   });
   
   connection.query('INSERT IGNORE INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id) VALUES ("18", "KCK_LSM_Bv6", "Little Sippewissett Marsh", "Anthropogenic impacts and  fecal populations at Little Sippewissett Marsh", "6vB_MSL_KCK", "Keck", "6")', function(err, result) 
   {
     if (err) {throw err;}
-    console.log("project.insertId: " + result.insertId);
-    console.log("=========");  
+    // console.log("project.insertId: " + result.insertId);
+    // console.log("=========");  
   });
 
   connection.query('INSERT IGNORE INTO env_sample_source (env_sample_source_id, env_source_name) VALUES (130, "water-marine")', function(err, result) 
   {
     if (err) {throw err;}
-    console.log("env_sample_source INSERT: ");
-    console.log(result);
-    console.log("=========");  
+    // console.log("env_sample_source INSERT: ");
+    // console.log(result);
+    // console.log("=========");  
   });
   
   connection.query('INSERT IGNORE INTO dataset (dataset_id, dataset, dataset_description, env_sample_source_id, project_id) VALUES (387,"082107st5","082107st5",130,18), (395,"082107st6c","082107st6c",130,18), (392,"082107st7b","082107st7b",130,18), (404,"LSM_0001_090407st4","LSM_0001_090407st4",130,18), (401,"LSM_0002_090407st6","LSM_0002_090407st6",130,18)', function(err, result) 
   {
     if (err) {throw err;}
-    console.log("dataset INSERT: " );
-    console.log(result);
-    console.log("=========");  
+    // console.log("dataset INSERT: " );
+    // console.log(result);
+    // console.log("=========");  
   });
   
 
@@ -82,9 +82,9 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            console.log("RRR results")
-            console.log(results[0].project)
-            console.log(results.length)
+            // console.log("RRR results")
+            // console.log(results[0].project)
+            // console.log(results.length)
             results.length.should.equal(5);
             results[0].project.should.equal("KCK_LSM_Bv6");
           }
@@ -280,8 +280,8 @@ describe('csv_metadata_model', function(){
           throw err; // or return an error message, or something
         else
         {
-          console.log("NNN make_custom_table_per_pr results"); 
-          console.log(results); 
+          // console.log("NNN make_custom_table_per_pr results"); 
+          // console.log(results); 
           /*
           { fieldCount: 0,
             affectedRows: 0,
@@ -302,17 +302,16 @@ describe('csv_metadata_model', function(){
 
           res_message = "";
           results.message.should.equal(res_message);
-          
-        }
+        }        
         
-        
-        done();
+        // done();
       });
       
       connection.query('SHOW TABLES LIKE "custom_metadata_18"', function(err, results1){
-          console.log("results SELECT");
-          console.log(results1);
-          results1.length.should.not.equal(0);
+          // console.log("results SELECT");
+          // console.log(results1);
+          results1.length.should.equal(1);
+          results1[0]['Tables_in_vamps_js_testing (custom_metadata_18)'].should.equal('custom_metadata_18');
           done();
       });
       
@@ -320,7 +319,7 @@ describe('csv_metadata_model', function(){
     // }
 
   // ], done);
-
+  // done();
 });
 
 
