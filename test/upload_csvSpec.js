@@ -1,10 +1,12 @@
+// jshint multistr: true 
+
 var async = require('async'),
     request = require('supertest'),
-    should = require('should'),
-    app = require('../app'),
-    connection = require('../config/database-test');
+    should = require('should')
+    // app = require('../app'),
 var passportStub = require('passport-stub');
 var helpers = require('../routes/helpers/helpers');
+connection = require('../config/database-test');
 
 var csvMetadataUpload = require('../models/csv_metadata_upload.js');
 var csv_metadata_db = new csvMetadataUpload();
@@ -17,7 +19,6 @@ before(function() {
 
   // passportStub.logout();    
 
-  /*jshint multistr: true */
   connection.query("DROP table if exists custom_metadata_18", function(err, rows, fields) {
     if (err) {throw err;}
   });
@@ -29,6 +30,38 @@ before(function() {
   connection.query("TRUNCATE table required_metadata_info", function(err, rows, fields) {
     if (err) {throw err;}
   });
+  
+  connection.query('INSERT IGNORE INTO user (user_id, username, email, institution, first_name, last_name, active, security_level, encrypted_password, sign_in_count, current_sign_in_at, last_sign_in_at) VALUES (6, "jhuber", "jhuber@mbl.edu", "Marine Biological Laboratory", "Julie", "Huber", "0", "50", "", "0", NULL, NULL)', function(err, result) 
+  {
+    if (err) {throw err;}
+    // console.log(query.sql);
+    console.log("user.insertId: " + result.insertId);
+    console.log("=========");
+  });
+  
+  connection.query('INSERT IGNORE INTO project (project_id, project, title, project_description, rev_project_name, funding, owner_user_id) VALUES ("18", "KCK_LSM_Bv6", "Little Sippewissett Marsh", "Anthropogenic impacts and  fecal populations at Little Sippewissett Marsh", "6vB_MSL_KCK", "Keck", "6")', function(err, result) 
+  {
+    if (err) {throw err;}
+    console.log("project.insertId: " + result.insertId);
+    console.log("=========");  
+  });
+
+  connection.query('INSERT IGNORE INTO env_sample_source (env_sample_source_id, env_source_name) VALUES (130, "water-marine")', function(err, result) 
+  {
+    if (err) {throw err;}
+    console.log("env_sample_source INSERT: ");
+    console.log(result);
+    console.log("=========");  
+  });
+  
+  connection.query('INSERT IGNORE INTO dataset (dataset_id, dataset, dataset_description, env_sample_source_id, project_id) VALUES (387,"082107st5","082107st5",130,18), (395,"082107st6c","082107st6c",130,18), (392,"082107st7b","082107st7b",130,18), (404,"LSM_0001_090407st4","LSM_0001_090407st4",130,18), (401,"LSM_0002_090407st6","LSM_0002_090407st6",130,18)', function(err, result) 
+  {
+    if (err) {throw err;}
+    console.log("dataset INSERT: " );
+    console.log(result);
+    console.log("=========");  
+  });
+  
 
   console.log('before every test');
 });
@@ -37,7 +70,7 @@ describe('csv_metadata_model', function(){
 
   it('get_dataset_ids', function (done) {
     project = "KCK_LSM_Bv6";
-    datasets = "'071007st5b', 'LSM_0008_031808st6', 'LSM_0002_090407st6', '061307st4a', 'LSM_0004_110707st6', 'LSM_0005_010808st4', 'LSM_0001_090407st4', '081407st4b', '082107st7b', '061907st2', 'LSM_0006_010808st6', '080707st5b', '061907st4', '071007st6b', 'LSM_0007_031808st4', 'LSM_0003_110707st4', '082107st4', '080707st6b', '071007st4', '071007st3', '071007st2', '080707st3', '080707st4b', '010808st1', '080707st2b', '080707st7', '082107st6c', '082107st5', '082107st2', '082107st3'"
+    datasets = '"082107st5", "082107st6c", "082107st7b", "LSM_0001_090407st4", "LSM_0002_090407st6"';
 
     this.timeout(5000);
     async.series([
