@@ -85,7 +85,7 @@ describe('csv_metadata_model', function(){
             console.log("RRR results")
             console.log(results[0].project)
             console.log(results.length)
-            results.length.should.equal(29);
+            results.length.should.equal(5);
             results[0].project.should.equal("KCK_LSM_Bv6");
           }
           done();
@@ -146,8 +146,21 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            res_message = '(Records: 22  Duplicates: 22  Warnings: 0';
+            console.log("NNN insert_custom_field_names results"); 
+            console.log(results); 
+            /*
+            affectedRows: 22,
+            insertId: 1,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '\'Records: 22  Duplicates: 0  Warnings: 0',
+            
+            */
+            res_message = '\'Records: 22  Duplicates: 0  Warnings: 0';
             results.message.should.equal(res_message);
+
+            res_message = 22;
+            results.affectedRows.should.equal(res_message);
           }
           done();
         });
