@@ -34,8 +34,6 @@ var constants = require('../public/constants');
 var req_fields = constants.REQ_METADATA_FIELDS;
 var fields_to_replace = ['sample_name', 'anonymized_name', 'title'];
 
-var metadata_dict_by_pr_dataset = {};
-
 function usage()
 {
   console.log("This script puts metadata in the Qiita format into the database.");
@@ -88,18 +86,6 @@ function add_to_dict(dict, key, value)
   }
   dict[key].push(value);
   return dict;
-}
-
-function make_metadata_dict_by_pr_dataset(csv_data_hash)
-{
-  metadata_dict_by_pr_dataset = {};
-
-  for (var i = 0; csv_data_hash.length > i; i += 1) {
-    var dataset = csv_data_hash[i]['sample_name'];
-    var project = csv_data_hash[i]['title'];
-    metadata_dict_by_pr_dataset[project + "--" + dataset] = csv_data_hash[i];
-  }
-  return metadata_dict_by_pr_dataset;
 }
 
 function make_metadata_dict_by_project(csv_data_hash)
@@ -481,7 +467,6 @@ function do_smth_w_data_hash(csv_data_hash_raw)
   // console.log(csv_data_hash);
   var csv_data_hash = to_lower_case(csv_data_hash_raw);
   var metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
-  metadata_dict_by_pr_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
 
   var project_datasets = make_dict_by_project_datasets(csv_data_hash);
 
