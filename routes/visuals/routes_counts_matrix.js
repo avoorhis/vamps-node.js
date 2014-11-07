@@ -99,7 +99,7 @@ module.exports = {
 
 			    		for(var t in post_items.custom_taxa) {
 							 		//console.log(post_items.custom_taxa[t])
-							 		var name_and_rank  = post_items.custom_taxa[t]
+							 		var name_and_rank  = post_items.custom_taxa[t];
 							 		var items          = name_and_rank.split('_');
 							 		var tax_short_name = items[0];							 		
 							 		rank           = items[1];
