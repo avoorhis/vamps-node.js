@@ -18,13 +18,17 @@ import csv
 import fileinput   # allows capture of stdin
 #import Bio
 from cogent.maths import distance_transform as dt
-
+from hcluster import linkage, to_tree
+from ete2 import Tree
+#from pprint import pprint
 
 
 
 	
+#  should output newick string
+def go(args):
+	print args.metric
 
-	#PCoA_result.writeToFile(os.path.join(args.output_dir, args.file_prefix + '_pcoa_results.txt'),sep='\t')
 
 
 #
@@ -50,3 +54,4 @@ if __name__ == '__main__':
 # 	#print sys.stdin
 #  	args = parser.parse_args()
 # 	#distance(args) 
+	go(args)
