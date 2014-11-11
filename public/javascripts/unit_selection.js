@@ -197,9 +197,12 @@ var check_input = function(event)
   if (children.is(":visible")) {
     check_mode === "clade" ? check_last_visible(this) : toggle_checking;
 
-  } else {
-    show_children(this);
-  }
+  } 
+  // uncomment to show children on check
+  // else {
+    // show_children(this);
+    // alert("HERE");
+  // }
 };
 
 var open_one_layer = function()
