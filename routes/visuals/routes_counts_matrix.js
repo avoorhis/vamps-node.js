@@ -100,13 +100,14 @@ module.exports = {
 
 			    		for(var t in post_items.custom_taxa) {
 							 		//console.log(post_items.custom_taxa[t])
-							 		var name_and_rank  = post_items.custom_taxa[t]
+							 		var name_and_rank  = post_items.custom_taxa[t];
 							 		var items          = name_and_rank.split('_');
 							 		var tax_short_name = items[0];							 		
 							 		rank           = items[1];
 							 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
 							 		node_id   = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
 							 		
+//                TODO: 'tax_long_name' is already defined.
 							 		var tax_long_name = create_concatenated_tax_name(node_id);
 							 		unit_name_lookup[tax_long_name] = 1;
 									ukeys.push(tax_long_name);
@@ -187,8 +188,11 @@ module.exports = {
         // Adjust for normalization
         var tmp = [];
         if (norm === 'max') {
+          // TODO: "'c' is already defined."          
             for(var c in custom_count_matrix.data) {
+              // TODO: "'new_counts' is already defined."          
               var new_counts = [];
+              // TODO: "'k' is already defined."          
               for(var k in custom_count_matrix.data[c]) {                
                   new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );                  
               }    
@@ -196,8 +200,11 @@ module.exports = {
             }
             custom_count_matrix.data = tmp;
         }else if(norm === 'freq'){
+          // TODO: "'c' is already defined."          
             for(var c in custom_count_matrix.data) {              
+              // TODO: "'new_counts' is already defined."          
               var new_counts = [];
+              // TODO: "'k' is already defined."          
               for(var k in custom_count_matrix.data[c]) {                
                   new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );                    
               }    
@@ -210,8 +217,11 @@ module.exports = {
 
         // re-calculate totals
         var tots = [];
+        // TODO: "'tmp' is already defined."          
         var tmp = {};
+        // TODO: "'c' is already defined."          
         for(var c in custom_count_matrix.data) {
+          // TODO: "'k' is already defined."          
           for(var k in custom_count_matrix.data[c]) {
             if(k in tmp){
               tmp[k] += custom_count_matrix.data[c][k];
@@ -220,6 +230,7 @@ module.exports = {
             }            
           }
         }
+        // TODO: "'k' is already defined."          
         for(var k in custom_count_matrix.columns){
           tots.push(tmp[k]);
         }
@@ -263,13 +274,14 @@ function create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_nam
 		
 		var taxa_counts={};
 	  
-	  for(tax_name in unit_name_lookup){
+	  for(var tax_name in unit_name_lookup){
 	  	taxa_counts[tax_name]=[];
 	  }	
 	  
 	  
 		for (var n in chosen_id_name_hash.ids) { // correct order
 	  	did = chosen_id_name_hash.ids[n];				  	
+      // TODO: "'tax_name' is already defined."
 	  	for(var tax_name in unit_name_lookup) {
 	  		if(did in unit_name_lookup_per_dataset && tax_name in unit_name_lookup_per_dataset[did]) {
 	  			cnt = unit_name_lookup_per_dataset[did][tax_name];
@@ -310,7 +322,7 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
 //  F I N D  C O U N T  P E R  D S  A N D  R A N K
 //
 function find_count_per_ds_and_rank(did, rank, db_tax_id) {
-		var cnt = 0
+		var cnt = 0;
   	if(did in TaxaCounts) {
 	  	if(rank in TaxaCounts[did]) {
 		  	if(db_tax_id in TaxaCounts[did][rank]) {
@@ -318,7 +330,7 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 		  	}
 	  	}
   	}
-  	return cnt
+  	return cnt;
 }
 //
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
@@ -358,13 +370,15 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	if(ukeys === undefined) {
 		max = 0;
 	}else{
+    // TODO: "'n' is already defined."
 		for(var n in biom_matrix.columns) {
 		  	max_count[biom_matrix.columns[n].id] = 0;
-		  	for(d in biom_matrix.data) {
+		  	for(var d in biom_matrix.data) {
 		  		max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
 		  	}
 		}
 		max = 0;
+    // TODO: "'n' is already defined."
 		for(var n in chosen_id_name_hash.names) { 		// correct order
 		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n]]);
 		  	if(max_count[chosen_id_name_hash.names[n]] > max){
