@@ -32,11 +32,9 @@ var parse = require('csv-parse');
 var constants = require('../public/constants');
 
 var req_fields = constants.REQ_METADATA_FIELDS;
-<<<<<<< HEAD
-var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'DESCRIPTION', 'TAXON_ID', 'common_name', 'TITLE'];
-=======
+
 var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'title'];
->>>>>>> b96b56807bf9ea5de5612a99b4e570dcf3b28ec3
+
 
 var metadata_dict_by_pr_dataset = {};
 

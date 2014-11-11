@@ -1,9 +1,12 @@
 <% include ../add_ins/begin.ejs %>
 
-<%   var thumbs = JSON.parse(constants).VISUAL_THUMBNAILS.visuals; %>
-<%   var mtx = JSON.parse(matrix); %>
-<%   var ts = timestamp; %>
-<%   var disable_thumbs = false; %>
+<%  var cnsts  = JSON.parse(constants) %>
+<%  var mtx    = JSON.parse(matrix); %>
+<%  var pi     = JSON.parse(post_items); %>
+<%  var md     = JSON.parse(metadata); %>
+<%  //console.log('cnsts')%>
+<%  //console.log(cnsts.VISUAL_THUMBNAILS.visuals)%>
+<%  var disable_thumbs = false; %>
 
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
@@ -36,32 +39,31 @@
 <br>
       <table border='1'>
         <tr>
-          <% for(n in thumbs) { %>
-            <% var file = thumbs[n].file %>
-            <% var name = thumbs[n].name %>
-            <% var link = thumbs[n].link %>
-            <% var cols = 5 %>
-            <% if(mtx.shape[1] === 1  && (name === 'Distance Heatmap' || name === 'Dendrograms' )) { %>
-              <td class='td_top'><%= name %><br><br>Not Available</td>
-            <% } else { %>
-              <% if(disable_thumbs) { %>
+          <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
+          <%    var file = cnsts.VISUAL_THUMBNAILS.visuals[n].file                                    %>
+          <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
+          <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
+          <%    var cols = 5 %>
+          <%    if(mtx.shape[1] === 1  && (name === 'Distance Heatmap' || name === 'Dendrograms' )) { %>
+                    <td class='td_top'><%= name %><br><br>Not Available</td>
+          <%    } else { %>
+          <%        if(disable_thumbs) {                                                              %>
                   <td class='td_top'><%= name %><br>
                     <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
                   </td>
-              <% }else{ %>
+          <%        }else{                                                                            %>
                   <td class='td_top'><%= name %><br>
-                    <a href='<%= link %>?ts=<%= ts %>' target='<%= ts %>_<%= name %>' >
+                    <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >
                       <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
                     </a> 
                   </td>
-              <% } %>
-              
-            <% } %>
+          <%        }                                                                                 %>              
+          <%    }                                                                                     %>
             
-            <% if( n % cols === (cols - 1) ) { %>
-              </tr><tr>
-            <% } %>
-          <% } %>
+          <%    if( n % cols === (cols - 1) ) {                                                       %>
+                  </tr><tr>
+          <%    }                                                                                     %>
+          <% }                                                                                        %>
         </tr>
       </table>
       <a href="#" class="back">Go back</a> to the previous page.      
