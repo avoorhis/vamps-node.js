@@ -27,20 +27,18 @@ module.exports = {
 
 
 		create_pcoa_graphs: function(matrix) {
-					console.log('in pcoa');
-					//console.log(matrix);
-					//console.log(metadata);
-					//console.log(metadata_filename)
+
 					var svgGraph ='';
+
 			
 			//fs.readFile(metadata_filename, 'utf8', function (err, data) {
   		//		 var mdata = d3.tsv.parse(data);
   		//		 console.log(mdata)
   				var mdata_name_value_lookup = {};
   				var mdata_name_ds_lookup = {};
-  				for(m in metadata) {
+  				for(var m in metadata) {
   					var ds = metadata[m]['project_dataset'];
-  					for(name in metadata[m]) {
+  					for(var name in metadata[m]) {
   						if(name !== 'project_dataset') {
   							//console.log(metadata[m][item]);
   							var value = metadata[m][name];
@@ -74,17 +72,17 @@ module.exports = {
   				var mdata_colors = {};
   				mdata_colors_by_val = {};
   				//mdata_colors[name]['HMP_204_Bv4v5--204_10_GG_26Jan12_H'] = '#ababab';
-  				for(mname in mdata_name_value_lookup) {
+  				for(var mname in mdata_name_value_lookup) {
   					mdata_colors[mname] = {};
   					mdata_colors_by_val[mname] = {};
-  					c =0
-  					for(val in mdata_name_value_lookup[mname]){
+  					c = 0;
+  					for(var val in mdata_name_value_lookup[mname]){
   						
-  						for(d in mdata_name_value_lookup[mname][val]){
+  						for(var d in mdata_name_value_lookup[mname][val]){
   							ds = mdata_name_value_lookup[mname][val][d];
+                //TODO: 'ds' used out of scope
   							mdata_colors[mname][ds] = colors[c];
   							mdata_colors_by_val[mname][val] = colors[c];
-  						
   						}
   						// if(mname in mdata_colors_by_val) {
   							
@@ -127,14 +125,14 @@ module.exports = {
 
 
 					var md_count = 0;			
-					for(m in mdata_name_value_lookup)	{	 
-						var mdata_name = m;
+					for(var mdata_name in mdata_name_value_lookup)	{	 
+            // var mdata_name = m;
 						//var colors_needed = Object.keys(mdata[m]).length;
 						
 						//var mdata_colors = default_colors.slice(0,colors_needed);
 						//console.log(mdata_colors)
 
-						for(v in vectors) {
+						for(var v in vectors) {
 			      		
 			      		xdata = matrix[vectors[v][0]];
 								ydata = matrix[vectors[v][1]];
@@ -147,7 +145,7 @@ module.exports = {
 									.attr('transform', 'translate(' + (margin.left + (v * chart_tx)) + ',' + (margin.top + (md_count * chart_ty)) + ')')
 									.attr('width', chart_width)
 									.attr('height', chart_height)
-									.attr('class', 'main')   
+									.attr('class', 'main');
 
 									// draw the x axis
 								var xAxis = d3.svg.axis()
@@ -175,14 +173,15 @@ module.exports = {
 									g.selectAll("scatter-dots")
 									  .data(ydata)  // using the values in the ydata array
 									  .enter().append("circle")  // create a new circle for each value
+                    // TODO: functions made inside a loop are slow
 									      .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
 									      .attr("cx", function (d,i) { return x(xdata[i]); } ) // translate x value
 									      .attr("r", function (d,i) { 
 									      	//console.log(mdata_name_ds_lookup[mdata_name][matrix.names[i]])
 									      	if(mdata_name_ds_lookup[mdata_name][matrix.names[i]] === undefined){  // don't show undefined data
-									      		return 0
+									      		return 0;
 									      	}else{
-									      		return 2
+									      		return 2;
 									      	}									      
 									      } ) // radius of circle
 									      //.style("opacity", 0.6) // opacity of circle
@@ -194,7 +193,7 @@ module.exports = {
 											  .attr("class","tooltip")
 									      .style("fill", function(d,i){
 									      	ds = matrix.names[i];
-									      	return mdata_colors[mdata_name][ds]
+									      	return mdata_colors[mdata_name][ds];
 									      });
 									      
 
