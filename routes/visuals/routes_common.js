@@ -47,8 +47,8 @@ module.exports = {
       var distrows = C.DISTANCECHOICES.choices;
       html += '<li>Change Distance Metric: ';
       html += "<select name='selected_distance' class='small_font'>";
-      for(d in distrows ) {
-        if(obj[viz_page] === distrows[d].id) {
+      for (var d in distrows ) {
+        if (obj[viz_page] === distrows[d].id) {
           html += "<option value='"+distrows[d].id+"' selected='selected' >"+distrows[d].show+"</option>";
         }else{
           html += "<option value='"+distrows[d].id+"'>"+distrows[d].show+"</option>";
@@ -98,7 +98,8 @@ module.exports = {
      }
     html += "</select>";
     html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
-     for( var n=1;n < C.PCT_RANGE.length;n++ ) {
+    // TODO: "'n' is already defined."
+     for (var n=1; n < C.PCT_RANGE.length; n++ ) {
        
        if(obj.max_range.toString() === C.PCT_RANGE[n].toString()) {
          html += "<option value='"+C.PCT_RANGE[n]+"' selected='selected'>"+C.PCT_RANGE[n]+" %</option>";
@@ -241,6 +242,7 @@ module.exports = {
     // str to hash
     for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
     // int/hash to hex
+    // TODO: "'i' is already defined."
     for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
     return colour;
   },
@@ -397,9 +399,9 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
       if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
         html += '<div>Error -- No distances were calculated.</div>';
       }else{
-        if(visual_name === 'heatmap') {
+        if (visual_name === 'heatmap') {
           var dm = HMAP.create_distance_matrix(stdout);
-          console.log(dm)
+          console.log(dm);
           title += ' Heatmap';
           html  += HMAP.create_hm_html(dm);  
         }else if(visual_name === 'dendrogram') {
@@ -486,15 +488,15 @@ create_chosen_id_name_hash: function(dataset_ids) {
 get_custom_meta_selection: function(dataset_ids) {
     req_metadata = C.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
-    fields_lookup = {}
-    for(i in dataset_ids) {      
-      id = dataset_ids[i]
+    fields_lookup = {};
+    for (var i in dataset_ids) {      
+      id = dataset_ids[i];
       //console.log('id '+ id)
-      if(id in MetadataValues) {
-        for(field in MetadataValues[id]) {
+      if (id in MetadataValues) {
+        for (var field in MetadataValues[id]) {
           
           //console.log('field_name '+field)
-          if(req_metadata.indexOf(field) === -1) {
+          if (req_metadata.indexOf(field) === -1) {
             //console.log('PUT IN CUSTOM '+field)
             fields_lookup[field] = 1;
           }else{
@@ -504,7 +506,7 @@ get_custom_meta_selection: function(dataset_ids) {
       }
 
     }
-    return fields_lookup
+    return fields_lookup;
 },
 //
 //
