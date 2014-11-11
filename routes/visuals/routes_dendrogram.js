@@ -70,12 +70,17 @@ module.exports = {
 	    } // end for row in raw...
 	    return distance_matrix;
 		},
+		//
+		//
+		//
+		create_newick: function () {
 
+		},
 		//
 		//  CREATE HTML
 		//
 	
-		create_dendrogram_html: function (newick,ds_count) {
+		create_dendrogram_html: function (newick, ds_count) {
 			//console.log(newick);
 
 			var Newick    = require('../../public/javascripts/newick');

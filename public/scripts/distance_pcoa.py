@@ -79,12 +79,13 @@ def distance(args):
 def pcoa(args, dist):
 	from cogent.cluster.metric_scaling import PCoA
 	PCoA_result = PCoA(dist)
+#print PCoA_result
 	a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
-		
+	print a
 	json_array = {}
-	json_array['v1'] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
-	json_array['v2'] = a[:,3].tolist()[:-2]
-	json_array['v3'] = a[:,4].tolist()[:-2]
+	json_array['P1'] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
+	json_array['P2'] = a[:,3].tolist()[:-2]
+	json_array['P3'] = a[:,4].tolist()[:-2]
 	json_array['names'] = a[:,1].tolist()[:-2]
 	#json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
 	#json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
