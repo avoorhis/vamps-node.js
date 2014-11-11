@@ -11,38 +11,38 @@ module.exports = {
 		//
 		//  CREATE DISTANCE MATRIX
 		//
-		create_distance_matrix: function (outstr) {
-			//console.log('stderr: ' + stderr);
-	    raw_distance_array = outstr.toString().split('\n');
-	    //console.log('distance array (stdout):')
-	    //console.log(outstr);
-	    var distance_matrix = {};
-	    // distance_matrix[ds1][ds2] = 2
-	    var dcolnames = raw_distance_array[0].trim().split("\t");
-	    //console.log('dcolnames:  '+dcolnames)
-	    //distance_matrix[dcolname] = {};
-	    //distance_matrix[dcolname][dcolname] = 0;
-	    //console.log(dcolname);
-	    for(n in dcolnames) {
-	    	distance_matrix[dcolnames[n]] = {};
-	    }
-	    for(n in raw_distance_array){
-	    	//console.log(raw_distance_array[n])	    	
+		// create_distance_matrix: function (outstr) {
+		// 	//console.log('stderr: ' + stderr);
+	 //    raw_distance_array = outstr.toString().split('\n');
+	 //    //console.log('distance array (stdout):')
+	 //    //console.log(outstr);
+	 //    var distance_matrix = {};
+	 //    // distance_matrix[ds1][ds2] = 2
+	 //    var dcolnames = raw_distance_array[0].trim().split("\t");
+	 //    //console.log('dcolnames:  '+dcolnames)
+	 //    //distance_matrix[dcolname] = {};
+	 //    //distance_matrix[dcolname][dcolname] = 0;
+	 //    //console.log(dcolname);
+	 //    for(n in dcolnames) {
+	 //    	distance_matrix[dcolnames[n]] = {};
+	 //    }
+	 //    for(n in raw_distance_array){
+	 //    	//console.log(raw_distance_array[n])	    	
 	    	
-	      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
-	      if( n == 0 ) { continue; }   						// skip header
-	      var items = raw_distance_array[n].trim().split("\t");
-	      //console.log('i  '+items)
-		  var ds = items.shift();  // remove and return dataset
-		  //console.log('ds  '+ds)
-	      for(i in items){     	
-	      	distance_matrix[ds][dcolnames[i]] = items[i];	      
-	      }	      
+	 //      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
+	 //      if( n == 0 ) { continue; }   						// skip header
+	 //      var items = raw_distance_array[n].trim().split("\t");
+	 //      //console.log('i  '+items)
+		//   var ds = items.shift();  // remove and return dataset
+		//   //console.log('ds  '+ds)
+	 //      for(i in items){     	
+	 //      	distance_matrix[ds][dcolnames[i]] = items[i];	      
+	 //      }	      
 
-	    } // end for row in raw...
-	    //console.log(distance_matrix)
-	    return distance_matrix;
-		},
+	 //    } // end for row in raw...
+	 //    //console.log(distance_matrix)
+	 //    return distance_matrix;
+		// },
 
 		//
 		//  CREATE HTML
