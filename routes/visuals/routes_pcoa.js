@@ -27,12 +27,12 @@ module.exports = {
 
 
 		create_pcoa_graphs: function(matrix) {
-			console.log('in pcoa')
-			//console.log(matrix)
+					console.log('in pcoa');
+					//console.log(matrix);
+					//console.log(metadata);
+					//console.log(metadata_filename)
+					var svgGraph ='';
 			
-			//console.log(metadata_filename)
-			var svgGraph ='';
-			//console.log(metadata)
 			//fs.readFile(metadata_filename, 'utf8', function (err, data) {
   		//		 var mdata = d3.tsv.parse(data);
   		//		 console.log(mdata)
@@ -119,8 +119,7 @@ module.exports = {
 		          .domain([-1, 1])
 		          .range([ chart_height, 0 ]);
 
-		      //var vectors = ['v1','v2','v3'];
-		      var vectors = [ ['v1','v2'], ['v1','v3'], ['v2','v3'] ];
+		      var vectors = [ ['P1','P2'], ['P1','P3'], ['P2','P3'] ];
 		      var svgContainer = d3.select("body")
 		      				.append("svg")
 		              .attr('width', img_width)
@@ -139,6 +138,7 @@ module.exports = {
 			      		
 			      		xdata = matrix[vectors[v][0]];
 								ydata = matrix[vectors[v][1]];
+								//console.log('ydata '+ydata.toString())
 								//var chart = 'chart'+v.toString();
 								var chart_tx = base_chart_size;
 						    var chart_ty = base_chart_size; 
