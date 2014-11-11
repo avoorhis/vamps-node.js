@@ -22,10 +22,10 @@ module.exports = {
   			//mtx = JSON.parse(json);
 
 	  		data = [];
-				for(o in mtx.columns){
+				for (var o in mtx.columns){
 	  			tmp={};
 	  			tmp.DatasetName = mtx.columns[o].id;
-	  			for (t in mtx.rows){
+	  			for (var t in mtx.rows){
 	  				tmp[mtx.rows[t].id] = mtx.data[t][o];
 	  			}
 	  			data.push(tmp);
@@ -33,7 +33,8 @@ module.exports = {
 
   		
   			var unit_list = [];
-  			for(o in mtx.rows){
+        // TODO: "'o' is already defined."
+  			for (var o in mtx.rows){
   				unit_list.push(mtx.rows[o].id);
   			}
   			
@@ -215,13 +216,13 @@ function get_colors(unit_names){
 //
 function convert_matrix(mtx) {
 		var data = [];
-		for(n in mtx.dataset_names) {
+		for (var n in mtx.dataset_names) {
 			data.push({'DatasetName': mtx.dataset_names[n]});	
 		}
-		for(u in mtx.unit_names) {
-			for(n in mtx.dataset_names) {
-				//dname = mtx.dataset_names[n];
-				data[n][u] = mtx.unit_names[u][n];
+		for (var u in mtx.unit_names) {
+			for (var k in mtx.dataset_names) {
+				//dname = mtx.dataset_names[k];
+				data[k][u] = mtx.unit_names[u][k];
 			}
 		}
 		return data;
