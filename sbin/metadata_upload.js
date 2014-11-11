@@ -33,10 +33,12 @@ var constants = require('../public/constants');
 
 var req_fields = constants.REQ_METADATA_FIELDS;
 
+
 var fields_to_replace = ['sample_name', 'ANONYMIZED_NAME', 'title'];
 
 
 var metadata_dict_by_pr_dataset = {};
+
 
 function usage()
 {
@@ -92,21 +94,9 @@ function add_to_dict(dict, key, value)
   return dict;
 }
 
-function make_metadata_dict_by_pr_dataset(csv_data_hash)
-{
-  metadata_dict_by_pr_dataset = {};
-
-  for (var i = 0; csv_data_hash.length > i; i += 1) {
-    var dataset = csv_data_hash[i]['sample_name'];
-    var project = csv_data_hash[i]['title'];
-    metadata_dict_by_pr_dataset[project + "--" + dataset] = csv_data_hash[i];
-  }
-  return metadata_dict_by_pr_dataset;
-}
-
 function make_metadata_dict_by_project(csv_data_hash)
 {
-  metadata_dict_by_project = {};
+  var metadata_dict_by_project = {};
 
   for (var i = 0; csv_data_hash.length > i; i += 1) {
     var project = csv_data_hash[i]['title'];
@@ -169,7 +159,7 @@ function get_custom_column_examples_from_csv(metadata_dict_by_project, custom_co
   return custom_column_examples;
 }
 
-function work_with_ids_from_db(project_datasets)
+function work_with_ids_from_db(project_datasets, metadata_dict_by_project)
 {
   // console.log("000000");
   // console.log(project_datasets);
@@ -181,7 +171,6 @@ function work_with_ids_from_db(project_datasets)
     {
       
       var datasets = "'" + project_datasets[project].join("', '") + "'";
-
       csv_metadata_db.get_dataset_ids(project, datasets, function work_with_dataset_id(err, results)
       {
         if (err)
@@ -189,7 +178,7 @@ function work_with_ids_from_db(project_datasets)
         else
         {
           // todo: add ids to dict, use for custom and requireds
-          metadata_dict_by_project_w_ids = update_metadata_dict_by_project(results);
+          metadata_dict_by_project_w_ids = update_metadata_dict_by_project(results, metadata_dict_by_project);
 
           insert_into_custom_fields_txt = format_custom_metadata_fields_info(metadata_dict_by_project_w_ids[project]);
           call_insert_custom_fields_into_db(insert_into_custom_fields_txt);          
@@ -225,7 +214,7 @@ function add_ids_to_metadata(db_ids, metadata_from_csv)
   return metadata_from_csv;
 }
 
-function update_metadata_dict_by_project(db_id_results)
+function update_metadata_dict_by_project(db_id_results, metadata_dict_by_project)
 {
   var metadata_dict_by_project_w_ids = {};
   for (var project in metadata_dict_by_project)
@@ -289,7 +278,7 @@ function format_custom_metadata_fields_info(metadata_by_project_w_ids)
   return insert_into_custom_fields_txt;
 }
 
-function custom_fields(csv_data_hash)
+function custom_fields(csv_data_hash, metadata_dict_by_project)
 {
   custom_column_names = get_custom_columns_from_csv(csv_data_hash);
   // console.log("OOO custom_column_names");
@@ -317,31 +306,14 @@ function combine_required_data(this_entry)
   var quote = "'";
   for (var i = 0; req_fields.length > i; i += 1)
   {
-    // console.log("FFF req_fields[i]:");
-    // console.log(req_fields[i]);
-    into_db += get_comma(i) + quote + this_entry[req_fields[i]] + quote;
-  }
-  // var altitude = this_entry["altitude"];
-  // var assigned_from_geo = this_entry["assigned_from_geo"];
-  // var collection_date = "";
-  // // if (this_entry["collection_date"] != "unknown")
-  // // {
-  //   collection_date = correct_db_data(this_entry["collection_date"]);
-  // // }
-  // var depth = this_entry["depth"];
-  // var country = this_entry["country"];
-  // var elevation = this_entry["elevation"];
-  // var env_biome = this_entry["env_biome"];
-  // var env_feature = this_entry["env_feature"];
-  // var env_matter = this_entry["env_matter"];
-  // var latitude = this_entry["latitude"];
-  // var longitude = this_entry["longitude"];
-  // var is_public = this_entry["public"];
-
-  // into_db = altitude + ", '" + assigned_from_geo + "', '" + collection_date + "', " + depth + ", '" + country + "', " + elevation + ", '" + env_biome + "', '" + env_feature + "', '" + env_matter + "', " + latitude + ", " + longitude + ", " + temp + ", " + salinity + ", " + diss_oxygen + ", '" + is_public + "'";
-  // console.log("IIIII into_db:");
-  // console.log(into_db);
-  
+    var value = "";
+    value = this_entry[req_fields[i]];
+    if (req_fields[i] === "collection_date")
+    {
+      value = correct_db_data(this_entry[req_fields[i]]);
+    }
+    into_db += get_comma(i) + quote + value + quote;
+  }  
   return into_db;
 }
 
@@ -499,14 +471,13 @@ function do_smth_w_data_hash(csv_data_hash_raw)
   // console.log("===== HHH ");
   // console.log("csv_data_hash");
   // console.log(csv_data_hash);
-  csv_data_hash = to_lower_case(csv_data_hash_raw);
-  metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
-  metadata_dict_by_pr_dataset = make_metadata_dict_by_pr_dataset(csv_data_hash);
+  var csv_data_hash = to_lower_case(csv_data_hash_raw);
+  var metadata_dict_by_project = make_metadata_dict_by_project(csv_data_hash);
 
   var project_datasets = make_dict_by_project_datasets(csv_data_hash);
 
-  custom_fields(csv_data_hash);
-  work_with_ids_from_db(project_datasets);  
+  custom_fields(csv_data_hash, metadata_dict_by_project);
+  work_with_ids_from_db(project_datasets, metadata_dict_by_project);  
 }
 
 // input.pipe(parser);
