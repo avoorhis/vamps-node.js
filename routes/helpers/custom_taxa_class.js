@@ -188,7 +188,7 @@ function add_li(this_node)
 {
   this_html = '<li>\n';
   this_html += '<span class="sign"><i class="icon-no-sign"></i></span>';
-  this_html += '<input name="custom_taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '_' +this_node.rank + '"/>\n';
+  this_html += '<input name="custom_taxa" class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '_' +this_node.rank + '"/>\n';  
   this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
   return this_html;
 }
