@@ -16,14 +16,12 @@ import numpy as np
 import argparse
 import json
 import csv
-from hcluster import linkage, to_tree
-#from ete2 import Tree
-from pprint import pprint
+#print >> sys.stderr, sys.argv[1:]
 
 from cogent.maths import distance_transform as dt
 
 
-def distance(args):
+def calculate_distance(args):
 	
 	if args.file_format == 'json': 
 		try:
@@ -87,16 +85,36 @@ def distance(args):
 	
 	#print data['columns']
 	#print dist
-	distance_matrix = {}
+	distance_matrix1 = {}
+	distance_matrix2 = {}
+	out_fp = open(args.out_file,'w')
+	
+	file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
+
+	out_fp.write(file_header_line)
+
+
 	for row,line in enumerate(data['columns']):
 		name = line['id']
-		distance_matrix[name] = {}		
+		distance_matrix1[name] = {}	
+		file_data_line = name+','	
 		for col,d in enumerate(dist[row]):
 			#print data['columns'][col]['id']
-			distance_matrix[name][data['columns'][col]['id']] = dist[row][col]
+			file_data_line += str(dist[row][col])+','
+			distance_matrix1[name][data['columns'][col]['id']]  = dist[row][col]
+			distance_matrix2[(name, data['columns'][col]['id'])]  = dist[row][col]
+		file_data_line = file_data_line[:-1]+'\n'
+		out_fp.write(file_data_line)
+	
+	out_fp.close()
+	#if args.function == 'distance' or args.function == 'heatmap':
+	print json.dumps(distance_matrix1)
+	#print distance_matrix1
 
-	print json.dumps(distance_matrix)
+		#print distance_matrix2
+	#return distance_matrix2
 
+# distance_matrix1:  JSON
 # { 'SLM_NIH_Bv6--Biofilter_005': 
 #    { 'SLM_NIH_Bv6--Biofilter_005': '0',
 #      'SLM_NIH_Bv6--Biofilter_Outflow_006': '0.015246870934763',
@@ -111,9 +129,83 @@ def distance(args):
 #      'SLM_NIH_Bv6--Biofilter_Sand_008': '0' } 
 #  }
 
+# distance_matrix2:   NOT good JSON, but works with pycogent
+# {
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.32185444543965835, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.95288201941646389, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.0, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.0, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.97554598143130711, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.32185444543965835, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.0, 
+#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.95288201941646389
+# }
+def write_csv_file(args):
+	file_name = 'distance.csv'
 
+#
+#
+#
+def construct_newick(dist):
+	from cogent.cluster.UPGMA import upgma
 
-
+	mycluster = upgma(dist)
+	newick = mycluster.getNewick(with_distances=True)		
+	print json.dumps(newick)
+#
+#
+#
+def construct_pcoa(dist_matrix):
+	pass
+#
+#
+#
+def plot_tree( P, pos=None ):
+		import matplotlib.pylab as plt
+		icoord = scipy.array( P['icoord'] )
+		dcoord = scipy.array( P['dcoord'] )
+		color_list = scipy.array( P['color_list'] )
+		xmin, xmax = icoord.min(), icoord.max()
+		ymin, ymax = dcoord.min(), dcoord.max()
+		if pos:
+		    icoord = icoord[pos]
+		    dcoord = dcoord[pos]
+		    color_list = color_list[pos]
+		for xs, ys, color in zip(icoord, dcoord, color_list):
+		    plt.plot(xs, ys,  color)
+		plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
+		plt.ylim( ymin, ymax + 0.1*abs(ymax) )
+		plt.show()
+#
+#
+#
+def get_json(node):
+	# Read ETE tag for duplication or speciation events
+	from ete2 import Tree
+	import random
+	if not hasattr(node, 'evoltype'):
+		dup = random.sample(['N','Y'], 1)[0]
+	elif node.evoltype == "S":
+		dup = "N"
+	elif node.evoltype == "D":
+		dup = "Y"
+	 
+	node.name = node.name.replace("'", '')
+	json = { "name": node.name,
+			"display_label": node.name,
+			"duplication": dup,
+			"branch_length": str(node.dist),
+			"common_name": node.name,
+			"seq_length": 0,
+			"type": "node" if node.children else "leaf",
+			"uniprot_name": "Unknown",
+			}
+	if node.children:
+		json["children"] = []
+		for ch in node.children:
+			json["children"].append(get_json(ch))
+	return json
 #
 #
 #
@@ -125,9 +217,41 @@ if __name__ == '__main__':
 	"""
 	parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
 	parser.add_argument('-in','--in',   required=True,  action="store",   dest='in_file', help = '')
+	parser.add_argument('-out','--out',   required=True,  action="store",   dest='out_file', help = 'output distance fp')
 	parser.add_argument('-ff','--file_format',   required=False,  action="store",   dest='file_format', default='json', help = 'json or csv only')
 	parser.add_argument('-metric','--metric', required=False, action="store",   dest='metric', help = '', default='bray_curtis') 
- 	 	
+ 	parser.add_argument('-fxn','--function', required=True, action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
 
  	args = parser.parse_args()
-	distance(args) 
+	dist2 = calculate_distance(args) 
+
+	if args.function == 'dendrogram':
+		#construct_newick(dist2)
+		pass
+
+
+
+		# from scipy.cluster import hierarchy
+		# from scipy.spatial import distance
+		# from hcluster import pdist, linkage, dendrogram, to_tree, squareform
+		# from ete2 import Tree, ClusterTree
+		
+		# condensed_dm = distance.squareform(dist)
+		# print condensed_dm   # [ 0.97554598  0.32185445  0.95288202]
+		# T = hierarchy.linkage(condensed_dm, method='single', metric='euclidean')
+		# print T
+		# # ndarray:
+		# # [[ 0.          2.          0.32185445  2.        ]
+ 	# 	# [ 1.          3.          0.95288202  3.        ]]
+		
+		# P = hierarchy.dendrogram(T)
+		#plot_tree(P)
+		
+
+
+	if args.function == 'pcoa':
+		#pcoa = construct_pcoa(dist)
+		pass
+
+
+
