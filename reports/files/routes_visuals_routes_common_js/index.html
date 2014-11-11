@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">57.87</p>
+      <p class="stat">57.72</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">345</p>
+      <p class="stat">347</p>
     </div>
   </div>
   <div class="row historical">
@@ -66,7 +66,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.41</p>
+      <p class="stat">3.42</p>
     </div>
   </div>
 </div>
@@ -136,8 +136,8 @@ module.exports = {
       var distrows = C.DISTANCECHOICES.choices;
       html += &#039;&lt;li&gt;Change Distance Metric: &#039;;
       html += &quot;&lt;select name=&#039;selected_distance&#039; class=&#039;small_font&#039;&gt;&quot;;
-      for(d in distrows ) {
-        if(obj[viz_page] === distrows[d].id) {
+      for (var d in distrows ) {
+        if (obj[viz_page] === distrows[d].id) {
           html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039; selected=&#039;selected&#039; &gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
         }else{
           html += &quot;&lt;option value=&#039;&quot;+distrows[d].id+&quot;&#039;&gt;&quot;+distrows[d].show+&quot;&lt;/option&gt;&quot;;
@@ -187,7 +187,8 @@ module.exports = {
      }
     html += &quot;&lt;/select&gt;&quot;;
     html += &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp; MAX &lt;select name=&#039;max_range&#039; class=&#039;small_font&#039;&gt;&quot;;
-     for( var n=1;n &lt; C.PCT_RANGE.length;n++ ) {
+    // TODO: &quot;&#039;n&#039; is already defined.&quot;
+     for (var n=1; n &lt; C.PCT_RANGE.length; n++ ) {
        
        if(obj.max_range.toString() === C.PCT_RANGE[n].toString()) {
          html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
@@ -298,6 +299,7 @@ module.exports = {
     // str to hash
     for (var i = 0, hash = 0; i &lt; str.length; hash = str.charCodeAt(i++) + ((hash &lt;&lt; 5) - hash));
     // int/hash to hex
+    // TODO: &quot;&#039;i&#039; is already defined.&quot;
     for (var i = 0, colour = &quot;#&quot;; i &lt; 3; colour += (&quot;00&quot; + ((hash &gt;&gt; i++ * 8) &amp; 0xFF).toString(16)).slice(-2));
     return colour;
   },
@@ -329,9 +331,9 @@ module.exports = {
       if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
         html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
       }else{
-        if(visual_name === &#039;heatmap&#039;) {
+        if (visual_name === &#039;heatmap&#039;) {
           var dm = HMAP.create_distance_matrix(stdout);
-          console.log(dm)
+          console.log(dm);
           title += &#039; Heatmap&#039;;
           html  += HMAP.create_hm_html(dm);  
         }else if(visual_name === &#039;dendrogram&#039;) {
@@ -379,15 +381,15 @@ create_chosen_id_name_hash: function(dataset_ids) {
 get_custom_meta_selection: function(dataset_ids) {
     req_metadata = C.REQ_METADATA_FIELDS;
     //console.log(&#039;req_metadata &#039;+req_metadata)
-    fields_lookup = {}
-    for(i in dataset_ids) {      
-      id = dataset_ids[i]
+    fields_lookup = {};
+    for (var i in dataset_ids) {      
+      id = dataset_ids[i];
       //console.log(&#039;id &#039;+ id)
-      if(id in MetadataValues) {
-        for(field in MetadataValues[id]) {
+      if (id in MetadataValues) {
+        for (var field in MetadataValues[id]) {
           
           //console.log(&#039;field_name &#039;+field)
-          if(req_metadata.indexOf(field) === -1) {
+          if (req_metadata.indexOf(field) === -1) {
             //console.log(&#039;PUT IN CUSTOM &#039;+field)
             fields_lookup[field] = 1;
           }else{
@@ -397,7 +399,7 @@ get_custom_meta_selection: function(dataset_ids) {
       }
 
     }
-    return fields_lookup
+    return fields_lookup;
 },
 //
 //
