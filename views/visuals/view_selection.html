@@ -4,10 +4,17 @@
 <%  var mtx    = JSON.parse(matrix); %>
 <%  var pi     = JSON.parse(post_items); %>
 <%  var md     = JSON.parse(metadata); %>
-<%  //console.log('cnsts')%>
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  console.log('items') %>
+<%  console.log(items) %>
 <%  //console.log(cnsts.VISUAL_THUMBNAILS.visuals)%>
 <%  var disable_thumbs = false; %>
-
+<script>  
+  var pi_local  = JSON.parse('<%- post_items %>');
+  var mtx_local = JSON.parse('<%- matrix %>');
+  var md_local  = JSON.parse('<%- metadata %>');
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+</script>
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
 <% if(messages.info){ %>
@@ -37,13 +44,14 @@
 </table>
 
 <br>
-      <table border='1'>
+      <table border='1' class='small_font'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
           <%    var file = cnsts.VISUAL_THUMBNAILS.visuals[n].file                                    %>
           <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
-          <%    var cols = 5 %>
+          <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                    %>
+          <%    var cols = 10 %>
           <%    if(mtx.shape[1] === 1  && (name === 'Distance Heatmap' || name === 'Dendrograms' )) { %>
                     <td class='td_top'><%= name %><br><br>Not Available</td>
           <%    } else { %>
@@ -52,11 +60,13 @@
                     <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
                   </td>
           <%        }else{                                                                            %>
-                  <td class='td_top'><%= name %><br>
-                    <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >
-                      <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
-                    </a> 
-                  </td>
+                  <td class='td_top'>
+               <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
+                    <a href='#<%= link_id %>' id='<%= link_id %>'  ><%= name %><br>
+               <!-- <input type='button' id='<%= link_id %>' value='pushme'> -->
+                      <img src='<%= file %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                    </a>  
+                 </td>
           <%        }                                                                                 %>              
           <%    }                                                                                     %>
             
@@ -66,8 +76,52 @@
           <% }                                                                                        %>
         </tr>
       </table>
-      <a href="#" class="back">Go back</a> to the previous page.      
+      <a href="#" class="back">Go back</a> to the previous page.   
+  <br><br>
+  <div id='pre_counts_table_div' class='display_none'>
+    <span class='table_title'>Tax Counts Table</span>
+    <input type='button' id='counts_table_hide_btn' class='close_open_btn' value='close'>
+  </div>
+  <a name='tax_table'><div id='tax_table_div'          class=''>tax table</div></a>
+  <br><br>
+  <a name='metadata'><div id='metadata_local_table_div'class=''>metadata</div> </a>
+  <br><br>
+  <a name='dist_heatmap'><div id='distance_heatmap_div' class=''>distance heatmap</div></a> 
+  <br><br>
+  <a name='freq_heatmap'><div id='frequency_heatmap_div' class=''>frequency heatmap</div></a> 
+  <br><br>
+  <div id='pre_barcharts_table_div' class='display_none'>
+    <span class='table_title'>Bar Charts</span>
+    <input type='button' id='barcharts_hide_btn' class='close_open_btn' value='close'>
+  </div>
+  <a name='barcharts'><div id='barcharts_div'           class=''>bar charts</div> </a>
+  <br><br>
+  <div id='pre_piecharts_table_div' class='display_none'>
+    <span class='table_title'>Pie Charts</span>
+    <input type='button' id='piecharts_hide_btn' class='close_open_btn' value='close'>
+  </div>
+  <a name='piecharts'><div id='piecharts_div'           class=''>pie charts</div></a>
+  <br><br>
+  <a name='dendrogram'><div id='dendrogram_div'        class=''>dendrograms</div></a>
+  <br><br>
+  <a name='pcoa'><div id='pcoa_div'                    class=''>pcoa</div></a> 
+  <br><br> 
+  <a name='geospatial'><div id='geospatial_div'        class=''>geospatial</div></a> 
+  <br><br> 
+  <div id='test_div'              class=''></div>  
+
+  <div id='counts_tooltip_div' class=''></div>
+  <div id='piebarcharts_tooltip_div' class=''></div>
+  <div id='metadata_tooltip_div' class=''></div>
+  
+
   <div id='DEBUG_div'></div>
   <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/javascripts/jquery.tooltip.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script type="text/javascript" src="/javascripts/global.js"></script>
+  <script type="text/javascript" src="/javascripts/view_selection.js"></script>
+  
 <% include ../add_ins/end.ejs %>
+
+
