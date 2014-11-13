@@ -76,55 +76,101 @@ module.exports = {
 				  
 				  did = chosen_id_name_hash.ids[n];	
 
-				  if(post_items.unit_choice === 'tax_silva108_simple') {
 
-						  rank = post_items.tax_depth;
-						  //console.log('did '+did+' rank: '+rank);
+				   if(post_items.unit_choice === 'tax_silva108_simple') {
+rank = post_items.tax_depth;
+//console.log('did '+did+' rank: '+rank);
+for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;
+var tax_long_name = create_concatenated_tax_name(node_id);
+unit_name_lookup[tax_long_name] = 1;
+ukeys.push(tax_long_name);
+cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
+unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+}
+}else if(post_items.unit_choice === 'tax_silva108_custom'){
+for(var t in post_items.custom_taxa) {
+//console.log(post_items.custom_taxa[t])
+var name_and_rank = post_items.custom_taxa[t];
+var items = name_and_rank.split('_');
+var tax_short_name = items[0];
+rank = items[1];
+db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
+node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
+// TODO: 'tax_long_name' is already defined.
+var tax_long_name = create_concatenated_tax_name(node_id);
+unit_name_lookup[tax_long_name] = 1;
+ukeys.push(tax_long_name);
+cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
+unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+} // END :: for(t in post_items.custom_taxa) {
+} 
+// 				  if(post_items.unit_choice === 'tax_silva108_simple') {
+
+// 						  rank = post_items.tax_depth;
+// 						  //console.log('did '+did+' rank: '+rank);
 						  		  
-						  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+// 						  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
 						  	
-						  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
-						  	node_id   = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;	
+// 						  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+// 						  	node_id   = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;	
 						  	
-								var tax_long_name = create_concatenated_tax_name(node_id);	
-								unit_name_lookup[tax_long_name] = 1;					  	
-						  	ukeys.push(tax_long_name);	
+								
+// 								unit_name_lookup[tax_long_name] = 1;					  	
+// 						  	ukeys.push(create_tax_name_list(node_id));	
 
-						  	cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);		// This uses TaxaCounts created in app.js from JSON file  	
+// 						  	cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);		// This uses TaxaCounts created in app.js from JSON file  	
 						  	
-						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);		 	
+// 						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);		 	
 					   
-					    }	
+// 					    }	
 
-			    }else if(post_items.unit_choice === 'tax_silva108_custom'){
+// 			    }else if(post_items.unit_choice === 'tax_silva108_custom'){
 
-			    		for(var t in post_items.custom_taxa) {
-							 		//console.log(post_items.custom_taxa[t])
-							 		var name_and_rank  = post_items.custom_taxa[t];
-							 		var items          = name_and_rank.split('_');
-							 		var tax_short_name = items[0];							 		
-							 		rank           = items[1];
-							 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
-							 		node_id   = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
+// 			    		for(var t in post_items.custom_taxa) {
+// 							 		//console.log(post_items.custom_taxa[t])
+// 							 		var name_and_rank  = post_items.custom_taxa[t];
+// 							 		var items          = name_and_rank.split('_');
+// 							 		var tax_short_name = items[0];							 		
+// 							 		rank           		 = items[1];
+// 							 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
+// 							 		node_id   = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
 							 		
-//                TODO: 'tax_long_name' is already defined.
-							 		var tax_long_name = create_concatenated_tax_name(node_id);
-							 		unit_name_lookup[tax_long_name] = 1;
-									ukeys.push(tax_long_name);
+// //                TODO: 'tax_long_name' is already defined.
+							 		
+// 							 		//var tax_long_name       = clean_custom_names(tax_long_name_array);
+							 		
+// 							 		//unit_name_lookup[tax_long_name] = 1;
+									
+// 									ukeys.push(create_tax_name_list(node_id));
 
-							 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
+// 							 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
 							  	
-							  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);						   
+// 							  	//unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);						   
 						  
-						  }  // END :: for(t in post_items.custom_taxa) {				
+// 						  }  // END :: for(t in post_items.custom_taxa) {				
+// 						  console.log(ukeys)
+// 						  ukeys = clean_custom_names(ukeys);
+// 						  console.log(ukeys)
+// 						  for(n in ukeys){
+// 						  	unit_name_lookup[ukeys[n]] = 1;
+// 						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, ukeys[n], cnt);	
+// 						  }
 
-
-			    }				    
+			   // }				    
 			}
 			ukeys = ukeys.filter(onlyUnique);
-		  ukeys.sort();
+ukeys.sort();
+unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
+			//ukeys = clean_custom_names(ukeys);
+			
 
-			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);	
+			// clean/filter/sort ukeys
+
+		  
+
+			//unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);	
 			
 			ukeys = remove_empty_rows(unit_name_counts, ukeys);	
 
@@ -319,6 +365,18 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
   	return lookup;
 }
 //
+//  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
+//
+function create_concatenated_tax_name(node_id) {		
+		var tax_name = '';					  	
+  	while(node_id !== 0) {  				  		
+  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
+  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
+  	}
+  	return tax_name.replace(/;+$/,'');  // remove trailing ';'
+
+}
+//
 //  F I N D  C O U N T  P E R  D S  A N D  R A N K
 //
 function find_count_per_ds_and_rank(did, rank, db_tax_id) {
@@ -335,14 +393,55 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 //
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //
-function create_concatenated_tax_name(node_id) {		
-		var tax_name = '';					  	
+function create_tax_name_list(node_id) {		
+		var tax_name = [];					  	
   	while(node_id !== 0) {  				  		
-  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
+  		//tax_name.unshift( new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon );
+  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon  +';'+ tax_name;
   		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
   	}
-  	return tax_name.replace(/;+$/,'');  // remove trailing ';'
+  	return tax_name.replace(/;+$/,''); // remove trailing ';' 
+  	//return tax_name; // remove trailing ';' 
+}
+//
+//
+//
+function clean_custom_names(name_array) {
+		name_array = name_array.filter(onlyUnique);
+		name_array.sort(function(a, b){
+				return b.length - a.length; // ASC -> a - b; DESC -> b - a
+		});
+		
+		var ukeys2 = [];
+		//ukeys.sort();
+		var rank_num = 10; // too long rank to start
+		console.log(name_array)
+		for(var i in name_array) {
+			got_one = true;
+			for(n in ukeys2 ){
+				if(ukeys2[n].indexOf(name_array[i]) === 0){
+						console.log('MATCH! -no add '+ name_array[i]); 
+						got_one = false; 
+					}else{
+						//console.log('add '+ukeys[i]+' test against '+ukeys2[n])
+						//ukeys2.push(ukeys[i]);
+						//got_one = true;
+					}
+			}
+			if(got_one == true){
+				ukeys2.push(name_array[i]);
+			}
+		}
+		console.log('ukeys2')
+		console.log(ukeys2);
 
+		return ukeys2;
+}
+//
+//
+//
+function onlyUnique(value, index, self) { 
+	return self.indexOf(value) === index;
 }
 //
 //	C R E A T E  B I O M E  M A T R I X

@@ -35,24 +35,29 @@ config.NORMALIZATIONCHOICES = { choices: [
 
    
 config.DISTANCECHOICES = { choices: [
+        
+{id: 'binary_jaccard',         show: 'Jaccard'     },
+ {id: 'kulczynski',      show: 'Kulczynski'  },
+  {id: 'canberra',        show: 'Canberra'    },
+  {id: 'morisita_horn',   show: 'Morisita-Horn'},
         // both R and python
-        {id: 'morisita_horn',   show: 'Morisita-Horn'},
+        
         {id: 'bray_curtis',     show: 'Bray-Curtis' },
-        {id: 'manhattan',       show: 'Manhattan'   },
-        {id: 'gower',           show: 'Gower'       },
-        {id: 'euclidean',       show: 'Euclidean'   },
-        {id: 'canberra',        show: 'Canberra'    },
-        {id: 'kulczynski',      show: 'Kulczynski'  },
-        {id: 'pearson',         show: 'Pearson'     },
-        {id: 'spearman',        show: 'Spearman'    },
+ //       {id: 'manhattan',       show: 'Manhattan'   },
+ //       {id: 'gower',           show: 'Gower'       },
+ //       {id: 'euclidean',       show: 'Euclidean'   },
+       
+       
+ //       {id: 'pearson',         show: 'Pearson'     },
+ //       {id: 'spearman',        show: 'Spearman'    },
 // R only
-        {id: 'correlation',     show: 'Correlation' },
-        {id: 'mountford',       show: 'Mountford'   },
-        {id: 'chao_j',          show: 'Chao J'      },
-        {id: 'chao_s',          show: 'Chao S'      },
-        {id: 'raup',            show: 'Raup'        },
-        {id: 'jaccard',         show: 'Jaccard'     },
-        {id: 'yue_clayton',     show: 'Yue-Clayton' }
+//        {id: 'correlation',     show: 'Correlation' },
+//        {id: 'mountford',       show: 'Mountford'   },
+//        {id: 'chao_j',          show: 'Chao J'      },
+//        {id: 'chao_s',          show: 'Chao S'      },
+//        {id: 'raup',            show: 'Raup'        },
+        
+//        {id: 'yue_clayton',     show: 'Yue-Clayton' }
 // python distances:
 
         // {id: 'abund_jaccard',         show: 'Jaccard  - Abundance'     },
@@ -74,16 +79,16 @@ config.RSCRIPT_CMD = 'RScript --no-restore --no-save';
 config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "species", "strain"];
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 config.VISUAL_THUMBNAILS = { visuals: [
-    {name:'Distance Heatmap',  file:'/images/visuals/heatmap.png',     link:'user_data/heatmap'     },
-    {name:'Frequency Heatmap', file:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap' },
-    {name:'Stackbar Charts',   file:'/images/visuals/barcharts.png',   link:'user_data/barcharts'     },
-    {name:'Pie Charts',        file:'/images/visuals/pie_charts.png',  link:'user_data/piecharts'   },
-    {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram'   },
-    {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa'   },
-    {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table'   },
-    {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table'    },
-    {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial'    },
-    {name:'TEST_TEST',     file:'',         link:'user_data/test_page'    }
+    {name:'Distance Heatmap',  file:'/images/visuals/heatmap.png',     link:'user_data/heatmap', id:'distance_heatmap'     },
+    {name:'Frequency Heatmap', file:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap', id:'frequency_heatmap'  },
+    {name:'Stackbar Charts',   file:'/images/visuals/barcharts.png',   link:'user_data/barcharts', id:'barcharts'      },
+    {name:'Pie Charts',        file:'/images/visuals/pie_charts.png',  link:'user_data/piecharts', id:'piecharts'    },
+    {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram', id:'dendrogram'    },
+    {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa', id:'pcoa'    },
+    {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table', id:'counts_table'    },
+    {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata2_table'     },
+    {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial', id:'geospatial'     },
+    {name:'TEST_TEST',     file:'',         link:'user_data/test_page', id:'test_page'     }
     ]};
     
 
