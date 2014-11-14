@@ -52,10 +52,16 @@ $(document).ready(function() {
             var passthru = this.getTrigger().attr("id");
             
             var stuff = passthru.split('-|-')
-            dname = stuff[0];
-            cnt = stuff[1];
-            pct   = stuff[2];
-            count = cnt + ' ('+pct+' %)'
+            var dname = stuff[0];
+            var cnt   = stuff[1];
+            var pct   = stuff[2];
+            var count;
+            if(cnt == 0) {
+                count = cnt.toString();
+            }else{
+                count = cnt + ' ('+pct+' %)'
+            }
+            
                        
             $("#chart_tooltip table td#dataset").text(dname);
             $("#chart_tooltip table td#count").text(count);
