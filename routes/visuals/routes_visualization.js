@@ -248,7 +248,7 @@ router.get('/user_data/counts_table', function(req, res) {
 
     var mtx = biom_matrix
     if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
     //console.log('after cust');
 
@@ -260,16 +260,16 @@ router.get('/user_data/counts_table', function(req, res) {
     html += "<table border='1' class='single_border small_font counts_table'>";
     html += '<tr><td></td>';
     for(var n in mtx.columns){ 
-      html += '<td>'+mtx.columns[n].id+'</td>';
+      html += '<td>'+mtx.columns[n].name+'</td>';
     }
     html += '</tr>';
     for(n in mtx.rows){ 
       html += '<tr>';
-      html += '<td>'+mtx.rows[n].id+'</td>';
+      html += '<td>'+mtx.rows[n].name+'</td>';
       for(i in mtx.data[n]) {
         var cnt = mtx.data[n][i];
         var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
-        var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
+        var id  = mtx.columns[i].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
         html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
       }
       html += '</tr>';
@@ -302,7 +302,7 @@ router.get('/user_data/barcharts', function(req, res) {
 
     var mtx = biom_matrix;
     if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
      
     var html = '<table border="1" class="single_border center_table"><tr><td>';
@@ -334,7 +334,7 @@ router.get('/user_data/piecharts', function(req, res) {
    
     var mtx = biom_matrix;
     if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
 
     var html = '<table border="1" class="single_border center_table"><tr><td>';
