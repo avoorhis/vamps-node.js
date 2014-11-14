@@ -360,19 +360,22 @@ router.get('/user_data/piechart_single', function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log(myurl)
     var ts = myurl.query.ts;
-    var ds = myurl.query.ds;
+    var ds_name = myurl.query.ds;
 
     var html = '<table border="1" class="single_border center_table"><tr><td>';
     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
     html += '</td><td>';
     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
+    
+    html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
+
     res.render('visuals/user_data/piechart_single', {
           title: 'VAMPS Single PieChart:',
-          subtitle: ds,
+          subtitle: ds_name,
           timestamp: ts || 'default_timestamp',
-          dataset: ds,
-          html: html+"<h2>Not Coded Yet</h2>",
+          dataset: ds_name,
+          html: html,
           user: req.user
         });
 
