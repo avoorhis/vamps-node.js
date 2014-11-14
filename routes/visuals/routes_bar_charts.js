@@ -13,7 +13,7 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, res, mtx ) {
+		create_barcharts_html: function( timestamp, res, mtx ) {
 							
 			//var infile = path.join(__dirname, '../../tmp/'+ts+'_count_matrix.biom');
 			//console.log('in create_barcharts_html: '+infile)
@@ -24,9 +24,9 @@ module.exports = {
 	  		data = [];
 				for (var o in mtx.columns){
 	  			tmp={};
-	  			tmp.DatasetName = mtx.columns[o].id;
+	  			tmp.DatasetName = mtx.columns[o].name;
 	  			for (var t in mtx.rows){
-	  				tmp[mtx.rows[t].id] = mtx.data[t][o];
+	  				tmp[mtx.rows[t].name] = mtx.data[t][o];
 	  			}
 	  			data.push(tmp);
 	  		}
@@ -35,7 +35,7 @@ module.exports = {
   			var unit_list = [];
         // TODO: "'o' is already defined."
   			for (var o in mtx.rows){
-  				unit_list.push(mtx.rows[o].id);
+  				unit_list.push(mtx.rows[o].name);
   			}
   			
 
@@ -72,7 +72,7 @@ module.exports = {
 				});
 			
 				console.log(data);
-		  	create_svg_object(props, color, ts, data);
+		  	create_svg_object(props, color, timestamp, data);
 
 
 			  var svgGraph = d3.select('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
@@ -94,7 +94,7 @@ module.exports = {
 //
 //
 //
-function create_svg_object(props, color, ts, data) {
+function create_svg_object(props, color, timestamp, data) {
 
 		  var svg = d3.select("body").append("svg")
 							    .attr("width",  props.width)
@@ -141,7 +141,7 @@ function create_svg_object(props, color, ts, data) {
 		      .attr("class", "g")
 		      .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
 		      .append("a")
-		    .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+ts;} );
+		    .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+timestamp;} );
 
 		  datasetBar.selectAll("rect")
 		 // 		.append("a")
