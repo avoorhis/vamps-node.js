@@ -258,13 +258,13 @@ router.get('/user_data/counts_table', function(req, res) {
     html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
     html += '</td></tr></table>';
     html += "<table border='1' class='single_border small_font counts_table'>";
-    html += '<tr><td></td>';
+    html += "<tr class='border_row'><td></td>";
     for(var n in mtx.columns){ 
       html += '<td>'+mtx.columns[n].name+'</td>';
     }
     html += '</tr>';
     for(n in mtx.rows){ 
-      html += '<tr>';
+      html += "<tr class='tooltip_row'>";
       html += '<td>'+mtx.rows[n].name+'</td>';
       for(i in mtx.data[n]) {
         var cnt = mtx.data[n][i];
@@ -274,7 +274,7 @@ router.get('/user_data/counts_table', function(req, res) {
       }
       html += '</tr>';
     }
-    html += '<tr>';
+    html += "<tr class='border_row'>";
     html += "<td class='right_justify'><strong>Sums:</strong></td>";
     for(n in mtx.column_totals) {
       html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';

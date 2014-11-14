@@ -87,7 +87,7 @@
     list-style-type: none;
     font-size:11px;
     padding:3px;
-    width: 400px;
+    width: 450px;
     height:110px;
 }
 .choices_info {
@@ -96,7 +96,7 @@
     list-style-type: none;
     font-size:11px;
     padding:3px;
-    width: 400px;
+    width: 450px;
     height:110px;
 }
 .thumb_img {
@@ -114,6 +114,9 @@
     margin-right:20px;
     padding-right:20px;
 
+}
+.counts_table .border_row {
+    background: lightblue;
 }
 #metadata_table_div {
     
@@ -204,7 +207,9 @@
 .tooltip:hover {
     background-color: yellow;
 }
-
+.tooltip_row:hover {
+    background-color: lightgrey;
+}
 .chart_div {
     border: 1px solid black;
     width: 800px;

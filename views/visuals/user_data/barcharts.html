@@ -56,16 +56,17 @@ $(document).ready(function() {
             
             var stuff = passthru.split('-|-')
             //dname = stuff[0];
-            uname = stuff[0];
-            cnt = stuff[1];
-            pct   = stuff[2];
-            count = cnt + ' ('+pct+' %)'
-            //distance = stuff[3];
-            //dm = metric+': '+distance
-            //var newarray=[];
-
-
-                       
+            var uname = stuff[0];
+            var cnt = stuff[1];
+            var pct   = stuff[2];
+            var count;
+            if(cnt == 0) {
+                count = cnt.toString();
+            }else{
+                count = cnt + ' ('+pct+' %)'
+            }
+            
+           
             //$("#chart_tooltip table td#dataset").text(dname);
             $("#chart_tooltip table td#unit").text(uname); 
             $("#chart_tooltip table td#count").text(count);
