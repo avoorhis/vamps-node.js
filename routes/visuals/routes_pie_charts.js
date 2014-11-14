@@ -11,7 +11,7 @@ module.exports = {
 		//
 		//  CREATE PIECHARTS HTML
 		//
-		create_piecharts_html: function( ts, res, mtx ) {
+		create_piecharts_html: function( timestamp, res, mtx ) {
 			
 
   		var counts_per_ds = [];
@@ -54,10 +54,6 @@ module.exports = {
 
 			var pie = d3.layout.pie();
 				   
-
-			//var counts_per_ds = [[100,20,5],[20,20,20]];
-			
-			//for(i in counts_per_ds){
 			var svgContainer = d3.select("body").append("svg")
                                   .attr("width",image_w)
                                   .attr("height",image_h);
@@ -76,7 +72,7 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
-		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} );
 			
 			pies.selectAll("path")
 			    .data(d3.layout.pie())
