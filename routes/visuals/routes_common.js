@@ -86,7 +86,7 @@ module.exports = {
     }
     html += '</li>';
     html += '<hr>';
-    html += '<li>Limit view based on tax percentage: &nbsp;&nbsp;&nbsp;';
+    html += '<li>Limit view based on count percentage: &nbsp;&nbsp;&nbsp;';
      
      html += "MIN <select name='min_range' class='small_font'>";
      for( var n=0;n < C.PCT_RANGE.length-1;n++ ) {

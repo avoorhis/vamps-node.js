@@ -43,7 +43,7 @@ def calculate_distance(args):
 	datasets = []
 	for i in data['columns']:
 		#print i['id']
-		datasets.append(i['id'])
+		datasets.append(i['name'])
 	
 	z = np.array(data['data'])
 	dm = np.transpose(z)
@@ -79,7 +79,7 @@ def calculate_distance(args):
 	elif args.metric == 'spearman':
 		dist = dt.dist_spearman_approx(dm)	
 	else:  # default
-		dist = dt.dist_bray_curtis(dm)
+		dist = {}   # ERROR
 
 
 	
@@ -89,20 +89,20 @@ def calculate_distance(args):
 	distance_matrix2 = {}
 	out_fp = open(args.out_file,'w')
 	
-	file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
+	file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
 
 	out_fp.write(file_header_line)
 
 
 	for row,line in enumerate(data['columns']):
-		name = line['id']
+		name = line['name']
 		distance_matrix1[name] = {}	
 		file_data_line = name+','	
 		for col,d in enumerate(dist[row]):
 			#print data['columns'][col]['id']
 			file_data_line += str(dist[row][col])+','
-			distance_matrix1[name][data['columns'][col]['id']]  = dist[row][col]
-			distance_matrix2[(name, data['columns'][col]['id'])]  = dist[row][col]
+			distance_matrix1[name][data['columns'][col]['name']]  = dist[row][col]
+			distance_matrix2[(name, data['columns'][col]['name'])]  = dist[row][col]
 		file_data_line = file_data_line[:-1]+'\n'
 		out_fp.write(file_data_line)
 	
@@ -216,11 +216,11 @@ if __name__ == '__main__':
 		--metric	distance metric to calculate ['horn', ]
 	"""
 	parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
-	parser.add_argument('-in','--in',   required=True,  action="store",   dest='in_file', help = '')
-	parser.add_argument('-out','--out',   required=True,  action="store",   dest='out_file', help = 'output distance fp')
-	parser.add_argument('-ff','--file_format',   required=False,  action="store",   dest='file_format', default='json', help = 'json or csv only')
-	parser.add_argument('-metric','--metric', required=False, action="store",   dest='metric', help = '', default='bray_curtis') 
- 	parser.add_argument('-fxn','--function', required=True, action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
+	parser.add_argument('-in','--in',          required=True,  action="store", dest='in_file', help = '')
+	parser.add_argument('-out','--out',        required=True,  action="store", dest='out_file', help = 'output distance fp')
+	parser.add_argument('-ff','--file_format', required=False, action="store", dest='file_format', default='json', help = 'json or csv only')
+	parser.add_argument('-metric','--metric',  required=False, action="store", dest='metric', help = '', default='bray_curtis') 
+ 	parser.add_argument('-fxn','--function',   required=True,  action="store", dest='function', help = 'distance, dendrogram, pcoa') 
 
  	args = parser.parse_args()
 	dist2 = calculate_distance(args) 
