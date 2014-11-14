@@ -77,35 +77,35 @@ module.exports = {
 				  did = chosen_id_name_hash.ids[n];	
 
 
-				   if(post_items.unit_choice === 'tax_silva108_simple') {
-rank = post_items.tax_depth;
-//console.log('did '+did+' rank: '+rank);
-for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
-db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
-node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;
-var tax_long_name = create_concatenated_tax_name(node_id);
-unit_name_lookup[tax_long_name] = 1;
-ukeys.push(tax_long_name);
-cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
-unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-}
-}else if(post_items.unit_choice === 'tax_silva108_custom'){
-for(var t in post_items.custom_taxa) {
-//console.log(post_items.custom_taxa[t])
-var name_and_rank = post_items.custom_taxa[t];
-var items = name_and_rank.split('_');
-var tax_short_name = items[0];
-rank = items[1];
-db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
-node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
-// TODO: 'tax_long_name' is already defined.
-var tax_long_name = create_concatenated_tax_name(node_id);
-unit_name_lookup[tax_long_name] = 1;
-ukeys.push(tax_long_name);
-cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
-unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-} // END :: for(t in post_items.custom_taxa) {
-} 
+				  if(post_items.unit_choice === 'tax_silva108_simple') {
+							rank = post_items.tax_depth;
+							//console.log('did '+did+' rank: '+rank);
+							for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
+								db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
+								node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;
+								var tax_long_name = create_concatenated_tax_name(node_id);
+								unit_name_lookup[tax_long_name] = 1;
+								ukeys.push(tax_long_name);
+								cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
+								unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+							}
+					}else if(post_items.unit_choice === 'tax_silva108_custom'){
+							for(var t in post_items.custom_taxa) {
+							//console.log(post_items.custom_taxa[t])
+									var name_and_rank = post_items.custom_taxa[t];
+									var items = name_and_rank.split('_');
+									var tax_short_name = items[0];
+									rank = items[1];
+									db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
+									node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
+									// TODO: 'tax_long_name' is already defined.
+									var tax_long_name = create_concatenated_tax_name(node_id);
+									unit_name_lookup[tax_long_name] = 1;
+									ukeys.push(tax_long_name);
+									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
+									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+							} // END :: for(t in post_items.custom_taxa) {
+					} 
 // 				  if(post_items.unit_choice === 'tax_silva108_simple') {
 
 // 						  rank = post_items.tax_depth;
@@ -161,8 +161,8 @@ unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_da
 			   // }				    
 			}
 			ukeys = ukeys.filter(onlyUnique);
-ukeys.sort();
-unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
+			ukeys.sort();
+			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
 			//ukeys = clean_custom_names(ukeys);
 			
 
@@ -452,12 +452,12 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
+	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
 		
-		biom_matrix.rows.push({ id: ukeys[uk], metadata: {} });
+		biom_matrix.rows.push({ name: ukeys[uk], metadata: {} });
 		
 		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
@@ -471,9 +471,9 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	}else{
     // TODO: "'n' is already defined."
 		for(var n in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n].id] = 0;
+		  	max_count[biom_matrix.columns[n].name] = 0;
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
+		  		max_count[biom_matrix.columns[n].name] += biom_matrix.data[d][n];
 		  	}
 		}
 		max = 0;
