@@ -75,7 +75,7 @@ if (typeof barcharts_btn !=="undefined") {
 //
 //
 //
-function load_tt(visual) {
+function load_tooltip(visual) {
 
   if(visual === 'counts_table') {
 
@@ -162,17 +162,17 @@ function create_counts_table() {
       html += "<table border='1' class='single_border small_font counts_table' >";
       html += "<tr><td></td>";
       for(i in mtx_local.columns){
-        html += "<td>"+mtx_local.columns[i].id +"</td>"
+        html += "<td>"+mtx_local.columns[i].name +"</td>"
       }
       html += "</tr>";
       
       for(i in mtx_local.rows){
         html += "<tr>";
-        html += "<td>"+mtx_local.rows[i].id +"</td>";
+        html += "<td>"+mtx_local.rows[i].name +"</td>";
         for(d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = mtx_local.columns[d].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          var id  = mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
           html += "<td id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
           //html += "<td>"+mtx_local.data[i][d] +"</td>";
         }
@@ -202,7 +202,7 @@ function create_counts_table() {
       tooltip_tbl += "</span>";
       document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
       tt_div.innerHTML = html;
-      load_tt('counts_table');
+      load_tooltip('counts_table');
 };
 //
 //  CREATE METADATA TABLE
@@ -255,11 +255,11 @@ function create_piecharts(ts) {
       var counts_per_ds = [];
       var tmp={};
       for(var i in mtx_local.columns){
-        tmp[mtx_local.columns[i].id]=[]; // datasets
+        tmp[mtx_local.columns[i].name]=[]; // datasets
       }
       for(var x in mtx_local.data){
         for(var i in mtx_local.columns){
-          tmp[mtx_local.columns[i].id].push(mtx_local.data[x][i]);
+          tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
         }       
       }
       var myjson_obj={};
@@ -275,7 +275,7 @@ function create_piecharts(ts) {
 
       var unit_list = [];
       for(o in mtx_local.rows){
-        unit_list.push(mtx_local.rows[o].id);
+        unit_list.push(mtx_local.rows[o].name);
       }
       var colors = get_colors(unit_list);
       var pies_per_row = 4;
@@ -366,7 +366,7 @@ function create_piecharts(ts) {
       tooltip_tbl += "</table>";  
       tooltip_tbl += "</span>";
       document.getElementById('piebarcharts_tooltip_div').innerHTML = tooltip_tbl;
-      load_tt('piecharts');
+      load_tooltip('piecharts');
       //hm_div.innerHTML = html;
 };
 //
@@ -379,9 +379,9 @@ function create_barcharts(ts) {
         data = [];
         for (var o in mtx_local.columns){
           tmp={};
-          tmp.DatasetName = mtx_local.columns[o].id;
+          tmp.DatasetName = mtx_local.columns[o].name;
           for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].id] = mtx_local.data[t][o];
+            tmp[mtx_local.rows[t].name] = mtx_local.data[t][o];
           }
           data.push(tmp);
         }
@@ -390,7 +390,7 @@ function create_barcharts(ts) {
         var unit_list = [];
         // TODO: "'o' is already defined."
         for (var o in mtx_local.rows){
-          unit_list.push(mtx_local.rows[o].id);
+          unit_list.push(mtx_local.rows[o].name);
         }
         
 
@@ -441,7 +441,7 @@ function create_barcharts(ts) {
       tooltip_tbl += "</table>";  
       tooltip_tbl += "</span>";
       document.getElementById('piebarcharts_tooltip_div').innerHTML = tooltip_tbl;
-      load_tt('barcharts');
+      load_tooltip('barcharts');
 }
 
 //////////////////////////////////////////////////////////////////////////////////
