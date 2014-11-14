@@ -11,17 +11,17 @@ module.exports = {
 		//
 		//  CREATE PIECHARTS HTML
 		//
-		create_piecharts_html: function( ts, res, mtx ) {
+		create_piecharts_html: function( timestamp, res, mtx ) {
 			
 
   		var counts_per_ds = [];
   		var tmp={};
   		for(var i in mtx.columns){
-  			tmp[mtx.columns[i].id]=[]; // datasets
+  			tmp[mtx.columns[i].name]=[]; // datasets
   		}
 			for(var x in mtx.data){
   			for(var i in mtx.columns){
-  				tmp[mtx.columns[i].id].push(mtx.data[x][i]);
+  				tmp[mtx.columns[i].name].push(mtx.data[x][i]);
   			}  			
   		}
   		var myjson_obj={};
@@ -37,13 +37,19 @@ module.exports = {
 
   		var unit_list = [];
 			for(o in mtx.rows){
-				unit_list.push(mtx.rows[o].id);
+				unit_list.push(mtx.rows[o].name);
 			}
 			var colors = get_colors(unit_list);
-			var pies_per_row = 4;
+			var pies_per_row = 6;
+			//iw = 800
+			var image_w = 800;
 			var m = 20;  // margin
-	    var r = 320/pies_per_row; // five pies per row
-	    var image_w = 2*(r+m)*pies_per_row;
+			//var r = 320/pies_per_row; // 4 ppr
+			var r = (((image_w - m)/pies_per_row) - (2*m)) / 2
+	    //var r = 280/pies_per_row; // radius: 6 ppr
+	    //var r = 240/pies_per_row; // radius: 8 ppr
+	    //var image_w = ((m+(2*r))*pies_per_row)+m
+	    //var image_w = 2*(r+m)*pies_per_row;
 	    
 	    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
 
@@ -76,7 +82,7 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
-		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} );
 			
 			pies.selectAll("path")
 			    .data(d3.layout.pie())
@@ -112,12 +118,18 @@ module.exports = {
 			  	.attr("dy", r+m)			  	
         	.attr("text-anchor", "left")
         	.attr("font-size","9px")
+        	.append('tspan')
+			  	.text(function(d, i) {
+			  		s = d.split('--')
+			  		return 'Project: '+s[0];
+			  	})
+			  	.append('tspan')
 			  	.text(function(d, i) {
 			  		//console.log('xxy');
 			  		//console.log(d);
-			  		//s = d.split('--')
-			  		return d;
-			  	});
+			  		s = d.split('--')
+			  		return 'Dataset: '+s[1];
+			  	}).attr('x', '-60').attr('dy', '15')
 
 			  	 
 					//console.log(svg.node());
