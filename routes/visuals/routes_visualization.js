@@ -251,12 +251,8 @@ router.get('/user_data/counts_table', function(req, res) {
       mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
     //console.log('after cust');
-
-    var html = "<table border='1' class='single_border center_table'><tr><td>";
-    html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+    var html  = COMMON.start_visuals_html('counts_table');
+    
     html += "<table border='1' class='single_border small_font counts_table'>";
     html += "<tr class='border_row'><td></td>";
     for(var n in mtx.columns){ 
@@ -304,12 +300,7 @@ router.get('/user_data/barcharts', function(req, res) {
     if(values_updated) {
       mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
-     
-    var html = '<table border="1" class="single_border center_table"><tr><td>';
-    html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+    var html  = COMMON.start_visuals_html('barcharts');
    
     //var BCHARTS = require('./routes_bar_charts_states');
     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
@@ -336,12 +327,7 @@ router.get('/user_data/piecharts', function(req, res) {
     if(values_updated) {
       mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
     }
-
-    var html = '<table border="1" class="single_border center_table"><tr><td>';
-    html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+    var html  = COMMON.start_visuals_html('piecharts');
    
     html += PCHARTS.create_piecharts_html ( ts, res, mtx );
 
@@ -361,12 +347,7 @@ router.get('/user_data/piechart_single', function(req, res) {
     //console.log(myurl)
     var ts = myurl.query.ts;
     var ds_name = myurl.query.ds;
-
-    var html = '<table border="1" class="single_border center_table"><tr><td>';
-    html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+    var html  = COMMON.start_visuals_html('piechart');
     
     html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
@@ -581,12 +562,8 @@ router.get('/user_data/frequency_heatmap', function(req, res) {
   
   var ts    = myurl.query.ts;
   var values_updated = COMMON.check_initial_status(myurl);  
+  var html  = COMMON.start_visuals_html('frequency_heatmap');
   
-  var html = '<table border="1" class="single_border center_table"><tr><td>';
-  html += COMMON.get_selection_markup('frequency_heatmap', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-  html += '</td><td>';
-  html += COMMON.get_choices_markup('frequency_heatmap', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-  html += '</td></tr></table>';
   res.render('visuals/user_data/frequency_heatmap', {
             title: 'VAMPS Frequency Heatmap',
             timestamp: ts || 'default_timestamp',
@@ -621,12 +598,8 @@ router.get('/user_data/geospatial', function(req, res) {
   var myurl = url.parse(req.url, true);
   
   var ts    = myurl.query.ts;
-   
-  var html = '<table border="1" class="single_border center_table"><tr><td>';
-  html += COMMON.get_selection_markup('geospatial', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-  html += '</td><td>';
-  html += COMMON.get_choices_markup('geospatial', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-  html += '</td></tr></table>';
+  var html  = COMMON.start_visuals_html('geospatial');
+  
   res.render('visuals/user_data/geospatial', {
             title: 'VAMPS Geospatial Data',
             timestamp: ts || 'default_timestamp',
@@ -711,6 +684,7 @@ function IsJsonString(str) {
     }
     return true;
 }
+
 
 
 //
