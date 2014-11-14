@@ -178,7 +178,7 @@ module.exports = {
             new_counts.push(custom_count_matrix.data[c]);
             new_units.push(custom_count_matrix.rows[c]);
           }else{
-            console.log('rejecting '+custom_count_matrix.rows[c].id);
+            console.log('rejecting '+custom_count_matrix.rows[c].name);
           }
         }
         custom_count_matrix.data = new_counts;
@@ -353,12 +353,12 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: {} });
+	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
 		
-		biom_matrix.rows.push({ id: ukeys[uk], metadata: {} });
+		biom_matrix.rows.push({ name: ukeys[uk], metadata: {} });
 		
 		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
@@ -372,9 +372,9 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	}else{
     // TODO: "'n' is already defined."
 		for(var n in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n].id] = 0;
+		  	max_count[biom_matrix.columns[n].name] = 0;
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n].id] += biom_matrix.data[d][n];
+		  		max_count[biom_matrix.columns[n].name] += biom_matrix.data[d][n];
 		  	}
 		}
 		max = 0;
