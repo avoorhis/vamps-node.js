@@ -82,9 +82,11 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
-		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} );
-			
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} )
+					.attr("target",  '_blank' );
+
 			pies.selectAll("path")
+			    //.data(d3.layout.pie().sort(null))
 			    .data(d3.layout.pie())
 			  .enter().append("path")
 			    .attr("d", d3.svg.arc()
@@ -150,7 +152,74 @@ module.exports = {
 				return html;
 
 
-	  } // end fxn
+	  }, // end fxn
+	  //
+	  // SINGLE PIE
+	  //
+	  create_single_piechart_html: function( ts, ds_name, res ) {
+
+	  		var ds_index = chosen_id_name_hash.names.indexOf(ds_name);
+	  		console.log(ds_index)
+	  		var data = [];
+
+	  		var unit_list = [];
+	  		var total = 0;
+	  		for(i in biom_matrix.data){
+	  			data.push(biom_matrix.data[i][ds_index]);
+	  			total += biom_matrix.data[i][ds_index];
+	  			//data.push({name: biom_matrix.rows[i].name, cnt: biom_matrix.data[i][ds_index]});
+	  			unit_list.push(biom_matrix.rows[i].name);
+	  		}
+	  		console.log(data);
+				var width = 800,
+    			height = 500,
+    			radius = Math.min(width, height) / 2;
+				var colors = get_colors(unit_list);
+	  		//console.log(colors);
+
+	  		var arc = d3.svg.arc()
+    			.outerRadius(radius - 10)
+    			.innerRadius(0);
+
+				var pie = d3.layout.pie()
+    			//.sort()
+    			.value(function(d) { return d; });
+
+    		var svg = d3.select("body").append("svg")
+				    .attr("width", width)
+				    .attr("height", height)
+				  .append("g")
+				    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");				
+
+				var g = svg.selectAll(".arc")
+				      .data(pie(data))
+				    .enter().append("g")
+				      .attr("class", "arc")
+				     .attr("id",function(d,i) { 
+		      	var cnt =  d.value;
+		      	//var total = this._parentNode.__data__['total'];
+		      	
+		      	//console.log(this._parentNode);
+		      	var pct = (cnt * 100 / total).toFixed(2);
+		       	return unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+		       	//return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+					}) 
+		      .attr("class","tooltip")
+
+				g.append("path")
+				      .attr("d", arc)
+				      .style("fill", function(d,i) { return colors[i]; });
+
+				var svgGraph = d3.selectAll('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
+					
+				var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
+					
+				var html = "<div id='' class='chart_div center_table'>"+svgXML+"</div>";
+			
+				d3.select('svg').remove();
+				return html;
+
+		}
 
 };
 
