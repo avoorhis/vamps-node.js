@@ -24,7 +24,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
         
         <table border='1' id='drag_table' class='small_font center_table' >
         <% for (var i in items.names){ %>
-            <tr>
+            <tr class='tooltip_row'>
               <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
                 <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > 
                 <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
@@ -33,7 +33,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
         <% } %> 
         </table>
 
-        <div id='ds_save_order_div' class='small_font'><input type='submit' id='save_order_btn' class='' value='Save Order and Return'>
+        
         
        
         </div>
@@ -42,6 +42,8 @@ Here are your <%= items.names.length %> selected datasets:<br>
     <td class='td_top'>
         
         <table border='1' class='single_border '>
+          <tr><td class='small_font'><div id='ds_save_order_div' class='small_font'><input type='submit' id='save_order_btn' class='' value='Save Order and Return'></td></tr>
+          
           <tr><td class='small_font'>Drag rows to re-order<br>OR</td></tr>
         
           <tr><td class='small_font'><input type='button' value='Alphabetize'><br>OR</td></tr>
