@@ -68,7 +68,7 @@ module.exports = {
 		    html += '</tr>';
 		    var n=1;
 		    for(x_dname in dm) {
-		      html += "<tr id='"+x_dname+"'>";
+		      html += "<tr id='"+x_dname+"' class='tooltip_row' >";
 		      html += "<td  id='"+x_dname+"' class='dragHandle'>"+n.toString()+"</td><td class='dragHandle ds_cell' >"+x_dname+"</td>";
 		      for(y_dname in dm) {
 		      	
