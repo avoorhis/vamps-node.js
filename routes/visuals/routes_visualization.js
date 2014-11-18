@@ -71,8 +71,9 @@ router.post('/view_selection',  function(req, res) {
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
     metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
     // GLOBAL
-    
-    //console.log(metadata);
+    console.log('metadata');
+    console.log(metadata);
+    console.log('metadata');
     //console.log('MAP:::');
     //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
     //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
