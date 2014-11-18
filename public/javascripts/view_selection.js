@@ -72,6 +72,27 @@ if (typeof barcharts_btn !=="undefined") {
       
   });
 }
+
+//
+//
+//
+// TEST
+//
+test_link = document.getElementById('test_page');
+if (typeof test_link !=="undefined") {
+  test_link.addEventListener('click', function () {
+      //alert('here in pc')
+      create_test_page(pi_local.ts);
+  });
+}
+function create_test_page(ts) {
+  
+
+var opened = window.open("");
+opened.document.write("<html><head><title>My title</title></head><body>test</body></html>");
+
+
+}
 //
 //
 //
@@ -144,10 +165,8 @@ function show_visual_element(table_div, btn){
 // TAX TABLE
 //
 function create_counts_table() {
-      //alert(local_data.unit_choice)
-      tt_div = document.getElementById('tax_table_div');
-      document.getElementById('pre_counts_table_div').style.display = 'block';
-      
+
+      var count_table_window = window.open();
       var html = '';
       //var html = "<div id='' class='visual_top_div'>";
       //html += "<input type='button' id='counts_table_hide_btn' value='close'>";
@@ -173,7 +192,7 @@ function create_counts_table() {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
           var id  = mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          html += "<td id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
+          html += "<td data-ot='"+id+"' data-ot-title='"+mtx_local.columns[d].name+"' data-ot-fixed='true' id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
           //html += "<td>"+mtx_local.data[i][d] +"</td>";
         }
         html += "</tr>";
@@ -188,49 +207,72 @@ function create_counts_table() {
       html += "</table>";
       
 
-      tooltip_tbl = "<span id='counts_tt_span' class='chart_tooltip' >";
-      tooltip_tbl += "<table style='margin:0'>";   
-      tooltip_tbl += "<tr>";
-      tooltip_tbl += " <td class='dataset'>Dataset:</td>";
-      tooltip_tbl += " <td id='dataset'></td>";
-      tooltip_tbl += "</tr>";
-      tooltip_tbl += "<tr>";
-      tooltip_tbl += "  <td class='count'>Count:</td>";
-      tooltip_tbl += "  <td id='count'></td>";
-      tooltip_tbl += "</tr>";    
-      tooltip_tbl += "</table>";  
-      tooltip_tbl += "</span>";
-      document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
-      tt_div.innerHTML = html;
-      load_tooltip('counts_table');
+      // tooltip_tbl = "<span id='counts_tt_span' class='chart_tooltip' >";
+      // tooltip_tbl += "<table style='margin:0'>";   
+      // tooltip_tbl += "<tr>";
+      // tooltip_tbl += " <td class='dataset'>Dataset:</td>";
+      // tooltip_tbl += " <td id='dataset'></td>";
+      // tooltip_tbl += "</tr>";
+      // tooltip_tbl += "<tr>";
+      // tooltip_tbl += "  <td class='count'>Count:</td>";
+      // tooltip_tbl += "  <td id='count'></td>";
+      // tooltip_tbl += "</tr>";    
+      // tooltip_tbl += "</table>";  
+      // tooltip_tbl += "</span>";
+      // document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
+      //tt_div.innerHTML = html;
+      
+      count_table_window.document.write("<html><head><title>VAMPS Counts</title>\n");
+      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
+      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
+      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
+      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
+      count_table_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
+      count_table_window.document.write("</head><body>"+html+"\n");
+      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
+      count_table_window.document.write("</body></html>");
+      count_table_window.document.close();
+      //load_tooltip('counts_table');
 };
 //
 //  CREATE METADATA TABLE
 //
 function create_metadata_table() {
-      //alert(local_md)
-      md_div = document.getElementById('metadata_local_table_div');
+     
+      var metadata_table_window = window.open();
+      metadata_table_window.document.write("<html><head><title>VAMPS Metadata</title>\n");
+      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
+      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
+      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
+      metadata_table_window.document.write("</head><body>\n");
+
       var html = '';
-      html += "<table border='1' class='single_border small_font md_table' >";
+      html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
       html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
-      for (var i in ds_local.ids) {
-          var did = ds_local.ids[i];
-          var ds = ds_local.names[i];
+      
+      for (var ds in md_local) {
 
-         // for(var md_name in MetadataValues[did]) { 
-          //  found_metadata = true;        
-
-            var md_value = MetadataValues[did][md_name];
-          //  if(pi_local.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
-                html += "<tr><td>"+ds+"</td><td>"+md_name+"</td><td>"+md_value+"</td></tr>";
-                
-          //  }
-         // }
+          for(k in md_local[ds]) {
+            html += "<tr>";
+            html += "<td>"+ds+"</td>";
+            md_item = k
+            md_val = md_local[ds][k]
+            html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
+            html += "</tr>";
+          }        
       }
       html += "</tbody></table>";
-      //alert(md_local[0].env_matter)
       
-      md_div.innerHTML = html;
+      
+      metadata_table_window.document.write(html+"\n");
+      metadata_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
+      metadata_table_window.document.write("<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>\n");
+      metadata_table_window.document.write("<script>\n");
+      metadata_table_window.document.write("  new Tablesort(document.getElementById('metadata_table')); \n");
+      metadata_table_window.document.write("</script>\n");
+      metadata_table_window.document.write("<script type=\"text/javascript\" src=\"/javascripts/metadata.js\"></script>\n");
+      metadata_table_window.document.write("</body></html>");
+      metadata_table_window.document.close();
 };
 //
 //  CREATE HEATMAP
@@ -249,124 +291,157 @@ function create_heatmap() {
 //
 function create_piecharts(ts) {
       
-       document.getElementById('pre_piecharts_table_div').style.display = 'block';
+       //document.getElementById('pre_piecharts_table_div').style.display = 'block';
       //d3.select('svg').remove();
+      var piecharts_window = window.open('');
+      piecharts_window.document.write("<html><head><title>VAMPS PieCharts</title>");
+      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">");
+      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">");
+      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">  ");
+      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
+      piecharts_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
+      piecharts_window.document.write("</head><body>");
+      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
+      piecharts_window.document.write("</body></html>");
+      piecharts_window.document.close();
+      //piecharts_window.document.write()
+      var newWindowRoot = d3.select(piecharts_window.document.body);
+      newWindowRoot
+        .append("div")
+          .attr("class", "pies")
+          .attr("id","viz")
+          .style("width","500px")
+          .style("text-align","center")
+          .style("background","lightgray")
+          .style("border","1px solid black")
 
-      var counts_per_ds = [];
-      var tmp={};
-      for(var i in mtx_local.columns){
-        tmp[mtx_local.columns[i].name]=[]; // datasets
-      }
-      for(var x in mtx_local.data){
-        for(var i in mtx_local.columns){
-          tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
-        }       
-      }
-      var myjson_obj={};
-      myjson_obj.names=[];
-      myjson_obj.values=[];
-      for(var x in tmp) {
-        counts_per_ds.push(tmp[x]);
-        myjson_obj.names.push(x);
-        myjson_obj.values.push(tmp[x]);
-      }
-      
-      //alert(myjson_obj.names);
+
+     var myjson_obj=[];
+     
+     for(var g in mtx_local.columns) {  // per ds
+        
+        var ds = mtx_local.columns[g].name;
+        var tdata = [];
+        var ttax = [];        
+        total = 0;
+        var totals = [];
+        for(k in mtx_local.data){
+          tdata.push(mtx_local.data[k][g])
+          ttax.push(mtx_local.rows[k].name);
+          total += mtx_local.data[k][g]
+        }
+        for(k in mtx_local.data) {
+          totals.push(total)
+        }
+        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:totals });  // one for each dataset
+        //var total = d3.sum(tdata, function(d){ return d; });
+        //alert(totals[ds]);
+     }
+
+
+//alert(JSON.stringify(myjson_obj))
 
       var unit_list = [];
       for(o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
       }
       var colors = get_colors(unit_list);
+   //   var pies_per_row = 4;
+   //   var m = 20;  // margin
+  //    var r = 320/pies_per_row; // five pies per row
+  //    var image_w = 2*(r+m)*pies_per_row;
+      
+  //    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
+      var w = 100;
+      var h = 100;
+      var radius = 50;
       var pies_per_row = 4;
-      var m = 20;  // margin
-      var r = 320/pies_per_row; // five pies per row
-      var image_w = 2*(r+m)*pies_per_row;
-      
-      var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
 
-      
       var arc = d3.svg.arc()
-                .innerRadius(r / 2)
-                .outerRadius(r);
-
+          .outerRadius(radius - 10);       
+                
+      var pie = d3.layout.pie()
+            .value(function (d) { return d; })
+            .sort(null);
       
+      // var tooltip = d3.select(piecharts_window.document.body)
+      //     .append("div")
+      //     .attr("id","tooltip")
+      //     .attr("class","hidden")
+      //     .style("visibility", "hidden")
+      //     .append("span")
+      //     .attr("id", "value")
+      //     .text("a simple tooltip");
+
+
+      //var svg = newWindowRoot
+      var svg = newWindowRoot.select("#viz")
+            .selectAll('svg')
+            .data(myjson_obj)
+            .enter().append("svg")
+      //var svgContainer = d3.select('#viz_div').append('svg')
+            .attr('width', radius*2)
+            .attr('height',radius*2)
+            .append("g")
+            .attr("transform", "translate(" + radius + "," + radius + ")")
            
-
-      //var counts_per_ds = [[100,20,5],[20,20,20]];
+            .append("a")
+              .attr("id", function(d,i) { return myjson_obj[i].name } )
+              .attr("xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj[i].name+'&ts='+ts;} );           
       
-      //for(i in counts_per_ds){
-      var svgContainer = d3.select("#piecharts_div").append("svg")
-                                  .attr("width",image_w)
-                                  .attr("height",image_h);
-      
-      var pies =  svgContainer.selectAll("svg")
-                    .data(myjson_obj.values)
-                    .enter().append("g")          
-                      .attr("transform", function(d, i){
-                          //console.log(i);
-                          var modulo_i = i+1;
-                          var d = r+m;
-                          var h_spacer = d*2*(i % pies_per_row);
-                          var v_spacer = d*2*Math.floor(i / pies_per_row);                            
-                          return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";  
-                      })
-                    .append("a")
-                      .attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
-      
-      pies.selectAll("path")
-          .data(d3.layout.pie())
-        .enter().append("path")
-          .attr("d", d3.svg.arc()
-          .innerRadius(0)
-          .outerRadius(r))
-          .attr("id",function(d,i) { 
-            var cnt =  d.value;
-            var total = 0;
-            for(k in this.parentNode.__data__){
-              total += this.parentNode.__data__[k];
-            }
-            //var total = this.parentNode.__data__['total'];
-            //console.log(this._parentNode);
-            var pct = (cnt * 100 / total).toFixed(2);
-            //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
-            return unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
-          }) 
-          .attr("class","piebarchart_tooltip")
-          .style("fill", function(d, i) {             
-            return colors[i]; 
-          });
-
-      d3.selectAll("g")
-          .data(myjson_obj.names)
-          
-          .append("text")
-          .attr("dx", -(r+m))
-          .attr("dy", r+m)          
-          .attr("text-anchor", "left")
-          .attr("font-size","9px")
-          .text(function(d, i) {
-            return d;
-          });
-
+     
+      var arcs = svg.selectAll("g")
+          .data(function (d,i) { 
+            //alert(JSON.stringify(d.name)) 
             
-        // add dataset text
-       
-      var tooltip_tbl = "<span id='piebarchart_tt_span' class='chart_tooltip' >";
-      tooltip_tbl += "<table style='margin:0'>";      
-      tooltip_tbl += "<tr>";        
-      tooltip_tbl += "<td class='tax'>Tax:</td>";
-      tooltip_tbl += "<td id='unit'></td>";
-      tooltip_tbl += "</tr>";
-      tooltip_tbl += "<tr>";        
-      tooltip_tbl += "<td class='knt'>Count:</td>";
-      tooltip_tbl += "<td id='count'></td>";
-      tooltip_tbl += "</tr>";     
-      tooltip_tbl += "</table>";  
-      tooltip_tbl += "</span>";
-      document.getElementById('piebarcharts_tooltip_div').innerHTML = tooltip_tbl;
-      load_tooltip('piecharts');
+            return pie(d.data); })
+          .enter().append("g")
+          .attr("class", "piebarchart_tooltip")
+          .attr("id",function(d,i) {
+                var cnt = d.value;
+                //var total =1000;
+                var data = this.parentNode.__data__;
+                //ds = this.parentNode.__data__.name
+                var total = data.total[i]; 
+                //alert(JSON.stringify(this.parentNode.__data__.total[i])) 
+                
+                //var name = myjson_obj[i].name  
+                          
+                var pct = (cnt * 100 / total).toFixed(2);
+                return unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          })
+          .on("mouseover", function (d,i) {
+                var xPosition = parseFloat(d3.select(this).attr("x"));
+                var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+                //Create the tooltip label
+                svg.append("text")
+                  .attr("id", "tooltip")
+                  .attr("x", xPosition)
+                  .attr("y", yPosition)
+                  .attr("text-anchor", "middle")
+                  .attr("font-family", "sans-serif")
+                  .attr("font-size", "11px")
+                  .attr("font-weight", "bold")
+                  .attr("fill", "black")
+                  .text(d.value);
+
+                })
+                .on("mouseout", function () {
+                // Hide the tooltip
+
+                d3.select("#tooltip").remove();
+            });
+
+
+      arcs.append("path")
+          .attr("d", arc)         
+          .style("fill", function (d,i) { return colors[i]; });
+   
+      // ");
+   //   piecharts_window.document.write("  </body>\n");
+   //   piecharts_window.document.write("</html>\n");
+   //   piecharts_window.document.close();
+      //load_tooltip('piecharts');
       //hm_div.innerHTML = html;
 };
 //
@@ -374,7 +449,34 @@ function create_piecharts(ts) {
 //
 function create_barcharts(ts) {
 
-        document.getElementById('pre_barcharts_table_div').style.display = 'block';
+        //document.getElementById('pre_barcharts_table_div').style.display = 'block';
+
+      var barcharts_window = window.open('');
+      barcharts_window.document.write("<html><head><title>VAMPS BarCharts</title>");
+      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">");
+      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">");
+      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">  ");
+      barcharts_window.document.write("</head><body>");
+      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
+      barcharts_window.document.write("</body></html>");
+      barcharts_window.document.close();
+      //piecharts_window.document.write()
+      var newWindowRoot = d3.select(barcharts_window.document.body);
+      newWindowRoot
+        .append("div")
+          .attr("class", "bars")
+          .attr("id","viz")
+          .style("background","lightgray")
+          .style("border","1px solid black")
+
+     
+      var unit_list = [];
+      for(o in mtx_local.rows){
+        unit_list.push(mtx_local.rows[o].name);
+      }
+      var colors = get_colors(unit_list);  
+
+
 
         data = [];
         for (var o in mtx_local.columns){
@@ -387,12 +489,6 @@ function create_barcharts(ts) {
         }
 
       
-        var unit_list = [];
-        // TODO: "'o' is already defined."
-        for (var o in mtx_local.rows){
-          unit_list.push(mtx_local.rows[o].name);
-        }
-        
 
         var ds_count = mtx_local.shape[1];      
         var bar_height = 15;
@@ -412,6 +508,7 @@ function create_barcharts(ts) {
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
+          //alert(d.total)
           //console.log(d.total);
         });
 
@@ -427,21 +524,8 @@ function create_barcharts(ts) {
         });
       
         
-        create_svg_object(props, color, data, ts);
-        var tooltip_tbl = "<span id='piebarchart_tt_span' class='chart_tooltip' >";
-      tooltip_tbl += "<table style='margin:0'>";      
-      tooltip_tbl += "<tr>";        
-      tooltip_tbl += "<td class='tax'>Tax:</td>";
-      tooltip_tbl += "<td id='unit'></td>";
-      tooltip_tbl += "</tr>";
-      tooltip_tbl += "<tr>";        
-      tooltip_tbl += "<td class='knt'>Count:</td>";
-      tooltip_tbl += "<td id='count'></td>";
-      tooltip_tbl += "</tr>";     
-      tooltip_tbl += "</table>";  
-      tooltip_tbl += "</span>";
-      document.getElementById('piebarcharts_tooltip_div').innerHTML = tooltip_tbl;
-      load_tooltip('barcharts');
+        create_svg_object(props, color, data, ts, newWindowRoot);
+     
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -473,11 +557,14 @@ function get_image_properties(bar_height, ds_count) {
               
   return props;
 }
-function create_svg_object(props, color, data, ts) {
+//
+//
+//
+function create_svg_object(props, color, data, ts, window) {
       
       //d3.select('svg').remove();
       
-      var svg = d3.select("#barcharts_div").append("svg")
+      var svg = window.select("#viz").append("svg")
                   .attr("width",  props.width)
                   .attr("height", props.height)
                 .append("g")
@@ -507,15 +594,6 @@ function create_svg_object(props, color, data, ts) {
           .text("Percent");
      
      
-      
-
-      // var datasetBar = svg.selectAll("a")
-      //     .data(data)
-      //   .enter().append("a")
-      //   .attr("xlink:href",  'http://www.google.com' )
-      //   .append("g")
-      //     .attr("class", "g")
-      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
@@ -534,7 +612,7 @@ function create_svg_object(props, color, data, ts) {
           .attr("y", 15)  // adjust where first bar starts on x-axis
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
-          .attr("id",function(d) { 
+          .attr("id",function(d,i) { 
             var cnt =  this.parentNode.__data__[d.name];
             var total = this.parentNode.__data__['total'];
             //console.log(this._parentNode.__data__['total']);
@@ -548,30 +626,7 @@ function create_svg_object(props, color, data, ts) {
        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
        
 }
-//
-// GET REQUESTED UNITS SELECTION BOX
-//
-// function get_requested_units_selection_box() {
-//   var file_id = this.value;
-//   // Using ajax it will show the requested units module
-//   var file = '';
-//   var partial_name = '/visuals/partials/'+file_id;
-//   //alert(partial_name)
-//   var xmlhttp = new XMLHttpRequest();
-//   xmlhttp.addEventListener("load", transferComplete(file_id), false);
 
-//   xmlhttp.open("GET", partial_name);
-//   xmlhttp.onreadystatechange = function() {
-
-//          if (xmlhttp.readyState == 4 ) {
-//            var string = xmlhttp.responseText;
-
-//            var div = document.getElementById('units_select_choices_div').innerHTML = string;
-//            show_custom_taxa_tree();
-//          }
-//   };
-//   xmlhttp.send();
-// }
 
 function get_colors(unit_names){
   var colors = [];
