@@ -1,25 +1,25 @@
 // visualization: unit_selection.js
-
+// COUNTS
 tax_counts_link = document.getElementById('counts_table');
 if (typeof tax_counts_link !=="undefined") {
   tax_counts_link.addEventListener('click', function () {
-      //alert('here in tt')
+      
       create_counts_table();
   });
 }
-tax_counts_btn = document.getElementById('counts_table_hide_btn');
-tax_counts_div = document.getElementById('tax_table_div');
-if (typeof tax_counts_btn !=="undefined") {
-  tax_counts_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(tax_counts_btn.value == 'close'){
-        hide_visual_element(tax_counts_div,tax_counts_btn);
-      }else{
-        show_visual_element(tax_counts_div,tax_counts_btn);
-      }
+// tax_counts_btn = document.getElementById('counts_table_hide_btn');
+// tax_counts_div = document.getElementById('tax_table_div');
+// if (typeof tax_counts_btn !=="undefined") {
+//   tax_counts_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(tax_counts_btn.value == 'close'){
+//         hide_visual_element(tax_counts_div,tax_counts_btn);
+//       }else{
+//         show_visual_element(tax_counts_div,tax_counts_btn);
+//       }
       
-  });
-}
+//   });
+// }
 metadata_link = document.getElementById('metadata2_table');
 if (typeof metadata_link !=="undefined") {
   metadata_link.addEventListener('click', function () {
@@ -36,19 +36,19 @@ if (typeof piecharts_link !=="undefined") {
       create_piecharts(pi_local.ts);
   });
 }
-piecharts_btn = document.getElementById('piecharts_hide_btn');
-piecharts_div = document.getElementById('piecharts_div');
-if (typeof piecharts_btn !=="undefined") {
-  piecharts_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(piecharts_btn.value == 'close'){
-        hide_visual_element(piecharts_div,piecharts_btn);
-      }else{
-        show_visual_element(piecharts_div,piecharts_btn);
-      }
+// piecharts_btn = document.getElementById('piecharts_hide_btn');
+// piecharts_div = document.getElementById('piecharts_div');
+// if (typeof piecharts_btn !=="undefined") {
+//   piecharts_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(piecharts_btn.value == 'close'){
+//         hide_visual_element(piecharts_div,piecharts_btn);
+//       }else{
+//         show_visual_element(piecharts_div,piecharts_btn);
+//       }
       
-  });
-}
+//   });
+// }
 //
 // BARCHARTS
 //
@@ -59,19 +59,19 @@ if (typeof barchart_link !=="undefined") {
       create_barcharts(pi_local.ts);
   });
 }
-barcharts_btn = document.getElementById('barcharts_hide_btn');
-barcharts_div = document.getElementById('barcharts_div');
-if (typeof barcharts_btn !=="undefined") {
-  barcharts_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(barcharts_btn.value == 'close'){
-        hide_visual_element(barcharts_div,barcharts_btn);
-      }else{
-        show_visual_element(barcharts_div,barcharts_btn);
-      }
+// barcharts_btn = document.getElementById('barcharts_hide_btn');
+// barcharts_div = document.getElementById('barcharts_div');
+// if (typeof barcharts_btn !=="undefined") {
+//   barcharts_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(barcharts_btn.value == 'close'){
+//         hide_visual_element(barcharts_div,barcharts_btn);
+//       }else{
+//         show_visual_element(barcharts_div,barcharts_btn);
+//       }
       
-  });
-}
+//   });
+// }
 
 //
 //
@@ -181,18 +181,19 @@ function create_counts_table() {
       html += "<table border='1' class='single_border small_font counts_table' >";
       html += "<tr><td></td>";
       for(i in mtx_local.columns){
-        html += "<td>"+mtx_local.columns[i].name +"</td>"
+        html += "<td class=''>"+mtx_local.columns[i].name +"</td>"
       }
       html += "</tr>";
       
       for(i in mtx_local.rows){
         html += "<tr>";
-        html += "<td>"+mtx_local.rows[i].name +"</td>";
+        html += "<td class='right_justify'>"+mtx_local.rows[i].name +"</td>";
         for(d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
           var id  = mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          html += "<td data-ot='"+id+"' data-ot-title='"+mtx_local.columns[d].name+"' data-ot-fixed='true' id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
+          //html += "<td data-ot='"+id+"' data-ot-title='"+mtx_local.columns[d].name+"' data-ot-fixed='true' id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
+          html += "<td id='"+id+"' class='chart_tooltip right_justify'>"+cnt+'</td>';
           //html += "<td>"+mtx_local.data[i][d] +"</td>";
         }
         html += "</tr>";
@@ -226,9 +227,19 @@ function create_counts_table() {
       count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
       count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
       count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
-      count_table_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
+      
+      
+      //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
+      //count_table_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
+
       count_table_window.document.write("</head><body>"+html+"\n");
+      
+
+      count_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
+      count_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
+                  
+
+
       //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
       count_table_window.document.write("</body></html>");
       count_table_window.document.close();
@@ -270,7 +281,7 @@ function create_metadata_table() {
       metadata_table_window.document.write("<script>\n");
       metadata_table_window.document.write("  new Tablesort(document.getElementById('metadata_table')); \n");
       metadata_table_window.document.write("</script>\n");
-      metadata_table_window.document.write("<script type=\"text/javascript\" src=\"/javascripts/metadata.js\"></script>\n");
+      metadata_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
       metadata_table_window.document.write("</body></html>");
       metadata_table_window.document.close();
 };
@@ -294,23 +305,14 @@ function create_piecharts(ts) {
        //document.getElementById('pre_piecharts_table_div').style.display = 'block';
       //d3.select('svg').remove();
       var piecharts_window = window.open('');
-      piecharts_window.document.write("<html><head><title>VAMPS PieCharts</title>");
-      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">");
-      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">");
-      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">  ");
-      piecharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
-      piecharts_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
-      piecharts_window.document.write("</head><body>");
-      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
-      piecharts_window.document.write("</body></html>");
+     
       piecharts_window.document.close();
-      //piecharts_window.document.write()
+     
       var newWindowRoot = d3.select(piecharts_window.document.body);
-      newWindowRoot
-        .append("div")
+      newWindowRoot.append("div")
           .attr("class", "pies")
           .attr("id","viz")
-          .style("width","500px")
+          .style("width","800px")
           .style("text-align","center")
           .style("background","lightgray")
           .style("border","1px solid black")
@@ -346,16 +348,9 @@ function create_piecharts(ts) {
         unit_list.push(mtx_local.rows[o].name);
       }
       var colors = get_colors(unit_list);
-   //   var pies_per_row = 4;
-   //   var m = 20;  // margin
-  //    var r = 320/pies_per_row; // five pies per row
-  //    var image_w = 2*(r+m)*pies_per_row;
-      
-  //    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
-      var w = 100;
-      var h = 100;
-      var radius = 50;
-      var pies_per_row = 4;
+  
+      var radius = 100;
+      //var pies_per_row = 4;
 
       var arc = d3.svg.arc()
           .outerRadius(radius - 10);       
@@ -364,14 +359,10 @@ function create_piecharts(ts) {
             .value(function (d) { return d; })
             .sort(null);
       
-      // var tooltip = d3.select(piecharts_window.document.body)
-      //     .append("div")
-      //     .attr("id","tooltip")
-      //     .attr("class","hidden")
-      //     .style("visibility", "hidden")
-      //     .append("span")
-      //     .attr("id", "value")
-      //     .text("a simple tooltip");
+      var ttip = newWindowRoot
+          .append("div")  // declare the tooltip div 
+          .attr("class", "xxtooltip")              // apply the 'tooltip' class
+          .style("opacity", 1e-6);    // set the opacity to nil
 
 
       //var svg = newWindowRoot
@@ -396,53 +387,61 @@ function create_piecharts(ts) {
             
             return pie(d.data); })
           .enter().append("g")
-          .attr("class", "piebarchart_tooltip")
+          .attr("class", "chart_tooltip")
           .attr("id",function(d,i) {
-                var cnt = d.value;
-                //var total =1000;
-                var data = this.parentNode.__data__;
-                //ds = this.parentNode.__data__.name
-                var total = data.total[i]; 
-                //alert(JSON.stringify(this.parentNode.__data__.total[i])) 
-                
-                //var name = myjson_obj[i].name  
-                          
-                var pct = (cnt * 100 / total).toFixed(2);
-                return unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct.toString();
+                              
+                var total = this.parentNode.__data__.total[i]; 
+                //alert(JSON.stringify(this.parentNode.__data__.total[i]))                           
+                var pct = (d.value * 100 / total).toFixed(2);
+                return unit_list[i]+'-|-'+d.value.toString()+'-|-'+pct.toString();
           })
-          .on("mouseover", function (d,i) {
-                var xPosition = parseFloat(d3.select(this).attr("x"));
-                var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
-                //Create the tooltip label
-                svg.append("text")
-                  .attr("id", "tooltip")
-                  .attr("x", xPosition)
-                  .attr("y", yPosition)
-                  .attr("text-anchor", "middle")
-                  .attr("font-family", "sans-serif")
-                  .attr("font-size", "11px")
-                  .attr("font-weight", "bold")
-                  .attr("fill", "black")
-                  .text(d.value);
-
-                })
-                .on("mouseout", function () {
-                // Hide the tooltip
-
-                d3.select("#tooltip").remove();
-            });
+          .on("mouseover", function(d,i) { 
+              
+      //        ttip.transition()
+      //          .duration(0)  
+      //          .style("opacity", 1);                             
+              })
+          
+          .on("mousemove", function(d,i){
+            var pnode = this.parentNode;
+            var ds = pnode.__data__.name; 
+                //alert(JSON.stringify(pnode.__data__))
+            var total = pnode.__data__.total[i]; 
+            var pct = (d.value * 100 / total).toFixed(2);
+            ttip
+             .html(                
+              //var total = data.total[i]; 
+                
+                '<table>' + // The first <a> tag
+                '<tr><td colspan="2">' +  ds +'</td></tr>'+ 
+                 '<tr><td bgcolor="'+colors[i]+'" width="15">&nbsp;</td><td>'+unit_list[i] +'</td></tr>'+
+                 '<tr><td></td><td>Count ' +  d.value.toString() +'</td></tr>'+ 
+                 '<tr><td></td><td>Frequency ' +  pct.toString() +'%'+'</td></tr>'+                    // closing </a> tag
+                '</table>'
+              ).style('position','absolute')
+             .style('top', (d3.event.pageY)+'px')
+             .style('left', (d3.event.pageX+20)+'px')
+             .style('background','lightsteelblue')
+             .style('padding','3px')
+             .style('font','9px sans-serif')
+             .style('border','0px')
+             .style('border-radius','8px')
+             .style("opacity", 1);
+            
+//alert(JSON.stringify(this.parentNode))
+              
+          })
+          .on("mouseout", function (d) {
+                 // Hide the tooltip
+              ttip
+                .style("opacity", 1e-6);
+          });
 
 
       arcs.append("path")
           .attr("d", arc)         
           .style("fill", function (d,i) { return colors[i]; });
    
-      // ");
-   //   piecharts_window.document.write("  </body>\n");
-   //   piecharts_window.document.write("</html>\n");
-   //   piecharts_window.document.close();
-      //load_tooltip('piecharts');
-      //hm_div.innerHTML = html;
 };
 //
 //  CREATE BARCHARTS
@@ -458,6 +457,7 @@ function create_barcharts(ts) {
       barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">  ");
       barcharts_window.document.write("</head><body>");
       //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
+      barcharts_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
       barcharts_window.document.write("</body></html>");
       barcharts_window.document.close();
       //piecharts_window.document.write()
