@@ -6,9 +6,10 @@ $(function() {
 
               var items = tip.split('-|-');
               var tthtml = '<table>';
-              tthtml += '<tr><td>'+items[0]+'</td></tr>';  
-              tthtml += '<tr><td>count: '+items[1]+'</td></tr>';  
-              tthtml += '<tr><td>frequency: '+items[2]+'%</td></tr>';  
+              tthtml += '<tr><td>'+items[1]+'</td></tr>';  
+              tthtml += '<tr><td>'+items[0]+'</td></tr>'; 
+              tthtml += '<tr><td>count: '+items[2]+'</td></tr>';  
+              tthtml += '<tr><td>frequency: '+items[3]+'%</td></tr>';  
               tthtml += '</table>'; 
               $(this).attr('title','');   
               $(this).append('<div class=\"tooltip\"><div class=\"tipBody\">' + tthtml+ '</div></div>');       
@@ -17,7 +18,7 @@ $(function() {
 
       }).mousemove(function(e) {    
               $('.tooltip').css('top', e.pageY + 10 );
-              $('.tooltip').css('left', e.pageX + 20 );  
+              $('.tooltip').css('left', e.pageX + 20 ); 
       }).mouseout(function() {   
               $(this).attr('title',$('.tipBody').html());    
               $(this).children('div.tooltip').remove();
