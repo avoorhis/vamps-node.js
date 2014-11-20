@@ -60,10 +60,6 @@ module.exports = {
 
 			var pie = d3.layout.pie();
 				   
-
-			//var counts_per_ds = [[100,20,5],[20,20,20]];
-			
-			//for(i in counts_per_ds){
 			var svgContainer = d3.select("body").append("svg")
                                   .attr("width",image_w)
                                   .attr("height",image_h);
@@ -82,9 +78,14 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
+<<<<<<< HEAD
 		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} )
 					.attr("target",  '_blank' );
 
+=======
+		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} );
+			
+>>>>>>> all_on_one
 			pies.selectAll("path")
 			    //.data(d3.layout.pie().sort(null))
 			    .data(d3.layout.pie())
