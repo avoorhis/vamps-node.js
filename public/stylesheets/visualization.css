@@ -227,8 +227,9 @@
 /* client side native jquery tooltips */
 .tooltip{
     padding:5px 10px;
-    background-color:#e5f4fe;
-    border:#5a5959 1px solid;
+    background-color:lightsteelblue;
+    border:0;
+    border-radius:8px;
     position:absolute;
     z-index:9999;
     color:#0c0c0c;
@@ -236,7 +237,13 @@
     min-width:100px;
     min-height:50px;
 }
-.xxtooltip {
+.chart_tooltip:hover{
+    background:yellow;
+}
+.chart_row:hover{
+    background:gray;
+}
+/*.xxtooltip {
   position: absolute; 
   text-align: center;   
   width: 60px;  
@@ -246,9 +253,9 @@
   background: lightsteelblue;   
   border: 0px;                  
   border-radius: 8px;
- /*  pointer-events: none;  This line needs to be removed */
+ 
     
-}
+}*/
 
 .chart_div {
     border: 1px solid black;
