@@ -42,19 +42,24 @@ module.exports = {
 			var metadata_names = post_items.metadata;
 			
 			var metadata = [];
-
+			var metadata2 = {};
 			for (var i in chosen_id_name_hash.names) {
 				var line = {};
 				var pjds = chosen_id_name_hash.names[i];
+				metadata2[pjds] = {};
 				var tmp = pjds.split('--');
 				var did = chosen_id_name_hash.ids[i];
 				
 				for (var n in metadata_names) {				
 					var name = metadata_names[n];
+
 					if(did in MetadataValues) {
 						line[name] = MetadataValues[did][name];
+						metadata2[pjds][name] = MetadataValues[did][name];
 					}						
 				}
+				metadata2[pjds].project = tmp[0];
+				metadata2[pjds].dataset = tmp[1];
 				line.project_dataset = pjds;
 				line.project = tmp[0];
 				line.dataset = tmp[1];
@@ -63,7 +68,7 @@ module.exports = {
 				//metadata.push({'project_dataset':ds,'project':tmp[0],'dataset':tmp[1]});
 				
 			}
-			return metadata;
+			return metadata2;
 		},
 
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
