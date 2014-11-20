@@ -1,3 +1,4 @@
+//var COMMON  = require('./routes_common');
 // visualization: unit_selection.js
 // COUNTS
 tax_counts_link = document.getElementById('counts_table');
@@ -96,61 +97,61 @@ opened.document.write("<html><head><title>My title</title></head><body>test</bod
 //
 //
 //
-function load_tooltip(visual) {
+// function load_tooltip(visual) {
 
-  if(visual === 'counts_table') {
+//   if(visual === 'counts_table') {
 
-    $(".counts_tbl_tooltip").tooltip({               
-        tip: "#counts_tt_span",          
-        position: 'center below',          
-        offset: [-40,0],
-        opacity: 0.95,          
-        delay: 0,
-        onBeforeShow: function() {
+//     $(".counts_tbl_tooltip").tooltip({               
+//         tip: "#counts_tt_span",          
+//         position: 'center below',          
+//         offset: [-40,0],
+//         opacity: 0.95,          
+//         delay: 0,
+//         onBeforeShow: function() {
 
-            var passthru = this.getTrigger().attr("id");            
-            var stuff = passthru.split('-|-')
-            dname = stuff[0];
-            cnt = stuff[1];
-            pct   = stuff[2];
-            count = cnt + ' ('+pct+' %)'                       
-            $("#counts_tt_span table td#dataset").text(dname);
-            $("#counts_tt_span table td#count").text(count);               
-        },           
-    });        
-    $(".counts_tbl_tooltip").hover(function() {         
-         var cell = $(this);   
-    });  
+//             var passthru = this.getTrigger().attr("id");            
+//             var stuff = passthru.split('-|-')
+//             dname = stuff[0];
+//             cnt = stuff[1];
+//             pct   = stuff[2];
+//             count = cnt + ' ('+pct+' %)'                       
+//             $("#counts_tt_span table td#dataset").text(dname);
+//             $("#counts_tt_span table td#count").text(count);               
+//         },           
+//     });        
+//     $(".counts_tbl_tooltip").hover(function() {         
+//          var cell = $(this);   
+//     });  
 
-  }else if(visual === 'piecharts' || visual === 'barcharts') {
+//   }else if(visual === 'piecharts' || visual === 'barcharts') {
 
-    $(".piebarchart_tooltip").tooltip({               
-        tip: "#piebarchart_tt_span",          
-        position: 'center below',          
-        offset: [-30,0],
-        opacity: 0.95,          
-        delay: 0,
-        onBeforeShow: function(){  
+//     $(".piebarchart_tooltip").tooltip({               
+//         tip: "#piebarchart_tt_span",          
+//         position: 'center below',          
+//         offset: [-30,0],
+//         opacity: 0.95,          
+//         delay: 0,
+//         onBeforeShow: function(){  
            
-          var passthru = this.getTrigger().attr("id");
-          var stuff = passthru.split('-|-')
-          uname = stuff[0];
-          cnt = stuff[1];
-          pct   = stuff[2];
-          count = cnt + ' ('+pct+' %)'
-          $("#piebarchart_tt_span table td#unit").text(uname); 
-          $("#piebarchart_tt_span table td#count").text(count);      
-        },       
-    });           
-    $(".piebarchart_tooltip").hover(function() {         
-       var cell = $(this);  
-    });
+//           var passthru = this.getTrigger().attr("id");
+//           var stuff = passthru.split('-|-')
+//           uname = stuff[0];
+//           cnt = stuff[1];
+//           pct   = stuff[2];
+//           count = cnt + ' ('+pct+' %)'
+//           $("#piebarchart_tt_span table td#unit").text(uname); 
+//           $("#piebarchart_tt_span table td#count").text(count);      
+//         },       
+//     });           
+//     $(".piebarchart_tooltip").hover(function() {         
+//        var cell = $(this);  
+//     });
 
-  }else if(visual === 'metadata'){
+//   }else if(visual === 'metadata'){
 
-  }
+//   }
 
-}
+// }
 function hide_visual_element(table_div, btn){
   table_div.style.display = 'none';
   btn.value = 'open';
@@ -171,11 +172,14 @@ function create_counts_table() {
       //var html = "<div id='' class='visual_top_div'>";
       //html += "<input type='button' id='counts_table_hide_btn' value='close'>";
       //html += "</div>";
-      //html += "<table border='1' class='single_border center_table'><tr><td>";
+      html += "<table border='1' class='single_border center_table font_small'>";
+      html += '<tr><td>Current Normalization</td><td>'+pi_local.normalization+'</td></tr>';
       //html += COMMON.get_selection_markup('counts_table', pi_local);     // block for listing prior selections: domains,include_NAs ...
-      //html += '</td><td>';
+      html += "<tr><td><input type='radio' name='norm' selected value='none'>none</td>";
+      html += "<td><input type='radio' name='norm' value='max'>max</td>";
+      html += "<td><input type='radio' name='norm' value='freq'>freq</td></tr>";
       //html += COMMON.get_choices_markup('counts_table', pi_local);       // block for controls to normalize, change tax percentages or distance
-      //html += '</td></tr></table>';
+      html += '</table>';
 
 
       html += "<table border='1' class='single_border small_font counts_table' >";
@@ -186,12 +190,12 @@ function create_counts_table() {
       html += "</tr>";
       
       for(i in mtx_local.rows){
-        html += "<tr>";
+        html += "<tr class='chart_row'>";
         html += "<td class='right_justify'>"+mtx_local.rows[i].name +"</td>";
         for(d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          var id  = mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
           //html += "<td data-ot='"+id+"' data-ot-title='"+mtx_local.columns[d].name+"' data-ot-fixed='true' id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
           html += "<td id='"+id+"' class='chart_tooltip right_justify'>"+cnt+'</td>';
           //html += "<td>"+mtx_local.data[i][d] +"</td>";
@@ -208,20 +212,7 @@ function create_counts_table() {
       html += "</table>";
       
 
-      // tooltip_tbl = "<span id='counts_tt_span' class='chart_tooltip' >";
-      // tooltip_tbl += "<table style='margin:0'>";   
-      // tooltip_tbl += "<tr>";
-      // tooltip_tbl += " <td class='dataset'>Dataset:</td>";
-      // tooltip_tbl += " <td id='dataset'></td>";
-      // tooltip_tbl += "</tr>";
-      // tooltip_tbl += "<tr>";
-      // tooltip_tbl += "  <td class='count'>Count:</td>";
-      // tooltip_tbl += "  <td id='count'></td>";
-      // tooltip_tbl += "</tr>";    
-      // tooltip_tbl += "</table>";  
-      // tooltip_tbl += "</span>";
-      // document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
-      //tt_div.innerHTML = html;
+     
       
       count_table_window.document.write("<html><head><title>VAMPS Counts</title>\n");
       count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
@@ -302,10 +293,8 @@ function create_heatmap() {
 //
 function create_piecharts(ts) {
       
-       //document.getElementById('pre_piecharts_table_div').style.display = 'block';
-      //d3.select('svg').remove();
       var piecharts_window = window.open('');
-     
+
       piecharts_window.document.close();
      
       var newWindowRoot = d3.select(piecharts_window.document.body);
@@ -325,19 +314,22 @@ function create_piecharts(ts) {
         var ds = mtx_local.columns[g].name;
         var tdata = [];
         var ttax = [];        
-        total = 0;
-        var totals = [];
+        //total = 0;
+        //var totals = [];
+        total = mtx_local.column_totals[g]
         for(k in mtx_local.data){
           tdata.push(mtx_local.data[k][g])
           ttax.push(mtx_local.rows[k].name);
-          total += mtx_local.data[k][g]
+          //total = mtx_local.data[k][g]
+          
         }
-        for(k in mtx_local.data) {
-          totals.push(total)
-        }
-        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:totals });  // one for each dataset
+        //for(k in mtx_local.data) {
+          //totals.push(total)
+        //}
+
+        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:total });  // one for each dataset
         //var total = d3.sum(tdata, function(d){ return d; });
-        //alert(totals[ds]);
+        //alert(totals);
      }
 
 
@@ -361,7 +353,7 @@ function create_piecharts(ts) {
       
       var ttip = newWindowRoot
           .append("div")  // declare the tooltip div 
-          .attr("class", "xxtooltip")              // apply the 'tooltip' class
+          .attr("class", "tooltip")              // apply the 'tooltip' class
           .style("opacity", 1e-6);    // set the opacity to nil
 
 
@@ -390,8 +382,8 @@ function create_piecharts(ts) {
           .attr("class", "chart_tooltip")
           .attr("id",function(d,i) {
                               
-                var total = this.parentNode.__data__.total[i]; 
-                //alert(JSON.stringify(this.parentNode.__data__.total[i]))                           
+                var total = this.parentNode.__data__.total; 
+                //alert(JSON.stringify(this.parentNode.__data__.total))                           
                 var pct = (d.value * 100 / total).toFixed(2);
                 return unit_list[i]+'-|-'+d.value.toString()+'-|-'+pct.toString();
           })
@@ -406,12 +398,10 @@ function create_piecharts(ts) {
             var pnode = this.parentNode;
             var ds = pnode.__data__.name; 
                 //alert(JSON.stringify(pnode.__data__))
-            var total = pnode.__data__.total[i]; 
+            var total = pnode.__data__.total; 
             var pct = (d.value * 100 / total).toFixed(2);
             ttip
-             .html(                
-              //var total = data.total[i]; 
-                
+             .html( 
                 '<table>' + // The first <a> tag
                 '<tr><td colspan="2">' +  ds +'</td></tr>'+ 
                  '<tr><td bgcolor="'+colors[i]+'" width="15">&nbsp;</td><td>'+unit_list[i] +'</td></tr>'+
@@ -450,15 +440,7 @@ function create_barcharts(ts) {
 
         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
-      var barcharts_window = window.open('');
-      barcharts_window.document.write("<html><head><title>VAMPS BarCharts</title>");
-      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">");
-      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">");
-      barcharts_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">  ");
-      barcharts_window.document.write("</head><body>");
-      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
-      barcharts_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
-      barcharts_window.document.write("</body></html>");
+      var barcharts_window = window.open('');      
       barcharts_window.document.close();
       //piecharts_window.document.write()
       var newWindowRoot = d3.select(barcharts_window.document.body);
@@ -524,7 +506,7 @@ function create_barcharts(ts) {
         });
       
         
-        create_svg_object(props, color, data, ts, newWindowRoot);
+        create_svg_object(props, color, colors, data, ts, newWindowRoot);
      
 }
 
@@ -560,10 +542,15 @@ function get_image_properties(bar_height, ds_count) {
 //
 //
 //
-function create_svg_object(props, color, data, ts, window) {
+function create_svg_object(props, color, colors, data, ts, window) {
       
       //d3.select('svg').remove();
       
+      var ttip = window
+          .append("div")  // declare the tooltip div 
+          .attr("class", "tooltip")              // apply the 'tooltip' class
+          .style("opacity", 1e-6);    // set the opacity to nil
+
       var svg = window.select("#viz").append("svg")
                   .attr("width",  props.width)
                   .attr("height", props.height)
@@ -613,15 +600,56 @@ function create_svg_object(props, color, data, ts, window) {
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
           .attr("id",function(d,i) { 
-            var cnt =  this.parentNode.__data__[d.name];
-            var total = this.parentNode.__data__['total'];
+            var pnode = this.parentNode;
+            var cnt =  pnode.__data__[d.name];
+            var total = pnode.__data__['total'];
             //console.log(this._parentNode.__data__['total']);
             var pct = (cnt * 100 / total).toFixed(2);
             return d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
-          .attr("class","piebarchart_tooltip")
-          .style("fill",   function(d) { return color(d.name); });
+          .on("mouseover", function(d,i) { 
+              
+                            
+              })
+          
+          .on("mousemove", function(d,i){
+            var pnode = this.parentNode;
+            //var ds = pnode.__data__.name; 
+            //alert(JSON.stringify(pnode.__data__))
+            var ds = pnode.__data__.DatasetName
+            var cnt =  pnode.__data__[d.name];
+            var total = pnode.__data__['total'];
+            //console.log(this._parentNode.__data__['total']);
+            var pct = (cnt * 100 / total).toFixed(2);
+            ttip
+             .html( 
+                '<table>' + // The first <a> tag
+                '<tr><td colspan="2">' +  ds +'</td></tr>'+ 
+                 '<tr><td bgcolor="'+colors[i]+'" width="15">&nbsp;</td><td>'+d.name +'</td></tr>'+
+                 '<tr><td></td><td>Count ' +  cnt.toString() +'</td></tr>'+ 
+                 '<tr><td></td><td>Frequency ' +  pct.toString() +'%'+'</td></tr>'+                    // closing </a> tag
+                '</table>'
+              ).style('position','absolute')
+             .style('top', (d3.event.pageY)+'px')
+             .style('left', (d3.event.pageX+20)+'px')
+             .style('background','lightsteelblue')
+             .style('padding','3px')
+             .style('font','9px sans-serif')
+             .style('border','0px')
+             .style('border-radius','8px')
+             .style("opacity", 1);
+            
+//alert(JSON.stringify(this.parentNode))
+              
+          })
+          .on("mouseout", function (d) {
+                 // Hide the tooltip
+              ttip
+                .style("opacity", 1e-6);
+          })
+          //.attr("class","piebarchart_tooltip")
+          .style("fill",   function(d,i) { return colors[i]; });
 
        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
        
