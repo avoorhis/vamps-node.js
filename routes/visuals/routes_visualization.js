@@ -241,119 +241,119 @@ router.get('/reorder_datasets', function(req, res) {
 //
 //  C O U N T S  T A B L E
 //
-router.get('/user_data/counts_table', function(req, res) {
+// router.get('/user_data/counts_table', function(req, res) {
   
-    var myurl = url.parse(req.url, true);
-    var ts   = myurl.query.ts;
-    var values_updated = COMMON.check_initial_status(myurl);  
+//     var myurl = url.parse(req.url, true);
+//     var ts   = myurl.query.ts;
+//     var values_updated = COMMON.check_initial_status(myurl);  
 
-    var mtx = biom_matrix
-    if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-    }
-    //console.log('after cust');
+//     var mtx = biom_matrix
+//     if(values_updated) {
+//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+//     }
+//     //console.log('after cust');
 
-    var html = "<table border='1' class='single_border center_table'><tr><td>";
-    html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
-    html += "<table border='1' class='single_border small_font counts_table'>";
-    html += '<tr><td></td>';
-    for(var n in mtx.columns){ 
-      html += '<td>'+mtx.columns[n].id+'</td>';
-    }
-    html += '</tr>';
-    for(n in mtx.rows){ 
-      html += '<tr>';
-      html += '<td>'+mtx.rows[n].id+'</td>';
-      for(i in mtx.data[n]) {
-        var cnt = mtx.data[n][i];
-        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
-        var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
-        html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
-      }
-      html += '</tr>';
-    }
-    html += '<tr>';
-    html += "<td class='right_justify'><strong>Sums:</strong></td>";
-    for(n in mtx.column_totals) {
-      html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
-    } 
-    html += '</tr>';
-    html += '</table>';
+//     var html = "<table border='1' class='single_border center_table'><tr><td>";
+//     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
+//     html += '</td><td>';
+//     html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
+//     html += '</td></tr></table>';
+//     html += "<table border='1' class='single_border small_font counts_table'>";
+//     html += '<tr><td></td>';
+//     for(var n in mtx.columns){ 
+//       html += '<td>'+mtx.columns[n].id+'</td>';
+//     }
+//     html += '</tr>';
+//     for(n in mtx.rows){ 
+//       html += '<tr>';
+//       html += '<td>'+mtx.rows[n].id+'</td>';
+//       for(i in mtx.data[n]) {
+//         var cnt = mtx.data[n][i];
+//         var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
+//         var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
+//         html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
+//       }
+//       html += '</tr>';
+//     }
+//     html += '<tr>';
+//     html += "<td class='right_justify'><strong>Sums:</strong></td>";
+//     for(n in mtx.column_totals) {
+//       html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
+//     } 
+//     html += '</tr>';
+//     html += '</table>';
 
-    res.render('visuals/user_data/counts_table', {
-      title: 'VAMPS Counts Table',
-      timestamp: ts || 'default_timestamp',
-      html : html,
-      user: req.user
-    });
-});
+//     res.render('visuals/user_data/counts_table', {
+//       title: 'VAMPS Counts Table',
+//       timestamp: ts || 'default_timestamp',
+//       html : html,
+//       user: req.user
+//     });
+// });
 
 //
 // B A R C H A R T S
 //
-router.get('/user_data/barcharts', function(req, res) {
-    var myurl = url.parse(req.url, true);
-    //console.log(myurl)
-    var ts = myurl.query.ts;
-    var values_updated = COMMON.check_initial_status(myurl);  
+// router.get('/user_data/barcharts', function(req, res) {
+//     var myurl = url.parse(req.url, true);
+//     //console.log(myurl)
+//     var ts = myurl.query.ts;
+//     var values_updated = COMMON.check_initial_status(myurl);  
   
 
-    var mtx = biom_matrix;
-    if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-    }
+//     var mtx = biom_matrix;
+//     if(values_updated) {
+//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+//     }
      
-    var html = '<table border="1" class="single_border center_table"><tr><td>';
-    html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+//     var html = '<table border="1" class="single_border center_table"><tr><td>';
+//     html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+//     html += '</td><td>';
+//     html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+//     html += '</td></tr></table>';
    
-    //var BCHARTS = require('./routes_bar_charts_states');
-    html += BCHARTS.create_barcharts_html ( ts, res, mtx );
+//     //var BCHARTS = require('./routes_bar_charts_states');
+//     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
 
-    res.render('visuals/user_data/barcharts', {
-          title: 'VAMPS StackbarCharts',
-          timestamp: ts || 'default_timestamp',
-          html : html,
-          user: req.user
-        });
+//     res.render('visuals/user_data/barcharts', {
+//           title: 'VAMPS StackbarCharts',
+//           timestamp: ts || 'default_timestamp',
+//           html : html,
+//           user: req.user
+//         });
 
-});
+// });
 
 //
 // P I E C H A R T S
 //
-router.get('/user_data/piecharts', function(req, res) {
-    var myurl = url.parse(req.url, true);
-    //console.log(myurl)
-    var ts = myurl.query.ts;
-    var values_updated = COMMON.check_initial_status(myurl);  
+// router.get('/user_data/piecharts', function(req, res) {
+//     var myurl = url.parse(req.url, true);
+//     //console.log(myurl)
+//     var ts = myurl.query.ts;
+//     var values_updated = COMMON.check_initial_status(myurl);  
    
-    var mtx = biom_matrix;
-    if(values_updated) {
-      mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-    }
+//     var mtx = biom_matrix;
+//     if(values_updated) {
+//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
+//     }
 
-    var html = '<table border="1" class="single_border center_table"><tr><td>';
-    html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-    html += '</td><td>';
-    html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-    html += '</td></tr></table>';
+//     var html = '<table border="1" class="single_border center_table"><tr><td>';
+//     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
+//     html += '</td><td>';
+//     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
+//     html += '</td></tr></table>';
    
-    html += PCHARTS.create_piecharts_html ( ts, res, mtx );
+//     html += PCHARTS.create_piecharts_html ( ts, res, mtx );
 
-    res.render('visuals/user_data/piecharts', {
-          title: 'VAMPS PieCharts',
-          timestamp: ts || 'default_timestamp',
-          html : html,
-          user: req.user
-        });
+//     res.render('visuals/user_data/piecharts', {
+//           title: 'VAMPS PieCharts',
+//           timestamp: ts || 'default_timestamp',
+//           html : html,
+//           user: req.user
+//         });
 
-});
+// });
 //
 // P I E C H A R T  -- S I N G L E
 //
@@ -597,21 +597,21 @@ router.get('/user_data/frequency_heatmap', function(req, res) {
 //
 //  M E T A D A T A  T A B L E
 //
-router.get('/user_data/metadata_table', function(req, res) {
-  var myurl = url.parse(req.url, true);
+// router.get('/user_data/metadata_table', function(req, res) {
+//   var myurl = url.parse(req.url, true);
   
-  var ts    = myurl.query.ts;
+//   var ts    = myurl.query.ts;
    
-  html = META.create_metadata_table(chosen_id_name_hash, visual_post_items);
-  res.render('visuals/user_data/metadata_table', {
-            title: 'VAMPS Metadata Table',
-            timestamp: ts || 'default_timestamp',
-            html : html,
-            user: req.user
-      });
+//   html = META.create_metadata_table(chosen_id_name_hash, visual_post_items);
+//   res.render('visuals/user_data/metadata_table', {
+//             title: 'VAMPS Metadata Table',
+//             timestamp: ts || 'default_timestamp',
+//             html : html,
+//             user: req.user
+//       });
  
 
-});
+// });
 //
 //  G E O S P A T I A L
 //
