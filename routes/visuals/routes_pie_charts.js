@@ -78,14 +78,10 @@ module.exports = {
 			    		return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";	
 			    })
 				.append("a")
-<<<<<<< HEAD
-		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} )
-					.attr("target",  '_blank' );
 
-=======
 		    	.attr("xlink:xlink:href",  function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+timestamp;} );
 			
->>>>>>> all_on_one
+
 			pies.selectAll("path")
 			    //.data(d3.layout.pie().sort(null))
 			    .data(d3.layout.pie())
