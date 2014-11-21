@@ -43,39 +43,7 @@ config.DISTANCECHOICES = { choices: [
         // both R and python
         
         {id: 'bray_curtis',     show: 'Bray-Curtis' },
-<<<<<<< HEAD
-   //     {id: 'manhattan',       show: 'Manhattan'   },
-   //     {id: 'gower',           show: 'Gower'       },
-   //     {id: 'euclidean',       show: 'Euclidean'   },
-        {id: 'canberra',        show: 'Canberra'    },
-        {id: 'kulczynski',      show: 'Kulczynski'  },
-        {id: 'pearson',         show: 'Pearson'     },
-        {id: 'spearman',        show: 'Spearman'    },
-// R only
-    //    {id: 'correlation',     show: 'Correlation' },
-     //   {id: 'mountford',       show: 'Mountford'   },
-    //   {id: 'chao_j',          show: 'Chao J'      },
-    //    {id: 'chao_s',          show: 'Chao S'      },
-    //    {id: 'raup',            show: 'Raup'        },
-        {id: 'binary_jaccard',         show: 'Jaccard'     },
-      //  {id: 'yue_clayton',     show: 'Yue-Clayton' }
-=======
- //       {id: 'manhattan',       show: 'Manhattan'   },
- //       {id: 'gower',           show: 'Gower'       },
- //       {id: 'euclidean',       show: 'Euclidean'   },
-       
-       
- //       {id: 'pearson',         show: 'Pearson'     },
- //       {id: 'spearman',        show: 'Spearman'    },
-// R only
-//        {id: 'correlation',     show: 'Correlation' },
-//        {id: 'mountford',       show: 'Mountford'   },
-//        {id: 'chao_j',          show: 'Chao J'      },
-//        {id: 'chao_s',          show: 'Chao S'      },
-//        {id: 'raup',            show: 'Raup'        },
-        
-//        {id: 'yue_clayton',     show: 'Yue-Clayton' }
->>>>>>> all_on_one
+
 // python distances:
 
         // {id: 'abund_jaccard',         show: 'Jaccard  - Abundance'     },
