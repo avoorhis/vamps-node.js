@@ -243,51 +243,7 @@ router.get('/reorder_datasets', function(req, res) {
 //
 // router.get('/user_data/counts_table', function(req, res) {
   
-<<<<<<< HEAD
-    var myurl = url.parse(req.url, true);
-    var ts   = myurl.query.ts;
-    var values_updated = COMMON.check_initial_status(myurl);  
 
-    var mtx = biom_matrix
-    if(values_updated) {
-      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
-    }
-    //console.log('after cust');
-    var html  = COMMON.start_visuals_html('counts_table');
-    
-    html += "<table border='1' class='single_border small_font counts_table'>";
-    html += "<tr class='border_row'><td></td>";
-    for(var n in mtx.columns){ 
-      html += '<td>'+mtx.columns[n].name+'</td>';
-    }
-    html += '</tr>';
-    for(n in mtx.rows){ 
-      html += "<tr class='tooltip_row'>";
-      html += '<td>'+mtx.rows[n].name+'</td>';
-      for(i in mtx.data[n]) {
-        var cnt = mtx.data[n][i];
-        var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
-        var id  = mtx.columns[i].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-        html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
-      }
-      html += '</tr>';
-    }
-    html += "<tr class='border_row'>";
-    html += "<td class='right_justify'><strong>Sums:</strong></td>";
-    for(n in mtx.column_totals) {
-      html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
-    } 
-    html += '</tr>';
-    html += '</table>';
-
-    res.render('visuals/user_data/counts_table', {
-      title: 'VAMPS Counts Table',
-      timestamp: ts || 'default_timestamp',
-      html : html,
-      user: req.user
-    });
-});
-=======
 //     var myurl = url.parse(req.url, true);
 //     var ts   = myurl.query.ts;
 //     var values_updated = COMMON.check_initial_status(myurl);  
@@ -335,7 +291,7 @@ router.get('/reorder_datasets', function(req, res) {
 //       user: req.user
 //     });
 // });
->>>>>>> all_on_one
+
 
 //
 // B A R C H A R T S
@@ -347,13 +303,7 @@ router.get('/reorder_datasets', function(req, res) {
 //     var values_updated = COMMON.check_initial_status(myurl);  
   
 
-<<<<<<< HEAD
-    var mtx = biom_matrix;
-    if(values_updated) {
-      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
-    }
-    var html  = COMMON.start_visuals_html('barcharts');
-=======
+
 //     var mtx = biom_matrix;
 //     if(values_updated) {
 //       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
@@ -364,7 +314,7 @@ router.get('/reorder_datasets', function(req, res) {
 //     html += '</td><td>';
 //     html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
 //     html += '</td></tr></table>';
->>>>>>> all_on_one
+
    
 //     //var BCHARTS = require('./routes_bar_charts_states');
 //     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
@@ -387,13 +337,7 @@ router.get('/reorder_datasets', function(req, res) {
 //     var ts = myurl.query.ts;
 //     var values_updated = COMMON.check_initial_status(myurl);  
    
-<<<<<<< HEAD
-    var mtx = biom_matrix;
-    if(values_updated) {
-      mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
-    }
-    var html  = COMMON.start_visuals_html('piecharts');
-=======
+
 //     var mtx = biom_matrix;
 //     if(values_updated) {
 //       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
@@ -404,7 +348,7 @@ router.get('/reorder_datasets', function(req, res) {
 //     html += '</td><td>';
 //     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
 //     html += '</td></tr></table>';
->>>>>>> all_on_one
+
    
 //     html += PCHARTS.create_piecharts_html ( ts, res, mtx );
 
