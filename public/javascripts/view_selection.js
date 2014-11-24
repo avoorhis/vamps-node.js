@@ -4,27 +4,39 @@
 tax_counts_link = document.getElementById('counts_table');
 if (typeof tax_counts_link !=="undefined") {
   tax_counts_link.addEventListener('click', function () {
-      
       create_counts_table();
   });
 }
-// tax_counts_btn = document.getElementById('counts_table_hide_btn');
-// tax_counts_div = document.getElementById('tax_table_div');
-// if (typeof tax_counts_btn !=="undefined") {
-//   tax_counts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(tax_counts_btn.value == 'close'){
-//         hide_visual_element(tax_counts_div,tax_counts_btn);
-//       }else{
-//         show_visual_element(tax_counts_div,tax_counts_btn);
-//       }
+tax_counts_btn = document.getElementById('counts_table_hide_btn');
+tax_counts_div = document.getElementById('tax_table_div');
+if (typeof tax_counts_btn !=="undefined") {
+  tax_counts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(tax_counts_btn.value == 'close'){
+        hide_visual_element(tax_counts_div,tax_counts_btn);
+      }else{
+        show_visual_element(tax_counts_div,tax_counts_btn);
+      }
       
-//   });
-// }
+  });
+}
 metadata_link = document.getElementById('metadata2_table');
 if (typeof metadata_link !=="undefined") {
   metadata_link.addEventListener('click', function () {
       create_metadata_table();
+  });
+}
+metadata_btn = document.getElementById('metadata_table_hide_btn');
+metadata_div = document.getElementById('metadata_table_div');
+if (typeof metadata_btn !=="undefined") {
+  metadata_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(metadata_btn.value == 'close'){
+        hide_visual_element(metadata_div,metadata_btn);
+      }else{
+        show_visual_element(metadata_div,metadata_btn);
+      }
+      
   });
 }
 //
@@ -37,19 +49,19 @@ if (typeof piecharts_link !=="undefined") {
       create_piecharts(pi_local.ts);
   });
 }
-// piecharts_btn = document.getElementById('piecharts_hide_btn');
-// piecharts_div = document.getElementById('piecharts_div');
-// if (typeof piecharts_btn !=="undefined") {
-//   piecharts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(piecharts_btn.value == 'close'){
-//         hide_visual_element(piecharts_div,piecharts_btn);
-//       }else{
-//         show_visual_element(piecharts_div,piecharts_btn);
-//       }
+piecharts_btn = document.getElementById('piecharts_hide_btn');
+piecharts_div = document.getElementById('piecharts_div');
+if (typeof piecharts_btn !=="undefined") {
+  piecharts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(piecharts_btn.value == 'close'){
+        hide_visual_element(piecharts_div,piecharts_btn);
+      }else{
+        show_visual_element(piecharts_div,piecharts_btn);
+      }
       
-//   });
-// }
+  });
+}
 //
 // BARCHARTS
 //
@@ -60,19 +72,19 @@ if (typeof barchart_link !=="undefined") {
       create_barcharts(pi_local.ts);
   });
 }
-// barcharts_btn = document.getElementById('barcharts_hide_btn');
-// barcharts_div = document.getElementById('barcharts_div');
-// if (typeof barcharts_btn !=="undefined") {
-//   barcharts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(barcharts_btn.value == 'close'){
-//         hide_visual_element(barcharts_div,barcharts_btn);
-//       }else{
-//         show_visual_element(barcharts_div,barcharts_btn);
-//       }
+barcharts_btn = document.getElementById('barcharts_hide_btn');
+barcharts_div = document.getElementById('barcharts_div');
+if (typeof barcharts_btn !=="undefined") {
+  barcharts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(barcharts_btn.value == 'close'){
+        hide_visual_element(barcharts_div,barcharts_btn);
+      }else{
+        show_visual_element(barcharts_div,barcharts_btn);
+      }
       
-//   });
-// }
+  });
+}
 
 //
 //
@@ -167,11 +179,13 @@ function show_visual_element(table_div, btn){
 //
 function create_counts_table() {
 
-      var count_table_window = window.open();
+      //var count_table_window = window.open();
+      tt_div = document.getElementById('tax_table_div');
+      document.getElementById('pre_counts_table_div').style.display = 'block';
       var html = '';
-      //var html = "<div id='' class='visual_top_div'>";
-      //html += "<input type='button' id='counts_table_hide_btn' value='close'>";
-      //html += "</div>";
+      var html = "<div id='' class='visual_top_div'>";
+      html += "<input type='button' id='counts_table_hide_btn' value='close'>";
+      html += "</div>";
       html += "<table border='1' class='single_border center_table font_small'>";
       html += '<tr><td>Current Normalization</td><td>'+pi_local.normalization+'</td></tr>';
       //html += COMMON.get_selection_markup('counts_table', pi_local);     // block for listing prior selections: domains,include_NAs ...
@@ -211,29 +225,31 @@ function create_counts_table() {
       html += "</tr>";
       html += "</table>";
       
-
+      //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
+      tt_div.innerHTML = html;
+      load_tt('counts_table');
      
       
-      count_table_window.document.write("<html><head><title>VAMPS Counts</title>\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
+      //count_table_window.document.write("<html><head><title>VAMPS Counts</title>\n");
+      //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
+      //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
+      //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
       
       
       //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
       //count_table_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
 
-      count_table_window.document.write("</head><body>"+html+"\n");
+      //count_table_window.document.write("</head><body>"+html+"\n");
       
 
-      count_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
-      count_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
+      //count_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
+      //count_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
                   
 
 
       //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
-      count_table_window.document.write("</body></html>");
-      count_table_window.document.close();
+      //count_table_window.document.write("</body></html>");
+      //count_table_window.document.close();
       //load_tooltip('counts_table');
 };
 //
@@ -241,13 +257,8 @@ function create_counts_table() {
 //
 function create_metadata_table() {
      
-      var metadata_table_window = window.open();
-      metadata_table_window.document.write("<html><head><title>VAMPS Metadata</title>\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
-      metadata_table_window.document.write("</head><body>\n");
-
+      md_div = document.getElementById('metadata_local_table_div');
+      document.getElementById('pre_metadata_table_div').style.display = 'block';
       var html = '';
       html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
       html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
@@ -264,17 +275,8 @@ function create_metadata_table() {
           }        
       }
       html += "</tbody></table>";
-      
-      
-      metadata_table_window.document.write(html+"\n");
-      metadata_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
-      metadata_table_window.document.write("<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>\n");
-      metadata_table_window.document.write("<script>\n");
-      metadata_table_window.document.write("  new Tablesort(document.getElementById('metadata_table')); \n");
-      metadata_table_window.document.write("</script>\n");
-      metadata_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
-      metadata_table_window.document.write("</body></html>");
-      metadata_table_window.document.close();
+      //alert(md_local[0].env_matter)
+      md_div.innerHTML = html;
 };
 //
 //  CREATE HEATMAP
