@@ -77,7 +77,10 @@
         </tr>
       </table>
       <a href="#" class="back">Go back</a> to the previous page.   
-  <!--
+ </div>  <!-- end grid_9  content --> 
+  
+
+<div class='grid_12'>
   <br><br>
   <div id='pre_counts_table_div' class='display_none'>
     <span class='table_title'>Tax Counts Table</span>
@@ -85,6 +88,10 @@
   </div>
   <a name='tax_table'><div id='tax_table_div'          class=''>tax table</div></a>
   <br><br>
+  <div id='pre_metadata_table_div' class='display_none'>
+    <span class='table_title'>Metadata Table</span>
+    <input type='button' id='metadata_table_hide_btn' class='close_open_btn' value='close'>
+  </div>
   <a name='metadata'><div id='metadata_local_table_div'class=''>metadata</div> </a>
   <br><br>
   <a name='dist_heatmap'><div id='distance_heatmap_div' class=''>distance heatmap</div></a> 
@@ -114,17 +121,17 @@
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
   <div id='metadata_tooltip_div' class=''></div>
- --> 
+</div> 
 
   <div id='DEBUG_div'></div>
-  <!--
+  
   <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
   <script type="text/javascript" src="/javascripts/jquery.tooltip.js"></script>
--->
+
   <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/view_selection.js"></script>
-  
-<% include ../add_ins/end.ejs %>
+ 
+<% //include ../add_ins/end.ejs %>
 
 
