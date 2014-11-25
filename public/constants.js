@@ -86,7 +86,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram', id:'dendrogram'    },
     {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa', id:'pcoa'    },
     {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table', id:'counts_table'    },
-    {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata2_table'     },
+    {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata_table'     },
     {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial', id:'geospatial'     },
     {name:'TEST_TEST',     file:'',         link:'user_data/test_page', id:'test_page'     }
     ]};
