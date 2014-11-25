@@ -20,9 +20,15 @@
 <% if(messages.info){ %>
   <span><%= messages.info %></span>
 <% } %>
+<table class='small_font' border='1'><tr><td>
 <div id='show_selected_datasets_div' class='div_border table'>
                 <% include partials/show_selected_datasets.html %>
 </div>
+</td><td>
+<div id='show_select_items_div' class='div_border table'>
+              <% include partials/show_visual_output_choices.html %>
+</div>
+</td></tr></table>
 <table class='small_font'>
 <tr>
   <td><a href='reorder_datasets'>Reorder Datasets</a></td>
@@ -81,43 +87,59 @@
   
 
 <div class='grid_12'>
+  
+  <!-- Counts -->
   <br><br>
   <div id='pre_counts_table_div' class='display_none'>
     <span class='table_title'>Tax Counts Table</span>
     <input type='button' id='counts_table_hide_btn' class='close_open_btn' value='close'>
   </div>
-  <a name='tax_table'><div id='tax_table_div'          class=''>tax table</div></a>
+  <a name='tax_table'><div id='tax_table_div'          class=''></div></a>
+  
+  <!-- Metadata -->
   <br><br>
   <div id='pre_metadata_table_div' class='display_none'>
     <span class='table_title'>Metadata Table</span>
     <input type='button' id='metadata_table_hide_btn' class='close_open_btn' value='close'>
   </div>
-  <a name='metadata'><div id='metadata_local_table_div'class=''>metadata</div> </a>
+  <a name='metadata'><div id='metadata_local_table_div' class=''></div> </a>
+  
+  <!-- Distance heatmap -->
   <br><br>
   <a name='dist_heatmap'><div id='distance_heatmap_div' class=''>distance heatmap</div></a> 
   <br><br>
   <a name='freq_heatmap'><div id='frequency_heatmap_div' class=''>frequency heatmap</div></a> 
+  
+  <!-- BarCharts -->
   <br><br>
   <div id='pre_barcharts_table_div' class='display_none'>
     <span class='table_title'>Bar Charts</span>
     <input type='button' id='barcharts_hide_btn' class='close_open_btn' value='close'>
   </div>
-  <a name='barcharts'><div id='barcharts_div'           class=''>bar charts</div> </a>
+  <a name='barcharts'><div id='barcharts_div'           class=''></div> </a>
+  
+  <!-- PieCharts -->
   <br><br>
   <div id='pre_piecharts_table_div' class='display_none'>
     <span class='table_title'>Pie Charts</span>
     <input type='button' id='piecharts_hide_btn' class='close_open_btn' value='close'>
   </div>
-  <a name='piecharts'><div id='piecharts_div'           class=''>pie charts</div></a>
+  <a name='piecharts'><div id='piecharts_div'           class=''></div></a>
+  
+  <!-- Dendrogram -->
   <br><br>
   <a name='dendrogram'><div id='dendrogram_div'        class=''>dendrograms</div></a>
+  
+  <!-- PCoA-->
   <br><br>
   <a name='pcoa'><div id='pcoa_div'                    class=''>pcoa</div></a> 
+  <!-- -->
   <br><br> 
   <a name='geospatial'><div id='geospatial_div'        class=''>geospatial</div></a> 
+  
   <br><br> 
+  
   <div id='test_div'              class=''></div>  
-
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
   <div id='metadata_tooltip_div' class=''></div>
