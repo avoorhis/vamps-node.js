@@ -126,7 +126,7 @@ module.exports = {
           // GLOBAL Variable
           var post_hash = {};
           
-          post_hash .unit_choice                  = req.body.unit_choice;
+          post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
           post_hash.no_of_datasets               = chosen_id_name_hash.ids.length;
           post_hash.normalization                = req.body.normalization || 'none';
@@ -134,14 +134,17 @@ module.exports = {
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
           post_hash.tax_depth                    = req.body.tax_depth    || 'custom';
           post_hash.domains                      = req.body.domains      || ['NA'];
+          if(typeof post_hash.domains == 'string') {
+            post_hash.domains = post_hash.domains.split(',');
+          }
           post_hash.custom_taxa                  = req.body.custom_taxa  || ['NA'];
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
           post_hash.include_nas                  = req.body.include_nas  || 'yes';
-          post_hash.min_range                    = 0;
-          post_hash.max_range                    = 100;
+          post_hash.min_range                    = req.body.min_range || 0;
+          post_hash.max_range                    = req.body.max_range || 100;
           post_hash.metadata                     = req.body.selected_metadata  || [];
-
+          post_hash.update_data                  = req.body.update_data  || false;  // zer
           var timestamp = +new Date();  // millisecs since the epoch!
           var user = req.user || 'no-user';
           timestamp = user + '_' + timestamp;
@@ -276,105 +279,106 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     console.log('options:', options);
     PythonShell.run('distance.py', options, function (err, mtx) {
       if (err) throw err;
-
+console.log(JSON.parse(mtx))
+      return mtx;
       //console.log('results: %j', distance_matrix);
       //console.log('options: %j', options);
-      distance_matrix = JSON.parse(mtx);
+      //distance_matrix = JSON.parse(mtx);
 
       //distance_matrix = mtx
-      if(distance_matrix === {} || distance_matrix === 'err' || distance_matrix==='') {
-        html += '<div>Error -- No distances were calculated.</div>';
-      }else{
-        if(visual_name === 'heatmap') {
-          //var dm = HMAP.create_distance_matrix(distance_matrix);
-          console.log(distance_matrix)
+      // if(distance_matrix === {} || distance_matrix === 'err' || distance_matrix==='') {
+      //   html += '<div>Error -- No distances were calculated.</div>';
+      // }else{
+      //   if(visual_name === 'heatmap') {
+      //     //var dm = HMAP.create_distance_matrix(distance_matrix);
+      //     console.log(distance_matrix)
           
-          //distance_matrix = results
+      //     //distance_matrix = results
           
-          title += ' Heatmap';
-          html  += HMAP.create_hm_html(distance_matrix); 
-          res.render('visuals/user_data/'+visual_name, {
-                title: title,
-                timestamp: ts || 'default_timestamp',
-                html : html,
-                user: req.user
-          });
+      //     title += ' Heatmap';
+      //     html  += HMAP.create_hm_html(distance_matrix); 
+      //     res.render('visuals/user_data/'+visual_name, {
+      //           title: title,
+      //           timestamp: ts || 'default_timestamp',
+      //           html : html,
+      //           user: req.user
+      //     });
 
-        }else if(visual_name === 'dendrogram') {
-          //var newick = stdout
-          //html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets); 
+      //   }else if(visual_name === 'dendrogram') {
+      //     //var newick = stdout
+      //     //html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets); 
 
-          var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
-          shell_command = [req.C.RSCRIPT_CMD, dend_script_file, distmtx_file].join(' ');
-          console.log(shell_command)
-          exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+      //     var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
+      //     shell_command = [req.C.RSCRIPT_CMD, dend_script_file, distmtx_file].join(' ');
+      //     console.log(shell_command)
+      //     exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
 
-              if(stderr){console.log(stderr);}
-              stdout = stdout.trim();
-              console.log(stdout);
-              if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-                html += '<div>Error -- No distances were calculated.</div>';
-              }else{
+      //         if(stderr){console.log(stderr);}
+      //         stdout = stdout.trim();
+      //         console.log(stdout);
+      //         if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
+      //           html += '<div>Error -- No distances were calculated.</div>';
+      //         }else{
                 
                   
-                  html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
+      //             html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
                  
-                  title += ' Dendrogram';
-                  res.render('visuals/user_data/'+visual_name, {
-                        title: title,
-                        timestamp: ts || 'default_timestamp',
-                        html : html,
-                        user: req.user
-                  });
+      //             title += ' Dendrogram';
+      //             res.render('visuals/user_data/'+visual_name, {
+      //                   title: title,
+      //                   timestamp: ts || 'default_timestamp',
+      //                   html : html,
+      //                   user: req.user
+      //             });
                 
-              }
+      //         }
               
               
 
-          });
+      //     });
           
           
-        }else if(visual_name === 'pcoa') {
+      //   }else if(visual_name === 'pcoa') {
 
 
-            var pcoa_script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
-                      shell_command = [req.C.RSCRIPT_CMD, pcoa_script_file, distmtx_file].join(' ');
-                      console.log(shell_command)
-                      exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+      //       var pcoa_script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
+      //                 shell_command = [req.C.RSCRIPT_CMD, pcoa_script_file, distmtx_file].join(' ');
+      //                 console.log(shell_command)
+      //                 exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
 
-                          if(stderr){console.log(stderr);}
-                          stdout = JSON.parse(stdout);
-                          //console.log('pcoa NAMES');
-                          //console.log(stdout.names);
-                          if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-                            html += '<div>Error -- No distances were calculated.</div>';
-                          }else{
+      //                     if(stderr){console.log(stderr);}
+      //                     stdout = JSON.parse(stdout);
+      //                     //console.log('pcoa NAMES');
+      //                     //console.log(stdout.names);
+      //                     if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
+      //                       html += '<div>Error -- No distances were calculated.</div>';
+      //                     }else{
                             
                               
-                              html += PCOA.create_pcoa_graphs(stdout);  
+      //                         html += PCOA.create_pcoa_graphs(stdout);  
                              
-                              title += ' PCoA';
-                              res.render('visuals/user_data/'+visual_name, {
-                                    title: title,
-                                    timestamp: ts || 'default_timestamp',
-                                    html : html,
-                                    user: req.user
-                              });
+      //                         title += ' PCoA';
+      //                         res.render('visuals/user_data/'+visual_name, {
+      //                               title: title,
+      //                               timestamp: ts || 'default_timestamp',
+      //                               html : html,
+      //                               user: req.user
+      //                         });
                             
-                          }
+      //                     }
                           
                           
 
-                      });
+      //                 });
 
-            title += ' PCoA';
+      //       title += ' PCoA';
 
 
-        }else{
+      //   }else{
           
-        }
+      //   }
         
-      }
+      // }
 
       
     });   
