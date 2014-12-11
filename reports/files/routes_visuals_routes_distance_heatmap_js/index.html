@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">52.81</p>
+      <p class="stat">50.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">23.95</p>
+      <p class="stat">17.47</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.59</p>
+      <p class="stat">0.37</p>
     </div>
   </div>
 </div>
@@ -102,38 +102,38 @@ module.exports = {
 		//
 		//  CREATE DISTANCE MATRIX
 		//
-		create_distance_matrix: function (outstr) {
-			//console.log(&#039;stderr: &#039; + stderr);
-	    raw_distance_array = outstr.toString().split(&#039;\n&#039;);
-	    //console.log(&#039;distance array (stdout):&#039;)
-	    //console.log(outstr);
-	    var distance_matrix = {};
-	    // distance_matrix[ds1][ds2] = 2
-	    var dcolnames = raw_distance_array[0].trim().split(&quot;\t&quot;);
-	    //console.log(&#039;dcolnames:  &#039;+dcolnames)
-	    //distance_matrix[dcolname] = {};
-	    //distance_matrix[dcolname][dcolname] = 0;
-	    //console.log(dcolname);
-	    for(n in dcolnames) {
-	    	distance_matrix[dcolnames[n]] = {};
-	    }
-	    for(n in raw_distance_array){
-	    	//console.log(raw_distance_array[n])	    	
+		// create_distance_matrix: function (outstr) {
+		// 	//console.log(&#039;stderr: &#039; + stderr);
+	 //    raw_distance_array = outstr.toString().split(&#039;\n&#039;);
+	 //    //console.log(&#039;distance array (stdout):&#039;)
+	 //    //console.log(outstr);
+	 //    var distance_matrix = {};
+	 //    // distance_matrix[ds1][ds2] = 2
+	 //    var dcolnames = raw_distance_array[0].trim().split(&quot;\t&quot;);
+	 //    //console.log(&#039;dcolnames:  &#039;+dcolnames)
+	 //    //distance_matrix[dcolname] = {};
+	 //    //distance_matrix[dcolname][dcolname] = 0;
+	 //    //console.log(dcolname);
+	 //    for(n in dcolnames) {
+	 //    	distance_matrix[dcolnames[n]] = {};
+	 //    }
+	 //    for(n in raw_distance_array){
+	 //    	//console.log(raw_distance_array[n])	    	
 	    	
-	      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
-	      if( n == 0 ) { continue; }   						// skip header
-	      var items = raw_distance_array[n].trim().split(&quot;\t&quot;);
-	      //console.log(&#039;i  &#039;+items)
-		  var ds = items.shift();  // remove and return dataset
-		  //console.log(&#039;ds  &#039;+ds)
-	      for(i in items){     	
-	      	distance_matrix[ds][dcolnames[i]] = items[i];	      
-	      }	      
+	 //      if( ! raw_distance_array[n].trim() ) { continue; } // skip blank lines
+	 //      if( n == 0 ) { continue; }   						// skip header
+	 //      var items = raw_distance_array[n].trim().split(&quot;\t&quot;);
+	 //      //console.log(&#039;i  &#039;+items)
+		//   var ds = items.shift();  // remove and return dataset
+		//   //console.log(&#039;ds  &#039;+ds)
+	 //      for(i in items){     	
+	 //      	distance_matrix[ds][dcolnames[i]] = items[i];	      
+	 //      }	      
 
-	    } // end for row in raw...
-	    //console.log(distance_matrix)
-	    return distance_matrix;
-		},
+	 //    } // end for row in raw...
+	 //    //console.log(distance_matrix)
+	 //    return distance_matrix;
+		// },
 
 		//
 		//  CREATE HTML
@@ -159,7 +159,7 @@ module.exports = {
 		    html += &#039;&lt;/tr&gt;&#039;;
 		    var n=1;
 		    for(x_dname in dm) {
-		      html += &quot;&lt;tr id=&#039;&quot;+x_dname+&quot;&#039;&gt;&quot;;
+		      html += &quot;&lt;tr id=&#039;&quot;+x_dname+&quot;&#039; class=&#039;tooltip_row&#039; &gt;&quot;;
 		      html += &quot;&lt;td  id=&#039;&quot;+x_dname+&quot;&#039; class=&#039;dragHandle&#039;&gt;&quot;+n.toString()+&quot;&lt;/td&gt;&lt;td class=&#039;dragHandle ds_cell&#039; &gt;&quot;+x_dname+&quot;&lt;/td&gt;&quot;;
 		      for(y_dname in dm) {
 		      	

@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">28.31</p>
+      <p class="stat">28.49</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.32</p>
+      <p class="stat">2.31</p>
     </div>
   </div>
 </div>
@@ -104,7 +104,7 @@ module.exports = {
 		//
 		//  CREATE BARCHARTS HTML
 		//
-		create_barcharts_html: function( ts, res, mtx ) {
+		create_barcharts_html: function( timestamp, res, mtx ) {
 							
 			//var infile = path.join(__dirname, &#039;../../tmp/&#039;+ts+&#039;_count_matrix.biom&#039;);
 			//console.log(&#039;in create_barcharts_html: &#039;+infile)
@@ -115,9 +115,9 @@ module.exports = {
 	  		data = [];
 				for (var o in mtx.columns){
 	  			tmp={};
-	  			tmp.DatasetName = mtx.columns[o].id;
+	  			tmp.DatasetName = mtx.columns[o].name;
 	  			for (var t in mtx.rows){
-	  				tmp[mtx.rows[t].id] = mtx.data[t][o];
+	  				tmp[mtx.rows[t].name] = mtx.data[t][o];
 	  			}
 	  			data.push(tmp);
 	  		}
@@ -126,7 +126,7 @@ module.exports = {
   			var unit_list = [];
         // TODO: &quot;&#039;o&#039; is already defined.&quot;
   			for (var o in mtx.rows){
-  				unit_list.push(mtx.rows[o].id);
+  				unit_list.push(mtx.rows[o].name);
   			}
   			
 
@@ -163,7 +163,7 @@ module.exports = {
 				});
 			
 				console.log(data);
-		  	create_svg_object(props, color, ts, data);
+		  	create_svg_object(props, color, timestamp, data);
 
 
 			  var svgGraph = d3.select(&#039;svg&#039;).attr(&#039;xmlns&#039;, &#039;http://www.w3.org/2000/svg&#039;);
@@ -185,7 +185,7 @@ module.exports = {
 //
 //
 //
-function create_svg_object(props, color, ts, data) {
+function create_svg_object(props, color, timestamp, data) {
 
 		  var svg = d3.select(&quot;body&quot;).append(&quot;svg&quot;)
 							    .attr(&quot;width&quot;,  props.width)
@@ -232,7 +232,7 @@ function create_svg_object(props, color, ts, data) {
 		      .attr(&quot;class&quot;, &quot;g&quot;)
 		      .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.DatasetName) + &quot;)&quot;; })  
 		      .append(&quot;a&quot;)
-		    .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;piechart_single?ds=&#039;+d.DatasetName+&#039;&amp;ts=&#039;+ts;} );
+		    .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;piechart_single?ds=&#039;+d.DatasetName+&#039;&amp;ts=&#039;+timestamp;} );
 
 		  datasetBar.selectAll(&quot;rect&quot;)
 		 // 		.append(&quot;a&quot;)
