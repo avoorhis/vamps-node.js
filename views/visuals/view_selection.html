@@ -106,9 +106,15 @@
   
   <!-- Distance heatmap -->
   <br><br>
-  <a name='dist_heatmap'><div id='distance_heatmap_div' class=''>distance heatmap</div></a> 
+  <div id='pre_dheatmap_div' class='display_none'>
+    <span class='table_title'>Distance Heatmap</span>
+    <input type='button' id='dheatmap_hide_btn' class='close_open_btn' value='close'>
+  </div>
+  <a name='dheatmap'><div id='dheatmap_div' class=''>distance heatmap</div></a> 
+  
+<!-- Frequency heatmap -->
   <br><br>
-  <a name='freq_heatmap'><div id='frequency_heatmap_div' class=''>frequency heatmap</div></a> 
+  <a name='freq_heatmap'><div id='fheatmap_div' class=''>frequency heatmap</div></a> 
   
   <!-- BarCharts -->
   <br><br>
@@ -147,12 +153,115 @@
 
   <div id='DEBUG_div'></div>
   
-  <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
-  <script type="text/javascript" src="/javascripts/jquery.tooltip.js"></script>
+<script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery.tooltip.js"></script>
+<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
 
-  <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
-  <script type="text/javascript" src="/javascripts/global.js"></script>
-  <script type="text/javascript" src="/javascripts/view_selection.js"></script>
+<script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/view_selection.js"></script>
+<script>
+  $("#metadata_local_table_div").on("click", "#metadata_table", function () {
+      new Tablesort(document.getElementById('metadata_table'));
+  });
+</script>
+<script>
+
+// code for tooltips
+
+
+
+    var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+        $win = $(window),
+        showTip;
+
+    var tip = {
+      title: '',
+      offset: 12,
+      delay: 300,
+      position: function(event) {
+        var positions = {x: event.pageX, y: event.pageY};
+        var dimensions = {
+          x: [
+            $win.width(),
+            $liveTip.outerWidth()
+          ],
+          y: [
+            $win.scrollTop() + $win.height(),
+            $liveTip.outerHeight()
+          ]
+        };
+     
+        for ( var axis in dimensions ) {
+     
+          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+            positions[axis] -= dimensions[axis][1] + this.offset;
+          } else {
+            positions[axis] += this.offset;
+          }
+     
+        }
+     
+        $liveTip.css({
+          top: positions.y,
+          left: positions.x
+        });
+      }
+    };
+
+
+    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+          var link = this,
+          html = '';
+          $link = $(this);
+         
+          if (event.type == 'mouseover') {
+            tip.id = link.id;
+            link.id = '';
+            id_items = tip.id.split('-|-');
+
+            html = "<table><tr>";
+            html += "<td>"+id_items[0]+"</td>";
+            html += "</tr><tr>";
+            html += "<td>"+id_items[1]+"</td>";
+            html += "</tr><tr>";
+            html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+      
+            html += "</tr><table>";
+
+            showTip = setTimeout(function() {
+         
+              $link.data('tipActive', true);
+              
+              tip.position(event);
+         //alert(event.pageX)
+              $liveTip
+              .html('<div>' + html  + '</div>')
+              .fadeOut(0)
+              .fadeIn(200);
+         
+            }, tip.delay);
+          }
+         
+          if (event.type == 'mouseout') {
+            link.id = tip.id || link.id;
+            if ($link.data('tipActive')) {
+              $link.removeData('tipActive');
+              $liveTip.hide();
+            } else {
+              clearTimeout(showTip);
+            }
+          }
+         
+          if (event.type == 'mousemove' && $link.data('tipActive')) {
+            tip.position(event);
+          }
+                  
+     });              
+              
+    
+ </script> 
+ 
  
 <% //include ../add_ins/end.ejs %>
 
