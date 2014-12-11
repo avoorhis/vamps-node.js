@@ -198,30 +198,20 @@ function toggle_visual_element(table_div, tog, btn){
 
 
 function get_user_input(visual, ts) {
-    var norm,dist,min,max;
-    var client_normalization = document.getElementsByName('client_normalization');
-    for(i=0; i<client_normalization.length;i++) {
-      if(client_normalization[i].checked === true) {
-          //alert(client_normalization[i].value)
-          norm = client_normalization[i].value;
-      }
-    }
-    dist = document.getElementById('selected_distance').value;
-    min = document.getElementById('min_range').value;
-    max = document.getElementById('max_range').value;
+    // var norm,dist,min,max;
+    // var client_normalization = document.getElementsByName('client_normalization');
+    // for(i=0; i<client_normalization.length;i++) {
+    //   if(client_normalization[i].checked === true) {
+    //       //alert(client_normalization[i].value)
+    //       norm = client_normalization[i].value;
+    //   }
+    // }
+    // dist = document.getElementById('selected_distance').value;
+    // min = document.getElementById('min_range').value;
+    // max = document.getElementById('max_range').value;
 
     if(visual === 'counts_table'){
-      tax_counts_btn = document.getElementById('counts_table_hide_btn');
-      tax_counts_div = document.getElementById('tax_table_div');
-      create_counts_table();
-      // if(tax_counts_btn.value == 'close'){
-
-      //   toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
-      // }else{
-      //   toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
-      // }
-
-      
+      create_counts_table();      
     }else if(visual === 'metadata_table'){
       create_metadata_table();
     }else if(visual === 'piecharts'){
@@ -244,6 +234,10 @@ function get_user_input(visual, ts) {
 function create_counts_table() {
       
       tax_table_created = true;
+      var info_line = 'Frequency Counts -- ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
       var tax_counts_div = document.getElementById('tax_table_div');
       var html = '';
@@ -276,7 +270,7 @@ function create_counts_table() {
         for(d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
           html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
           
         }
@@ -328,8 +322,15 @@ function create_metadata_table() {
 //
 function create_dheatmap(ts) {
       //alert('im HM')
-      heatmap_created = true;
+      dheatmap_created = true;
       hm_div = document.getElementById('dheatmap_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Distance Heatmap -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('dheatmap_title').innerHTML = info_line;
+      
       html = ''
       args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
@@ -356,6 +357,10 @@ function create_dheatmap(ts) {
 function create_piecharts(ts) {
      
     piecharts_created = true;
+    var info_line = 'PieCharts -- ';
+    info_line += ' Normaization: ' + pi_local.normalization+'; ';
+    info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+    document.getElementById('piecharts_title').innerHTML = info_line;
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
     var counts_per_ds = [];
@@ -427,8 +432,9 @@ function create_piecharts(ts) {
             
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
+            var id = 'piecharts-|-'+unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;
             //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
-            return unit_list[i]+'-|-'+ds+'-|-'+cnt.toString()+'-|-'+pct; // ip of each rectangle should be datasetname-|-unitname-|-count
+            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
         })
         .attr("class","tooltip")
@@ -456,6 +462,10 @@ function create_piecharts(ts) {
 function create_barcharts(ts) {
         
         barcharts_created = true;
+        var info_line = 'BarCharts -- ';
+        info_line += ' Normaization: ' + pi_local.normalization+'; ';
+        info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+        document.getElementById('barcharts_title').innerHTML = info_line;
         document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
         data = [];
@@ -611,7 +621,8 @@ function create_svg_object(props, color, data, ts) {
             //console.log(this._parentNode.__data__['total']);
             var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            return d.name + '-|-' +ds+'-|-'+ cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
           .attr("class","tooltip")
