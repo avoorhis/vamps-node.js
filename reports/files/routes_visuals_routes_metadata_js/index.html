@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.78</p>
+      <p class="stat">52.89</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">99</p>
+      <p class="stat">105</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">20.77</p>
+      <p class="stat">23.94</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.47</p>
+      <p class="stat">0.55</p>
     </div>
   </div>
 </div>
@@ -133,19 +133,24 @@ module.exports = {
 			var metadata_names = post_items.metadata;
 			
 			var metadata = [];
-
+			var metadata2 = {};
 			for (var i in chosen_id_name_hash.names) {
 				var line = {};
 				var pjds = chosen_id_name_hash.names[i];
+				metadata2[pjds] = {};
 				var tmp = pjds.split(&#039;--&#039;);
 				var did = chosen_id_name_hash.ids[i];
 				
 				for (var n in metadata_names) {				
 					var name = metadata_names[n];
+
 					if(did in MetadataValues) {
 						line[name] = MetadataValues[did][name];
+						metadata2[pjds][name] = MetadataValues[did][name];
 					}						
 				}
+				metadata2[pjds].project = tmp[0];
+				metadata2[pjds].dataset = tmp[1];
 				line.project_dataset = pjds;
 				line.project = tmp[0];
 				line.dataset = tmp[1];
@@ -154,10 +159,8 @@ module.exports = {
 				//metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1]});
 				
 			}
-			return metadata;
+			return metadata2;
 		},
-
-
 
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
 				var html = &quot;&lt;table border=&#039;1&#039; id=&#039;metadata_table&#039; class=&#039;single_border center_table&#039;&gt;&quot;;
@@ -166,11 +169,14 @@ module.exports = {
 				for (var i in chosen_id_name_hash.ids) {
 						var did = chosen_id_name_hash.ids[i];
 						var ds = chosen_id_name_hash.names[i];
-						for (var md_name in MetadataValues[did]) {					
+
+						for(var md_name in MetadataValues[did]) {	
+							found_metadata = true;				
+
 							var md_value = MetadataValues[did][md_name];
 							if(visual_post_items.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
 									html += &quot;&lt;tr&gt;&lt;td&gt;&quot;+ds+&quot;&lt;/td&gt;&lt;td&gt;&quot;+md_name+&quot;&lt;/td&gt;&lt;td&gt;&quot;+md_value+&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
-									found_metadata = true;
+									
 							}
 						}
 				}

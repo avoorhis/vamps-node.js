@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/javascripts/view_selection.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/javascripts/view_selection.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">68.31</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">673</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">48.87</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">6.47</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//var COMMON  = require(&#039;./routes_common&#039;);
+// visualization: unit_selection.js
+// COUNTS
+tax_counts_link = document.getElementById(&#039;counts_table&#039;);
+if (typeof tax_counts_link !==&quot;undefined&quot;) {
+  tax_counts_link.addEventListener(&#039;click&#039;, function () {
+      
+      create_counts_table();
+  });
+}
+// tax_counts_btn = document.getElementById(&#039;counts_table_hide_btn&#039;);
+// tax_counts_div = document.getElementById(&#039;tax_table_div&#039;);
+// if (typeof tax_counts_btn !==&quot;undefined&quot;) {
+//   tax_counts_btn.addEventListener(&#039;click&#039;, function () {
+//       //alert(&#039;here in tt&#039;)
+//       if(tax_counts_btn.value == &#039;close&#039;){
+//         hide_visual_element(tax_counts_div,tax_counts_btn);
+//       }else{
+//         show_visual_element(tax_counts_div,tax_counts_btn);
+//       }
+      
+//   });
+// }
+metadata_link = document.getElementById(&#039;metadata2_table&#039;);
+if (typeof metadata_link !==&quot;undefined&quot;) {
+  metadata_link.addEventListener(&#039;click&#039;, function () {
+      create_metadata_table();
+  });
+}
+//
+// PIECHARTS
+//
+piecharts_link = document.getElementById(&#039;piecharts&#039;);
+if (typeof piecharts_link !==&quot;undefined&quot;) {
+  piecharts_link.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in pc&#039;)
+      create_piecharts(pi_local.ts);
+  });
+}
+// piecharts_btn = document.getElementById(&#039;piecharts_hide_btn&#039;);
+// piecharts_div = document.getElementById(&#039;piecharts_div&#039;);
+// if (typeof piecharts_btn !==&quot;undefined&quot;) {
+//   piecharts_btn.addEventListener(&#039;click&#039;, function () {
+//       //alert(&#039;here in tt&#039;)
+//       if(piecharts_btn.value == &#039;close&#039;){
+//         hide_visual_element(piecharts_div,piecharts_btn);
+//       }else{
+//         show_visual_element(piecharts_div,piecharts_btn);
+//       }
+      
+//   });
+// }
+//
+// BARCHARTS
+//
+barchart_link = document.getElementById(&#039;barcharts&#039;);
+if (typeof barchart_link !==&quot;undefined&quot;) {
+  barchart_link.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in pc&#039;)
+      create_barcharts(pi_local.ts);
+  });
+}
+// barcharts_btn = document.getElementById(&#039;barcharts_hide_btn&#039;);
+// barcharts_div = document.getElementById(&#039;barcharts_div&#039;);
+// if (typeof barcharts_btn !==&quot;undefined&quot;) {
+//   barcharts_btn.addEventListener(&#039;click&#039;, function () {
+//       //alert(&#039;here in tt&#039;)
+//       if(barcharts_btn.value == &#039;close&#039;){
+//         hide_visual_element(barcharts_div,barcharts_btn);
+//       }else{
+//         show_visual_element(barcharts_div,barcharts_btn);
+//       }
+      
+//   });
+// }
+
+//
+//
+//
+// TEST
+//
+test_link = document.getElementById(&#039;test_page&#039;);
+if (typeof test_link !==&quot;undefined&quot;) {
+  test_link.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in pc&#039;)
+      create_test_page(pi_local.ts);
+  });
+}
+function create_test_page(ts) {
+  
+
+var opened = window.open(&quot;&quot;);
+opened.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;My title&lt;/title&gt;&lt;/head&gt;&lt;body&gt;test&lt;/body&gt;&lt;/html&gt;&quot;);
+
+
+}
+//
+//
+//
+// function load_tooltip(visual) {
+
+//   if(visual === &#039;counts_table&#039;) {
+
+//     $(&quot;.counts_tbl_tooltip&quot;).tooltip({               
+//         tip: &quot;#counts_tt_span&quot;,          
+//         position: &#039;center below&#039;,          
+//         offset: [-40,0],
+//         opacity: 0.95,          
+//         delay: 0,
+//         onBeforeShow: function() {
+
+//             var passthru = this.getTrigger().attr(&quot;id&quot;);            
+//             var stuff = passthru.split(&#039;-|-&#039;)
+//             dname = stuff[0];
+//             cnt = stuff[1];
+//             pct   = stuff[2];
+//             count = cnt + &#039; (&#039;+pct+&#039; %)&#039;                       
+//             $(&quot;#counts_tt_span table td#dataset&quot;).text(dname);
+//             $(&quot;#counts_tt_span table td#count&quot;).text(count);               
+//         },           
+//     });        
+//     $(&quot;.counts_tbl_tooltip&quot;).hover(function() {         
+//          var cell = $(this);   
+//     });  
+
+//   }else if(visual === &#039;piecharts&#039; || visual === &#039;barcharts&#039;) {
+
+//     $(&quot;.piebarchart_tooltip&quot;).tooltip({               
+//         tip: &quot;#piebarchart_tt_span&quot;,          
+//         position: &#039;center below&#039;,          
+//         offset: [-30,0],
+//         opacity: 0.95,          
+//         delay: 0,
+//         onBeforeShow: function(){  
+           
+//           var passthru = this.getTrigger().attr(&quot;id&quot;);
+//           var stuff = passthru.split(&#039;-|-&#039;)
+//           uname = stuff[0];
+//           cnt = stuff[1];
+//           pct   = stuff[2];
+//           count = cnt + &#039; (&#039;+pct+&#039; %)&#039;
+//           $(&quot;#piebarchart_tt_span table td#unit&quot;).text(uname); 
+//           $(&quot;#piebarchart_tt_span table td#count&quot;).text(count);      
+//         },       
+//     });           
+//     $(&quot;.piebarchart_tooltip&quot;).hover(function() {         
+//        var cell = $(this);  
+//     });
+
+//   }else if(visual === &#039;metadata&#039;){
+
+//   }
+
+// }
+function hide_visual_element(table_div, btn){
+  table_div.style.display = &#039;none&#039;;
+  btn.value = &#039;open&#039;;
+}
+
+function show_visual_element(table_div, btn){
+  table_div.style.display = &#039;block&#039;;
+  btn.value = &#039;close&#039;;
+}
+
+//
+// TAX TABLE
+//
+function create_counts_table() {
+
+      var count_table_window = window.open();
+      var html = &#039;&#039;;
+      //var html = &quot;&lt;div id=&#039;&#039; class=&#039;visual_top_div&#039;&gt;&quot;;
+      //html += &quot;&lt;input type=&#039;button&#039; id=&#039;counts_table_hide_btn&#039; value=&#039;close&#039;&gt;&quot;;
+      //html += &quot;&lt;/div&gt;&quot;;
+      html += &quot;&lt;table border=&#039;1&#039; class=&#039;single_border center_table font_small&#039;&gt;&quot;;
+      html += &#039;&lt;tr&gt;&lt;td&gt;Current Normalization&lt;/td&gt;&lt;td&gt;&#039;+pi_local.normalization+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;;
+      //html += COMMON.get_selection_markup(&#039;counts_table&#039;, pi_local);     // block for listing prior selections: domains,include_NAs ...
+      html += &quot;&lt;tr&gt;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; selected value=&#039;none&#039;&gt;none&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; value=&#039;max&#039;&gt;max&lt;/td&gt;&quot;;
+      html += &quot;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; value=&#039;freq&#039;&gt;freq&lt;/td&gt;&lt;/tr&gt;&quot;;
+      //html += COMMON.get_choices_markup(&#039;counts_table&#039;, pi_local);       // block for controls to normalize, change tax percentages or distance
+      html += &#039;&lt;/table&gt;&#039;;
+
+
+      html += &quot;&lt;table border=&#039;1&#039; class=&#039;single_border small_font counts_table&#039; &gt;&quot;;
+      html += &quot;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&quot;;
+      for (var n in mtx_local.columns) {
+        html += &quot;&lt;td class=&#039;&#039;&gt;&quot;+mtx_local.columns[n].name +&quot;&lt;/td&gt;&quot;;
+      }
+      html += &quot;&lt;/tr&gt;&quot;;
+      
+      for (var i in mtx_local.rows){
+        html += &quot;&lt;tr class=&#039;chart_row&#039;&gt;&quot;;
+        html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot;+mtx_local.rows[i].name +&quot;&lt;/td&gt;&quot;;
+        for (var d in mtx_local.data[i]) {
+          var cnt = mtx_local.data[i][d];
+          var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
+          var id  = mtx_local.rows[i].name+&#039;-|-&#039;+mtx_local.columns[d].name+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
+          //html += &quot;&lt;td data-ot=&#039;&quot;+id+&quot;&#039; data-ot-title=&#039;&quot;+mtx_local.columns[d].name+&quot;&#039; data-ot-fixed=&#039;true&#039; id=&#039;&quot;+id+&quot;&#039; class=&#039;counts_tbl_tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
+          html += &quot;&lt;td id=&#039;&quot;+id+&quot;&#039; class=&#039;chart_tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
+          //html += &quot;&lt;td&gt;&quot;+mtx_local.data[i][d] +&quot;&lt;/td&gt;&quot;;
+        }
+        html += &quot;&lt;/tr&gt;&quot;;
+      }
+      // TOTALS
+      html += &quot;&lt;tr&gt;&quot;;
+      html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&lt;strong&gt;Sums:&lt;/strong&gt;&lt;/td&gt;&quot;;
+      for (var m in mtx_local.column_totals){
+        html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot; + mtx_local.column_totals[m] + &quot;&lt;/td&gt;&quot;;
+      }
+      html += &quot;&lt;/tr&gt;&quot;;
+      html += &quot;&lt;/table&gt;&quot;;
+      
+
+     
+      
+      count_table_window.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;VAMPS Counts&lt;/title&gt;\n&quot;);
+      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/style.css\&quot;&gt;\n&quot;);
+      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/960.css\&quot;&gt;\n&quot;);
+      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/visualization.css\&quot;&gt;\n&quot;);
+      
+      
+      //count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/opentip.css\&quot;&gt;\n&quot;);
+      //count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/opentip-native.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+
+      count_table_window.document.write(&quot;&lt;/head&gt;&lt;body&gt;&quot;+html+&quot;\n&quot;);
+      
+
+      count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/jquery-2.1.1.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+      count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/view_selection_client.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+                  
+
+
+      //count_table_window.document.write(&quot;&lt;script type=\&quot;text/javascript\&quot; src=\&quot;/public/javascripts/global.js\&quot;&gt;&lt;/script&gt;&quot;);
+      count_table_window.document.write(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+      count_table_window.document.close();
+      //load_tooltip(&#039;counts_table&#039;);
+}
+//
+//  CREATE METADATA TABLE
+//
+function create_metadata_table() {
+     
+      var metadata_table_window = window.open();
+      metadata_table_window.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;VAMPS Metadata&lt;/title&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/style.css\&quot;&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/960.css\&quot;&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/visualization.css\&quot;&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;/head&gt;&lt;body&gt;\n&quot;);
+
+      var html = &#039;&#039;;
+      html += &quot;&lt;table border=&#039;1&#039; id=&#039;metadata_table&#039; class=&#039;single_border small_font md_table&#039; &gt;&quot;;
+      html += &quot;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Dataset (sortable)&lt;/th&gt;&lt;th&gt;Name (sortable)&lt;/th&gt;&lt;th&gt;Value (sortable)&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;;
+      
+      for (var ds in md_local) {
+
+          for (var k in md_local[ds]) {
+            html += &quot;&lt;tr&gt;&quot;;
+            html += &quot;&lt;td&gt;&quot;+ds+&quot;&lt;/td&gt;&quot;;
+            md_item = k;
+            md_val = md_local[ds][k];
+            html += &quot;&lt;td&gt;&quot;+md_item+&quot;&lt;/td&gt;&lt;td&gt;&quot;+md_val+&quot;&lt;/td&gt;&quot;;
+            html += &quot;&lt;/tr&gt;&quot;;
+          }        
+      }
+      html += &quot;&lt;/tbody&gt;&lt;/table&gt;&quot;;
+      
+      
+      metadata_table_window.document.write(html+&quot;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/jquery-2.1.1.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;script type=&#039;text/javascript&#039; src=&#039;/javascripts/tablesort.min.js&#039;&gt;&lt;/script&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;script&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;  new Tablesort(document.getElementById(&#039;metadata_table&#039;)); \n&quot;);
+      metadata_table_window.document.write(&quot;&lt;/script&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/view_selection_client.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+      metadata_table_window.document.write(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
+      metadata_table_window.document.close();
+}
+//
+//  CREATE HEATMAP
+//
+function create_heatmap() {
+       alert(&#039;im HM&#039;);
+       hm_div = document.getElementById(&#039;distance_heatmap_div&#039;);
+       html = &#039;&#039;;
+       for (var i in md_local) {
+        html += &quot;&lt;li&gt;&quot;+md_local[i]+&quot;&lt;/li&gt;&quot;;
+       }
+      hm_div.innerHTML = html;
+}
+//
+//  CREATE PIECHARTS
+//
+function create_piecharts(ts) {
+      
+      var piecharts_window = window.open(&#039;&#039;);
+
+      piecharts_window.document.close();
+     
+      var newWindowRoot = d3.select(piecharts_window.document.body);
+      newWindowRoot.append(&quot;div&quot;)
+          .attr(&quot;class&quot;, &quot;pies&quot;)
+          .attr(&quot;id&quot;,&quot;viz&quot;)
+          .style(&quot;width&quot;,&quot;800px&quot;)
+          .style(&quot;text-align&quot;,&quot;center&quot;)
+          .style(&quot;background&quot;,&quot;lightgray&quot;)
+          .style(&quot;border&quot;,&quot;1px solid black&quot;);
+
+
+     var myjson_obj=[];
+     
+     for(var g in mtx_local.columns) {  // per ds
+        
+        var ds = mtx_local.columns[g].name;
+        var tdata = [];
+        var ttax = [];        
+        //total = 0;
+        //var totals = [];
+        total = mtx_local.column_totals[g];
+        for (var k in mtx_local.data) {
+          tdata.push(mtx_local.data[k][g]);
+          ttax.push(mtx_local.rows[k].name);
+          //total = mtx_local.data[k][g]
+          
+        }
+        //for(k in mtx_local.data) {
+          //totals.push(total)
+        //}
+
+        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:total });  // one for each dataset
+        //var total = d3.sum(tdata, function(d){ return d; });
+        //alert(totals);
+     }
+
+
+//alert(JSON.stringify(myjson_obj))
+
+      var unit_list = [];
+      for (var o in mtx_local.rows) {
+        unit_list.push(mtx_local.rows[o].name);
+      }
+      var colors = get_colors(unit_list);
+  
+      var radius = 100;
+      //var pies_per_row = 4;
+
+      var arc = d3.svg.arc()
+          .outerRadius(radius - 10);       
+                
+      var pie = d3.layout.pie()
+            .value(function (d) { return d; })
+            .sort(null);
+      
+      var ttip = newWindowRoot
+          .append(&quot;div&quot;)  // declare the tooltip div 
+          .attr(&quot;class&quot;, &quot;tooltip&quot;)              // apply the &#039;tooltip&#039; class
+          .style(&quot;opacity&quot;, 1e-6);    // set the opacity to nil
+
+
+      //var svg = newWindowRoot
+      var svg = newWindowRoot.select(&quot;#viz&quot;)
+            .selectAll(&#039;svg&#039;)
+            .data(myjson_obj)
+            .enter().append(&quot;svg&quot;)
+      //var svgContainer = d3.select(&#039;#viz_div&#039;).append(&#039;svg&#039;)
+            .attr(&#039;width&#039;, radius*2)
+            .attr(&#039;height&#039;,radius*2)
+            .append(&quot;g&quot;)
+            .attr(&quot;transform&quot;, &quot;translate(&quot; + radius + &quot;,&quot; + radius + &quot;)&quot;)
+           
+            .append(&quot;a&quot;)
+            .attr(&quot;id&quot;, function(d,i) { return myjson_obj[i].name; } )
+            .attr(&quot;xlink:href&quot;, function(d,i) { return &#039;piechart_single?ds=&#039;+myjson_obj[i].name+&#039;&amp;ts=&#039;+ts;} );           
+      
+     
+      var arcs = svg.selectAll(&quot;g&quot;)
+          .data(function (d,i) { 
+            //alert(JSON.stringify(d.name)) 
+            
+            return pie(d.data); })
+          .enter().append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;chart_tooltip&quot;)
+          .attr(&quot;id&quot;,function(d,i) {
+                              
+                var total = this.parentNode.__data__.total; 
+                //alert(JSON.stringify(this.parentNode.__data__.total))                           
+                var pct = (d.value * 100 / total).toFixed(2);
+                return unit_list[i]+&#039;-|-&#039;+d.value.toString()+&#039;-|-&#039;+pct.toString();
+          })
+          .on(&quot;mouseover&quot;, function(d,i) { 
+              
+      //        ttip.transition()
+      //          .duration(0)  
+      //          .style(&quot;opacity&quot;, 1);                             
+              })
+          
+          .on(&quot;mousemove&quot;, function(d,i){
+            var pnode = this.parentNode;
+            var ds = pnode.__data__.name; 
+                //alert(JSON.stringify(pnode.__data__))
+            var total = pnode.__data__.total; 
+            var pct = (d.value * 100 / total).toFixed(2);
+            ttip
+             .html( 
+                &#039;&lt;table&gt;&#039; + // The first &lt;a&gt; tag
+                &#039;&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&#039; +  ds +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
+                 &#039;&lt;tr&gt;&lt;td bgcolor=&quot;&#039;+colors[i]+&#039;&quot; width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&#039;+unit_list[i] +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+
+                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Count &#039; +  d.value.toString() +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
+                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Frequency &#039; +  pct.toString() +&#039;%&#039;+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+                    // closing &lt;/a&gt; tag
+                &#039;&lt;/table&gt;&#039;
+              ).style(&#039;position&#039;,&#039;absolute&#039;)
+             .style(&#039;top&#039;, (d3.event.pageY)+&#039;px&#039;)
+             .style(&#039;left&#039;, (d3.event.pageX+20)+&#039;px&#039;)
+             .style(&#039;background&#039;,&#039;lightsteelblue&#039;)
+             .style(&#039;padding&#039;,&#039;3px&#039;)
+             .style(&#039;font&#039;,&#039;9px sans-serif&#039;)
+             .style(&#039;border&#039;,&#039;0px&#039;)
+             .style(&#039;border-radius&#039;,&#039;8px&#039;)
+             .style(&quot;opacity&quot;, 1);
+            
+//alert(JSON.stringify(this.parentNode))
+              
+          })
+          .on(&quot;mouseout&quot;, function (d) {
+                 // Hide the tooltip
+              ttip
+                .style(&quot;opacity&quot;, 1e-6);
+          });
+
+
+      arcs.append(&quot;path&quot;)
+          .attr(&quot;d&quot;, arc)         
+          .style(&quot;fill&quot;, function (d,i) { return colors[i]; });
+   
+}
+//
+//  CREATE BARCHARTS
+//
+function create_barcharts(ts) {
+
+        //document.getElementById(&#039;pre_barcharts_table_div&#039;).style.display = &#039;block&#039;;
+
+      var barcharts_window = window.open(&#039;&#039;);      
+      barcharts_window.document.close();
+      //piecharts_window.document.write()
+      var newWindowRoot = d3.select(barcharts_window.document.body);
+      newWindowRoot
+        .append(&quot;div&quot;)
+          .attr(&quot;class&quot;, &quot;bars&quot;)
+          .attr(&quot;id&quot;,&quot;viz&quot;)
+          .style(&quot;background&quot;,&quot;lightgray&quot;)
+          .style(&quot;border&quot;,&quot;1px solid black&quot;);
+
+     
+      var unit_list = [];
+      for (var o in mtx_local.rows){
+        unit_list.push(mtx_local.rows[o].name);
+      }
+      var colors = get_colors(unit_list);  
+
+
+
+        data = [];
+        for (var p in mtx_local.columns){
+          tmp={};
+          tmp.DatasetName = mtx_local.columns[p].name;
+          for (var t in mtx_local.rows){
+            tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
+          }
+          data.push(tmp);
+        }
+
+      
+
+        var ds_count = mtx_local.shape[1];      
+        var bar_height = 15;
+        var props = get_image_properties(bar_height, ds_count); 
+        //console.log(props)
+        var color = d3.scale.ordinal()                  
+          .range( get_colors(unit_list) );
+
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== &quot;DatasetName&quot;; }));
+
+        
+
+        data.forEach(function(d) {
+          var x0 = 0;
+          d.unitObj = color.domain().map(function(name) { 
+            return { name: name, x0: x0, x1: x0 += +d[name] }; 
+          });
+          //console.log(d.unitObj);
+          d.total = d.unitObj[d.unitObj.length - 1].x1;
+          //alert(d.total)
+          //console.log(d.total);
+        });
+
+
+        data.forEach(function(d) {
+          // normalize to 100%
+          tot = d.total;
+          d.unitObj.forEach(function(o) {
+              //console.log(o);
+              o.x0 = (o.x0*100)/tot;
+              o.x1 = (o.x1*100)/tot;
+          });
+        });
+      
+        
+        create_svg_object(props, color, colors, data, ts, newWindowRoot);
+     
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+function get_image_properties(bar_height, ds_count) {
+  var props = {};
+  
+  //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
+  props.margin = {top: 20, right: 100, bottom: 20, left: 300};
+  
+  var plot_width = 650;
+  var gap = 2;  // gap on each side of bar
+  props.width = plot_width + props.margin.left + props.margin.right;
+  props.height = (ds_count * (bar_height + 2 * gap)) + 125;
+  
+  props.x = d3.scale.linear() .rangeRound([0, plot_width]);
+    
+  props.y = d3.scale.ordinal()
+      .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
+    
+  props.xAxis = d3.svg.axis()
+          .scale(props.x)
+          .orient(&quot;top&quot;);
+  
+  props.yAxis = d3.svg.axis()
+          .scale(props.y)
+          .orient(&quot;left&quot;);
+          
+              
+  return props;
+}
+//
+//
+//
+function create_svg_object(props, color, colors, data, ts, window) {
+      
+      //d3.select(&#039;svg&#039;).remove();
+      
+      var ttip = window
+          .append(&quot;div&quot;)  // declare the tooltip div 
+          .attr(&quot;class&quot;, &quot;tooltip&quot;)              // apply the &#039;tooltip&#039; class
+          .style(&quot;opacity&quot;, 1e-6);    // set the opacity to nil
+
+      var svg = window.select(&quot;#viz&quot;).append(&quot;svg&quot;)
+                  .attr(&quot;width&quot;,  props.width)
+                  .attr(&quot;height&quot;, props.height)
+                .append(&quot;g&quot;)
+                  .attr(&quot;transform&quot;, &quot;translate(&quot; + props.margin.left + &quot;,&quot; + props.margin.top + &quot;)&quot;);
+      
+      
+      // axis legends -- would like to rotate dataset names
+      props.y.domain(data.map(function(d) { return d.DatasetName; }));
+      props.x.domain([0, 100]);
+
+      svg.append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;y axis&quot;)
+          .call(props.yAxis)
+          .selectAll(&quot;text&quot;)  
+             .style(&quot;text-anchor&quot;, &quot;end&quot;)
+             .attr(&quot;dx&quot;, &quot;-.5em&quot;)
+             .attr(&quot;dy&quot;, &quot;1.4em&quot;); 
+             
+             
+      svg.append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;x axis&quot;)
+          .call(props.xAxis)
+        .append(&quot;text&quot;)
+          .attr(&quot;x&quot;, 650)
+          .attr(&quot;dy&quot;, &quot;.8em&quot;)
+          .style(&quot;text-anchor&quot;, &quot;end&quot;)
+          .text(&quot;Percent&quot;);
+     
+     
+       var datasetBar = svg.selectAll(&quot;.bar&quot;)
+          .data(data)
+        .enter() .append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;g&quot;)
+          .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.DatasetName) + &quot;)&quot;; })  
+          .append(&quot;a&quot;)
+        .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;piechart_single?ds=&#039;+d.DatasetName+&#039;&amp;ts=&#039;+ts;} );
+
+      datasetBar.selectAll(&quot;rect&quot;)
+     //     .append(&quot;a&quot;)
+     //   .attr(&quot;xlink:href&quot;,  &#039;http://www.google.com&#039;)
+          .data(function(d) { return d.unitObj; })
+        .enter()
+        .append(&quot;rect&quot;)
+          .attr(&quot;x&quot;, function(d) { return props.x(d.x0); })
+          .attr(&quot;y&quot;, 15)  // adjust where first bar starts on x-axis
+          .attr(&quot;width&quot;, function(d) { return props.x(d.x1) - props.x(d.x0); })
+          .attr(&quot;height&quot;,  18)
+          .attr(&quot;id&quot;,function(d,i) { 
+            var pnode = this.parentNode;
+            var cnt =  pnode.__data__[d.name];
+            var total = pnode.__data__[&#039;total&#039;];
+            //console.log(this._parentNode.__data__[&#039;total&#039;]);
+            var pct = (cnt * 100 / total).toFixed(2);
+            return d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            //return this._parentNode.__data__.DatasetName + &#039;-|-&#039; + d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+          }) 
+          .on(&quot;mouseover&quot;, function(d,i) { 
+              
+                            
+              })
+          
+          .on(&quot;mousemove&quot;, function(d,i){
+            var pnode = this.parentNode;
+            //var ds = pnode.__data__.name; 
+            //alert(JSON.stringify(pnode.__data__))
+            var ds = pnode.__data__.DatasetName;
+            var cnt =  pnode.__data__[d.name];
+            var total = pnode.__data__[&#039;total&#039;];
+            //console.log(this._parentNode.__data__[&#039;total&#039;]);
+            var pct = (cnt * 100 / total).toFixed(2);
+            ttip
+             .html( 
+                &#039;&lt;table&gt;&#039; + // The first &lt;a&gt; tag
+                &#039;&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&#039; +  ds +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
+                 &#039;&lt;tr&gt;&lt;td bgcolor=&quot;&#039;+colors[i]+&#039;&quot; width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&#039;+d.name +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+
+                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Count &#039; +  cnt.toString() +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
+                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Frequency &#039; +  pct.toString() +&#039;%&#039;+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+                    // closing &lt;/a&gt; tag
+                &#039;&lt;/table&gt;&#039;
+              ).style(&#039;position&#039;,&#039;absolute&#039;)
+             .style(&#039;top&#039;, (d3.event.pageY)+&#039;px&#039;)
+             .style(&#039;left&#039;, (d3.event.pageX+20)+&#039;px&#039;)
+             .style(&#039;background&#039;,&#039;lightsteelblue&#039;)
+             .style(&#039;padding&#039;,&#039;3px&#039;)
+             .style(&#039;font&#039;,&#039;9px sans-serif&#039;)
+             .style(&#039;border&#039;,&#039;0px&#039;)
+             .style(&#039;border-radius&#039;,&#039;8px&#039;)
+             .style(&quot;opacity&quot;, 1);
+            
+//alert(JSON.stringify(this.parentNode))
+              
+          })
+          .on(&quot;mouseout&quot;, function (d) {
+                 // Hide the tooltip
+              ttip
+                .style(&quot;opacity&quot;, 1e-6);
+          })
+          //.attr(&quot;class&quot;,&quot;piebarchart_tooltip&quot;)
+          .style(&quot;fill&quot;,   function(d,i) { return colors[i]; });
+
+       //rect.append(&quot;svg:a&quot;).attr(&quot;xlink:href&quot;,  &#039;http://www.google.com&#039;)
+       
+}
+
+
+function get_colors(unit_names){
+  var colors = [];
+  for(var n in unit_names){
+    //alert(unit_names[n]);
+    col = string_to_color_code(unit_names[n]);
+    //console.log(col);
+    colors.push(col);
+  }
+  return colors;
+}
+function string_to_color_code(str){
+    var hash = 0;
+    for(var i=0; i &lt; str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash &lt;&lt; 3) - hash);
+    }
+    var color = Math.abs(hash).toString(16).substring(0, 6);
+    return &quot;#&quot; + &#039;000000&#039;.substring(0, 6 - color.length) + color;
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
