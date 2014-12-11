@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.64</p>
+      <p class="stat">53.72</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">287</p>
+      <p class="stat">285</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">41.81</p>
+      <p class="stat">42.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.71</p>
+      <p class="stat">2.69</p>
     </div>
   </div>
 </div>
@@ -118,12 +118,10 @@ module.exports = {
 
 
 		create_pcoa_graphs: function(matrix) {
-			console.log(&#039;in pcoa&#039;);
-			//console.log(matrix)
+
+					var svgGraph =&#039;&#039;;
+
 			
-			//console.log(metadata_filename)
-			var svgGraph =&#039;&#039;;
-			//console.log(metadata)
 			//fs.readFile(metadata_filename, &#039;utf8&#039;, function (err, data) {
   		//		 var mdata = d3.tsv.parse(data);
   		//		 console.log(mdata)
@@ -210,8 +208,7 @@ module.exports = {
 		          .domain([-1, 1])
 		          .range([ chart_height, 0 ]);
 
-		      //var vectors = [&#039;v1&#039;,&#039;v2&#039;,&#039;v3&#039;];
-		      var vectors = [ [&#039;v1&#039;,&#039;v2&#039;], [&#039;v1&#039;,&#039;v3&#039;], [&#039;v2&#039;,&#039;v3&#039;] ];
+		      var vectors = [ [&#039;P1&#039;,&#039;P2&#039;], [&#039;P1&#039;,&#039;P3&#039;], [&#039;P2&#039;,&#039;P3&#039;] ];
 		      var svgContainer = d3.select(&quot;body&quot;)
 		      				.append(&quot;svg&quot;)
 		              .attr(&#039;width&#039;, img_width)
@@ -230,6 +227,7 @@ module.exports = {
 			      		
 			      		xdata = matrix[vectors[v][0]];
 								ydata = matrix[vectors[v][1]];
+								//console.log(&#039;ydata &#039;+ydata.toString())
 								//var chart = &#039;chart&#039;+v.toString();
 								var chart_tx = base_chart_size;
 						    var chart_ty = base_chart_size; 
