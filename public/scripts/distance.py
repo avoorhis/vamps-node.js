@@ -43,7 +43,7 @@ def calculate_distance(args):
 	datasets = []
 	for i in data['columns']:
 		#print i['id']
-		datasets.append(i['id'])
+		datasets.append(i['name'])
 	
 	z = np.array(data['data'])
 	dm = np.transpose(z)
@@ -89,20 +89,20 @@ def calculate_distance(args):
 	distance_matrix2 = {}
 	out_fp = open(args.out_file,'w')
 	
-	file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
+	file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
 
 	out_fp.write(file_header_line)
 
 
 	for row,line in enumerate(data['columns']):
-		name = line['id']
+		name = line['name']
 		distance_matrix1[name] = {}	
 		file_data_line = name+','	
 		for col,d in enumerate(dist[row]):
 			#print data['columns'][col]['id']
 			file_data_line += str(dist[row][col])+','
-			distance_matrix1[name][data['columns'][col]['id']]  = dist[row][col]
-			distance_matrix2[(name, data['columns'][col]['id'])]  = dist[row][col]
+			distance_matrix1[name][data['columns'][col]['name']]  = dist[row][col]
+			distance_matrix2[(name, data['columns'][col]['name'])]  = dist[row][col]
 		file_data_line = file_data_line[:-1]+'\n'
 		out_fp.write(file_data_line)
 	
