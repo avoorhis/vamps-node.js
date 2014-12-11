@@ -91,7 +91,7 @@
   <!-- Counts -->
   <br><br>
   <div id='pre_counts_table_div' class='display_none'>
-    <span class='table_title'>Tax Counts Table</span>
+    <span id='counts_table_title' class='table_title'>Tax Counts Table</span>
     <input type='button' id='counts_table_hide_btn' class='close_open_btn' value='close'>
   </div>
   <a name='tax_table'><div id='tax_table_div'          class=''></div></a>
@@ -99,7 +99,7 @@
   <!-- Metadata -->
   <br><br>
   <div id='pre_metadata_table_div' class='display_none'>
-    <span class='table_title'>Metadata Table</span>
+    <span id='metadata_title' class='table_title'>Metadata Table</span>
     <input type='button' id='metadata_table_hide_btn' class='close_open_btn' value='close'>
   </div>
   <a name='metadata'><div id='metadata_local_table_div' class=''></div> </a>
@@ -107,19 +107,19 @@
   <!-- Distance heatmap -->
   <br><br>
   <div id='pre_dheatmap_div' class='display_none'>
-    <span class='table_title'>Distance Heatmap</span>
+    <span id='dheatmap_title' class='table_title'>Distance Heatmap</span>
     <input type='button' id='dheatmap_hide_btn' class='close_open_btn' value='close'>
   </div>
-  <a name='dheatmap'><div id='dheatmap_div' class=''>distance heatmap</div></a> 
+  <a name='dheatmap'><div id='dheatmap_div' class=''></div></a> 
   
 <!-- Frequency heatmap -->
   <br><br>
-  <a name='freq_heatmap'><div id='fheatmap_div' class=''>frequency heatmap</div></a> 
+  <a name='freq_heatmap'><div id='fheatmap_div' class=''>TODO: frequency heatmap</div></a> 
   
   <!-- BarCharts -->
   <br><br>
   <div id='pre_barcharts_table_div' class='display_none'>
-    <span class='table_title'>Bar Charts</span>
+    <span id='barcharts_title' class='table_title'>Bar Charts</span>
     <input type='button' id='barcharts_hide_btn' class='close_open_btn' value='close'>
   </div>
   <a name='barcharts'><div id='barcharts_div'           class=''></div> </a>
@@ -127,21 +127,21 @@
   <!-- PieCharts -->
   <br><br>
   <div id='pre_piecharts_table_div' class='display_none'>
-    <span class='table_title'>Pie Charts</span>
+    <span id='piecharts_title' class='table_title'>Pie Charts</span>
     <input type='button' id='piecharts_hide_btn' class='close_open_btn' value='close'>
   </div>
   <a name='piecharts'><div id='piecharts_div'           class=''></div></a>
   
   <!-- Dendrogram -->
   <br><br>
-  <a name='dendrogram'><div id='dendrogram_div'        class=''>dendrograms</div></a>
+  <a name='dendrogram'><div id='dendrogram_div'        class=''>TODO: dendrograms</div></a>
   
   <!-- PCoA-->
   <br><br>
-  <a name='pcoa'><div id='pcoa_div'                    class=''>pcoa</div></a> 
-  <!-- -->
+  <a name='pcoa'><div id='pcoa_div'                    class=''>TODO: pcoa</div></a> 
+  <!-- GEOSPATIAL -->
   <br><br> 
-  <a name='geospatial'><div id='geospatial_div'        class=''>geospatial</div></a> 
+  <a name='geospatial'><div id='geospatial_div'        class=''>TODO: geospatial</div></a> 
   
   <br><br> 
   
@@ -149,15 +149,16 @@
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
   <div id='metadata_tooltip_div' class=''></div>
-</div> 
+</div>
 
   <div id='DEBUG_div'></div>
   
 <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="/javascripts/jquery.tooltip.js"></script>
 <script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
-
+<script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
 <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
+
+<script type="text/javascript" src="/javascripts/drag_rows.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/view_selection.js"></script>
 <script>
@@ -219,14 +220,24 @@
             tip.id = link.id;
             link.id = '';
             id_items = tip.id.split('-|-');
-
             html = "<table><tr>";
-            html += "<td>"+id_items[0]+"</td>";
-            html += "</tr><tr>";
-            html += "<td>"+id_items[1]+"</td>";
-            html += "</tr><tr>";
-            html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
-      
+            if(id_items[0] == 'dheatmap') {
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Distance: "+id_items[3]+"</td>";
+            }else if(id_items[0] == 'frequencies'){
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+            }else{  // barcharts and piecharts            
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+            }
             html += "</tr><table>";
 
             showTip = setTimeout(function() {
