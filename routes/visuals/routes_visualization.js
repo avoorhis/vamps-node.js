@@ -354,6 +354,50 @@ router.get('/reorder_datasets', function(req, res) {
 //         });
 
 // });
+
+router.post('/test_heatmap', function(req, res) {
+  console.log('found routes_test_heatmap')
+  console.log('req.body hm');
+  console.log(req.body);
+  console.log('req.body hm');
+  var ts = req.body.ts
+  var metric = req.body.metric;
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+  
+  console.log('mtx1')
+  
+  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
+
+
+    var exec = require('child_process').exec;
+    var PythonShell = require('python-shell');
+    var html = '';
+    var title = 'VAMPS';
+    
+    var distmtx_file_name = ts+'_distance.csv'
+    var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '-fxn', 'dheatmap', '-out',  distmtx_file], 
+    };
+    console.log('options:', options);
+    PythonShell.run('distance.py', options, function (err, mtx) {
+      if (err) throw err;
+      distance_matrix = JSON.parse(mtx);
+      console.log('dmtx')
+      console.log(distance_matrix)
+      var m = JSON.stringify(mtx)
+      res.render('visuals/partials/load_distance',{
+                                        dm        : distance_matrix,
+                                        constants : JSON.stringify(req.C),
+                                      })
+      //return 'this is returned';
+    });
+
+
+
+});
 //
 // P I E C H A R T  -- S I N G L E
 //

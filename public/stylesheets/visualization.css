@@ -119,6 +119,7 @@
     border:1px solid red;
     padding: 3px;
     height:20px;
+    width:100%;
 }
 #counts_table_div {
     width: 500px;
@@ -138,6 +139,7 @@
     border:1px solid red;
     padding: 3px;
     height:20px;
+    width:100%;
 }
 #metadata_table_div {
     
@@ -162,6 +164,7 @@
     border:1px solid red;
     padding: 3px;
     height:20px;
+    width:100%;
 }
 #piecharts_div {
     width: 500px;
@@ -173,8 +176,21 @@
     border:1px solid red;
     padding: 3px;
     height:20px;
+    width:100%;
 }
 #barcharts_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
+/* Dist HEATMAP */
+#pre_dheatmap_div{
+    border:1px solid red;
+    padding: 3px;
+    height:20px;
+    width:100%;
+}
+#dheatmap_div {
     width: 500px;
     margin-right:20px;
     padding-right:20px;
@@ -236,7 +252,7 @@
 
 /* client side native jquery tooltips */
 .tooltip{
-    padding:5px 10px;
+   /* padding:5px 10px;
     background-color:lightsteelblue;
     border:0;
     border-radius:8px;
@@ -245,27 +261,26 @@
     color:#0c0c0c;
     font-size:0.688em;
     min-width:100px;
-    min-height:50px;
+    min-height:50px;*/
 }
+
+
+#livetip {
+  position: absolute;
+  background-color: #cfc;
+  border: 2px solid #c9c;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
+
 .chart_tooltip:hover{
     background:yellow;
 }
 .chart_row:hover{
     background:gray;
 }
-/*.xxtooltip {
-  position: absolute; 
-  text-align: center;   
-  width: 60px;  
-  height: 28px;     
-  padding: 2px; 
-  font: 12px sans-serif;    
-  background: lightsteelblue;   
-  border: 0px;                  
-  border-radius: 8px;
- 
-    
-}*/
 
 .chart_div {
     border: 1px solid black;
