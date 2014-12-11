@@ -184,15 +184,15 @@ function create_counts_table() {
 
       html += "<table border='1' class='single_border small_font counts_table' >";
       html += "<tr><td></td>";
-      for(i in mtx_local.columns){
-        html += "<td class=''>"+mtx_local.columns[i].name +"</td>"
+      for (var n in mtx_local.columns) {
+        html += "<td class=''>"+mtx_local.columns[n].name +"</td>";
       }
       html += "</tr>";
       
-      for(i in mtx_local.rows){
+      for (var i in mtx_local.rows){
         html += "<tr class='chart_row'>";
         html += "<td class='right_justify'>"+mtx_local.rows[i].name +"</td>";
-        for(d in mtx_local.data[i]) {
+        for (var d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
           var id  = mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
@@ -205,8 +205,8 @@ function create_counts_table() {
       // TOTALS
       html += "<tr>";
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
-      for(i in mtx_local.column_totals){
-        html += "<td class='right_justify'>"+mtx_local.column_totals[i] +"</td>"
+      for (var m in mtx_local.column_totals){
+        html += "<td class='right_justify'>" + mtx_local.column_totals[m] + "</td>";
       }
       html += "</tr>";
       html += "</table>";
@@ -235,7 +235,7 @@ function create_counts_table() {
       count_table_window.document.write("</body></html>");
       count_table_window.document.close();
       //load_tooltip('counts_table');
-};
+}
 //
 //  CREATE METADATA TABLE
 //
@@ -254,11 +254,11 @@ function create_metadata_table() {
       
       for (var ds in md_local) {
 
-          for(k in md_local[ds]) {
+          for (var k in md_local[ds]) {
             html += "<tr>";
             html += "<td>"+ds+"</td>";
-            md_item = k
-            md_val = md_local[ds][k]
+            md_item = k;
+            md_val = md_local[ds][k];
             html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
             html += "</tr>";
           }        
@@ -275,19 +275,19 @@ function create_metadata_table() {
       metadata_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
       metadata_table_window.document.write("</body></html>");
       metadata_table_window.document.close();
-};
+}
 //
 //  CREATE HEATMAP
 //
 function create_heatmap() {
-       alert('im HM')
+       alert('im HM');
        hm_div = document.getElementById('distance_heatmap_div');
-       html = ''
-       for(i in md_local){
+       html = '';
+       for (var i in md_local) {
         html += "<li>"+md_local[i]+"</li>";
        }
       hm_div.innerHTML = html;
-};
+}
 //
 //  CREATE PIECHARTS
 //
@@ -304,7 +304,7 @@ function create_piecharts(ts) {
           .style("width","800px")
           .style("text-align","center")
           .style("background","lightgray")
-          .style("border","1px solid black")
+          .style("border","1px solid black");
 
 
      var myjson_obj=[];
@@ -316,9 +316,9 @@ function create_piecharts(ts) {
         var ttax = [];        
         //total = 0;
         //var totals = [];
-        total = mtx_local.column_totals[g]
-        for(k in mtx_local.data){
-          tdata.push(mtx_local.data[k][g])
+        total = mtx_local.column_totals[g];
+        for (var k in mtx_local.data) {
+          tdata.push(mtx_local.data[k][g]);
           ttax.push(mtx_local.rows[k].name);
           //total = mtx_local.data[k][g]
           
@@ -336,7 +336,7 @@ function create_piecharts(ts) {
 //alert(JSON.stringify(myjson_obj))
 
       var unit_list = [];
-      for(o in mtx_local.rows){
+      for (var o in mtx_local.rows) {
         unit_list.push(mtx_local.rows[o].name);
       }
       var colors = get_colors(unit_list);
@@ -369,8 +369,8 @@ function create_piecharts(ts) {
             .attr("transform", "translate(" + radius + "," + radius + ")")
            
             .append("a")
-              .attr("id", function(d,i) { return myjson_obj[i].name } )
-              .attr("xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj[i].name+'&ts='+ts;} );           
+            .attr("id", function(d,i) { return myjson_obj[i].name; } )
+            .attr("xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj[i].name+'&ts='+ts;} );           
       
      
       var arcs = svg.selectAll("g")
@@ -432,7 +432,7 @@ function create_piecharts(ts) {
           .attr("d", arc)         
           .style("fill", function (d,i) { return colors[i]; });
    
-};
+}
 //
 //  CREATE BARCHARTS
 //
@@ -449,11 +449,11 @@ function create_barcharts(ts) {
           .attr("class", "bars")
           .attr("id","viz")
           .style("background","lightgray")
-          .style("border","1px solid black")
+          .style("border","1px solid black");
 
      
       var unit_list = [];
-      for(o in mtx_local.rows){
+      for (var o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
       }
       var colors = get_colors(unit_list);  
@@ -461,11 +461,11 @@ function create_barcharts(ts) {
 
 
         data = [];
-        for (var o in mtx_local.columns){
+        for (var p in mtx_local.columns){
           tmp={};
-          tmp.DatasetName = mtx_local.columns[o].name;
+          tmp.DatasetName = mtx_local.columns[p].name;
           for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].name] = mtx_local.data[t][o];
+            tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
           }
           data.push(tmp);
         }
@@ -617,7 +617,7 @@ function create_svg_object(props, color, colors, data, ts, window) {
             var pnode = this.parentNode;
             //var ds = pnode.__data__.name; 
             //alert(JSON.stringify(pnode.__data__))
-            var ds = pnode.__data__.DatasetName
+            var ds = pnode.__data__.DatasetName;
             var cnt =  pnode.__data__[d.name];
             var total = pnode.__data__['total'];
             //console.log(this._parentNode.__data__['total']);
