@@ -143,13 +143,44 @@ if (typeof dheatmap_link !=="undefined") {
       
   });
 }
-if (typeof dheatmap_btn !=="undefined") {
+if (typeof dheatmap_btn !== "undefined") {
   dheatmap_btn.addEventListener('click', function () {
       //alert('here in tt')
       if(dheatmap_btn.value == 'close'){        
         toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
       }else{
         toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
+      }
+      
+  });
+}
+//
+// DENDROGRAM
+//
+var dendrogram_link = document.getElementById('dendrogram');
+var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
+var dendrogram_div = document.getElementById('dendrogram_div');
+if (typeof dendrogram_link !=="undefined") {
+  dendrogram_link.addEventListener('click', function () {
+      if(typeof dendrogram_created == "undefined"){
+        get_user_input('dendrogram', pi_local.ts);
+      }else{
+        if(dendrogram_btn.value == 'close'){        
+          toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dendrogram_btn !== "undefined") {
+  dendrogram_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram_btn.value == 'close'){        
+        toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+      }else{
+        toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
       }
       
   });
@@ -170,7 +201,7 @@ function create_test_page(ts) {
   
 
 var opened = window.open("");
-opened.document.write("<html><head><title>My title</title></head><body>test</body></html>");
+opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
 
 
 }
@@ -221,9 +252,9 @@ function get_user_input(visual, ts) {
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts)
     }else if(visual === 'dendrogram'){
-      create_dendrogram()
+      create_dendrogram(ts)
     }else if(visual === 'pcoa'){
-      create_pcoa()
+      create_pcoa(ts)
     }else{
 
     }
@@ -318,6 +349,40 @@ function create_metadata_table() {
       metadata_div.innerHTML = html;
 };
 //
+//  CREATE Dendrogram
+//
+function create_dendrogram(ts) {
+      //alert('im HM')
+      dendrogram_created = true;
+      dend_div = document.getElementById('dendrogram_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Dendrogram -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('dendrogram_title').innerHTML = info_line;
+      
+      html = ''
+      args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_dendrogram_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/dendrogram', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+           //document.getElementById('metadata_table_div').innerHTML = string;
+           //new Tablesort(document.getElementById('metadata_table'));
+           dend_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);
+      
+};
+//
 //  CREATE HEATMAP
 //
 function create_dheatmap(ts) {
@@ -337,7 +402,7 @@ function create_dheatmap(ts) {
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/test_heatmap', true);
+      xmlhttp.open("POST", '/visuals/heatmap', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange = function() {
 
