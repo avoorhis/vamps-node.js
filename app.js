@@ -40,6 +40,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
+app.set(express.static(__dirname + '/tmp'));
 // MIDDLEWARE  <-- must be in correct order:
 app.use(favicon());
 app.use(logger('dev'));
