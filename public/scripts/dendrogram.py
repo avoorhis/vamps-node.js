@@ -39,6 +39,7 @@ def calculate_distance(args):
 		data = json.load(json_data)
 		json_data.close()						
 	else: # csv file
+		# this doesn't work now
 		with open('./tmp/'+args.in_file, 'rb') as csvfile:
 			csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
 			for row in csv_data:
@@ -114,6 +115,7 @@ def calculate_distance(args):
 	out_fp.close()
 	#if args.function == 'distance' or args.function == 'heatmap':
 	print json.dumps(distance_matrix1)
+	
 	arr = []
 	for ds1 in distance_matrix1:
 		print ds1 
@@ -239,7 +241,7 @@ if __name__ == '__main__':
 	parser.add_argument('-in','--in',   required=True,  action="store",   dest='in_file', help = '')
 	parser.add_argument('-out','--out',   required=True,  action="store",   dest='out_file', help = 'output distance fp')
 	parser.add_argument('-ff','--file_format',   required=False,  action="store",   dest='file_format', default='json', help = 'json or csv only')
-	parser.add_argument('-pre','--prefix', required=True, action="store",   dest='prefix', help = 'image prefix') 
+	parser.add_argument('-pre','--prefix', required=True, action="store",   dest='prefix', help = 'file prefix') 
 	parser.add_argument('-metric','--metric', required=False, action="store",   dest='metric', help = '', default='bray_curtis') 
  	parser.add_argument('-fxn','--function', required=True, action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
 
