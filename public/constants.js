@@ -84,10 +84,10 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Stackbar Charts',   file:'/images/visuals/barcharts.png',   link:'user_data/barcharts', id:'barcharts'      },
     {name:'Pie Charts',        file:'/images/visuals/pie_charts.png',  link:'user_data/piecharts', id:'piecharts'    },
     {name:'Dendrograms',       file:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram', id:'dendrogram'    },
-    {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa', id:'pcoa'    },
-    {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table', id:'counts_table'    },
+    {name:'PCoA Analyses',     file:'/images/visuals/pcoa.png',        link:'user_data/pcoa',           id: 'pcoa'    },
+    {name:'Frequency Table',   file:'/images/visuals/counts_table.png', link:'user_data/counts_table',  id:'counts_table'    },
     {name:'Metadata Table',    file:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata_table_id'     },
-    {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial', id:'geospatial'     },
+    {name:'Data Location',     file:'/images/visuals/map.png',         link:'user_data/geospatial',     id:'geospatial'     },
     {name:'TEST_TEST',     file:'',         link:'user_data/test_page', id:'test_page'     }
     ]};
     
