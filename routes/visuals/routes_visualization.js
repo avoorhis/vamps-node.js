@@ -375,11 +375,12 @@ router.post('/heatmap', function(req, res) {
     
     var distmtx_file_name = ts+'_distance.csv'
     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
+    var site_base = path.join(__dirname, '../../');
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '-fxn', 'dheatmap', '-out',  distmtx_file], 
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', site_base, '--prefix', ts], 
     };
-    console.log('options:', options);
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
     PythonShell.run('distance.py', options, function (err, mtx) {
       if (err) throw err;
       distance_matrix = JSON.parse(mtx);
@@ -390,14 +391,16 @@ router.post('/heatmap', function(req, res) {
                                         dm        : distance_matrix,
                                         constants : JSON.stringify(req.C),
                                       })
-      //return 'this is returned';
+      
     });
 
 
 
 });
+
 router.post('/dendrogram', function(req, res) {
     console.log('found routes_dendrogram')
+    
     //console.log('req.body hm');
     //console.log(req.body);
     //console.log('req.body hm');
@@ -406,9 +409,7 @@ router.post('/dendrogram', function(req, res) {
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
     
-    //console.log('mtx1')
-  
-  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
+   
     var exec = require('child_process').exec;
     var PythonShell = require('python-shell');
     var html = '';
@@ -416,28 +417,64 @@ router.post('/dendrogram', function(req, res) {
     
     var distmtx_file_name = ts+'_distance.csv'
     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
+    var site_base = path.join(__dirname, '../../');
+    //var fxn ='dendrogram-png'
+    var fxn ='dendrogram-svg'
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '-fxn', 'dendrogram', '-out',  distmtx_file,'-pre',ts], 
+      args :       [ '-in', biom_file, '-metric', metric, '--function', fxn, '--site_base', site_base, '--prefix', ts ], 
     };
-    console.log('options:', options);
-    PythonShell.run('dendrogram.py', options, function (err, mtx) {
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
+    
+    PythonShell.run('distance.py', options, function (err, output) {
       if (err) throw err;
-      //distance_matrix = JSON.parse(mtx);
-      //console.log(distance_matrix)
-      //var m = JSON.stringify(mtx)
       
-    res.render('visuals/partials/load_dendrogram',{
-            constants : JSON.stringify(req.C),
-            ts: ts,
-          });
-      //res.render('visuals/partials/load_dendrogram',{                                        
-       //                                 constants : JSON.stringify(req.C)
-      //                                })
-      //return 'this is returned';
+      //var m = JSON.stringify(mtx)
+      if(fxn == 'dendrogram-svg'){
+        console.log(JSON.parse(output))
+        var d3 = require("d3");
+        var xmldom = require('xmldom');
+        var Newick    = require('../../public/javascripts/newick');
+        var Phylogram = require('../../public/javascripts/d3.phylogram');
+        newick = JSON.parse(output);
+        console.log('Newick ',newick)
+        var json  = Newick.parse(newick);
+        console.log(json)
+        var newickNodes = [];
+        function buildNewickNodes(node, callback) {
+          newickNodes.push(node);
+          if (node.branchset) {
+            for (var i=0; i < node.branchset.length; i++) {
+              buildNewickNodes(node.branchset[i]);
+            }
+          }
+        }
+        buildNewickNodes(json);
+
+        var tree_data = d3.phylogram.build('body', json, {
+          width: 300,
+          height: visual_post_items.no_of_datasets*100
+        });
+
+        //
+        console.log(tree_data.vis[0][0]);
+
+        var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+        var html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
+         
+        //d3.select('svg').remove(); 
+        
+        console.log(html);
+        
+      }else{
+        var image = '/tmp_images/'+ts+'.png'
+        var html = "<img alt='alt_myfig' src='"+image+"' />"
+        
+      }
+      res.send(html);
+      
+
     });
-
-
 
 });
 //
@@ -566,40 +603,20 @@ router.get('/user_data/piechart_single', function(req, res) {
 //   } 
 
 // });
-//
-//  P C O A
-//
-// router.get('/user_data/pcoa', function(req, res) {
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-//   var values_updated = COMMON.check_initial_status(myurl);  
-//   var custom_count_mtx, custom_biom_file_name, custom_biom_file;
-//   var biom_file_name = ts+'_count_matrix.biom';
-//   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-  
-  
-//   //var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.py');
-//   if(values_updated) {
-//      fs.readFile(biom_file, 'utf8', function (err, json) {
-//        var mtx = JSON.parse(json);
-//        MTX.get_custom_biom_matrix(visual_post_items, mtx);
-//        custom_biom_file = ts+'_count_matrix_cust_dend.biom';    
-//        COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
-//         console.log('Writing/Using cust matrix file');
-//         COMMON.run_pyscript_cmd(req, res, ts, custom_biom_file, 'pcoa', visual_post_items.selected_distance);
-//      });
-//   }else {
-    
-//     //shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
-//     //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
-//     //console.log(shell_command)
-//     console.log('Using original matrix file');
-//     COMMON.run_pyscript_cmd(req, res, ts, biom_file, 'pcoa', visual_post_items.selected_distance);
-//     //COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
-//   } 
 
-// });
+ // P C O A
+
+router.post('/pcoa', function(req, res) {
+    var ts = req.body.ts
+    var metric = req.body.metric;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    
+    var exec = require('child_process').exec;
+    var PythonShell = require('python-shell');
+    console.log('IN PCoA')
+
+});
 //
 //   P C O A  P Y T H O N
 //
