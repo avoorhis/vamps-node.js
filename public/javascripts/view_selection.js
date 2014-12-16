@@ -1,5 +1,113 @@
-//var COMMON  = require('./routes_common');
-// visualization: unit_selection.js
+
+  $("#metadata_local_table_div").on("click", "#metadata_table", function () {
+      new Tablesort(document.getElementById('metadata_table'));
+  });
+
+
+// code for tooltips
+
+
+
+    var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+        $win = $(window),
+        showTip;
+
+    var tip = {
+      title: '',
+      offset: 12,
+      delay: 300,
+      position: function(event) {
+        var positions = {x: event.pageX, y: event.pageY};
+        var dimensions = {
+          x: [
+            $win.width(),
+            $liveTip.outerWidth()
+          ],
+          y: [
+            $win.scrollTop() + $win.height(),
+            $liveTip.outerHeight()
+          ]
+        };
+     
+        for ( var axis in dimensions ) {
+     
+          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+            positions[axis] -= dimensions[axis][1] + this.offset;
+          } else {
+            positions[axis] += this.offset;
+          }
+     
+        }
+     
+        $liveTip.css({
+          top: positions.y,
+          left: positions.x
+        });
+      }
+    };
+
+
+    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+          var link = this,
+          html = '';
+          $link = $(this);
+         
+          if (event.type == 'mouseover') {
+            tip.id = link.id;
+            link.id = '';
+            id_items = tip.id.split('-|-');
+            html = "<table><tr>";
+            if(id_items[0] == 'dheatmap') {
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Distance: "+id_items[3]+"</td>";
+            }else if(id_items[0] == 'frequencies'){
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+            }else{  // barcharts and piecharts            
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+            }
+            html += "</tr><table>";
+
+            showTip = setTimeout(function() {
+         
+              $link.data('tipActive', true);
+              
+              tip.position(event);
+         //alert(event.pageX)
+              $liveTip
+              .html('<div>' + html  + '</div>')
+              .fadeOut(0)
+              .fadeIn(200);
+         
+            }, tip.delay);
+          }
+         
+          if (event.type == 'mouseout') {
+            link.id = tip.id || link.id;
+            if ($link.data('tipActive')) {
+              $link.removeData('tipActive');
+              $liveTip.hide();
+            } else {
+              clearTimeout(showTip);
+            }
+          }
+         
+          if (event.type == 'mousemove' && $link.data('tipActive')) {
+            tip.position(event);
+          }
+                  
+     });              
+              
+    
+
 // COUNTS
 var tax_counts_link = document.getElementById('counts_table');
 var tax_counts_btn = document.getElementById('counts_table_hide_btn');
@@ -181,10 +289,100 @@ if (typeof dendrogram_btn !== "undefined") {
         toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
       }else{
         toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+      }      
+  });
+}
+//
+// PCOA
+//
+var pcoa_link = document.getElementById('pcoa');
+var pcoa_btn = document.getElementById('pcoa_hide_btn');
+var pcoa_div = document.getElementById('pcoa_div');
+if (typeof pcoa_link !=="undefined") {
+  pcoa_link.addEventListener('click', function () {
+      if(typeof pcoa_created == "undefined"){
+        get_user_input('pcoa', pi_local.ts);
+      }else{
+        if(pcoa_btn.value == 'close'){        
+          toggle_visual_element(pcoa_div,'show',pcoa_btn);
+        }else{
+          toggle_visual_element(pcoa_div,'hide',pcoa_btn);
+        }
+      }      
+  });
+}
+if (typeof pcoa_btn !== "undefined") {
+  pcoa_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(pcoa_btn.value == 'close'){        
+        toggle_visual_element(pcoa_div,'show',pcoa_btn);
+      }else{
+        toggle_visual_element(pcoa_div,'hide',pcoa_btn);
       }
       
   });
 }
+//
+// GEOSPATIAL
+//
+var geospatial_link = document.getElementById('geospatial');
+var geospatial_btn = document.getElementById('geospatial_hide_btn');
+var geospatial_div = document.getElementById('geospatial_div');
+if (typeof geospatial_link !=="undefined") {
+  geospatial_link.addEventListener('click', function () {
+      if(typeof geospatial_created == "undefined"){
+        get_user_input('geospatial', pi_local.ts);
+      }else{
+        if(geospatial_btn.value == 'close'){        
+          toggle_visual_element(geospatial_div,'show',geospatial_btn);
+        }else{
+          toggle_visual_element(geospatial_div,'hide',geospatial_btn);
+        }
+      }      
+  });
+}
+if (typeof geospatial_btn !== "undefined") {
+  geospatial_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(geospatial_btn.value == 'close'){        
+        toggle_visual_element(geospatial_div,'show',geospatial_btn);
+      }else{
+        toggle_visual_element(geospatial_div,'hide',geospatial_btn);
+      }
+      
+  });
+}
+//
+// FREQUENCY HEATMAP
+//
+var fheatmap_link = document.getElementById('fheatmap');
+var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
+var fheatmap_div = document.getElementById('fheatmap_div');
+if (typeof fheatmap_link !=="undefined") {
+  fheatmap_link.addEventListener('click', function () {
+      if(typeof fheatmap_created == "undefined"){
+        get_user_input('fheatmap', pi_local.ts);
+      }else{
+        if(fheatmap_btn.value == 'close'){        
+          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+        }else{
+          toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
+        }
+      }      
+  });
+}
+if (typeof fheatmap_btn !== "undefined") {
+  fheatmap_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(fheatmap_btn.value == 'close'){        
+        toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+      }else{
+        toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
+      }
+      
+  });
+}
+
 //
 //
 //
@@ -229,18 +427,7 @@ function toggle_visual_element(table_div, tog, btn){
 
 
 function get_user_input(visual, ts) {
-    // var norm,dist,min,max;
-    // var client_normalization = document.getElementsByName('client_normalization');
-    // for(i=0; i<client_normalization.length;i++) {
-    //   if(client_normalization[i].checked === true) {
-    //       //alert(client_normalization[i].value)
-    //       norm = client_normalization[i].value;
-    //   }
-    // }
-    // dist = document.getElementById('selected_distance').value;
-    // min = document.getElementById('min_range').value;
-    // max = document.getElementById('max_range').value;
-
+   
     if(visual === 'counts_table'){
       create_counts_table();      
     }else if(visual === 'metadata_table'){
@@ -255,6 +442,10 @@ function get_user_input(visual, ts) {
       create_dendrogram(ts)
     }else if(visual === 'pcoa'){
       create_pcoa(ts)
+    }else if(visual === 'fheatmap'){
+      create_fheatmap(ts)
+    }else if(visual === 'geospatial'){
+      create_geospatial(ts)
     }else{
 
     }
@@ -354,7 +545,7 @@ function create_metadata_table() {
 function create_dendrogram(ts) {
       //alert('im HM')
       dendrogram_created = true;
-      dend_div = document.getElementById('dendrogram_div');
+      var dend_div = document.getElementById('dendrogram_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = 'Dendrogram -- ';
       info_line += ' Metric: ' + pi_local.selected_distance+'; ';
@@ -362,11 +553,13 @@ function create_dendrogram(ts) {
       info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
       document.getElementById('dendrogram_title').innerHTML = info_line;
       
-      html = ''
-      args =  "metric="+pi_local.selected_distance;
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_dendrogram_div').style.display = 'block';
        // get distance matrix via AJAX
+      
+
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/dendrogram', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -374,21 +567,74 @@ function create_dendrogram(ts) {
 
         if (xmlhttp.readyState == 4 ) {
            var htmlstring = xmlhttp.responseText;
+           html = "<div id='' >"+htmlstring+"</div>"
+           dend_div.innerHTML = html;
+        }
+      };
+      xmlhttp.send(args);
+
+      // var newick  = Newick.parse(newick);
+      // var newickNodes = [];
+      // function buildNewickNodes(node, callback) {
+      //   newickNodes.push(node);
+      //   if (node.branchset) {
+      //     for (var i=0; i < node.branchset.length; i++) {
+      //       buildNewickNodes(node.branchset[i]);
+      //     }
+      //   }
+      // }
+      // buildNewickNodes(newick);
+      // var tree_data = d3.phylogram.build('#pcoa_div', newick, {
+      //   width: 300,
+      //   height: pi_local.no_of_datasets*100
+      // });
+
+      // var svgContainer = d3.select("#pcoa_div").append("svg")
+      //   .attr("width",image_w)
+      //   .attr("height",image_h);
+      
+};
+//
+//  CREATE Dendrogram
+//
+function create_pcoa(ts) {
+      //alert('im HM')
+      pcoa_created = true;
+      var pcoa_div = document.getElementById('pcoa_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'PCoA -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('pcoa_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_pcoa_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/pcoa', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
            //document.getElementById('metadata_table_div').innerHTML = string;
            //new Tablesort(document.getElementById('metadata_table'));
-           dend_div.innerHTML = htmlstring;
+           pcoa_div.innerHTML = htmlstring;
         }
       };
       xmlhttp.send(args);
       
 };
 //
-//  CREATE HEATMAP
+//  CREATE DIST HEATMAP
 //
 function create_dheatmap(ts) {
       //alert('im HM')
       dheatmap_created = true;
-      hm_div = document.getElementById('dheatmap_div');
+      var dhm_div = document.getElementById('dheatmap_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = 'Distance Heatmap -- ';
       info_line += ' Metric: ' + pi_local.selected_distance+'; ';
@@ -396,8 +642,8 @@ function create_dheatmap(ts) {
       info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
       document.getElementById('dheatmap_title').innerHTML = info_line;
       
-      html = ''
-      args =  "metric="+pi_local.selected_distance;
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
        // get distance matrix via AJAX
@@ -410,10 +656,78 @@ function create_dheatmap(ts) {
            var htmlstring = xmlhttp.responseText;
            //document.getElementById('metadata_table_div').innerHTML = string;
            //new Tablesort(document.getElementById('metadata_table'));
-           hm_div.innerHTML = htmlstring;
+           dhm_div.innerHTML = htmlstring;
         }
       };
       xmlhttp.send(args);
+      
+};
+//
+//  CREATE FREQUENCY HEATMAP
+//
+function create_fheatmap(ts) {
+      //alert('im HM')
+      fheatmap_created = true;
+      var fhm_div = document.getElementById('fheatmap_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Frequency Heatmap -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('fheatmap_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_fheatmap_div').style.display = 'block';
+       // get distance matrix via AJAX
+      // var xmlhttp = new XMLHttpRequest();  
+      // xmlhttp.open("POST", '/visuals/heatmap', true);
+      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      // xmlhttp.onreadystatechange = function() {
+
+      //   if (xmlhttp.readyState == 4 ) {
+      //      var htmlstring = xmlhttp.responseText;
+      //      //document.getElementById('metadata_table_div').innerHTML = string;
+      //      //new Tablesort(document.getElementById('metadata_table'));
+      //      hm_div.innerHTML = htmlstring;
+      //   }
+      // };
+      // xmlhttp.send(args);
+      
+};
+//
+//  CREATE GEOSPATIAL
+//
+function create_geospatial(ts) {
+      //alert('im HM')
+      geospatial_created = true;
+      var geo_div = document.getElementById('geospatial_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Geospatial -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('geospatial_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_geospatial_div').style.display = 'block';
+       // get distance matrix via AJAX
+      // var xmlhttp = new XMLHttpRequest();  
+      // xmlhttp.open("POST", '/visuals/heatmap', true);
+      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      // xmlhttp.onreadystatechange = function() {
+
+      //   if (xmlhttp.readyState == 4 ) {
+      //      var htmlstring = xmlhttp.responseText;
+      //      //document.getElementById('metadata_table_div').innerHTML = string;
+      //      //new Tablesort(document.getElementById('metadata_table'));
+      //      hm_div.innerHTML = htmlstring;
+      //   }
+      // };
+      // xmlhttp.send(args);
       
 };
 //

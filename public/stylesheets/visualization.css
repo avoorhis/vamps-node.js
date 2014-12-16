@@ -207,6 +207,42 @@
     margin-right:20px;
     padding-right:20px;
 }
+/* PCoA */
+#pre_pcoa_div{
+    border:1px solid red;
+    padding: 3px;
+    height:20px;
+    width:100%;
+}
+#pcoa_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
+/* GeoSpatial */
+#pre_geospatial_div{
+    border:1px solid red;
+    padding: 3px;
+    height:20px;
+    width:100%;
+}
+#geospatial_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
+/* Frequency Heatmap */
+#pre_fheatmap_div{
+    border:1px solid red;
+    padding: 3px;
+    height:20px;
+    width:100%;
+}
+#fheatmap_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
 .blue {
     background:blue;
     width:60px;
