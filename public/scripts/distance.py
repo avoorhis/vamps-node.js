@@ -11,7 +11,9 @@
 
 import sys,os
 import scipy
-from scipy.cluster import hierarchy
+#from scipy.cluster import hierarchy
+#from scipy.spatial.distance import pdist
+from scipy.spatial import distance
 import numpy as np
 import argparse
 import json
@@ -46,75 +48,115 @@ def calculate_distance(args):
 		datasets.append(i['name'])
 	
 	z = np.array(data['data'])
-	dm = np.transpose(z)
+	dmatrix = np.transpose(z)
+	#print dmatrix
+	# find zero sum rows (datasets) after transpose
+	bad_rows = np.nonzero(dmatrix.sum(axis=1) == 0)
+	#print bad_rows
+	# now remove them
+	dmatrix = np.delete(dmatrix, bad_rows, axis=0)
+	# delete datasets too:
+	edited_dataset_list=[]
+	for row,line in enumerate(data['columns']):
+		if row not in bad_rows[0]:
+			edited_dataset_list.append(line['name'])
+
+	#print edited_dataset_list
 	
 	if args.metric == 'bray_curtis':
-		dist = dt.dist_bray_curtis(dm)
-	elif args.metric == 'morisita_horn':
-		dist = dt.dist_morisita_horn(dm)
-	elif args.metric == 'canberra':
-		dist = dt.dist_canberra(dm)	
-	elif args.metric == 'chisq':
-		dist = dt.dist_chisq(dm)	
-	elif args.metric == 'chord':
-		dist = dt.dist_chord(dm)	
-	elif args.metric == 'euclidean':
-		dist = dt.dist_euclidean(dm)	
-	elif args.metric == 'gower':
-		dist = dt.dist_gower(dm)	
-	elif args.metric == 'hellinger':
-		dist = dt.dist_hellinger(dm)	
-	elif args.metric == 'kulczynski':
-		dist = dt.dist_kulczynski(dm)	
-	elif args.metric == 'manhattan':
-		dist = dt.dist_manhattan(dm)	
-	elif args.metric == 'abund_jaccard':
-		dist = dt.dist_abund_jaccard(dm)	
-	elif args.metric == 'binary_jaccard':
-		dist = dt.binary_dist_jaccard(dm)	
-	elif args.metric == 'pearson':
-		dist = dt.dist_pearson(dm)	
-	elif args.metric == 'soergel':
-		dist = dt.dist_soergel(dm)	
-	elif args.metric == 'spearman':
-		dist = dt.dist_spearman_approx(dm)	
-	else:  # default
-		dist = dt.dist_bray_curtis(dm)
-
-
+		#dist = dt.dist_bray_curtis(dm)
+		dist = distance.pdist(dmatrix, 'braycurtis')
 	
+	elif args.metric == 'morisita_horn':
+		dist = distance.squareform( dt.dist_morisita_horn(dmatrix) )
+	
+	elif args.metric == 'canberra':
+		#dist = dt.dist_canberra(dm)	
+		dist = distance.pdist(dmatrix, 'canberra')
+	
+	elif args.metric == 'jaccard':
+		#dist = dt.binary_dist_jaccard(dm)	
+		dist = distance.pdist(dmatrix, 'jaccard')
+	 
+	elif args.metric == 'kulczynski':
+		#dist = dt.dist_kulczynski(dm)	
+		# note different spelling
+		dist = distance.pdist(dmatrix, 'kulsinski')
+		
+
+
+	# elif args.metric == 'chisq':
+	# 	dist = dt.dist_chisq(dm)	
+	# elif args.metric == 'chord':
+	# 	dist = dt.dist_chord(dm)	
+	# elif args.metric == 'euclidean':
+	# 	dist = dt.dist_euclidean(dm)	
+	# elif args.metric == 'gower':
+	# 	dist = dt.dist_gower(dm)	
+	# elif args.metric == 'hellinger':
+	# 	dist = dt.dist_hellinger(dm)	
+	
+	# elif args.metric == 'manhattan':
+	# 	dist = pdist(dm,'cityblock')
+	# 	#dist = dt.dist_manhattan(dm)	
+	# elif args.metric == 'abund_jaccard':
+	# 	dist = dt.dist_abund_jaccard(dm)	
+	
+	# elif args.metric == 'pearson':
+	# 	dist = dt.dist_pearson(dm)	
+	# elif args.metric == 'soergel':
+	# 	dist = dt.dist_soergel(dm)	
+	# elif args.metric == 'spearman':
+	# 	dist = dt.dist_spearman_approx(dm)	
+	else:  # default
+		dist = distance.pdist(dmatrix, 'braycurtis')
+
 	#print data['columns']
-	#print dist
-	distance_matrix1 = {}
-	distance_matrix2 = {}
-	out_fp = open(args.out_file,'w')
+	dm1 = distance.squareform(dist)
+	# dist in in condensed form
+	# dm1 is in long form
+	#print dm1
+	
+	dm2 = {}
+	dm3 = {}
+
+	out_file = os.path.join(args.site_base,'tmp',args.prefix+'_distance.csv')
+	
+	out_fp = open(out_file,'w')
 	
 	file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
 
 	out_fp.write(file_header_line)
 
-
-	for row,line in enumerate(data['columns']):
-		name = line['name']
-		distance_matrix1[name] = {}	
-		file_data_line = name+','	
-		for col,d in enumerate(dist[row]):
-			#print data['columns'][col]['id']
-			file_data_line += str(dist[row][col])+','
-			distance_matrix1[name][data['columns'][col]['name']]  = dist[row][col]
-			distance_matrix2[(name, data['columns'][col]['name'])]  = dist[row][col]
-		file_data_line = file_data_line[:-1]+'\n'
-		out_fp.write(file_data_line)
+	#print dm1
+	for row,name in enumerate(edited_dataset_list):
+			#name = line['name']
+			dm2[name] = {}	
+			file_data_line = name+','	
+			for col,d in enumerate(dm1[row]):
+				#print data['columns'][col]['id']
+				file_data_line += str(dm1[row][col])+','
+				dm2[name][data['columns'][col]['name']]  = dm1[row][col]
+				dm3[(name, data['columns'][col]['name'])]  = dm1[row][col]
+			file_data_line = file_data_line[:-1]+'\n'
+			out_fp.write(file_data_line)
 	
 	out_fp.close()
-	#if args.function == 'distance' or args.function == 'heatmap':
-	print json.dumps(distance_matrix1)
-	#print distance_matrix1
+	
+	#print dm1
 
-		#print distance_matrix2
-	#return distance_matrix2
+	return (dm1, dm2, dm3)
+# dm1: [[]]
+#[
+#[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
+#    2.11434615e-03   6.39773481e-03   4.40706533e-01   4.69163215e-01
+#    4.49626425e-01   4.68261345e-01   4.42852516e-01   4.83894461e-01]
+# [  9.86159727e-03   0.00000000e+00   1.13731595e-02   2.51487629e-04
+#    6.90100361e-03   1.44735894e-03   3.52524523e-01   3.75776748e-01
+#    3.60328184e-01   3.75075268e-01   3.54329424e-01   3.88954243e-01]
+# ]
 
-# distance_matrix1:  JSON
+# dm2:  JSON
 # { 'SLM_NIH_Bv6--Biofilter_005': 
 #    { 'SLM_NIH_Bv6--Biofilter_005': '0',
 #      'SLM_NIH_Bv6--Biofilter_Outflow_006': '0.015246870934763',
@@ -129,30 +171,55 @@ def calculate_distance(args):
 #      'SLM_NIH_Bv6--Biofilter_Sand_008': '0' } 
 #  }
 
-# distance_matrix2:   NOT good JSON, but works with pycogent
+# dm3:   NOT good JSON, but works with pycogent
 # {
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.32185444543965835, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.95288201941646389, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.0, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
-#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.0, 
-#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.97554598143130711, 
-#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.32185444543965835, 
-#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step'): 0.0, 
-#  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep2_1Step'): 0.95288201941646389
 # }
+def dendrogram_png(args, dm):
+		from scipy.cluster.hierarchy import linkage, dendrogram
+		
+		import matplotlib
+		matplotlib.use('Agg')   # png
+		import matplotlib.pyplot as plt
+		condensed_dm = distance.squareform( dm )
+		
+		#print condensed_dm
+		linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
+		dendrogram(linkage_matrix,  color_threshold=1,   show_leaf_counts=True,  orientation='right')
+		#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
+		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'.png')
+		plt.savefig(image_file)
+
+def dendrogram_svg(args, dm):
+		#print json.dumps(dm)
+		newick = construct_newick(args, dm)
+		return newick
+
 def write_csv_file(args):
-	file_name = 'distance.csv'
+		file_name = 'distance.csv'
 
 #
 #
 #
-def construct_newick(dist):
-	from cogent.cluster.UPGMA import upgma
+def construct_newick(args, dm):
+		from cogent.cluster.UPGMA import upgma
 
-	mycluster = upgma(dist)
-	newick = mycluster.getNewick(with_distances=True)		
-	print json.dumps(newick)
+		mycluster = upgma(dm)
+		newick = mycluster.getNewick(with_distances=True)	
+		#print mycluster.asciiArt()
+		return newick
+		
+		
+
+		# from scipy.cluster.hierarchy import linkage, to_tree
+		# condensed_dm = distance.squareform( dm )
+		# print condensed_dm
+		# linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
+		# newick = to_tree(linkage_matrix)		
+		
 #
 #
 #
@@ -216,38 +283,28 @@ if __name__ == '__main__':
 		--metric	distance metric to calculate ['horn', ]
 	"""
 	parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
-	parser.add_argument('-in','--in',   required=True,  action="store",   dest='in_file', help = '')
-	parser.add_argument('-out','--out',   required=True,  action="store",   dest='out_file', help = 'output distance fp')
-	parser.add_argument('-ff','--file_format',   required=False,  action="store",   dest='file_format', default='json', help = 'json or csv only')
-	parser.add_argument('-metric','--metric', required=False, action="store",   dest='metric', help = '', default='bray_curtis') 
- 	parser.add_argument('-fxn','--function', required=True, action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
+	parser.add_argument('-in','--in',          required=True,  action="store",   dest='in_file', help = '')
+	parser.add_argument('-ff','--file_format', required=False, action="store",   dest='file_format', default='json', help = 'json or csv only')	
+	parser.add_argument('-metric','--metric',  required=False, action="store",   dest='metric', help = 'Distance Metric', default='bray_curtis') 
+ 	parser.add_argument('-fxn','--function',   required=True,  action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
+ 	parser.add_argument('-base','--site_base', required=True,  action="store",   dest='site_base', help = 'site base') 
+ 	parser.add_argument('-pre','--prefix',     required=True,  action="store",   dest='prefix', help = 'file prefix') 
 
  	args = parser.parse_args()
-	dist2 = calculate_distance(args) 
+	( dm1, dm2, dm3 ) = calculate_distance(args) 
 
-	if args.function == 'dendrogram':
-		#construct_newick(dist2)
-		pass
+	if args.function == 'dheatmap':
+		# IMPORTANT print for heatmap
+		print json.dumps(dm2)
 
+	if args.function == 'dendrogram-svg':
+		newick = dendrogram_svg(args, dm3)
+		# IMPORTANT print for SVG
+		print json.dumps(newick)
 
-
-		# from scipy.cluster import hierarchy
-		# from scipy.spatial import distance
-		# from hcluster import pdist, linkage, dendrogram, to_tree, squareform
-		# from ete2 import Tree, ClusterTree
-		
-		# condensed_dm = distance.squareform(dist)
-		# print condensed_dm   # [ 0.97554598  0.32185445  0.95288202]
-		# T = hierarchy.linkage(condensed_dm, method='single', metric='euclidean')
-		# print T
-		# # ndarray:
-		# # [[ 0.          2.          0.32185445  2.        ]
- 	# 	# [ 1.          3.          0.95288202  3.        ]]
-		
-		# P = hierarchy.dendrogram(T)
-		#plot_tree(P)
-		
-
+	if args.function == 'dendrogram-png':
+		#print distances
+		dendrogram_png(args, dm1)
 
 	if args.function == 'pcoa':
 		#pcoa = construct_pcoa(dist)

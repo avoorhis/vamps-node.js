@@ -62,9 +62,9 @@
                     <td class='td_top'><%= name %><br><br>Not Available</td>
           <%    } else { %>
           <%        if(disable_thumbs) {                                                              %>
-                  <td class='td_top'><%= name %><br>
-                    <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
-                  </td>
+                      <td class='td_top'><%= name %><br>
+                        <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
+                      </td>
           <%        }else{                                                                            %>
                   <td class='td_top'>
                <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
@@ -114,6 +114,10 @@
   
 <!-- Frequency heatmap -->
   <br><br>
+  <div id='pre_fheatmap_div' class='display_none'>
+    <span id='fheatmap_title' class='table_title'>Frequency Heatmap</span>
+    <input type='button' id='fheatmap_hide_btn' class='close_open_btn' value='close'>
+  </div>
   <a name='freq_heatmap'><div id='fheatmap_div' class=''>TODO: frequency heatmap</div></a> 
   
   <!-- BarCharts -->
@@ -132,9 +136,6 @@
   </div>
   <a name='piecharts'><div id='piecharts_div'           class=''></div></a>
   
-
-
-
   <!-- Dendrogram -->
   <br><br>
   <div id='pre_dendrogram_div' class='display_none'>
@@ -144,13 +145,20 @@
   <a name='dendrogram'><div id='dendrogram_div'        class=''>TODO: dendrograms</div></a>
   
 
-
-
   <!-- PCoA-->
   <br><br>
+  <div id='pre_pcoa_div' class='display_none'>
+    <span id='pcoa_title' class='table_title'>PCoA</span>
+    <input type='button' id='pcoa_hide_btn' class='close_open_btn' value='close'>
+  </div>
   <a name='pcoa'><div id='pcoa_div'                    class=''>TODO: pcoa</div></a> 
+
   <!-- GEOSPATIAL -->
   <br><br> 
+  <div id='pre_geospatial_div' class='display_none'>
+    <span id='geospatial_title' class='table_title'>GeoSpatial</span>
+    <input type='button' id='geospatial_hide_btn' class='close_open_btn' value='close'>
+  </div>
   <a name='geospatial'><div id='geospatial_div'        class=''>TODO: geospatial</div></a> 
   
   <br><br> 
@@ -167,121 +175,12 @@
 <script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
 <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
 <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
-
+<!-- <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script> -->
+<script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
 <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/view_selection.js"></script>
-<script>
-  $("#metadata_local_table_div").on("click", "#metadata_table", function () {
-      new Tablesort(document.getElementById('metadata_table'));
-  });
-</script>
-<script>
 
-// code for tooltips
-
-
-
-    var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
-        $win = $(window),
-        showTip;
-
-    var tip = {
-      title: '',
-      offset: 12,
-      delay: 300,
-      position: function(event) {
-        var positions = {x: event.pageX, y: event.pageY};
-        var dimensions = {
-          x: [
-            $win.width(),
-            $liveTip.outerWidth()
-          ],
-          y: [
-            $win.scrollTop() + $win.height(),
-            $liveTip.outerHeight()
-          ]
-        };
-     
-        for ( var axis in dimensions ) {
-     
-          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
-            positions[axis] -= dimensions[axis][1] + this.offset;
-          } else {
-            positions[axis] += this.offset;
-          }
-     
-        }
-     
-        $liveTip.css({
-          top: positions.y,
-          left: positions.x
-        });
-      }
-    };
-
-
-    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
-          var link = this,
-          html = '';
-          $link = $(this);
-         
-          if (event.type == 'mouseover') {
-            tip.id = link.id;
-            link.id = '';
-            id_items = tip.id.split('-|-');
-            html = "<table><tr>";
-            if(id_items[0] == 'dheatmap') {
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>"+id_items[2]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Distance: "+id_items[3]+"</td>";
-            }else if(id_items[0] == 'frequencies'){
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>"+id_items[2]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
-            }else{  // barcharts and piecharts            
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
-            }
-            html += "</tr><table>";
-
-            showTip = setTimeout(function() {
-         
-              $link.data('tipActive', true);
-              
-              tip.position(event);
-         //alert(event.pageX)
-              $liveTip
-              .html('<div>' + html  + '</div>')
-              .fadeOut(0)
-              .fadeIn(200);
-         
-            }, tip.delay);
-          }
-         
-          if (event.type == 'mouseout') {
-            link.id = tip.id || link.id;
-            if ($link.data('tipActive')) {
-              $link.removeData('tipActive');
-              $liveTip.hide();
-            } else {
-              clearTimeout(showTip);
-            }
-          }
-         
-          if (event.type == 'mousemove' && $link.data('tipActive')) {
-            tip.position(event);
-          }
-                  
-     });              
-              
-    
- </script> 
  
  
 <% //include ../add_ins/end.ejs %>
