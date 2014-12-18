@@ -19,6 +19,7 @@ npm-debug.log
 grep_code.sh
 temp/
 tmp/
+public/tmp_images/
 visuals_testing/
 .DS_Store
 
