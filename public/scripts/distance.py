@@ -151,7 +151,7 @@ def calculate_distance(args):
 	
 	#print dm1
  	
-	return (dm1, dm2, dm3, edited_dataset_list)
+	return (dm1, dist, dm2, dm3, edited_dataset_list)
 # dm1: [[]]
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
@@ -211,7 +211,7 @@ def dendrogram_png(args, dm, leafLabels):
 		linkage_matrix = linkage(dm,  method="average" )
 		dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
 		#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
-		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'.png')
+		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.png')
 		
 
 		plt.savefig(image_file)
@@ -316,10 +316,15 @@ if __name__ == '__main__':
 
 
  	args = parser.parse_args()
-	( dm1, dm2, dm3, datasets ) = calculate_distance(args) 
+	( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
+
+	if args.function == 'fheatmap':
+		# IMPORTANT print for freq heatmap
+		print short_dm1.tolist()
+		
 
 	if args.function == 'dheatmap':
-		# IMPORTANT print for heatmap
+		# IMPORTANT print for dist heatmap
 		print json.dumps(dm2)
 
 	if args.function == 'dendrogram-svg':
