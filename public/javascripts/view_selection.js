@@ -188,7 +188,6 @@ if (typeof piecharts_link !=="undefined") {
       
   });
 }
-
 if (typeof piecharts_btn !=="undefined") {
   piecharts_btn.addEventListener('click', function () {
       //alert('here in tt')
@@ -258,6 +257,36 @@ if (typeof dheatmap_btn !== "undefined") {
         toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
       }else{
         toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
+      }
+      
+  });
+}
+//
+// FREQUENCY HEATMAP
+//
+var fheatmap_link = document.getElementById('fheatmap_link_id');
+var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
+var fheatmap_div = document.getElementById('fheatmap_div');
+if (typeof fheatmap_link !=="undefined") {
+  fheatmap_link.addEventListener('click', function () {
+      if(typeof fheatmap_created == "undefined"){
+        get_user_input('fheatmap', pi_local.ts);
+      }else{
+        if(fheatmap_btn.value == 'close'){        
+          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+        }else{
+          toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
+        }
+      }      
+  });
+}
+if (typeof fheatmap_btn !== "undefined") {
+  fheatmap_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(fheatmap_btn.value == 'close'){        
+        toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+      }else{
+        toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
       }
       
   });
@@ -382,36 +411,7 @@ if (typeof geospatial_btn !== "undefined") {
       
   });
 }
-//
-// FREQUENCY HEATMAP
-//
-var fheatmap_link = document.getElementById('fheatmap_link_id');
-var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
-var fheatmap_div = document.getElementById('fheatmap_div');
-if (typeof fheatmap_link !=="undefined") {
-  fheatmap_link.addEventListener('click', function () {
-      if(typeof fheatmap_created == "undefined"){
-        get_user_input('fheatmap', pi_local.ts);
-      }else{
-        if(fheatmap_btn.value == 'close'){        
-          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
-        }else{
-          toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
-        }
-      }      
-  });
-}
-if (typeof fheatmap_btn !== "undefined") {
-  fheatmap_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(fheatmap_btn.value == 'close'){        
-        toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
-      }else{
-        toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
-      }
-      
-  });
-}
+
 //
 //
 //
@@ -669,15 +669,12 @@ function create_dheatmap(ts) {
       xmlhttp.open("POST", '/visuals/heatmap', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange = function() {
-
         if (xmlhttp.readyState == 4 ) {
-           var htmlstring = xmlhttp.responseText;
-           
+           var htmlstring = xmlhttp.responseText;           
            dhm_div.innerHTML = htmlstring;
         }
       };
-      xmlhttp.send(args);
-      
+      xmlhttp.send(args);      
 };
 //
 //  CREATE FREQUENCY HEATMAP
@@ -697,20 +694,16 @@ function create_fheatmap(ts) {
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_fheatmap_div').style.display = 'block';
-       // get distance matrix via AJAX
-      // var xmlhttp = new XMLHttpRequest();  
-      // xmlhttp.open("POST", '/visuals/heatmap', true);
-      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      // xmlhttp.onreadystatechange = function() {
-
-      //   if (xmlhttp.readyState == 4 ) {
-      //      var htmlstring = xmlhttp.responseText;
-      //      //document.getElementById('metadata_table_div').innerHTML = string;
-      //      //new Tablesort(document.getElementById('metadata_table'));
-      //      hm_div.innerHTML = htmlstring;
-      //   }
-      // };
-      // xmlhttp.send(args);
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/frequency_heatmap', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;           
+           fhm_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);   
       
 };
 //
