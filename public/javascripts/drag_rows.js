@@ -1,10 +1,11 @@
  // jquery script for moving table rows AND columns
- $(document).ready(function() {        
+ $("#dheatmap_div").on("click", "#drag_table", function () {     
      
     $("#drag_table").tableDnD({
     
        onDragClass: "myDragClass",
 	     onDragStart: function(table, row){        
+          
           var originalRows = table.tBodies[0].rows;			
     		  for(var i=0; i<=originalRows.length-1; i++) {
                   
