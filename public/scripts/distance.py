@@ -116,6 +116,7 @@ def calculate_distance(args):
 	# dist in in condensed form
 	# dm1 is in long form
 	#print dm1
+	#print dist
 	
 	dm2 = {}
 	dm3 = {}
@@ -144,8 +145,8 @@ def calculate_distance(args):
 	out_fp.close()
 	
 	#print dm1
-
-	return (dm1, dm2, dm3)
+ 	
+	return (dm1, dm2, dm3, edited_dataset_list)
 # dm1: [[]]
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
@@ -154,7 +155,7 @@ def calculate_distance(args):
 # [  9.86159727e-03   0.00000000e+00   1.13731595e-02   2.51487629e-04
 #    6.90100361e-03   1.44735894e-03   3.52524523e-01   3.75776748e-01
 #    3.60328184e-01   3.75075268e-01   3.54329424e-01   3.88954243e-01]
-# ]
+# ]q
 
 # dm2:  JSON
 # { 'SLM_NIH_Bv6--Biofilter_005': 
@@ -178,19 +179,36 @@ def calculate_distance(args):
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.0, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
 # }
-def dendrogram_png(args, dm):
+def dendrogram_png(args, dm, leafLabels):
 		from scipy.cluster.hierarchy import linkage, dendrogram
-		
+		#from hcluster import squareform, linkage, dendrogram
+		#from numpy import array
+		#import pylab
 		import matplotlib
 		matplotlib.use('Agg')   # png
 		import matplotlib.pyplot as plt
-		condensed_dm = distance.squareform( dm )
+		#condensed_dm = distance.squareform( dm )
+		#plt.figure(figsize=(100,10))
+		leafNodes = len(leafLabels)
+		fig = plt.figure(figsize=(14,(leafNodes*0.2)+0.8), dpi=100)
+		#fig.set_size_inches(14,(leafNodes*0.2))
+		ax = fig.add_subplot(111)
+		plt.tight_layout()
+		ax.set_title('Dendrogram')
+		#plt.subplots_adjust(bottom=0.25)
+		#plt.subplots_adjust(top=0.05)
+		plt.subplots_adjust(left=0.01)
+		plt.subplots_adjust(right=0.65)
+		#plt.subplots_adjust(top=0.7)
+		#leafLabels = [ '\n'.join(l.split('--')) for l in leafLabels ]
 		
-		#print condensed_dm
-		linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
-		dendrogram(linkage_matrix,  color_threshold=1,   show_leaf_counts=True,  orientation='right')
+		print datasets
+		linkage_matrix = linkage(dm,  method="average" )
+		dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
 		#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
 		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'.png')
+		
+
 		plt.savefig(image_file)
 
 def dendrogram_svg(args, dm):
@@ -291,7 +309,7 @@ if __name__ == '__main__':
  	parser.add_argument('-pre','--prefix',     required=True,  action="store",   dest='prefix', help = 'file prefix') 
 
  	args = parser.parse_args()
-	( dm1, dm2, dm3 ) = calculate_distance(args) 
+	( dm1, dm2, dm3, datasets ) = calculate_distance(args) 
 
 	if args.function == 'dheatmap':
 		# IMPORTANT print for heatmap
@@ -304,7 +322,7 @@ if __name__ == '__main__':
 
 	if args.function == 'dendrogram-png':
 		#print distances
-		dendrogram_png(args, dm1)
+		dendrogram_png(args, dm1, datasets)
 
 	if args.function == 'pcoa':
 		#pcoa = construct_pcoa(dist)
