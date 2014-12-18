@@ -393,19 +393,21 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
 //
 //
 //
-// run_script_cmd: function (req,res, ts, command, visual_name) {
-//     var exec = require('child_process').exec;
+run_script_cmd: function (req,res, ts, command, visual_name) {
+     var exec = require('child_process').exec;
 
-//     var html = '<table border="1" class="single_border center_table"><tr><td>';
-//     var title = 'VAMPS';
-//     html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//     html += '</td><td>';
-//     html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//     html += '</td></tr></table>';
 
-//     command.log(command)
-//     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
 
+     console.log(command)
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        var image = '/tmp_images/'+ts+'_heatmap.pdf'
+        var html = "<div id='pdf'>";
+        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+        html += " <p>ERROR in loading pdf file</p>";
+        html += "</object></div>"
+        //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
+        console.log(html)
+        res.send(html);
 //       if(stderr){console.log(stderr);}
 //       stdout = stdout.trim();
 //       console.log(stdout);
@@ -435,8 +437,8 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
 //       });
       
 
-//     });
-// },
+    });
+ },
 
 // run_pydendro_cmd: function (req, res, ts, script, infile, visual_name, metric) {
 //     var exec = require('child_process').exec;
