@@ -1,85 +1,423 @@
-//var COMMON  = require('./routes_common');
-// visualization: unit_selection.js
+
+  $("#metadata_local_table_div").on("click", "#metadata_table", function () {
+      new Tablesort(document.getElementById('metadata_table'));
+  });
+
+
+// code for tooltips
+
+
+
+    var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+        $win = $(window),
+        showTip;
+
+    var tip = {
+      title: '',
+      offset: 12,
+      delay: 300,
+      position: function(event) {
+        var positions = {x: event.pageX, y: event.pageY};
+        var dimensions = {
+          x: [
+            $win.width(),
+            $liveTip.outerWidth()
+          ],
+          y: [
+            $win.scrollTop() + $win.height(),
+            $liveTip.outerHeight()
+          ]
+        };
+     
+        for ( var axis in dimensions ) {
+     
+          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+            positions[axis] -= dimensions[axis][1] + this.offset;
+          } else {
+            positions[axis] += this.offset;
+          }
+     
+        }
+     
+        $liveTip.css({
+          top: positions.y,
+          left: positions.x
+        });
+      }
+    };
+
+
+    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+          var link = this,
+          html = '';
+          $link = $(this);
+         
+          if (event.type == 'mouseover') {
+            tip.id = link.id;
+            link.id = '';
+            id_items = tip.id.split('-|-');
+            html = "<table><tr>";
+            if(id_items[0] == 'dheatmap') {
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Distance: "+id_items[3]+"</td>";
+            }else if(id_items[0] == 'frequencies'){
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>"+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+            }else{  // barcharts and piecharts            
+              html += "<td>"+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+            }
+            html += "</tr><table>";
+
+            showTip = setTimeout(function() {
+         
+              $link.data('tipActive', true);
+              
+              tip.position(event);
+         //alert(event.pageX)
+              $liveTip
+              .html('<div>' + html  + '</div>')
+              .fadeOut(0)
+              .fadeIn(200);
+         
+            }, tip.delay);
+          }
+         
+          if (event.type == 'mouseout') {
+            link.id = tip.id || link.id;
+            if ($link.data('tipActive')) {
+              $link.removeData('tipActive');
+              $liveTip.hide();
+            } else {
+              clearTimeout(showTip);
+            }
+          }
+         
+          if (event.type == 'mousemove' && $link.data('tipActive')) {
+            tip.position(event);
+          }
+                  
+     });              
+              
+    
+
 // COUNTS
-tax_counts_link = document.getElementById('counts_table');
+var tax_counts_link = document.getElementById('counts_table_link_id');
+var tax_counts_btn = document.getElementById('counts_table_hide_btn');
+var tax_counts_div = document.getElementById('tax_table_div');
 if (typeof tax_counts_link !=="undefined") {
   tax_counts_link.addEventListener('click', function () {
-      
-      create_counts_table();
+      //alert(tax_table_created)
+      if(typeof tax_table_created == "undefined"){
+        get_user_input('counts_table', pi_local.ts);
+      }else{
+        if(tax_counts_btn.value == 'close'){
+          toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
+        }else{
+          toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
+        }
+      }
   });
 }
-// tax_counts_btn = document.getElementById('counts_table_hide_btn');
-// tax_counts_div = document.getElementById('tax_table_div');
-// if (typeof tax_counts_btn !=="undefined") {
-//   tax_counts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(tax_counts_btn.value == 'close'){
-//         hide_visual_element(tax_counts_div,tax_counts_btn);
-//       }else{
-//         show_visual_element(tax_counts_div,tax_counts_btn);
-//       }
+if (typeof tax_counts_btn !=="undefined") {
+  tax_counts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(tax_counts_btn.value == 'close'){
+        toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
+      }else{
+        toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
+      }
       
-//   });
-// }
-metadata_link = document.getElementById('metadata2_table');
+  });
+}
+//
+// METADATA
+//
+var metadata_link = document.getElementById('metadata_table_link_id');
+var metadata_btn = document.getElementById('metadata_table_hide_btn');
+var metadata_div = document.getElementById('metadata_local_table_div');
 if (typeof metadata_link !=="undefined") {
   metadata_link.addEventListener('click', function () {
-      create_metadata_table();
+      if(typeof metadata_table_created == "undefined"){
+        get_user_input('metadata_table', pi_local.ts);
+      }else{
+        if(metadata_btn.value == 'close'){
+          toggle_visual_element(metadata_div,'show',metadata_btn);
+        }else{
+          toggle_visual_element(metadata_div,'hide',metadata_btn);
+        }
+      }
+      
+  });
+}
+if (typeof metadata_btn !=="undefined") {
+  metadata_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(metadata_btn.value == 'close'){
+        toggle_visual_element(metadata_div,'show',metadata_btn);
+      }else{
+        toggle_visual_element(metadata_div,'hide',metadata_btn);
+      }
+      
   });
 }
 //
 // PIECHARTS
 //
-piecharts_link = document.getElementById('piecharts');
+var piecharts_link = document.getElementById('piecharts_link_id');
+var piecharts_btn = document.getElementById('piecharts_hide_btn');
+var piecharts_div = document.getElementById('piecharts_div');
 if (typeof piecharts_link !=="undefined") {
   piecharts_link.addEventListener('click', function () {
-      //alert('here in pc')
-      create_piecharts(pi_local.ts);
+      if(typeof piecharts_created == "undefined"){
+        get_user_input('piecharts', pi_local.ts);
+      }else{
+        if(piecharts_btn.value == 'close'){
+          toggle_visual_element(piecharts_div,'show',piecharts_btn);
+        }else{
+          toggle_visual_element(piecharts_div,'hide',piecharts_btn);
+        }
+      }
+      
   });
 }
-// piecharts_btn = document.getElementById('piecharts_hide_btn');
-// piecharts_div = document.getElementById('piecharts_div');
-// if (typeof piecharts_btn !=="undefined") {
-//   piecharts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(piecharts_btn.value == 'close'){
-//         hide_visual_element(piecharts_div,piecharts_btn);
-//       }else{
-//         show_visual_element(piecharts_div,piecharts_btn);
-//       }
+
+if (typeof piecharts_btn !=="undefined") {
+  piecharts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(piecharts_btn.value == 'close'){
+        toggle_visual_element(piecharts_div,'show',piecharts_btn);
+      }else{
+        toggle_visual_element(piecharts_div,'hide',piecharts_btn);
+      }
       
-//   });
-// }
+  });
+}
 //
 // BARCHARTS
 //
-barchart_link = document.getElementById('barcharts');
+var barchart_link = document.getElementById('barcharts_link_id');
+var barcharts_btn = document.getElementById('barcharts_hide_btn');
+var barcharts_div = document.getElementById('barcharts_div');
 if (typeof barchart_link !=="undefined") {
   barchart_link.addEventListener('click', function () {
-      //alert('here in pc')
-      create_barcharts(pi_local.ts);
+      if(typeof barcharts_created == "undefined"){
+        get_user_input('barcharts', pi_local.ts);
+      }else{
+        if(barcharts_btn.value == 'close'){        
+          toggle_visual_element(barcharts_div,'show',barcharts_btn);
+        }else{
+          toggle_visual_element(barcharts_div,'hide',barcharts_btn);
+        }
+      }
+      
   });
 }
-// barcharts_btn = document.getElementById('barcharts_hide_btn');
-// barcharts_div = document.getElementById('barcharts_div');
-// if (typeof barcharts_btn !=="undefined") {
-//   barcharts_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(barcharts_btn.value == 'close'){
-//         hide_visual_element(barcharts_div,barcharts_btn);
-//       }else{
-//         show_visual_element(barcharts_div,barcharts_btn);
-//       }
+if (typeof barcharts_btn !=="undefined") {
+  barcharts_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(barcharts_btn.value == 'close'){        
+        toggle_visual_element(barcharts_div,'show',barcharts_btn);
+      }else{
+        toggle_visual_element(barcharts_div,'hide',barcharts_btn);
+      }
       
-//   });
-// }
-
+  });
+}
+//
+// DISTANCE HEATMAP
+//
+var dheatmap_link = document.getElementById('dheatmap_link_id');
+var dheatmap_btn = document.getElementById('dheatmap_hide_btn');
+var dheatmap_div = document.getElementById('dheatmap_div');
+if (typeof dheatmap_link !=="undefined") {
+  dheatmap_link.addEventListener('click', function () {
+      if(typeof dheatmap_created == "undefined"){
+        get_user_input('dheatmap', pi_local.ts);
+      }else{
+        if(dheatmap_btn.value == 'close'){        
+          toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
+        }else{
+          toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dheatmap_btn !== "undefined") {
+  dheatmap_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dheatmap_btn.value == 'close'){        
+        toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
+      }else{
+        toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
+      }
+      
+  });
+}
+//
+// DENDROGRAM
+//
+var dendrogram_link = document.getElementById('dendrogram_link_id');
+var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
+var dendrogram_div = document.getElementById('dendrogram_div');
+if (typeof dendrogram_link !=="undefined") {
+  dendrogram_link.addEventListener('click', function () {
+      if(typeof dendrogram_created == "undefined"){
+        get_user_input('dendrogram', pi_local.ts);
+      }else{
+        if(dendrogram_btn.value == 'close'){        
+          toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dendrogram_btn !== "undefined") {
+  dendrogram_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram_btn.value == 'close'){        
+        toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+      }else{
+        toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+      }      
+  });
+}
+//
+// DENDROGRAM PNG
+//
+var dendrogram_png_link = document.getElementById('dendrogram_png_link_id');
+var dendrogram_png_btn = document.getElementById('dendrogram_png_hide_btn');
+var dendrogram_png_div = document.getElementById('dendrogram_png_div');
+if (typeof dendrogram_png_link !=="undefined") {
+  dendrogram_png_link.addEventListener('click', function () {
+      if(typeof dendrogram_png_created == "undefined"){
+        get_user_input('dendrogram_png', pi_local.ts);
+      }else{
+        if(dendrogram_png_btn.value == 'close'){        
+          toggle_visual_element(dendrogram_png_div,'show',dendrogram_png_btn);
+        }else{
+          toggle_visual_element(dendrogram_png_div,'hide',dendrogram_png_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dendrogram_png_btn !== "undefined") {
+  dendrogram_png_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram_png_btn.value == 'close'){        
+        toggle_visual_element(dendrogram_png_div,'show',dendrogram_png_btn);
+      }else{
+        toggle_visual_element(dendrogram_png_div,'hide',dendrogram_png_btn);
+      }      
+  });
+}
+//
+// PCOA
+//
+var pcoa_link = document.getElementById('pcoa_link_id');
+var pcoa_btn = document.getElementById('pcoa_hide_btn');
+var pcoa_div = document.getElementById('pcoa_div');
+if (typeof pcoa_link !=="undefined") {
+  pcoa_link.addEventListener('click', function () {
+      if(typeof pcoa_created == "undefined"){
+        get_user_input('pcoa', pi_local.ts);
+      }else{
+        if(pcoa_btn.value == 'close'){        
+          toggle_visual_element(pcoa_div,'show',pcoa_btn);
+        }else{
+          toggle_visual_element(pcoa_div,'hide',pcoa_btn);
+        }
+      }      
+  });
+}
+if (typeof pcoa_btn !== "undefined") {
+  pcoa_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(pcoa_btn.value == 'close'){        
+        toggle_visual_element(pcoa_div,'show',pcoa_btn);
+      }else{
+        toggle_visual_element(pcoa_div,'hide',pcoa_btn);
+      }
+      
+  });
+}
+//
+// GEOSPATIAL
+//
+var geospatial_link = document.getElementById('geospatial_link_id');
+var geospatial_btn = document.getElementById('geospatial_hide_btn');
+var geospatial_div = document.getElementById('geospatial_div');
+if (typeof geospatial_link !=="undefined") {
+  geospatial_link.addEventListener('click', function () {
+      if(typeof geospatial_created == "undefined"){
+        get_user_input('geospatial', pi_local.ts);
+      }else{
+        if(geospatial_btn.value == 'close'){        
+          toggle_visual_element(geospatial_div,'show',geospatial_btn);
+        }else{
+          toggle_visual_element(geospatial_div,'hide',geospatial_btn);
+        }
+      }      
+  });
+}
+if (typeof geospatial_btn !== "undefined") {
+  geospatial_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(geospatial_btn.value == 'close'){        
+        toggle_visual_element(geospatial_div,'show',geospatial_btn);
+      }else{
+        toggle_visual_element(geospatial_div,'hide',geospatial_btn);
+      }
+      
+  });
+}
+//
+// FREQUENCY HEATMAP
+//
+var fheatmap_link = document.getElementById('fheatmap_link_id');
+var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
+var fheatmap_div = document.getElementById('fheatmap_div');
+if (typeof fheatmap_link !=="undefined") {
+  fheatmap_link.addEventListener('click', function () {
+      if(typeof fheatmap_created == "undefined"){
+        get_user_input('fheatmap', pi_local.ts);
+      }else{
+        if(fheatmap_btn.value == 'close'){        
+          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+        }else{
+          toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
+        }
+      }      
+  });
+}
+if (typeof fheatmap_btn !== "undefined") {
+  fheatmap_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(fheatmap_btn.value == 'close'){        
+        toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+      }else{
+        toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
+      }
+      
+  });
+}
 //
 //
 //
 // TEST
 //
-test_link = document.getElementById('test_page');
+test_link = document.getElementById('test_page_link_id');
 if (typeof test_link !=="undefined") {
   test_link.addEventListener('click', function () {
       //alert('here in pc')
@@ -90,97 +428,75 @@ function create_test_page(ts) {
   
 
 var opened = window.open("");
-opened.document.write("<html><head><title>My title</title></head><body>test</body></html>");
+opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
 
 
 }
 //
+// visual choices 
 //
-//
-// function load_tooltip(visual) {
+test_link = document.getElementsByName('normalization');
 
-//   if(visual === 'counts_table') {
 
-//     $(".counts_tbl_tooltip").tooltip({               
-//         tip: "#counts_tt_span",          
-//         position: 'center below',          
-//         offset: [-40,0],
-//         opacity: 0.95,          
-//         delay: 0,
-//         onBeforeShow: function() {
 
-//             var passthru = this.getTrigger().attr("id");            
-//             var stuff = passthru.split('-|-')
-//             dname = stuff[0];
-//             cnt = stuff[1];
-//             pct   = stuff[2];
-//             count = cnt + ' ('+pct+' %)'                       
-//             $("#counts_tt_span table td#dataset").text(dname);
-//             $("#counts_tt_span table td#count").text(count);               
-//         },           
-//     });        
-//     $(".counts_tbl_tooltip").hover(function() {         
-//          var cell = $(this);   
-//     });  
 
-//   }else if(visual === 'piecharts' || visual === 'barcharts') {
 
-//     $(".piebarchart_tooltip").tooltip({               
-//         tip: "#piebarchart_tt_span",          
-//         position: 'center below',          
-//         offset: [-30,0],
-//         opacity: 0.95,          
-//         delay: 0,
-//         onBeforeShow: function(){  
-           
-//           var passthru = this.getTrigger().attr("id");
-//           var stuff = passthru.split('-|-')
-//           uname = stuff[0];
-//           cnt = stuff[1];
-//           pct   = stuff[2];
-//           count = cnt + ' ('+pct+' %)'
-//           $("#piebarchart_tt_span table td#unit").text(uname); 
-//           $("#piebarchart_tt_span table td#count").text(count);      
-//         },       
-//     });           
-//     $(".piebarchart_tooltip").hover(function() {         
-//        var cell = $(this);  
-//     });
 
-//   }else if(visual === 'metadata'){
 
-//   }
 
-// }
-function hide_visual_element(table_div, btn){
-  table_div.style.display = 'none';
-  btn.value = 'open';
+function toggle_visual_element(table_div, tog, btn){
+  if(tog == 'show') {
+    table_div.style.display = 'none';
+    btn.value = 'open';
+  }else{
+    table_div.style.display = 'block';
+    btn.value = 'close';
+  }
 }
 
-function show_visual_element(table_div, btn){
-  table_div.style.display = 'block';
-  btn.value = 'close';
-}
 
+function get_user_input(visual, ts) {
+   
+    if(visual === 'counts_table'){
+      create_counts_table();      
+    }else if(visual === 'metadata_table'){
+      create_metadata_table();
+    }else if(visual === 'piecharts'){
+      create_piecharts(ts)
+    }else if(visual === 'barcharts'){
+      create_barcharts(ts)
+    }else if(visual === 'dheatmap'){
+      create_dheatmap(ts)
+    }else if(visual === 'dendrogram'){
+      create_dendrogram(ts,'svg')
+    }else if(visual === 'dendrogram_png'){
+      create_dendrogram(ts,'png')
+    }else if(visual === 'pcoa'){
+      create_pcoa(ts)
+    }else if(visual === 'fheatmap'){
+      create_fheatmap(ts)
+    }else if(visual === 'geospatial'){
+      create_geospatial(ts)
+    }else{
+
+    }
+}
 //
 // TAX TABLE
 //
 function create_counts_table() {
-
-      var count_table_window = window.open();
+      
+      tax_table_created = true;
+      var info_line = 'Frequency Counts -- ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('counts_table_title').innerHTML = info_line;
+      document.getElementById('pre_counts_table_div').style.display = 'block';
+      var tax_counts_div = document.getElementById('tax_table_div');
       var html = '';
-      //var html = "<div id='' class='visual_top_div'>";
-      //html += "<input type='button' id='counts_table_hide_btn' value='close'>";
-      //html += "</div>";
-      html += "<table border='1' class='single_border center_table font_small'>";
-      html += '<tr><td>Current Normalization</td><td>'+pi_local.normalization+'</td></tr>';
-      //html += COMMON.get_selection_markup('counts_table', pi_local);     // block for listing prior selections: domains,include_NAs ...
-      html += "<tr><td><input type='radio' name='norm' selected value='none'>none</td>";
-      html += "<td><input type='radio' name='norm' value='max'>max</td>";
-      html += "<td><input type='radio' name='norm' value='freq'>freq</td></tr>";
-      //html += COMMON.get_choices_markup('counts_table', pi_local);       // block for controls to normalize, change tax percentages or distance
-      html += '</table>';
-
+         
+      html += "</table>  ";
+      html += "</span>";
 
       html += "<table border='1' class='single_border small_font counts_table' >";
       html += "<tr><td></td>";
@@ -195,10 +511,9 @@ function create_counts_table() {
         for (var d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          //html += "<td data-ot='"+id+"' data-ot-title='"+mtx_local.columns[d].name+"' data-ot-fixed='true' id='"+id+"' class='counts_tbl_tooltip right_justify'>"+cnt+'</td>';
-          html += "<td id='"+id+"' class='chart_tooltip right_justify'>"+cnt+'</td>';
-          //html += "<td>"+mtx_local.data[i][d] +"</td>";
+          var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
+          
         }
         html += "</tr>";
       }
@@ -210,44 +525,22 @@ function create_counts_table() {
       }
       html += "</tr>";
       html += "</table>";
-      
+
+      //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
+      tax_counts_div.innerHTML = html;
+
 
      
-      
-      count_table_window.document.write("<html><head><title>VAMPS Counts</title>\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
-      count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
-      
-      
-      //count_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/opentip.css\">\n");
-      //count_table_window.document.write("<script src=\"/javascripts/opentip-native.min.js\"></script>\n");
+};
 
-      count_table_window.document.write("</head><body>"+html+"\n");
-      
-
-      count_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
-      count_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
-                  
-
-
-      //count_table_window.document.write("<script type=\"text/javascript\" src=\"/public/javascripts/global.js\"></script>");
-      count_table_window.document.write("</body></html>");
-      count_table_window.document.close();
-      //load_tooltip('counts_table');
-}
 //
 //  CREATE METADATA TABLE
 //
 function create_metadata_table() {
      
-      var metadata_table_window = window.open();
-      metadata_table_window.document.write("<html><head><title>VAMPS Metadata</title>\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/style.css\">\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/960.css\">\n");
-      metadata_table_window.document.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"/stylesheets/visualization.css\">\n");
-      metadata_table_window.document.write("</head><body>\n");
-
+      metadata_table_created = true;
+      var metadata_div = document.getElementById('metadata_local_table_div');
+      document.getElementById('pre_metadata_table_div').style.display = 'block';
       var html = '';
       html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
       html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
@@ -264,200 +557,308 @@ function create_metadata_table() {
           }        
       }
       html += "</tbody></table>";
+
+      //alert(md_local[0].env_matter)
+      metadata_div.innerHTML = html;
+};
+
+//
+//  CREATE Dendrogram
+//
+
+function create_dendrogram(ts, image_type) {
+      //alert('im HM')
+      if(image_type == 'png'){
+        dendrogram_png_created = true;
+        var dend_div = document.getElementById('dendrogram_png_div');
+        var info_line = 'Dendrogram (png)-- ';
+        document.getElementById('pre_dendrogram_png_div').style.display = 'block';
+        document.getElementById('dendrogram_png_title').innerHTML = info_line;
+      }else{  // svg
+        dendrogram_created = true;
+        var dend_div = document.getElementById('dendrogram_div');
+        var info_line = 'Dendrogram -- ';
+        document.getElementById('pre_dendrogram_div').style.display = 'block';
+        document.getElementById('dendrogram_title').innerHTML = info_line;
+      }
       
       
-      metadata_table_window.document.write(html+"\n");
-      metadata_table_window.document.write("<script src=\"/javascripts/jquery-2.1.1.min.js\"></script>\n");
-      metadata_table_window.document.write("<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>\n");
-      metadata_table_window.document.write("<script>\n");
-      metadata_table_window.document.write("  new Tablesort(document.getElementById('metadata_table')); \n");
-      metadata_table_window.document.write("</script>\n");
-      metadata_table_window.document.write("<script src=\"/javascripts/view_selection_client.js\"></script>\n");
-      metadata_table_window.document.write("</body></html>");
-      metadata_table_window.document.close();
-}
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      args += "&image_type="+image_type;
+      
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/dendrogram', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+           html = "<div id='' >"+htmlstring+"</div>"
+           dend_div.innerHTML = html;
+        }
+      };
+      xmlhttp.send(args);
+ 
+};
+
+
 //
-//  CREATE HEATMAP
+//  CREATE PCoA
 //
-function create_heatmap() {
-       alert('im HM');
-       hm_div = document.getElementById('distance_heatmap_div');
-       html = '';
-       for (var i in md_local) {
-        html += "<li>"+md_local[i]+"</li>";
-       }
-      hm_div.innerHTML = html;
-}
+function create_pcoa(ts) {
+      //alert('im HM')
+      pcoa_created = true;
+      var pcoa_div = document.getElementById('pcoa_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'PCoA -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('pcoa_title').innerHTML = info_line;
+      
+
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_pcoa_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/pcoa', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+
+          
+           pcoa_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);
+      
+};
+//
+//  CREATE DIST HEATMAP
+//
+function create_dheatmap(ts) {
+      //alert('im HM')
+      dheatmap_created = true;
+      var dhm_div = document.getElementById('dheatmap_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Distance Heatmap -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('dheatmap_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_dheatmap_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/heatmap', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+           
+           dhm_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);
+      
+};
+//
+//  CREATE FREQUENCY HEATMAP
+//
+function create_fheatmap(ts) {
+      //alert('im HM')
+      fheatmap_created = true;
+      var fhm_div = document.getElementById('fheatmap_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Frequency Heatmap -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('fheatmap_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_fheatmap_div').style.display = 'block';
+       // get distance matrix via AJAX
+      // var xmlhttp = new XMLHttpRequest();  
+      // xmlhttp.open("POST", '/visuals/heatmap', true);
+      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      // xmlhttp.onreadystatechange = function() {
+
+      //   if (xmlhttp.readyState == 4 ) {
+      //      var htmlstring = xmlhttp.responseText;
+      //      //document.getElementById('metadata_table_div').innerHTML = string;
+      //      //new Tablesort(document.getElementById('metadata_table'));
+      //      hm_div.innerHTML = htmlstring;
+      //   }
+      // };
+      // xmlhttp.send(args);
+      
+};
+//
+//  CREATE GEOSPATIAL
+//
+function create_geospatial(ts) {
+      //alert('im HM')
+      geospatial_created = true;
+      var geo_div = document.getElementById('geospatial_div');
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = 'Geospatial -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      document.getElementById('geospatial_title').innerHTML = info_line;
+      
+      var html = ''
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_geospatial_div').style.display = 'block';
+       // get distance matrix via AJAX
+      // var xmlhttp = new XMLHttpRequest();  
+      // xmlhttp.open("POST", '/visuals/heatmap', true);
+      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      // xmlhttp.onreadystatechange = function() {
+
+
+      
+};
 //
 //  CREATE PIECHARTS
 //
 function create_piecharts(ts) {
-      
-      var piecharts_window = window.open('');
-
-      piecharts_window.document.close();
      
-      var newWindowRoot = d3.select(piecharts_window.document.body);
-      newWindowRoot.append("div")
-          .attr("class", "pies")
-          .attr("id","viz")
-          .style("width","800px")
-          .style("text-align","center")
-          .style("background","lightgray")
-          .style("border","1px solid black");
-
-
-     var myjson_obj=[];
-     
-     for(var g in mtx_local.columns) {  // per ds
-        
-        var ds = mtx_local.columns[g].name;
-        var tdata = [];
-        var ttax = [];        
-        //total = 0;
-        //var totals = [];
-        total = mtx_local.column_totals[g];
-        for (var k in mtx_local.data) {
-          tdata.push(mtx_local.data[k][g]);
-          ttax.push(mtx_local.rows[k].name);
-          //total = mtx_local.data[k][g]
-          
-        }
-        //for(k in mtx_local.data) {
-          //totals.push(total)
-        //}
-
-        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:total });  // one for each dataset
-        //var total = d3.sum(tdata, function(d){ return d; });
-        //alert(totals);
-     }
-
-
-//alert(JSON.stringify(myjson_obj))
-
-      var unit_list = [];
-      for (var o in mtx_local.rows) {
-        unit_list.push(mtx_local.rows[o].name);
+    piecharts_created = true;
+    var info_line = 'PieCharts -- ';
+    info_line += ' Normaization: ' + pi_local.normalization+'; ';
+    info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+    document.getElementById('piecharts_title').innerHTML = info_line;
+    document.getElementById('pre_piecharts_table_div').style.display = 'block';
+    //d3.select('svg').remove();
+    var counts_per_ds = [];
+    var tmp={};
+    for(var i in mtx_local.columns){
+      tmp[mtx_local.columns[i].name]=[]; // datasets
+    }
+    for(var x in mtx_local.data){
+      for(var i in mtx_local.columns){
+        tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
       }
-      var colors = get_colors(unit_list);
-  
-      var radius = 100;
-      //var pies_per_row = 4;
+    }
+    var myjson_obj={};
+    myjson_obj.names=[];
+    myjson_obj.values=[];
+    for(var x in tmp) {
+        counts_per_ds.push(tmp[x]);
+        myjson_obj.names.push(x);
+        myjson_obj.values.push(tmp[x]);
+    }
+    //alert(myjson_obj.names);
+    var unit_list = [];
+    for(o in mtx_local.rows){
+        unit_list.push(mtx_local.rows[o].name);
+    }
+    
+    
+    var colors = get_colors(unit_list);
+    var pies_per_row = 4;
+    var m = 20; // margin
+    var r = 320/pies_per_row; // five pies per row
+    var image_w = 2*(r+m)*pies_per_row;
+    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
+    var arc = d3.svg.arc()
+        .innerRadius(r / 2)
+        .outerRadius(r);
+    //var counts_per_ds = [[100,20,5],[20,20,20]];
+    //for(i in counts_per_ds){
+    var svgContainer = d3.select("#piecharts_div").append("svg")
+        .attr("width",image_w)
+        .attr("height",image_h);
+    
+    var pies = svgContainer.selectAll("svg")
+        .data(myjson_obj.values)
+        .enter().append("g")
+        .attr("transform", function(d, i){
+            
+            var modulo_i = i+1;
+            var d = r+m;
+            var h_spacer = d*2*(i % pies_per_row);
+            var v_spacer = d*2*Math.floor(i / pies_per_row);
+            return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";
+        })
+        .append("a")
+        .attr("xlink:xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
 
-      var arc = d3.svg.arc()
-          .outerRadius(radius - 10);       
-                
-      var pie = d3.layout.pie()
-            .value(function (d) { return d; })
-            .sort(null);
-      
-      var ttip = newWindowRoot
-          .append("div")  // declare the tooltip div 
-          .attr("class", "tooltip")              // apply the 'tooltip' class
-          .style("opacity", 1e-6);    // set the opacity to nil
-
-
-      //var svg = newWindowRoot
-      var svg = newWindowRoot.select("#viz")
-            .selectAll('svg')
-            .data(myjson_obj)
-            .enter().append("svg")
-      //var svgContainer = d3.select('#viz_div').append('svg')
-            .attr('width', radius*2)
-            .attr('height',radius*2)
-            .append("g")
-            .attr("transform", "translate(" + radius + "," + radius + ")")
+    pies.selectAll("path")
+        .data(d3.layout.pie())
+        .enter().append("path")
+        .attr("d", d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(r))
+        .attr("id",function(d,i) {
+            var cnt = d.value;
+            var total = 0;
+            for(k in this.parentNode.__data__){
+              total += this.parentNode.__data__[k];
+            }           
+            
+            var ds = ''; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = 'piecharts-|-'+unit_list[i]+'-|-'+cnt.toString()+'-|-'+pct;
+            //alert(unit_list[i]+'-|-'+cnt.toString()+'-|-'+total+'-|-'+pct)
+            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
-            .append("a")
-            .attr("id", function(d,i) { return myjson_obj[i].name; } )
-            .attr("xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj[i].name+'&ts='+ts;} );           
-      
-     
-      var arcs = svg.selectAll("g")
-          .data(function (d,i) { 
-            //alert(JSON.stringify(d.name)) 
-            
-            return pie(d.data); })
-          .enter().append("g")
-          .attr("class", "chart_tooltip")
-          .attr("id",function(d,i) {
-                              
-                var total = this.parentNode.__data__.total; 
-                //alert(JSON.stringify(this.parentNode.__data__.total))                           
-                var pct = (d.value * 100 / total).toFixed(2);
-                return unit_list[i]+'-|-'+d.value.toString()+'-|-'+pct.toString();
-          })
-          .on("mouseover", function(d,i) { 
-              
-      //        ttip.transition()
-      //          .duration(0)  
-      //          .style("opacity", 1);                             
-              })
-          
-          .on("mousemove", function(d,i){
-            var pnode = this.parentNode;
-            var ds = pnode.__data__.name; 
-                //alert(JSON.stringify(pnode.__data__))
-            var total = pnode.__data__.total; 
-            var pct = (d.value * 100 / total).toFixed(2);
-            ttip
-             .html( 
-                '<table>' + // The first <a> tag
-                '<tr><td colspan="2">' +  ds +'</td></tr>'+ 
-                 '<tr><td bgcolor="'+colors[i]+'" width="15">&nbsp;</td><td>'+unit_list[i] +'</td></tr>'+
-                 '<tr><td></td><td>Count ' +  d.value.toString() +'</td></tr>'+ 
-                 '<tr><td></td><td>Frequency ' +  pct.toString() +'%'+'</td></tr>'+                    // closing </a> tag
-                '</table>'
-              ).style('position','absolute')
-             .style('top', (d3.event.pageY)+'px')
-             .style('left', (d3.event.pageX+20)+'px')
-             .style('background','lightsteelblue')
-             .style('padding','3px')
-             .style('font','9px sans-serif')
-             .style('border','0px')
-             .style('border-radius','8px')
-             .style("opacity", 1);
-            
-//alert(JSON.stringify(this.parentNode))
-              
-          })
-          .on("mouseout", function (d) {
-                 // Hide the tooltip
-              ttip
-                .style("opacity", 1e-6);
-          });
+        })
+        .attr("class","tooltip")
+        .style("fill", function(d, i) {
+            return colors[i];
+        });
 
-
-      arcs.append("path")
-          .attr("d", arc)         
-          .style("fill", function (d,i) { return colors[i]; });
+    d3.selectAll("g")
+      .data(myjson_obj.names)
+      .append("text")
+      .attr("dx", -(r+m))
+      .attr("dy", r+m)
+      .attr("text-anchor", "left")
+      .attr("font-size","9px")
+      .text(function(d, i) {
+          return d;
+      });
    
-}
+
+};
+
+
+
 //
 //  CREATE BARCHARTS
 //
 function create_barcharts(ts) {
 
-        //document.getElementById('pre_barcharts_table_div').style.display = 'block';
-
-      var barcharts_window = window.open('');      
-      barcharts_window.document.close();
-      //piecharts_window.document.write()
-      var newWindowRoot = d3.select(barcharts_window.document.body);
-      newWindowRoot
-        .append("div")
-          .attr("class", "bars")
-          .attr("id","viz")
-          .style("background","lightgray")
-          .style("border","1px solid black");
-
-     
-      var unit_list = [];
-      for (var o in mtx_local.rows){
-        unit_list.push(mtx_local.rows[o].name);
-      }
-      var colors = get_colors(unit_list);  
-
+        
+        barcharts_created = true;
+        var info_line = 'BarCharts -- ';
+        info_line += ' Normaization: ' + pi_local.normalization+'; ';
+        info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+        document.getElementById('barcharts_title').innerHTML = info_line;
+        document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
 
         data = [];
@@ -471,6 +872,12 @@ function create_barcharts(ts) {
         }
 
       
+        var unit_list = [];
+        // TODO: "'o' is already defined."
+        for (var o in mtx_local.rows){
+          unit_list.push(mtx_local.rows[o].name);
+        }
+        
 
         var ds_count = mtx_local.shape[1];      
         var bar_height = 15;
@@ -490,7 +897,6 @@ function create_barcharts(ts) {
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
-          //alert(d.total)
           //console.log(d.total);
         });
 
@@ -506,9 +912,9 @@ function create_barcharts(ts) {
         });
       
         
-        create_svg_object(props, color, colors, data, ts, newWindowRoot);
-     
-}
+        create_svg_object(props, color, data, ts);
+        
+};
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -542,16 +948,10 @@ function get_image_properties(bar_height, ds_count) {
 //
 //
 //
-function create_svg_object(props, color, colors, data, ts, window) {
+function create_svg_object(props, color, data, ts) {
+       //d3.select('svg').remove();
       
-      //d3.select('svg').remove();
-      
-      var ttip = window
-          .append("div")  // declare the tooltip div 
-          .attr("class", "tooltip")              // apply the 'tooltip' class
-          .style("opacity", 1e-6);    // set the opacity to nil
-
-      var svg = window.select("#viz").append("svg")
+      var svg = d3.select("#barcharts_div").append("svg")
                   .attr("width",  props.width)
                   .attr("height", props.height)
                 .append("g")
@@ -581,6 +981,15 @@ function create_svg_object(props, color, colors, data, ts, window) {
           .text("Percent");
      
      
+      
+
+      // var datasetBar = svg.selectAll("a")
+      //     .data(data)
+      //   .enter().append("a")
+      //   .attr("xlink:href",  'http://www.google.com' )
+      //   .append("g")
+      //     .attr("class", "g")
+      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
@@ -599,61 +1008,24 @@ function create_svg_object(props, color, colors, data, ts, window) {
           .attr("y", 15)  // adjust where first bar starts on x-axis
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
-          .attr("id",function(d,i) { 
-            var pnode = this.parentNode;
-            var cnt =  pnode.__data__[d.name];
-            var total = pnode.__data__['total'];
+          .attr("id",function(d) { 
+            var cnt =  this.parentNode.__data__[d.name];
+            var total = this.parentNode.__data__['total'];
             //console.log(this._parentNode.__data__['total']);
+            var ds = ''; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            return d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
-          .on("mouseover", function(d,i) { 
-              
-                            
-              })
-          
-          .on("mousemove", function(d,i){
-            var pnode = this.parentNode;
-            //var ds = pnode.__data__.name; 
-            //alert(JSON.stringify(pnode.__data__))
-            var ds = pnode.__data__.DatasetName;
-            var cnt =  pnode.__data__[d.name];
-            var total = pnode.__data__['total'];
-            //console.log(this._parentNode.__data__['total']);
-            var pct = (cnt * 100 / total).toFixed(2);
-            ttip
-             .html( 
-                '<table>' + // The first <a> tag
-                '<tr><td colspan="2">' +  ds +'</td></tr>'+ 
-                 '<tr><td bgcolor="'+colors[i]+'" width="15">&nbsp;</td><td>'+d.name +'</td></tr>'+
-                 '<tr><td></td><td>Count ' +  cnt.toString() +'</td></tr>'+ 
-                 '<tr><td></td><td>Frequency ' +  pct.toString() +'%'+'</td></tr>'+                    // closing </a> tag
-                '</table>'
-              ).style('position','absolute')
-             .style('top', (d3.event.pageY)+'px')
-             .style('left', (d3.event.pageX+20)+'px')
-             .style('background','lightsteelblue')
-             .style('padding','3px')
-             .style('font','9px sans-serif')
-             .style('border','0px')
-             .style('border-radius','8px')
-             .style("opacity", 1);
-            
-//alert(JSON.stringify(this.parentNode))
-              
-          })
-          .on("mouseout", function (d) {
-                 // Hide the tooltip
-              ttip
-                .style("opacity", 1e-6);
-          })
-          //.attr("class","piebarchart_tooltip")
-          .style("fill",   function(d,i) { return colors[i]; });
+
+          .attr("class","tooltip")
+          .style("fill",   function(d) { return color(d.name); });
+
 
        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
-       
 }
+
 
 
 function get_colors(unit_names){

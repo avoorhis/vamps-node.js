@@ -84,11 +84,18 @@ module.exports = {
 								db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
 								node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;
 								var tax_long_name = create_concatenated_tax_name(node_id);
+								
 								unit_name_lookup[tax_long_name] = 1;
-								ukeys.push(tax_long_name);
-								cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
-								unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+								//console.log(post_items.domains)
+								//console.log(tax_long_name.split(';')[0])
+								if( post_items.domains.indexOf(tax_long_name.split(';')[0]) != -1 ) {
+									//console.log(tax_long_name)									
+									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
+									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+								}							
+							
 							}
+
 					}else if(post_items.unit_choice === 'tax_silva108_custom'){
 							for(var t in post_items.custom_taxa) {
 							//console.log(post_items.custom_taxa[t])
@@ -100,89 +107,38 @@ module.exports = {
 									node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
 									// TODO: 'tax_long_name' is already defined.
 									var tax_long_name = create_concatenated_tax_name(node_id);
-									unit_name_lookup[tax_long_name] = 1;
-									ukeys.push(tax_long_name);
+									unit_name_lookup[tax_long_name] = 1;									
 									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
 									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 							} // END :: for(t in post_items.custom_taxa) {
 					} 
-// 				  if(post_items.unit_choice === 'tax_silva108_simple') {
 
-// 						  rank = post_items.tax_depth;
-// 						  //console.log('did '+did+' rank: '+rank);
-						  		  
-// 						  for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
-						  	
-// 						  	db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
-// 						  	node_id   = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;	
-						  	
-								
-// 								unit_name_lookup[tax_long_name] = 1;					  	
-// 						  	ukeys.push(create_tax_name_list(node_id));	
-
-// 						  	cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);		// This uses TaxaCounts created in app.js from JSON file  	
-						  	
-// 						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);		 	
-					   
-// 					    }	
-
-// 			    }else if(post_items.unit_choice === 'tax_silva108_custom'){
-
-// 			    		for(var t in post_items.custom_taxa) {
-// 							 		//console.log(post_items.custom_taxa[t])
-// 							 		var name_and_rank  = post_items.custom_taxa[t];
-// 							 		var items          = name_and_rank.split('_');
-// 							 		var tax_short_name = items[0];							 		
-// 							 		rank           		 = items[1];
-// 							 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
-// 							 		node_id   = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
-							 		
-// //                TODO: 'tax_long_name' is already defined.
-							 		
-// 							 		//var tax_long_name       = clean_custom_names(tax_long_name_array);
-							 		
-// 							 		//unit_name_lookup[tax_long_name] = 1;
-									
-// 									ukeys.push(create_tax_name_list(node_id));
-
-// 							 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
-							  	
-// 							  	//unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);						   
-						  
-// 						  }  // END :: for(t in post_items.custom_taxa) {				
-// 						  console.log(ukeys)
-// 						  ukeys = clean_custom_names(ukeys);
-// 						  console.log(ukeys)
-// 						  for(n in ukeys){
-// 						  	unit_name_lookup[ukeys[n]] = 1;
-// 						  	unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, ukeys[n], cnt);	
-// 						  }
-
-			   // }				    
 			}
+			
+			
+			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
+			
+			
+			ukeys = remove_empty_rows(unit_name_counts);	
 			ukeys = ukeys.filter(onlyUnique);
 			ukeys.sort();
-			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
-			//ukeys = clean_custom_names(ukeys);
-			
-
-			// clean/filter/sort ukeys
-
-		  
-
-			//unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);	
-			
-			ukeys = remove_empty_rows(unit_name_counts, ukeys);	
-
 
 		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 		  //console.log(unit_name_counts);
 		  //console.log(ukeys);
 		  biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
+		  if(post_items.update_data == true){
+		  	
+		  	biom_matrix = this.get_custom_biom_matrix( post_items, biom_matrix );
+		  	
+		  }else{
+		  	
+		  }
+
 		  matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
 		    
-			console.log('Writing matrix file');
+			
 			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
 			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 
@@ -200,7 +156,7 @@ module.exports = {
   get_custom_biom_matrix: function(visual_post_items, mtx) {
     var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
     
-    var max_cnt = visual_post_items.max_ds_count,
+    var max_cnt = mtx.max_dataset_count,
         min     = visual_post_items.min_range,
         max     = visual_post_items.max_range,
         norm    = visual_post_items.normalization;
@@ -240,7 +196,8 @@ module.exports = {
               var new_counts = [];
               // TODO: "'k' is already defined."          
               for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );                  
+                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );
+                  
               }    
               tmp.push(new_counts);              
             }
@@ -294,23 +251,21 @@ module.exports = {
 //
 //  R E M O V E  E M P T Y  R O W S
 //
-function remove_empty_rows(taxa_counts, ukeys) {
+function remove_empty_rows(taxa_counts) {
 		// remove empty rows:					
 		
+		var tmparr = [];
 		for(var taxname in taxa_counts) {
 			var sum = 0;
 			for(var c in taxa_counts[taxname]){
 				sum += taxa_counts[taxname][c];
 				//console.log(k);
 			}
-			if(sum===0){
-				// just need to remove names from ukeys and zero rows
-				// will be removed from data rows in create_biom_matrix()
-				var idx = ukeys.indexOf(taxname);
-				ukeys.splice(idx,1);
-			}		  			
+			if(sum > 0){
+				tmparr.push(taxname)
+			}	  			
 		}
-		return ukeys;
+		return tmparr;
 
 }
 //
@@ -369,9 +324,9 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
 //
 function create_concatenated_tax_name(node_id) {		
 		var tax_name = '';					  	
-  	while(node_id !== 0) {  				  		
+  	while(node_id !== 0) {  		
   		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
-  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
+  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;  	
   	}
   	return tax_name.replace(/;+$/,'');  // remove trailing ';'
 
@@ -393,50 +348,50 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 //
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //
-function create_tax_name_list(node_id) {		
-		var tax_name = [];					  	
-  	while(node_id !== 0) {  				  		
-  		//tax_name.unshift( new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon );
-  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon  +';'+ tax_name;
-  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
-  	}
-  	return tax_name.replace(/;+$/,''); // remove trailing ';' 
-  	//return tax_name; // remove trailing ';' 
-}
+// function create_tax_name_list(node_id) {		
+// 		var tax_name = [];					  	
+//   	while(node_id !== 0) {  				  		
+//   		//tax_name.unshift( new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon );
+//   		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon  +';'+ tax_name;
+//   		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
+//   	}
+//   	return tax_name.replace(/;+$/,''); // remove trailing ';' 
+//   	//return tax_name; // remove trailing ';' 
+// }
 //
 //
 //
-function clean_custom_names(name_array) {
-		name_array = name_array.filter(onlyUnique);
-		name_array.sort(function(a, b){
-				return b.length - a.length; // ASC -> a - b; DESC -> b - a
-		});
+// function clean_custom_names(name_array) {
+// 		name_array = name_array.filter(onlyUnique);
+// 		name_array.sort(function(a, b){
+// 				return b.length - a.length; // ASC -> a - b; DESC -> b - a
+// 		});
 		
-		var ukeys2 = [];
-		//ukeys.sort();
-		var rank_num = 10; // too long rank to start
-		console.log(name_array)
-		for(var i in name_array) {
-			got_one = true;
-			for(n in ukeys2 ){
-				if(ukeys2[n].indexOf(name_array[i]) === 0){
-						console.log('MATCH! -no add '+ name_array[i]); 
-						got_one = false; 
-					}else{
-						//console.log('add '+ukeys[i]+' test against '+ukeys2[n])
-						//ukeys2.push(ukeys[i]);
-						//got_one = true;
-					}
-			}
-			if(got_one == true){
-				ukeys2.push(name_array[i]);
-			}
-		}
-		console.log('ukeys2')
-		console.log(ukeys2);
+// 		var ukeys2 = [];
+// 		//ukeys.sort();
+// 		var rank_num = 10; // too long rank to start
+// 		console.log(name_array)
+// 		for(var i in name_array) {
+// 			got_one = true;
+// 			for(n in ukeys2 ){
+// 				if(ukeys2[n].indexOf(name_array[i]) === 0){
+// 						console.log('MATCH! -no add '+ name_array[i]); 
+// 						got_one = false; 
+// 					}else{
+// 						//console.log('add '+ukeys[i]+' test against '+ukeys2[n])
+// 						//ukeys2.push(ukeys[i]);
+// 						//got_one = true;
+// 					}
+// 			}
+// 			if(got_one == true){
+// 				ukeys2.push(name_array[i]);
+// 			}
+// 		}
+// 		console.log('ukeys2')
+// 		console.log(ukeys2);
 
-		return ukeys2;
-}
+// 		return ukeys2;
+// }
 //
 //
 //
