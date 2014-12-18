@@ -53,7 +53,7 @@
       <table border='1' class='small_font'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
-          <%    var file = cnsts.VISUAL_THUMBNAILS.visuals[n].file                                    %>
+          <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb                                   %>
           <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
           <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
@@ -63,14 +63,14 @@
           <%    } else { %>
           <%        if(disable_thumbs) {                                                              %>
                       <td class='td_top'><%= name %><br>
-                        <img src='<%= file %>' border='0' alt='<%= name %>' class='thumb_img' >
+                        <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
                       </td>
           <%        }else{                                                                            %>
                   <td class='td_top'>
                <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
                     <a href='#<%= link_id %>' id='<%= link_id %>'  ><%= name %><br>
                <!-- <input type='button' id='<%= link_id %>' value='pushme'> -->
-                      <img src='<%= file %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                      <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
                     </a>  
                  </td>
           <%        }                                                                                 %>              
@@ -104,7 +104,7 @@
   </div>
   <a name='metadata'><div id='metadata_local_table_div' class=''></div> </a>
   
-  <!-- Distance heatmap -->
+  <!-- Distance Heatmap -->
   <br><br>
   <div id='pre_dheatmap_div' class='display_none'>
     <span id='dheatmap_title' class='table_title'>Distance Heatmap</span>
@@ -112,7 +112,7 @@
   </div>
   <a name='dheatmap'><div id='dheatmap_div' class=''></div></a> 
   
-<!-- Frequency heatmap -->
+<!-- Frequency Heatmap -->
   <br><br>
   <div id='pre_fheatmap_div' class='display_none'>
     <span id='fheatmap_title' class='table_title'>Frequency Heatmap</span>
@@ -144,6 +144,13 @@
   </div>
   <a name='dendrogram'><div id='dendrogram_div'        class=''>TODO: dendrograms</div></a>
   
+  <!-- Dendrogram png-->
+  <br><br>
+  <div id='pre_dendrogram_png_div' class='display_none'>
+    <span id='dendrogram_png_title' class='table_title'>Dendrogram</span>
+    <input type='button' id='dendrogram_png_hide_btn' class='close_open_btn' value='close'>
+  </div>
+  <a name='dendrogram_png'><div id='dendrogram_png_div'        class=''>TODO: dendrograms</div></a>
 
   <!-- PCoA-->
   <br><br>
