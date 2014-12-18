@@ -207,6 +207,18 @@
     margin-right:20px;
     padding-right:20px;
 }
+/* Dendrogram png */
+#pre_dendrogram_png_div{
+    border:1px solid red;
+    padding: 3px;
+    height:20px;
+    width:100%;
+}
+#dendrogram_png_div {
+    width: 500px;
+    margin-right:20px;
+    padding-right:20px;
+}
 /* PCoA */
 #pre_pcoa_div{
     border:1px solid red;
