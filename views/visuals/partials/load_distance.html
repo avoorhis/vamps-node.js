@@ -1,0 +1,36 @@
+<%  var colors = JSON.parse(constants).HEATMAP_COLORS %>
+
+<div id='dragInfoArea' >- Drag a row to rearrange the table.</div>
+<table border='1' id='drag_table' class='heatmap_table center_table' >
+	<tr class='nodrag nodrop' ><td></td>
+		<td>
+		 	<div class='blue'>Similar</div>
+		  <div class='red'>Dissimilar</div>
+		  <div id='ds_save_order_div'><input type='button' id='ds_save_order_btn' class='' value='Save Order'></div>
+		</td>
+
+		  <% for(i=1; i<=Object.keys(dm).length; i++) { %>
+		      
+		       <td><div class='cell'></div></td>  
+		  <% } %>
+	</tr>
+		  <%  var n=1; %>
+		  <%  for(x_dname in dm) { %>
+	<tr id='<%= x_dname %>'>
+		      <td  id='<%= x_dname %>' class='dragHandle'><%= n.toString() %></td><td class='dragHandle ds_cell' ><%= x_dname %></td>
+		  <%    for(y_dname in dm) { %>
+		      	
+		  <%      if(x_dname === y_dname){ %>
+		        	<td id='' class='heat_map_td' bgcolor='#000'></td>
+		  <%      }else{ %>
+		  <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname]; %>
+		  <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
+		        	
+		        		<td id='<%= id %>' class='heat_map_td tooltip' bgcolor='#<%= colors[svalue] %>'></td>
+		  <%      } %>		        
+		  <%    } %>
+	</tr>
+		  <%    n+=1; %>
+		  <%  } %>
+</table>
+		    
