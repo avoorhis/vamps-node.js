@@ -401,122 +401,53 @@ router.post('/heatmap', function(req, res) {
       
     });
 
-
-
 });
 
-router.post('/dendrogramXX', function(req, res) {
-    console.log('found routes_dendrogram')
-    
-    //console.log('req.body hm');
-    //console.log(req.body);
-    //console.log('req.body hm');
-    var ts = req.body.ts
-    var metric = req.body.metric;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-    
-   
-    var exec = require('child_process').exec;
-    var PythonShell = require('python-shell');
-    var html = '';
-    var title = 'VAMPS';
-    
-    var distmtx_file_name = ts+'_distance.csv'
-    var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-    var site_base = path.join(__dirname, '../../');
-    //var fxn ='dendrogram-png'
-    var fxn ='dendrogram-svg'
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', fxn, '--site_base', site_base, '--prefix', ts ], 
-    };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
-    
-    PythonShell.run('distance.py', options, function (err, output) {
-      if (err) throw err;
-      var Newick    = require('../../public/javascripts/newick');
-      //var m = JSON.stringify(mtx)
-      
-        //console.log('Output '+output)
-        
-        //var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-        
-        //var Phylogram = require('../../public/javascripts/d3.phylogram');
-        
-      newick = JSON.parse(output);
-        //console.log('Newick '+newick)
-      var json_treeData  = Newick.parse(newick);
-        
-      console.log(JSON.stringify(json_treeData,null,4))
-        
-
-      var str_json = JSON.stringify(json_treeData);
-
-
-      var w = 960,
-      h = 2200;
+//
+//   F R E Q U E N C Y  H E A T M A P
+//
+router.post('/frequency_heatmap', function(req, res) {
   
-      var cluster = d3.layout.cluster()
-        .size([h, w - 160]);
+  console.log('in Freq HP')
+  var ts = req.body.ts
+  var metric = req.body.metric;
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    
+    //console.log('mtx1')
   
-      var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y, d.x]; });
-  
-      var vis = d3.select("body").append("svg:svg")
-         .attr("width", w)
-         .attr("height", h)
-       .append("svg:g")
-         .attr("transform", "translate(40, 0)");
-   
-      fs.readFile('./public/tmp_images/node_test.txt', function(err,data) {
-          if(err){ console.log(err); }
-       //   console.log(JSON.parse(data));
+  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
+  var exec = require('child_process').exec;
+  var PythonShell = require('python-shell');
+  var html = '';
+  var title = 'VAMPS';
+    
+  var distmtx_file_name = ts+'_distance.csv'
+  var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
+  var site_base = path.join(__dirname, '../../');
+  //var options = {
+   //   scriptPath : 'public/scripts',
+  //    args :       [ '-in', biom_file, '-metric', metric, '--function', 'fheatmap', '--site_base', site_base, '--prefix', ts], 
+   // };
+  //console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
+  //PythonShell.run('distance.py', options, function (err, mtx) {
+    //  if (err) throw err;
+   //   distance_matrix = JSON.parse(mtx);
+      var fheatmap_script_file = path.resolve(__dirname, '../../public/scripts/fheatmap.R');
 
-      //d3.json('./public/tmp_images/node_test.txt', function(data) {
-       //json_treeData.branchset.forEach(function(json) { 
-         var nodes = cluster.nodes(data); 
-         console.log('nodes');   
-         console.log(JSON.parse(nodes)); 
-         var links = cluster.links(nodes);    
-         console.log(links);
-         
-
-         var link = vis.selectAll(".link")       
-            .data(links)       
-            .enter().append("path")       
-            .attr("class","link")       
-            .attr("d", diagonal);     
-         var node = vis.selectAll(".node")       
-            .data(nodes)       
-            .enter().append("g")       
-            .attr("class","node")       
-            .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });    
-         node.append("circle")       
-            .attr("r", 4.5);    
-         node.append("text")       
-            .attr("dx", function(d) { return d.branchset ? -8 : 8; })       
-            .attr("dy", 3)       
-            .style("text-anchor", function(d) { return d.branchset ? "end" : "start"; })      
-            .text( function(d){ return d.name;}); 
-      });
-
-  var svgGraph = d3.selectAll('svg').attr('xmlns', 'http://www.w3.org/2000/svg');
-  //console.log(svgGraph[0][0])
-  var svgXML = (new xmldom.XMLSerializer()).serializeToString( svgGraph[0][0] );
-        var html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
-
-
-        //res.render('visuals/partials/load_dendrogram',{
-        //                                str_json        : str_json,
-        //                                constants : JSON.stringify(req.C)
-        //                              })
+      shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
+      //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
+       //console.log(shell_command)
+//     console.log('Using original matrix file');
+//     COMMON.run_pyscript_cmd(req, res, ts, biom_file, 'dendrogram', visual_post_items.selected_distance);
+      COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
+      //res.render('visuals/partials/load_distance',{
+      //                                  dm        : distance_matrix,
+      //                                  constants : JSON.stringify(req.C),
+      //                                })
       
-      console.log(html)
-      res.send(html);
-      
-
-    });
+  //});
+ 
 
 });
 router.post('/dendrogram', function(req, res) {
@@ -588,7 +519,7 @@ router.post('/dendrogram', function(req, res) {
         //console.log(html);
         
       }else{
-        var image = '/tmp_images/'+ts+'.png'
+        var image = '/tmp_images/'+ts+'_dendrogram.png'
         var html = "<img alt='alt_myfig' src='"+image+"' />"
         
       }
@@ -793,25 +724,7 @@ router.post('/pcoa', function(req, res) {
  
 
 // });
-//
-//   F R E Q U E N C Y  H E A T M A P
-//
-router.get('/user_data/frequency_heatmap', function(req, res) {
-  var myurl = url.parse(req.url, true);
-  
-  var ts    = myurl.query.ts;
-  var values_updated = COMMON.check_initial_status(myurl);  
-  var html  = COMMON.start_visuals_html('frequency_heatmap');
-  
-  res.render('visuals/user_data/frequency_heatmap', {
-            title: 'VAMPS Frequency Heatmap',
-            timestamp: ts || 'default_timestamp',
-            html : html+"<h2>Not Coded Yet</h2>",
-            user: req.user
-      });
- 
 
-});
 //
 //  M E T A D A T A  T A B L E
 //
