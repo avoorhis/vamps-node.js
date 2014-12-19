@@ -386,11 +386,16 @@ if (typeof pcoa_btn !== "undefined") {
 //
 var geospatial_link = document.getElementById('geospatial_link_id');
 var geospatial_btn = document.getElementById('geospatial_hide_btn');
-var geospatial_div = document.getElementById('geospatial_div');
+var geospatial_div = document.getElementById('map-canvas');
 if (typeof geospatial_link !=="undefined") {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+
   geospatial_link.addEventListener('click', function () {
       if(typeof geospatial_created == "undefined"){
-        get_user_input('geospatial', pi_local.ts);
+        
+        
+          get_user_input('geospatial', pi_local.ts);
+       
       }else{
         if(geospatial_btn.value == 'close'){        
           toggle_visual_element(geospatial_div,'show',geospatial_btn);
@@ -710,29 +715,74 @@ function create_fheatmap(ts) {
 //  CREATE GEOSPATIAL
 //
 function create_geospatial(ts) {
-      //alert('im HM')
+      //alert('in GEO')
       geospatial_created = true;
-      var geo_div = document.getElementById('geospatial_div');
+      var geo_div = document.getElementById('map-canvas');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = 'Geospatial -- ';
       info_line += ' Metric: ' + pi_local.selected_distance+'; ';
       info_line += ' Normaization: ' + pi_local.normalization+'; ';
       info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
       document.getElementById('geospatial_title').innerHTML = info_line;
-      
-      var html = ''
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&ts="+ts;
+       
       document.getElementById('pre_geospatial_div').style.display = 'block';
-       // get distance matrix via AJAX
-      // var xmlhttp = new XMLHttpRequest();  
-      // xmlhttp.open("POST", '/visuals/heatmap', true);
-      // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      // xmlhttp.onreadystatechange = function() {
-
-
       
+      var markers = [];
+      var z = 1;
+      for (var ds in md_local) {
+          lat = ''
+          lon = ''
+          for (var k in md_local[ds]) {
+            md_item = k;
+            if(md_item == 'latitude') {
+              lat = Number(md_local[ds][k]);
+            }
+            if(md_item == 'longitude'){              
+              lon = Number(md_local[ds][k]);
+            }           
+            
+          } 
+          if(typeof lat == 'number' && typeof lon == 'number'){
+            markers.push([ds,lon,lat,z]);
+            z+=1; 
+          }
+          
+            
+      }
+
+      if(markers.length == 0){
+          geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
+      }else{
+        var center = new google.maps.LatLng(markers[0][1],markers[0][2]);
+
+        var mapCanvas = document.getElementById('map-canvas');
+          var mapOptions = {
+            //center: {lat: Number(lat), lng: Number(lon)},
+            center:center,
+            //zoom: 5,
+            zoom: 2,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          }
+        var map = new google.maps.Map(mapCanvas, mapOptions);
+        setMarkers(map, markers);
+      }
+           
 };
+function setMarkers(map, locations) {
+  for (var i = 0; i < locations.length; i++) {
+    var ds = locations[i];
+    var myLatLng = new google.maps.LatLng(ds[1], ds[2]);
+    var marker = new google.maps.Marker({
+        position: myLatLng,
+        map: map,
+        //icon: image,
+        //shape: shape,
+        title: ds[0],
+        zIndex: ds[3]
+    });
+  }
+
+}
 //
 //  CREATE PIECHARTS
 //
