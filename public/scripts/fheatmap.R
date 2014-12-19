@@ -47,6 +47,9 @@ x<-data_matrix
 #x<-squareform(cc)
 
 
+#  x remove empty columns (datasets)
+x<-x[,colSums(x) > 0]
+
 
 
 
@@ -71,57 +74,62 @@ print(nrow(x))
 
 # rows (taxa)
 if (nrow(x) <= 30 ){
-    h<-7
+    h<-(nrow(x)*.14)+6
 }else if(nrow(x) > 30 && nrow(x) <= 80){
-    h<-12
+    h<-(nrow(x)*.13)+5
 }else if(nrow(x) > 80 && nrow(x) <= 150){
-    h<-20
+    h<-(nrow(x)*.13)+3
 }else if(nrow(x) > 150 && nrow(x) <= 300){
-    h<-30
+    h<-(nrow(x)*.12)+2
 }else if(nrow(x) > 300 && nrow(x) <= 400){
-    h<-40
+    h<-(nrow(x)*.12)+2
 }else if(nrow(x) > 400 && nrow(x) <= 500){
-    h<-50
+    h<-(nrow(x)*.12)+2
 }else if(nrow(x) > 500 && nrow(x) <= 600){
-    h<-60
+    h<-(nrow(x)*.12)+2
 }else if(nrow(x) > 600 && nrow(x) <= 700){
-    h<-70
+    h<-(nrow(x)*.11)+1
 }else if(nrow(x) > 700 && nrow(x) <= 800){
-    h<-80
+    h<-(nrow(x)*.11)+1
 }else if(nrow(x) > 800 && nrow(x) <= 900){
-    h<-90
+    h<-(nrow(x)*.1)+1
 }else if(nrow(x) > 900 && nrow(x) <= 1000){
-    h<-100
+    h<-(nrow(x)*.1)+1
 }else if(nrow(x) > 1000 && nrow(x) <= 1100){
-    h<-110
+    h<-(nrow(x)*.09)
 }else if(nrow(x) > 1100 && nrow(x) <= 1200){
-    h<-120
+    h<-(nrow(x)*.09)
 }else{
-    h<-130
+    
+    h<-(nrow(x)*.1)
 }
 # cols (datasets)
-if (ncol(x) <= 5){
-    w<-10
-}else if(ncol(x) > 5 && ncol(x) <= 15){
-    w<-14
-}else if(ncol(x) > 15 && ncol(x) <= 30){
-    w<-20
-}else if(ncol(x) > 30 && ncol(x) <= 50){
-    w<-23
-}else if(ncol(x) > 50 && ncol(x) <= 70){
-    w<-26
-}else if(ncol(x) > 70 && ncol(x) <= 90){
-    w<-29
-}else if(ncol(x) > 90 && ncol(x) <= 110){
-    w<-32
-}else{
-    w<-35
-}
-
-#w<-(ncol(x)*100)+100
-#h<-(nrow(x)*20)+100
+# if (ncol(x) <= 5){
+#     w<-10
+# }else if(ncol(x) > 5 && ncol(x) <= 15){
+#     w<-14
+# }else if(ncol(x) > 15 && ncol(x) <= 30){
+#     w<-20
+# }else if(ncol(x) > 30 && ncol(x) <= 50){
+#     w<-23
+# }else if(ncol(x) > 50 && ncol(x) <= 70){
+#     w<-26
+# }else if(ncol(x) > 70 && ncol(x) <= 90){
+#     w<-29
+# }else if(ncol(x) > 90 && ncol(x) <= 110){
+#     w<-32
+# }else{
+#     w<-35
+# }
 
 
+
+w<-(ncol(x)*0.2)+10
+
+
+#
+#[1] "rows: 128 h: 20 rmarg: 20"
+#[1] "cols: 284 w: 35"
 
 
 
@@ -139,7 +147,7 @@ pdf_title="VAMPS Frequency Heatmap"
 pdf(pdf_file, width=w, height=h, title=pdf_title)
 
 if(depth=="genus" || depth=="species" || depth=="strain"){
-    r_margin=35
+    r_margin=45
 }else if(depth=="class" || depth=="order" || depth=="family"){
     r_margin=20
 }else{
@@ -157,7 +165,7 @@ fontsize_row = 8
 if(method=='horn'){ 
     meth <- 'horn'
     text <- "Morisita-Horn"
-}else if(method=='bray'){
+}else if(method=='bray' || method=='bray_curtis'){
     meth <- 'bray'
     text <- "Bray-Curtis"
 }else if(method=='jaccard'){

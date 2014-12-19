@@ -168,7 +168,7 @@
     width:100%;
 }
 #piecharts_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -180,7 +180,7 @@
     width:100%;
 }
 #barcharts_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -192,7 +192,7 @@
     width:100%;
 }
 #dheatmap_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -204,7 +204,7 @@
     width:100%;
 }
 #fheatmap_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -216,7 +216,7 @@
     width:100%;
 }
 #dendrogram_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -228,7 +228,7 @@
     width:100%;
 }
 #dendrogram_png_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -240,7 +240,7 @@
     width:100%;
 }
 #pcoa_div {
-    width: 500px;
+    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
@@ -251,8 +251,9 @@
     height:20px;
     width:100%;
 }
-#geospatial_div {
-    width: 500px;
+#map-canvas {
+    width: 900px;
+    height: 400px;
     margin-right:20px;
     padding-right:20px;
 }

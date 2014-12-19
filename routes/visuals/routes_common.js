@@ -396,46 +396,18 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
 run_script_cmd: function (req,res, ts, command, visual_name) {
      var exec = require('child_process').exec;
 
-
-
-     console.log(command)
+    console.log(command)
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-        var image = '/tmp_images/'+ts+'_heatmap.pdf'
-        var html = "<div id='pdf'>";
-        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-        html += " <p>ERROR in loading pdf file</p>";
-        html += "</object></div>"
-        //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-        console.log(html)
-        res.send(html);
-//       if(stderr){console.log(stderr);}
-//       stdout = stdout.trim();
-//       console.log(stdout);
-//       if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-//         html += '<div>Error -- No distances were calculated.</div>';
-//       }else{
-//         if (visual_name === 'heatmap') {
-//           var dm = HMAP.create_distance_matrix(stdout);
-//           console.log(dm);
-//           title += ' Heatmap';
-//           html  += HMAP.create_hm_html(dm);  
-//         }else if(visual_name === 'dendrogram') {
-          
-//           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-//           title += ' Dendrogram';
-//         }else{
-
-//         }
-        
-//       }
-
-//       res.render('visuals/user_data/'+visual_name, {
-//             title: title,
-//             timestamp: ts || 'default_timestamp',
-//             html : html,
-//             user: req.user
-//       });
-      
+        if(visual_name == 'fheatmap'){
+            var image = '/tmp_images/'+ts+'_heatmap.pdf'
+            var html = "<div id='pdf'>";
+            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+            html += " <p>ERROR in loading pdf file</p>";
+            html += "</object></div>"
+            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
+            console.log(html)
+            res.send(html);  
+        }    
 
     });
  },
