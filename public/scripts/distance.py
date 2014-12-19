@@ -190,7 +190,7 @@ def dendrogram_png(args, dm, leafLabels):
 		#from numpy import array
 		#import pylab
 		import matplotlib
-		matplotlib.use('Agg')   # png
+		matplotlib.use('PDF')   # pdf
 		import matplotlib.pyplot as plt
 		#condensed_dm = distance.squareform( dm )
 		#plt.figure(figsize=(100,10))
@@ -198,7 +198,7 @@ def dendrogram_png(args, dm, leafLabels):
 		fig = plt.figure(figsize=(14,(leafNodes*0.2)+0.8), dpi=100)
 		#fig.set_size_inches(14,(leafNodes*0.2))
 		ax = fig.add_subplot(111)
-		plt.tight_layout()
+		#plt.tight_layout()
 		ax.set_title('Dendrogram')
 		#plt.subplots_adjust(bottom=0.25)
 		#plt.subplots_adjust(top=0.05)
@@ -211,7 +211,7 @@ def dendrogram_png(args, dm, leafLabels):
 		linkage_matrix = linkage(dm,  method="average" )
 		dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
 		#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
-		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.png')
+		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.pdf')
 		
 
 		plt.savefig(image_file)

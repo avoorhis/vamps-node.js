@@ -79,14 +79,16 @@ config.HEATMAP_COLORS = ['1111ff','3333ff','5555ff','7777ff','9999ff','aaaaff','
 config.RSCRIPT_CMD = 'RScript --no-restore --no-save';
 
 config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "species", "strain"];
+
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
+
 config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Distance Heatmap',  thumb:'/images/visuals/heatmap.png',     link:'user_data/heatmap',       id:'dheatmap_link_id'     },
-    {name:'Frequency Heatmap', thumb:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap', id:'fheatmap_link_id'  },
-    {name:'Stackbar Charts',   thumb:'/images/visuals/barcharts.png',   link:'user_data/barcharts',     id:'barcharts_link_id'      },
-    {name:'Pie Charts',        thumb:'/images/visuals/pie_charts.png',  link:'user_data/piecharts',     id:'piecharts_link_id'    },
-    {name:'Dendrogram',        thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_link_id'    },
-    {name:'Dendrogram (png)',  thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_png_link_id'    },
+    {name:'Frequency Heatmap (pdf)', thumb:'/images/visuals/frequency_heatmap.png', link:'user_data/frequency_heatmap', id:'fheatmap_link_id'  },
+    {name:'Stackbar Charts (svg)',   thumb:'/images/visuals/barcharts.png',   link:'user_data/barcharts',     id:'barcharts_link_id'      },
+    {name:'Pie Charts (svg)',        thumb:'/images/visuals/pie_charts.png',  link:'user_data/piecharts',     id:'piecharts_link_id'    },
+    {name:'Dendrogram (svg)',        thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_link_id'    },
+    {name:'Dendrogram (pdf)',  thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_png_link_id'    },
     {name:'PCoA Analyses',     thumb:'/images/visuals/pcoa.png',        link:'user_data/pcoa',           id: 'pcoa_link_id'    },
     {name:'Frequency Table',   thumb:'/images/visuals/counts_table.png',link:'user_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',    thumb:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata_table_link_id'     },
@@ -94,8 +96,8 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'TEST_TEST',          thumb:'',                               link:'user_data/test_page',     id:'test_page_link_id'     }
 ]};
     
-
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 
-
 module.exports = config;
+
+
