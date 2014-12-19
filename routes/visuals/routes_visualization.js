@@ -414,9 +414,6 @@ router.post('/frequency_heatmap', function(req, res) {
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
     
-    //console.log('mtx1')
-  
-  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
   var exec = require('child_process').exec;
   var PythonShell = require('python-shell');
   var html = '';
@@ -425,29 +422,13 @@ router.post('/frequency_heatmap', function(req, res) {
   var distmtx_file_name = ts+'_distance.csv'
   var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
   var site_base = path.join(__dirname, '../../');
-  //var options = {
-   //   scriptPath : 'public/scripts',
-  //    args :       [ '-in', biom_file, '-metric', metric, '--function', 'fheatmap', '--site_base', site_base, '--prefix', ts], 
-   // };
-  //console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
-  //PythonShell.run('distance.py', options, function (err, mtx) {
-    //  if (err) throw err;
-   //   distance_matrix = JSON.parse(mtx);
-      var fheatmap_script_file = path.resolve(__dirname, '../../public/scripts/fheatmap.R');
+  
+  var fheatmap_script_file = path.resolve(__dirname, '../../public/scripts/fheatmap.R');
 
-      shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
-      //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
-       //console.log(shell_command)
-//     console.log('Using original matrix file');
-//     COMMON.run_pyscript_cmd(req, res, ts, biom_file, 'dendrogram', visual_post_items.selected_distance);
-      COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
-      //res.render('visuals/partials/load_distance',{
-      //                                  dm        : distance_matrix,
-      //                                  constants : JSON.stringify(req.C),
-      //                                })
+  shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
+     
+  COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
       
-  //});
- 
 
 });
 router.post('/dendrogram', function(req, res) {
@@ -508,20 +489,20 @@ router.post('/dendrogram', function(req, res) {
           height: visual_post_items.no_of_datasets*100
         });
 
-        //
-        //console.log(tree_data.vis[0][0]);
-
         var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
         var html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
          
-        //d3.select('svg').remove(); 
+        d3.select('svg').remove(); 
         
         //console.log(html);
         
       }else{
-        var image = '/tmp_images/'+ts+'_dendrogram.png'
-        var html = "<img alt='alt_myfig' src='"+image+"' />"
-        
+
+         var image = '/tmp_images/'+ts+'_dendrogram.pdf'
+            var html = "<div id='pdf'>";
+            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+            html += " <p>ERROR in loading pdf file</p>";
+            html += "</object></div>"
       }
       res.send(html);
       
