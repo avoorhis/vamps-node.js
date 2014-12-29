@@ -70,9 +70,12 @@ router.post('/view_selection',  function(req, res) {
     distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-    metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+    
+    
     // GLOBAL
     console.log('metadata');
+    metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+    //metadata = JSON.parse(metadata);
     console.log(metadata);
     console.log('metadata');
     //console.log('MAP:::');
@@ -376,7 +379,7 @@ router.post('/heatmap', function(req, res) {
   
   //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
     var exec = require('child_process').exec;
-    var PythonShell = require('python-shell');
+    //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
     
@@ -415,7 +418,7 @@ router.post('/frequency_heatmap', function(req, res) {
   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
     
   var exec = require('child_process').exec;
-  var PythonShell = require('python-shell');
+  //var PythonShell = require('python-shell');
   var html = '';
   var title = 'VAMPS';
     
@@ -434,9 +437,9 @@ router.post('/frequency_heatmap', function(req, res) {
 router.post('/dendrogram', function(req, res) {
     console.log('found routes_dendrogram')
     
-    //console.log('req.body hm');
+    //console.log('req.body dnd');
     //console.log(req.body);
-    //console.log('req.body hm');
+    //console.log('req.body dnd');
     var ts = req.body.ts
     var metric = req.body.metric;
     var image_type = req.body.image_type;
@@ -445,7 +448,7 @@ router.post('/dendrogram', function(req, res) {
     
    
     var exec = require('child_process').exec;
-    var PythonShell = require('python-shell');
+    //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
     
@@ -638,14 +641,36 @@ router.get('/user_data/piechart_single', function(req, res) {
  // P C O A
 
 router.post('/pcoa', function(req, res) {
+    console.log('in PCoA')
+    console.log(metadata)
     var ts = req.body.ts
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-    
+    var site_base = path.join(__dirname, '../../');
     var exec = require('child_process').exec;
-    var PythonShell = require('python-shell');
-    console.log('IN PCoA')
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts], 
+    };
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
+    PythonShell.run('distance.py', options, function (err, pcoa_data) {
+      if (err) throw err;
+      //console.log(pcoa_data)
+      //pcoa_data = JSON.parse(pcoa_data)
+      //console.log(pcoa_data); 
+
+      var image = '/tmp_images/'+ts+'_pcoa.pdf'
+      var html = "<div id='pdf'>";
+      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+      html += " <p>ERROR in loading pdf file</p>";
+      html += "</object></div>"
+      console.log(html)
+      res.send(html);
+
+
+      
+    });    
 
 });
 //
