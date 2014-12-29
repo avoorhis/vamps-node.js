@@ -157,7 +157,7 @@ module.exports = {
           var timestamp = +new Date();  // millisecs since the epoch!
           var user = req.user || 'no-user';
           timestamp = user + '_' + timestamp;
-          post_hash .ts = timestamp;
+          post_hash.ts = timestamp;
 
     }else {
         chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);   
