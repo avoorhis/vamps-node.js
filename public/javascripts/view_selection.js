@@ -324,30 +324,30 @@ if (typeof dendrogram_btn !== "undefined") {
 //
 // DENDROGRAM PNG
 //
-var dendrogram_png_link = document.getElementById('dendrogram_png_link_id');
-var dendrogram_png_btn = document.getElementById('dendrogram_png_hide_btn');
-var dendrogram_png_div = document.getElementById('dendrogram_png_div');
-if (typeof dendrogram_png_link !=="undefined") {
-  dendrogram_png_link.addEventListener('click', function () {
-      if(typeof dendrogram_png_created == "undefined"){
-        get_user_input('dendrogram_png', pi_local.ts);
+var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id');
+var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
+var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
+if (typeof dendrogram_pdf_link !=="undefined") {
+  dendrogram_pdf_link.addEventListener('click', function () {
+      if(typeof dendrogram_pdf_created == "undefined"){
+        get_user_input('dendrogram_pdf', pi_local.ts);
       }else{
-        if(dendrogram_png_btn.value == 'close'){        
-          toggle_visual_element(dendrogram_png_div,'show',dendrogram_png_btn);
+        if(dendrogram_pdf_btn.value == 'close'){        
+          toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
         }else{
-          toggle_visual_element(dendrogram_png_div,'hide',dendrogram_png_btn);
+          toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
         }
       }
       
   });
 }
-if (typeof dendrogram_png_btn !== "undefined") {
-  dendrogram_png_btn.addEventListener('click', function () {
+if (typeof dendrogram_pdf_btn !== "undefined") {
+  dendrogram_pdf_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(dendrogram_png_btn.value == 'close'){        
-        toggle_visual_element(dendrogram_png_div,'show',dendrogram_png_btn);
+      if(dendrogram_pdf_btn.value == 'close'){        
+        toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
       }else{
-        toggle_visual_element(dendrogram_png_div,'hide',dendrogram_png_btn);
+        toggle_visual_element(dendrogram_png_div,'hide',dendrogram_pdf_btn);
       }      
   });
 }
@@ -392,10 +392,7 @@ if (typeof geospatial_link !=="undefined") {
 
   geospatial_link.addEventListener('click', function () {
       if(typeof geospatial_created == "undefined"){
-        
-        
           get_user_input('geospatial', pi_local.ts);
-       
       }else{
         if(geospatial_btn.value == 'close'){        
           toggle_visual_element(geospatial_div,'show',geospatial_btn);
@@ -474,8 +471,8 @@ function get_user_input(visual, ts) {
       create_dheatmap(ts)
     }else if(visual === 'dendrogram'){
       create_dendrogram(ts,'svg')
-    }else if(visual === 'dendrogram_png'){
-      create_dendrogram(ts,'png')
+    }else if(visual === 'dendrogram_pdf'){
+      create_dendrogram(ts,'pdf')
     }else if(visual === 'pcoa'){
       create_pcoa(ts)
     }else if(visual === 'fheatmap'){
@@ -573,16 +570,20 @@ function create_metadata_table() {
 
 function create_dendrogram(ts, image_type) {
       //alert('im HM')
-      if(image_type == 'png'){
-        dendrogram_png_created = true;
-        var dend_div = document.getElementById('dendrogram_png_div');
-        var info_line = 'Dendrogram (png)-- ';
-        document.getElementById('pre_dendrogram_png_div').style.display = 'block';
-        document.getElementById('dendrogram_png_title').innerHTML = info_line;
+      
+      var info_line = 'Dendrogram -- ';
+      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
+      info_line += ' Normaization: ' + pi_local.normalization+'; ';
+      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+
+      if(image_type == 'pdf'){
+        dendrogram_pdf_created = true;
+        var dend_div = document.getElementById('dendrogram_pdf_div');
+        document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';
+        document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
       }else{  // svg
         dendrogram_created = true;
         var dend_div = document.getElementById('dendrogram_div');
-        var info_line = 'Dendrogram -- ';
         document.getElementById('pre_dendrogram_div').style.display = 'block';
         document.getElementById('dendrogram_title').innerHTML = info_line;
       }
@@ -590,9 +591,7 @@ function create_dendrogram(ts, image_type) {
       
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      
       
       
       var html = ''
@@ -620,7 +619,7 @@ function create_dendrogram(ts, image_type) {
 //  CREATE PCoA
 //
 function create_pcoa(ts) {
-      //alert('im HM')
+      //alert('JS PCoA')
       pcoa_created = true;
       var pcoa_div = document.getElementById('pcoa_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
@@ -643,8 +642,6 @@ function create_pcoa(ts) {
 
         if (xmlhttp.readyState == 4 ) {
            var htmlstring = xmlhttp.responseText;
-
-          
            pcoa_div.innerHTML = htmlstring;
         }
       };
@@ -728,10 +725,12 @@ function create_geospatial(ts) {
       document.getElementById('pre_geospatial_div').style.display = 'block';
       
       var markers = [];
-      var z = 1;
+      var lat_lon_collector = {};
+      var latlon;
+      
       for (var ds in md_local) {
-          lat = ''
-          lon = ''
+          var lat = ''
+          var lon = ''
           for (var k in md_local[ds]) {
             md_item = k;
             if(md_item == 'latitude') {
@@ -742,44 +741,69 @@ function create_geospatial(ts) {
             }           
             
           } 
-          if(typeof lat == 'number' && typeof lon == 'number'){
-            markers.push([ds,lon,lat,z]);
-            z+=1; 
-          }
           
-            
+          if(typeof lat == 'number' && typeof lon == 'number'){
+            latlon = lat.toString() +';'+ lon.toString();
+            if (latlon in lat_lon_collector) {
+              newds = lat_lon_collector[latlon] + "<br>" + ds
+              lat_lon_collector[latlon] = newds;
+            }else{
+              lat_lon_collector[latlon] = ds;
+            }            
+          }
+      }
+      var z = 1;
+
+      for(latlon in lat_lon_collector){
+        //alert(latlon)
+        ds = lat_lon_collector[latlon];
+        var latlons =  latlon.split(';');
+        markers.push([ds,latlons[0],latlons[1],z]);
+        z+=1; 
+
       }
 
       if(markers.length == 0){
           geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
       }else{
-        var center = new google.maps.LatLng(markers[0][1],markers[0][2]);
+        var center = new google.maps.LatLng(markers[0][2],markers[0][1]); // wants lon, lat order
 
         var mapCanvas = document.getElementById('map-canvas');
           var mapOptions = {
-            //center: {lat: Number(lat), lng: Number(lon)},
             center:center,
-            //zoom: 5,
-            zoom: 2,
+            zoom: 5,
+            //zoom: 2,
             mapTypeId: google.maps.MapTypeId.ROADMAP
           }
         var map = new google.maps.Map(mapCanvas, mapOptions);
-        setMarkers(map, markers);
-      }
-           
+        var infowindow =  new google.maps.InfoWindow({
+          content: ''
+        });
+
+        setMarkers(map, markers, infowindow);
+      }  
 };
-function setMarkers(map, locations) {
+
+function bindInfoWindow(marker, map, infowindow, html) { 
+  google.maps.event.addListener(marker, 'click', function() { 
+    infowindow.setContent(html); 
+    infowindow.open(map, marker); 
+  }); 
+} 
+function setMarkers(map, locations,infowindow) {
   for (var i = 0; i < locations.length; i++) {
+    // create a marker
     var ds = locations[i];
-    var myLatLng = new google.maps.LatLng(ds[1], ds[2]);
+    var myLatLng = new google.maps.LatLng(ds[2], ds[1]); // wants lon, lat order
     var marker = new google.maps.Marker({
-        position: myLatLng,
-        map: map,
-        //icon: image,
-        //shape: shape,
-        title: ds[0],
-        zIndex: ds[3]
+      title: ds[0].title,
+      position: myLatLng,
+      map: map
     });
+    
+    // add an event listener for this marker
+    bindInfoWindow(marker, map, infowindow, "<p>" + ds[0] + "</p>"); 
+
   }
 
 }
