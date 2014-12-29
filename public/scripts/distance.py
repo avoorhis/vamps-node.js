@@ -184,7 +184,7 @@ def calculate_distance(args):
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.0, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
 # }
-def dendrogram_png(args, dm, leafLabels):
+def dendrogram_pdf(args, dm, leafLabels):
 		from scipy.cluster.hierarchy import linkage, dendrogram
 		#from hcluster import squareform, linkage, dendrogram
 		#from numpy import array
@@ -299,6 +299,115 @@ def get_json(node):
 #
 #
 #
+def pcoa(args, dist):
+	from cogent.cluster.metric_scaling import PCoA
+	PCoA_result = PCoA(dist)
+	#print PCoA_result
+	a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
+	#print a
+	json_array = {}
+	json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
+	json_array["P2"] = a[:,3].tolist()[:-2]
+	json_array["P3"] = a[:,4].tolist()[:-2]
+	json_array["names"] = a[:,1].tolist()[:-2]
+	#json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
+	#json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
+	#json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
+	return json_array
+	#return a
+#
+#
+#
+#
+def pcoa_pdf(args, data):
+		import matplotlib
+		matplotlib.use('PDF')   # pdf
+		import pylab
+		from pylab import rcParams		
+		import matplotlib.pyplot as plt
+
+		
+		metadata = {}
+		try:
+			with open('./'+args.prefix+'_metadata.txt', 'rb') as csvfile:
+				metadata_raw = csv.DictReader(csvfile, delimiter="\t")
+				# each row is a dataset
+				for row in metadata_raw:
+					ds = row['DATASET'].strip("'")
+					metadata[ds] = row
+		except IOError:
+			with open('./tmp/'+args.prefix+'_metadata.txt', 'rb') as csvfile:
+				metadata_raw = csv.DictReader(csvfile, delimiter="\t")
+				for row in metadata_raw:
+					ds = row['DATASET'].strip("'")
+					metadata[ds] = row
+		except:
+			print "NO FILE FOUND ERROR"
+			sys.exit()
+		
+		print json.dumps(metadata)
+		ds_order = data['names']
+		ds_count = len(data['names'])
+		color_choices = ['b','g','r','c','m','y','k','w']  # limited to 8 distinct colors
+		meta_dict = {}
+		#val_lookup = {}
+		#colors = {}
+		ds_vals = {}
+ 		for ds in ds_order:			
+ 			
+ 			for md_name in metadata[ds]:
+ 			 	md_val = metadata[ds][md_name]
+ 			
+ 				if md_name in meta_dict:
+ 					meta_dict[md_name][md_val]=1
+ 				else:
+ 					meta_dict[md_name]={}
+ 					meta_dict[md_name][md_val]=1
+ 		#print colors
+ 		#print ds_vals
+ 		meta_names_list = sorted(meta_dict.keys()) # sort the list by alpha
+ 		#print meta_names_list
+ 		meta_names_count = len(meta_dict) 		
+
+ 		rcParams['figure.figsize'] = 10, meta_names_count*2
+
+ 		#N = 50
+		#colors = np.random.rand(N)
+		ds_vals2 = {}
+		for i,mname in enumerate(meta_names_list):
+			ds_vals2[mname] = {}
+			num_of_colors_needed = len(meta_dict[mname])
+			for i,val in enumerate(meta_dict[mname]):				
+				if(num_of_colors_needed <= len(color_choices)):
+					ds_vals2[mname][val] = color_choices[i]
+
+		#print ds_vals2
+		f1, ax = plt.subplots(meta_names_count, 3, sharex=True, sharey=True)
+		for i,mname in enumerate(meta_names_list):
+			# i is 0,1,2,3...
+			num_of_colors_needed = len(meta_dict[mname])
+			#print num_colors
+			col=[]
+			for ds in ds_order:
+				if(num_of_colors_needed > len(color_choices)):
+					col.append('b')  # all blue
+				else:
+					val = metadata[ds][mname]
+					col.append(ds_vals2[mname][val])	
+			#print mname,col
+			ax[i,1].set_title(mname)			
+			ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
+			ax[i,1].scatter(data['P1'], data['P3'], c=col)
+			ax[i,2].scatter(data['P2'], data['P3'], c=col)		
+		ax[0,0].set_title('P1-P2')
+		ax[0,2].set_title('P2-P3')
+		
+		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
+		pylab.savefig(image_file, bbox_inches='tight')
+		
+#
+#
+#
 if __name__ == '__main__':
 
 	usage = """
@@ -307,15 +416,17 @@ if __name__ == '__main__':
 	"""
 	parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
 
-	parser.add_argument('-in','--in',          required=True,  action="store",   dest='in_file', help = '')
-	parser.add_argument('-ff','--file_format', required=False, action="store",   dest='file_format', default='json', help = 'json or csv only')	
-	parser.add_argument('-metric','--metric',  required=False, action="store",   dest='metric', help = 'Distance Metric', default='bray_curtis') 
- 	parser.add_argument('-fxn','--function',   required=True,  action="store",   dest='function', help = 'distance, dendrogram, pcoa') 
- 	parser.add_argument('-base','--site_base', required=True,  action="store",   dest='site_base', help = 'site base') 
- 	parser.add_argument('-pre','--prefix',     required=True,  action="store",   dest='prefix', help = 'file prefix') 
-
+	parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = '')
+	parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')	
+	parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis') 
+ 	parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap') 
+ 	parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
+ 	parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix') 
+ 	#parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
  	args = parser.parse_args()
+ 			
+
 	( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
 
 	if args.function == 'fheatmap':
@@ -332,13 +443,21 @@ if __name__ == '__main__':
 		# IMPORTANT print for SVG
 		print json.dumps(newick)
 
-	if args.function == 'dendrogram-png':
+	if args.function == 'dendrogram-pdf':
 		#print distances
-		dendrogram_png(args, dm1, datasets)
+		dendrogram_pdf(args, dm1, datasets)
 
 	if args.function == 'pcoa':
-		#pcoa = construct_pcoa(dist)
-		pass
+		# if not args.metadata:
+		# 	print "ERROR: In PCoA and no metadata recieved"
+		# 	sys.exit()
+						
+		pcoa_data = pcoa(args, dm3)
+		#print json.dumps(pcoa_data)
+
+		#metadata = json.loads( args.metadata.strip("'") )	 
+		pcoa_pdf(args, pcoa_data)
+		#print pcoa_data
 
 
 

@@ -43,31 +43,48 @@ module.exports = {
 			
 			var metadata = [];
 			var metadata2 = {};
+			var file_name = post_items.ts+'_metadata.txt';
+			var metadata_filename = path.join(__dirname, '../../tmp/'+file_name);
+			var txt = 'DATASET';
+			for (var n in metadata_names) {				
+					var name = metadata_names[n];
+					txt += 		"\t" + name;	
+			}
+			txt += 		"\tproject_dataset\n";
+			var txt2 = '';
 			for (var i in chosen_id_name_hash.names) {
-				var line = {};
+				var ds_row = {};
 				var pjds = chosen_id_name_hash.names[i];
 				metadata2[pjds] = {};
 				var tmp = pjds.split('--');
 				var did = chosen_id_name_hash.ids[i];
+				txt2 = pjds;
 				
 				for (var n in metadata_names) {				
 					var name = metadata_names[n];
 
 					if(did in MetadataValues) {
-						line[name] = MetadataValues[did][name];
+						ds_row[name] = MetadataValues[did][name];
 						metadata2[pjds][name] = MetadataValues[did][name];
-					}						
+						txt2 += "\t" + metadata2[pjds][name];
+					}	
+				}
+				
+				console.log(txt2.length)
+				if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
+					txt += txt2 + "\t"+pjds+"\n";
 				}
 				metadata2[pjds].project = tmp[0];
 				metadata2[pjds].dataset = tmp[1];
-				line.project_dataset = pjds;
-				line.project = tmp[0];
-				line.dataset = tmp[1];
-				metadata.push(line);
-				//txt += ds + "\t" + tmp[0] + "\t" + tmp[1] + "\n";  // just put project and dataset in here for now				
-				//metadata.push({'project_dataset':ds,'project':tmp[0],'dataset':tmp[1]});
+				
+				ds_row.project_dataset = pjds;
+				ds_row.project = tmp[0];
+				ds_row.dataset = tmp[1];
+
+				metadata.push(ds_row);
 				
 			}
+			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},
 
