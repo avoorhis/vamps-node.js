@@ -141,13 +141,16 @@
     height:20px;
     width:100%;
 }
-
+#metadata_local_table_div{
+    
+    width:900px;
+    overflow:auto;
+}
 #metadata_table_div {
     
     margin-right:20px;
     padding-right:20px;
-    height:700px;
-    overflow:auto;
+    
 
 }
 #metadata_table {
@@ -221,13 +224,13 @@
     padding-right:20px;
 }
 /* Dendrogram png */
-#pre_dendrogram_png_div{
+#pre_dendrogram_pdf_div{
     border:1px solid red;
     padding: 3px;
     height:20px;
     width:100%;
 }
-#dendrogram_png_div {
+#dendrogram_pdf_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
