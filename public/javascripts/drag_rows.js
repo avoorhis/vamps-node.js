@@ -1,5 +1,5 @@
  // jquery script for moving table rows AND columns
- $("#dheatmap_div").on("click", "#drag_table", function () {     
+ $("#reorder_div").on("click", "#drag_table", function () {     
      
     $("#drag_table").tableDnD({
     
