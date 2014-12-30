@@ -435,6 +435,21 @@ opened.document.write("<html><head><title>My title</title></head><body>open in a
 
 }
 //
+//
+// DOWNLOAD
+//
+download_metadata_id = document.getElementById('download_metadata_id');
+if (typeof download_metadata_id !=="undefined") {
+  download_metadata_id.addEventListener('click', function () {
+      alert('here in md')
+      var file = fs.createWriteStream("metafile.txt");
+      //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+      //  response.pipe(file);
+      //});
+  });
+}
+
+//
 // visual choices 
 //
 test_link = document.getElementsByName('normalization');
