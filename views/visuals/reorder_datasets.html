@@ -21,7 +21,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
         <% } %>
         </table>
     </td><td>
-        
+        <div id='reorder_div'>
         <table border='1' id='drag_table' class='small_font center_table' >
         <% for (var i in items.names){ %>
             <tr class='tooltip_row'>
