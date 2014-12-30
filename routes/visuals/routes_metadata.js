@@ -67,7 +67,9 @@ module.exports = {
 						ds_row[name] = MetadataValues[did][name];
 						metadata2[pjds][name] = MetadataValues[did][name];
 						txt2 += "\t" + metadata2[pjds][name];
-					}	
+					}else{
+						txt2 += "\tno_value";
+					}
 				}
 				
 				console.log(txt2.length)
