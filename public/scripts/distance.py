@@ -346,25 +346,30 @@ def pcoa_pdf(args, data):
 			sys.exit()
 		
 		print json.dumps(metadata)
+		print metadata.keys()
 		ds_order = data['names']
-		ds_count = len(data['names'])
+		
 		color_choices = ['b','g','r','c','m','y','k','w']  # limited to 8 distinct colors
 		meta_dict = {}
 		#val_lookup = {}
 		#colors = {}
 		ds_vals = {}
+		new_ds_order = []
  		for ds in ds_order:			
- 			
- 			for md_name in metadata[ds]:
- 			 	md_val = metadata[ds][md_name]
- 			
- 				if md_name in meta_dict:
- 					meta_dict[md_name][md_val]=1
- 				else:
- 					meta_dict[md_name]={}
- 					meta_dict[md_name][md_val]=1
+ 			if ds in metadata:
+ 				new_ds_order.append(ds)
+	 			for md_name in metadata[ds]:
+	 			 	md_val = metadata[ds][md_name]
+	 			
+	 				if md_name in meta_dict:
+	 					meta_dict[md_name][md_val]=1
+	 				else:
+	 					meta_dict[md_name]={}
+	 					meta_dict[md_name][md_val]=1
  		#print colors
  		#print ds_vals
+ 		ds_order = new_ds_order
+ 		ds_count = len(ds_order)
  		meta_names_list = sorted(meta_dict.keys()) # sort the list by alpha
  		#print meta_names_list
  		meta_names_count = len(meta_dict) 		
@@ -382,29 +387,31 @@ def pcoa_pdf(args, data):
 					ds_vals2[mname][val] = color_choices[i]
 
 		#print ds_vals2
-		f1, ax = plt.subplots(meta_names_count, 3, sharex=True, sharey=True)
-		for i,mname in enumerate(meta_names_list):
-			# i is 0,1,2,3...
-			num_of_colors_needed = len(meta_dict[mname])
-			#print num_colors
-			col=[]
-			for ds in ds_order:
-				if(num_of_colors_needed > len(color_choices)):
-					col.append('b')  # all blue
-				else:
-					val = metadata[ds][mname]
-					col.append(ds_vals2[mname][val])	
-			#print mname,col
-			ax[i,1].set_title(mname)			
-			ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
-			ax[i,1].scatter(data['P1'], data['P3'], c=col)
-			ax[i,2].scatter(data['P2'], data['P3'], c=col)		
-		ax[0,0].set_title('P1-P2')
-		ax[0,2].set_title('P2-P3')
-		
-		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
-		pylab.savefig(image_file, bbox_inches='tight')
-		
+		if metadata:
+			f1, ax = plt.subplots(meta_names_count, 3, sharex=True, sharey=True)
+			for i,mname in enumerate(meta_names_list):
+				# i is 0,1,2,3...
+				num_of_colors_needed = len(meta_dict[mname])
+				#print num_colors
+				col=[]
+				for ds in ds_order:
+					if(num_of_colors_needed > len(color_choices)):
+						col.append('b')  # all blue
+					else:
+						val = metadata[ds][mname]
+						col.append(ds_vals2[mname][val])	
+				#print mname,col
+				ax[i,1].set_title(mname)			
+				ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
+				ax[i,1].scatter(data['P1'], data['P3'], c=col)
+				ax[i,2].scatter(data['P2'], data['P3'], c=col)		
+			ax[0,0].set_title('P1-P2')
+			ax[0,2].set_title('P2-P3')
+			
+			image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
+			pylab.savefig(image_file, bbox_inches='tight')
+		else:
+			print 'no metadata'
 #
 #
 #
