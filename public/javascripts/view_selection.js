@@ -441,7 +441,7 @@ opened.document.write("<html><head><title>My title</title></head><body>open in a
 download_metadata_id = document.getElementById('download_metadata_id');
 if (typeof download_metadata_id !=="undefined") {
   download_metadata_id.addEventListener('click', function () {
-      alert('here in md')
+      
       var file = fs.createWriteStream("metafile.txt");
       //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
       //  response.pipe(file);
@@ -504,9 +504,7 @@ function get_user_input(visual, ts) {
 function create_counts_table() {
       
       tax_table_created = true;
-      var info_line = 'Frequency Counts -- ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      var info_line = create_header('ftable', pi_local);
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
       var tax_counts_div = document.getElementById('tax_table_div');
@@ -556,6 +554,7 @@ function create_counts_table() {
 function create_metadata_table() {
      
       metadata_table_created = true;
+      var info_line = create_header('mtable', pi_local);
       var metadata_div = document.getElementById('metadata_local_table_div');
       document.getElementById('pre_metadata_table_div').style.display = 'block';
       var html = '';
@@ -586,10 +585,7 @@ function create_metadata_table() {
 function create_dendrogram(ts, image_type) {
       //alert('im HM')
       
-      var info_line = 'Dendrogram -- ';
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      var info_line = create_header('dend', pi_local);
 
       if(image_type == 'pdf'){
         dendrogram_pdf_created = true;
@@ -638,10 +634,7 @@ function create_pcoa(ts) {
       pcoa_created = true;
       var pcoa_div = document.getElementById('pcoa_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var info_line = 'PCoA -- ';
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      var info_line = create_header('pcoa', pi_local);
       document.getElementById('pcoa_title').innerHTML = info_line;
       
 
@@ -671,10 +664,7 @@ function create_dheatmap(ts) {
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var info_line = 'Distance Heatmap -- ';
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
       
       var html = ''
@@ -701,10 +691,7 @@ function create_fheatmap(ts) {
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var info_line = 'Frequency Heatmap -- ';
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      var info_line = create_header('fhm', pi_local);
       document.getElementById('fheatmap_title').innerHTML = info_line;
       
       var html = ''
@@ -731,10 +718,9 @@ function create_geospatial(ts) {
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      var info_line = 'Geospatial -- ';
-      info_line += ' Metric: ' + pi_local.selected_distance+'; ';
-      info_line += ' Normaization: ' + pi_local.normalization+'; ';
-      info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+      
+      var info_line = create_header('geo', pi_local);
+      
       document.getElementById('geospatial_title').innerHTML = info_line;
        
       document.getElementById('pre_geospatial_div').style.display = 'block';
@@ -828,9 +814,8 @@ function setMarkers(map, locations,infowindow) {
 function create_piecharts(ts) {
      
     piecharts_created = true;
-    var info_line = 'PieCharts -- ';
-    info_line += ' Normaization: ' + pi_local.normalization+'; ';
-    info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+    
+    var info_line = create_header('pies', pi_local);
     document.getElementById('piecharts_title').innerHTML = info_line;
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
@@ -936,9 +921,8 @@ function create_barcharts(ts) {
 
         
         barcharts_created = true;
-        var info_line = 'BarCharts -- ';
-        info_line += ' Normaization: ' + pi_local.normalization+'; ';
-        info_line += ' Counts Min/Max: ' + pi_local.min_range+'% -- '+pi_local.max_range+'%';
+        var info_line = create_header('bars', pi_local);
+        
         document.getElementById('barcharts_title').innerHTML = info_line;
         document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
@@ -1109,7 +1093,44 @@ function create_svg_object(props, color, data, ts) {
 }
 
 
+function create_header(viz, pi) {
+  
+  var txt;
+  //viz_possibles = ['bars','pies','geo','dhm','fhm','dend-svg','dend-pdf','pcoa','ftable','mtable'];
+  
+    if(viz == 'geo'){
+      txt = 'Geospatial -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'bars'){
+      txt = 'Barcharts -- ';
+    }else if(viz == 'pies'){
+      txt = 'Barcharts -- ';
+    }else if(viz == 'dhm'){
+      txt = 'Distance Heatmap -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'fhm'){
+      txt = 'Frequency Heatmap -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'dend'){
+      txt = 'Dendrogram -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'pcoa'){
+      txt = 'PCoA -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'ftable'){
+      txt = 'Frequency table -- ';
+    }else if(viz == 'mtable'){
+      txt = 'Metadata Table -- ';
+    }else{
+      txt = 'ERROR in fxn create_headers '+v;
 
+    }
+  txt += ' Normalization: ' + pi.normalization+'; ';
+  txt += ' Counts Min/Max: ' + pi.min_range+'% -- '+pi.max_range+'%';
+
+     
+  return txt;
+}
 function get_colors(unit_names){
   var colors = [];
   for(var n in unit_names){
