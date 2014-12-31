@@ -89,7 +89,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Pie Charts (d3-svg)',        thumb:'/images/visuals/pie_charts.png',  link:'user_data/piecharts',     id:'piecharts_link_id'    },
     {name:'Dendrogram (d3-svg)',        thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_link_id'    },
     {name:'Dendrogram (py-pdf)',  thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_pdf_link_id'    },
-    {name:'PCoA Analyses',     thumb:'/images/visuals/pcoa.png',        link:'user_data/pcoa',           id: 'pcoa_link_id'    },
+    {name:'PCoA Analyses (R-pdf)',     thumb:'/images/visuals/pcoa.png',        link:'user_data/pcoa',           id: 'pcoa_link_id'    },
     {name:'Frequency Table',   thumb:'/images/visuals/counts_table.png',link:'user_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',    thumb:'/images/visuals/metadata.png',    link:'user_data/metadata_table', id:'metadata_table_link_id'     },
     {name:'Data Location',     thumb:'/images/visuals/map.png',         link:'user_data/geospatial',     id:'geospatial_link_id'     },

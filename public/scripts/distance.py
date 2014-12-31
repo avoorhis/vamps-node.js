@@ -199,7 +199,7 @@ def dendrogram_pdf(args, dm, leafLabels):
 		#fig.set_size_inches(14,(leafNodes*0.2))
 		ax = fig.add_subplot(111)
 		#plt.tight_layout()
-		ax.set_title('Dendrogram')
+		ax.set_title('Dendrogram: '+args.metric.capitalize())
 		#plt.subplots_adjust(bottom=0.25)
 		#plt.subplots_adjust(top=0.05)
 		plt.subplots_adjust(left=0.01)
@@ -345,8 +345,8 @@ def pcoa_pdf(args, data):
 			print "NO FILE FOUND ERROR"
 			sys.exit()
 		
-		print json.dumps(metadata)
-		print metadata.keys()
+		
+		
 		ds_order = data['names']
 		
 		color_choices = ['b','g','r','c','m','y','k','w']  # limited to 8 distinct colors
