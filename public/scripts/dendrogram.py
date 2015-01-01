@@ -129,7 +129,8 @@ def calculate_distance(args):
 	
 	linkage_matrix = linkage(arr,  "single")
 	dendrogram(linkage_matrix,           color_threshold=1,                show_leaf_counts=True)
-	image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
+	#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
+	image_file = 'public/tmp_images/'+args.prefix+'.png'
 	plt.savefig(image_file)
 	#print distance_matrix2
 
