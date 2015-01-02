@@ -152,7 +152,12 @@ module.exports = {
           post_hash.include_nas                  = req.body.include_nas  || 'yes';
           post_hash.min_range                    = req.body.min_range || 0;
           post_hash.max_range                    = req.body.max_range || 100;
-          post_hash.metadata                     = req.body.selected_metadata  || [];
+          if(typeof req.body.selected_metadata == 'string'){
+            post_hash.metadata                     = req.body.selected_metadata.split(',') || [];
+          }else{
+            post_hash.metadata                     = req.body.selected_metadata  || [];
+          }
+          
           post_hash.update_data                  = req.body.update_data  || false;  // zer
           var timestamp = +new Date();  // millisecs since the epoch!
           var user = req.user || 'no-user';
