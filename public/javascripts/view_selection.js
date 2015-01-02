@@ -1122,12 +1122,10 @@ function create_header(viz, pi) {
     }else if(viz == 'mtable'){
       txt = 'Metadata Table -- ';
     }else{
-      txt = 'ERROR in fxn create_headers '+v;
-
+      txt = 'ERROR in fxn create_headers '+viz;
     }
   txt += ' Normalization: ' + pi.normalization+'; ';
   txt += ' Counts Min/Max: ' + pi.min_range+'% -- '+pi.max_range+'%';
-
      
   return txt;
 }
