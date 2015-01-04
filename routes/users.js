@@ -20,7 +20,10 @@ router.get('/index_users', function(req, res) {
       throw err;
     } else {
 
-        res.render('user_admin/index_users', { rows : rows, user: req.user  });
+        res.render('user_admin/index_users', { 
+                  title   : 'VAMPS: User List',
+                  rows : rows, 
+                  user: req.user  });
       }
     });
 
