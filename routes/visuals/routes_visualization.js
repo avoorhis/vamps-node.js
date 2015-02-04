@@ -67,6 +67,10 @@ router.post('/view_selection',  function(req, res) {
   //
   if(data_source_testing == 'json') {
     // GLOBAL
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var user = req.user || 'no-user';
+    timestamp = user + '_' + timestamp;
+    visual_post_items.ts = timestamp;
     distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
@@ -221,6 +225,7 @@ router.get('/index_visuals',  function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
+  //console.log(ALL_DATASETS);
   res.render('visuals/index_visuals', { 
                                 title   : 'VAMPS: Select Datasets',
                                 rows    : JSON.stringify(ALL_DATASETS),
