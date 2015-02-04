@@ -2,14 +2,18 @@
   <% all_pr_dat = JSON.parse(rows).projects %>
   <% for (i in all_pr_dat) { %>
     <% pname = all_pr_dat[i].name %>
+    <% pid = all_pr_dat[i].pid %>
+    <% title = all_pr_dat[i].title %>
     <% datasets = all_pr_dat[i].datasets %>
+    <% var tt_pj_id  = 'project-|-'+pname+'-|-'+title; %>
     <li>
       <label id='<%= pname %>' class='project-select'>
         <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
           <img alt='plus' src='/images/tree_plus.gif'/>
         </a>
         <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
-        <a href=''><%= pname %></a>
+        <a href='/projects/<%= pid %>'>
+          <span id='<%= tt_pj_id %>' class='tooltip'><%= pname %></span></a>
       </label>
       <ul>
         <div id='<%= pname %>_ds_div' class='datasets_per_pr'>
@@ -17,13 +21,14 @@
           <% for (k in datasets) { %>
             <% did = datasets[k].did %>
             <% dname = datasets[k].dname %>
+            <% ddesc = datasets[k].ddesc %>
             <% pd = pname + '--' + dname %>
             <% pass_thru_value = did + '--' + pname + '--' + dname %>
-            
+            <% var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc; %>
             <li>
               <label id='<%= pd %>' class='dataset-select'  >
                  <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= pass_thru_value %>'/>
-                 <%= dname %>
+                 <span id='<%= tt_ds_id %>' class='tooltip'><%= dname %></span>
               </label>
             </li>
           <% } %>
