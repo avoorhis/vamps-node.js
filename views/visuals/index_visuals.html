@@ -31,4 +31,106 @@
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
+<script>
+// code for tooltips
+
+    var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
+        $win = $(window),
+        showTip;
+    
+    var tip = {
+      title: '',
+      offset: 12,
+      //delay: 300,
+      position: function(event) {
+        var positions = {x: event.pageX, y: event.pageY};
+        var dimensions = {
+          x: [
+            $win.width(),
+            $liveTip_pjds.outerWidth()
+            
+          ],
+          y: [
+            $win.scrollTop() + $win.height(),
+            $liveTip_pjds.outerHeight()
+            
+          ]
+        };
+     
+        for ( var axis in dimensions ) {
+     
+          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+            positions[axis] -= dimensions[axis][1] + this.offset;
+          } else {
+            positions[axis] += this.offset;
+          }
+     
+        }
+     
+        $liveTip_pjds.css({
+          top: positions.y,
+          left: positions.x
+        });
+        
+      }
+    };
+
+
+    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+          var link = this,
+          html = '';
+          $link = $(this);
+         
+          if (event.type == 'mouseover') {
+            tip.id = link.id;
+            link.id = '';
+            id_items = tip.id.split('-|-');
+            html = "<table><tr>";
+            if(id_items[0] == 'project') {
+              html += "<td>Name: "+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Title: "+id_items[2]+"</td>";             
+            }else if(id_items[0] == 'dataset'){
+              html += "<td>Project: "+id_items[1]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Dataset: "+id_items[2]+"</td>";
+              html += "</tr><tr>";
+              html += "<td>Description: "+id_items[3]+"</td>";
+            }
+            html += "</tr><table>";
+
+            showTip = setTimeout(function() {
+         
+              $link.data('tipActive', true);
+              
+              tip.position(event);
+         //alert(event.pageX)
+              $liveTip_pjds
+              .html('<div>' + html  + '</div>')
+              .fadeOut(0)
+              .fadeIn(0);
+
+         
+            }, tip.delay);
+          }
+         
+          if (event.type == 'mouseout') {
+            link.id = tip.id || link.id;
+            if ($link.data('tipActive')) {
+              $link.removeData('tipActive');
+              $liveTip_pjds.hide();
+              
+            } else {
+              clearTimeout(showTip);
+            }
+          }
+         
+          if (event.type == 'mousemove' && $link.data('tipActive')) {
+            tip.position(event);
+          }
+                  
+     });              
+</script>
+
+
 <% include ../add_ins/end.ejs %>
