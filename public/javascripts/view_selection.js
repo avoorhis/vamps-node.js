@@ -8,7 +8,7 @@
 
 
 
-    var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+    var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
         $win = $(window),
         showTip;
 

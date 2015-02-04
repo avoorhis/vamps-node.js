@@ -41,7 +41,7 @@ def calculate_distance(args):
 			csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
 			for row in csv_data:
 				pass
-
+	
 	datasets = []
 	for i in data['columns']:
 		#print i['id']
@@ -68,8 +68,12 @@ def calculate_distance(args):
 		dist = distance.pdist(dmatrix, 'braycurtis')
 	
 	elif args.metric == 'morisita_horn':
-		dist = distance.squareform( dt.dist_morisita_horn(dmatrix) )
-	
+		#print dmatrix
+		dtvar = dt.dist_morisita_horn(dmatrix, strict=False)
+		#print '2'
+		dist = distance.squareform( dtvar )
+
+		#sys.exit()
 	elif args.metric == 'canberra':
 		#dist = dt.dist_canberra(dm)	
 		dist = distance.pdist(dmatrix, 'canberra')
@@ -84,36 +88,11 @@ def calculate_distance(args):
 		# note different spelling
 		dist = distance.pdist(dmatrix, 'kulsinski')
 		
-
-
-
-	# elif args.metric == 'chisq':
-	# 	dist = dt.dist_chisq(dm)	
-	# elif args.metric == 'chord':
-	# 	dist = dt.dist_chord(dm)	
-	# elif args.metric == 'euclidean':
-	# 	dist = dt.dist_euclidean(dm)	
-	# elif args.metric == 'gower':
-	# 	dist = dt.dist_gower(dm)	
-	# elif args.metric == 'hellinger':
-	# 	dist = dt.dist_hellinger(dm)	
-	
-	# elif args.metric == 'manhattan':
-	# 	dist = pdist(dm,'cityblock')
-	# 	#dist = dt.dist_manhattan(dm)	
-	# elif args.metric == 'abund_jaccard':
-	# 	dist = dt.dist_abund_jaccard(dm)	
-	
-	# elif args.metric == 'pearson':
-	# 	dist = dt.dist_pearson(dm)	
-	# elif args.metric == 'soergel':
-	# 	dist = dt.dist_soergel(dm)	
-	# elif args.metric == 'spearman':
-	# 	dist = dt.dist_spearman_approx(dm)	
 	else:  # default
 		dist = distance.pdist(dmatrix, 'braycurtis')
 
 	#print data['columns']
+	
 	dm1 = distance.squareform(dist)
 	# dist in in condensed form
 	# dm1 is in long form
