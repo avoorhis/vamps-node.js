@@ -18,6 +18,7 @@ npm-debug.log
 
 grep_code.sh
 temp/
+downloads/
 tmp/
 public/tmp_images/
 visuals_testing/
