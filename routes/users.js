@@ -24,6 +24,7 @@ router.get('/index_users', function(req, res) {
                               title: 'users',
                               rows : rows, 
                               user: req.user  });
+
       }
     });
 
