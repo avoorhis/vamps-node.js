@@ -144,3 +144,13 @@ td.left_justify {
 .alert {
   visibility:hidden;
 }
+#project_profile_div ul{
+  list-style-type: none;
+  text-decoration: none;
+  
+  padding:5px;
+}
+#project_list_div {
+  width:100%;
+
+}
