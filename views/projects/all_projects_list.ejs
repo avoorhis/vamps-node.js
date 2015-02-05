@@ -1,22 +1,12 @@
 <ul>
-<% for (var i = 0; i < all_projects.length; i++) {%>
-    <% var obj = all_projects[i];%>
+<% for (var i = 0; i < projects.length; i++) {%>
+    <% var obj = projects[i];%>
     <br/>
     <li>
-      <a href='/projects/<%= obj.project_id%>'> <%= obj.project %> </a>
-      		-- <%= obj.title %>; <%= obj.project_description %>
+      <a href='/projects/<%= obj.pid %>'> <%= obj.name %> </a>
+      		<br>&nbsp;&nbsp;Title: <%= obj.title %>; 
     </li>
 <% }%>
 </ul>
-<br>
-These have data:
-<ul>
-<% all_pr_dat = JSON.parse(ALL).projects %>
-<% for (i in all_pr_dat) { %>
-    <% pname = all_pr_dat[i].name %>
-    
-    <li>
-      <%= pname %>
-    </li>
-<% }%>
-</ul>
+
+
