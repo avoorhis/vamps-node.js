@@ -42,9 +42,28 @@
   <div id='' class='no_data'>
         <h3>No Sequences Found</h3>
   </div>
-<% }else { %>
-  <input id='download_fasta_id' type='button' value='Download Fasta File'>
-  <input id='download_metadata_id' type='button' value='Download Metadata'>
+<% } else { %>
+  <!-- <input id='download_fasta_id' type='button' value='Download Fasta File'>  -->
+  <form id='download_fasta_id' method='POST' action='../download_selected_seqs'>
+    <!-- This form should run in the background and place the seqs file 
+          in a 'downloads' directory where it can be retrieved.
+          The user should get an email when its ready.
+     -->
+    <input type='submit' value='Create Fasta File' />
+    <input type='hidden' name='download_type' value='partial_project' />
+    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+    
+  </form>
+  <!-- <input id='download_metadata_id' type='button' value='Download Metadata'> -->
+  <form id='download_metadata_id' method='POST' action='../download_selected_metadata'>
+    <!-- This form should run in the background and place the seqs file 
+          in a 'downloads' directory where it can be retrieved.
+          The user should get an email when its ready.
+     -->
+    <input type='submit' value='Create Metadata File' />
+    <input type='hidden' name='download_type' value='partial_project' />
+    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+  </form>
 <% } %>
   </td>
 </tr>
@@ -54,7 +73,7 @@
       <table border='1' class='small_font'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
-          <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb                                   %>
+          <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb                                  %>
           <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
           <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
