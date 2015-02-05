@@ -152,5 +152,9 @@ td.left_justify {
 }
 #project_list_div {
   width:100%;
-
+}
+#profile_dataset_list {
+  height: 150px;
+  overflow:auto;
+  background:lightgrey;
 }
