@@ -434,21 +434,41 @@ opened.document.write("<html><head><title>My title</title></head><body>open in a
 
 
 }
+
 //
 //
 // DOWNLOAD
 //
-download_metadata_id = document.getElementById('download_metadata_id');
-if (typeof download_metadata_id !=="undefined") {
-  download_metadata_id.addEventListener('click', function () {
+// download_metadata_id = document.getElementById('download_metadata_id');
+// if (typeof download_metadata_id !=="undefined") {
+//   download_metadata_id.addEventListener('click', function () {
       
-      var file = fs.createWriteStream("metafile.txt");
-      //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
-      //  response.pipe(file);
-      //});
-  });
-}
-
+//       var timestamp = +new Date();  // millisecs since the epoch!
+//       var user = user || 'no-user';
+//       timestamp = user + '_' + timestamp;
+//       var out_file = 'downloads/'+timestamp+'.metadata.gz';
+//       console.log(out_file)
+//       var file = fs.createWriteStream(out_file);
+//       //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+//       //  response.pipe(file);
+//       //});
+//   });
+// }
+// download_fasta_id = document.getElementById('download_fasta_id');
+// if (typeof download_fasta_id !=="undefined") {
+//   download_fasta_id.addEventListener('click', function () {
+      
+//       var timestamp = +new Date();  // millisecs since the epoch!
+//       var user = user || 'no-user';
+//       timestamp = user + '_' + timestamp;
+//       var out_file = 'downloads/'+timestamp+'.metadata.gz';
+//       console.log(out_file)
+//       var file = fs.createWriteStream(out_file);
+//       //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+//       //  response.pipe(file);
+//       //});
+//   });
+// }
 //
 // visual choices 
 //
