@@ -1,39 +1,61 @@
 
+<% data = JSON.parse(info) %>
+<% dscounts = JSON.parse(dscounts) %>
 <img src='/images/projects/science.jpeg' alt="Smiley_face"  height='80'>
 <div id='project_profile_div' >
 <ul>
-  <li>Project Name: <%= project[0].project %></li>
-  <li>Project_id: <%= project[0].project_id %></li>
+  <li>Project Name: <%= data.project %></li>
+  <li>Project_id: <%= pid %></li>
   
-  <li>Title: <%= project[0].title %></li>
-  <li>Description: <%= project[0].project_description %></li>
-  <li> </li>
+  <li>Title: <%= data.title %></li>
+  <li>Description: <%= data.description %></li>
+  <li>Project Sequence Count: <%= pcount %></li>
+
+  <li>Primary Investigator: <%= data.first %> <%= data.last %> (<%= data.email %>)</li>
+  <li>Institution: <%= data.institution %></li>
+  <li>Environmental Source: <%= data.env_source_name %></li>
+  <li>List of datasets with counts and descriptions:
+  <div id='profile_dataset_list' >
+  <ol>
+  <% for(n in dsinfo){ %>
+  	<% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
+  		<li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
+  	<% }else{ %>
+  		<li><%= dsinfo[n].dname %>(<%= dscounts[dsinfo[n].did] %>) Desc: <%= dsinfo[n].ddesc %> </li>
+  	<% } %>
+  		
+  <% } %>
+  
+  </ol>
+  </div>
+  </li>
+  
   <hr>
-  <li>ToDo: Download Metadata: should metadata be pre-tabulated and compressed??</li>
+  <li>
   <form id='' method='POST' action='download_project_metadata_all'>
-	  <!-- This form should run in the background andplace the seqs file 
+	  <!-- This form should run in the background and place the seqs file 
 	  			in a 'downloads' directory where it can be retrieved.
 	  			The user should get an email when its ready.
 	   -->
 	  <input type='submit' value='Create Metadata File' />
-	  <input type='hidden' name='project_id' value='<%= project[0].project_id %>' />
-	  <input type='hidden' name='project' value='<%= project[0].project %>' />
+	  <input type='hidden' name='project_id' value='<%= pid %>' />
+	  <input type='hidden' name='project' value='<%= data.project %>' />
   </form>
 
 
-  <li>TODO: Compress the data files
+  <li>
   <form id='' method='POST' action='download_project_seqs_all'>
 	  <!-- This form should run in the background and place the seqs file 
 	  			in a 'downloads' directory where it can be retrieved.
 	  			The user should get an email when its ready.
 	   -->
 	  <input type='submit' value='Create Fasta File' />
-	  <input type='hidden' name='project_id' value='<%= project[0].project_id %>' />
-	  <input type='hidden' name='project' value='<%= project[0].project %>' />
+	  <input type='hidden' name='project_id' value='<%= pid %>' />
+	  <input type='hidden' name='project' value='<%= data.project %>' />
   </form>
 		You will receive an email
   	when the files are ready
-  	and they can be downloaded here: <a href='../export_data'>Export Data</a>
+  	and they can be downloaded here: <a href='../file_retrieval'>Files</a>
   </li>
 
 </ul>
