@@ -5,7 +5,7 @@ var fs   = require('fs');
 var ds = require('./load_all_datasets');
 var rs = ds.get_datasets(function(ALL_DATASETS){
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
-
+  
   /* GET home page. */
   router.get('/', function(req, res) {
     res.render('index', { title: 'VAMPS:Home', user: req.user });
@@ -29,9 +29,14 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
                              user: req.user 
                             });
   });
-
-  /* GET Export Data page. */
+  /* GET Import Data page. */
   router.get('/export_data', function(req, res) {
+      res.render('export_data', { title: 'VAMPS:Import Data', 
+                             user: req.user 
+                            });
+  });
+  /* GET Export Data page. */
+  router.get('/file_retrieval', function(req, res) {
       
       var user = req.user || 'no-user';  
       var export_dir = 'downloads';
@@ -40,14 +45,12 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
       fs.readdir(export_dir, function(err, files){   
         
         for(f in files){
-          
           stat = fs.statSync(export_dir+'/'+files[f]);
           mtime[files[f]] = stat.mtime;  // modify time
           size[files[f]] = stat.size;
-          console.log(stat.mtime);
         }
         
-        res.render('export_data', { title: 'VAMPS:Export Data', 
+        res.render('file_retrieval', { title: 'VAMPS:Export Data', 
                              user: user,
                              files:files,
                              mtime:mtime,
@@ -61,11 +64,14 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
     console.log('dnld')
     console.log(req.query.filename)
     var file = 'downloads/'+req.query.filename;
-    if(req.query.fxn == 'download'){
+    
+    if(req.query.fxn == 'download' && req.query.type == 'fasta'){
+      res.download(file); // Set disposition and send it.
+    }else if(req.query.fxn == 'download' && req.query.type == 'metadata'){
       res.download(file); // Set disposition and send it.
     }else if(req.query.fxn == 'delete'){
       fs.unlink(file); // 
-      res.redirect("/export_data")
+      res.redirect("/file_retrieval")
     }
   });
 
