@@ -7,10 +7,14 @@ var http = require('http');
 var path = require('path');
 var fs   = require('fs');
 var async = require('async');
-
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport();
+var zlib = require('zlib');
+var Readable = require('stream').Readable;
 
 var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
+
 
 var COMMON  = require('./routes_common');
 var META    = require('./routes_metadata');
@@ -247,128 +251,9 @@ router.get('/reorder_datasets', function(req, res) {
   //console.log(chosen_id_name_hash)
 });
 
-//
-//  C O U N T S  T A B L E
-//
-// router.get('/user_data/counts_table', function(req, res) {
-  
-
-//     var myurl = url.parse(req.url, true);
-//     var ts   = myurl.query.ts;
-//     var values_updated = COMMON.check_initial_status(myurl);  
-
-//     var mtx = biom_matrix
-//     if(values_updated) {
-//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-//     }
-//     //console.log('after cust');
-
-//     var html = "<table border='1' class='single_border center_table'><tr><td>";
-//     html += COMMON.get_selection_markup('counts_table', visual_post_items);     // block for listing prior selections: domains,include_NAs ...
-//     html += '</td><td>';
-//     html += COMMON.get_choices_markup('counts_table', visual_post_items);       // block for controls to normalize, change tax percentages or distance
-//     html += '</td></tr></table>';
-//     html += "<table border='1' class='single_border small_font counts_table'>";
-//     html += '<tr><td></td>';
-//     for(var n in mtx.columns){ 
-//       html += '<td>'+mtx.columns[n].id+'</td>';
-//     }
-//     html += '</tr>';
-//     for(n in mtx.rows){ 
-//       html += '<tr>';
-//       html += '<td>'+mtx.rows[n].id+'</td>';
-//       for(i in mtx.data[n]) {
-//         var cnt = mtx.data[n][i];
-//         var pct =  (cnt * 100 / mtx.column_totals[i]).toFixed(2);
-//         var id  = mtx.columns[i].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
-//         html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
-//       }
-//       html += '</tr>';
-//     }
-//     html += '<tr>';
-//     html += "<td class='right_justify'><strong>Sums:</strong></td>";
-//     for(n in mtx.column_totals) {
-//       html += "<td class='right_justify'>"+mtx.column_totals[n]+'</td>';
-//     } 
-//     html += '</tr>';
-//     html += '</table>';
-
-//     res.render('visuals/user_data/counts_table', {
-//       title: 'VAMPS Counts Table',
-//       timestamp: ts || 'default_timestamp',
-//       html : html,
-//       user: req.user
-//     });
-// });
 
 
-//
-// B A R C H A R T S
-//
-// router.get('/user_data/barcharts', function(req, res) {
-//     var myurl = url.parse(req.url, true);
-//     //console.log(myurl)
-//     var ts = myurl.query.ts;
-//     var values_updated = COMMON.check_initial_status(myurl);  
-  
 
-
-//     var mtx = biom_matrix;
-//     if(values_updated) {
-//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-//     }
-     
-//     var html = '<table border="1" class="single_border center_table"><tr><td>';
-//     html += COMMON.get_selection_markup('barcharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//     html += '</td><td>';
-//     html += COMMON.get_choices_markup('barcharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//     html += '</td></tr></table>';
-
-   
-//     //var BCHARTS = require('./routes_bar_charts_states');
-//     html += BCHARTS.create_barcharts_html ( ts, res, mtx );
-
-//     res.render('visuals/user_data/barcharts', {
-//           title: 'VAMPS StackbarCharts',
-//           timestamp: ts || 'default_timestamp',
-//           html : html,
-//           user: req.user
-//         });
-
-// });
-
-//
-// P I E C H A R T S
-//
-// router.get('/user_data/piecharts', function(req, res) {
-//     var myurl = url.parse(req.url, true);
-//     //console.log(myurl)
-//     var ts = myurl.query.ts;
-//     var values_updated = COMMON.check_initial_status(myurl);  
-   
-
-//     var mtx = biom_matrix;
-//     if(values_updated) {
-//       mtx = COMMON.get_custom_biom_matrix(visual_post_items, mtx);
-//     }
-
-//     var html = '<table border="1" class="single_border center_table"><tr><td>';
-//     html += COMMON.get_selection_markup('piecharts', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//     html += '</td><td>';
-//     html += COMMON.get_choices_markup('piecharts', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//     html += '</td></tr></table>';
-
-   
-//     html += PCHARTS.create_piecharts_html ( ts, res, mtx );
-
-//     res.render('visuals/user_data/piecharts', {
-//           title: 'VAMPS PieCharts',
-//           timestamp: ts || 'default_timestamp',
-//           html : html,
-//           user: req.user
-//         });
-
-// });
 
 router.post('/heatmap', function(req, res) {
     //console.log('found routes_test_heatmap')
@@ -541,107 +426,9 @@ router.get('/user_data/piechart_single', function(req, res) {
 
 });
 
-//
-//   H E A T M A P
-//
-// router.get('/user_data/heatmap', function(req, res) {
-    
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-//   var values_updated = COMMON.check_initial_status(myurl);  
-//   var custom_count_mtx, custom_biom_file_name, custom_biom_file;
-//   var biom_file_name = ts+'_count_matrix.biom';
-//   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-  
-//   if(values_updated) {
-//     fs.readFile(biom_file, 'utf8', function (err, json) {
-//       var mtx = JSON.parse(json);
-//       custom_count_mtx = MTX.get_custom_biom_matrix(visual_post_items, mtx);
-//       custom_biom_file_name = ts+'_count_matrix_cust_heat.biom';
-//       custom_biom_file = path.join(__dirname, '../../tmp/'+custom_biom_file_name);
-//       //console.log(custom_count_mtx)
-//       COMMON.write_file( custom_biom_file, JSON.stringify(custom_count_mtx,null,2) );  
-//       console.log('Writing/Using custom matrix file');
 
-//       COMMON.run_pyscript_cmd(req, res, ts, custom_biom_file, 'heatmap', visual_post_items.selected_distance);
-//     });
-//   }else{
-//     console.log('Using original matrix file');
-//     COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', visual_post_items.selected_distance);
-//   } 
- 
- 
-// });
-//
-//   D E N D R O G R A M
-//
-// router.get('/user_data/dendrogram', function(req, res) {
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-//   var values_updated = COMMON.check_initial_status(myurl);  
-//   var custom_count_mtx, custom_biom_file_name, custom_biom_file;
-//   var biom_file_name = ts+'_count_matrix.biom';
-//   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-//   //var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
-  
-//   //var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.py');
-//   if(values_updated) {
-//      fs.readFile(biom_file, 'utf8', function (err, json) {
-//        var mtx = JSON.parse(json);
-//        MTX.get_custom_biom_matrix(visual_post_items, mtx);
-//        custom_biom_file = ts+'_count_matrix_cust_dend.biom';    
-//        COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
-//         console.log('Writing/Using cust matrix file');
-//         COMMON.run_pyscript_cmd(req, res, ts, custom_biom_file, 'dendrogram', visual_post_items.selected_distance);
-//      });
-//   }else {
-    
-//     //shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
-//     //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
-//     //console.log(shell_command)
-//     console.log('Using original matrix file');
-//     COMMON.run_pyscript_cmd(req, res, ts, biom_file, 'dendrogram', visual_post_items.selected_distance);
-//     //COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
-//   } 
 
-// });
-//
-//   D E N D R O G R A M  ORIG
-//
-// router.get('/user_data/dendrogram_orig', function(req, res) {
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-//   var values_updated = COMMON.check_initial_status(myurl);  
-//   var biom_file,R_command;
-//   var infile_name = ts+'_count_matrix.biom';
-//   var infile = path.join(__dirname, '../../tmp/'+infile_name);
-//   var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
-  
-//   //var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.py');
-//   if(values_updated) {
-//     fs.readFile(infile, 'utf8', function (err, json) {
-//       var mtx = JSON.parse(json);
-//       MTX.get_custom_biom_matrix(visual_post_items, mtx);
-//       custom_biom_file = ts+'_count_matrix_cust_dend.biom';
-//       shell_command = [req.C.RSCRIPT_CMD, dend_script_file, custom_biom_file, visual_post_items.selected_distance].join(' ');
-//       console.log(shell_command);
-//       COMMON.write_file( '../../tmp/'+custom_biom_file, JSON.stringify(mtx,null,2) );  
-//       console.log('Writing/Using cust matrix file');
-//       COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
-//     });
-//   }else {
-//     biom_file = infile_name;
-//     shell_command = [req.C.RSCRIPT_CMD, dend_script_file, biom_file, visual_post_items.selected_distance].join(' ');
-//     //shell_command = [dist_script_file,'--in', biom_file, '--metric',visual_post_items.selected_distance,'|',dend_script_file, '-'].join(' ');
-//     console.log(shell_command);
-//     console.log('Using original matrix file');
-//     COMMON.run_script_cmd(req, res, ts, shell_command, 'dendrogram');
-//   } 
 
-// });
 
  // P C O A
 
@@ -678,82 +465,8 @@ router.post('/pcoa', function(req, res) {
     });    
 
 });
-//
-//   P C O A  P Y T H O N
-//
-// router.get('/user_data/pcoa_python', function(req, res) {
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-//   var values_updated = COMMON.check_initial_status(myurl);  
-//   var biom_file,shell_command;
-//   var infile_name = ts+'_count_matrix.biom';
-//   var metafile_name = ts+'_metadata.txt'
-//   var biom_file = path.resolve(__dirname, '../../tmp/'+infile_name);
-//   //var script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
-//   var script_file = path.resolve(__dirname, '../../public/scripts/distance_pcoa.py');
-//   var metadata_file = path.resolve(__dirname, '../../tmp/'+metafile_name);
-//   //var name_on_graph= 'no';
-//     console.log('DM')
-//     console.log(distance_matrix)
-//   //shell_command = [req.C.RSCRIPT_CMD, script_file, biom_file, metadata_file, visual_post_items.selected_distance].join(' ');
-//   shell_command = [script_file, '--mtx', biom_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',].join(' ');
-//   //shell_command = [script_file, '--calculate_pcoa','--metric', visual_post_items.selected_distance,'--to_output','pcoa',JSON.stringify(biom_matrix), ].join(' ');
-//   console.log(shell_command);
-//   console.log('Using original matrix file');
-//   var exec = require('child_process').exec;
-//   exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-//       if(stderr){console.log(stderr);}
-//       html='';
-//       //console.log('parsing json')
-//       stdout = JSON.parse(stdout);
-      
-      
-//       if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-//         html += '<div>Error -- No distances were calculated.</div>';
-//       }else{
-        
-//           var html = '<table border="1" class="single_border center_table"><tr><td>';
-//           html += COMMON.get_selection_markup('pcoa', visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//           html += '</td><td>';
-//           html += COMMON.get_choices_markup('pcoa', visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//           html += '</td></tr></table>';
-//           //html += "<a href='/tmp/vamps_pcoa.pdf'>Show pdf</a>";  
-//           html += PCOA.create_pcoa_graphs(stdout);
-        
-//       }
 
-//       res.render('visuals/user_data/pcoa', {
-//             title: 'VAMPS PCoA Graphs',
-//             timestamp: ts || 'default_timestamp',
-//             html : html,
-//             user: req.user
-//       });
-      
 
-//     });
- 
-
-// });
-
-//
-//  M E T A D A T A  T A B L E
-//
-// router.get('/user_data/metadata_table', function(req, res) {
-//   var myurl = url.parse(req.url, true);
-  
-//   var ts    = myurl.query.ts;
-   
-//   html = META.create_metadata_table(chosen_id_name_hash, visual_post_items);
-//   res.render('visuals/user_data/metadata_table', {
-//             title: 'VAMPS Metadata Table',
-//             timestamp: ts || 'default_timestamp',
-//             html : html,
-//             user: req.user
-//       });
- 
-
-// });
 //
 //  G E O S P A T I A L
 //
