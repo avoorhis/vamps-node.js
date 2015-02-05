@@ -99,38 +99,38 @@ app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 
 // todo: Andy, shouldn't it be in a module?
-app.post('/download/:ts/:file_type', function(req, res){
-  console.log(req.params.ts);
-  console.log(req.params.file_type);
-  if(req.params.file_type === 'counts_matrix') {
-    var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
-    res.download(file); // Set disposition and send it.
-  }else if(req.params.file_type === 'fasta') {
-    console.log(req.body.ids);
-    var dataset_ids = JSON.parse(req.body.ids);
-    var qSelectSeqs = "SELECT project, dataset, sequence_id, UNCOMPRESS(sequence_comp) as seq FROM sequence_pdr_info";
-    qSelectSeqs +=    "  JOIN dataset  using(dataset_id)";
-    qSelectSeqs +=    "  JOIN project  using(project_id)";
-    qSelectSeqs +=    "  JOIN sequence using(sequence_id)";
-    qSelectSeqs +=    "  WHERE dataset_id in (" + dataset_ids + ")";
-    console.log(qSelectSeqs);
-    req.db.query(qSelectSeqs, function(err, rows, fields){
-        if (err)  {
-          throw err;
-        } else {
-            var filename = req.params.ts+'.fa';
-            res.setHeader('Content-disposition', 'attachment; filename='+filename+'');
-            res.setHeader('Content-type', 'text/plain');
-            res.charset = 'UTF-8';
-            for (var k=0, len=rows.length; k < len; k++){
-                res.write(">"+rows[k].sequence_id+'|project='+rows[k].project+'|dataset='+rows[k].dataset+'\n');
-                res.write(rows[k].seq+'\n');
-            }
-            res.end();
-        }
-    });
-  }
-});
+// app.post('/download/:ts/:file_type', function(req, res){
+//   console.log(req.params.ts);
+//   console.log(req.params.file_type);
+//   if(req.params.file_type === 'counts_matrix') {
+//     var file = __dirname + '/tmp/'+req.params.ts+'_text_matrix.mtx';
+//     res.download(file); // Set disposition and send it.
+//   }else if(req.params.file_type === 'fasta') {
+//     console.log(req.body.ids);
+//     var dataset_ids = JSON.parse(req.body.ids);
+//     var qSelectSeqs = "SELECT project, dataset, sequence_id, UNCOMPRESS(sequence_comp) as seq FROM sequence_pdr_info";
+//     qSelectSeqs +=    "  JOIN dataset  using(dataset_id)";
+//     qSelectSeqs +=    "  JOIN project  using(project_id)";
+//     qSelectSeqs +=    "  JOIN sequence using(sequence_id)";
+//     qSelectSeqs +=    "  WHERE dataset_id in (" + dataset_ids + ")";
+//     console.log(qSelectSeqs);
+//     req.db.query(qSelectSeqs, function(err, rows, fields){
+//         if (err)  {
+//           throw err;
+//         } else {
+//             var filename = req.params.ts+'.fa';
+//             res.setHeader('Content-disposition', 'attachment; filename='+filename+'');
+//             res.setHeader('Content-type', 'text/plain');
+//             res.charset = 'UTF-8';
+//             for (var k=0, len=rows.length; k < len; k++){
+//                 res.write(">"+rows[k].sequence_id+'|project='+rows[k].project+'|dataset='+rows[k].dataset+'\n');
+//                 res.write(rows[k].seq+'\n');
+//             }
+//             res.end();
+//         }
+//     });
+//   }
+// });
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){

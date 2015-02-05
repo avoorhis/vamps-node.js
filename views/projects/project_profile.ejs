@@ -14,7 +14,8 @@
   <li>Primary Investigator: <%= data.first %> <%= data.last %> (<%= data.email %>)</li>
   <li>Institution: <%= data.institution %></li>
   <li>Environmental Source: <%= data.env_source_name %></li>
-  <li>List of datasets with counts and descriptions:
+  <li>Number of samples (datasets): <%= dsinfo.length %></li>
+  <li>List of datasets with counts (and descriptions if available):
   <div id='profile_dataset_list' >
   <ol>
   <% for(n in dsinfo){ %>
@@ -32,27 +33,32 @@
   
   <hr>
   <li>
-  <form id='' method='POST' action='download_project_metadata_all'>
-	  <!-- This form should run in the background and place the seqs file 
-	  			in a 'downloads' directory where it can be retrieved.
-	  			The user should get an email when its ready.
-	   -->
-	  <input type='submit' value='Create Metadata File' />
-	  <input type='hidden' name='project_id' value='<%= pid %>' />
-	  <input type='hidden' name='project' value='<%= data.project %>' />
-  </form>
-
-
-  <li>
-  <form id='' method='POST' action='download_project_seqs_all'>
+  <form id='download_project_fasta_form_id' method='POST' action='../download_selected_seqs'>
 	  <!-- This form should run in the background and place the seqs file 
 	  			in a 'downloads' directory where it can be retrieved.
 	  			The user should get an email when its ready.
 	   -->
 	  <input type='submit' value='Create Fasta File' />
+	  <input type='hidden' name='download_type' value='whole_project' />
 	  <input type='hidden' name='project_id' value='<%= pid %>' />
 	  <input type='hidden' name='project' value='<%= data.project %>' />
   </form>
+  </li>
+  <li>
+  <form id='download_project_metadata_form_id' method='POST' action='../download_selected_metadata'>
+	  <!-- This form should run in the background and place the seqs file 
+	  			in a 'downloads' directory where it can be retrieved.
+	  			The user should get an email when its ready.
+	   -->
+	  <input type='submit' value='Create Metadata File' />
+	  <input type='hidden' name='download_type' value='whole_project' />
+	  <input type='hidden' name='project_id' value='<%= pid %>' />
+	  <input type='hidden' name='project' value='<%= data.project %>' />
+  </form>
+  </li>
+
+  <li>
+
 		You will receive an email
   	when the files are ready
   	and they can be downloaded here: <a href='../file_retrieval'>Files</a>

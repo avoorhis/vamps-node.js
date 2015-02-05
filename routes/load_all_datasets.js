@@ -11,10 +11,11 @@ qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this
 qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
 qSelectDatasets += " ORDER BY project, dataset";
 
-var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+//var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+var qSequenceCounts = "SELECT project_id, dataset_id, seq_count"; 
 qSequenceCounts += " FROM sequence_pdr_info";
 qSequenceCounts += " JOIN dataset using(dataset_id)";
-qSequenceCounts += " GROUP BY dataset_id";
+//qSequenceCounts += " GROUP BY dataset_id";
 console.log(qSelectDatasets)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
@@ -24,7 +25,7 @@ module.exports.get_datasets = function(callback){
     var titles       = {};
     DATASET_NAME_BY_DID = {};    // GLOBAL
     PROJECT_INFORMATION_BY_PID={}  // GLOBAL
-    
+    DATASET_IDS_BY_PID = {};
       if (err)  {
         throw err;
       } else {
@@ -39,6 +40,7 @@ module.exports.get_datasets = function(callback){
           var dataset = rows[i].dataset;
           var dataset_description = rows[i].dataset_description;
           var pid = rows[i].pid;
+          
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last":rows[i].last_name,
             "first":rows[i].first_name,
@@ -50,7 +52,12 @@ module.exports.get_datasets = function(callback){
             "title":rows[i].title,
             "description":rows[i].description
           }
-
+          if(pid in DATASET_IDS_BY_PID){
+            DATASET_IDS_BY_PID[pid].push(did);
+          }else{
+            DATASET_IDS_BY_PID[pid]=[];
+            DATASET_IDS_BY_PID[pid].push(did);
+          }
           pids[project] = pid;
           titles[project] = rows[i].title;
           
@@ -95,12 +102,18 @@ module.exports.get_datasets = function(callback){
           var pid = rows[i].project_id;
           var did = rows[i].dataset_id;
           var count= rows[i].seq_count;
-          ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-           if(pid in ALL_PCOUNTS_BY_PID){
+          //ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+          if(did in ALL_DCOUNTS_BY_DID){
+             ALL_DCOUNTS_BY_DID[did] += parseInt(count);
+          }else{
+             ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+          }
+
+          if(pid in ALL_PCOUNTS_BY_PID){
              ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
-           }else{
+          }else{
              ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
-           }
+          }
         }
       }
       console.log('Done with Counts retrieval')
