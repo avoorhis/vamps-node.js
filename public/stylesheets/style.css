@@ -155,6 +155,8 @@ td.left_justify {
 }
 #profile_dataset_list {
   height: 150px;
-  overflow:auto;
-  background:lightgrey;
+  overflow: auto;
+  background: #F0F0F0;
+  padding:3px;
+  border: 1px solid grey;
 }
