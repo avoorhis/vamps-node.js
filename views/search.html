@@ -1,16 +1,52 @@
 <% include add_ins/begin.ejs %>
-
+<% var metaitems = JSON.parse(metadata_items) %>
+<script>  
+  var mi_local  = JSON.parse('<%- metadata_items %>');
+</script>
 <p class='title'>Search</p>
-<br><strong>Metadata</strong>
-<br>
-<ul>
-	<li>search for all datasets that have a salinity between 28ppt and 30.5ppt for instance.
-	<li>search for all datasets that have a lat-long range between.....
-		<ul>
+<div id='metadata_search_div' >
+		<br><strong>Metadata</strong>
+		<br>
+		<ul>	
+
+			<li>Select Field:<br>
+				
+				<select id='metadata_search_id1' name='metadata_search_id1'>
+					<option value='NONE'>select</option>
+					<% for(field in metaitems) { %>
+						<option class='' value='<%= field %>'><%= field %></option>
+					<% } %>
+				</select>	
+				<div id='metadata_search_range_div1' class='display_none'></div>
+				<br>			
+				<select id='metadata_search_id2' name='metadata_search_id2' disabled='disabled' >
+					<option value='NONE'>select</option>
+					<% for(field in metaitems) { %>
+						<option class='' value='<%= field %>'><%= field %></option>
+					<% } %>
+				</select> <input id='search_metadata_activate_btn2' type='checkbox' value='activate' >activate
+				<div id='metadata_search_range_div2' class='display_none'></div>
+				<br>	
+				<select id='metadata_search_id3' name='metadata_search_id3' disabled='disabled' >
+					<option value='NONE'>select</option>
+					<% for(field in metaitems) { %>
+						<option class='' value='<%= field %>'><%= field %></option>
+					<% } %>
+				</select>	<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >activate
+				<div id='metadata_search_range_div3' class='display_none'></div>
+				
+				<br><input id='search_metadata_btn' class='display_none' type='button' value='Search Datasets' >
+			</li>
+
+
+
+			
 			<li>Save the datasets to be able to use them in the visualizations.
+				
+			
 		</ul>
-	<li>
-</ul>
+</div>
+
 <br><strong>Taxonomy</strong>
 <br><strong>Sequences (to be run on cluster)</strong>
 <br><strong>Names (key words)</strong>
@@ -18,5 +54,7 @@
 	<ul>
 			<li>Must create and maintain VAMPS Blast Database.
 	</ul>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/search.js"></script>
 <% include add_ins/end.ejs %>
 
