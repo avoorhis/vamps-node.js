@@ -40,7 +40,7 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
             }           
         }
       }
-      console.log(tmp_metadata_fields)
+      //console.log(tmp_metadata_fields)
       for(name in tmp_metadata_fields){
         if(tmp_metadata_fields[name][0] == 'non-numeric'){
           tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
@@ -51,7 +51,7 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
           metadata_fields[name] = {"min":min,"max":max};
         }
       }
-      console.log(metadata_fields)
+      //console.log(metadata_fields)
       res.render('search', { title: 'VAMPS:Search',
                             metadata_items: JSON.stringify(metadata_fields),
       											 user: req.user
