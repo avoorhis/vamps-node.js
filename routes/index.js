@@ -22,8 +22,39 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
 
   /* GET Search page. */
   router.get('/search', function(req, res) {
-      res.render('search', { title: 'VAMPS:Search', 
-      											 user: req.user 
+      //console.log(MetadataValues)
+      var tmp_metadata_fields = {};
+      var metadata_fields = {};
+      for(did in MetadataValues){
+        for(name in MetadataValues[did]){
+            val = MetadataValues[did][name];
+            if(name in tmp_metadata_fields){
+              tmp_metadata_fields[name].push(val); 
+            }else{
+              if(IsNumeric(val)){
+                tmp_metadata_fields[name]=[];
+              }else{
+                tmp_metadata_fields[name]=['non-numeric'];
+              }
+              tmp_metadata_fields[name].push(val); 
+            }           
+        }
+      }
+      console.log(tmp_metadata_fields)
+      for(name in tmp_metadata_fields){
+        if(tmp_metadata_fields[name][0] == 'non-numeric'){
+          tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
+          metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
+        }else{
+          var min = Math.min.apply(null, tmp_metadata_fields[name]);
+          var max = Math.max.apply(null, tmp_metadata_fields[name]);
+          metadata_fields[name] = {"min":min,"max":max};
+        }
+      }
+      console.log(metadata_fields)
+      res.render('search', { title: 'VAMPS:Search',
+                            metadata_items: JSON.stringify(metadata_fields),
+      											 user: req.user
       											});
   });
 
@@ -163,21 +194,22 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
         .pipe(wstream)
         .on('finish', function () {  // finished
           console.log('done compressing and writing file');
-          transporter.sendMail({
-            from: 'vamps@mbl.edu',
-            to: 'avoorhis@mbl.edu',
-            subject: 'fasta is ready',
-            text: "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-          });
+          var info = { 
+                "addr":'avoorhis@mbl.edu',
+                "from":"vamps@mbl.edu",
+                "subj":"fasta file is ready",
+                "msg":"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              }
+          send_mail(info);
         });
     });
 
-});
+  });
 
-//
-// DOWNLOAD METADATA
-//
-router.post('/download_selected_metadata', function(req, res) {
+  //
+  // DOWNLOAD METADATA
+  //
+  router.post('/download_selected_metadata', function(req, res) {
     var db = req.db;
     console.log(req.body);
     
@@ -251,17 +283,42 @@ router.post('/download_selected_metadata', function(req, res) {
         .pipe(wstream)
         .on('finish', function () {  // finished
           console.log('done compressing and writing file');
-          transporter.sendMail({
-            from: 'vamps@mbl.edu',
-            to: 'avoorhis@mbl.edu',
-            subject: 'metadata is ready',
-            text: "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-          });
+          var info = { 
+                "addr":'avoorhis@mbl.edu',
+                "from":"vamps@mbl.edu",
+                "subj":"metadata is ready",
+                "msg":"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              }
+          send_mail(info);
+          // transporter.sendMail({
+          //   from: 'vamps@mbl.edu',
+          //   to: 'avoorhis@mbl.edu',
+          //   subject: 'metadata is ready',
+          //   text: "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+          // });
         });
 
     //console.log(datasets);
-});
+  });
+  function send_mail(mail_info) {
+    var to_addr = mail_info.addr;
+    var from_addr = mail_info.from
+    var subj = mail_info.subj
+    var msg = mail_info.msg
+    transporter.sendMail({
+            from: from_addr,
+            to: to_addr,
+            subject: subj,
+            text: msg
+          });
 
+  }
+  function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
 
 });
 
