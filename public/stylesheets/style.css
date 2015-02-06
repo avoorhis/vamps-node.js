@@ -160,3 +160,14 @@ td.left_justify {
   padding:3px;
   border: 1px solid grey;
 }
+
+/*  SEARCH */
+#metadata_search_div{
+  background: lightgrey;
+  padding: 3px;
+  border:1px solid grey;
+}
+#metadata_search_div ul{
+  list-style-type: none;
+  text-decoration: none;
+}
