@@ -5,44 +5,47 @@
 </script>
 <p class='title'>Search</p>
 <div id='metadata_search_div' >
-		<br><strong>Metadata</strong>
+		<br><strong>Metadata -- (search all datasets)</strong>
 		<br>
 		<ul>	
-
-			<li>Select Field:<br>
+			<form id='metadata_search_form1' name='' method='POST' action='/visuals/search_datasets' >	
+				<li>Select Field(s) to Search:<br>
 				
-				<select id='metadata_search_id1' name='metadata_search_id1'>
-					<option value='NONE'>select</option>
-					<% for(field in metaitems) { %>
-						<option class='' value='<%= field %>'><%= field %></option>
-					<% } %>
-				</select>	
-				<div id='metadata_search_range_div1' class='display_none'></div>
-				<br>			
-				<select id='metadata_search_id2' name='metadata_search_id2' disabled='disabled' >
-					<option value='NONE'>select</option>
-					<% for(field in metaitems) { %>
-						<option class='' value='<%= field %>'><%= field %></option>
-					<% } %>
-				</select> <input id='search_metadata_activate_btn2' type='checkbox' value='activate' >activate
-				<div id='metadata_search_range_div2' class='display_none'></div>
-				<br>	
-				<select id='metadata_search_id3' name='metadata_search_id3' disabled='disabled' >
-					<option value='NONE'>select</option>
-					<% for(field in metaitems) { %>
-						<option class='' value='<%= field %>'><%= field %></option>
-					<% } %>
-				</select>	<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >activate
-				<div id='metadata_search_range_div3' class='display_none'></div>
+					<select id='field1_metadata_search' name='search1_metadata-item'>
+						<option value='NONE'>select</option>
+						<% for(field in metaitems) { %>
+							<option class='' value='<%= field %>'><%= field %></option>
+						<% } %>
+					</select>					
+					<div id='metadata_search_range_div1' class='display_none'></div>
+					
+					<br>			
+					
+					<select id='field2_metadata_search' name='search2_metadata-item' disabled='disabled' >
+						<option value='NONE'>select</option>
+						<% for(field in metaitems) { %>
+							<option class='' value='<%= field %>'><%= field %></option>
+						<% } %>
+					</select> <input id='search_metadata_activate_btn2' type='checkbox' value='activate' >activate
+					<div id='metadata_search_range_div2' class='display_none'></div>
+					
+					<br>	
+					
+					<select id='field3_metadata_search' name='search3_metadata-item' disabled='disabled' >
+						<option value='NONE'>select</option>
+						<% for(field in metaitems) { %>
+							<option class='' value='<%= field %>'><%= field %></option>
+						<% } %>
+					</select>	<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >activate
+					<div id='metadata_search_range_div3' class='display_none'></div>
+					
+					<br><input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' >
+					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
+				</li>
 				
-				<br><input id='search_metadata_btn' class='display_none' type='button' value='Search Datasets' >
-			</li>
-
-
-
-			
-			<li>Save the datasets to be able to use them in the visualizations.
-				
+				<li>Save the datasets to be able to use them in the visualizations.
+				<li>Search all datasets or select subset of datasets then search in subset?
+			<form>
 			
 		</ul>
 </div>
