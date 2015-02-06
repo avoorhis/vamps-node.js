@@ -240,6 +240,93 @@ router.get('/index_visuals',  function(req, res) {
 //
 //
 //
+router.post('/search_datasets', function(req, res) {
+  console.log('req.body-->>');
+  console.log(req.body);
+  console.log('<<--req.body');
+
+  var search_function = req.body.search_function;
+  var searches = {};
+  var allowed = [ 'search1', 'search2', 'search3' ];
+  if(search_function === 'search_metadata_all_datasets'){
+    for(name in req.body){  
+      items = name.split('_');
+      var search = items[0];
+      if(allowed.indexOf(search) != -1){
+        if( !(search  in searches)){
+          searches[search] = {};
+        }
+        searches[search][items[1]] = req.body[name];
+      }
+    }
+  }
+  console.log(searches)
+
+  // search datasets
+  //console.log(MetadataValues);
+  var datasets = [];
+  for(did in MetadataValues){
+    for(mdname in MetadataValues[did]){
+      if(mdname === searches['search1']['metadata-item']){
+        console.log('val '+mdname+' - '+MetadataValues[did][mdname])
+        mdvalue = MetadataValues[did][mdname]
+        
+        if(('comparison' in searches['search1']) && (searches['search1']['comparison'] === '1-equal_to')){
+          search_value = searches['search1']['single-comparison-value'];
+          console.log('1-equal-to - mdval: '+mdvalue+' search: '+search_value);
+          if( mdvalue ===  search_value ){
+            datasets.push(did);
+          }
+        }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '2-less_than'){
+          search_value = searches['search1']['single-comparison-value'];
+          console.log('2-less_than - mdval: '+mdvalue+' search: '+search_value);
+          if(mdvalue <= search_value){
+            datasets.push(did);
+          }
+        }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '3-greater_than'){
+          search_value = searches['search1']['single-comparison-value'];
+          console.log('3-greater_than - mdval: '+mdvalue+' search: '+search_value);
+          if(mdvalue >= search_value){
+            datasets.push(did);
+          }
+        }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '4-not_equal_to'){
+          search_value = searches['search1']['single-comparison-value'];
+          console.log('4-not_equal_to - mdval: '+mdvalue+' search: '+search_value);
+          if(mdvalue !== search_value){
+            datasets.push(did);
+          }
+        }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '5-between_range'){
+          min_search_value = searches['search1']['min-comparison-value'];
+          max_search_value = searches['search1']['max-comparison-value'];
+          if(mdvalue > min_search_value && mdvalue < max_search_value){
+            datasets.push(did);
+          }
+
+        }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '6-outside_range'){
+          if(mdvalue < min_search_value || mdvalue > max_search_value){
+            datasets.push(did);
+          }
+
+        }else if('data' in searches['search1']){
+          list = searches['search1']['data']
+          if(list.indexOf(mdvalue)){
+            datasets.push(did)
+          }
+        }
+      }
+    }
+  }
+  console.log(datasets);
+  res.render('visuals/search_datasets', {   
+                    title: 'VAMPS: Search Datasets',
+                    datasets: datasets,
+                    user         : req.user
+  });  // 
+
+});
+//
+//
+//
 router.get('/reorder_datasets', function(req, res) {
   
   res.render('visuals/reorder_datasets', { 
