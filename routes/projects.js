@@ -58,84 +58,93 @@ router.get('/:id', function(req, res) {
     
 });
 
-router.post('/download_project_metadata_all', function(req, res) {
-    var db = req.db;
-    console.log(req.body);
-    var pid = req.body.project_id
-    var project = req.body.project
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var user = req.user || 'no-user';
-    timestamp = user + '_' + timestamp;
+// router.post('/download_project_metadata_all', function(req, res) {
+//     var db = req.db;
+//     console.log(req.body);
+//     var pid = req.body.project_id
+//     var project = req.body.project
+//     var timestamp = +new Date();  // millisecs since the epoch!
+//     var user = req.user || 'no-user';
+//     timestamp = user + '_' + timestamp;
 
-    // check if custom metadata table exists
-    //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
+//     // check if custom metadata table exists
+//     //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
     
-    // get the fields from required_metadata_info as they may vary
-    //var qSelect = "SHOW columns from required_metadata_info";
-    //console.log('in projects-->');
-    //console.log(MetadataValues);
-    //console.log('<--in projects');
-    // we have all the metadata in MetadataValues by did
-    var q = "select dataset_id as did from dataset where project_id='"+pid+"'" 
-    var gzip = zlib.createGzip();
-    var myrows = {}; // myrows[mdname] == [] list of values
-    var header = 'Project: '+project+"\n\t"
-    var out_file = 'downloads/'+timestamp+'_'+project+'.metadata.gz';
-    var wstream = fs.createWriteStream(out_file);
-    var rs = new Readable;
-    var filetxt;
-    var collection = db.query(q, function (err, rows, fields){
-      if (err) {
-          throw err;
-      } else {
-        for(i in rows){
-          did = rows[i].did
-          dname = DATASET_NAME_BY_DID[did]
-          header += dname+"\t"
-          for(k in MetadataValues[did]){
-            nm = k
-            val = MetadataValues[did][k]
-            if(nm in myrows){
-              myrows[nm].push(val)
-            }else{
-              myrows[nm] = []
-              myrows[nm].push(val)
-            }
-          }
-        }
-      }
-      // print
-      header += "\n"
-      rs.push(header)
-      if(Object.keys(myrows).length === 0){
-        rs.push("NO METADATA FOUND\n")
-      }else{
-        for(mdname in myrows){
-          filetxt = mdname+"\t"  // restart sting
-          for(i in myrows[mdname]){
-            filetxt += myrows[mdname][i]+"\t"
-          }
-          filetxt += "\n";
-          rs.push(filetxt)
-        }
-      }
-      rs.push(null); 
-      rs
-        .pipe(gzip)
-        .pipe(wstream)
-        .on('finish', function () {  // finished
-          console.log('done compressing and writing file');
-          transporter.sendMail({
-            from: 'vamps@mbl.edu',
-            to: 'avoorhis@mbl.edu',
-            subject: 'metadata is ready',
-            text: "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-          });
-        });
+//     // get the fields from required_metadata_info as they may vary
+//     //var qSelect = "SHOW columns from required_metadata_info";
+//     //console.log('in projects-->');
+//     //console.log(MetadataValues);
+//     //console.log('<--in projects');
+//     // we have all the metadata in MetadataValues by did
+//     var q = "select dataset_id as did from dataset where project_id='"+pid+"'" 
+//     var gzip = zlib.createGzip();
+//     var myrows = {}; // myrows[mdname] == [] list of values
+//     var header = 'Project: '+project+"\n\t"
+//     var out_file = 'downloads/'+timestamp+'_'+project+'.metadata.gz';
+//     var wstream = fs.createWriteStream(out_file);
+//     var rs = new Readable;
+//     var filetxt;
+//     var collection = db.query(q, function (err, rows, fields){
+//       if (err) {
+//           throw err;
+//       } else {
+//         for(i in rows){
+//           did = rows[i].did
+//           dname = DATASET_NAME_BY_DID[did]
+//           header += dname+"\t"
+//           for(k in MetadataValues[did]){
+//             nm = k
+//             val = MetadataValues[did][k]
+//             if(nm in myrows){
+//               myrows[nm].push(val)
+//             }else{
+//               myrows[nm] = []
+//               myrows[nm].push(val)
+//             }
+//           }
+//         }
+//       }
+//       // print
+//       header += "\n"
+//       rs.push(header)
+//       if(Object.keys(myrows).length === 0){
+//         rs.push("NO METADATA FOUND\n")
+//       }else{
+//         for(mdname in myrows){
+//           filetxt = mdname+"\t"  // restart sting
+//           for(i in myrows[mdname]){
+//             filetxt += myrows[mdname][i]+"\t"
+//           }
+//           filetxt += "\n";
+//           rs.push(filetxt)
+//         }
+//       }
+//       rs.push(null); 
+//       rs
+//         .pipe(gzip)
+//         .pipe(wstream)
+//         .on('finish', function () {  // finished
+//           console.log('done compressing and writing file');
+//           var info = { 
+//                 "addr":'avoorhis@mbl.edu',
+//                 "from":"vamps@mbl.edu",
+//                 "subj":"metadata is ready",
+//                 "msg":"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+//               }
+//           send_mail(info);
+//           // transporter.sendMail({
+//           //   from: 'vamps@mbl.edu',
+//           //   to: 'avoorhis@mbl.edu',
+//           //   subject: 'metadata is ready',
+//           //   text: "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+//           // });
+//         });
 
-    });
-    //console.log(datasets);
-});
+//     });
+//     //console.log(datasets);
+// });
+
+
 // move to routes/download.js
 // router.post('/download_project_seqs_all', function(req, res) {
 //     var db = req.db;
