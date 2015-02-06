@@ -171,3 +171,15 @@ td.left_justify {
   list-style-type: none;
   text-decoration: none;
 }
+
+#input1_comparison{
+  display: inline-block;
+}
+#input2_comparison{
+  display: inline-block;
+} 
+#input3_comparison{
+  display: inline-block;
+}
+
+
