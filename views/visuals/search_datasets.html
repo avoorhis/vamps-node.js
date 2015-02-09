@@ -1,7 +1,26 @@
-<!-- Not used -->
 <% include ../add_ins/begin.ejs %>
+<% ds = JSON.parse(datasets) %>
+<% s = JSON.parse(searches) %>
 
-Put Content Here
-
+<script>
+  
+</script>
+<div class='title'>Search Result</div>
+<div class='subtitle'>Metadata</div>
+Search-1
+<% for(i in s.search1) { %>
+	<br><%= i %>: <%= s.search1[i] %>
+<% } %>
+<br><br>
+<form id='' name='' method='POST' action='unit_selection'>
+	<% for(i in ds) { %>
+		<li>
+			P: <%= ds[i].pname %>  D:<%= ds[i].dname %>
+		</li>
+	<% } %>
+	<input type='submit' name='' value='Accept' >
+	<input type='hidden' name='search' value='1' >
+	<input type='hidden' name='dataset_ids' value='<%= dids %>' >
+</form>
 <% include ../add_ins/end.ejs %>
 
