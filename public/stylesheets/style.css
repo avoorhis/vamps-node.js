@@ -114,7 +114,10 @@ td.left_justify {
     color: black;
     background-color: #a8b6c0;
 }
-
+.float_right{
+  
+  float:right;
+}
 
 .metadata_selection_page_div_border {
   border:1px solid black;
