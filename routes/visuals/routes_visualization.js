@@ -284,58 +284,58 @@ router.post('/search_datasets', function(req, res) {
    // use for posting to unit_selection
   //
   //
+  
   //
 
-  var result = get_search_datasets(searches.search1,join_type, MetadataValues);
-
+  var result = get_search_datasets(searches.search1, MetadataValues);
+  ds1 = result.ds
+  //console.log('result.mdv1')
+  //console.log(result.mdv)
   if('search2' in searches){
-    var result = get_search_datasets(searches.search2,join_type, result.md);
-
+    if(join_type == 'intersect'){
+      var md_hash = result.mdv
+    }else{  // summation
+      var md_hash =  MetadataValues;
+    }
+    var result = get_search_datasets(searches.search2, md_hash);
+    ds2 = result.ds
+    //console.log('result.mdv2')
+    //console.log(result.mdv)
   }
   if('search3' in searches){
-    var result = get_search_datasets(searches.search3,join_type, result.md);
+    if(join_type == 'intersect'){
+      var md_hash = result.mdv
+    }else{
+      var md_hash =  MetadataValues;
+    }
+    var result = get_search_datasets(searches.search3, md_hash);
+    //console.log('result.mdv3')
+    //console.log(result.mdv)
+  }
+  if(join_type == 'combine'){
+    result.ds = result.ds.concat(ds1).concat(ds2);
   }
   //
   //
   //searches.search1.dataset_count = ds.dataset_ids.length;
+  result.ds = result.ds.filter(onlyUnique);
+  ds_plus = [];
+  for(var i in result.ds){
+    var did = result.ds[i];
+    var dname = DATASET_NAME_BY_DID[did];
+    var pid = PROJECT_ID_BY_DID[did];
+    var pname = PROJECT_INFORMATION_BY_PID[pid].project
+    //var ds_req = did+'--'+pname+'--'+dname;
+    ds_plus.push({did:did,dname:dname,pid:pid,pname:pname});
 
+  }
   //console.log('search1:');
-  console.log('result');
+  console.log('ds result');
   console.log(result.ds);
-  // if('search2' in searches){
-  //   for(did in tmp1MetadataValues){
-  //     var dname = DATASET_NAME_BY_DID[did];
-  //     var pid= PROJECT_ID_BY_DID[did];
-  //     var pname = PROJECT_INFORMATION_BY_PID[pid].project
-  //     var ds_req = did+'--'+pname+'--'+dname;
-  //     var tmp2MetadataValues = {};
-  //     for(mdname in tmp1MetadataValues[did]){
-  //       if(mdname === searches['search2']['metadata-item']){
-  //         console.log('val '+mdname+' - '+tmp1MetadataValues[did][mdname])
-  //         mdvalue = tmp1MetadataValues[did][mdname]
-          
-  //         if(('comparison' in searches['search2']) && (searches['search2']['comparison'] === '1-equal_to')){
-  //           search_value = Number(searches['search2']['single-comparison-value']);
-  //           console.log('1-equal-to - mdval: '+mdvalue+' search: '+search_value);
-  //           if( Number(mdvalue) ===  search_value ){
-  //             datasets.push(did);
-  //             datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
-  //             ds.dataset_ids.push(ds_req);
-  //             if(did in tmp2MetadataValues){
-  //               tmp2MetadataValues[did] = tmp1MetadataValues[did];
-  //             }else{
-  //               tmp2MetadataValues[did]={};
-  //               tmp2MetadataValues[did] = tmp1MetadataValues[did];
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   searches.search2.dataset_count = ds.dataset_ids.length;
-  //   console.log('search2:');
-  //   console.log(ds);
-  // }
+  console.log('result plus');
+  console.log(ds_plus);
+  searches.search1.dataset_count = result.ds.length;
+  
   
   //if(ds.dataset_ids.length != 0){
   // if(('data' in searches.search1 && searches.search1['data'].length > 0) || 
@@ -346,7 +346,7 @@ router.post('/search_datasets', function(req, res) {
   //if(!('single-comparison-value' in searches.search1)){
           res.render('visuals/search_datasets', {   
                     title    : 'VAMPS: Search Datasets',
-                    datasets : JSON.stringify(result.ds_plus),
+                    datasets : JSON.stringify(ds_plus),
                     searches : JSON.stringify(searches),
                     dids     : JSON.stringify(result.ds),
                     user     : req.user
@@ -679,30 +679,29 @@ function IsJsonString(str) {
     }
     return true;
 }
-
-function get_search_datasets(search, join_type, metadata){
-  var datasets_plus = [];
+//
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+//
+function get_search_datasets(search, metadata){
+  //var datasets_plus = [];
   var datasets = [];  // use for posting to unit_selection
-  
+  var tmp_metadata = {};
   for(did in metadata){
-      
-    var dname = DATASET_NAME_BY_DID[did];
-    var pid= PROJECT_ID_BY_DID[did];
-    var pname = PROJECT_INFORMATION_BY_PID[pid].project
-    var ds_req = did+'--'+pname+'--'+dname;
-    var tmp_metadata = {};
+    
     for(mdname in metadata[did]){
       if(mdname === search['metadata-item']){
         
         mdvalue = metadata[did][mdname];
-        console.log('val '+mdname+' - '+mdvalue)
+        
         
         if(('comparison' in search) && (search['comparison'] === '1-equal_to')){
           search_value = Number(search['single-comparison-value']);
-          console.log('1-equal-to - mdval: '+mdvalue+' search: '+search_value);
           if( Number(mdvalue) ===  search_value ){
+            console.log('1-equal-to: val '+mdname+' - '+mdvalue)
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -713,10 +712,10 @@ function get_search_datasets(search, join_type, metadata){
           }
         }else if('comparison' in search && search['comparison'] === '2-less_than'){
           search_value = Number(search['single-comparison-value']);
-          console.log('2-less_than - mdval: '+mdvalue+' search: '+search_value);
           if(Number(mdvalue) <= search_value){
+            console.log('2-less_than: val '+mdname+' - '+mdvalue)
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -727,10 +726,10 @@ function get_search_datasets(search, join_type, metadata){
           }
         }else if('comparison' in search && search['comparison'] === '3-greater_than'){
           search_value = Number(search['single-comparison-value']);
-          console.log('3-greater_than - mdval: '+mdvalue+' search: '+search_value);
           if(Number(mdvalue) >= search_value){
+            console.log('3-greater_than: val '+mdname+' - '+mdvalue);
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -741,10 +740,10 @@ function get_search_datasets(search, join_type, metadata){
           }
         }else if('comparison' in search && search['comparison'] === '4-not_equal_to'){
           search_value = Number(search['single-comparison-value']);
-          console.log('4-not_equal_to - mdval: '+mdvalue+' search: '+search_value);
           if(Number(mdvalue) !== search_value){
+            console.log('4-not_equal_to: val '+mdname+' - '+mdvalue);
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -756,10 +755,10 @@ function get_search_datasets(search, join_type, metadata){
         }else if('comparison' in search && search['comparison'] === '5-between_range'){
           min_search_value = Number(search['min-comparison-value']);
           max_search_value = Number(search['max-comparison-value']);
-          console.log('5-between_range - mdval: '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
           if(Number(mdvalue) > min_search_value && Number(mdvalue) < max_search_value){
+            console.log('6-outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -772,10 +771,11 @@ function get_search_datasets(search, join_type, metadata){
         }else if('comparison' in search && search['comparison'] === '6-outside_range'){
           min_search_value = Number(search['min-comparison-value']);
           max_search_value = Number(search['max-comparison-value']);
-          console.log('6-outside_range - mdval: '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
+          
           if(Number(mdvalue) < min_search_value || Number(mdvalue) > max_search_value){
+            console.log('6-outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -788,8 +788,9 @@ function get_search_datasets(search, join_type, metadata){
         }else if('data' in search){
           list = search['data']
           if(list.indexOf(mdvalue) != -1){
+            console.log('DATA: val '+did+' - '+mdname+' - '+mdvalue);
             datasets.push(did);
-            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
             //ds.dataset_ids.push(ds_req);
             if(did in tmp_metadata){
               tmp_metadata[did] = metadata[did];
@@ -802,7 +803,7 @@ function get_search_datasets(search, join_type, metadata){
       }
     }
   }
-  return {ds:datasets, ds_plus:datasets_plus, md:tmp_metadata};
+  return {ds:datasets, mdv:tmp_metadata};
 }
 
 //
