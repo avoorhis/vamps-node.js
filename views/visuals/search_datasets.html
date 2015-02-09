@@ -33,7 +33,7 @@ Search-3
 		<form id='' name='' method='POST' action='unit_selection'>
 			<% for(i in ds) { %>
 				<li>
-					P: <%= ds[i].pname %>  D:<%= ds[i].dname %>
+					P: <%= ds[i].pname %>(<%= ds[i].did %>)  --- D:<%= ds[i].dname %>
 				</li>
 			<% } %>
 			<input type='submit' name='' value='Accept' >
