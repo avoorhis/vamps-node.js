@@ -7,20 +7,47 @@
 </script>
 <div class='title'>Search Result</div>
 <div class='subtitle'>Metadata</div>
+<table border='1'><tr><td>
 Search-1
 <% for(i in s.search1) { %>
 	<br><%= i %>: <%= s.search1[i] %>
 <% } %>
-<br><br>
-<form id='' name='' method='POST' action='unit_selection'>
-	<% for(i in ds) { %>
-		<li>
-			P: <%= ds[i].pname %>  D:<%= ds[i].dname %>
-		</li>
-	<% } %>
-	<input type='submit' name='' value='Accept' >
-	<input type='hidden' name='search' value='1' >
-	<input type='hidden' name='dataset_ids' value='<%= dids %>' >
-</form>
+</td>
+<td>
+Search-2
+
+</td>
+<td>
+Search-3
+
+</td>
+</tr>
+<tr>
+	<td>
+
+
+
+<% if(ds.length == 0){ %>
+		<li><b>no data found</b></li>
+<% }else{ %>
+		<form id='' name='' method='POST' action='unit_selection'>
+			<% for(i in ds) { %>
+				<li>
+					P: <%= ds[i].pname %>  D:<%= ds[i].dname %>
+				</li>
+			<% } %>
+			<input type='submit' name='' value='Accept' >
+			<input type='hidden' name='search' value='1' >
+			<input type='hidden' name='dataset_ids' value='<%= dids %>' >
+		</form>
+<% } %>
+</td>
+<td>
+	Search-2
+</td>
+<td>
+	Search-3
+</td></tr></table>
+
 <% include ../add_ins/end.ejs %>
 
