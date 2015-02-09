@@ -101,7 +101,7 @@ module.exports.get_datasets = function(callback){
       } else {
         
         for (var i=0; i < rows.length; i++) {
-        console.log(rows[i].project_id);
+        //console.log(rows[i].project_id);
           var pid = rows[i].project_id;
           var did = rows[i].dataset_id;
           var count= rows[i].seq_count;
