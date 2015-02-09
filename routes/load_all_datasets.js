@@ -10,13 +10,13 @@ qSelectDatasets += " JOIN project USING(project_id)";
 qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
 qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
 qSelectDatasets += " ORDER BY project, dataset";
-
-//var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
-var qSequenceCounts = "SELECT project_id, dataset_id, seq_count"; 
+console.log(qSelectDatasets)
+var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+//var qSequenceCounts = "SELECT project_id, dataset_id, seq_count"; 
 qSequenceCounts += " FROM sequence_pdr_info";
 qSequenceCounts += " JOIN dataset using(dataset_id)";
-//qSequenceCounts += " GROUP BY dataset_id";
-console.log(qSelectDatasets)
+qSequenceCounts += " GROUP BY dataset_id";
+console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
   connection.query(qSelectDatasets, function(err, rows, fields){
@@ -24,6 +24,7 @@ module.exports.get_datasets = function(callback){
     var pids         = {};
     var titles       = {};
     DATASET_NAME_BY_DID = {};    // GLOBAL
+    PROJECT_ID_BY_DID = {};
     PROJECT_INFORMATION_BY_PID={}  // GLOBAL
     DATASET_IDS_BY_PID = {};
       if (err)  {
@@ -40,17 +41,17 @@ module.exports.get_datasets = function(callback){
           var dataset = rows[i].dataset;
           var dataset_description = rows[i].dataset_description;
           var pid = rows[i].pid;
-          
+          PROJECT_ID_BY_DID[did]=pid;
           PROJECT_INFORMATION_BY_PID[pid] = {
-            "last":rows[i].last_name,
-            "first":rows[i].first_name,
-            "username":rows[i].username,
-            "email":rows[i].email,
-            "env_source_name":rows[i].env_source_name,
-            "institution":rows[i].institution,
-            "project":project,
-            "title":rows[i].title,
-            "description":rows[i].description
+            "last" :			rows[i].last_name,
+            "first" :			rows[i].first_name,
+            "username" :		rows[i].username,
+            "email" :			rows[i].email,
+            "env_source_name" :	rows[i].env_source_name,
+            "institution" :		rows[i].institution,
+            "project" :			project,
+            "title" :			rows[i].title,
+            "description" :		rows[i].description
           }
           if(pid in DATASET_IDS_BY_PID){
             DATASET_IDS_BY_PID[pid].push(did);
@@ -94,20 +95,22 @@ module.exports.get_datasets = function(callback){
   connection.query(qSequenceCounts, function(err, rows, fields){    
     ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
     ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
-    console.log(qSequenceCounts)
+    //console.log(qSequenceCounts)
       if (err)  {
         throw err;
       } else {
+        
         for (var i=0; i < rows.length; i++) {
+        console.log(rows[i].project_id);
           var pid = rows[i].project_id;
           var did = rows[i].dataset_id;
           var count= rows[i].seq_count;
-          //ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-          if(did in ALL_DCOUNTS_BY_DID){
-             ALL_DCOUNTS_BY_DID[did] += parseInt(count);
-          }else{
-             ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-          }
+          ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+         //  if(did in ALL_DCOUNTS_BY_DID){
+//              ALL_DCOUNTS_BY_DID[did] += parseInt(count);
+//           }else{
+//              ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+//           }
 
           if(pid in ALL_PCOUNTS_BY_PID){
              ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
@@ -120,6 +123,7 @@ module.exports.get_datasets = function(callback){
   });
 };
 
+// ALL_DATASETS
 // { projects:
 //    [ { name: 'SLM_NIH_Bv6', datasets: [Object] },
 //      { name: 'SLM_NIH_v1', datasets: [Object] },

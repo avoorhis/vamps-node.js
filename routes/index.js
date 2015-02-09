@@ -7,7 +7,7 @@ var zlib = require('zlib');
 var Readable = require('stream').Readable;
 
 var ds = require('./load_all_datasets');
-var rs = ds.get_datasets(function(ALL_DATASETS){
+var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
 
   /* GET home page. */
@@ -143,7 +143,10 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
     qSelect += " join sequence using (sequence_id)\n";
     qSelect += " join dataset using (dataset_id)\n";
     qSelect += " join project using (project_id)\n";
-    
+    var seq, seqid, seq_count, pjds;
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var user = req.user || 'no-user';
+    timestamp = user + '_' + timestamp;
     if(req.body.download_type == 'whole_project'){
       var pid = req.body.project_id
       var project = req.body.project
@@ -151,17 +154,14 @@ var rs = ds.get_datasets(function(ALL_DATASETS){
       qSelect += " where project_id = '"+pid+"'";
     }else{
       var pids = JSON.parse(req.body.datasets).ids
-      var out_file = 'downloads/'+timestamp+'.fa.gz';
+      var out_file = 'downloads/'+timestamp+'_custom.fa.gz';
       qSelect += " where dataset_id in ("+pids+")";
       console.log(pids);
              
     }
     qSelect += " limit 100 ";                     // <<<<-----  for testing
     
-    var seq, seqid, seq_count, pjds;
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var user = req.user || 'no-user';
-    timestamp = user + '_' + timestamp;
+    
     
     
                  // <<<<-----  for testing

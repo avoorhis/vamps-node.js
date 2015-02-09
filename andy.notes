@@ -1,0 +1,35 @@
+List of things todo: OLD VAMPS
+
+Explore: download fasta sequences
+Give more colors to PCoA groups (how many?) -- recycle colors?
+Find sequences from MWS user projects on last vamps page
+procrutes ??
+pc#1 pc#2 pc#3
+fix graphs
+missing boot scores for ref data and MWS data
+nmds -- see MED  -- better viz
+
+workshop users:
+split up big projects: SL
+change project names:   MBE_(study_id)_[ITS,Bv4,Bv3v5]
+add MWS(MBE) projects to portal (privacy?)
+fix filter bug: press GO and all projects disappear.
+put emperor into new vamps
+norm to a certain count (below max)(remove all ds below this count) -- does this make sense?
+	Rarefaction depth
+Combining datasets -Customize datasets [clean out - check fxn]
+Community Dendrogram says Norm: Absolute Number where it is Norm: Precent
+Patrik: Download table and reupload at matrix - works?
+	How much effort is it??
+Humberto: Look for certain metadata name: 'host_or_room' . Not found on
+	vamps need to look in 1666 file.
+Mark Hernandez: get metadata and process these samples R1-R2
+
+Make sure that Parag and Ioannis data gets loaded.
+Mytien -- will send code for new component anaylsis viz.
+	Also ?? How to remove ds lower than a certain count
+
+I Said new vamps prototype up live this summer!!!!
+	what features are important?
+
+FEEDBACK:
