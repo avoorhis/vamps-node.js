@@ -54,9 +54,9 @@ router.post('/view_selection',  function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
-  console.log('req.body');
+  console.log('req.body: view_selection-->>');
   console.log(req.body);
-  console.log('req.body');
+  console.log('req.body: view_selection');
   //console.log(TaxaCounts['27'])
   //console.log('1');
   
@@ -166,17 +166,31 @@ router.post('/unit_selection',  function(req, res) {
   //console.log('START BODY>> in route/visualization.js /unit_selection');
   //console.log(JSON.stringify(req.body));
   //console.log('<<END BODY');
-  console.log('req.body');
+  console.log('req.body: unit_selection-->>');
   console.log(req.body);
-  console.log('req.body');
-
+  console.log('req.body: unit_selection');
+  if(req.body.search == '1'){
+    myds = JSON.parse(req.body.dataset_ids);
+    console.log(myds)
+    dataset_ids = [];
+    var dname,pid,did,pname;
+    for(i in myds){
+      did   = myds[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project
+      dataset_ids.push(did+'--'+pname+'--'+dname);
+    }
+  }else{
+    dataset_ids = req.body.dataset_ids
+  }
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
  
   //console.log(req.body);
 
   // GLOBAL Variable
-  chosen_id_name_hash       = COMMON.create_chosen_id_name_hash(req.body.dataset_ids);
+  chosen_id_name_hash       = COMMON.create_chosen_id_name_hash(dataset_ids);
   var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
   //console.log('chosen_id_name_hash')
   //console.log(chosen_id_name_hash)
@@ -264,8 +278,16 @@ router.post('/search_datasets', function(req, res) {
 
   // search datasets
   //console.log(MetadataValues);
+  // This assumes that ALL datasets are in MetadataValues. 
   var datasets = [];
+  var datasets_plus =[];
+  var ds = {};  // use for posting to unit_selection
+  ds.dataset_ids = [];  // use for posting to unit_selection
   for(did in MetadataValues){
+    var dname = DATASET_NAME_BY_DID[did];
+    var pid= PROJECT_ID_BY_DID[did];
+    var pname = PROJECT_INFORMATION_BY_PID[pid].project
+    var ds_req = did+'--'+pname+'--'+dname;
     for(mdname in MetadataValues[did]){
       if(mdname === searches['search1']['metadata-item']){
         console.log('val '+mdname+' - '+MetadataValues[did][mdname])
@@ -276,51 +298,70 @@ router.post('/search_datasets', function(req, res) {
           console.log('1-equal-to - mdval: '+mdvalue+' search: '+search_value);
           if( mdvalue ===  search_value ){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
         }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '2-less_than'){
           search_value = searches['search1']['single-comparison-value'];
           console.log('2-less_than - mdval: '+mdvalue+' search: '+search_value);
           if(mdvalue <= search_value){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
         }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '3-greater_than'){
           search_value = searches['search1']['single-comparison-value'];
           console.log('3-greater_than - mdval: '+mdvalue+' search: '+search_value);
           if(mdvalue >= search_value){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
         }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '4-not_equal_to'){
           search_value = searches['search1']['single-comparison-value'];
           console.log('4-not_equal_to - mdval: '+mdvalue+' search: '+search_value);
           if(mdvalue !== search_value){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
         }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '5-between_range'){
           min_search_value = searches['search1']['min-comparison-value'];
           max_search_value = searches['search1']['max-comparison-value'];
           if(mdvalue > min_search_value && mdvalue < max_search_value){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
 
         }else if('comparison' in searches['search1'] && searches['search1']['comparison'] === '6-outside_range'){
+          min_search_value = searches['search1']['min-comparison-value'];
+          max_search_value = searches['search1']['max-comparison-value'];
           if(mdvalue < min_search_value || mdvalue > max_search_value){
             datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
 
         }else if('data' in searches['search1']){
           list = searches['search1']['data']
-          if(list.indexOf(mdvalue)){
-            datasets.push(did)
+          if(list.indexOf(mdvalue) != -1){
+            datasets.push(did);
+            datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+            ds.dataset_ids.push(ds_req);
           }
         }
       }
     }
   }
-  console.log(datasets);
+  console.log(ds);
   res.render('visuals/search_datasets', {   
-                    title: 'VAMPS: Search Datasets',
-                    datasets: datasets,
-                    user         : req.user
+                    title    : 'VAMPS: Search Datasets',
+                    datasets : JSON.stringify(datasets_plus),
+                    searches : JSON.stringify(searches),
+                    dids : JSON.stringify(datasets),
+                    
+                    user     : req.user
   });  // 
 
 });
