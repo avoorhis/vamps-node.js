@@ -34,7 +34,10 @@ router.get('/index_users', function(req, res) {
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
-    res.render('user_admin/login', { message: req.flash('loginMessage'), user: req.user });
+    res.render('user_admin/login', { 
+                      title: 'login',
+                      message: req.flash('loginMessage'), 
+                      user: req.user });
 });
 
 router.post('/login',
@@ -50,7 +53,9 @@ router.post('/login',
 router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('user_admin/signup', { message: req.flash('signupMessage'), user: req.user });
+        res.render('user_admin/signup', { 
+                            title: 'signup',
+                            message: req.flash('signupMessage'), user: req.user });
 });
 
 // process the signup form
@@ -67,6 +72,7 @@ router.post('/signup',
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
     res.render('user_admin/profile', {
+        title:'profile',
         user : req.user // get the user out of session and pass to template
     });
 		console.log(req.user);

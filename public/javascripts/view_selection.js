@@ -428,13 +428,18 @@ if (typeof test_link !=="undefined") {
 }
 function create_test_page(ts) {
   
-
-var opened = window.open("");
-opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
-
+    var opened = window.open("");
+    opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
 
 }
-
+save_dataset_btn = document.getElementById('save_dataset_btn');
+if (typeof save_dataset_btn !=="undefined") {
+  save_dataset_btn.addEventListener('click', function () {
+      alert('here in pc')
+      //create_test_page(pi_local.ts);
+  });
+}
+function create_test_page(ts) {
 //
 //
 // DOWNLOAD

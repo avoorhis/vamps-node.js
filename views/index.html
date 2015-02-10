@@ -1,7 +1,9 @@
 <% include add_ins/begin.ejs %>
-
-    <p class='title'><%= title %></p>
-    <ul>
+<% if (message) { %>
+   <div class="alert alert-danger"><%= message %></div>
+ <% } %>
+    <p class='title'> Home Page </p>
+    
       
       <li>VAMPS is an integrated collection of tools for researchers to visualize and analyze data for microbial population structures and distributions. For more information on the VAMPS project, visit our 
       	<a href='overview'>VAMPS Overview page.</a>
