@@ -12,7 +12,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
   /* GET home page. */
   router.get('/', function(req, res) {
-    res.render('index', { title: 'VAMPS:Home', user: req.user });
+    res.render('index', { 
+            title: 'VAMPS:Home', 
+            message: req.flash('signupMessage'),
+            user: req.user });
   });
 
   /* GET Overview page. */
