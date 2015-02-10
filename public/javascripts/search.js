@@ -43,47 +43,49 @@ var selection_choices = ['1-equal_to','2-less_than','3-greater_than','4-not_equa
 if (typeof metadata_search_field1 !=="undefined") {
   metadata_search_field1.addEventListener('change', function () {
       var item = metadata_search_field1.value;
-      
-      var html = "";
-      if(Array.isArray(mi_local[item])){
-        //html += "<br>";
-        for(var i in mi_local[item]){
-          val = mi_local[item][i];
-          name = 'search1_data_'+item+'[]'
-          html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
-          //html += " <input type='checkbox' id='"+val+"' name='data[]' value='"+val+"' onclick=\"save_value1(this.value,'"+item+"')\" >"+val;
-        }
+      if(item == 'NONE'){
+        metadata_search_range_div1.style.display    = "none";
       }else{
-        var min = mi_local[item].min
-        var max = mi_local[item].max
-        var range = max - min;
-        if(range > 1){
-          range = Math.ceil(max) - Math.floor(min);
-        }
-        
-        html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
-        //html += " -->> Select range to search: "+range
-        
-        html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-        
-        html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
-        for(var i in selection_choices) {
-          html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
-        } 
-        html += "</select> ";
-        html += "<div id='input1_comparison'> ";
-        html += " Enter: <input type='text' id='' name='search1_single-comparison-value' value='' maxlength='6' size='10' > (numeric only)";
-        html += "</div>";
+        var html = "";
+        if(Array.isArray(mi_local[item])){
+          //html += "<br>";
+          for(var i in mi_local[item]){
+            val = mi_local[item][i];
+            name = 'search1_data_'+item+'[]'
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+            //html += " <input type='checkbox' id='"+val+"' name='data[]' value='"+val+"' onclick=\"save_value1(this.value,'"+item+"')\" >"+val;
+          }
+        }else{
+          var min = mi_local[item].min
+          var max = mi_local[item].max
+          var range = max - min;
+          if(range > 1){
+            range = Math.ceil(max) - Math.floor(min);
+          }
+          
+          html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
+          //html += " -->> Select range to search: "+range
+          
+          html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
+          
+          html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
+          for(var i in selection_choices) {
+            html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
+          } 
+          html += "</select> ";
+          html += "<div id='input1_comparison'> ";
+          html += " Enter: <input type='text' id='' name='search1_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
+          html += "</div>";
 
+        }
+        //html += "<br><input type='button' value='Search Datasets' >"
+        metadata_search_range_div1.innerHTML        = html;
+        metadata_search_range_div1.style.display    = "block";
+        metadata_search_range_div1.style.background = "#C0C0C0";
+        metadata_search_range_div1.style.padding    = "3px";
+        metadata_search_range_div1.style.width      = "95%";
+        document.getElementById('search_metadata_btn').style.display    = "block";
       }
-      //html += "<br><input type='button' value='Search Datasets' >"
-      metadata_search_range_div1.innerHTML        = html;
-      metadata_search_range_div1.style.display    = "block";
-      metadata_search_range_div1.style.background = "#C0C0C0";
-      metadata_search_range_div1.style.padding    = "3px";
-      metadata_search_range_div1.style.width      = "95%";
-      document.getElementById('search_metadata_btn').style.display    = "block";
-      
   });
 }
 
@@ -91,91 +93,95 @@ if (typeof metadata_search_field1 !=="undefined") {
 if (typeof metadata_search_field2 !=="undefined") {
   metadata_search_field2.addEventListener('change', function () {
       var item = metadata_search_field2.value;
-      
-      var html = "";
-      if(Array.isArray(mi_local[item])){
-        //html += "<br>";
-        for(i in mi_local[item]){
-          val = mi_local[item][i];
-          name = 'search2_data_'+item+'[]'
-          html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
-        }
+      if(item == 'NONE'){
+        metadata_search_range_div2.style.display    = "none";
       }else{
-        var min = mi_local[item].min
-        var max = mi_local[item].max
-        var range = max - min;
-        if(range > 1){
-          range = Math.ceil(max) - Math.floor(min);
-        }
-        
-        html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
-        //html += " -->> Select range to search: "+range
-        
-        html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-        
-        html += " <select id='search2_comparison' name='search2_comparison' onchange=\"change_comparison(this.value,'2')\" >";
-        for(var i in selection_choices) {
-          html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
-        } 
-        html += "</select> ";
-        html += "<div id='input2_comparison'> ";
-        html += " Enter: <input type='text' id='' name='search2_single-comparison-value' value='' maxlength='6' size='10' > (numeric only)";
-        html += "</div>";
+        var html = "";
+        if(Array.isArray(mi_local[item])){
+          //html += "<br>";
+          for(i in mi_local[item]){
+            val = mi_local[item][i];
+            name = 'search2_data_'+item+'[]'
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+          }
+        }else{
+          var min = mi_local[item].min
+          var max = mi_local[item].max
+          var range = max - min;
+          if(range > 1){
+            range = Math.ceil(max) - Math.floor(min);
+          }
+          
+          html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
+          //html += " -->> Select range to search: "+range
+          
+          html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
+          
+          html += " <select id='search2_comparison' name='search2_comparison' onchange=\"change_comparison(this.value,'2')\" >";
+          for(var i in selection_choices) {
+            html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
+          } 
+          html += "</select> ";
+          html += "<div id='input2_comparison'> ";
+          html += " Enter: <input type='text' id='' name='search2_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
+          html += "</div>";
 
+        }
+        //html += "<br><input type='button' value='Search Datasets' >"
+        metadata_search_range_div2.innerHTML        = html;
+        metadata_search_range_div2.style.display    = "block";
+        metadata_search_range_div2.style.background = "#C0C0C0";
+        metadata_search_range_div2.style.padding    = "3px";
+        metadata_search_range_div2.style.width      = "95%";
+        document.getElementById('search_metadata_btn').style.display    = "block";
       }
-      //html += "<br><input type='button' value='Search Datasets' >"
-      metadata_search_range_div2.innerHTML        = html;
-      metadata_search_range_div2.style.display    = "block";
-      metadata_search_range_div2.style.background = "#C0C0C0";
-      metadata_search_range_div2.style.padding    = "3px";
-      metadata_search_range_div2.style.width      = "95%";
-      document.getElementById('search_metadata_btn').style.display    = "block";
-      
   });
 }
 //
 if (typeof metadata_search_field3 !=="undefined") {
   metadata_search_field3.addEventListener('change', function () {
       var item = metadata_search_field3.value;
-      
-      var html = "";
-      if(Array.isArray(mi_local[item])){
-        //html += "<br>";
-        for(i in mi_local[item]){
-          val = mi_local[item][i];
-          name = 'search3_data_'+item+'[]'
-          html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
-        }
+      if(item == 'NONE'){
+        metadata_search_range_div3.style.display    = "none";
       }else{
-        var min = mi_local[item].min
-        var max = mi_local[item].max
-        var range = max - min;
-        if(range > 1){
-          range = Math.ceil(max) - Math.floor(min);
+        var html = "";
+        if(Array.isArray(mi_local[item])){
+          //html += "<br>";
+          for(i in mi_local[item]){
+            val = mi_local[item][i];
+            name = 'search3_data_'+item+'[]'
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+          }
+        }else{
+          var min = mi_local[item].min
+          var max = mi_local[item].max
+          var range = max - min;
+          if(range > 1){
+            range = Math.ceil(max) - Math.floor(min);
+          }
+          
+          html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
+          //html += " -->> Select range to search: "+range
+          
+          html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
+          
+          html += " <select id='search3_comparison' name='search3_comparison' onchange=\"change_comparison(this.value,'3')\" >";
+          for(var i in selection_choices) {
+            html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
+          } 
+          html += "</select> ";
+          html += "<div id='input3_comparison'> ";
+          html += " Enter: <input type='text' id='' name='search3_single-comparison-value' value='' maxlength='10' size='10' > (numeric only)";
+          html += "</div>";
         }
-        
-        html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Values Min: "+min+" Max: "+max
-        //html += " -->> Select range to search: "+range
-        
-        html += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->> Select Comparison:";
-        
-        html += " <select id='search3_comparison' name='search3_comparison' onchange=\"change_comparison(this.value,'3')\" >";
-        for(var i in selection_choices) {
-          html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
-        } 
-        html += "</select> ";
-        html += "<div id='input3_comparison'> ";
-        html += " Enter: <input type='text' id='' name='search3_single-comparison-value' value='' maxlength='6' size='10' > (numeric only)";
-        html += "</div>";
+        //html += "<br><input type='button' value='Search Datasets' >"
+        metadata_search_range_div3.innerHTML        = html;
+        metadata_search_range_div3.style.display    = "block";
+        metadata_search_range_div3.style.background = "#C0C0C0";
+        metadata_search_range_div3.style.padding    = "3px";
+        metadata_search_range_div3.style.width      = "95%";
+        document.getElementById('search_metadata_btn').style.display    = "block";
       }
-      //html += "<br><input type='button' value='Search Datasets' >"
-      metadata_search_range_div3.innerHTML        = html;
-      metadata_search_range_div3.style.display    = "block";
-      metadata_search_range_div3.style.background = "#C0C0C0";
-      metadata_search_range_div3.style.padding    = "3px";
-      metadata_search_range_div3.style.width      = "95%";
-      document.getElementById('search_metadata_btn').style.display    = "block";
-      
   });
 }
 
@@ -198,11 +204,11 @@ function change_comparison(comparison, item){
   }
   
   if(comparison[0]==5 || comparison[0]==6){
-    var html = " Enter Min: <input type='text' id='' name='"+minname+"' value='' maxlength='5' size='5' >";
-    html += "  Max: <input type='text' id='' name='"+maxname+"' value='' maxlength='5' size='5' > (numeric only)";
+    var html = " Enter Min: <input type='text' id='' name='"+minname+"' value='' maxlength='10' size='5' >";
+    html += "  Max: <input type='text' id='' name='"+maxname+"' value='' maxlength='10' size='5' > (numeric only)";
     comparison_input.innerHTML = html;
   }else{
-    var html = " Enter: <input type='text' id='' name='"+name+"' value='' maxlength='6' size='10' > (numeric only)";
+    var html = " Enter: <input type='text' id='' name='"+name+"' value='' maxlength='10' size='10' > (numeric only)";
     comparison_input.innerHTML = html;
   }
   
