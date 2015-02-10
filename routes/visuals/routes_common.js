@@ -290,105 +290,7 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
       if (err) throw err;
       console.log(JSON.parse(mtx))
       return mtx;
-      //console.log('results: %j', distance_matrix);
-      //console.log('options: %j', options);
-      //distance_matrix = JSON.parse(mtx);
-
-      //distance_matrix = mtx
-      // if(distance_matrix === {} || distance_matrix === 'err' || distance_matrix==='') {
-      //   html += '<div>Error -- No distances were calculated.</div>';
-      // }else{
-      //   if(visual_name === 'heatmap') {
-      //     //var dm = HMAP.create_distance_matrix(distance_matrix);
-      //     console.log(distance_matrix)
-          
-      //     //distance_matrix = results
-          
-      //     title += ' Heatmap';
-      //     html  += HMAP.create_hm_html(distance_matrix); 
-      //     res.render('visuals/user_data/'+visual_name, {
-      //           title: title,
-      //           timestamp: ts || 'default_timestamp',
-      //           html : html,
-      //           user: req.user
-      //     });
-
-      //   }else if(visual_name === 'dendrogram') {
-      //     //var newick = stdout
-      //     //html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets); 
-
-      //     var dend_script_file = path.resolve(__dirname, '../../public/scripts/dendrogram.R');
-      //     shell_command = [req.C.RSCRIPT_CMD, dend_script_file, distmtx_file].join(' ');
-      //     console.log(shell_command)
-      //     exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-
-      //         if(stderr){console.log(stderr);}
-      //         stdout = stdout.trim();
-      //         console.log(stdout);
-      //         if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-      //           html += '<div>Error -- No distances were calculated.</div>';
-      //         }else{
-                
-                  
-      //             html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-                 
-      //             title += ' Dendrogram';
-      //             res.render('visuals/user_data/'+visual_name, {
-      //                   title: title,
-      //                   timestamp: ts || 'default_timestamp',
-      //                   html : html,
-      //                   user: req.user
-      //             });
-                
-      //         }
-              
-              
-
-      //     });
-          
-          
-      //   }else if(visual_name === 'pcoa') {
-
-
-      //       var pcoa_script_file = path.resolve(__dirname, '../../public/scripts/pcoa.R');
-      //                 shell_command = [req.C.RSCRIPT_CMD, pcoa_script_file, distmtx_file].join(' ');
-      //                 console.log(shell_command)
-      //                 exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-
-      //                     if(stderr){console.log(stderr);}
-      //                     stdout = JSON.parse(stdout);
-      //                     //console.log('pcoa NAMES');
-      //                     //console.log(stdout.names);
-      //                     if(stdout === 'dist(0)' || stdout === 'err' || stdout==='') {
-      //                       html += '<div>Error -- No distances were calculated.</div>';
-      //                     }else{
-                            
-                              
-      //                         html += PCOA.create_pcoa_graphs(stdout);  
-                             
-      //                         title += ' PCoA';
-      //                         res.render('visuals/user_data/'+visual_name, {
-      //                               title: title,
-      //                               timestamp: ts || 'default_timestamp',
-      //                               html : html,
-      //                               user: req.user
-      //                         });
-                            
-      //                     }
-                          
-                          
-
-      //                 });
-
-      //       title += ' PCoA';
-
-
-      //   }else{
-          
-      //   }
-        
-      // }
-
+ 
       
     });   
 },
@@ -414,61 +316,27 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
     });
  },
 
-// run_pydendro_cmd: function (req, res, ts, script, infile, visual_name, metric) {
-//     var exec = require('child_process').exec;
-//     var html = '<table border="1" class="single_border center_table"><tr><td>';
-//     var title = 'VAMPS';
-//     html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//     html += '</td><td>';
-//     html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//     html += '</td></tr></table>';
-//     script = 'distance.py | dendrogram.py '
-//     var options = {
-//       scriptPath: 'public/scripts',
-//       args:       [ '-in', infile, '-metric', metric ], 
-//     };
 
-//     PythonShell.run(script, options, function (err, results) {
-//       if (err) throw err;
-
-//       distance_matrix = JSON.parse(results)
-//       //console.log('results: %j', distance_matrix);
-      
-//       if(distance_matrix === {} || distance_matrix === 'err' || distance_matrix==='') {
-//         html += '<div>Error -- No distances were calculated.</div>';
-//       }else{
-        
-//           html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets);  
-//           title += ' Dendrogram';
-       
-        
-//       }
-
-//       res.render('visuals/user_data/'+visual_name, {
-//             title: title,
-//             timestamp: ts || 'default_timestamp',
-//             html : html,
-//             user: req.user
-//       });
-//     });   
-// },
 //
 //
 //
 create_chosen_id_name_hash: function(dataset_ids) {
-  // dataset_ids is list of strings of form:
+  
   console.log(dataset_ids);
-  // ID--PROJECTNAME--DATASETNAME
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-  //console.log('req.body.dataset_ids')
-  //console.log(req.body.dataset_ids)
-  for (var n=0; n < dataset_ids.length; n++){
-    var items = dataset_ids[n].split('--');
-    chosen_id_name_hash.ids.push(items[0]);
-    chosen_id_name_hash.names.push(items[1]+'--'+items[2]);
+
+  for(i in dataset_ids){
+      did   = dataset_ids[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      //dataset_ids.push(did+'--'+pname+'--'+dname);
+      chosen_id_name_hash.ids.push(did);
+      chosen_id_name_hash.names.push(pname+'--'+dname);
   }
+  
   return chosen_id_name_hash;
 },
 //
@@ -532,6 +400,10 @@ check_initial_status: function(url) {
   }
   console.log('values_updated: '+values_updated.toString())
   return values_updated;
+},
+
+save_datasets: function(datasets) {
+  console.log('in save_datasets');
 }
 
 };   // end module.exports
