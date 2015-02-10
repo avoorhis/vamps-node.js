@@ -152,8 +152,8 @@ router.post('/view_selection',  function(req, res) {
 
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
-//router.post('/unit_selection', isLoggedIn, function(req, res) {
-router.post('/unit_selection',  function(req, res) {
+router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
+//router.post('/unit_selection',  function(req, res) {
   
   // TESTING:
   //    There should be one or more datasets shown in list
@@ -170,27 +170,15 @@ router.post('/unit_selection',  function(req, res) {
   console.log(req.body);
   console.log('req.body: unit_selection');
   if(req.body.search == '1'){
-    myds = JSON.parse(req.body.dataset_ids);
-    console.log(myds)
-    dataset_ids = [];
-    var dname,pid,did,pname;
-    for(i in myds){
-      did   = myds[i];
-      dname = DATASET_NAME_BY_DID[did];
-      pid   = PROJECT_ID_BY_DID[did];
-      pname = PROJECT_INFORMATION_BY_PID[pid].project
-      dataset_ids.push(did+'--'+pname+'--'+dname);
-    }
+    dataset_ids = JSON.parse(req.body.dataset_ids);
   }else{
-    dataset_ids = req.body.dataset_ids
+    dataset_ids = req.body.dataset_ids;
   }
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
- 
-  //console.log(req.body);
-
   // GLOBAL Variable
-  chosen_id_name_hash       = COMMON.create_chosen_id_name_hash(dataset_ids);
+  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+  
   var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
   //console.log('chosen_id_name_hash')
   //console.log(chosen_id_name_hash)
@@ -286,56 +274,81 @@ router.post('/search_datasets', function(req, res) {
   //
   
   //
-
+  var ds1, ds2, ds3 = [];
   var result = get_search_datasets(searches.search1, MetadataValues);
-  ds1 = result.ds
-  //console.log('result.mdv1')
-  //console.log(result.mdv)
+  ds1 = result.datasets
+  searches.search1.datasets = result.datasets;
+  searches.search1.dataset_count = searches.search1.datasets.length;
+  searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
+  
+  
   if('search2' in searches){
-    if(join_type == 'intersect'){
-      var md_hash = result.mdv
-    }else{  // summation
+    //if(join_type == 'intersect'){
+    //  var md_hash = result.mdv
+    //}else{  // summation
       var md_hash =  MetadataValues;
-    }
+    //}
     var result = get_search_datasets(searches.search2, md_hash);
-    ds2 = result.ds
+    ds2 = result.datasets;
+    searches.search2.datasets = result.datasets;
+    searches.search2.dataset_count = searches.search2.datasets.length;
     //console.log('result.mdv2')
     //console.log(result.mdv)
+    searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
+
   }
+  
   if('search3' in searches){
-    if(join_type == 'intersect'){
-      var md_hash = result.mdv
-    }else{
+    //if(join_type == 'intersect'){
+    //  var md_hash = result.mdv
+    //}else{
       var md_hash =  MetadataValues;
-    }
+    //}
     var result = get_search_datasets(searches.search3, md_hash);
+    ds3 = result.datasets;
+    searches.search3.datasets = result.datasets;
+    searches.search3.dataset_count = searches.search3.datasets.length;
     //console.log('result.mdv3')
     //console.log(result.mdv)
+    searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
   }
-  if(join_type == 'combine'){
-    result.ds = result.ds.concat(ds1).concat(ds2);
+  //
+  // Calculate (sum or intersect) final datasets
+  //
+  var filtered = {};
+  if(join_type == 'combination'){
+    filtered.datasets = ds1.concat(ds2, ds3);
+    filtered.datasets = filtered.datasets.filter(onlyUnique);
+  }else{   // intersection
+    filtered.datasets = ds1;
+    if('search2' in searches) { 
+      filtered.datasets = ds1.filter(function(n) {
+          return ds2.indexOf(n) != -1
+      });
+    }
+    if('search3' in searches) { 
+      filtered.datasets = filtered.datasets.filter(function(n) {
+          return ds3.indexOf(n) != -1
+      });
+    }
   }
+  filtered.ds_plus = get_dataset_search_info(filtered.datasets, {});
   //
   //
   //searches.search1.dataset_count = ds.dataset_ids.length;
-  result.ds = result.ds.filter(onlyUnique);
-  ds_plus = [];
-  for(var i in result.ds){
-    var did = result.ds[i];
-    var dname = DATASET_NAME_BY_DID[did];
-    var pid = PROJECT_ID_BY_DID[did];
-    var pname = PROJECT_INFORMATION_BY_PID[pid].project
-    //var ds_req = did+'--'+pname+'--'+dname;
-    ds_plus.push({did:did,dname:dname,pid:pid,pname:pname});
-
-  }
-  //console.log('search1:');
-  console.log('ds result');
-  console.log(result.ds);
-  console.log('result plus');
-  console.log(ds_plus);
-  searches.search1.dataset_count = result.ds.length;
   
+  
+  console.log('searches')
+  console.log(searches)
+  
+  console.log('final');
+  console.log(filtered.datasets);
+  //searches.dataset_count = result.datasets.length;
+  
+//  { dataset_ids:
+//   [ '142--BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step',
+//     '146--BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step' ],
+//   }
   
   //if(ds.dataset_ids.length != 0){
   // if(('data' in searches.search1 && searches.search1['data'].length > 0) || 
@@ -346,9 +359,10 @@ router.post('/search_datasets', function(req, res) {
   //if(!('single-comparison-value' in searches.search1)){
           res.render('visuals/search_datasets', {   
                     title    : 'VAMPS: Search Datasets',
-                    datasets : JSON.stringify(ds_plus),
+                    filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
-                    dids     : JSON.stringify(result.ds),
+                    join_type: join_type,
+                    //dids     : JSON.stringify(result.datasets),
                     user     : req.user
           });  // 
   //}else{
@@ -694,8 +708,7 @@ function get_search_datasets(search, metadata){
       if(mdname === search['metadata-item']){
         
         mdvalue = metadata[did][mdname];
-        
-        
+          
         if(('comparison' in search) && (search['comparison'] === '1-equal_to')){
           search_value = Number(search['single-comparison-value']);
           if( Number(mdvalue) ===  search_value ){
@@ -771,7 +784,6 @@ function get_search_datasets(search, metadata){
         }else if('comparison' in search && search['comparison'] === '6-outside_range'){
           min_search_value = Number(search['min-comparison-value']);
           max_search_value = Number(search['max-comparison-value']);
-          
           if(Number(mdvalue) < min_search_value || Number(mdvalue) > max_search_value){
             console.log('6-outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
             datasets.push(did);
@@ -803,7 +815,23 @@ function get_search_datasets(search, metadata){
       }
     }
   }
-  return {ds:datasets, mdv:tmp_metadata};
+  return {datasets:datasets, mdv:tmp_metadata};
+}
+function get_dataset_search_info(ds, search){
+    var ds_plus = [];
+    for(var i in ds){
+      var did = ds[i];
+      var dname = DATASET_NAME_BY_DID[did];
+      var pid = PROJECT_ID_BY_DID[did];
+      var pname = PROJECT_INFORMATION_BY_PID[pid].project
+      //var ds_req = did+'--'+pname+'--'+dname;
+      if(search == {}){
+        ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
+      }else{
+        ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:MetadataValues[did][search["metadata-item"]] });
+      }
+    }
+    return ds_plus;
 }
 
 //

@@ -204,8 +204,8 @@ function change_comparison(comparison, item){
   }
   
   if(comparison[0]==5 || comparison[0]==6){
-    var html = " Enter Min: <input type='text' id='' name='"+minname+"' value='' maxlength='10' size='5' >";
-    html += "  Max: <input type='text' id='' name='"+maxname+"' value='' maxlength='10' size='5' > (numeric only)";
+    var html = " Enter Min: <input type='text' id='' name='"+minname+"' value='' maxlength='10' size='7' >";
+    html += "  Max: <input type='text' id='' name='"+maxname+"' value='' maxlength='10' size='7' > (numeric only)";
     comparison_input.innerHTML = html;
   }else{
     var html = " Enter: <input type='text' id='' name='"+name+"' value='' maxlength='10' size='10' > (numeric only)";
