@@ -1,8 +1,8 @@
 <% include ../add_ins/begin.ejs %>
   <div class='title'  >VAMPS Login</div>
   <% if (message.length > 0) { %>
-      <div class="alert alert-danger"><%= message %></div>
-  <% } %>
+      <div class="message"><%= message %></div>
+  <% } %><br>
   <form action="/users/login" method="post">
       <div>
           <label>Username:</label>

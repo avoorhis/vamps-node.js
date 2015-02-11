@@ -220,7 +220,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 /*
  * GET visualization page.
  */
-router.get('/index_visuals',  function(req, res) {
+router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
