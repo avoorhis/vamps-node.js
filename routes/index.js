@@ -7,6 +7,7 @@ var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
 var ds = require('./load_all_datasets');
+var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
 
@@ -68,7 +69,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                              user: req.user 
                             });
   });
-  /* GET Import Data page. */
+  /* GET Saved Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
       res.render('saved_data', { title: 'VAMPS:Saved Data', 
                              user: req.user 
@@ -83,23 +84,29 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   /* GET Export Data page. */
   router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
       
-      var user = req.user || 'no-user';  
+      var user = req.user.username;  
       var export_dir = 'downloads';
       var mtime = {};
       var size = {};
+      var file_info = {};
+      file_info.mtime ={};
+      file_info.size = {};
+      file_info.files = [];
       fs.readdir(export_dir, function(err, files){   
         
         for(f in files){
-          stat = fs.statSync(export_dir+'/'+files[f]);
-          mtime[files[f]] = stat.mtime;  // modify time
-          size[files[f]] = stat.size;
+          var pts = files[f].split('_');
+          if(pts[0] === req.user.username){
+            file_info.files.push(files[f]);
+            stat = fs.statSync(export_dir+'/'+files[f]);
+            file_info.mtime[files[f]] = stat.mtime;  // modify time
+            file_info.size[files[f]] = stat.size;
+          }
         }
-        
+        console.log(file_info)
         res.render('file_retrieval', { title: 'VAMPS:Export Data', 
                              user: user,
-                             files:files,
-                             mtime:mtime,
-                             size:size
+                             finfo: JSON.stringify(file_info)                             
                             });
       });
   });
@@ -141,6 +148,50 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                             });
   });
 
+  /* GET Contact Us page. */
+  router.get('/contact', function(req, res) {
+      
+      //get sweetcaptcha html for the contact area
+        sweetcaptcha.api('get_html', function(err,html){
+            //Send the guts of the captcha to your template
+            res.render('contact', { 
+              captcha : html,
+              title: 'VAMPS:Cuntact-Us', 
+              user: req.user 
+               });
+        });
+  });
+  router.post('/contact', function(req, res) {     
+ 
+    //Validate captcha
+    sweetcaptcha.api('check', {sckey: req.body["sckey"], scvalue: req.body["scvalue"]}, function(err, response){
+        if (err) return console.log(err);
+        
+        if (response === 'true') {
+            // valid captcha
+ 
+            // setup e-mail data with unicode symbols
+            var info = { 
+                to: 'avoorhis@mbl.edu',
+                from: 'vamps@mbl.edu',
+                subject: 'New email from your website contact form', // Subject line
+                text: req.body["contact-form-message"] + "\n\nYou may contact this sender at: " + req.body["contact-form-mail"] // plaintext body
+              }
+            send_mail(info);
+
+            //Success
+            res.send("Thanks! We have sent your message.");
+ 
+        }
+        if (response === 'false'){
+            // invalid captcha
+            console.log("Invalid Captcha");
+            res.send("Try again");
+ 
+        }
+    });
+ 
+});
   //
   // DOWNLOAD SEQUENCES
   //
@@ -155,8 +206,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     qSelect += " join project using (project_id)\n";
     var seq, seqid, seq_count, pjds;
     var timestamp = +new Date();  // millisecs since the epoch!
-    var user = req.user || 'no-user';
-    timestamp = user + '_' + timestamp;
+    timestamp = req.user.username + '_' + timestamp;
     if(req.body.download_type == 'whole_project'){
       var pid = req.body.project_id
       var project = req.body.project
@@ -205,10 +255,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
         .on('finish', function () {  // finished
           console.log('done compressing and writing file');
           var info = { 
-                "addr":'avoorhis@mbl.edu',
-                "from":"vamps@mbl.edu",
-                "subj":"fasta file is ready",
-                "msg":"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+                to:'avoorhis@mbl.edu',
+                from:"vamps@mbl.edu",
+                subject:"fasta file is ready",
+                text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
               }
           send_mail(info);
         });
@@ -222,7 +272,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   router.post('/download_selected_metadata', function(req, res) {
     var db = req.db;
     console.log(req.body);
-    
+    var timestamp = +new Date();  // millisecs since the epoch!
+    timestamp = req.user.username + '_' + timestamp;
     if(req.body.download_type == 'whole_project'){      
       var pid  = req.body.project_id
       var dids = DATASET_IDS_BY_PID[pid];
@@ -234,9 +285,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     }
     console.log('dids')
     console.log(dids)
-    var timestamp = +new Date();  // millisecs since the epoch!
-    var user = req.user || 'guest';
-    timestamp = user + '_' + timestamp;
+    
 
     // check if custom metadata table exists
     //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
@@ -294,10 +343,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
         .on('finish', function () {  // finished
           console.log('done compressing and writing file');
           var info = { 
-                "addr":'avoorhis@mbl.edu',
-                "from":"vamps@mbl.edu",
-                "subj":"metadata is ready",
-                "msg":"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+                to:'avoorhis@mbl.edu',
+                from:"vamps@mbl.edu",
+                subject:"metadata is ready",
+                text:"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
               }
           send_mail(info);
           // transporter.sendMail({
@@ -310,17 +359,32 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
     //console.log(datasets);
   });
+// transporter.sendMail(mailOptions, function (error, info) {
+//                 if (error) {
+//                     console.log(error);
+//                 } else {
+//                     console.log('Message sent: ' + info.response);
+//                 }
+//             });
   function send_mail(mail_info) {
     var to_addr = mail_info.addr;
     var from_addr = mail_info.from
     var subj = mail_info.subj
     var msg = mail_info.msg
-    transporter.sendMail({
-            from: from_addr,
-            to: to_addr,
-            subject: subj,
-            text: msg
-          });
+    transporter.sendMail(mail_info, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Message sent: ' + info.response);
+                }
+            });
+
+    // transporter.sendMail({
+    //         from: from_addr,
+    //         to: to_addr,
+    //         subject: subj,
+    //         text: msg
+    //       });
 
   }
   function IsNumeric(n) {
