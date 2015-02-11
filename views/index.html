@@ -1,7 +1,7 @@
 <% include add_ins/begin.ejs %>
-<% if (message) { %>
-   <div class="alert alert-danger"><%= message %></div>
- <% } %>
+<% if ( message.length > 0 ) { %>
+		<p><strong>ALERT!</strong> <%= message %></p>
+<% } %> 
     <p class='title'> Home Page </p>
     
       
