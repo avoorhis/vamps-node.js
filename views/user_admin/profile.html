@@ -1,5 +1,8 @@
 <% include ../add_ins/begin.ejs %>
 <div class="title fa fa-anchor">Profile Page</div>
+  <% if (message.length > 0) { %>
+      <div class="message"><%= message %></div>
+  <% } %><br>
   <!-- USER INFORMATION -->
   <div class="col-sm-6">
     <div class="well">
@@ -12,7 +15,13 @@
           <strong>Last Name</strong>: <%= user.last_name %><br>
           <strong>Email</strong>: <%= user.email %><br>
           <strong>Institution</strong>: <%= user.institution %><br>
-          <strong>Security Level</strong>: <%= user.security_level %><br>
+          <% if(user.security_level === 1) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Administrator)<br>
+          <% }else if(user.security_level === 50) { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Registered User)<br>
+          <% }else { %>
+            <strong>Security Level</strong>: <%= user.security_level %> (Guest)<br>
+          <% } %>  
         </p>
 
     </div>
