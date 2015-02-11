@@ -5,10 +5,11 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var zlib = require('zlib');
 var Readable = require('stream').Readable;
+var helpers = require('./helpers/helpers');
 //var crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
-router.get('/index_projects', function(req, res) {
+router.get('/index_projects', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     
     console.log(ALL_DATASETS);
@@ -24,7 +25,7 @@ router.get('/index_projects', function(req, res) {
 
 });
 
-router.get('/:id', function(req, res) {
+router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var dsinfo = []; 
     var dscounts = {};  

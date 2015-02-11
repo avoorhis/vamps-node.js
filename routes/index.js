@@ -5,7 +5,7 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var zlib = require('zlib');
 var Readable = require('stream').Readable;
-
+var helpers = require('./helpers/helpers');
 var ds = require('./load_all_datasets');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
@@ -25,7 +25,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   });
 
   /* GET Search page. */
-  router.get('/search', function(req, res) {
+  router.get('/search', helpers.isLoggedIn, function(req, res) {
       //console.log(MetadataValues)
       var tmp_metadata_fields = {};
       var metadata_fields = {};
@@ -63,19 +63,25 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   });
 
   /* GET Import Data page. */
-  router.get('/import_data', function(req, res) {
+  router.get('/import_data', helpers.isLoggedIn, function(req, res) {
       res.render('import_data', { title: 'VAMPS:Import Data', 
                              user: req.user 
                             });
   });
   /* GET Import Data page. */
-  router.get('/export_data', function(req, res) {
+  router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
+      res.render('saved_data', { title: 'VAMPS:Import Data', 
+                             user: req.user 
+                            });
+  });
+  /* GET Import Data page. */
+  router.get('/export_data', helpers.isLoggedIn, function(req, res) {
       res.render('export_data', { title: 'VAMPS:Import Data', 
                              user: req.user 
                             });
   });
   /* GET Export Data page. */
-  router.get('/file_retrieval', function(req, res) {
+  router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
       
       var user = req.user || 'no-user';  
       var export_dir = 'downloads';
@@ -98,7 +104,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       });
   });
 
-  router.get('/file_utils', function(req, res){
+  router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 
     console.log('dnld')
     console.log(req.query.filename)

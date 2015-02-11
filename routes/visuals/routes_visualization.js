@@ -35,7 +35,7 @@ var xmldom = require('xmldom');
 /*
  * GET visualization page.
  */
-router.post('/view_selection',  function(req, res) {
+router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   // This page (view_selection) comes after the datasets and units have been selected
   //    in the previous two pages.
   // It should be protected with isLoggedIn like /unit_selection below.
@@ -242,7 +242,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.post('/search_datasets', function(req, res) {
+router.post('/search_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -373,7 +373,7 @@ router.post('/search_datasets', function(req, res) {
 //
 //
 //
-router.get('/reorder_datasets', function(req, res) {
+router.get('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   
   res.render('visuals/reorder_datasets', { 
                                 title   : 'VAMPS: Reorder Datasets',

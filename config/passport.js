@@ -65,7 +65,7 @@ module.exports = function(passport, db) {
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, password, done) { // callback with email and password from our form
+    function(req, username, password, done) { // callback with username and password from our form
         return login_auth_user(req, username, password, done, db);
     }));
 
