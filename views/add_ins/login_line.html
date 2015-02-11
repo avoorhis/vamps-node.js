@@ -5,7 +5,7 @@
 <% } else { %>
     <div>(Logged in as: <%= user.username %>)
     <% if (user.security_level === 1) { %>
-      (admin)
+      (<span class='color_red'>admin</span>)
     <% } %>
     <a href='/users/logout'> logout</a></div>
 <% } %>
