@@ -53,7 +53,7 @@ Search-3
 			<% for(i in s.search1.ds_plus) { %>
 				<li>
 					<%= parseInt(i)+1 %>) <%= s.search1.ds_plus[i].pname %>--<%= s.search1.ds_plus[i].dname %>
-					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(val: <%= s.search1.ds_plus[i].value %>)
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(value: <%= s.search1.ds_plus[i].value %>)
 				</li>
 			<% } %>
 			
@@ -112,9 +112,17 @@ Search-3
 			</form>
 		<% } %>
 	<% } %>
-</td></tr></table>
-<br>Combined by: <%= join_type %> (<%= f.datasets.length %> datasets)
-<table border='1' class='small_font'><tr><td>
+
+</td>
+</tr>
+<tr>
+<td  colspan='3'><center>
+	<% if(!('search2' in s) && !('search3' in s)) { %>
+		<br><strong><%= f.datasets.length %> datasets</strong>
+	<% }else{ %>	
+		<br><strong>Combined by <%= join_type %> (<%= f.datasets.length %> datasets)</strong>
+
+	<% } %>
 	<% if(f.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
@@ -133,6 +141,7 @@ Search-3
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >
 			</form>
 		<% } %>
+	</center>
 </td></tr></table>
 <% include ../add_ins/end.ejs %>
 
