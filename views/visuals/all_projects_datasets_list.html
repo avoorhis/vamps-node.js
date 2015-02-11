@@ -2,14 +2,16 @@
   <% all_pr_dat = JSON.parse(rows).projects %>
   <% permissions = JSON.parse(permissions) %>
   <% for (i in all_pr_dat) { %>
-    <% pname = all_pr_dat[i].name %>
     <% pid = all_pr_dat[i].pid %>
-    <% title = all_pr_dat[i].title %>
-    <% datasets = all_pr_dat[i].datasets %>
-    <% var tt_pj_id  = 'project-|-'+pname+'-|-'+title; %>
-    <!-- admin OR public project OR this users project -->
+    <!-- admin OR public-project OR this-users-project -->
     <% if(user.security_level === 1 || permissions[pid]  === 0 || permissions[pid] === user.user_id ) { %>
-
+      <% pname = all_pr_dat[i].name %>
+      <% title = all_pr_dat[i].title %>
+      <% datasets = all_pr_dat[i].datasets %>
+      <% if(permissions[pid]  === 0) { var status='public';  %>
+      <% } else { var status = 'private'; } %>
+      <% var tt_pj_id  = 'project-|-'+pname+'-|-'+title+'-|-'+status; %>
+      
       <li>
         <label id='<%= pname %>' class='project-select'>
           <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>

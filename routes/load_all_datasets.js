@@ -61,7 +61,8 @@ module.exports.get_datasets = function(callback){
             "institution" :		rows[i].institution,
             "project" :			project,
             "title" :			rows[i].title,
-            "description" :		rows[i].description
+            "description" :		rows[i].description,
+            "public" : rows[i].public
           }
           if(pid in DATASET_IDS_BY_PID){
             DATASET_IDS_BY_PID[pid].push(did);
