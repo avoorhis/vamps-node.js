@@ -1,13 +1,13 @@
 
 <% include add_ins/begin.ejs %>
-
+<% var file_info = JSON.parse(finfo) %>
 <p class='title'>Export Data</p>
 <br><strong>Your Downloads</strong>
 <ol>
 
-<% for(f in files){ %>
-	<% var filename = files[f] %>
-	<% var fileSizeInBytes = size[filename] %>
+<% for(f in file_info.files){ %>
+	<% var filename = file_info.files[f] %>
+	<% var fileSizeInBytes = file_info.size[filename] %>
 	<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 	<% var sizer = 'Bytes' %>
 	<% if(fileSizeInBytes > 1000) { %>
@@ -29,7 +29,7 @@
 				<li>
 					<ul>
 						<li>File: <%= filename %><% sizer %>
-						<li><%= fileSize %> <%= sizer %> | <%= mtime[filename] %>
+						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
 						 
 						<li><a href='file_utils?fxn=download&type=fasta&filename=<%= filename %>' >download</a> | 
 								<a href='file_utils?fxn=delete&filename=<%= filename %>' >delete from the server</a>
