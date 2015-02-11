@@ -11,7 +11,7 @@ var helpers = require('./helpers/helpers');
 
 // These are all under /user
 /* GET User List (index) page. */
-router.get('/index_users', function(req, res) {
+router.get('/index_users', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var qSelect = "SELECT * from user";
     console.log(qSelect);
@@ -41,7 +41,8 @@ router.get('/login', function(req, res) {
 });
 
 router.post('/login',
-    passport.authenticate('local-login', { successRedirect: '/',
+    
+    passport.authenticate('local-login', { successRedirect: '/users/profile',
                                    failureRedirect: 'login',
                                    failureFlash: true })
 );
@@ -73,6 +74,7 @@ router.post('/signup',
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
     res.render('user_admin/profile', {
         title:'profile',
+        message: req.flash('loginMessage'), 
         user : req.user // get the user out of session and pass to template
     });
 		console.log(req.user);
