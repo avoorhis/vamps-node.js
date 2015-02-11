@@ -1,5 +1,8 @@
 <% include ../add_ins/begin.ejs %>
   <div class='title'>Add User</div>
+  <% if (message.length > 0) { %>
+      <div class="message"><%= message %></div>
+  <% } %><br>
   <div id='new_user_div' class='table' >
     <form id='' name='newuser_form' method='POST' action='/users/signup'>
       <ul>
