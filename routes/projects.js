@@ -53,7 +53,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                 dscounts: JSON.stringify(dscounts),
                                 pid: req.params.id,
                                 pcount: project_count,
-
+                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
                                 user   : req.user 
                               });
     
