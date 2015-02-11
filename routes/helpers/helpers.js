@@ -13,8 +13,8 @@ module.exports = {
       }
       // if they aren't redirect them to the home page
       console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
-      req.flash('signupMessage', 'anyValue');
-      res.redirect('/');
+      req.flash('loginMessage', 'Please login or register before continuing.');
+      res.redirect('/users/login');
   }
   
   
