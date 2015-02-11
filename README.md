@@ -48,7 +48,7 @@ MySQL db schema is included in root dir as: db_schema.sql
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
-  2015-02-11 AAV Added 'public' field to 'project' table. INT 0 or 1
+  2015-02-11 AAV Added 'public' field to 'project' table. -->> TINYINT 0 (private) or 1 (public)
 
   CREATE TABLE custom_metadata_fields (
     custom_metadata_fields_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,

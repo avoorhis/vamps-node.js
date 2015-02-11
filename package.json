@@ -14,32 +14,33 @@
     "async": "",
     "bcrypt-nodejs": "",
     "body-parser": "",
-    "compression": "",    
+    "compression": "",
     "connect-flash": "",
     "cookie-parser": "",
-    "d3":"",
+    "csv": "",
+    "d3": "",
     "depd": "",
-    "ejs":"",
+    "ejs": "",
     "express": "",
-    "express-session":"",
+    "express-session": "",
     "istanbul": "",
-    "jsdom":"",
+    "jsdom": "",
     "morgan": "",
     "mysql": "",
     "nodemon": "",
-    "nodetime":"",
+    "nodetime": "",
     "passport": "",
     "passport-local": "",
     "static-favicon": "",
+    "sweetcaptcha": "0.0.2-1",
     "uid-safe": "",
-    "xmldom":"",
-    "csv": ""
+    "xmldom": ""
   },
   "devDependencies": {
     "debug": "",
     "istanbul": "",
     "mocha": "",
-    "nodetime":"",
+    "nodetime": "",
     "passport-stub": "",
     "plato": "",
     "should": "",
@@ -47,4 +48,3 @@
     "zombie": ""
   }
 }
-
