@@ -232,9 +232,11 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   //console.log(ALL_DATASETS);
+  //console.log(req.user)
   res.render('visuals/index_visuals', { 
                                 title   : 'VAMPS: Select Datasets',
                                 rows    : JSON.stringify(ALL_DATASETS),
+                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
                                 constants    : JSON.stringify(req.C),
                                 user: req.user
                             });
