@@ -4,7 +4,7 @@ var router = express.Router();
 //
 //
 //
-var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name";
+var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
 qSelectDatasets += " FROM dataset";
 qSelectDatasets += " JOIN project USING(project_id)";
 qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
@@ -20,13 +20,15 @@ console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
   connection.query(qSelectDatasets, function(err, rows, fields){
-    ALL_DATASETS = {};      // GLOBAL
-    var pids         = {};
-    var titles       = {};
-    DATASET_NAME_BY_DID = {};    // GLOBAL
-    PROJECT_ID_BY_DID = {};
-    PROJECT_INFORMATION_BY_PID={}  // GLOBAL
-    DATASET_IDS_BY_PID = {};
+      ALL_DATASETS = {};      // GLOBAL
+      var pids         = {};
+      var titles       = {};
+      DATASET_NAME_BY_DID = {};    // GLOBAL
+      PROJECT_ID_BY_DID = {};
+      PROJECT_INFORMATION_BY_PID={};  // GLOBAL
+      DATASET_IDS_BY_PID = {};
+      PROJECT_PERMISSION_BY_PID = {};  // 0 if public otherwise == user id
+
       if (err)  {
         throw err;
       } else {
@@ -41,7 +43,15 @@ module.exports.get_datasets = function(callback){
           var dataset = rows[i].dataset;
           var dataset_description = rows[i].dataset_description;
           var pid = rows[i].pid;
+          var public = rows[i].public;
+          var user_id = rows[i].owner_user_id;
+          if(public){
+            PROJECT_PERMISSION_BY_PID[pid] = 0;
+          }else{
+            PROJECT_PERMISSION_BY_PID[pid] = user_id;
+          }
           PROJECT_ID_BY_DID[did]=pid;
+
           PROJECT_INFORMATION_BY_PID[pid] = {
             "last" :			rows[i].last_name,
             "first" :			rows[i].first_name,
