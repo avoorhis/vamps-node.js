@@ -70,7 +70,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   });
   /* GET Import Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
-      res.render('saved_data', { title: 'VAMPS:Import Data', 
+      res.render('saved_data', { title: 'VAMPS:Saved Data', 
                              user: req.user 
                             });
   });
