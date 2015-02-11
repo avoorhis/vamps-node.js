@@ -83,7 +83,9 @@ vertical-align:top;
     
   
 }
-
+.color_red{
+  color:red;
+}
 td.right_justify {
   text-align:right;
 }
