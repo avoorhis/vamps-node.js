@@ -10,11 +10,12 @@ var ds = require('./load_all_datasets');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
 
+
   /* GET home page. */
   router.get('/', function(req, res) {
     res.render('index', { 
             title: 'VAMPS:Home', 
-            message: req.flash('signupMessage'),
+            message: req.flash('fail'),
             user: req.user });
   });
 
