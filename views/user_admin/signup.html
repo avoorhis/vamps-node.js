@@ -3,22 +3,22 @@
   <% if (message.length > 0) { %>
       <div class="message"><%= message %></div>
   <% } %><br>
-  <div id='new_user_div' class='table' >
+  <div id='new_user_div' class='table' >All fields are required
     <form id='' name='newuser_form' method='POST' action='/users/signup'>
       <ul>
-      <li> <input id='username'       name='username'     type="text"     \> Username</li>
-      <li> <input id='password'       name='password'     type="password" \> Password</li>
-      <li> <input id='userfirstname'     name='userfirstname'   type="text"     \> First Name</li>
-      <li> <input id='userlastname'     name='userlastname'   type="text"     \> Last name</li>
-      <li> <input id='useremail'       name='useremail'     type="text"     \> Email</li>
-      <li> <input id='userinstitution'   name='userinstitution'   type="text"     \> Institution</li>
-      <li> <input id=''   type="submit" value='Enter'\></li>
+      <li> <input id='username'       name='username'       type="text"     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
+      <li> <input id='password'       name='password'       type="password" \> Password</li>
+      <li> <input id='userfirstname'  name='userfirstname'  type="text"     \> First Name</li>
+      <li> <input id='userlastname'   name='userlastname'   type="text"     \> Last Name</li>
+      <li> <input id='useremail'      name='useremail'      type="text"     \> Email <span class='tiny_font'>(must be correct email format)</span></li>  
+      <li> <input id='userinstitution'name='userinstitution'type="text"     \> Institution</li>
+      <li> <input id=''   type="submit" value='Enter' \></li>
       </ul>
     </form>
     <hr>
 
     <p>Already have an account? <a href="/users/login">Login</a></p>
-    <p>Or go <a href="/">home</a>.</p>
+    <p>Or go to the <a href="/">home</a> page.</p>
   </div>
   <a href="#" class="back">Go back!</a>
   

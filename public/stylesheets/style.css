@@ -189,6 +189,8 @@ td.left_justify {
 .search_ds_result_box{
   list-style-type: none;
   text-decoration: none;
+  border: 1px solid grey;
+  background:#F0FFF0;
   height:100px;
   width:250px;
   overflow:auto;
