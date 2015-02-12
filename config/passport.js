@@ -135,7 +135,7 @@ function signup_user(req, username, password, done, db){
     if(password.length < 3 || password.length > 20){
         return done(null, false, req.flash('signupMessage', 'The password must be between 3 and 20 characters.'));
     }
-    if(checkUserName(username)){
+    if(!checkUserName(username)){
         return done(null, false, req.flash('signupMessage', "The username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
     }
     if(username.length < 3 || username.length > 15){
@@ -173,8 +173,13 @@ function signup_user(req, username, password, done, db){
                 newUserMysql.institution    = inst;
                 newUserMysql.security_level = 50;  //reg user
 
-                var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution)";
-                insertQuery +=    " VALUES ('" + username +"', '"+ newUserMysql.password +"', '"+ newUserMysql.firstname +"', '"+ newUserMysql.lastname +"', '"+ newUserMysql.email +"', '"+ newUserMysql.institution +"')";
+                var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, current_sign_in_at)";
+                insertQuery +=    " VALUES ('" + username +"', '"+ 
+                                    newUserMysql.password +"', '"+ 
+                                    newUserMysql.firstname +"', '"+ 
+                                    newUserMysql.lastname +"', '"+ 
+                                    newUserMysql.email +"', '"+ 
+                                    newUserMysql.institution +"', CURRENT_TIMESTAMP() )";
 
 
                 console.log(insertQuery);
@@ -189,7 +194,8 @@ function signup_user(req, username, password, done, db){
 
 function checkUserName(name){
     reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-    a = !(reg.test(name));    
+    a = !(reg.test(name));  
+    //console.log(a)  
     return a;
 }
 
