@@ -1,112 +1,112 @@
 
-  $("#metadata_local_table_div").on("click", "#metadata_table", function () {
-      new Tablesort(document.getElementById('metadata_table'));
-  });
+$("#metadata_local_table_div").on("click", "#metadata_table", function () {
+    new Tablesort(document.getElementById('metadata_table'));
+});
 
 
 // code for tooltips
 
 
 
-    var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
-        $win = $(window),
-        showTip;
+var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
+    $win = $(window),
+    showTip;
 
-    var tip = {
-      title: '',
-      offset: 12,
-      delay: 300,
-      position: function(event) {
-        var positions = {x: event.pageX, y: event.pageY};
-        var dimensions = {
-          x: [
-            $win.width(),
-            $liveTip.outerWidth()
-          ],
-          y: [
-            $win.scrollTop() + $win.height(),
-            $liveTip.outerHeight()
-          ]
-        };
-     
-        for ( var axis in dimensions ) {
-     
-          if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
-            positions[axis] -= dimensions[axis][1] + this.offset;
-          } else {
-            positions[axis] += this.offset;
-          }
-     
-        }
-     
-        $liveTip.css({
-          top: positions.y,
-          left: positions.x
-        });
-      }
+var tip = {
+  title: '',
+  offset: 12,
+  delay: 300,
+  position: function(event) {
+    var positions = {x: event.pageX, y: event.pageY};
+    var dimensions = {
+      x: [
+        $win.width(),
+        $liveTip.outerWidth()
+      ],
+      y: [
+        $win.scrollTop() + $win.height(),
+        $liveTip.outerHeight()
+      ]
     };
+ 
+    for ( var axis in dimensions ) {
+ 
+      if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+        positions[axis] -= dimensions[axis][1] + this.offset;
+      } else {
+        positions[axis] += this.offset;
+      }
+ 
+    }
+ 
+    $liveTip.css({
+      top: positions.y,
+      left: positions.x
+    });
+  }
+};
 
 
-    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
-          var link = this,
-          html = '';
-          $link = $(this);
-         
-          if (event.type == 'mouseover') {
-            tip.id = link.id;
-            link.id = '';
-            id_items = tip.id.split('-|-');
-            html = "<table><tr>";
-            if(id_items[0] == 'dheatmap') {
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>"+id_items[2]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Distance: "+id_items[3]+"</td>";
-            }else if(id_items[0] == 'frequencies'){
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>"+id_items[2]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
-            }else{  // barcharts and piecharts            
-              html += "<td>"+id_items[1]+"</td>";
-              html += "</tr><tr>";
-              html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
-            }
-            html += "</tr><table>";
+$("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+      var link = this,
+      html = '';
+      $link = $(this);
+     
+      if (event.type == 'mouseover') {
+        tip.id = link.id;
+        link.id = '';
+        id_items = tip.id.split('-|-');
+        html = "<table><tr>";
+        if(id_items[0] == 'dheatmap') {
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>"+id_items[2]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Distance: "+id_items[3]+"</td>";
+        }else if(id_items[0] == 'frequencies'){
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>"+id_items[2]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+        }else{  // barcharts and piecharts            
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+        }
+        html += "</tr><table>";
 
-            showTip = setTimeout(function() {
-         
-              $link.data('tipActive', true);
+        showTip = setTimeout(function() {
+     
+          $link.data('tipActive', true);
+          
+          tip.position(event);
+     //alert(event.pageX)
+          $liveTip
+          .html('<div>' + html  + '</div>')
+          .fadeOut(0)
+          .fadeIn(200);
+     
+        }, tip.delay);
+      }
+     
+      if (event.type == 'mouseout') {
+        link.id = tip.id || link.id;
+        if ($link.data('tipActive')) {
+          $link.removeData('tipActive');
+          $liveTip.hide();
+        } else {
+          clearTimeout(showTip);
+        }
+      }
+     
+      if (event.type == 'mousemove' && $link.data('tipActive')) {
+        tip.position(event);
+      }
               
-              tip.position(event);
-         //alert(event.pageX)
-              $liveTip
-              .html('<div>' + html  + '</div>')
-              .fadeOut(0)
-              .fadeIn(200);
-         
-            }, tip.delay);
-          }
-         
-          if (event.type == 'mouseout') {
-            link.id = tip.id || link.id;
-            if ($link.data('tipActive')) {
-              $link.removeData('tipActive');
-              $liveTip.hide();
-            } else {
-              clearTimeout(showTip);
-            }
-          }
-         
-          if (event.type == 'mousemove' && $link.data('tipActive')) {
-            tip.position(event);
-          }
-                  
-     });              
-              
-    
+});              
+          
+
 
 // COUNTS
 var tax_counts_link = document.getElementById('counts_table_link_id');
@@ -439,6 +439,7 @@ if (typeof save_dataset_btn !=="undefined") {
       //create_test_page(pi_local.ts);
   });
 }
+
 function create_test_page(ts) {
 //
 //
@@ -480,7 +481,7 @@ function create_test_page(ts) {
 test_link = document.getElementsByName('normalization');
 
 
-
+}
 
 
 

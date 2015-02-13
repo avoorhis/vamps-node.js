@@ -49,7 +49,7 @@ module.exports = function(passport, db) {
         passReqToCallback   : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
-        console.log(req.body.userfirstname);
+        //console.log(req.body.userfirstname);
         return signup_user(req, username, password, done, db);
     }));
 
@@ -81,7 +81,7 @@ function generateHash(password) {
 }
 function validatePassword(entered_pw, database_pw) {
     if (generateHash(entered_pw) === database_pw){
-        console.log('Match!');
+        console.log('Password Match!');
         return true;
     }
     console.log('No-Match!');
@@ -100,20 +100,24 @@ function login_auth_user(req, username, password, done, db){
             // req.flash is the way to set flashdata using connect-flash
             { return done(null, false, req.flash('loginMessage', 'No user found.'));}
         }
-        // if the user is found but the password is wrong
+        // If the account is not active
+        if (rows[0].active !== 1) {
+            { return done(null, false, req.flash('loginMessage', 'That account is inactive -- send email to vamps.mbl.edu to request re-activation.'));}
+        }
 
         //Wed Feb 11 2015 15:05:29 GMT-0500 (EST)
         if ( validatePassword(password, rows[0].encrypted_password) )
         { 
             var new_count = parseInt(rows[0].sign_in_count) + 1;            
             var q = "update user set sign_in_count='"+new_count+"', current_sign_in_at=CURRENT_TIMESTAMP(), last_sign_in_at='"+rows[0].current_sign_in_at+"' where user_id='"+rows[0].user_id+"'"
-            console.log(q);
+            //console.log(q);
             db.query(q,function(err,rows){
                 if (err){ console.log(err); }
             });
             return done(null, rows[0], req.flash('loginMessage', 'Success!')); 
         }
-
+        
+        // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
         return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
         // all is well, return successful user
@@ -135,14 +139,14 @@ function signup_user(req, username, password, done, db){
     if(password.length < 3 || password.length > 20){
         return done(null, false, req.flash('signupMessage', 'The password must be between 3 and 20 characters.'));
     }
-    if(!checkUserName(username)){
+    if(checkUserName(username)){
         return done(null, false, req.flash('signupMessage', "The username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only."));
     }
     if(username.length < 3 || username.length > 15){
         return done(null, false, req.flash('signupMessage', 'The username must be between 3 and 15 characters. Alphanumeric only.'));
     }
     if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
-        return done(null, false, req.flash('signupMessage', 'The email address is the wrong format.'));
+        return done(null, false, req.flash('signupMessage', 'The email address is empty or the wrong format.'));
     }
     if( first.length < 1 || first.length > 50 ||  last.length < 1 || last.length > 50 ){
         return done(null, false, req.flash('signupMessage', 'Both first and last names are required.'));
@@ -152,13 +156,11 @@ function signup_user(req, username, password, done, db){
     }
 
     db.query("select * from user where username = '"+username+"'",function(err,rows){
-            console.log(rows);
-            console.log("above row object");
             if (err) {
               return done(null, false, { message: err });
             }
             if (rows.length) {
-                console.log('That username is already taken.');
+                //console.log('That username is already taken.');
                 return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
             } else {
 
@@ -173,13 +175,17 @@ function signup_user(req, username, password, done, db){
                 newUserMysql.institution    = inst;
                 newUserMysql.security_level = 50;  //reg user
 
-                var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, current_sign_in_at)";
+                var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at,last_sign_in_at)";
                 insertQuery +=    " VALUES ('" + username +"', '"+ 
                                     newUserMysql.password +"', '"+ 
                                     newUserMysql.firstname +"', '"+ 
                                     newUserMysql.lastname +"', '"+ 
                                     newUserMysql.email +"', '"+ 
-                                    newUserMysql.institution +"', CURRENT_TIMESTAMP() )";
+                                    newUserMysql.institution +"',"+
+                                    " 1,"+
+                                    " 1,"+
+                                    " CURRENT_TIMESTAMP(), "+
+                                    " '0000-00-00 00:00:00' )";
 
 
                 console.log(insertQuery);
@@ -194,7 +200,7 @@ function signup_user(req, username, password, done, db){
 
 function checkUserName(name){
     reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-    a = !(reg.test(name));  
+    a = (reg.test(name));  
     //console.log(a)  
     return a;
 }
