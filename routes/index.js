@@ -93,7 +93,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       file_info.size = {};
       file_info.files = [];
       fs.readdir(export_dir, function(err, files){   
-        
         for(f in files){
           var pts = files[f].split('_');
           if(pts[0] === req.user.username){
@@ -103,7 +102,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             file_info.size[files[f]] = stat.size;
           }
         }
-        console.log(file_info)
+        //console.log(file_info)
         res.render('file_retrieval', { title: 'VAMPS:Export Data', 
                              user: user,
                              finfo: JSON.stringify(file_info)                             
