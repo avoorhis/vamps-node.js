@@ -11,6 +11,7 @@ qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this
 qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
 qSelectDatasets += " ORDER BY project, dataset";
 console.log(qSelectDatasets)
+
 var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
 //var qSequenceCounts = "SELECT project_id, dataset_id, seq_count"; 
 qSequenceCounts += " FROM sequence_pdr_info";
