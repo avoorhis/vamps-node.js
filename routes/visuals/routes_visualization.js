@@ -72,8 +72,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   if(data_source_testing == 'json') {
     // GLOBAL
     var timestamp = +new Date();  // millisecs since the epoch!
-    var user = req.user || 'no-user';
-    timestamp = user + '_' + timestamp;
+    timestamp = req.user.username + '_' + timestamp;
     visual_post_items.ts = timestamp;
     distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
