@@ -14,7 +14,6 @@ var helpers = require('./helpers/helpers');
 router.get('/index_users', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var qSelect = "SELECT * from user";
-    console.log(qSelect);
     var collection = db.query(qSelect, function (err, rows, fields){
       if (err)  {
       throw err;
@@ -77,7 +76,6 @@ router.get('/profile', helpers.isLoggedIn, function(req, res) {
         message: req.flash('loginMessage'), 
         user : req.user // get the user out of session and pass to template
     });
-		console.log(req.user);
 });
 
 // =====================================
