@@ -32,7 +32,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     // PROJECT_INFORMATION_BY_PID is a global variable created on server start in 'load_all_datasets.js'
     var info = PROJECT_INFORMATION_BY_PID[req.params.id]
     var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
-    console.log(info);
+    //console.log(info);
 
     dataset_counts = {};
     for(n in ALL_DATASETS.projects){

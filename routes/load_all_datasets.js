@@ -20,23 +20,24 @@ qSequenceCounts += " GROUP BY dataset_id";
 console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
+  
   connection.query(qSelectDatasets, function(err, rows, fields){
-      ALL_DATASETS = {};      // GLOBAL
+      ALL_DATASETS                = {};      // GLOBAL
+      DATASET_NAME_BY_DID         = {};    // GLOBAL
+      PROJECT_ID_BY_DID           = {};
+      PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
+      DATASET_IDS_BY_PID          = {};
+      PROJECT_PERMISSION_BY_PID   = {};  // 0 if public otherwise == user id
       var pids         = {};
       var titles       = {};
-      DATASET_NAME_BY_DID = {};    // GLOBAL
-      PROJECT_ID_BY_DID = {};
-      PROJECT_INFORMATION_BY_PID={};  // GLOBAL
-      DATASET_IDS_BY_PID = {};
-      PROJECT_PERMISSION_BY_PID = {};  // 0 if public otherwise == user id
-
       if (err)  {
         throw err;
       } else {
+        console.log('Filling GLOBAL Variables:');
         var datasetsByProject = {};
         ALL_DATASETS.projects = [];
         //datasetsByProject.projects = []
-        console.log('GETTING ALL DATASETS FROM DB-3 as ALL_DATASETS');
+        
 
         for (var i=0; i < rows.length; i++) {
           var project = rows[i].project;
@@ -101,6 +102,13 @@ module.exports.get_datasets = function(callback){
         }
 
       }
+      console.log('ALL_DATASETS');
+      console.log('PROJECT_ID_BY_DID');
+      console.log('PROJECT_INFORMATION_BY_PID');
+      console.log('PROJECT_PERMISSION_BY_PID');
+      console.log('DATASET_IDS_BY_PID');
+      console.log('DATASET_NAME_BY_DID');
+      
       callback(ALL_DATASETS);
   });
   
@@ -131,7 +139,8 @@ module.exports.get_datasets = function(callback){
           }
         }
       }
-      console.log('Done with Counts retrieval')
+      console.log('ALL_DCOUNTS_BY_DID');
+      console.log('ALL_PCOUNTS_BY_PID');
   });
 };
 
