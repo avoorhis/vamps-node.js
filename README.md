@@ -91,6 +91,7 @@ views - html/ejs
 models - data retrieval (db for now, hdf5 in the future) 
 public - client side, cached with an expiration time
 sbin - additional scripts
+downloads - will contain user downloaded files for retrieval
 
 
 --- TODO ---
