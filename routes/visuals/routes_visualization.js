@@ -230,7 +230,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  //console.log(ALL_DATASETS);
+  console.log(ALL_DATASETS);
   //console.log(req.user)
   res.render('visuals/index_visuals', { 
                                 title   : 'VAMPS: Select Datasets',
