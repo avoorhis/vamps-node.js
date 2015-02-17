@@ -14,14 +14,15 @@ import json
 hostname = 'localhost'
 username = 'ruby'
 password = 'ruby'
-database = "vamps_js_development"
+#database = "vamps_js_development"
+database = "vamps_js_dev_av"
 out_file = "tax_counts.json"
 db = MySQLdb.connect(host=hostname, # your host, usually localhost
                      user=username, # your username
                       passwd=password, # your password
                       db=database) # name of the data base
 cur = db.cursor() 
-
+parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
 query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
