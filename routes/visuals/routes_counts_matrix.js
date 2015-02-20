@@ -86,13 +86,14 @@ module.exports = {
 								var tax_long_name = create_concatenated_tax_name(node_id);
 								
 								unit_name_lookup[tax_long_name] = 1;
-								console.log('POSTf')
-								console.log(did)
-								console.log(tax_long_name)
+								//console.log('POSTf')
+								//console.log(did)
+								//console.log(tax_long_name)
 								
 								//console.log(tax_long_name.split(';')[0])
 								if( post_items.domains.indexOf(tax_long_name.split(';')[0]) != -1 ) {
-									//console.log(tax_long_name)									
+									
+									console.log(tax_long_name)									
 									console.log('rank '+rank)
 									console.log('db_tax_id '+db_tax_id)
 									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
@@ -121,8 +122,8 @@ module.exports = {
 
 			}
 			console.log('POSTy');
-			console.log(unit_name_lookup);
-			console.log(chosen_id_name_hash);
+			//console.log(unit_name_lookup);
+			//console.log(chosen_id_name_hash);
 			console.log(unit_name_lookup_per_dataset);
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
 			
@@ -133,8 +134,8 @@ module.exports = {
 
 		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 		  //console.log(unit_name_counts);
-		  console.log('POSTx');
-		  console.log(post_items);
+		  //console.log('POSTx');
+		  //console.log(post_items);
 
 		  biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  

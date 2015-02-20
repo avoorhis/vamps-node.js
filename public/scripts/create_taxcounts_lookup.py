@@ -14,13 +14,13 @@ import json
 hostname = 'localhost'
 username = 'ruby'
 password = 'ruby'
-#database = "vamps_js_development"
-database = "vamps_js_dev_av"
-out_file = "tax_counts.json"
+NODE_DATABASE = "vamps_js_development"
+#NODE_DATABASE = "vamps_js_dev_av"
+out_file = "tax_counts_local.json"
 db = MySQLdb.connect(host=hostname, # your host, usually localhost
                      user=username, # your username
                       passwd=password, # your password
-                      db=database) # name of the data base
+                      db=NODE_DATABASE) # name of the data base
 cur = db.cursor() 
 parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
@@ -61,14 +61,14 @@ strain_query += query_core
 strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
 #queries = [domain_query,phylum_query,class_query,order_query,family_query,genus_query,species_query,strain_query]
-queries = [{"rank":"domain","query":domain_query},
-		   {"rank":"phylum","query":phylum_query},
-		   {"rank":"klass","query":class_query},
- 		   {"rank":"order","query":order_query},
- 		   {"rank":"family","query":family_query},
- 		   {"rank":"genus","query":genus_query},
+queries = [{"rank":"domain", "query":domain_query },
+		   {"rank":"phylum", "query":phylum_query },
+		   {"rank":"klass",  "query":class_query  },
+ 		   {"rank":"order",  "query":order_query  },
+ 		   {"rank":"family", "query":family_query },
+ 		   {"rank":"genus",  "query":genus_query  },
  		   {"rank":"species","query":species_query},
- 		   {"rank":"strain","query":strain_query}
+ 		   {"rank":"strain", "query":strain_query }
 		   ]
 def go(args):
 	"""
@@ -111,7 +111,10 @@ def go(args):
 			rank = q["rank"]
 			if ds_id in counts_lookup:
 				if rank in counts_lookup[ds_id]:					
-					counts_lookup[ds_id][rank][tax_id] = count
+					if tax_id in counts_lookup[ds_id][rank]:
+					    counts_lookup[ds_id][rank][tax_id] += count
+					else:
+					    counts_lookup[ds_id][rank][tax_id] = count
 				else:
 					counts_lookup[ds_id][rank] = {}
 					counts_lookup[ds_id][rank][tax_id] = count
