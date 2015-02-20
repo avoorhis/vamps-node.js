@@ -16,6 +16,7 @@ hostname = 'localhost'
 username = 'ruby'
 password = 'ruby'
 database = "vamps_js_development"
+#database = "vamps_js_dev_av"
 
 db = MySQLdb.connect(host=hostname, # your host, usually localhost
                      user=username, # your username
@@ -34,7 +35,7 @@ def go_required_metadata():
 		metadata_lookup_per_dsid[dsid][metadataName] = value			
 
 	"""
-	required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "temp", "salinity", "diss_oxygen", "public"];
+	required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
 
 	req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 	#print req_query
