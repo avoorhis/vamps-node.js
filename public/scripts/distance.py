@@ -281,9 +281,9 @@ def get_json(node):
 def pcoa(args, dist):
 	from cogent.cluster.metric_scaling import PCoA
 	PCoA_result = PCoA(dist)
-	#print PCoA_result
+	print PCoA_result
 	a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
-	#print a
+	print a
 	json_array = {}
 	json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
 	json_array["P2"] = a[:,3].tolist()[:-2]
