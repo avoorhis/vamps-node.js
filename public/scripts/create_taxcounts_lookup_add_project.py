@@ -14,14 +14,15 @@ import json
 hostname = 'localhost'
 username = 'ruby'
 password = 'ruby'
-database = "vamps_js_development"
-#database = "vamps_js_dev_av"
+#NODE_DATABASE = "vamps_js_development"
+NODE_DATABASE = "vamps_js_dev_av"
+
 out_file = "tax_counts_local.json"
 in_file  = "../json/tax_counts_lookup.json"
 db = MySQLdb.connect(host=hostname, # your host, usually localhost
                      user=username, # your username
                       passwd=password, # your password
-                      db=database) # name of the data base
+                      db=NODE_DATABASE) # name of the data base
 cur = db.cursor() 
 parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
@@ -143,10 +144,11 @@ def go_add(args):
                 counts_lookup[ds_id][rank][tax_id] = count
 
     write_json_file(out_file,counts_lookup)
+    print 'DONE (must now move file into place)'
   
 def write_json_file(outfile,obj):
     json_str = json.dumps(obj)    
-    print(json_str)
+    print('Re-Writing JSON file')
     f = open(outfile,'w')
     f.write(json_str+"\n")
     f.close()
@@ -181,7 +183,7 @@ if __name__ == '__main__':
 
     usage = """
         -pid/--project_id   add project to object
-        -d/--delete         delete all dids (whole project) from obj  (need pid also)
+        -del/--delete         delete all dids (whole project) from obj  (need pid also)
         -l/list             list: list all projects in json object
     
     count_lookup_per_dsid[dsid][rank][taxid] = count
@@ -214,7 +216,7 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "pid", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-d","--delete",                   
+    parser.add_argument("-del","--delete",                   
                 required=False,  action="store_true",   dest = "delete", default='',
                 help="""ProjectID""") 
     
@@ -225,9 +227,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if not args.list and not args.pid and not args.delete:
         print usage
+        print 'DATABASE:',NODE_DATABASE
         sys.exit('need command line parameter(s)')
     if args.delete and not args.pid:
         print usage
+        print 'DATABASE:',NODE_DATABASE
         sys.exit('need pid to delete')    
     
     if args.list:
