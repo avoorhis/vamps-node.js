@@ -14,9 +14,10 @@ import json
 hostname = 'localhost'
 username = 'ruby'
 password = 'ruby'
-NODE_DATABASE = "vamps_js_development"
-#NODE_DATABASE = "vamps_js_dev_av"
-out_file = "tax_counts_local.json"
+#NODE_DATABASE = "vamps_js_development"
+NODE_DATABASE = "vamps_js_dev_av"
+print 'DATABASE:',NODE_DATABASE
+out_file = "tax_counts--"+NODE_DATABASE+".json"
 db = MySQLdb.connect(host=hostname, # your host, usually localhost
                      user=username, # your username
                       passwd=password, # your password
