@@ -80,11 +80,25 @@ queries = [{"rank":"domain", "query":domain_query },
        {"rank":"strain", "query":strain_query }
        ]
 
-def go_test(args):
+def go_list(args):
     counts_lookup = read_original_taxcounts(in_file)
-    print 'List of dataset IDs:'
+    
+    q = "SELECT DISTINCT project,project.project_id from dataset"
+    q += " JOIN project on(dataset_id)"
+    q += " WHERE dataset_id in('%s')"
+    dids = []
     for did in counts_lookup:
-        print did
+        dids.append(did)
+    did_sql = "','".join(dids)
+    q = q % (did_sql)
+    print q
+    num = 0
+    cur.execute(q)
+    print 'List of projects in tax_counts_lookup:'
+    for row in cur.fetchall():
+        print row[0],row[1]
+        num += 1
+    print 'Count:',num
     
 def go_delete(args):
     
@@ -167,8 +181,8 @@ if __name__ == '__main__':
 
     usage = """
         -pid/--project_id   add project to object
-        -d/--delete         delete all dids (whole project) from obj 
-        -t/test             test: list all dids in json object
+        -d/--delete         delete all dids (whole project) from obj  (need pid also)
+        -l/list             list: list all projects in json object
     
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
@@ -204,13 +218,20 @@ if __name__ == '__main__':
                 required=False,  action="store_true",   dest = "delete", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-t","--test",                   
-                required=False,  action="store_true",   dest = "test", default='',
+    parser.add_argument("-l","--list",                   
+                required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""") 
                 
     args = parser.parse_args()
-    if args.test:
-        go_test(args)
+    if not args.list and not args.pid and not args.delete:
+        print usage
+        sys.exit('need command line parameter(s)')
+    if args.delete and not args.pid:
+        print usage
+        sys.exit('need pid to delete')    
+    
+    if args.list:
+        go_list(args)
     elif args.delete:
         go_delete(args)
     else:
