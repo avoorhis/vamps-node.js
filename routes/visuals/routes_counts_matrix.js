@@ -81,23 +81,17 @@ module.exports = {
 							rank = post_items.tax_depth;
 							//console.log('did '+did+' rank: '+rank);
 							for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
-								db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
-								node_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].node_id;
+								var node = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r]
+								db_tax_id = node.db_id;
+								node_id = node.node_id;
 								var tax_long_name = create_concatenated_tax_name(node_id);
 								
 								unit_name_lookup[tax_long_name] = 1;
-								//console.log('POSTf')
-								//console.log(did)
-								//console.log(tax_long_name)
-								
+								//console.log(post_items.domains)
 								//console.log(tax_long_name.split(';')[0])
 								if( post_items.domains.indexOf(tax_long_name.split(';')[0]) != -1 ) {
-									
-									console.log(tax_long_name)									
-									console.log('rank '+rank)
-									console.log('db_tax_id '+db_tax_id)
+									//console.log(tax_long_name)									
 									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id); // This uses TaxaCounts created in app.js from JSON file
-									console.log('cnt '+cnt)
 									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 								}							
 							
@@ -121,10 +115,8 @@ module.exports = {
 					} 
 
 			}
-			console.log('POSTy');
-			//console.log(unit_name_lookup);
-			//console.log(chosen_id_name_hash);
-			console.log(unit_name_lookup_per_dataset);
+			
+			
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
 			
 			
@@ -134,8 +126,8 @@ module.exports = {
 
 		  // Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 		  //console.log(unit_name_counts);
-		  //console.log('POSTx');
-		  //console.log(post_items);
+		  console.log('POSTx');
+		  console.log(post_items);
 
 		  biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 		  
@@ -334,7 +326,7 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //
 function create_concatenated_tax_name(node_id) {		
-	var tax_name = '';					  	
+		var tax_name = '';					  	
   	while(node_id !== 0) {  		
   		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
   		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;  	
@@ -346,7 +338,7 @@ function create_concatenated_tax_name(node_id) {
 //  F I N D  C O U N T  P E R  D S  A N D  R A N K
 //
 function find_count_per_ds_and_rank(did, rank, db_tax_id) {
-	var cnt = 0;
+		var cnt = 0;
   	if(did in TaxaCounts) {
 	  	if(rank in TaxaCounts[did]) {
 		  	if(db_tax_id in TaxaCounts[did][rank]) {
@@ -414,9 +406,7 @@ function onlyUnique(value, index, self) {
 //
 function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash ) {
 	
-	console.log('AAV123ukeys');  // uname:
-	console.log(unit_name_counts);  // uname:
-	console.log(ukeys);
+	//console.log(ukeys);  // uname:
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
