@@ -81,7 +81,7 @@ module.exports.get_datasets = function(callback){
           if (project in datasetsByProject){
               datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
           } else {
-              datasetsByProject[project] = [{ did:did, dname:dataset, ddesc: dataset_description }];
+              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
           }
         }
 

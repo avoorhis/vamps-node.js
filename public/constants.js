@@ -2,11 +2,11 @@ var config = {};
 
 //console.log( JSON.stringify(datasets_by_project_all) );
 config.DOMAINS = { domains: [
-        {id: 2, name: "Archaea"},
-        {id: 3, name: "Bacteria"},
-        {id: 4, name: "Eukarya"},
-        {id: 5, name: "Organelle"},
-        {id: 6, name: "Unknown"}
+        {id: 1, name: "Archaea"},
+        {id: 2, name: "Bacteria"},
+        {id: 3, name: "Eukarya"},
+        {id: 4, name: "Organelle"},
+        {id: 5, name: "Unknown"}
     ]};
 
 config.UNITSELECT = { units: [
