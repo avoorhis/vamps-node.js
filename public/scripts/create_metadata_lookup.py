@@ -12,18 +12,6 @@ import random
 import MySQLdb
 import json
 
-hostname = 'localhost'
-username = 'ruby'
-password = 'ruby'
-#NODE_DATABASE = "vamps_js_development"
-NODE_DATABASE = "vamps_js_dev_av"
-
-db = MySQLdb.connect(host=hostname, # your host, usually localhost
-                     user=username, # your username
-                      passwd=password, # your password
-                      db=NODE_DATABASE) # name of the data base
-cur = db.cursor() 
-
 
 
 
@@ -63,7 +51,7 @@ def go_required_metadata():
 	
 def go_custom_metadata(metadata_lookup):
 	
-	cust_pquery = "SELECT project_id,field_name from custom_metadata_fields order by field_name"
+	cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 	pid_collection = {}
 	cur.execute(cust_pquery)
 	cust_metadata_lookup = {}
@@ -123,7 +111,20 @@ if __name__ == '__main__':
 		
 	"""
 	
- 	 	
+    database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
+    if database == '2':
+        NODE_DATABASE = "vamps_js_development"
+    elif database == '1':
+        NODE_DATABASE = "vamps_js_dev_av"
+    else:
+        sys.exit('Exiting')
+    
+    
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                          user="ruby", # your username
+                          passwd="ruby", # your password
+                          db=NODE_DATABASE) # name of the data base
+    cur = db.cursor() 	
 	
 	data = go_required_metadata() 
 	data = go_custom_metadata(data)
