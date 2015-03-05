@@ -11,19 +11,29 @@ import argparse
 import MySQLdb
 import json
 
-hostname = 'localhost'
-username = 'ruby'
-password = 'ruby'
-#NODE_DATABASE = "vamps_js_development"
-NODE_DATABASE = "vamps_js_dev_av"
 
-out_file = "tax_counts_local.json"
-in_file  = "../json/tax_counts_lookup.json"
-db = MySQLdb.connect(host=hostname, # your host, usually localhost
-                     user=username, # your username
-                      passwd=password, # your password
-                      db=NODE_DATABASE) # name of the data base
-cur = db.cursor() 
+"""
+SELECT sum(seq_count), dataset_id, domain_id,domain
+FROM sequence_pdr_info
+JOIN sequence_uniq_info USING(sequence_id)
+JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)
+JOIN silva_taxonomy USING(silva_taxonomy_id)
+JOIN domain USING(domain_id)
+JOIN pyhlum USING(phylum_id)
+GROUP BY dataset_id, domain_id
+
+SELECT sum(seq_count), dataset_id, domain_id,domain,phylum_id,phylum
+FROM sequence_pdr_info
+JOIN sequence_uniq_info USING(sequence_id)
+JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)
+JOIN silva_taxonomy USING(silva_taxonomy_id)
+JOIN domain USING(domain_id)
+JOIN phylum USING(phylum_id)
+GROUP BY dataset_id, domain_id,phylum_id
+"""
+out_file = "tax_counts--"+NODE_DATABASE+".json"
+in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
+
 parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
@@ -131,10 +141,7 @@ def go_add(args):
             rank = q["rank"]
             if ds_id in counts_lookup:
                 if rank in counts_lookup[ds_id]:                    
-                    if tax_id in counts_lookup[ds_id][rank]:
-                        counts_lookup[ds_id][rank][tax_id] += count
-                    else:
-                        counts_lookup[ds_id][rank][tax_id] = count
+                    counts_lookup[ds_id][rank][tax_id] = count
                 else:
                     counts_lookup[ds_id][rank] = {}
                     counts_lookup[ds_id][rank][tax_id] = count
@@ -148,7 +155,7 @@ def go_add(args):
   
 def write_json_file(outfile,obj):
     json_str = json.dumps(obj)    
-    print('Re-Writing JSON file')
+    print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
     f = open(outfile,'w')
     f.write(json_str+"\n")
     f.close()
@@ -224,14 +231,32 @@ if __name__ == '__main__':
                 required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""") 
                 
+    
+    
     args = parser.parse_args()
+    database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
+    if database == '2':
+        NODE_DATABASE = "vamps_js_development"
+    elif database == '1':
+        NODE_DATABASE = "vamps_js_dev_av"
+    else:
+        sys.exit('Exiting')
+    
+    
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                          user="ruby", # your username
+                          passwd="ruby", # your password
+                          db=NODE_DATABASE) # name of the data base
+    cur = db.cursor()
+    print 'DATABASE:',NODE_DATABASE
+    
     if not args.list and not args.pid and not args.delete:
         print usage
-        print 'DATABASE:',NODE_DATABASE
+        
         sys.exit('need command line parameter(s)')
     if args.delete and not args.pid:
         print usage
-        print 'DATABASE:',NODE_DATABASE
+        
         sys.exit('need pid to delete')    
     
     if args.list:
@@ -240,3 +265,5 @@ if __name__ == '__main__':
         go_delete(args)
     else:
         go_add(args) 
+        
+
