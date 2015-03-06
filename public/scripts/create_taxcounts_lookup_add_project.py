@@ -31,8 +31,7 @@ JOIN domain USING(domain_id)
 JOIN phylum USING(phylum_id)
 GROUP BY dataset_id, domain_id,phylum_id
 """
-out_file = "tax_counts--"+NODE_DATABASE+".json"
-in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
+
 
 parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
@@ -105,11 +104,11 @@ def go_list(args):
     print q
     num = 0
     cur.execute(q)
-    print 'List of projects in tax_counts_lookup:'
+    print 'List of projects in: '+in_file
     for row in cur.fetchall():
-        print row[0],row[1]
+        print 'project:',row[0],'project_id:',row[1]
         num += 1
-    print 'Count:',num
+    print 'Number of Projects:',num
     
 def go_delete(args):
     
@@ -195,60 +194,43 @@ if __name__ == '__main__':
     
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
-    count_lookup_per_dsid[dsid] = 
-    {
-    "domain":[
-      Archaea_id:23,
-      Bacteria_id:234,
-    ],
-    "phylum":[
-
-    ],
-    "klass":[
-
-    ],
-    "order":[
-
-    ],
-    "family":[
-
-    ],
-    "order":[
-
-    ]}
-
+    This script will add a project to ../json/tax_counts--<vamps_js_development>.json JSON object
+    But ONLY if it is already in the MySQL database.
+    
+    To add a new project to the MySQL database use py_mbl_sequencing_pipeline/3-vamps-upload.py
 
     """
-    parser.add_argument("-pid","--project_id",                   
+    parser.add_argument("-pid","--pid",                   
                 required=False,  action="store",   dest = "pid", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-del","--delete",                   
+    parser.add_argument("-del","--del",                   
                 required=False,  action="store_true",   dest = "delete", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-l","--list",                   
+    parser.add_argument("-list","--list",                   
                 required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""") 
                 
-    
-    
     args = parser.parse_args()
+    
     database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
-    if database == '2':
+    if database == 2:
         NODE_DATABASE = "vamps_js_development"
-    elif database == '1':
+    elif database == 1:
         NODE_DATABASE = "vamps_js_dev_av"
     else:
         sys.exit('Exiting')
     
-    
+    out_file = "tax_counts--"+NODE_DATABASE+".json"
+    in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                           user="ruby", # your username
                           passwd="ruby", # your password
                           db=NODE_DATABASE) # name of the data base
     cur = db.cursor()
     print 'DATABASE:',NODE_DATABASE
+    
     
     if not args.list and not args.pid and not args.delete:
         print usage
