@@ -186,7 +186,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // uncomment to print out the object:
     // console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
-    console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
+    //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
+	for(n in new_taxonomy.taxa_tree_dict){
+		console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
+	}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
     //console.log("\ntaxa_tree_dict_map_by_db_id_n_rank = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
