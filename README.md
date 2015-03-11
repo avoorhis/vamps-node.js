@@ -11,8 +11,8 @@ look in package.json to see required modules or run
  
 You will nead mysql running.
  * create 2 databases: 
- ** vamps_js_development 
- ** vamps_js_test
+ -- vamps_js_development 
+ -- vamps_js_test
  * create a user with name and password from database-dev.js and give it permissions for those 2 databases.
  * upload the example sql: mysql -u USERNAME -p <example_db.sql
  (Please ask developers for config files, like database-dev.js, database-test.js and example_db.sql)
