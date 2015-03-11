@@ -19,7 +19,7 @@ var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
 
-var db = require('mysql');
+var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require('./config/database-dev');
