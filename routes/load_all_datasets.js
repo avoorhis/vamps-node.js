@@ -16,7 +16,7 @@ var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_coun
 //var qSequenceCounts = "SELECT project_id, dataset_id, seq_count"; 
 qSequenceCounts += " FROM sequence_pdr_info";
 qSequenceCounts += " JOIN dataset using(dataset_id)";
-qSequenceCounts += " GROUP BY dataset_id";
+qSequenceCounts += " GROUP BY project_id, dataset_id";
 console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
