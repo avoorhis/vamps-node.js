@@ -3,9 +3,21 @@ VAMPS rendition using Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
+--- INSTALL ---
+
 To run this program first install Node.js (http://nodejs.org/)
 look in package.json to see required modules or run
  * (sudo) npm -g install
+ 
+You will nead mysql running.
+ * create 2 databases: 
+ -- vamps_js_development 
+ -- vamps_js_test
+ * create a user with name and password from database-dev.js and give it permissions for those 2 databases.
+ * upload the example sql: mysql -u USERNAME -p <example_db.sql
+ (Please ask developers for config files, like database-dev.js, database-test.js and example_db.sql)
+
+--- UPDATE ---
 
 To update modules:
   * npm update
@@ -48,7 +60,9 @@ MySQL db schema is included in root dir as: db_schema.sql
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
-  2015-02-11 AAV Added 'public' field to 'project' table. -->> TINYINT 0 (private) or 1 (public)
+  2015-02-11 AAV Added 'public' field to 'project' table. -->> 
+  alter table project add column `public` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT ' 0 (private) or 1 (public)'
+  
 
   CREATE TABLE custom_metadata_fields (
     custom_metadata_fields_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -84,6 +98,7 @@ Applying new database schema from vamps2 (on vampsdev)
     UNIQUE KEY `dataset_id_u` (`dataset_id`),
     CONSTRAINT `required_metadata_info_ibfk_1` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  
     
 --- Dir structure ---
 routes - server side logic
