@@ -19,7 +19,7 @@ var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
 
-var db = require('mysql');
+var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require('./config/database-dev');
@@ -170,7 +170,8 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 console.log('DB '+NODE_DATABASE)
 var tax_counts_file = './public/json/tax_counts--'+NODE_DATABASE+'.json'
 TaxaCounts     = require(tax_counts_file);
-MetadataValues = require('./public/json/metadata_all.json');
+var metadata_file = './public/json/metadata--'+NODE_DATABASE+'.json'
+MetadataValues = require(metadata_file);
 //console.log(MetadataValues)
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)

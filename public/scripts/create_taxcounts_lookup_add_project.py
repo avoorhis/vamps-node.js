@@ -20,6 +20,7 @@ JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)
 JOIN silva_taxonomy USING(silva_taxonomy_id)
 JOIN domain USING(domain_id)
 JOIN pyhlum USING(phylum_id)
+where dataset_id = '426'
 GROUP BY dataset_id, domain_id
 
 SELECT sum(seq_count), dataset_id, domain_id,domain,phylum_id,phylum
@@ -29,7 +30,8 @@ JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)
 JOIN silva_taxonomy USING(silva_taxonomy_id)
 JOIN domain USING(domain_id)
 JOIN phylum USING(phylum_id)
-GROUP BY dataset_id, domain_id,phylum_id
+where dataset_id = '426'
+GROUP BY dataset_id, domain_id, phylum_id
 """
 
 
@@ -214,21 +216,29 @@ if __name__ == '__main__':
                 
     args = parser.parse_args()
     
-    database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
-    if database == 2:
-        NODE_DATABASE = "vamps_js_development"
-    elif database == 1:
-        NODE_DATABASE = "vamps_js_dev_av"
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                          user="ruby", # your username
+                          passwd="ruby") # name of the data base
+    cur = db.cursor()
+    cur.execute("SHOW databases like 'vamps%'")
+    dbs = []
+    db_str = ''
+    for i, row in enumerate(cur.fetchall()):
+        dbs.append(row[0])
+        db_str += str(i)+'-'+row[0]+';  '
+    print db_str
+    db_no = input("\nchoose database number: ")
+    if int(db_no) < len(dbs):
+        NODE_DATABASE = dbs[db_no]
     else:
-        sys.exit('Exiting')
+        sys.exit("unrecognized number -- Exiting")
+        
+    print
+    cur.execute("USE "+NODE_DATABASE)
     
     out_file = "tax_counts--"+NODE_DATABASE+".json"
     in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          user="ruby", # your username
-                          passwd="ruby", # your password
-                          db=NODE_DATABASE) # name of the data base
-    cur = db.cursor()
+    
     print 'DATABASE:',NODE_DATABASE
     
     
