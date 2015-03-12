@@ -3,7 +3,7 @@
 
 
 .display_none {
-  /*    hidden*/
+    /* hidden */
     display:none;
 }
 
@@ -21,7 +21,6 @@
 
     list-style-type: none;
     display:inline;
-
     text-align:left;
 }
 #projects_select_div {
@@ -107,20 +106,30 @@
 .thumb_img {
     width:70px;
 }
-/*  COUNTS TABLE */
-.table_title {
-    float:left;
-}
-.close_open_btn{
-    float:right;
-}
-/*  COUNTS TABLE */
-#pre_counts_table_div{
-    border:1px solid red;
+
+.viz_hidden_div {
+	border:1px solid green;
     padding: 3px;
     height:20px;
     width:100%;
 }
+.overflow_500 {
+	height:500px;
+	overflow:auto;
+}
+/*  COUNTS TABLE */
+.table_title {
+    float:left;
+}
+.visualization_download_btn{
+    float:right;
+	margin-right:20px;
+}
+.close_open_btn{
+    float:right;
+}
+
+/*  COUNTS TABLE */
 #counts_table_div {
     width: 500px;
     margin-right:20px;
@@ -135,23 +144,14 @@
 }
 
 /* METADATA TABLE */
-#pre_metadata_table_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #metadata_local_table_div{
     
     width:900px;
     overflow:auto;
 }
 #metadata_table_div {
-    
     margin-right:20px;
     padding-right:20px;
-    
-
 }
 #metadata_table {
     font-size:small;
@@ -164,96 +164,48 @@
     font-weight:bold;
 }
 /* PIECHARTS */
-#pre_piecharts_table_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #piecharts_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* BARCHARTS */
-#pre_barcharts_table_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #barcharts_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dist HEATMAP */
-#pre_dheatmap_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #dheatmap_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Freq HEATMAP */
-#pre_fheatmap_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #fheatmap_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dendrogram */
-#pre_dendrogram_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #dendrogram_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dendrogram png */
-#pre_dendrogram_pdf_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #dendrogram_pdf_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* PCoA */
-#pre_pcoa_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #pcoa_div {
     width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* GeoSpatial */
-#pre_geospatial_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
 #map-canvas {
     width: 900px;
     height: 400px;
@@ -261,12 +213,7 @@
     padding-right:20px;
 }
 /* Frequency Heatmap */
-#pre_fheatmap_div{
-    border:1px solid red;
-    padding: 3px;
-    height:20px;
-    width:100%;
-}
+
 #fheatmap_div {
     width: 500px;
     margin-right:20px;

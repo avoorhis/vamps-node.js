@@ -38,7 +38,7 @@ if (typeof search_metadata_activate_btn3 !=="undefined") {
 
 
 
-var selection_choices = ['1-equal_to','2-less_than','3-greater_than','4-not_equal_to','5-between_range','6-outside_range'];
+var selection_choices = ['equal_to','less_than','greater_than','not_equal_to','between_range','outside_range'];
 
 if (typeof metadata_search_field1 !=="undefined") {
   metadata_search_field1.addEventListener('change', function () {
@@ -70,7 +70,7 @@ if (typeof metadata_search_field1 !=="undefined") {
           
           html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
           for(var i in selection_choices) {
-            html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
+			html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
           } 
           html += "</select> ";
           html += "<div id='input1_comparison'> ";

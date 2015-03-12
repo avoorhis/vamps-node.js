@@ -118,93 +118,104 @@
   
   <!-- Counts -->
   <br><br>
-  <div id='pre_counts_table_div' class='display_none'>
+  <div id='pre_counts_table_div' class='viz_hidden_div display_nonex'>
     <span id='counts_table_title' class='table_title'>Tax Counts Table</span>
+	
     <input type='button' id='counts_table_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='counts_table_download_btn' class='visualization_download_btn' value='download'>
   </div>
-  <a name='tax_table'><div id='tax_table_div'          class=''></div></a>
+  <a name='tax_table'><div id='tax_table_div'          class='overflow_500'></div></a>
   
   <!-- Metadata -->
   <br><br>
-  <div id='pre_metadata_table_div' class='display_none'>
+  <div id='pre_metadata_table_div' class='viz_hidden_div display_nonex'>
     <span id='metadata_title' class='table_title'>Metadata Table</span>
     <input type='button' id='metadata_table_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='metadata_download_btn' class='visualization_download_btn' value='download'>
   </div>
-  <a name='metadata'><div id='metadata_local_table_div' class=''></div> </a>
+  <a name='metadata'><div id='metadata_local_table_div' class='overflow_500'></div> </a>
   
   <!-- Distance Heatmap -->
   <br><br>
-  <div id='pre_dheatmap_div' class='display_none'>
+  <div id='pre_dheatmap_div' class='viz_hidden_div display_nonex'>
     <span id='dheatmap_title' class='table_title'>Distance Heatmap</span>
     <input type='button' id='dheatmap_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='dheatmap_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='dheatmap'><div id='reorder_div'><div id='dheatmap_div' class=''></div></div></a> 
   
 <!-- Frequency Heatmap -->
   <br><br>
-  <div id='pre_fheatmap_div' class='display_none'>
+  <div id='pre_fheatmap_div' class='viz_hidden_div display_nonex'>
     <span id='fheatmap_title' class='table_title'>Frequency Heatmap</span>
     <input type='button' id='fheatmap_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='fheatmap_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='freq_heatmap'><div id='fheatmap_div' class=''></div></a> 
   
   <!-- BarCharts -->
   <br><br>
-  <div id='pre_barcharts_table_div' class='display_none'>
+  <div id='pre_barcharts_table_div' class='viz_hidden_div display_nonex'>
     <span id='barcharts_title' class='table_title'>Bar Charts</span>
     <input type='button' id='barcharts_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='barcharts_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='barcharts'><div id='barcharts_div'           class=''></div> </a>
   
   <!-- PieCharts -->
   <br><br>
-  <div id='pre_piecharts_table_div' class='display_none'>
+  <div id='pre_piecharts_table_div' class='viz_hidden_div display_nonex'>
     <span id='piecharts_title' class='table_title'>Pie Charts</span>
     <input type='button' id='piecharts_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='piecharts_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='piecharts'><div id='piecharts_div'           class=''></div></a>
   
   <!-- Dendrogram -->
   <br><br>
-  <div id='pre_dendrogram_div' class='display_none'>
+  <div id='pre_dendrogram_div' class='viz_hidden_div display_nonex'>
     <span id='dendrogram_title' class='table_title'>Dendrogram</span>
     <input type='button' id='dendrogram_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='dendrogram_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='dendrogram'><div id='dendrogram_div'        class=''></div></a>
   
   <!-- Dendrogram png-->
   <br><br>
-  <div id='pre_dendrogram_pdf_div' class='display_none'>
+  <div id='pre_dendrogram_pdf_div' class='viz_hidden_div display_nonex'>
     <span id='dendrogram_pdf_title' class='table_title'>Dendrogram</span>
     <input type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='dendrogram2_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='dendrogram_pdf'><div id='dendrogram_pdf_div'        class=''></div></a>
 
   <!-- PCoA-->
   <br><br>
-  <div id='pre_pcoa_div' class='display_none'>
+  <div id='pre_pcoa_div' class='viz_hidden_div display_nonex'>
     <span id='pcoa_title' class='table_title'>PCoA</span>
     <input type='button' id='pcoa_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='pcoa_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='pcoa'><div id='pcoa_div'                    class=''></div></a> 
 
   <!-- GEOSPATIAL -->
   <br><br> 
-  <div id='pre_geospatial_div' class='display_none'>
+  <div id='pre_geospatial_div' class='viz_hidden_div display_nonex'>
     <span id='geospatial_title' class='table_title'>GeoSpatial</span>
     <input type='button' id='geospatial_hide_btn' class='close_open_btn' value='close'>
+	<input type='button' id='geospatial_download_btn' class='visualization_download_btn' value='download'>
   </div>
   <a name='geospatial'><div id='map-canvas'            class=''></div></a> 
   
-  <br><br> 
+ 
   
-  <div id='test_div'              class=''></div>  
+
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
   <div id='metadata_tooltip_div' class=''></div>
 </div>
 
-  <div id='DEBUG_div'></div>
+
   
 <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
