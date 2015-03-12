@@ -22,8 +22,8 @@ console.log(qSequenceCounts)
 module.exports.get_datasets = function(callback){
   
   connection.query(qSelectDatasets, function(err, rows, fields){
-      ALL_DATASETS                = {};      // GLOBAL
-      DATASET_NAME_BY_DID         = {};    // GLOBAL
+      ALL_DATASETS                = {};  // GLOBAL
+      DATASET_NAME_BY_DID         = {};  // GLOBAL
       PROJECT_ID_BY_DID           = {};
       PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
       DATASET_IDS_BY_PID          = {};
@@ -33,7 +33,7 @@ module.exports.get_datasets = function(callback){
       if (err)  {
         throw err;
       } else {
-        console.log('Filling GLOBAL Variables:');
+        console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js):');
         var datasetsByProject = {};
         ALL_DATASETS.projects = [];
         //datasetsByProject.projects = []
@@ -64,7 +64,7 @@ module.exports.get_datasets = function(callback){
             "project" :			project,
             "title" :			rows[i].title,
             "description" :		rows[i].description,
-            "public" : rows[i].public
+            "public" :          rows[i].public
           }
           if(pid in DATASET_IDS_BY_PID){
             DATASET_IDS_BY_PID[pid].push(did);
@@ -102,12 +102,12 @@ module.exports.get_datasets = function(callback){
         }
 
       }
-      console.log('ALL_DATASETS');
-      console.log('PROJECT_ID_BY_DID');
-      console.log('PROJECT_INFORMATION_BY_PID');
-      console.log('PROJECT_PERMISSION_BY_PID');
-      console.log('DATASET_IDS_BY_PID');
-      console.log('DATASET_NAME_BY_DID');
+      console.log('  ALL_DATASETS');
+      console.log('  PROJECT_ID_BY_DID');
+      console.log('  PROJECT_INFORMATION_BY_PID');
+      console.log('  PROJECT_PERMISSION_BY_PID');
+      console.log('  DATASET_IDS_BY_PID');
+      console.log('  DATASET_NAME_BY_DID');
       
       callback(ALL_DATASETS);
   });
@@ -139,8 +139,8 @@ module.exports.get_datasets = function(callback){
           }
         }
       }
-      console.log('ALL_DCOUNTS_BY_DID');
-      console.log('ALL_PCOUNTS_BY_PID');
+      console.log('  ALL_DCOUNTS_BY_DID');
+      console.log('  ALL_PCOUNTS_BY_PID');
   });
 };
 
