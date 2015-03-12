@@ -714,10 +714,10 @@ function get_search_datasets(user, search, metadata){
           
           mdvalue = metadata[did][mdname];
             
-          if(('comparison' in search) && (search['comparison'] === '1-equal_to')){
+          if(('comparison' in search) && (search['comparison'] === 'equal_to')){
             search_value = Number(search['single-comparison-value']);
             if( Number(mdvalue) ===  search_value ){
-              console.log('1-equal-to: val '+mdname+' - '+mdvalue)
+              console.log('equal-to: val '+mdname+' - '+mdvalue)
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
@@ -728,10 +728,10 @@ function get_search_datasets(user, search, metadata){
                 tmp_metadata[did] = metadata[did];
               }
             }
-          }else if('comparison' in search && search['comparison'] === '2-less_than'){
+          }else if('comparison' in search && search['comparison'] === 'less_than'){
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) <= search_value){
-              console.log('2-less_than: val '+mdname+' - '+mdvalue)
+              console.log('less_than: val '+mdname+' - '+mdvalue)
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
@@ -742,10 +742,10 @@ function get_search_datasets(user, search, metadata){
                 tmp_metadata[did] = metadata[did];
               }
             }
-          }else if('comparison' in search && search['comparison'] === '3-greater_than'){
+          }else if('comparison' in search && search['comparison'] === 'greater_than'){
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) >= search_value){
-              console.log('3-greater_than: val '+mdname+' - '+mdvalue);
+              console.log('greater_than: val '+mdname+' - '+mdvalue);
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
@@ -756,10 +756,10 @@ function get_search_datasets(user, search, metadata){
                 tmp_metadata[did] = metadata[did];
               }
             }
-          }else if('comparison' in search && search['comparison'] === '4-not_equal_to'){
+          }else if('comparison' in search && search['comparison'] === 'not_equal_to'){
             search_value = Number(search['single-comparison-value']);
             if(Number(mdvalue) !== search_value){
-              console.log('4-not_equal_to: val '+mdname+' - '+mdvalue);
+              console.log('not_equal_to: val '+mdname+' - '+mdvalue);
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
@@ -770,11 +770,11 @@ function get_search_datasets(user, search, metadata){
                 tmp_metadata[did] = metadata[did];
               }
             }
-          }else if('comparison' in search && search['comparison'] === '5-between_range'){
+          }else if('comparison' in search && search['comparison'] === 'between_range'){
             min_search_value = Number(search['min-comparison-value']);
             max_search_value = Number(search['max-comparison-value']);
             if(Number(mdvalue) > min_search_value && Number(mdvalue) < max_search_value){
-              console.log('6-outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
+              console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
@@ -786,11 +786,11 @@ function get_search_datasets(user, search, metadata){
               }
             }
 
-          }else if('comparison' in search && search['comparison'] === '6-outside_range'){
+          }else if('comparison' in search && search['comparison'] === 'outside_range'){
             min_search_value = Number(search['min-comparison-value']);
             max_search_value = Number(search['max-comparison-value']);
             if(Number(mdvalue) < min_search_value || Number(mdvalue) > max_search_value){
-              console.log('6-outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
+              console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
               datasets.push(did);
               //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
               //ds.dataset_ids.push(ds_req);
