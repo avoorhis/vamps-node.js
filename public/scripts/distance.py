@@ -279,21 +279,24 @@ def get_json(node):
 #
 #
 def pcoa(args, dist):
-	from cogent.cluster.metric_scaling import PCoA
-	PCoA_result = PCoA(dist)
-	print PCoA_result
-	a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
-	print a
-	json_array = {}
-	json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
-	json_array["P2"] = a[:,3].tolist()[:-2]
-	json_array["P3"] = a[:,4].tolist()[:-2]
-	json_array["names"] = a[:,1].tolist()[:-2]
-	#json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
-	#json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
-	#json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
-	return json_array
-	#return a
+    from cogent.cluster.metric_scaling import PCoA
+    PCoA_result = PCoA(dist)
+    print PCoA_result
+    #dt = np.dtype(float)
+    #print type(PCoA_result)
+    a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
+    print a
+    json_array = {}
+    json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
+    json_array["P2"] = a[:,3].tolist()[:-2]
+    json_array["P3"] = a[:,4].tolist()[:-2]
+    json_array["names"] = a[:,1].tolist()[:-2]
+    
+    #json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
+    #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
+    #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
+    return json_array
+    #return a
 #
 #
 #
@@ -396,54 +399,56 @@ def pcoa_pdf(args, data):
 #
 if __name__ == '__main__':
 
-	usage = """
-		--in   		json_file
-		--metric	distance metric to calculate ['horn', ]
-	"""
-	parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
+    usage = """
+    --in   		json_file
+    --metric	distance metric to calculate ['horn', ]
+    """
+    parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
 
-	parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = '')
-	parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')	
-	parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis') 
- 	parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap') 
- 	parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
- 	parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix') 
- 	#parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
+    parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = '')
+    parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')	
+    parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis') 
+    parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap') 
+    parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
+    parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix') 
+    #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
- 	args = parser.parse_args()
- 			
+    args = parser.parse_args()
+	
 
-	( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
+    ( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
 
-	if args.function == 'fheatmap':
-		# IMPORTANT print for freq heatmap
-		print short_dm1.tolist()
-		
+    if args.function == 'fheatmap':
+        # IMPORTANT print for freq heatmap
+        print short_dm1.tolist()
 
-	if args.function == 'dheatmap':
-		# IMPORTANT print for dist heatmap
-		print json.dumps(dm2)
 
-	if args.function == 'dendrogram-svg':
-		newick = dendrogram_svg(args, dm3)
-		# IMPORTANT print for SVG
-		print json.dumps(newick)
+    if args.function == 'dheatmap':
+        # IMPORTANT print for dist heatmap
+        print json.dumps(dm2)
 
-	if args.function == 'dendrogram-pdf':
-		#print distances
-		dendrogram_pdf(args, dm1, datasets)
+    if args.function == 'dendrogram-svg':
+        newick = dendrogram_svg(args, dm3)
+        # IMPORTANT print for SVG
+        print json.dumps(newick)
 
-	if args.function == 'pcoa':
-		# if not args.metadata:
-		# 	print "ERROR: In PCoA and no metadata recieved"
-		# 	sys.exit()
-						
-		pcoa_data = pcoa(args, dm3)
-		#print json.dumps(pcoa_data)
+    if args.function == 'dendrogram-pdf':
+        #print distances
+        dendrogram_pdf(args, dm1, datasets)
 
-		#metadata = json.loads( args.metadata.strip("'") )	 
-		pcoa_pdf(args, pcoa_data)
-		#print pcoa_data
+    if args.function == 'pcoa':
+        # if not args.metadata:
+        # 	print "ERROR: In PCoA and no metadata recieved"
+        # 	sys.exit()
+				
+        pcoa_data = pcoa(args, dm3)
+        #print json.dumps(pcoa_data)
+
+        #metadata = json.loads( args.metadata.strip("'") )	 
+        pcoa_pdf(args, pcoa_data)
+        #print pcoa_data
+
+        pass
 
 
 
