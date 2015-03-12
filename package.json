@@ -15,7 +15,6 @@
     "bcrypt-nodejs": "",
     "body-parser": "",
     "compression": "",
-    "connect-flash": "",
     "cookie-parser": "",
     "csv": "",
     "d3": "",
@@ -34,7 +33,16 @@
     "static-favicon": "",
     "sweetcaptcha": "0.0.2-1",
     "uid-safe": "",
-    "xmldom": ""
+    "xmldom": "",
+	"csv-parse": "",
+	"express-flash": "",
+	"node-json2html": "",
+	"express-expose": "",
+	"biojs-io-newick": "",
+	"python-shell": "",
+	"tablesort": "",
+	"ya-csv": "",
+	"nodemailer": ""
   },
   "devDependencies": {
     "debug": "",
@@ -45,6 +53,7 @@
     "plato": "",
     "should": "",
     "supertest": "",
-    "zombie": ""
+    "zombie": "",
+	"selenium-webdriver": ""
   }
 }
