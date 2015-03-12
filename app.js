@@ -167,7 +167,7 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // GLOBAL if leave off 'var':
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-console.log('DB '+NODE_DATABASE)
+console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/database-xxx.js)')
 var tax_counts_file = './public/json/tax_counts--'+NODE_DATABASE+'.json'
 TaxaCounts     = require(tax_counts_file);
 var metadata_file = './public/json/metadata--'+NODE_DATABASE+'.json'
@@ -189,7 +189,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
     //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
 	for(n in new_taxonomy.taxa_tree_dict){
-		console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
+		//console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
 	}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
