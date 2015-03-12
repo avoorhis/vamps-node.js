@@ -1144,7 +1144,7 @@ function create_header(viz, pi) {
       txt = 'PCoA -- ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'ftable'){
-      txt = 'Frequency table -- ';
+      txt = 'Frequency Table -- ';
     }else if(viz == 'mtable'){
       txt = 'Metadata Table -- ';
     }else{
