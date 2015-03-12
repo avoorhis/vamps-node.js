@@ -27,7 +27,7 @@ def go_required_metadata():
 
 	req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 	#print req_query
-	out_file = "metadata_required.json"
+	
 	req_metadata_lookup = {}
 	
 		
@@ -90,7 +90,7 @@ def go_custom_metadata(metadata_lookup):
 					metadata_lookup[did][name] = value
 				n += 1
 
-	out_file = "metadata.json"
+	
 	
 
 	json_str = json.dumps(metadata_lookup)		
@@ -107,25 +107,35 @@ def go_custom_metadata(metadata_lookup):
 
 if __name__ == '__main__':
 
-	usage = """
+    usage = """
 		
-	"""
+    """
 	
-    database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
-    if database == '2':
-        NODE_DATABASE = "vamps_js_development"
-    elif database == '1':
-        NODE_DATABASE = "vamps_js_dev_av"
-    else:
-        sys.exit('Exiting')
-    
-    
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                           user="ruby", # your username
-                          passwd="ruby", # your password
-                          db=NODE_DATABASE) # name of the data base
-    cur = db.cursor() 	
+                          passwd="ruby") # name of the data base
+    cur = db.cursor()
+    cur.execute("SHOW databases like 'vamps%'")
+    dbs = []
+    db_str = ''
+    for i, row in enumerate(cur.fetchall()):
+        dbs.append(row[0])
+        db_str += str(i)+'-'+row[0]+';  '
+    print db_str
+    db_no = input("\nchoose database number: ")
+    if int(db_no) < len(dbs):
+        NODE_DATABASE = dbs[db_no]
+    else:
+        sys.exit("unrecognized number -- Exiting")
+        
+    print
+    cur.execute("USE "+NODE_DATABASE)
+    
+    req_out_file = "metadataREQ--"+NODE_DATABASE+".json"
+    cust_out_file = "metadataCUST--"+NODE_DATABASE+".json"
+    out_file = "metadata--"+NODE_DATABASE+".json"
+    
 	
-	data = go_required_metadata() 
-	data = go_custom_metadata(data)
+    data = go_required_metadata() 
+    data = go_custom_metadata(data)
 	

@@ -141,20 +141,28 @@ if __name__ == '__main__':
     """
 	
 
-    database = input("\nEnter 1 (vamps_js_dev_av) or 2 (vamps_js_development): ")
-    if database == 2:
-        NODE_DATABASE = "vamps_js_development"
-    elif database == 1:
-        NODE_DATABASE = "vamps_js_dev_av"
-    else:
-        sys.exit('Exiting')
-    
-    out_file = "tax_counts--"+NODE_DATABASE+".json"
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                           user="ruby", # your username
-                          passwd="ruby", # your password
-                          db=NODE_DATABASE) # name of the data base
+                          passwd="ruby") # name of the data base
     cur = db.cursor()
+    cur.execute("SHOW databases like 'vamps%'")
+    dbs = []
+    db_str = ''
+    for i, row in enumerate(cur.fetchall()):
+        dbs.append(row[0])
+        db_str += str(i)+'-'+row[0]+';  '
+    print db_str
+    db_no = input("\nchoose database number: ")
+    if int(db_no) < len(dbs):
+        NODE_DATABASE = dbs[db_no]
+    else:
+        sys.exit("unrecognized number -- Exiting")
+        
+    print
+    cur.execute("USE "+NODE_DATABASE)
+    
+    out_file = "tax_counts--"+NODE_DATABASE+".json"
+    
     print 'DATABASE:',NODE_DATABASE 	
     args = parser.parse_args()
     go(args)
