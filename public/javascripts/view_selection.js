@@ -292,7 +292,7 @@ if (typeof fheatmap_btn !== "undefined") {
   });
 }
 //
-// DENDROGRAM
+// DENDROGRAM  D3
 //
 var dendrogram_link = document.getElementById('dendrogram_link_id');
 var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
@@ -609,7 +609,7 @@ function create_metadata_table() {
 //
 
 function create_dendrogram(ts, image_type) {
-      //alert('im HM')
+      //alert('im DEND')
       
       var info_line = create_header('dend', pi_local);
 

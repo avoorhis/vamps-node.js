@@ -83,7 +83,7 @@ module.exports = {
 		create_dendrogram_html: function (newick, ds_count) {
 			//console.log(newick);
 
-			var Newick    = require('../../public/javascripts/newick');
+		  var Newick    = require('../../public/javascripts/newick');
 		  var Phylogram = require('../../public/javascripts/d3.phylogram');
 		  var newick  = Newick.parse(newick);
 		  

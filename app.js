@@ -19,7 +19,7 @@ var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
 
-var db = require('mysql2');
+//var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require('./config/database-dev');
@@ -34,7 +34,7 @@ var C = require('./public/constants');
 
 var app = express();
 app.set('appName', 'VAMPS');
-require('./config/passport')(passport, connection); // pass passport for configuration
+require('./config/passport')(passport, connection.db); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -72,8 +72,8 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // Make our db accessible to our router
 app.use(function(req, res, next){
-    if(!connection) {return next(new Error('no db connection'));}
-    req.db = connection;
+    if(!connection.db) {return next(new Error('no db connection'));}
+    req.db = connection.db;
     req.C = C;
     return next();
 });
@@ -168,11 +168,12 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
 console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/database-xxx.js)')
-var tax_counts_file = './public/json/tax_counts--'+NODE_DATABASE+'.json'
-TaxaCounts     = require(tax_counts_file);
-var metadata_file = './public/json/metadata--'+NODE_DATABASE+'.json'
-MetadataValues = require(metadata_file);
+
+// these files are manually created before server startup using the scripts in public/scripts
+TaxaCounts     = require('./public/json/tax_counts--'+NODE_DATABASE+'.json');
+MetadataValues = require('./public/json/metadata--' + NODE_DATABASE+'.json');
 //console.log(MetadataValues)
+
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
