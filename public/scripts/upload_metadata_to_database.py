@@ -264,7 +264,7 @@ if __name__ == '__main__':
     import argparse
     
     
-    myusage = """usage: 4-vamps-metadata.py  [options]
+    myusage = """usage: upload_metadata_to_database.py  [options]
          
          
          where
@@ -274,17 +274,13 @@ if __name__ == '__main__':
             -i/--infile     
            
             
-         These should all be in INFO-CONFIG.ini file:
-            -p/--project
-            
-            -reg/--dna_region
-            
-            -dom/--domain
+         These should all be in INFO-CONFIG.ini file which is REQUIRED to be in dir:
+            -p/--project            
             
             
      Samples:
-    ./new_vamps_load.py -d new_vamps_data/MBE_10068_Bv4 -i new_vamps_data/MBE_10068_Bv4/preprocessed_fasta.fna -p mtMBE -t multi
-     ~/py_mbl_sequencing_pipeline> ./new_vamps_load.py -d new_vamps_data/test_project/ -i new_vamps_data/test_project/test.fa -p mytestp -t single -ds ds1
+    ./upload_metadata_to_database.py -dir new_vamps_data/MBE_10068_Bv4 -i new_vamps_data/MBE_10068_Bv4/preprocessed_fasta.csv
+    ./upload_metadata_to_database.py -dir new_vamps_data/test_project/ -i new_vamps_data/test_project/test.txt
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     

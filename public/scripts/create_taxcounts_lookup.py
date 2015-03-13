@@ -136,11 +136,15 @@ def go(args):
 #
 if __name__ == '__main__':
 
-    usage = """
-		
+    myusage = """
+		./create_taxcount_lookup.py  (
+        
+        Will ask you to input which database
+        Output will be like tax_counts--(database name).json
+        Output file should be moved as is to ../json/ directory.
+        
     """
 	
-
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                           user="ruby", # your username
                           passwd="ruby") # name of the data base
@@ -151,6 +155,7 @@ if __name__ == '__main__':
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '
+    print myusage
     print db_str
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
