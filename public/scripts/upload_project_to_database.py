@@ -23,14 +23,51 @@ import random
 import csv
 from time import sleep
 import ConfigParser
-#sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 from IlluminaUtils.lib import fastalib
 import datetime
 today = str(datetime.date.today())
 import subprocess
 import MySQLdb
-
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 """
+New Table:
+CREATE TABLE `summed_counts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dataset_id` int(11) unsigned DEFAULT NULL,
+  `domain_id` int(11) unsigned DEFAULT NULL,
+  `phylum_id` int(11) unsigned DEFAULT NULL,
+  `klass_id` int(11) unsigned DEFAULT NULL,
+  `order_id` int(11) unsigned DEFAULT NULL,
+  `family_id` int(11) unsigned DEFAULT NULL,
+  `genus_id` int(11) unsigned DEFAULT NULL,
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `rank_id` tinyint(11) unsigned DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `summed_counts_ibfk_11` (`dataset_id`),
+  KEY `summed_counts_ibfk_1` (`strain_id`),
+  KEY `summed_counts_ibfk_3` (`genus_id`),
+  KEY `summed_counts_ibfk_4` (`domain_id`),
+  KEY `summed_counts_ibfk_5` (`family_id`),
+  KEY `summed_counts_ibfk_6` (`klass_id`),
+  KEY `summed_counts_ibfk_7` (`order_id`),
+  KEY `summed_counts_ibfk_8` (`phylum_id`),
+  KEY `summed_counts_ibfk_9` (`species_id`),
+  KEY `summed_counts_ibfk_10` (`rank_id`),
+  CONSTRAINT `summed_counts_ibfk_11` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_1` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`strain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_3` FOREIGN KEY (`genus_id`) REFERENCES `genus` (`genus_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_4` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_5` FOREIGN KEY (`family_id`) REFERENCES `family` (`family_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_6` FOREIGN KEY (`klass_id`) REFERENCES `klass` (`klass_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_7` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_8` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_9` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_10` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=464 DEFAULT CHARSET=latin1;
+
 
 """
 # Global:
@@ -40,24 +77,50 @@ CONFIG_ITEMS = {}
 SEQ_COLLECTOR = {}
 DATASET_ID_BY_NAME = {}
 SILVA_IDS_BY_TAX = {}
+RANK_COLLECTOR={}
+TAX_ID_BY_RANKID_N_TAX = {}
+SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
-#db = MySQLdb.connect(host="localhost", # your host, usually localhost
-#                      user="ruby", # your username
-#                      passwd="ruby", # your password
-#                      db=NODE_DATABASE) # name of the data base
-#cur = db.cursor()
+# ranks =[{'name':'domain', 'id':1,'num':0},
+#         {'name':'phylum', 'id':4,'num':1},
+#         {'name':'klass',  'id':5,'num':2},
+#         {'name':'order',  'id':6,'num':3},
+#         {'name':'family', 'id':8,'num':4},
+#         {'name':'genus',  'id':9,'num':5},
+#         {'name':'species','id':10,'num':6},
+#         {'name':'strain', 'id':11,'num':7}]
+
 
 def start(args):
     get_config_data(args)
     check_user(args)  ## script dies if user not in db
+    recreate_ranks()
     push_taxonomy(args)  #
     push_sequences(args)
     push_project(args)   # 
     push_dataset(args)
+    push_summed_counts(args)
     push_pdr_seqs(args)
     
-    print SEQ_COLLECTOR
-    print CONFIG_ITEMS
+    #print SEQ_COLLECTOR
+    pp.pprint(CONFIG_ITEMS)
+
+def recreate_ranks():
+    for i,rank in enumerate(ranks):
+        
+        q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
+        print q
+        cur.execute(q)
+        rank_id = cur.lastrowid
+        if rank_id==0:
+            q = "SELECT rank_id from rank where rank='"+rank+"'"
+            print q
+            cur.execute(q)
+            row = cur.fetchone()
+            RANK_COLLECTOR[rank] = row[0]
+        else:
+            RANK_COLLECTOR[rank] = rank_id
+    db.commit()
     
 def push_dataset(args):
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
@@ -95,9 +158,9 @@ def push_project(args):
 def check_user(args):
     """
     check_user()
-      the owner/user must be present in 'user' table for script to continue
+      the owner/user (from config file) must be present in 'user' table for script to continue
     """
-    q = "select * from user where username='"+CONFIG_ITEMS['owner']+"'"
+    q = "select user_id from user where username='"+CONFIG_ITEMS['owner']+"'"
     cur.execute(q)
     numrows = int(cur.rowcount)
     if numrows==0:
@@ -150,7 +213,7 @@ def push_sequences(args):
                 q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
                 q3 += " and gast_distance = '"+distance+"'"
                 q3 += " and rank_id = '"+rank_id+"'"
-                print 'DUP silva_tax_seq'
+                #print 'DUP silva_tax_seq'
                 cur.execute(q3)
                 db.commit() 
                 row = cur.fetchone()
@@ -164,7 +227,51 @@ def push_sequences(args):
         ## don't see that we need to save uniq_ids
     db.commit()
     #print SEQ_COLLECTOR    
+
         
+def push_summed_counts(args):
+    print TAX_ID_BY_RANKID_N_TAX
+    print RANK_COLLECTOR
+    print
+    #print SUMMED_TAX_COLLECTOR
+    #print
+    #print SILVA_IDS_BY_TAX
+    silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
+    for ds in SUMMED_TAX_COLLECTOR:
+        did = DATASET_ID_BY_NAME[ds]
+        for rank_id in SUMMED_TAX_COLLECTOR[ds]:
+             
+            for tax in SUMMED_TAX_COLLECTOR[ds][rank_id]:
+                
+                tax_items = tax.split(';')
+                count = SUMMED_TAX_COLLECTOR[ds][rank_id][tax]
+                print did,tax,rank_id,count
+                fields_sql = []
+                valueholder_sql =[]
+                values_sql = []
+                for i in range(0,len(tax_items)):
+                    fields_sql.append(silva[i])
+                    valueholder_sql.append("%s")
+                    #print rank_id,tax_items[i]
+                    #q = "SELECT "+ranks[i]+"_id from "+ranks[i]+" where "+ranks[i]+"='"+tax_items[i]+"'"
+                    
+                    #cur.execute(q)
+                    #db.commit()
+                    #row = cur.fetchone()
+                    id = RANK_COLLECTOR[ranks[i]]
+                    #print 'id',id
+                    values_sql.append(str(TAX_ID_BY_RANKID_N_TAX[id][tax_items[i]]))
+                #print  'valueholder_sql',valueholder_sql   
+                q = "INSERT into summed_counts (dataset_id,"+", ".join(fields_sql)+",rank_id,count)"
+                q += " VALUES('"+str(did)+"',"
+                for n in values_sql:
+                    q += "'"+str(n)+"',"
+                q += "'"+str(rank_id)+"','"+str(count)+"')"
+                #"'%s','%s','"+  "','".join(valueholder_sql)  +"','%s')"
+                print q
+                cur.execute(q)
+    db.commit()           
+                               
 def push_taxonomy(args):
     
     gast_dir = os.path.join(args.indir,'analysis/gast') 
@@ -175,8 +282,8 @@ def push_taxonomy(args):
     tax_collector = {}
     
     for dir in os.listdir(gast_dir): 
-        ds_dir = dir
-        SEQ_COLLECTOR[ds_dir] = {}
+        ds = dir
+        SEQ_COLLECTOR[ds] = {}
         tax_file = os.path.join(gast_dir, dir, 'vamps_sequences_pipe.txt')
         #print tax_file
         with open(tax_file,'r') as fh:
@@ -186,14 +293,21 @@ def push_taxonomy(args):
                 if items[0] == 'HEADER': continue
                 seq = items[0]
                 ds_file = items[2]
-                if ds_file != ds_dir:
+                if ds_file != ds:
                     sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
                 tax_string = items[3]
                 refhvr_ids = items[4]
                 rank = items[5]
                 seq_count = items[6]
                 distance = items[8]
-                SEQ_COLLECTOR[ds_dir][seq] = {'dataset':ds_dir,
+                
+                
+                if ds not in SUMMED_TAX_COLLECTOR:
+                    SUMMED_TAX_COLLECTOR[ds]={}
+                
+                
+    
+                SEQ_COLLECTOR[ds][seq] = {'dataset':ds,
                                       'taxonomy':tax_string,
                                       'refhvr_ids':refhvr_ids,
                                       'rank':rank,
@@ -204,48 +318,81 @@ def push_taxonomy(args):
                 cur.execute(q1)
                 db.commit()
                 for row in cur.fetchall():
-                    SEQ_COLLECTOR[ds_dir][seq]['rank_id'] = row[0]
-                #print tax_string
+                    SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
+                    
+                
                 tax_items = tax_string.split(';')
+                #print tax_string
+                sumtax = ''
+                for i in range(0,8):
+                    
+                    rank_id = RANK_COLLECTOR[ranks[i]]
+                    if len(tax_items) > i:
+                        
+                        taxitem = tax_items[i]
+                        
+                    else:
+                        taxitem = ranks[i]+'_NA'
+                    sumtax += taxitem+';'
+                    
+                    #print ranks[i],rank_id,taxitem,sumtax,seq_count
+                    if rank_id in SUMMED_TAX_COLLECTOR[ds]:
+                        if sumtax[:-1] in SUMMED_TAX_COLLECTOR[ds][rank_id]:
+                            SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] += int(seq_count)
+                        else:
+                            SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+                            
+                    else:
+                        SUMMED_TAX_COLLECTOR[ds][rank_id] = {}
+                        SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+ 
                 #for i in range(0,8):
                 #insert_nas()    
-                print tax_string
+                
                 if tax_items[0].lower() in accepted_domains:
                     ids_by_rank = []
                     for i in range(0,8):
                         #print i,len(tax_items),tax_items[i]
+                        rank_name = ranks[i]
+                        rank_id = RANK_COLLECTOR[ranks[i]]
                         if len(tax_items) > i:
                             if tax_items[i].lower() == 'species':
                                 t = tax_items[i].lower()
                             else:
                                 t = tax_items[i].capitalize()
                             
-                            if tax_items[i].lower() != (ranks[i]+'_NA').lower():
+                            if tax_items[i].lower() != (rank_name+'_NA').lower():
                                 name_found = False
-                                if ranks[i] in tax_collector:
-                                    tax_collector[ranks[i]].append(t)
+                                if rank_name in tax_collector:
+                                    tax_collector[rank_name].append(t)
                                 else:
-                                    tax_collector[ranks[i]] = [t]
+                                    tax_collector[rank_name] = [t]
                         else:
-                            t = ranks[i]+'_NA'
+                            t = rank_name+'_NA'
                         
-   
-                        q2 = "INSERT ignore into `"+ranks[i]+"` (`"+ranks[i]+"`) VALUES('"+t+"')"
+                        
+                            
+                        q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
                         print q2
                         cur.execute(q2)
                         db.commit() 
-                        rankid = cur.lastrowid
-                        if rankid == 0:
-                            q3 = "select "+ranks[i]+"_id from `"+ranks[i]+"` where `"+ranks[i]+"` = '"+t+"'"
+                        tax_id = cur.lastrowid
+                        if tax_id == 0:
+                            q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
                             print q3
                             cur.execute(q3)
                             db.commit() 
                             row = cur.fetchone()
-                            rankid=row[0]
-                        ids_by_rank.append(str(rankid))
+                            tax_id=row[0]
+                        ids_by_rank.append(str(tax_id))
                         #else:
-                            
-                            #ids_by_rank.append('1')
+                        print 'rank_id,t,tax_id',rank_id,t,tax_id    
+                        if rank_id in TAX_ID_BY_RANKID_N_TAX:
+                            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+                        else:
+                            TAX_ID_BY_RANKID_N_TAX[rank_id]={}
+                            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+                        #ids_by_rank.append('1')
                     print  ids_by_rank   
                     q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
                     q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
@@ -267,7 +414,7 @@ def push_taxonomy(args):
                         silva_tax_id=row[0]
                     
                     SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
-                    SEQ_COLLECTOR[ds_dir][seq]['silva_tax_id'] = silva_tax_id
+                    SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
                     db.commit() 
  #    for rank in tax_collector:
 #         for name in tax_collector[rank]:
@@ -289,6 +436,8 @@ def push_taxonomy(args):
 #         if table != 'domain':
 #             cur.execute(q)
 #     db.commit()
+    print 'SUMMED_TAX_COLLECTOR'
+    print SUMMED_TAX_COLLECTOR
              
 def get_config_data(args):
     # convert a vamps user upload config file: use INFO-TAX.config
@@ -327,23 +476,23 @@ if __name__ == '__main__':
     import argparse
     
     
-    myusage = """usage: database_project_upload.py  [options]
+    myusage = """usage: upload_project_to_database.py  [options]
          
        uploads to new vamps  
          where
             
             -dir/--indir   This should be all you need.
-                     Steps 1 & 2 are in py_pipeline
+                     Steps 1 & 2 are in py_mbl_sequencing_pipeline (modified)
                      
                      Step 1) ./1-vamps-load.py
                              Create config.ini from input fasta file
                              Will also create directory structure:
-                                 analysis/gast/
-                             Divide up datasets into separate directories
+                                 analysis/gast/<dataset name>
+                             Installs fatsta files into separate dataset directories.
                      Step 2) ./2-vamps-gast.py
-                             Will create INFO-TAX.ini
-                             and using (modified) python_pipeline
-                             GAST data into analysis/gast/ds directory
+                             Will create INFO_CONFIG.ini
+                             and, using (modified) python_pipeline,
+                             GAST data into analysis/gast/<dataset name> directory
                      Step 3) This script:
                              .database_project_upload.py -dir input_directory
 

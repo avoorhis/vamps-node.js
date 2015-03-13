@@ -19,7 +19,7 @@ JOIN sequence_uniq_info USING(sequence_id)
 JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)
 JOIN silva_taxonomy USING(silva_taxonomy_id)
 JOIN domain USING(domain_id)
-JOIN pyhlum USING(phylum_id)
+JOIN phylum USING(phylum_id)
 where dataset_id = '426'
 GROUP BY dataset_id, domain_id
 
