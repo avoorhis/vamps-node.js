@@ -118,7 +118,8 @@ def clean_all(args):
     
     q = "DELETE from silva_taxonomy"
     cur.execute(q)
-    
+    q = "DELETE from summed_counts"
+    cur.execute(q)
     print q
     # tax domains
     for table in ranks:

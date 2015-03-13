@@ -86,8 +86,8 @@
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
           <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
           <%    var cols = 8 %>
-          <%    if(mtx.shape[1] === 1  && (name === 'Distance Heatmap' || name === 'Dendrograms' )) { %>
-                    <td class='td_top'><%= name %><br><br>Not Available</td>
+          <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' || name.substring(0,10) === 'Dendrogram' || name.substring(0,17) === 'Frequency Heatmap' || name.substring(0,13) === 'PCoA Analyses' )) { %>
+                    <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
           <%    } else { %>
           <%        if(disable_thumbs) {                                                              %>
                       <td class='td_top'><%= name %><br>

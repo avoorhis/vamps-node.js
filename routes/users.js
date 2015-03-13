@@ -13,6 +13,7 @@ var helpers = require('./helpers/helpers');
 /* GET User List (index) page. */
 router.get('/index_users', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
+	console.log('in indexusers')
     var qSelect = "SELECT * from user";
     var collection = db.query(qSelect, function (err, rows, fields){
       if (err)  {

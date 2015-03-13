@@ -491,7 +491,7 @@ router.post('/dendrogram', function(req, res) {
       
       //var m = JSON.stringify(mtx)
       if(image_type == 'svg'){
-        console.log(JSON.parse(output))
+        //console.log(JSON.parse(output))
         var d3 = require("d3");
         var xmldom = require('xmldom');
         var Newick    = require('../../public/javascripts/newick');
@@ -499,7 +499,7 @@ router.post('/dendrogram', function(req, res) {
         newick = JSON.parse(output);
         //console.log('Newick ',newick)
         var json  = Newick.parse(newick);
-        console.log(JSON.stringify(json,null,4))
+        //console.log(JSON.stringify(json,null,4))
         var newickNodes = [];
         function buildNewickNodes(node, callback) {
           newickNodes.push(node);
@@ -510,13 +510,14 @@ router.post('/dendrogram', function(req, res) {
           }
         }
         buildNewickNodes(json);
-
+		
         var tree_data = d3.phylogram.build('body', json, {
           width: 300,
           height: visual_post_items.no_of_datasets*100
         });
-
+		
         var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+		
         var html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
          
         d3.select('svg').remove(); 
