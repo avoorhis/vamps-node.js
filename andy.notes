@@ -29,7 +29,52 @@ Make sure that Parag and Ioannis data gets loaded.
 Mytien -- will send code for new component anaylsis viz.
 	Also ?? How to remove ds lower than a certain count
 
-I Said new vamps prototype up live this summer!!!!
+I said new vamps prototype up live this summer!!!!
 	what features are important?
 
 FEEDBACK:
+
+
+NOTES:
+	For taxonomy and counts:
+	counts are pre-calculated (in script public/scripts/create_taxcounts_lookup) and kept in public/json/taxcounts--(database).json
+	taxonomy nodes are created on server start in routes/helpers/custom_taxa_class.js  
+		new_taxonomy.taxa_tree_dict
+		new_taxonomy.taxa_tree_dict_map_by_rank
+		
+New Table:
+CREATE TABLE `summed_counts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dataset_id` int(11) unsigned DEFAULT NULL,
+  `domain_id` int(11) unsigned DEFAULT NULL,
+  `phylum_id` int(11) unsigned DEFAULT NULL,
+  `klass_id` int(11) unsigned DEFAULT NULL,
+  `order_id` int(11) unsigned DEFAULT NULL,
+  `family_id` int(11) unsigned DEFAULT NULL,
+  `genus_id` int(11) unsigned DEFAULT NULL,
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `rank_id` tinyint(11) unsigned DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `summed_counts_ibfk_11` (`dataset_id`),
+  KEY `summed_counts_ibfk_1` (`strain_id`),
+  KEY `summed_counts_ibfk_3` (`genus_id`),
+  KEY `summed_counts_ibfk_4` (`domain_id`),
+  KEY `summed_counts_ibfk_5` (`family_id`),
+  KEY `summed_counts_ibfk_6` (`klass_id`),
+  KEY `summed_counts_ibfk_7` (`order_id`),
+  KEY `summed_counts_ibfk_8` (`phylum_id`),
+  KEY `summed_counts_ibfk_9` (`species_id`),
+  KEY `summed_counts_ibfk_10` (`rank_id`),
+  CONSTRAINT `summed_counts_ibfk_11` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_1` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`strain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_3` FOREIGN KEY (`genus_id`) REFERENCES `genus` (`genus_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_4` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_5` FOREIGN KEY (`family_id`) REFERENCES `family` (`family_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_6` FOREIGN KEY (`klass_id`) REFERENCES `klass` (`klass_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_7` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_8` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_9` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_10` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=464 DEFAULT CHARSET=latin1;
