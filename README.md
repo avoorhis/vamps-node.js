@@ -31,6 +31,10 @@ the server is already running
   * events.js:72
     * throw er; // Unhandled 'error' event
 
+--- Test for unused modules ---
+	sudo npm install depcheck -g
+	depcheck
+	
 --- START ---
 
 Start this project:
@@ -62,7 +66,21 @@ Applying new database schema from vamps2 (on vampsdev)
   
   2015-02-11 AAV Added 'public' field to 'project' table. -->> 
   alter table project add column `public` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT ' 0 (private) or 1 (public)'
-  
+  CREATE TABLE `project` (
+    `project_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `project` varchar(32) NOT NULL DEFAULT '',
+    `title` varchar(64) NOT NULL DEFAULT '',
+    `project_description` varchar(255) NOT NULL DEFAULT '',
+    `rev_project_name` varchar(32) NOT NULL DEFAULT '',
+    `funding` varchar(64) NOT NULL DEFAULT '',
+    `owner_user_id` int(11) unsigned DEFAULT NULL,
+    `public` tinyint(1) DEFAULT '1',
+    PRIMARY KEY (`project_id`),
+    UNIQUE KEY `project` (`project`),
+    UNIQUE KEY `rev_project_name` (`rev_project_name`),
+    KEY `project_fk_user_id_idx` (`owner_user_id`),
+    CONSTRAINT `project_ibfk_1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE
+  ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
   CREATE TABLE custom_metadata_fields (
     custom_metadata_fields_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,

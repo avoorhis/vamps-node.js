@@ -21,7 +21,7 @@ console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
   
-  connection.query(qSelectDatasets, function(err, rows, fields){
+  connection.db.query(qSelectDatasets, function(err, rows, fields){
       ALL_DATASETS                = {};  // GLOBAL
       DATASET_NAME_BY_DID         = {};  // GLOBAL
       PROJECT_ID_BY_DID           = {};
@@ -31,7 +31,9 @@ module.exports.get_datasets = function(callback){
       var pids         = {};
       var titles       = {};
       if (err)  {
-        throw err;
+		  console.log('Query error: ' + err);
+		  console.log(err.stack);
+		  process.exit(1);
       } else {
         console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js):');
         var datasetsByProject = {};
@@ -112,12 +114,14 @@ module.exports.get_datasets = function(callback){
       callback(ALL_DATASETS);
   });
   
-  connection.query(qSequenceCounts, function(err, rows, fields){    
+  connection.db.query(qSequenceCounts, function(err, rows, fields){    
     ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
     ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
     //console.log(qSequenceCounts)
       if (err)  {
-        throw err;
+		  console.log('Query error: ' + err);
+		  console.log(err.stack);
+		  process.exit(1);
       } else {
         
         for (var i=0; i < rows.length; i++) {
