@@ -20,6 +20,11 @@ function make_dictMap_by_rank(tags) {
   });
   var i = null;
   for (i = 0; tags.length > i; i += 1) {
+    console.log("TTT tags[i] = ");
+    console.log(tags[i]);
+    console.log("TTT tags[i].rank = ");
+    console.log(tags[i].rank);
+    
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
   return dictMap_by_rank;

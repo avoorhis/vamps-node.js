@@ -11,17 +11,6 @@ import argparse
 import MySQLdb
 import json
 
-hostname = 'localhost'
-username = 'ruby'
-password = 'ruby'
-NODE_DATABASE = "vamps_js_development"
-#NODE_DATABASE = "vamps_js_dev_av"
-out_file = "tax_counts--"+NODE_DATABASE+".json"
-db = MySQLdb.connect(host=hostname, # your host, usually localhost
-                     user=username, # your username
-                      passwd=password, # your password
-                      db=NODE_DATABASE) # name of the data base
-cur = db.cursor() 
 parser = argparse.ArgumentParser(description="") 
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
