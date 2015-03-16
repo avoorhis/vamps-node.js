@@ -44,6 +44,7 @@ Install nodemon to keep from restarting server after changes
   * sudo npm install nodemon -g
 Then run as: 
   * nodemon bin/www
+  * restart with rs
 
 --- TESTS ---
 
