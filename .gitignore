@@ -22,6 +22,8 @@ temp/
 downloads/*
 tmp/
 public/tmp_images/
+public/scripts/*.json
+public/json/*.json
 visuals_testing/
 .DS_Store
 
