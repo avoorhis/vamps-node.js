@@ -203,40 +203,40 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["435_klass"]["taxon"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["435_klass"]));
     
-    var tree = new TreeModel();
-    var root = tree.parse({
-        id: 0,
-        name: "Root",
-        children: [{id: 1, name: "1", children: []},{id: 2, name: "2", children: []}]
-    });
-    var root1 = tree.parse(new_taxonomy.taxa_tree_dict_map_by_rank['phylum'])
-    var root2 = tree.parse({
-        node_id: 0,
-        name: "Root",
-        children: [
-        {"parent_id":1,"children_ids":[3,19,41],"taxon":"Proteobacteria","rank":"phylum","node_id":2,"db_id":53584},
-        {"parent_id":1,"children_ids":[15,31],"taxon":"Firmicutes","rank":"phylum","node_id":14,"db_id":53588},
-        {"parent_id":34,"children_ids":[36],"taxon":"Fungi","rank":"phylum","node_id":35,"db_id":53602},
-        {"parent_id":1,"children_ids":[46],"taxon":"phylum_NA","rank":"phylum","node_id":45,"db_id":53583},
-        {"parent_id":1,"children_ids":[51],"taxon":"Bacteroidetes","rank":"phylum","node_id":50,"db_id":53596}
-        ]
-    });
-    var root3 = tree.parse({
-        node_id: 0,
-        name: "Root",
-        children: new_taxonomy.taxa_tree_dict
-    });
-
-    // console.log("555");
-    // console.log(root3);
-    var node14 = root2.first(function (node) {
-        return node.model.rank === 'phylum';
-    });
-    // console.log(node14);
-
-    var nodesGt100 = root3.all(function (node) {
-      return node.model.rank === 'phylum';
-    });
+    // var tree = new TreeModel();
+    // var root = tree.parse({
+    //     id: 0,
+    //     name: "Root",
+    //     children: [{id: 1, name: "1", children: []},{id: 2, name: "2", children: []}]
+    // });
+    // var root1 = tree.parse(new_taxonomy.taxa_tree_dict_map_by_rank['phylum'])
+    // var root2 = tree.parse({
+    //     node_id: 0,
+    //     name: "Root",
+    //     children: [
+    //     {"parent_id":1,"children_ids":[3,19,41],"taxon":"Proteobacteria","rank":"phylum","node_id":2,"db_id":53584},
+    //     {"parent_id":1,"children_ids":[15,31],"taxon":"Firmicutes","rank":"phylum","node_id":14,"db_id":53588},
+    //     {"parent_id":34,"children_ids":[36],"taxon":"Fungi","rank":"phylum","node_id":35,"db_id":53602},
+    //     {"parent_id":1,"children_ids":[46],"taxon":"phylum_NA","rank":"phylum","node_id":45,"db_id":53583},
+    //     {"parent_id":1,"children_ids":[51],"taxon":"Bacteroidetes","rank":"phylum","node_id":50,"db_id":53596}
+    //     ]
+    // });
+    // var root3 = tree.parse({
+    //     node_id: 0,
+    //     name: "Root",
+    //     children: new_taxonomy.taxa_tree_dict
+    // });
+    // 
+    // // console.log("555");
+    // // console.log(root3);
+    // var node14 = root2.first(function (node) {
+    //     return node.model.rank === 'phylum';
+    // });
+    // // console.log(node14);
+    // 
+    // var nodesGt100 = root3.all(function (node) {
+    //   return node.model.rank === 'phylum';
+    // });
     // console.log("888")
     // console.log(nodesGt100);
     
@@ -280,7 +280,7 @@ all_silva_taxonomy.get_dataset_taxa_counts(function(err, results) {
   {
     var taxcounts = new taxCounts(results);
     
-    console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
+    // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
     taxcounts.print_res(results)
     // console.log("1111")
     // console.log(results)
