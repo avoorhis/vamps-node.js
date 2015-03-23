@@ -31,10 +31,42 @@ var helpers = require('./helpers');
 
 // Private
 
+function count_taxa(dataset_seq_tax_dict)
+{
+  try 
+  {
+    if (dataset_seq_tax_dict[dataset_id][rank_attr] > 0)
+    {
+      dataset_seq_tax_dict[dataset_id][rank_attr] = dataset_seq_tax_dict[dataset_id][rank_attr] + count;
+    }
+    else
+    {
+      dataset_seq_tax_dict[dataset_id][rank_attr] = count;             
+    }    
+  }
+  catch (e) 
+  {
+    console.log(e);
+  }
+  // finally 
+  // {
+  //   console.log("entering and leaving the finally block");
+  // }
+  return dataset_seq_tax_dict;
+}
+
+function init_dataset_seq_tax_dict(dataset_seq_tax_dict)
+{
+  if (!(dataset_seq_tax_dict[dataset_id]))
+  {
+    dataset_seq_tax_dict[dataset_id] = {};
+  }
+  return dataset_seq_tax_dict
+}
+
 function make_taxa_count_dict(dataset_seq_tax_obj)
 {
 
-  var dataset_seq_tax_dict1 = [];
   var dataset_seq_tax_dict = {};
   // console.log("HHH1");
   // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
@@ -42,14 +74,15 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
   {
     
   	in_obj = dataset_seq_tax_obj[i];
-    console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
+    // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
     dataset_id = parseInt(in_obj["dataset_id"]);
     count = in_obj["seq_count"]
     // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
-    if (!(dataset_seq_tax_dict[dataset_id]))
-    {
-      dataset_seq_tax_dict[dataset_id] = {};
-    }
+    init_dataset_seq_tax_dict(dataset_seq_tax_dict);
+    // if (!(dataset_seq_tax_dict[dataset_id]))
+    // {
+    //   dataset_seq_tax_dict[dataset_id] = {};
+    // }
     
     rank_attr = ""
     for (var field_name in in_obj)
@@ -58,45 +91,10 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
        var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
        if (is_rank)
        {
-         try 
-         {
-           // console.log("EEE field_name = " + JSON.stringify(field_name));
-           // console.log("EEE1 in_obj[field_name] = " + JSON.stringify(in_obj[field_name]));
-           
-           // dataset_seq_tax_dict[dataset_id].set(field_name, in_obj[field_name])
-           // console.log("CCC count = " + count);
-           rank_attr += ("_" + in_obj[field_name])
-           // console.log("CCC2 parseInt(count) = " + parseInt(count));
-           console.log("FFF1 dataset_seq_tax_dict[dataset_id][rank_attr] = " + dataset_seq_tax_dict[dataset_id][rank_attr]);
-           
-           if (dataset_seq_tax_dict[dataset_id][rank_attr] > 0)
-           {
-             dataset_seq_tax_dict[dataset_id][rank_attr] = dataset_seq_tax_dict[dataset_id][rank_attr] + count;
-           }
-           else
-           {
-             dataset_seq_tax_dict[dataset_id][rank_attr] = count;             
-           }
-           
-         }
-         catch (e) 
-         {
-           console.log("entering catch block");
-           console.log(e);
-           console.log("leaving catch block");
-         }
-         // finally 
-         // {
-         //   console.log("entering and leaving the finally block");
-         // }
-         
-         
-       }
-       // console.log("DDD1 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
-       
+         rank_attr += ("_" + in_obj[field_name]);
+         count_taxa(dataset_seq_tax_dict);
+       }       
      }
-     console.log("DDD2 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
-     
    }
    console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
        
