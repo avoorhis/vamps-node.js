@@ -69,7 +69,15 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
            // console.log("CCC2 parseInt(count) = " + parseInt(count));
            console.log("FFF1 dataset_seq_tax_dict[dataset_id][rank_attr] = " + dataset_seq_tax_dict[dataset_id][rank_attr]);
            
-             dataset_seq_tax_dict[dataset_id][rank_attr] = 0;
+           if (dataset_seq_tax_dict[dataset_id][rank_attr] > 0)
+           {
+             dataset_seq_tax_dict[dataset_id][rank_attr] = dataset_seq_tax_dict[dataset_id][rank_attr] + count;
+           }
+           else
+           {
+             dataset_seq_tax_dict[dataset_id][rank_attr] = count;             
+           }
+           
          }
          catch (e) 
          {
