@@ -15,29 +15,30 @@
     "body-parser": "",
     "compression": "",
     "cookie-parser": "",
+    "csv-parse": "",
     "d3": "3.5.2",    // needs this version to function with d3.phylogram in routes_visualizations.js
     "depd": "",
     "ejs": "",
     "express": "",
+    "express-flash": "",
     "express-session": "",
     "istanbul": "",
     "jsdom": "",
     "morgan": "",
     "mysql2": "",
+    "node-json2html": "",
+    "nodemailer": "",
     "nodemon": "",
     "nodetime": "",
     "passport": "",
     "passport-local": "",
+    "python-shell": "",
     "static-favicon": "",
     "sweetcaptcha": "",
+    "tree-model": "",
     "uid-safe": "",
     "xmldom": "",
-	"csv-parse": "",
-	"express-flash": "",
-	"node-json2html": "",
-	"python-shell": "",
-	"ya-csv": "",
-	"nodemailer": ""
+    "ya-csv": ""
   },
   "devDependencies": {
     "debug": "",
@@ -46,9 +47,9 @@
     "nodetime": "",
     "passport-stub": "",
     "plato": "",
+	  "selenium-webdriver": ""
     "should": "",
     "supertest": "",
     "zombie": "",
-	"selenium-webdriver": ""
   }
 }
