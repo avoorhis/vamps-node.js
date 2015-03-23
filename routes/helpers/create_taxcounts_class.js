@@ -33,7 +33,9 @@ var helpers = require('./helpers');
 
 function make_taxa_count_dict(dataset_seq_tax_obj)
 {
-  var dataset_seq_tax_dict = {}
+
+  var dataset_seq_tax_dict1 = [];
+  var dataset_seq_tax_dict = {};
   // console.log("HHH1");
   // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
   for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
@@ -41,11 +43,15 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
     
   	in_obj = dataset_seq_tax_obj[i];
     console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
-    dataset_id = in_obj["dataset_id"];
+    dataset_id = parseInt(in_obj["dataset_id"]);
     count = in_obj["seq_count"]
-    console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
-    dataset_seq_tax_dict[dataset_id] = {};
+    // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+    if (!(dataset_seq_tax_dict[dataset_id]))
+    {
+      dataset_seq_tax_dict[dataset_id] = {};
+    }
     
+    rank_attr = ""
     for (var field_name in in_obj)
     {
      
@@ -54,12 +60,16 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
        {
          try 
          {
-           console.log("EEE field_name = " + JSON.stringify(field_name));
-           console.log("EEE1 in_obj[field_name] = " + JSON.stringify(in_obj[field_name]));
+           // console.log("EEE field_name = " + JSON.stringify(field_name));
+           // console.log("EEE1 in_obj[field_name] = " + JSON.stringify(in_obj[field_name]));
            
            // dataset_seq_tax_dict[dataset_id].set(field_name, in_obj[field_name])
-           console.log("CCC count = " + count);
-           dataset_seq_tax_dict[dataset_id][in_obj[field_name]] = count;
+           // console.log("CCC count = " + count);
+           rank_attr += ("_" + in_obj[field_name])
+           // console.log("CCC2 parseInt(count) = " + parseInt(count));
+           console.log("FFF1 dataset_seq_tax_dict[dataset_id][rank_attr] = " + dataset_seq_tax_dict[dataset_id][rank_attr]);
+           
+             dataset_seq_tax_dict[dataset_id][rank_attr] = 0;
          }
          catch (e) 
          {
@@ -67,10 +77,10 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
            console.log(e);
            console.log("leaving catch block");
          }
-         finally 
-         {
-           console.log("entering and leaving the finally block");
-         }
+         // finally 
+         // {
+         //   console.log("entering and leaving the finally block");
+         // }
          
          
        }
