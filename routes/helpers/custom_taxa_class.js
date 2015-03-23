@@ -20,11 +20,6 @@ function make_dictMap_by_rank(tags) {
   });
   var i = null;
   for (i = 0; tags.length > i; i += 1) {
-    console.log("TTT tags[i] = ");
-    console.log(tags[i]);
-    console.log("TTT tags[i].rank = ");
-    console.log(tags[i].rank);
-    
     dictMap_by_rank[tags[i].rank].push(tags[i]);
   }
   return dictMap_by_rank;
@@ -208,20 +203,20 @@ function make_taxa_tree_dict(taxonomy_obj)
 			
 			if (!node)
             {
-              //console.log("taxa_name = " + JSON.stringify(taxa_name));
-              //console.log("taxa_rank = " + JSON.stringify(taxa_rank));
-              //console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
-              //console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
-              //console.log("name_rank2 = " + taxa_name+' - '+taxa_rank)
+              // console.log("taxa_name = " + JSON.stringify(taxa_name));
+              // console.log("taxa_rank = " + JSON.stringify(taxa_rank));
+              // console.log("i_am_a_parent = " + JSON.stringify(i_am_a_parent));
+              // console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
+              // console.log("name_rank2 = " + taxa_name+' - '+taxa_rank)
               current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
-			  //console.log("new_node = " + JSON.stringify(current_dict));
-			  //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
+			        //console.log("new_node = " + JSON.stringify(current_dict));
+			        //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
               
-			  taxa_tree_dict.push(current_dict);
+			        taxa_tree_dict.push(current_dict);
              
               add_to_dict_by_key(dictMap_by_name_n_rank,  current_dict.taxon + "_" + current_dict.rank, current_dict);
               
-			  add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
+			        add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
 
               i_am_a_parent = current_dict.node_id;
 
