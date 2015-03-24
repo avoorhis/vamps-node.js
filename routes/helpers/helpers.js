@@ -1,3 +1,4 @@
+var constants = require(app_root + '/public/constants');
 var express = require('express');
 var router = express.Router();
 
@@ -30,8 +31,18 @@ module.exports = {
 */
 
 module.exports.start = process.hrtime();
+
 module.exports.elapsed_time = function(note){
     var precision = 3; // 3 decimal places
     var elapsed = process.hrtime(module.exports.start)[1] / 1000000; // divide by a million to get nano to milli
     console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 };
+
+var ranks = constants.RANKS;
+
+module.exports.check_if_rank = function(field_name)
+{
+  // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
+  // console.log("FFF0 field_name = "+ field_name);
+  return ranks.indexOf(field_name) > -1;
+}
