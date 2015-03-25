@@ -13,8 +13,6 @@ colony-npm/
 .project
 .settings/
 coverage/
-node_modules/express-session/node_modules/depd/
-node_modules/express-session/node_modules/uid-safe/
 npm-debug.log
 
 grep_code.sh
