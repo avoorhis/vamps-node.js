@@ -28,3 +28,5 @@ visuals_testing/
 .DS_Store
 
 .~lock.*.csv#
+views/visuals/partials/tax_silva108_custom.html
+views/visuals/partials/tax_silva108_simple.html
