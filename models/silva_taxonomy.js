@@ -72,6 +72,13 @@ var dataset_taxa_counts = " \
       ) AS t USING(taxa_counts_temp_id) \
 ";
 
+// SELECT * FROM pet
+// INTO OUTFILE ‘/tmp/pet.csv’
+// FIELDS TERMINATED BY ‘,’
+// LINES TERMINATED BY ‘\n’
+
+
+
 console.log('running dataset_taxa_counts query');
 
 
@@ -126,19 +133,26 @@ silvaTaxonomy.prototype.get_dataset_taxa_counts_amount = function(callback)
   //   callback(err, rows);
   // });
 
+
+
 silvaTaxonomy.prototype.get_dataset_taxa_counts = function(from_here, chunk_size, callback) 
 {
   console.log("AAA in silvaTaxonomy.prototype.get_dataset_taxa_counts");
   console.log("AAA from_here = " + from_here);
   console.log("AAA chunk_size = " + chunk_size);
 
-  connection.db.query(dataset_taxa_counts, [from_here, chunk_size], function (err, info) {
+  connection.db.query(dataset_taxa_counts, [from_here, chunk_size], function (err, rows, fields) {
     // callback(err, rows);
-    console.log("III1 info");
-    console.log(info);
+    console.log("III1 rows");
+    console.log(rows, fields);
 
-    callback(err, info);
+    callback(err, rows, fields);
   
+    // JSON is not 'appendable' format. You have two options here:
+    // 
+    //   Read file, parse it, append data to array, serialize, replace file content.
+    //   Switch to different file format. Actually CSV is good enough to store table-like data and is 'appendable'.
+    // 
   // connection.db.query(dataset_taxa_counts, [from_here, chunk_size], function(err, rows, fields) {
   //   console.log("AAA1 from_here = " + rows);
   //   console.log("AAA2 fields = " + fields);
@@ -147,6 +161,34 @@ silvaTaxonomy.prototype.get_dataset_taxa_counts = function(from_here, chunk_size
     // callback(err, rows);
   });
 };
+
+
+// silvaTaxonomy.prototype.get_dataset_taxa_counts = function(from_here, chunk_size, callback) 
+// {
+//   console.log("AAA in silvaTaxonomy.prototype.get_dataset_taxa_counts");
+//   console.log("AAA from_here = " + from_here);
+//   console.log("AAA chunk_size = " + chunk_size);
+// 
+//   connection.db.query(dataset_taxa_counts, [from_here, chunk_size], function (err, info) {
+//     // callback(err, rows);
+//     console.log("III1 info");
+//     console.log(info);
+// 
+//     callback(err, info);
+//   
+//     // JSON is not 'appendable' format. You have two options here:
+//     // 
+//     //   Read file, parse it, append data to array, serialize, replace file content.
+//     //   Switch to different file format. Actually CSV is good enough to store table-like data and is 'appendable'.
+//     // 
+//   // connection.db.query(dataset_taxa_counts, [from_here, chunk_size], function(err, rows, fields) {
+//   //   console.log("AAA1 from_here = " + rows);
+//   //   console.log("AAA2 fields = " + fields);
+//   //   console.log("AAA3 info = " + info);
+//   //   
+//     // callback(err, rows);
+//   });
+// };
 
 
 // silvaTaxonomy.prototype.get_dataset_taxa_counts = function(callback) 
