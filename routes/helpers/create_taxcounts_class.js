@@ -30,6 +30,58 @@ var helpers = require('./helpers');
 // });
 
 // Private
+var silvaTaxonomy = require(app_root + '/models/silva_taxonomy');
+var all_silva_taxonomy = new silvaTaxonomy();
+
+function get_table_chunks(total_amount)
+{
+  console.log("FFF1 in get_table_chunks");
+  
+  from_here = 0;
+  // chunk_size = 50000
+  chunk_size = 2;
+  amount_left = total_amount;
+  
+  while (amount_left > 0)
+  {
+    console.log("FFF3 in get_table_chunks.while");
+    console.log("FFF3 chunk_size = " + chunk_size);
+    console.log("FFF3 amount_left = " + amount_left);
+
+    all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, results) 
+    {
+      console.log("III2 results");
+      console.log(results);
+      // dataset_seq_tax_dict = make_taxa_count_dict(results)
+      helpers.write_to_file(file_name, JSON.stringify(results));
+      
+    });
+    
+    // all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, results) 
+    // {
+    //   console.log("III1 info");
+    //   console.log(info);
+    // 
+    //   
+    //   console.log("EEE in all_silva_taxonomy.get_dataset_taxa_counts");
+    //   console.log("EEE1 from_here = " + rows);
+    //   console.log("EEE2 fields = " + fields);
+    //   console.log("EEE3 info = " + info);
+    //   
+    //   if (err)
+    //     throw err; // or return an error message, or something
+    //   else
+    //   {
+    //     console.log("888 results")
+    //     console.log(results)  
+    //     dataset_seq_tax_dict = make_taxa_count_dict(results)
+    //         
+    //   }
+    // });
+    amount_left -= chunk_size;
+    from_here += chunk_size;
+  }
+}
 
 function count_taxa(dataset_seq_tax_dict)
 {
@@ -77,14 +129,11 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
     // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
     dataset_id = parseInt(in_obj["dataset_id"]);
     count = in_obj["seq_count"]
+    
     // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
     init_dataset_seq_tax_dict(dataset_seq_tax_dict);
-    // if (!(dataset_seq_tax_dict[dataset_id]))
-    // {
-    //   dataset_seq_tax_dict[dataset_id] = {};
-    // }
-    
     rank_attr = ""
+
     for (var field_name in in_obj)
     {
      
@@ -92,12 +141,13 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
        if (is_rank)
        {
          rank_attr += ("_" + in_obj[field_name]);
+         helpers.start = process.hrtime();     
          count_taxa(dataset_seq_tax_dict);
+         helpers.elapsed_time("This is the running time for some code");         
        }       
      }
    }
    console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
-       
   
 }
 
@@ -105,13 +155,17 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
 // Public
 module.exports = TaxCounts;
 
-function TaxCounts(rows) {
+function TaxCounts(total_amount) {
   helpers.start = process.hrtime();
+  file_name = "public/json/dataset_seq_tax_dict.json"
+  helpers.clear_file(file_name);
   
   // this.taxa_tree_dict = [];
   // this.taxa_tree_dict_map_by_rank = [];
-  this.dataset_seq_tax_obj = rows;
-  this.dataset_seq_tax_dict = make_taxa_count_dict(this.dataset_seq_tax_obj)
+  console.log("FFF2 in TaxCounts");
+  console.log("total_amount = " + total_amount);
+  
+  get_table_chunks(total_amount);
 
   // temp_arr = make_taxa_count_dict(this.dataset_seq_tax_obj);
   // this.taxa_tree_dict = temp_arr[0];
@@ -127,6 +181,7 @@ function TaxCounts(rows) {
 TaxCounts.prototype.print_res = function(rows) 
 {
   console.log("HHH2");
+  
   // console.log("rows = " + JSON.stringify(rows));
   
 }
