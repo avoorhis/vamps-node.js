@@ -44,7 +44,7 @@ def create_json_obj(args):
     # sql = "SELECT project, datasets.id as did, dataset, sum(seq_count) as ds_count"
     # sql += " FROM datasets "
     # sql += " JOIN projects ON (projects.id=project_id)"
-    # sql += " JOIN sequence_pdr_infos on (datasets.id=dataset_id)"
+    # sql += " JOIN sequence_pdr_info on (datasets.id=dataset_id)"
     # sql += " GROUP BY dataset"
     # sql += " ORDER BY project,dataset"
     
@@ -83,7 +83,7 @@ def create_json_obj(args):
     fp.write('// SELECT project, datasets.id as did, dataset\r')
     fp.write('//   FROM datasets \r')
     fp.write('//   JOIN projects ON (projects.id=project_id)\r')
-    #fp.write('//   JOIN sequence_pdr_infos on (datasets.id=dataset_id)\r')
+    #fp.write('//   JOIN sequence_pdr_info on (datasets.id=dataset_id)\r')
     #fp.write('//   GROUP BY dataset\r')
     fp.write('//   ORDER BY project,dataset\r')
     fp.write('datasets.ALL = { \r')
