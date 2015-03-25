@@ -1,6 +1,7 @@
 var constants = require(app_root + '/public/constants');
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
 
 module.exports = {
 
@@ -40,9 +41,20 @@ module.exports.elapsed_time = function(note){
 
 var ranks = constants.RANKS;
 
+// todo: use in file instead of those in the class
 module.exports.check_if_rank = function(field_name)
 {
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
   // console.log("FFF0 field_name = "+ field_name);
   return ranks.indexOf(field_name) > -1;
+}
+
+module.exports.clear_file = function(fileName)
+{
+  fs.openSync(fileName, "w");
+}
+
+module.exports.write_to_file = function(fileName, text) 
+{
+  fs.appendFileSync(fileName, text);
 }
