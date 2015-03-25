@@ -270,18 +270,28 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
-var silvaTaxonomy = require('./models/silva_taxonomy');
 var taxCounts = require('./routes/helpers/create_taxcounts_class');
+var helpers = require('./routes/helpers/helpers');
 
-all_silva_taxonomy.get_dataset_taxa_counts(function(err, results) {
+all_silva_taxonomy.get_dataset_taxa_counts_amount(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
   else
   {
-    var taxcounts = new taxCounts(results);
+    console.log('111 get_dataset_taxa_counts_amount = ' + JSON.stringify(results[0]["counts"]));
+    // total_amount = results[0]["counts"];
+
+    total_amount = 4;
+    var taxcounts = new taxCounts(total_amount);
+    helpers.start = process.hrtime();
+    taxcounts.print_res()
+    helpers.elapsed_time("This is the running time for some code");
     
-    // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
-    taxcounts.print_res(results)
+    // 
+    // // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
+    // helpers.start = process.hrtime();
+    // taxcounts.print_res(results)
+    // helpers.elapsed_time("This is the running time for some code");
     // console.log("1111")
     // console.log(results)
     // 
