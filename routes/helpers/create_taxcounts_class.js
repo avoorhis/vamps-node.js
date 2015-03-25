@@ -6,7 +6,7 @@
 
 var constants = require(app_root + '/public/constants');
 var helpers = require('./helpers');
-// var fs = require('fs');
+var fs = require('fs');
 
 // var silvaTaxonomy = require('./models/silva_taxonomy');
 // var all_silva_taxonomy = new silvaTaxonomy();
@@ -48,14 +48,83 @@ function get_table_chunks(total_amount)
     console.log("FFF3 chunk_size = " + chunk_size);
     console.log("FFF3 amount_left = " + amount_left);
 
-    all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, results) 
+    all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, rows, fields) 
     {
-      console.log("III2 results");
-      console.log(results);
-      // dataset_seq_tax_dict = make_taxa_count_dict(results)
-      helpers.write_to_file(file_name, JSON.stringify(results));
+      console.log("III2 rows, fields");
+      console.log(rows[0]);
+      // console.log(JSON.stringify(fields));
+      console.log(rows[0]["dataset_id"]);
+      arr = rows[0]
       
+      Object.keys(arr).forEach(function(key) {
+        var val = arr[key];
+        // logic();
+        console.log("RRR1 val, key");
+      
+        console.log(val);
+        console.log(key);
+        
+        
+      });
+      
+      // for (var i = 0, len = arr.length; i < len; i++) {
+        // someFn(arr[i]);
+        
+        // fs.appendFile(file_name, );
+        
+      // }
+
+      
+      // var text = ""
+      // { taxa_counts_temp_id: 3,
+      //   dataset_id: 450,
+      //   seq_count: 1,
+      //   sequence_id: 6160503,
+      //   sequence_pdr_info_id: 13582163,
+      //   silva_taxonomy_id: 75836,
+      //   domain_id: 2,
+      //   phylum_id: 53583,
+      //   klass_id: 59463,
+      //   order_id: 60420,
+      //   family_id: 60641,
+      //   genus_id: 61847,
+      //   species_id: 61933,
+      //   strain_id: 956 }
+      
+// todo: write titles once
+// taxa_counts_temp_id      
+// dataset_id,
+// seq_count,
+// sequence_id,
+// sequence_pdr_info_id,
+// silva_taxonomy_id,
+// domain_id,
+// phylum_id,
+// klass_id,
+// order_id,
+// family_id,
+// genus_id,
+// species_id,
+// strain_id,
+
+      
+      // fs.appendFile(file_name, JSON.stringify(rows[0]), function (err) {
+      // });
+      // fs.appendFile(file_name, ",");
+        // rows.each(element, index) {     console.log(element.firstName + " " + element.lastName);   } 
     });
+
+
+    // all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, results) 
+    // {
+    //   console.log("III2 results");
+    //   console.log(results[0]);
+    //   // helpers.write_to_file(file_name, JSON.stringify(results));
+    //   fs.appendFile(file_name, JSON.stringify(results[0]), function (err) {
+    //   });
+    //   fs.appendFile(file_name, ",");
+    //     // rows.each(element, index) {     console.log(element.firstName + " " + element.lastName);   } 
+    // });
     
     // all_silva_taxonomy.get_dataset_taxa_counts(from_here, chunk_size, function(err, results) 
     // {
@@ -166,6 +235,20 @@ function TaxCounts(total_amount) {
   console.log("total_amount = " + total_amount);
   
   get_table_chunks(total_amount);
+  this.obj_dataset_seq_tax_dict;
+  this.dataset_seq_tax_dict = {};
+  
+  
+  // fs.readFile(file_name, function (err, data) {
+  //   if (err) throw err;
+  //   this.obj_dataset_seq_tax_dict = JSON.parse(data);
+  //   console.log("TTT1");
+  //   console.log("obj_dataset_seq_tax_dict = " + JSON.stringify(this.obj_dataset_seq_tax_dict));
+  //   console.log("TTT2");
+  //   dataset_seq_tax_dict = make_taxa_count_dict(this.obj_dataset_seq_tax_dict)
+  // 
+  // });
+  
 
   // temp_arr = make_taxa_count_dict(this.dataset_seq_tax_obj);
   // this.taxa_tree_dict = temp_arr[0];
