@@ -54,7 +54,13 @@ module.exports.clear_file = function(fileName)
   fs.openSync(fileName, "w");
 }
 
-module.exports.write_to_file = function(fileName, text) 
+module.exports.append_to_file = function(fileName, text) 
 {
   fs.appendFileSync(fileName, text);
 }
+
+module.exports.write_to_file = function(fileName, text) 
+{
+  fs.writeFile(fileName, text);
+}
+
