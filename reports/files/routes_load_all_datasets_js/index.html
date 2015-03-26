@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.20</p>
+      <p class="stat">45.33</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">52</p>
+      <p class="stat">148</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">25.56</p>
+      <p class="stat">32.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.43</p>
+      <p class="stat">1.46</p>
     </div>
   </div>
 </div>
@@ -95,33 +95,86 @@ var router = express.Router();
 //
 //
 //
-var qSelectDatasets = &quot;SELECT project, dataset_id as did, dataset&quot;;
+var qSelectDatasets = &quot;SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public&quot;;
 qSelectDatasets += &quot; FROM dataset&quot;;
 qSelectDatasets += &quot; JOIN project USING(project_id)&quot;;
+qSelectDatasets += &quot; JOIN user on(project.owner_user_id=user.user_id)&quot;;  // this will need to be changed when table user_project in incorporated
+qSelectDatasets += &quot; JOIN env_sample_source USING(env_sample_source_id)&quot;;
 qSelectDatasets += &quot; ORDER BY project, dataset&quot;;
+console.log(qSelectDatasets)
 
+var qSequenceCounts = &quot;SELECT project_id, dataset_id, SUM(seq_count) as seq_count&quot;; 
+//var qSequenceCounts = &quot;SELECT project_id, dataset_id, seq_count&quot;; 
+qSequenceCounts += &quot; FROM sequence_pdr_info&quot;;
+qSequenceCounts += &quot; JOIN dataset using(dataset_id)&quot;;
+qSequenceCounts += &quot; GROUP BY project_id, dataset_id&quot;;
+console.log(qSequenceCounts)
 // This connection object is made global in app.js
 module.exports.get_datasets = function(callback){
-  connection.query(qSelectDatasets, function(err, rows, fields){
-    var ALL_DATASETS = {};
-
+  
+  connection.db.query(qSelectDatasets, function(err, rows, fields){
+      ALL_DATASETS                = {};  // GLOBAL
+      DATASET_NAME_BY_DID         = {};  // GLOBAL
+      PROJECT_ID_BY_DID           = {};
+      PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
+      DATASET_IDS_BY_PID          = {};
+      PROJECT_PERMISSION_BY_PID   = {};  // 0 if public otherwise == user id
+      var pids         = {};
+      var titles       = {};
       if (err)  {
-        throw err;
+		  console.log(&#039;Query error: &#039; + err);
+		  console.log(err.stack);
+		  process.exit(1);
       } else {
+        console.log(&#039;Filling GLOBAL Variables (in routes/load_all_datasets.js):&#039;);
         var datasetsByProject = {};
         ALL_DATASETS.projects = [];
         //datasetsByProject.projects = []
-        console.log(&#039;GETTING ALL DATASETS FROM DB-3&#039;);
+        
 
         for (var i=0; i &lt; rows.length; i++) {
           var project = rows[i].project;
           var did = rows[i].did;
           var dataset = rows[i].dataset;
+          var dataset_description = rows[i].dataset_description;
+          var pid = rows[i].pid;
+          var public = rows[i].public;
+          var user_id = rows[i].owner_user_id;
+          if(public){
+            PROJECT_PERMISSION_BY_PID[pid] = 0;
+          }else{
+            PROJECT_PERMISSION_BY_PID[pid] = user_id;
+          }
+          PROJECT_ID_BY_DID[did]=pid;
+
+          PROJECT_INFORMATION_BY_PID[pid] = {
+            &quot;last&quot; :			rows[i].last_name,
+            &quot;first&quot; :			rows[i].first_name,
+            &quot;username&quot; :		rows[i].username,
+            &quot;email&quot; :			rows[i].email,
+            &quot;env_source_name&quot; :	rows[i].env_source_name,
+            &quot;institution&quot; :		rows[i].institution,
+            &quot;project&quot; :			project,
+            &quot;title&quot; :			rows[i].title,
+            &quot;description&quot; :		rows[i].description,
+            &quot;public&quot; :          rows[i].public
+          }
+          if(pid in DATASET_IDS_BY_PID){
+            DATASET_IDS_BY_PID[pid].push(did);
+          }else{
+            DATASET_IDS_BY_PID[pid]=[];
+            DATASET_IDS_BY_PID[pid].push(did);
+          }
+          pids[project] = pid;
+          titles[project] = rows[i].title;
+          
+          DATASET_NAME_BY_DID[did] = dataset
+          
           if (project === undefined){ continue; }
           if (project in datasetsByProject){
-              datasetsByProject[project].push({ did:did, dname:dataset });
+              datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
           } else {
-              datasetsByProject[project] = [{ did:did, dname:dataset }];
+              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
           }
         }
 
@@ -129,20 +182,64 @@ module.exports.get_datasets = function(callback){
         for (var p in datasetsByProject){
           var tmp = {};
           tmp.name = p;
+          tmp.pid = pids[p];
+          tmp.title = titles[p];
           tmp.datasets = [];
           for (var d in datasetsByProject[p]){
             var ds = datasetsByProject[p][d].dname;
-            var dp_did = datasetsByProject[p][d].did;
-            tmp.datasets.push({ did: dp_did, dname:ds });
+            var dp_did = datasetsByProject[p][d].did;  
+            var ddesc = datasetsByProject[p][d].ddesc; 
+            tmp.datasets.push({ did:dp_did, dname:ds, ddesc:ddesc });
           }
           ALL_DATASETS.projects.push(tmp);
         }
 
       }
+      console.log(&#039;  ALL_DATASETS&#039;);
+      console.log(&#039;  PROJECT_ID_BY_DID&#039;);
+      console.log(&#039;  PROJECT_INFORMATION_BY_PID&#039;);
+      console.log(&#039;  PROJECT_PERMISSION_BY_PID&#039;);
+      console.log(&#039;  DATASET_IDS_BY_PID&#039;);
+      console.log(&#039;  DATASET_NAME_BY_DID&#039;);
+      
       callback(ALL_DATASETS);
+  });
+  
+  connection.db.query(qSequenceCounts, function(err, rows, fields){    
+    ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
+    ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
+    //console.log(qSequenceCounts)
+      if (err)  {
+		  console.log(&#039;Query error: &#039; + err);
+		  console.log(err.stack);
+		  process.exit(1);
+      } else {
+        
+        for (var i=0; i &lt; rows.length; i++) {
+        //console.log(rows[i].project_id);
+          var pid = rows[i].project_id;
+          var did = rows[i].dataset_id;
+          var count= rows[i].seq_count;
+          ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+         //  if(did in ALL_DCOUNTS_BY_DID){
+//              ALL_DCOUNTS_BY_DID[did] += parseInt(count);
+//           }else{
+//              ALL_DCOUNTS_BY_DID[did] = parseInt(count);
+//           }
+
+          if(pid in ALL_PCOUNTS_BY_PID){
+             ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
+          }else{
+             ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
+          }
+        }
+      }
+      console.log(&#039;  ALL_DCOUNTS_BY_DID&#039;);
+      console.log(&#039;  ALL_PCOUNTS_BY_PID&#039;);
   });
 };
 
+// ALL_DATASETS
 // { projects:
 //    [ { name: &#039;SLM_NIH_Bv6&#039;, datasets: [Object] },
 //      { name: &#039;SLM_NIH_v1&#039;, datasets: [Object] },
