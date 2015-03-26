@@ -203,116 +203,11 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     
     //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["435_klass"]["taxon"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["435_klass"]));
     
-    // var tree = new TreeModel();
-    // var root = tree.parse({
-    //     id: 0,
-    //     name: "Root",
-    //     children: [{id: 1, name: "1", children: []},{id: 2, name: "2", children: []}]
-    // });
-    // var root1 = tree.parse(new_taxonomy.taxa_tree_dict_map_by_rank['phylum'])
-    // var root2 = tree.parse({
-    //     node_id: 0,
-    //     name: "Root",
-    //     children: [
-    //     {"parent_id":1,"children_ids":[3,19,41],"taxon":"Proteobacteria","rank":"phylum","node_id":2,"db_id":53584},
-    //     {"parent_id":1,"children_ids":[15,31],"taxon":"Firmicutes","rank":"phylum","node_id":14,"db_id":53588},
-    //     {"parent_id":34,"children_ids":[36],"taxon":"Fungi","rank":"phylum","node_id":35,"db_id":53602},
-    //     {"parent_id":1,"children_ids":[46],"taxon":"phylum_NA","rank":"phylum","node_id":45,"db_id":53583},
-    //     {"parent_id":1,"children_ids":[51],"taxon":"Bacteroidetes","rank":"phylum","node_id":50,"db_id":53596}
-    //     ]
-    // });
-    // var root3 = tree.parse({
-    //     node_id: 0,
-    //     name: "Root",
-    //     children: new_taxonomy.taxa_tree_dict
-    // });
-    // 
-    // // console.log("555");
-    // // console.log(root3);
-    // var node14 = root2.first(function (node) {
-    //     return node.model.rank === 'phylum';
-    // });
-    // // console.log(node14);
-    // 
-    // var nodesGt100 = root3.all(function (node) {
-    //   return node.model.rank === 'phylum';
-    // });
-    // console.log("888")
-    // console.log(nodesGt100);
-    
-    // all_silva_taxonomy.get_dataset_taxa_counts(function(err, results) {
-    //   if (err)
-    //     throw err; // or return an error message, or something
-    //   else
-    //   {
-    //     console.log("1111")
-    //     console.log(results)
-    //     
-    //     var Treeize   = require('treeize');
-    //     var people    = new Treeize();
-    // 
-    //     a = people.grow(results);
-    //     // people.getData()
-    //     console.log("555555")
-    //     console.log(a)
-    //     console.log(a.toString())
-    //   }
-    // });
-
-    // root3.walk(function (node) {
-    //     // Halt the traversal by returning false
-    //     console.log("888")
-    //     console.log(node)
-    //     
-    //     if (node.model.rank === 'phylum') return false;
-    // });
-
   }
 });
 
 var taxCounts = require('./routes/helpers/create_taxcounts_class');
-var helpers = require('./routes/helpers/helpers');
-
-all_silva_taxonomy.get_dataset_taxa_counts_amount(function(err, results) {
-  if (err)
-    throw err; // or return an error message, or something
-  else
-  {
-    console.log('111 get_dataset_taxa_counts_amount = ' + JSON.stringify(results[0]["counts"]));
-    // total_amount = results[0]["counts"];
-
-    // helpers.start = process.hrtime();
-    total_amount = 4;
-    var taxcounts = new taxCounts(total_amount);
-    // taxcounts.print_res()
-    // asynchron
-    // helpers.elapsed_time("This is the running time for app: taxcounts code");
-    
-    // 
-    // // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
-    // helpers.start = process.hrtime();
-    // taxcounts.print_res(results)
-    // helpers.elapsed_time("This is the running time for some code");
-    // console.log("1111")
-    // console.log(results)
-    // 
-    // var Treeize   = require('treeize');
-    // var people    = new Treeize();
-    // 
-    // a = people.grow(results);
-    // // people.getData()
-    // console.log("555555")
-    // console.log(a)
-    // console.log(a.toString())
-  }
-});
-
-
-// var csvUpload = require('./sbin/metadata_upload');
-// var csv_filename = path.join(__dirname, 'data/KCK_LSM_Bv6_qii.csv');
-// myCSV = new csvUpload(csv_filename);
-// console.log("FROM app!");
-
+var taxcounts = new taxCounts();
 
 module.exports = app;
 
