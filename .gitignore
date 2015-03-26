@@ -15,6 +15,9 @@ colony-npm/
 coverage/
 npm-debug.log
 
+views/visuals/partials/tax_silva108_custom.html
+views/visuals/partials/tax_silva108_simple.html
+
 grep_code.sh
 temp/
 downloads/*
@@ -26,5 +29,3 @@ visuals_testing/
 .DS_Store
 
 .~lock.*.csv#
-views/visuals/partials/tax_silva108_custom.html
-views/visuals/partials/tax_silva108_simple.html
