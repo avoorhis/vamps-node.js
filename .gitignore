@@ -13,9 +13,10 @@ colony-npm/
 .project
 .settings/
 coverage/
-node_modules/express-session/node_modules/depd/
-node_modules/express-session/node_modules/uid-safe/
 npm-debug.log
+
+views/visuals/partials/tax_silva108_custom.html
+views/visuals/partials/tax_silva108_simple.html
 
 grep_code.sh
 temp/
