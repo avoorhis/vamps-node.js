@@ -91,11 +91,12 @@ function test_chunks()
              rank_attr += ("_" + in_obj[field_name]);
              helpers.start = process.hrtime();     
              count_taxa(dataset_seq_tax_dict);
-             helpers.elapsed_time("This is the running time for some code");         
+             helpers.elapsed_time("This is the running time for count_taxa");         
            }       
          }
        // }
        console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+       helpers.write_to_file(file_name, JSON.stringify(dataset_seq_tax_dict));
 
       
       //===
