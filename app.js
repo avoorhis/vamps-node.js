@@ -19,6 +19,8 @@ var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
 
+var fs = require('fs');
+var zlib = require('zlib');
 //var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
@@ -171,9 +173,21 @@ var TreeModel = require('tree-model');;
 console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/database-xxx.js)')
 
 // these files are manually created before server startup using the scripts in public/scripts
-TaxaCounts     = require('./public/json/tax_counts--'+NODE_DATABASE+'.json');
+var rstream = fs.createReadStream('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
+var unzip = zlib.createGunzip();
+var taxcounts =''
+var chunk;
+rstream.pipe(unzip)  
+	.on('data', function (chunk) { 
+		taxcounts += chunk;		
+  	})
+	.on('end', function() {
+		    console.log('Finished reading TAXCOUNTS');
+	});
+
+//TAXCOUNTS     = require('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
 MetadataValues = require('./public/json/metadata--' + NODE_DATABASE+'.json');
-//console.log(MetadataValues)
+
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
@@ -182,7 +196,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   {
     //console.log("AAA all_silva_taxonomy from app = " + JSON.stringify(results));
     
-// var small_rows = [ {"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":33,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":52,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":58,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":2,"order_id":7,"family_id":8,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":73,"family_id":138,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":6,"genus_id":1,"species_id":1,"strain_id":1}];
+	TAXCOUNTS = JSON.parse(taxcounts);
+	//console.log('TAXCOUNTS2 '+JSON.stringify(TAXCOUNTS));
+	// var small_rows = [ {"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":33,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":52,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":58,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":2,"order_id":7,"family_id":8,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":73,"family_id":138,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":6,"genus_id":1,"species_id":1,"strain_id":1}];
     // var new_taxonomy = new CustomTaxa(small_rows);
     // uncomment when we want all data:
     new_taxonomy = new CustomTaxa(results);
@@ -196,8 +212,8 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
 
-    // console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
+    //console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+    //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
     // console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
 
     
@@ -270,31 +286,30 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
-var silvaTaxonomy = require('./models/silva_taxonomy');
-var taxCounts = require('./routes/helpers/create_taxcounts_class');
-
-all_silva_taxonomy.get_dataset_taxa_counts(function(err, results) {
-  if (err)
-    throw err; // or return an error message, or something
-  else
-  {
-    var taxcounts = new taxCounts(results);
-    
-    // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
-    taxcounts.print_res(results)
-    // console.log("1111")
-    // console.log(results)
-    // 
-    // var Treeize   = require('treeize');
-    // var people    = new Treeize();
-    // 
-    // a = people.grow(results);
-    // // people.getData()
-    // console.log("555555")
-    // console.log(a)
-    // console.log(a.toString())
-  }
-});
+// var silvaTaxonomy = require('./models/silva_taxonomy');
+// var taxCounts = require('./routes/helpers/create_taxcounts_class');
+//
+// all_silva_taxonomy.get_dataset_taxa_counts(function(err, results) {
+//   if (err)
+//     throw err; // or return an error message, or something
+//   else
+//   {
+//     var taxcounts = new taxCounts(results);
+//     TAXCOUNTS = taxcounts.dataset_seq_tax_dict
+//     console.log('000 TAXCOUNTS = ' + JSON.stringify(TAXCOUNTS));
+//     taxcounts.print_res(results)
+//     // console.log("1111")
+//     console.log(results)
+//     //
+//     // var Treeize   = require('treeize');
+//     // var people    = new Treeize();
+//     //
+//     // // people.getData()
+//     // console.log("555555")
+//     // console.log(a)
+//     // console.log(a.toString())
+//   }
+// });
 
 
 // var csvUpload = require('./sbin/metadata_upload');
