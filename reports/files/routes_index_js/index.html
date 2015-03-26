@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/index.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/index.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">62.95</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">398</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">37.15</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">4.13</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+var router = express.Router();
+var fs   = require(&#039;fs&#039;);
+var nodemailer = require(&#039;nodemailer&#039;);
+var transporter = nodemailer.createTransport();
+var zlib = require(&#039;zlib&#039;);
+var Readable = require(&#039;stream&#039;).Readable;
+var helpers = require(&#039;./helpers/helpers&#039;);
+var ds = require(&#039;./load_all_datasets&#039;);
+var sweetcaptcha = new require(&#039;sweetcaptcha&#039;)(&#039;233846&#039;, &#039;f2a70ef1df3edfaa6cf45d7c338e40b8&#039;, &#039;720457356dc3156eb73fe316a293af2f&#039;);
+var rs_ds = ds.get_datasets(function(ALL_DATASETS){
+  GLOBAL.ALL_DATASETS = ALL_DATASETS;
+
+
+  /* GET home page. */
+  router.get(&#039;/&#039;, function(req, res) {
+    res.render(&#039;index&#039;, { 
+            title: &#039;VAMPS:Home&#039;, 
+            message: req.flash(&#039;fail&#039;),
+            user: req.user });
+  });
+
+  /* GET Overview page. */
+  router.get(&#039;/overview&#039;, function(req, res) {
+      res.render(&#039;overview&#039;, { title: &#039;VAMPS:Overview&#039;, user: req.user });
+  });
+
+  /* GET Search page. */
+  router.get(&#039;/search&#039;, helpers.isLoggedIn, function(req, res) {
+      //console.log(MetadataValues)
+      var tmp_metadata_fields = {};
+      var metadata_fields = {};
+      for(did in MetadataValues){
+        for(name in MetadataValues[did]){
+            val = MetadataValues[did][name];
+            if(name in tmp_metadata_fields){
+              tmp_metadata_fields[name].push(val); 
+            }else{
+              if(IsNumeric(val)){
+                tmp_metadata_fields[name]=[];
+              }else{
+                tmp_metadata_fields[name]=[&#039;non-numeric&#039;];
+              }
+              tmp_metadata_fields[name].push(val); 
+            }           
+        }
+      }
+      //console.log(tmp_metadata_fields)
+      for(name in tmp_metadata_fields){
+        if(tmp_metadata_fields[name][0] == &#039;non-numeric&#039;){
+          tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
+          metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
+        }else{
+          var min = Math.min.apply(null, tmp_metadata_fields[name]);
+          var max = Math.max.apply(null, tmp_metadata_fields[name]);
+          metadata_fields[name] = {&quot;min&quot;:min,&quot;max&quot;:max};
+        }
+      }
+      //console.log(metadata_fields)
+      res.render(&#039;search&#039;, { title: &#039;VAMPS:Search&#039;,
+                            metadata_items: JSON.stringify(metadata_fields),
+      											 user: req.user
+      											});
+  });
+
+  /* GET Import Data page. */
+  router.get(&#039;/import_data&#039;, helpers.isLoggedIn, function(req, res) {
+      res.render(&#039;import_data&#039;, { title: &#039;VAMPS:Import Data&#039;, 
+                             user: req.user 
+                            });
+  });
+  /* GET Saved Data page. */
+  router.get(&#039;/saved_data&#039;, helpers.isLoggedIn, function(req, res) {
+      res.render(&#039;saved_data&#039;, { title: &#039;VAMPS:Saved Data&#039;, 
+                             user: req.user 
+                            });
+  });
+  /* GET Import Data page. */
+  router.get(&#039;/export_data&#039;, helpers.isLoggedIn, function(req, res) {
+      res.render(&#039;export_data&#039;, { title: &#039;VAMPS:Import Data&#039;, 
+                             user: req.user 
+                            });
+  });
+  /* GET Export Data page. */
+  router.get(&#039;/file_retrieval&#039;, helpers.isLoggedIn, function(req, res) {
+      
+      var user = req.user.username;  
+      var export_dir = &#039;downloads&#039;;
+      var mtime = {};
+      var size = {};
+      var file_info = {};
+      file_info.mtime ={};
+      file_info.size = {};
+      file_info.files = [];
+      fs.readdir(export_dir, function(err, files){   
+        for(f in files){
+          var pts = files[f].split(&#039;_&#039;);
+          if(pts[0] === req.user.username){
+            file_info.files.push(files[f]);
+            stat = fs.statSync(export_dir+&#039;/&#039;+files[f]);
+            file_info.mtime[files[f]] = stat.mtime;  // modify time
+            file_info.size[files[f]] = stat.size;
+          }
+        }
+        //console.log(file_info)
+        res.render(&#039;file_retrieval&#039;, { title: &#039;VAMPS:Export Data&#039;, 
+                             user: user,
+                             finfo: JSON.stringify(file_info)                             
+                            });
+      });
+  });
+
+  router.get(&#039;/file_utils&#039;, helpers.isLoggedIn, function(req, res){
+
+    console.log(&#039;dnld&#039;)
+    console.log(req.query.filename)
+    var file = &#039;downloads/&#039;+req.query.filename;
+    
+    if(req.query.fxn == &#039;download&#039; &amp;&amp; req.query.type == &#039;fasta&#039;){
+      res.download(file); // Set disposition and send it.
+    }else if(req.query.fxn == &#039;download&#039; &amp;&amp; req.query.type == &#039;metadata&#039;){
+      res.download(file); // Set disposition and send it.
+    }else if(req.query.fxn == &#039;delete&#039;){
+      fs.unlink(file); // 
+      res.redirect(&quot;/file_retrieval&quot;)
+    }
+  });
+
+  /* GET Geo-Distribution page. */
+  router.get(&#039;/geodistribution&#039;, function(req, res) {
+      res.render(&#039;geodistribution&#039;, { title: &#039;VAMPS:Geo_Distribution&#039;, 
+                             user: req.user 
+                            });
+  });
+
+  /* GET metadata page. */
+  router.get(&#039;/metadata&#039;, function(req, res) {
+      res.render(&#039;metadata&#039;, { title: &#039;VAMPS:Metadata&#039;, 
+                             user: req.user 
+                            });
+  });
+
+  /* GET Portals page. */
+  router.get(&#039;/portals&#039;, function(req, res) {
+      res.render(&#039;portals&#039;, { title: &#039;VAMPS:Portals&#039;, 
+                             user: req.user 
+                            });
+  });
+
+  /* GET Contact Us page. */
+  router.get(&#039;/contact&#039;, function(req, res) {
+      
+      //get sweetcaptcha html for the contact area
+        sweetcaptcha.api(&#039;get_html&#039;, function(err,html){
+            //Send the guts of the captcha to your template
+            res.render(&#039;contact&#039;, { 
+              captcha : html,
+              title: &#039;VAMPS:Cuntact-Us&#039;, 
+              user: req.user 
+               });
+        });
+  });
+  router.post(&#039;/contact&#039;, function(req, res) {     
+ 
+    //Validate captcha
+    sweetcaptcha.api(&#039;check&#039;, {sckey: req.body[&quot;sckey&quot;], scvalue: req.body[&quot;scvalue&quot;]}, function(err, response){
+        if (err) return console.log(err);
+        
+        if (response === &#039;true&#039;) {
+            // valid captcha
+ 
+            // setup e-mail data with unicode symbols
+            var info = { 
+                to: &#039;avoorhis@mbl.edu&#039;,
+                from: &#039;vamps@mbl.edu&#039;,
+                subject: &#039;New email from your website contact form&#039;, // Subject line
+                text: req.body[&quot;contact-form-message&quot;] + &quot;\n\nYou may contact this sender at: &quot; + req.body[&quot;contact-form-mail&quot;] // plaintext body
+              }
+            send_mail(info);
+
+            //Success
+            res.send(&quot;Thanks! We have sent your message.&quot;);
+ 
+        }
+        if (response === &#039;false&#039;){
+            // invalid captcha
+            console.log(&quot;Invalid Captcha&quot;);
+            res.send(&quot;Try again&quot;);
+ 
+        }
+    });
+ 
+});
+  //
+  // DOWNLOAD SEQUENCES
+  //
+  router.post(&#039;/download_selected_seqs&#039;, function(req, res) {
+    var db = req.db;
+    console.log(req.body);
+    
+    var qSelect = &quot;select UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n&quot;;
+    //var qSelect = &quot;select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n&quot;;
+    qSelect += &quot; join sequence using (sequence_id)\n&quot;;
+    qSelect += &quot; join dataset using (dataset_id)\n&quot;;
+    qSelect += &quot; join project using (project_id)\n&quot;;
+    var seq, seqid, seq_count, pjds;
+    var timestamp = +new Date();  // millisecs since the epoch!
+    timestamp = req.user.username + &#039;_&#039; + timestamp;
+    if(req.body.download_type == &#039;whole_project&#039;){
+      var pid = req.body.project_id
+      var project = req.body.project
+      var out_file = &#039;downloads/&#039;+timestamp+&#039;_&#039;+project+&#039;.fa.gz&#039;;
+      qSelect += &quot; where project_id = &#039;&quot;+pid+&quot;&#039;&quot;;
+    }else{
+      var pids = JSON.parse(req.body.datasets).ids
+      var out_file = &#039;downloads/&#039;+timestamp+&#039;_custom.fa.gz&#039;;
+      qSelect += &quot; where dataset_id in (&quot;+pids+&quot;)&quot;;
+      console.log(pids);
+             
+    }
+    qSelect += &quot; limit 100 &quot;;                     // &lt;&lt;&lt;&lt;-----  for testing
+    
+    
+    
+    
+                 // &lt;&lt;&lt;&lt;-----  for testing
+    var gzip = zlib.createGzip();
+    console.log(qSelect);
+    
+    var wstream = fs.createWriteStream(out_file);
+    var rs = new Readable;
+    var collection = db.query(qSelect, function (err, rows, fields){
+      if (err) {
+          throw err;
+      } else {
+        for(i in rows){
+          seq = rows[i].seq.toString();
+          //var buffer = new Buffer(rows[i].seq, &#039;base64&#039;);
+          //console.log(seq);
+          seq_id = rows[i].sequence_id.toString();
+          seq_count = rows[i].seq_count.toString();
+          //project = rows[i].project;
+          pjds = rows[i].project+&#039;--&#039;+rows[i].dataset;
+          entry = &#039;&gt;&#039;+seq_id+&#039;|&#039;+pjds+&#039;|&#039;+seq_count+&quot;\n&quot;+seq+&quot;\n&quot;
+          //console.log(entry)
+          rs.push(entry)         
+        }
+       
+        rs.push(null);        
+      }
+      rs
+        .pipe(gzip)
+        .pipe(wstream)
+        .on(&#039;finish&#039;, function () {  // finished
+          console.log(&#039;done compressing and writing file&#039;);
+          var info = { 
+                to:&#039;avoorhis@mbl.edu&#039;,
+                from:&quot;vamps@mbl.edu&quot;,
+                subject:&quot;fasta file is ready&quot;,
+                text:&quot;Your fasta file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
+              }
+          send_mail(info);
+        });
+    });
+
+  });
+
+  //
+  // DOWNLOAD METADATA
+  //
+  router.post(&#039;/download_selected_metadata&#039;, function(req, res) {
+    var db = req.db;
+    console.log(req.body);
+    var timestamp = +new Date();  // millisecs since the epoch!
+    timestamp = req.user.username + &#039;_&#039; + timestamp;
+    if(req.body.download_type == &#039;whole_project&#039;){      
+      var pid  = req.body.project_id
+      var dids = DATASET_IDS_BY_PID[pid];
+      var project = req.body.project
+      var out_file = &#039;downloads/&#039;+timestamp+&#039;_&#039;+project+&#039;.metadata.gz&#039;;
+    }else{
+      var dids = JSON.parse(req.body.datasets).ids  
+      var out_file = &#039;downloads/&#039;+timestamp+&#039;.metadata.gz&#039;;    
+    }
+    console.log(&#039;dids&#039;)
+    console.log(dids)
+    
+
+    // check if custom metadata table exists
+    //var qSelect = &quot;SHOW tables like &#039;custom_metadata_&quot;+pid+&quot;&#039;&quot;;
+    
+    // get the fields from required_metadata_info as they may vary
+    //var qSelect = &quot;SHOW columns from required_metadata_info&quot;;
+    //console.log(&#039;in projects--&gt;&#039;);
+    //console.log(MetadataValues);
+    //console.log(&#039;&lt;--in projects&#039;);
+    // we have all the metadata in MetadataValues by did
+    
+    var gzip = zlib.createGzip();
+    var myrows = {}; // myrows[mdname] == [] list of values
+    var header = &#039;Project: &#039;+project+&quot;\n\t&quot;
+    
+    var wstream = fs.createWriteStream(out_file);
+    var rs = new Readable;
+    var filetxt;
+    
+        for(i in dids){
+          did = dids[i]
+          dname = DATASET_NAME_BY_DID[did]
+          header += dname+&quot;\t&quot;
+          for(k in MetadataValues[did]){
+            nm = k
+            val = MetadataValues[did][k]
+            if(nm in myrows){
+              myrows[nm].push(val)
+            }else{
+              myrows[nm] = []
+              myrows[nm].push(val)
+            }
+          }
+        }
+      
+      // print
+      header += &quot;\n&quot;
+      rs.push(header)
+      if(Object.keys(myrows).length === 0){
+        rs.push(&quot;NO METADATA FOUND\n&quot;)
+      }else{
+        for(mdname in myrows){
+          filetxt = mdname+&quot;\t&quot;  // restart sting
+          for(i in myrows[mdname]){
+            filetxt += myrows[mdname][i]+&quot;\t&quot;
+          }
+          filetxt += &quot;\n&quot;;
+          rs.push(filetxt)
+        }
+      }
+      rs.push(null); 
+      rs
+        .pipe(gzip)
+        .pipe(wstream)
+        .on(&#039;finish&#039;, function () {  // finished
+          console.log(&#039;done compressing and writing file&#039;);
+          var info = { 
+                to:&#039;avoorhis@mbl.edu&#039;,
+                from:&quot;vamps@mbl.edu&quot;,
+                subject:&quot;metadata is ready&quot;,
+                text:&quot;Your metadata file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
+              }
+          send_mail(info);
+          // transporter.sendMail({
+          //   from: &#039;vamps@mbl.edu&#039;,
+          //   to: &#039;avoorhis@mbl.edu&#039;,
+          //   subject: &#039;metadata is ready&#039;,
+          //   text: &quot;Your metadata file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
+          // });
+        });
+
+    //console.log(datasets);
+  });
+// transporter.sendMail(mailOptions, function (error, info) {
+//                 if (error) {
+//                     console.log(error);
+//                 } else {
+//                     console.log(&#039;Message sent: &#039; + info.response);
+//                 }
+//             });
+  function send_mail(mail_info) {
+    var to_addr = mail_info.addr;
+    var from_addr = mail_info.from
+    var subj = mail_info.subj
+    var msg = mail_info.msg
+    transporter.sendMail(mail_info, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(&#039;Message sent: &#039; + info.response);
+                }
+            });
+
+    // transporter.sendMail({
+    //         from: from_addr,
+    //         to: to_addr,
+    //         subject: subj,
+    //         text: msg
+    //       });
+
+  }
+  function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
+  }
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+
+});
+
+module.exports = router;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
