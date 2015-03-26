@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">34.77</p>
+      <p class="stat">34.41</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">84</p>
+      <p class="stat">101</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">5.72</p>
+      <p class="stat">5.66</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.36</p>
+      <p class="stat">1.40</p>
     </div>
   </div>
 </div>
@@ -95,9 +95,9 @@
 config.DOMAINS = { domains: [
         {id: 1, name: &quot;Archaea&quot;},
         {id: 2, name: &quot;Bacteria&quot;},
-        {id: 5, name: &quot;Eukarya&quot;},
-        {id: 3, name: &quot;Organelle&quot;},
-        {id: 4, name: &quot;Unknown&quot;}
+        {id: 3, name: &quot;Eukarya&quot;},
+        {id: 4, name: &quot;Organelle&quot;},
+        {id: 5, name: &quot;Unknown&quot;}
     ]};
 
 config.UNITSELECT = { units: [
@@ -127,13 +127,29 @@ config.NORMALIZATIONCHOICES = { choices: [
    
 config.DISTANCECHOICES = { choices: [
         
-{id: &#039;binary_jaccard&#039;,         show: &#039;Jaccard&#039;     },
- {id: &#039;kulczynski&#039;,      show: &#039;Kulczynski&#039;  },
-  {id: &#039;canberra&#039;,        show: &#039;Canberra&#039;    },
-  {id: &#039;morisita_horn&#039;,   show: &#039;Morisita-Horn&#039;},
+    {id: &#039;jaccard&#039;,         show: &#039;Jaccard&#039;     },
+    {id: &#039;kulczynski&#039;,      show: &#039;Kulczynski&#039;  },
+    {id: &#039;canberra&#039;,        show: &#039;Canberra&#039;    },
+    {id: &#039;morisita_horn&#039;,   show: &#039;Morisita-Horn&#039;},
         // both R and python
         
-        {id: &#039;bray_curtis&#039;,     show: &#039;Bray-Curtis&#039; },
+
+    {id: &#039;bray_curtis&#039;,     show: &#039;Bray-Curtis&#039; },
+ //       {id: &#039;manhattan&#039;,       show: &#039;Manhattan&#039;   },
+ //       {id: &#039;gower&#039;,           show: &#039;Gower&#039;       },
+ //       {id: &#039;euclidean&#039;,       show: &#039;Euclidean&#039;   },
+       
+       
+ //       {id: &#039;pearson&#039;,         show: &#039;Pearson&#039;     },
+ //       {id: &#039;spearman&#039;,        show: &#039;Spearman&#039;    },
+// R only
+//        {id: &#039;correlation&#039;,     show: &#039;Correlation&#039; },
+//        {id: &#039;mountford&#039;,       show: &#039;Mountford&#039;   },
+//        {id: &#039;chao_j&#039;,          show: &#039;Chao J&#039;      },
+//        {id: &#039;chao_s&#039;,          show: &#039;Chao S&#039;      },
+//        {id: &#039;raup&#039;,            show: &#039;Raup&#039;        },
+        
+//        {id: &#039;yue_clayton&#039;,     show: &#039;Yue-Clayton&#039; }
 
 // python distances:
 
@@ -154,23 +170,24 @@ config.HEATMAP_COLORS = [&#039;1111ff&#039;,&#039;3333ff&#039;,&#039;5555ff&#039
 config.RSCRIPT_CMD = &#039;RScript --no-restore --no-save&#039;;
 
 config.RANKS = [&quot;domain&quot;, &quot;phylum&quot;, &quot;klass&quot;, &quot;order&quot;, &quot;family&quot;, &quot;genus&quot;, &quot;species&quot;, &quot;strain&quot;];
+
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
+
 config.VISUAL_THUMBNAILS = { visuals: [
-    {name:&#039;Distance Heatmap&#039;,  file:&#039;/images/visuals/heatmap.png&#039;,     link:&#039;user_data/heatmap&#039;, id:&#039;distance_heatmap&#039;     },
-    {name:&#039;Frequency Heatmap&#039;, file:&#039;/images/visuals/frequency_heatmap.png&#039;, link:&#039;user_data/frequency_heatmap&#039;, id:&#039;frequency_heatmap&#039;  },
-    {name:&#039;Stackbar Charts&#039;,   file:&#039;/images/visuals/barcharts.png&#039;,   link:&#039;user_data/barcharts&#039;, id:&#039;barcharts&#039;      },
-    {name:&#039;Pie Charts&#039;,        file:&#039;/images/visuals/pie_charts.png&#039;,  link:&#039;user_data/piecharts&#039;, id:&#039;piecharts&#039;    },
-    {name:&#039;Dendrograms&#039;,       file:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;, id:&#039;dendrogram&#039;    },
-    {name:&#039;PCoA Analyses&#039;,     file:&#039;/images/visuals/pcoa.png&#039;,        link:&#039;user_data/pcoa&#039;, id:&#039;pcoa&#039;    },
-    {name:&#039;Frequency Table&#039;,   file:&#039;/images/visuals/counts_table.png&#039;, link:&#039;user_data/counts_table&#039;, id:&#039;counts_table&#039;    },
-    {name:&#039;Metadata Table&#039;,    file:&#039;/images/visuals/metadata.png&#039;,    link:&#039;user_data/metadata_table&#039;, id:&#039;metadata2_table&#039;     },
-    {name:&#039;Data Location&#039;,     file:&#039;/images/visuals/map.png&#039;,         link:&#039;user_data/geospatial&#039;, id:&#039;geospatial&#039;     },
-    {name:&#039;TEST_TEST&#039;,     file:&#039;&#039;,         link:&#039;user_data/test_page&#039;, id:&#039;test_page&#039;     }
-    ]};
+    {name:&#039;Distance Heatmap (py)&#039;,      thumb:&#039;/images/visuals/heatmap.png&#039;,     link:&#039;user_data/heatmap&#039;,       id:&#039;dheatmap_link_id&#039;     },
+    {name:&#039;Frequency Heatmap (R-pdf)&#039;,  thumb:&#039;/images/visuals/frequency_heatmap.png&#039;, link:&#039;user_data/frequency_heatmap&#039;, id:&#039;fheatmap_link_id&#039;  },
+    {name:&#039;Stackbar Charts (d3-svg)&#039;,   thumb:&#039;/images/visuals/barcharts.png&#039;,   link:&#039;user_data/barcharts&#039;,     id:&#039;barcharts_link_id&#039;      },
+    {name:&#039;Pie Charts (d3-svg)&#039;,        thumb:&#039;/images/visuals/pie_charts.png&#039;,  link:&#039;user_data/piecharts&#039;,     id:&#039;piecharts_link_id&#039;    },
+    {name:&#039;Dendrogram (d3-svg)&#039;,        thumb:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;,    id:&#039;dendrogram_link_id&#039;    },
+    {name:&#039;Dendrogram (py-pdf)&#039;,        thumb:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;,    id:&#039;dendrogram_pdf_link_id&#039;    },
+    {name:&#039;PCoA Analyses (R-pdf)&#039;,      thumb:&#039;/images/visuals/pcoa.png&#039;,        link:&#039;user_data/pcoa&#039;,          id: &#039;pcoa_link_id&#039;    },
+    {name:&#039;Frequency Table&#039;,            thumb:&#039;/images/visuals/counts_table.png&#039;,link:&#039;user_data/counts_table&#039;,  id:&#039;counts_table_link_id&#039;    },
+    {name:&#039;Metadata Table&#039;,             thumb:&#039;/images/visuals/metadata.png&#039;,    link:&#039;user_data/metadata_table&#039;,id:&#039;metadata_table_link_id&#039;     },
+    {name:&#039;Data Location&#039;,              thumb:&#039;/images/visuals/map.png&#039;,         link:&#039;user_data/geospatial&#039;,    id:&#039;geospatial_link_id&#039;     },
+    {name:&#039;TEST_TEST&#039;,                  thumb:&#039;&#039;,                                link:&#039;user_data/test_page&#039;,     id:&#039;test_page_link_id&#039;     }
+]};
     
-
 config.REQ_METADATA_FIELDS = [&quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;common_name&quot;, &quot;country&quot;, &quot;depth&quot;, &quot;description&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;public&quot;, &quot;taxon_id&quot;];
-
 
 module.exports = config;</textarea>
   </div>
