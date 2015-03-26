@@ -45,7 +45,6 @@ var ranks = constants.RANKS;
 module.exports.check_if_rank = function(field_name)
 {
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
-  // console.log("FFF0 field_name = "+ field_name);
   return ranks.indexOf(field_name) > -1;
 }
 
