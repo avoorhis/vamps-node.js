@@ -96,8 +96,8 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
        }       
      }
    }
-   console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
-       
+   //console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+   return dataset_seq_tax_dict  
   
 }
 

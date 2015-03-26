@@ -385,6 +385,44 @@ router.get('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
   //console.log(chosen_id_name_hash)
 });
 
+//
+// Download Counts Matrix
+router.post('/download_counts_matrix', function(req, res) {
+	//console.log('in download_counts_matrix')
+	//console.log(biom_matrix)
+    var timestamp = +new Date();  // millisecs since the epoch!
+    timestamp = req.user.username + '_' + timestamp;
+	var out_file = "downloads/"+timestamp+"_matrix.csv.gz";
+    var wstream = fs.createWriteStream(out_file);
+	var gzip = zlib.createGzip();
+    var rs = new Readable;
+	
+	header_txt = '';
+	for(i in biom_matrix.columns){
+		header_txt += ','+biom_matrix.columns[i].name;
+	}
+	header_txt += '\n\r';
+	rs.push(header_txt);
+	for(i in biom_matrix.rows){
+		row_txt = '';
+		row_txt += biom_matrix.rows[i].name;
+		for(k in biom_matrix.data[i]){
+			row_txt += ','+biom_matrix.data[i][k];
+		}
+		row_txt += '\n\r';
+		rs.push(row_txt);
+	}
+	rs.push('\n\r');
+	rs.push(null);  
+  	rs  
+	  .pipe(gzip)  
+      .pipe(wstream)
+      .on('finish', function () {  // finished
+        console.log('done compressing and writing file');    
+      });
+});
+//
+//
 
 
 
