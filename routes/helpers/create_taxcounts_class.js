@@ -8,6 +8,39 @@ var constants = require(app_root + '/public/constants');
 var helpers = require('./helpers');
 
 // Private
+function make_count_dict(row, dataset_seq_tax_dict)
+{
+  //===
+  // console.log("HHH1");
+  // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
+  // for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
+  // {
+  // 
+  //  in_obj = dataset_seq_tax_obj[i];
+    // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
+    in_obj = row;
+    dataset_id = parseInt(in_obj["dataset_id"]);
+    count = in_obj["seq_count"]
+
+    // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+    init_dataset_seq_tax_dict(dataset_seq_tax_dict);
+    rank_attr = ""
+    // helpers.start = process.hrtime();     
+
+    for (var field_name in in_obj)
+    {
+
+       var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
+       if (is_rank)
+       {
+         rank_attr += ("_" + in_obj[field_name]);
+         count_taxa(dataset_seq_tax_dict);
+       }       
+     }
+   // }
+   // helpers.elapsed_time("This is the running time for count_taxa");
+}
+
 function make_dataset_seq_tax_dict()
 {
   helpers.start = process.hrtime();     
@@ -23,49 +56,40 @@ function make_dataset_seq_tax_dict()
       throw err;
   });
 
-  // query.on('fields', function(fields) {
-  //   console.log("SSS1 fields");
-  //     console.log(fields);
-  // });
-
-  // query.on('result', function(row) {
-  //   console.log("SSS2 fields");
-  //     console.log(row);
-  // });
-  
   query.on('result', function(row) {
       connection.db.pause();
-      //===
-      // console.log("HHH1");
-      // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
-      // for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
-      // {
+      make_count_dict(row, dataset_seq_tax_dict);
+      // //===
+      // // console.log("HHH1");
+      // // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
+      // // for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
+      // // {
+      // // 
+      // //  in_obj = dataset_seq_tax_obj[i];
+      //   // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
+      //   in_obj = row;
+      //   dataset_id = parseInt(in_obj["dataset_id"]);
+      //   count = in_obj["seq_count"]
       // 
-      //  in_obj = dataset_seq_tax_obj[i];
-        // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
-        in_obj = row;
-        dataset_id = parseInt(in_obj["dataset_id"]);
-        count = in_obj["seq_count"]
-
-        // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
-        init_dataset_seq_tax_dict(dataset_seq_tax_dict);
-        rank_attr = ""
-        // helpers.start = process.hrtime();     
-
-        for (var field_name in in_obj)
-        {
-
-           var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
-           if (is_rank)
-           {
-             rank_attr += ("_" + in_obj[field_name]);
-             count_taxa(dataset_seq_tax_dict);
-           }       
-         }
-       // }
-       // helpers.elapsed_time("This is the running time for count_taxa");         
-
-      
+      //   // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+      //   init_dataset_seq_tax_dict(dataset_seq_tax_dict);
+      //   rank_attr = ""
+      //   // helpers.start = process.hrtime();     
+      // 
+      //   for (var field_name in in_obj)
+      //   {
+      // 
+      //      var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
+      //      if (is_rank)
+      //      {
+      //        rank_attr += ("_" + in_obj[field_name]);
+      //        count_taxa(dataset_seq_tax_dict);
+      //      }       
+      //    }
+      //  // }
+      //  // helpers.elapsed_time("This is the running time for count_taxa");         
+      // 
+      // 
       //===
       
       connection.db.resume();
