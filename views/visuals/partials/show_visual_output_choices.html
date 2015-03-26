@@ -7,7 +7,7 @@
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font'>
     <tr>
-        <td>Normalization of Counts:
+        <td>Normalization of Counts:<br>
             <% for (i in rows) { %>
             <%    if (rows[i].id === pi.normalization) { %>
                       <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' checked='checked' \> <%= rows[i].id %>
@@ -33,31 +33,28 @@
         </td>
     </tr>
     <tr>
-        <td>Filter Matrix Rows by Frequency:<br>
+<td>Filter Matrix Rows by Frequency:<br>
 
-  MIN: <select id='min_range' name='min_range' class='small_font'>
-    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
-    <%    if(pi.min_range.toString() === pct_range[n].toString()) { %>
-            <option value='<%= pct_range[n]  %>' selected='selected' ><%= pct_range[n] %>%</option> 
-    <%    }else{ %>
-            <option value='<%= pct_range[n]  %>' ><%= pct_range[n]  %>%</option>
-    <%    }  %>     
-    <% }  %>
-   </select>
-    MAX: <select id='max_range' name='max_range' class='small_font'>
-    
-    <% for (var n=1; n < pct_range.length; n++ ) {  %>
-       
-    <%    if(pi.max_range.toString() === pct_range[n].toString()) { %>
-            <option value='<%= pct_range[n]  %>' selected='selected'><%= pct_range[n] %>%</option>
-    <%    }else{ %>
-            <option value='<%= pct_range[n] %>'><%= pct_range[n] %>%</option>
-    <%    } %>
-    <% }  %>
-   </select>
+		  MIN: <select id='min_range' name='min_range' class='small_font'>
+		    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
+		    <%    if(pi.min_range.toString() === pct_range[n].toString()) { %>
+		            <option value='<%= pct_range[n]  %>' selected='selected' ><%= pct_range[n] %>%</option> 
+		    <%    }else{ %>
+		            <option value='<%= pct_range[n]  %>' ><%= pct_range[n]  %>%</option>
+		    <%    }  %>     
+		    <% }  %>
+		   </select>
+		  MAX: <select id='max_range' name='max_range' class='small_font'>
 
-
-
+		    <% for (var n=1; n < pct_range.length; n++ ) {  %>
+   
+		    <%    if(pi.max_range.toString() === pct_range[n].toString()) { %>
+		            <option value='<%= pct_range[n]  %>' selected='selected'><%= pct_range[n] %>%</option>
+		    <%    }else{ %>
+		            <option value='<%= pct_range[n] %>'><%= pct_range[n] %>%</option>
+		    <%    } %>
+		    <% }  %>
+		   </select>
 
 </td></tr></table>
 <input type='hidden' name='domains' value='<%= pi.domains %>'>
@@ -67,5 +64,5 @@
 <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
 <input type='hidden' name='update_data' value='1'>
 <hr>
-<input type='submit' id='output_choices_submit_btn' name='' value='Update Data' >
+<input type='submit' disabled='disabled' id='output_choices_submit_btn' name='' value='Update Data' >
 </form>
