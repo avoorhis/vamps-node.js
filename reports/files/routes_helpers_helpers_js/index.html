@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">73.93</p>
+      <p class="stat">81.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">36</p>
+      <p class="stat">64</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">10.00</p>
+      <p class="stat">13.24</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.21</p>
+      <p class="stat">0.42</p>
     </div>
   </div>
 </div>
@@ -89,8 +89,10 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+    <textarea id="file-source" class="col-md-12">var constants = require(app_root + &#039;/public/constants&#039;);
+var express = require(&#039;express&#039;);
 var router = express.Router();
+var fs = require(&#039;fs&#039;);
 
 module.exports = {
 
@@ -104,7 +106,8 @@ module.exports = {
       }
       // if they aren&#039;t redirect them to the home page
       console.log(&quot;Oops! NOT isLoggedIn.req.isAuthenticated&quot;);
-      res.redirect(&#039;/&#039;);
+      req.flash(&#039;loginMessage&#039;, &#039;Please login or register before continuing.&#039;);
+      res.redirect(&#039;/users/login&#039;);
   }
   
   
@@ -120,11 +123,36 @@ module.exports = {
 */
 
 module.exports.start = process.hrtime();
+
 module.exports.elapsed_time = function(note){
     var precision = 3; // 3 decimal places
     var elapsed = process.hrtime(module.exports.start)[1] / 1000000; // divide by a million to get nano to milli
     console.log(process.hrtime(module.exports.start)[0] + &quot; s, &quot; + elapsed.toFixed(precision) + &quot; ms - &quot; + note); // print message + time
-};</textarea>
+};
+
+var ranks = constants.RANKS;
+
+// todo: use in file instead of those in the class
+module.exports.check_if_rank = function(field_name)
+{
+  // ranks = [&quot;domain&quot;,&quot;phylum&quot;,&quot;klass&quot;,&quot;order&quot;,&quot;family&quot;,&quot;genus&quot;,&quot;species&quot;,&quot;strain&quot;]
+  return ranks.indexOf(field_name) &gt; -1;
+}
+
+module.exports.clear_file = function(fileName)
+{
+  fs.openSync(fileName, &quot;w&quot;);
+}
+
+module.exports.append_to_file = function(fileName, text) 
+{
+  fs.appendFileSync(fileName, text);
+}
+
+module.exports.write_to_file = function(fileName, text) 
+{
+  fs.writeFile(fileName, text);
+}</textarea>
   </div>
 </div>
 
