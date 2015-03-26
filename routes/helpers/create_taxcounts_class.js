@@ -32,6 +32,7 @@ var fs = require('fs');
 // Private
 var silvaTaxonomy = require(app_root + '/models/silva_taxonomy');
 var all_silva_taxonomy = new silvaTaxonomy();
+var converter = require('json-2-csv');
 
 function test_chunks()
 {
@@ -45,24 +46,37 @@ function test_chunks()
 
   query.on('fields', function(fields) {
     console.log("SSS1 fields");
-      console.log(fields);
+      // console.log(fields);
   });
 
-  query.on('result', function(row) {
-    console.log("SSS2 fields");
-      console.log(row);
-  });
-  // 
   // query.on('result', function(row) {
-  //     connection.pause();
-  //     // Do some more processing on the row
+  //   console.log("SSS2 fields");
   //     console.log(row);
-  //     connection.resume();
   // });
-  // 
+  
+  query.on('result', function(row) {
+      connection.db.pause();
+      // Do some more processing on the row
+      // helpers.write_to_file(file_name, JSON.stringify(row));
+      converter.json2csv(row, json2csvCallback);
+      
+      console.log("SSS2 fields");
+      console.log(row);
+      connection.db.resume();
+  });
+  
 
   // connection.end();
 }
+
+
+var json2csvCallback = function (err, csv) {
+    if (err) throw err;
+    console.log("VVV csv");
+    console.log(csv);
+    fs.appendFile(file_name, csv);
+};
+ 
 
 function get_table_chunks(total_amount)
 {
@@ -90,10 +104,10 @@ function get_table_chunks(total_amount)
       Object.keys(arr).forEach(function(key) {
         var val = arr[key];
         // logic();
-        console.log("RRR1 val, key");
-      
-        console.log(val);
-        console.log(key);
+        // console.log("RRR1 val, key");
+        //       
+        // console.log(val);
+        // console.log(key);
         
         
       });
