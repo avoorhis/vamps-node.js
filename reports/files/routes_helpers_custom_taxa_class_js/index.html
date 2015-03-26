@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">66.85</p>
+      <p class="stat">63.83</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">275</p>
+      <p class="stat">365</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">47.90</p>
+      <p class="stat">57.12</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.77</p>
+      <p class="stat">2.41</p>
     </div>
   </div>
 </div>
@@ -166,6 +166,83 @@ function check_if_rank(field_name)
   return ranks.indexOf(field_name) &gt; -1;
 }
 
+function make_taxa_tree_dictNEW(taxonomy_obj)
+{
+  var taxa_tree_dict = [];
+  var dictMap_by_name_n_rank = {};
+  var dictMap_by_db_id_n_rank = {};
+  var ranks = [&#039;domain&#039;,&#039;phylum&#039;,&#039;klass&#039;,&#039;order&#039;,&#039;family&#039;,&#039;genus&#039;,&#039;species&#039;,&#039;strain&#039;]
+  var dictMap_by_id = {};
+  //console.log(&quot;HHH0&quot;);
+  //console.log(&quot;taxonomy_obj = &quot; + JSON.stringify(taxonomy_obj));
+  //console.log(&quot;HHH&quot;);
+  
+  for (var i=0, len = taxonomy_obj.length; i &lt; len; i++)
+  {
+    
+	in_obj = taxonomy_obj[i];
+    console.log(&quot;\ntaxon_objs[i] = &quot; + JSON.stringify(in_obj));
+    var i_am_a_parent = 0;
+	//var domain_id = in_obj.domain_id
+    //for (var field_name in in_obj)
+	for(var n=0; n&lt;ranks.length; n++)
+	//for(var n=ranks.length-1; n&gt;=0; n--)
+    {
+      		var field_name = ranks[n]
+
+	        var db_id_field_name = field_name + &quot;_id&quot;;
+	        // console.log(&quot;db_id_field_name = &quot; + JSON.stringify(db_id_field_name));
+	        var db_id = in_obj[db_id_field_name];
+	        // console.log(&quot;db_id = &quot; + JSON.stringify(db_id));
+      
+	        //var parent_node = {}; 
+	        var current_dict = {};
+	        taxa_rank = field_name;
+		
+	        var taxa_name = in_obj[taxa_rank];
+          
+	        console.log(&quot; name_rank1 = &quot; + taxa_name + &quot; - &quot; + taxa_rank);
+			
+			node = get_by_key(dictMap_by_name_n_rank, taxa_name + &quot;_&quot; + taxa_rank);
+			console.log(taxa_rank+&quot; old_node = &quot; + JSON.stringify(node));
+			
+		
+			if (!node || taxa_name.substr(-3) == &#039;_NA&#039;)
+	        {
+		          //console.log(&quot;taxa_name = &quot; + JSON.stringify(taxa_name));
+		          //console.log(&quot;taxa_rank = &quot; + JSON.stringify(taxa_rank));
+		          //console.log(&quot;i_am_a_parent = &quot; + JSON.stringify(i_am_a_parent));
+		          //console.log(&quot;taxon_name_id = &quot; + JSON.stringify(taxon_name_id));
+		          //console.log(&quot;name_rank2 = &quot; + taxa_name+&#039; - &#039;+taxa_rank)
+		          current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
+				  console.log(taxa_rank+&quot; new_node = &quot; + JSON.stringify(current_dict));
+				  //console.log(&quot;current_dict = &quot; + JSON.stringify(current_dict,null,4))
+          
+				  taxa_tree_dict.push(current_dict);
+         
+		          add_to_dict_by_key(dictMap_by_name_n_rank,  current_dict.taxon + &quot;_&quot; + current_dict.rank, current_dict);
+          
+				  add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + &quot;_&quot; + current_dict.rank, current_dict);
+
+		          i_am_a_parent = current_dict.node_id;
+
+		          taxon_name_id += 1;
+        
+		          add_children_to_parent(dictMap_by_id, current_dict);
+	        }
+	        else
+	        {
+	          	i_am_a_parent = node.node_id;
+	        }
+			
+        
+      
+    }
+  } 
+  
+  return [taxa_tree_dict, dictMap_by_id, dictMap_by_db_id_n_rank, dictMap_by_name_n_rank];
+}
+
 // todo: refactoring! Too long and nested
 function make_taxa_tree_dict(taxonomy_obj)
 {
@@ -174,23 +251,24 @@ function make_taxa_tree_dict(taxonomy_obj)
   var dictMap_by_db_id_n_rank = {};
   
   var dictMap_by_id = {};
-  // console.log(&quot;HHH1&quot;);
-  // console.log(&quot;taxonomy_obj = &quot; + JSON.stringify(taxonomy_obj));
-  // console.log(&quot;HHH&quot;);
+  //console.log(&quot;HHH0&quot;);
+  //console.log(&quot;taxonomy_obj = &quot; + JSON.stringify(taxonomy_obj));
+  //console.log(&quot;HHH&quot;);
   
   for (var i=0, len = taxonomy_obj.length; i &lt; len; i++)
   {
-    in_obj = taxonomy_obj[i];
-    //console.log(&quot;taxon_objs[i] = &quot; + JSON.stringify(in_obj));
+    
+	in_obj = taxonomy_obj[i];
+    //console.log(&quot;\ntaxon_objs[i] = &quot; + JSON.stringify(in_obj));
     var i_am_a_parent = 0;
-
+	//var domain_id = in_obj.domain_id
     for (var field_name in in_obj)
     {
-      // console.log(&quot;field_name = &quot; + JSON.stringify(field_name));
+       //console.log(&quot;field_name = &quot; + JSON.stringify(field_name));
       // ranks.forEach(function(rank) {
-      //   dictMap_by_rank[rank] = [];
-      // });
-      // 
+       //  dictMap_by_rank[rank] = [];
+       //});
+       
       
       var is_rank = check_if_rank(field_name);
       if (is_rank)
@@ -203,26 +281,33 @@ function make_taxa_tree_dict(taxonomy_obj)
         var parent_node = {}; 
         var current_dict = {};
         taxa_rank = field_name;
+		
         if (in_obj.hasOwnProperty(taxa_rank))
         {
           var taxa_name = in_obj[taxa_rank];
           if (taxa_name)
           {
-            node = get_by_key(dictMap_by_name_n_rank, taxa_name + &quot;_&quot; + taxa_rank);
-
-            if (!node)
+            //console.log(&quot;name_rank1 = &quot; + taxa_name + &quot; - &quot; + taxa_rank);
+			node = get_by_key(dictMap_by_name_n_rank, taxa_name + &quot;_&quot; + taxa_rank);
+			//console.log(&quot;old_node = &quot; + JSON.stringify(node));
+            
+			
+			if (!node)
             {
               // console.log(&quot;taxa_name = &quot; + JSON.stringify(taxa_name));
               // console.log(&quot;taxa_rank = &quot; + JSON.stringify(taxa_rank));
               // console.log(&quot;i_am_a_parent = &quot; + JSON.stringify(i_am_a_parent));
               // console.log(&quot;taxon_name_id = &quot; + JSON.stringify(taxon_name_id));
-            
+              // console.log(&quot;name_rank2 = &quot; + taxa_name+&#039; - &#039;+taxa_rank)
               current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
-
-              taxa_tree_dict.push(current_dict);
-            
+			        //console.log(&quot;new_node = &quot; + JSON.stringify(current_dict));
+			        //console.log(&quot;current_dict = &quot; + JSON.stringify(current_dict,null,4))
+              
+			        taxa_tree_dict.push(current_dict);
+             
               add_to_dict_by_key(dictMap_by_name_n_rank,  current_dict.taxon + &quot;_&quot; + current_dict.rank, current_dict);
-              add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + &quot;_&quot; + current_dict.rank, current_dict);
+              
+			        add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + &quot;_&quot; + current_dict.rank, current_dict);
 
               i_am_a_parent = current_dict.node_id;
 
@@ -234,6 +319,7 @@ function make_taxa_tree_dict(taxonomy_obj)
             {
               i_am_a_parent = node.node_id;
             }
+			
           }
         }
       }
@@ -242,7 +328,8 @@ function make_taxa_tree_dict(taxonomy_obj)
         continue;
       }
     }
-  }  
+  } 
+  
   return [taxa_tree_dict, dictMap_by_id, dictMap_by_db_id_n_rank, dictMap_by_name_n_rank];
 }
 
@@ -334,6 +421,9 @@ function TaxonomyTree(rows) {
   this.taxa_tree_dict_map_by_db_id_n_rank = temp_arr[2]; 
   this.taxa_tree_dict_map_by_name_n_rank = temp_arr[3]; 
   this.taxa_tree_dict_map_by_rank = make_dictMap_by_rank(this.taxa_tree_dict);
+  //console.log(&quot;HHH1&quot;);
+  //console.log(&quot;taxonomy_obj = &quot; + JSON.stringify(this.taxonomy_obj));
+  //console.log(&quot;HHH&quot;);
 }
 
 TaxonomyTree.prototype.make_dict = function(tree_obj, key_name) 
