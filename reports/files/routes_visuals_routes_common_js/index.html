@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">56.81</p>
+      <p class="stat">59.15</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">552</p>
+      <p class="stat">408</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">65.56</p>
+      <p class="stat">57.79</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.87</p>
+      <p class="stat">4.39</p>
     </div>
   </div>
 </div>
@@ -226,7 +226,7 @@ module.exports = {
           // GLOBAL Variable
           var post_hash = {};
           
-          post_hash .unit_choice                  = req.body.unit_choice;
+          post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
           post_hash.no_of_datasets               = chosen_id_name_hash.ids.length;
           post_hash.normalization                = req.body.normalization || &#039;none&#039;;
@@ -234,18 +234,23 @@ module.exports = {
           post_hash.selected_distance            = req.body.selected_distance || &#039;morisita_horn&#039;;
           post_hash.tax_depth                    = req.body.tax_depth    || &#039;custom&#039;;
           post_hash.domains                      = req.body.domains      || [&#039;NA&#039;];
+          if(typeof post_hash.domains == &#039;string&#039;) {
+            post_hash.domains = post_hash.domains.split(&#039;,&#039;);
+          }
           post_hash.custom_taxa                  = req.body.custom_taxa  || [&#039;NA&#039;];
           // in the unusual event that a single custom checkbox is selected --&gt; must change from string to list:
           if(typeof post_hash.custom_taxa !== &#039;object&#039;) {post_hash.custom_taxa = [post_hash.custom_taxa]; }
           post_hash.include_nas                  = req.body.include_nas  || &#039;yes&#039;;
-          post_hash.min_range                    = 0;
-          post_hash.max_range                    = 100;
-          post_hash.metadata                     = req.body.selected_metadata  || [];
-
-          var timestamp = +new Date();  // millisecs since the epoch!
-          var user = req.user || &#039;no-user&#039;;
-          timestamp = user + &#039;_&#039; + timestamp;
-          post_hash .ts = timestamp;
+          post_hash.min_range                    = req.body.min_range || 0;
+          post_hash.max_range                    = req.body.max_range || 100;
+          if(typeof req.body.selected_metadata == &#039;string&#039;){
+            post_hash.metadata                     = req.body.selected_metadata.split(&#039;,&#039;) || [];
+          }else{
+            post_hash.metadata                     = req.body.selected_metadata  || [];
+          }
+          
+          post_hash.update_data                  = req.body.update_data  || false;  // zer
+          
 
     }else {
         chosen_id_name_hash = this.create_chosen_id_name_hash(req.body.ds_order);   
@@ -374,208 +379,55 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     console.log(&#039;options:&#039;, options);
     PythonShell.run(&#039;distance.py&#039;, options, function (err, mtx) {
       if (err) throw err;
-
-      //console.log(&#039;results: %j&#039;, distance_matrix);
-      //console.log(&#039;options: %j&#039;, options);
-      distance_matrix = JSON.parse(mtx);
-
-      //distance_matrix = mtx
-      if(distance_matrix === {} || distance_matrix === &#039;err&#039; || distance_matrix===&#039;&#039;) {
-        html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-      }else{
-        if(visual_name === &#039;heatmap&#039;) {
-          //var dm = HMAP.create_distance_matrix(distance_matrix);
-          console.log(distance_matrix)
-          
-          //distance_matrix = results
-          
-          title += &#039; Heatmap&#039;;
-          html  += HMAP.create_hm_html(distance_matrix); 
-          res.render(&#039;visuals/user_data/&#039;+visual_name, {
-                title: title,
-                timestamp: ts || &#039;default_timestamp&#039;,
-                html : html,
-                user: req.user
-          });
-
-        }else if(visual_name === &#039;dendrogram&#039;) {
-          //var newick = stdout
-          //html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets); 
-
-          var dend_script_file = path.resolve(__dirname, &#039;../../public/scripts/dendrogram.R&#039;);
-          shell_command = [req.C.RSCRIPT_CMD, dend_script_file, distmtx_file].join(&#039; &#039;);
-          console.log(shell_command)
-          exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-
-              if(stderr){console.log(stderr);}
-              stdout = stdout.trim();
-              console.log(stdout);
-              if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
-                html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-              }else{
-                
-                  
-                  html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-                 
-                  title += &#039; Dendrogram&#039;;
-                  res.render(&#039;visuals/user_data/&#039;+visual_name, {
-                        title: title,
-                        timestamp: ts || &#039;default_timestamp&#039;,
-                        html : html,
-                        user: req.user
-                  });
-                
-              }
-              
-              
-
-          });
-          
-          
-        }else if(visual_name === &#039;pcoa&#039;) {
-
-
-            var pcoa_script_file = path.resolve(__dirname, &#039;../../public/scripts/pcoa.R&#039;);
-                      shell_command = [req.C.RSCRIPT_CMD, pcoa_script_file, distmtx_file].join(&#039; &#039;);
-                      console.log(shell_command)
-                      exec(shell_command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-
-                          if(stderr){console.log(stderr);}
-                          stdout = JSON.parse(stdout);
-                          //console.log(&#039;pcoa NAMES&#039;);
-                          //console.log(stdout.names);
-                          if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
-                            html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-                          }else{
-                            
-                              
-                              html += PCOA.create_pcoa_graphs(stdout);  
-                             
-                              title += &#039; PCoA&#039;;
-                              res.render(&#039;visuals/user_data/&#039;+visual_name, {
-                                    title: title,
-                                    timestamp: ts || &#039;default_timestamp&#039;,
-                                    html : html,
-                                    user: req.user
-                              });
-                            
-                          }
-                          
-                          
-
-                      });
-
-            title += &#039; PCoA&#039;;
-
-
-        }else{
-          
-        }
-        
-      }
-
+      console.log(JSON.parse(mtx))
+      return mtx;
+ 
       
     });   
 },
 //
 //
 //
-// run_script_cmd: function (req,res, ts, command, visual_name) {
-//     var exec = require(&#039;child_process&#039;).exec;
-//     var html = start_visuals_html(visual_name);
+run_script_cmd: function (req,res, ts, command, visual_name) {
+     var exec = require(&#039;child_process&#039;).exec;
 
-//     var title = &#039;VAMPS&#039;;
-    
-//     command.log(command)
-//     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+    console.log(command)
+    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(visual_name == &#039;fheatmap&#039;){
+            var image = &#039;/tmp_images/&#039;+ts+&#039;_heatmap.pdf&#039;
+            var html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
+            html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
+            html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
+            html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;
+            //var html = &quot;&lt;img alt=&#039;alt_freq-heatmap-fig&#039; src=&#039;&quot;+image+&quot;&#039; /&gt;&quot;
+            console.log(html)
+            res.send(html);  
+        }    
 
-//       if(stderr){console.log(stderr);}
-//       stdout = stdout.trim();
-//       console.log(stdout);
-//       if(stdout === &#039;dist(0)&#039; || stdout === &#039;err&#039; || stdout===&#039;&#039;) {
-//         html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-//       }else{
-//         if (visual_name === &#039;heatmap&#039;) {
-//           var dm = HMAP.create_distance_matrix(stdout);
-//           console.log(dm);
-//           title += &#039; Heatmap&#039;;
-//           html  += HMAP.create_hm_html(dm);  
-//         }else if(visual_name === &#039;dendrogram&#039;) {
-          
-//           html += DEND.create_dendrogram_html(stdout, visual_post_items.no_of_datasets);  
-//           title += &#039; Dendrogram&#039;;
-//         }else{
+    });
+ },
 
-//         }
-        
-//       }
 
-//       res.render(&#039;visuals/user_data/&#039;+visual_name, {
-//             title: title,
-//             timestamp: ts || &#039;default_timestamp&#039;,
-//             html : html,
-//             user: req.user
-//       });
-      
-
-//     });
-// },
-
-// run_pydendro_cmd: function (req, res, ts, script, infile, visual_name, metric) {
-//     var exec = require(&#039;child_process&#039;).exec;
-//     var html = &#039;&lt;table border=&quot;1&quot; class=&quot;single_border center_table&quot;&gt;&lt;tr&gt;&lt;td&gt;&#039;;
-//     var title = &#039;VAMPS&#039;;
-//     html += this.get_selection_markup(visual_name, visual_post_items); // block for listing prior selections: domains,include_NAs ...
-//     html += &#039;&lt;/td&gt;&lt;td&gt;&#039;;
-//     html += this.get_choices_markup(visual_name, visual_post_items);      // block for controls to normalize, change tax percentages or distance
-//     html += &#039;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#039;;
-//     script = &#039;distance.py | dendrogram.py &#039;
-//     var options = {
-//       scriptPath: &#039;public/scripts&#039;,
-//       args:       [ &#039;-in&#039;, infile, &#039;-metric&#039;, metric ], 
-//     };
-
-//     PythonShell.run(script, options, function (err, results) {
-//       if (err) throw err;
-
-//       distance_matrix = JSON.parse(results)
-//       //console.log(&#039;results: %j&#039;, distance_matrix);
-      
-//       if(distance_matrix === {} || distance_matrix === &#039;err&#039; || distance_matrix===&#039;&#039;) {
-//         html += &#039;&lt;div&gt;Error -- No distances were calculated.&lt;/div&gt;&#039;;
-//       }else{
-        
-//           html += DEND.create_newick(distance_matrix, visual_post_items.no_of_datasets);  
-//           title += &#039; Dendrogram&#039;;
-       
-        
-//       }
-
-//       res.render(&#039;visuals/user_data/&#039;+visual_name, {
-//             title: title,
-//             timestamp: ts || &#039;default_timestamp&#039;,
-//             html : html,
-//             user: req.user
-//       });
-//     });   
-// },
 //
 //
 //
 create_chosen_id_name_hash: function(dataset_ids) {
-  // dataset_ids is list of strings of form:
+  
   console.log(dataset_ids);
-  // ID--PROJECTNAME--DATASETNAME
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-  //console.log(&#039;req.body.dataset_ids&#039;)
-  //console.log(req.body.dataset_ids)
-  for (var n=0; n &lt; dataset_ids.length; n++){
-    var items = dataset_ids[n].split(&#039;--&#039;);
-    chosen_id_name_hash.ids.push(items[0]);
-    chosen_id_name_hash.names.push(items[1]+&#039;--&#039;+items[2]);
+
+  for(i in dataset_ids){
+      did   = dataset_ids[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      //dataset_ids.push(did+&#039;--&#039;+pname+&#039;--&#039;+dname);
+      chosen_id_name_hash.ids.push(did);
+      chosen_id_name_hash.names.push(pname+&#039;--&#039;+dname);
   }
+  
   return chosen_id_name_hash;
 },
 //
@@ -639,6 +491,10 @@ check_initial_status: function(url) {
   }
   console.log(&#039;values_updated: &#039;+values_updated.toString())
   return values_updated;
+},
+
+save_datasets: function(datasets) {
+  console.log(&#039;in save_datasets&#039;);
 }
 
 };   // end module.exports</textarea>

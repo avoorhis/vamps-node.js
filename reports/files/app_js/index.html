@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">67.08</p>
+      <p class="stat">73.08</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">246</p>
+      <p class="stat">222</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">24.79</p>
+      <p class="stat">19.92</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.17</p>
+      <p class="stat">1.69</p>
     </div>
   </div>
 </div>
@@ -107,9 +107,10 @@ var favicon = require(&#039;static-favicon&#039;);
 var logger = require(&#039;morgan&#039;);
 var cookieParser = require(&#039;cookie-parser&#039;);
 var bodyParser = require(&#039;body-parser&#039;);
-var flash = require(&#039;connect-flash&#039;);
+var flash = require(&#039;express-flash&#039;);
 var passport = require(&#039;passport&#039;);
-var db = require(&#039;mysql&#039;);
+
+//var db = require(&#039;mysql2&#039;);
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require(&#039;./config/database-dev&#039;);
@@ -124,13 +125,14 @@ var C = require(&#039;./public/constants&#039;);
 
 var app = express();
 app.set(&#039;appName&#039;, &#039;VAMPS&#039;);
-require(&#039;./config/passport&#039;)(passport, connection); // pass passport for configuration
+require(&#039;./config/passport&#039;)(passport, connection.db); // pass passport for configuration
 
 // view engine setup
 app.set(&#039;views&#039;, path.join(__dirname, &#039;views&#039;));
 app.engine(&#039;html&#039;, require(&#039;ejs&#039;).renderFile);
 app.set(&#039;view engine&#039;, &#039;html&#039;);
 
+app.set(express.static(__dirname + &#039;/tmp&#039;));
 // MIDDLEWARE  &lt;-- must be in correct order:
 app.use(favicon());
 app.use(logger(&#039;dev&#039;));
@@ -153,15 +155,16 @@ app.use(&#039;public/stylesheets&#039;, express.static(path.join(__dirname, &#03
 // app.use(&#039;views/add_ins&#039;, express.static(path.join(__dirname, &#039;/views/add_ins&#039;)));
 // required for passport
 // app.use(session({ secret: &#039;keyboard cat&#039;,  cookie: {maxAge: 900000}})); // session secret
-//app.use(session({ secret: &#039;keyboard cat&#039;})); // session secret
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(session({ secret: &#039;keyboard cat&#039;})); // session secret
+
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
 
 // Make our db accessible to our router
 app.use(function(req, res, next){
-    if(!connection) {return next(new Error(&#039;no db connection&#039;));}
-    req.db = connection;
+    if(!connection.db) {return next(new Error(&#039;no db connection&#039;));}
+    req.db = connection.db;
     req.C = C;
     return next();
 });
@@ -188,39 +191,6 @@ app.use(&#039;/projects&#039;, projects);
 app.use(&#039;/datasets&#039;, datasets);
 app.use(&#039;/visuals&#039;, visuals);
 
-// todo: Andy, shouldn&#039;t it be in a module?
-app.post(&#039;/download/:ts/:file_type&#039;, function(req, res){
-  console.log(req.params.ts);
-  console.log(req.params.file_type);
-  if(req.params.file_type === &#039;counts_matrix&#039;) {
-    var file = __dirname + &#039;/tmp/&#039;+req.params.ts+&#039;_text_matrix.mtx&#039;;
-    res.download(file); // Set disposition and send it.
-  }else if(req.params.file_type === &#039;fasta&#039;) {
-    console.log(req.body.ids);
-    var dataset_ids = JSON.parse(req.body.ids);
-    var qSelectSeqs = &quot;SELECT project, dataset, sequence_id, UNCOMPRESS(sequence_comp) as seq FROM sequence_pdr_info&quot;;
-    qSelectSeqs +=    &quot;  JOIN dataset  using(dataset_id)&quot;;
-    qSelectSeqs +=    &quot;  JOIN project  using(project_id)&quot;;
-    qSelectSeqs +=    &quot;  JOIN sequence using(sequence_id)&quot;;
-    qSelectSeqs +=    &quot;  WHERE dataset_id in (&quot; + dataset_ids + &quot;)&quot;;
-    console.log(qSelectSeqs);
-    req.db.query(qSelectSeqs, function(err, rows, fields){
-        if (err)  {
-          throw err;
-        } else {
-            var filename = req.params.ts+&#039;.fa&#039;;
-            res.setHeader(&#039;Content-disposition&#039;, &#039;attachment; filename=&#039;+filename+&#039;&#039;);
-            res.setHeader(&#039;Content-type&#039;, &#039;text/plain&#039;);
-            res.charset = &#039;UTF-8&#039;;
-            for (var k=0, len=rows.length; k &lt; len; k++){
-                res.write(&quot;&gt;&quot;+rows[k].sequence_id+&#039;|project=&#039;+rows[k].project+&#039;|dataset=&#039;+rows[k].dataset+&#039;\n&#039;);
-                res.write(rows[k].seq+&#039;\n&#039;);
-            }
-            res.end();
-        }
-    });
-  }
-});
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get(&#039;/*&#039;, function(req, res, next){
@@ -276,6 +246,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
+
 /**
 * Create global objects once upon server startup
 */
@@ -283,19 +254,24 @@ app.use(function(err, req, res, next) {
 var silvaTaxonomy = require(&#039;./models/silva_taxonomy&#039;);
 var all_silva_taxonomy = new silvaTaxonomy();
 var CustomTaxa  = require(&#039;./routes/helpers/custom_taxa_class&#039;);
+var TreeModel = require(&#039;tree-model&#039;);;
 
 // GLOBAL if leave off &#039;var&#039;:
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-TaxaCounts     = require(&#039;./public/json/tax_counts_lookup.json&#039;);
-MetadataValues = require(&#039;./public/json/metadata_all.json&#039;);
+console.log(&#039;Loading DATABASE: &#039;+NODE_DATABASE+&#039; (see file config/database-xxx.js)&#039;)
+
+// these files are manually created before server startup using the scripts in public/scripts
+TaxaCounts     = require(&#039;./public/json/tax_counts--&#039;+NODE_DATABASE+&#039;.json&#039;);
+MetadataValues = require(&#039;./public/json/metadata--&#039; + NODE_DATABASE+&#039;.json&#039;);
 //console.log(MetadataValues)
+
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
   else
   {
-    // console.log(&quot;AAA all_silva_taxonomy from app = &quot; + JSON.stringify(results));
+    //console.log(&quot;AAA all_silva_taxonomy from app = &quot; + JSON.stringify(results));
     
 // var small_rows = [ {&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;D-F10&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:33,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Group_C3&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:52,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Marine_Benthic_Group_A&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:58,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Acidobacteria&quot;,&quot;order&quot;:&quot;Acidobacteriales&quot;,&quot;family&quot;:&quot;Acidobacteriaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:2,&quot;order_id&quot;:7,&quot;family_id&quot;:8,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;Holophagales&quot;,&quot;family&quot;:&quot;Holophagaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:73,&quot;family_id&quot;:138,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;Acidimicrobiaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:6,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1}];
     // var new_taxonomy = new CustomTaxa(small_rows);
@@ -304,25 +280,25 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // uncomment to print out the object:
     // console.log(&#039;000 new_taxonomy = &#039; + JSON.stringify(new_taxonomy));
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank[&quot;domain&quot;]);    
-    //console.log(&#039;000 new_taxonomy.taxa_tree_dict = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict));
-    //console.log(&#039;taxa_tree_dict_map_by_id = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
+    //console.log(&quot;\nnew_taxonomy.taxa_tree_dict = &quot; + JSON.stringify(new_taxonomy.taxa_tree_dict));
+  // for(n in new_taxonomy.taxa_tree_dict){
+		//console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
+  // }
+    //console.log(&quot;\ntaxa_tree_dict_map_by_id = &quot; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
-    //console.log(&#039;taxa_tree_dict_map_by_db_id_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    //console.log(&#039;taxa_tree_dict_map_by_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank));
-    //console.log(&#039;taxa_tree_dict_map_by_name_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
-    
-    //console.log(&#039;RRR333 taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;] = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[&quot;138_family&quot;][&quot;taxon&quot;]));
-    
-  
 
+    // console.log(&#039;taxa_tree_dict_map_by_db_id_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+    // console.log(&#039;taxa_tree_dict_map_by_rank[&quot;phylum&quot;] = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank[&#039;phylum&#039;]));
+    // console.log(&#039;taxa_tree_dict_map_by_name_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
+
+    
+    //console.log(&#039;RRR333 taxa_tree_dict_map_by_db_id_n_rank[&quot;435_klass&quot;][&quot;taxon&quot;] = &#039;+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[&quot;435_klass&quot;]));
+    
   }
 });
 
-// var csvUpload = require(&#039;./sbin/metadata_upload&#039;);
-// var csv_filename = path.join(__dirname, &#039;data/KCK_LSM_Bv6_qii.csv&#039;);
-// myCSV = new csvUpload(csv_filename);
-// console.log(&quot;FROM app!&quot;);
-
+var taxCounts = require(&#039;./routes/helpers/create_taxcounts_class&#039;);
+var taxcounts = new taxCounts();
 
 module.exports = app;
 
