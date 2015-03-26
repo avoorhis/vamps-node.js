@@ -197,7 +197,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     
 
     // console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
+    // console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
     // console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
 
     
@@ -281,11 +281,12 @@ all_silva_taxonomy.get_dataset_taxa_counts_amount(function(err, results) {
     console.log('111 get_dataset_taxa_counts_amount = ' + JSON.stringify(results[0]["counts"]));
     // total_amount = results[0]["counts"];
 
+    // helpers.start = process.hrtime();
     total_amount = 4;
     var taxcounts = new taxCounts(total_amount);
-    helpers.start = process.hrtime();
-    taxcounts.print_res()
-    helpers.elapsed_time("This is the running time for some code");
+    // taxcounts.print_res()
+    // asynchron
+    // helpers.elapsed_time("This is the running time for app: taxcounts code");
     
     // 
     // // console.log('000 taxcounts = ' + JSON.stringify(taxcounts));
