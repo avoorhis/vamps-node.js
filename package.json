@@ -24,6 +24,7 @@
     "express-session": "",
     "istanbul": "",
     "jsdom": "",
+    "json-2-csv": "",
     "morgan": "",
     "mysql2": "",
     "node-json2html": "",
