@@ -47,7 +47,6 @@ function query_dataset_seq_tax()
       connection.db.pause();
       make_count_dict(row, dataset_seq_tax_dict);
       connection.db.resume();
-
   });
 
   query.on('end', function(err) {
