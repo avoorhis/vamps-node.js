@@ -1,0 +1,13 @@
+<%  var rows = JSON.parse(constants).NORMALIZATIONCHOICES.choices %>
+Normalization of Counts:<br>
+<ul>
+    <% for (i in rows) { %>
+    <%    if (rows[i].id === 'none') { %>
+              <li><input type='radio' id='' name='normalization' value='<%= rows[i].id %>' checked='checked' \> <%= rows[i].show %></li>
+    <%     } else { %>
+              <li><input type='radio' id='' name='normalization' value='<%= rows[i].id %>' \> <%= rows[i].show %></li>
+    <%     } %>
+    <% } %>
+
+</ul>
+
