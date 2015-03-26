@@ -106,17 +106,57 @@ $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) 
               
 });              
           
-
-
+// normalization radio-buttons
+var norm_counts_radios = document.getElementsByName('normalization');
+if (typeof norm_counts_radios[0] !=="undefined") {
+  norm_counts_radios[0].addEventListener('click', function () {
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+  norm_counts_radios[1].addEventListener('click', function () {
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+  norm_counts_radios[2].addEventListener('click', function () {
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// Distance Metric Select (Combo)
+selected_distance_combo = document.getElementById('selected_distance');
+if (typeof selected_distance_combo !=="undefined") {
+	selected_distance_combo.addEventListener('change', function () {
+  	  document.getElementById('output_choices_submit_btn').disabled = false;
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
+}
+// MIN Select (Combo)
+min_range_combo = document.getElementById('min_range');
+if (typeof min_range_combo !=="undefined") {
+	min_range_combo.addEventListener('change', function () {
+  	  document.getElementById('output_choices_submit_btn').disabled = false;
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
+}
+// MAX Select (Combo)
+max_range_combo = document.getElementById('max_range');
+if (typeof max_range_combo !=="undefined") {
+	max_range_combo.addEventListener('change', function () {
+  	  document.getElementById('output_choices_submit_btn').disabled = false;
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
+}
 // COUNTS
 var tax_counts_link = document.getElementById('counts_table_link_id');
 var tax_counts_btn = document.getElementById('counts_table_hide_btn');
 var tax_counts_div = document.getElementById('tax_table_div');
+var counts_table_download_btn = document.getElementById('counts_table_download_btn');
 if (typeof tax_counts_link !=="undefined") {
   tax_counts_link.addEventListener('click', function () {
       //alert(tax_table_created)
       if(typeof tax_table_created == "undefined"){
         get_user_input('counts_table', pi_local.ts);
+		counts_table_download_btn.disabled = false
       }else{
         if(tax_counts_btn.value == 'close'){
           toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
@@ -135,6 +175,24 @@ if (typeof tax_counts_btn !=="undefined") {
         toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
       }
       
+  });
+}
+if (typeof counts_table_download_btn !=="undefined") {
+  
+  counts_table_download_btn.addEventListener('click', function () {
+	  //download_matrix('counts_matrix'); 
+	  
+	  var f = document.createElement("form");
+	  f.setAttribute('method',"POST");
+	  f.setAttribute('action',"download_counts_matrix");
+	  
+	  var s = document.createElement("input"); //input element, text
+	  s.setAttribute('type',"submit");
+	  s.setAttribute('value',"Submit");
+	  
+	  f.appendChild(s)
+	  document.getElementsByTagName('body')[0].appendChild(f);
+	  f.submit();
   });
 }
 //
@@ -450,7 +508,7 @@ function create_test_page(ts) {
 //   download_metadata_id.addEventListener('click', function () {
       
 //       var timestamp = +new Date();  // millisecs since the epoch!
-//       var user = user || 'no-user';
+//       user || 'no-user';
 //       timestamp = user + '_' + timestamp;
 //       var out_file = 'downloads/'+timestamp+'.metadata.gz';
 //       console.log(out_file)
@@ -525,6 +583,41 @@ function get_user_input(visual, ts) {
     }
 }
 //
+//
+// function download_matrix(what) {
+// 	alert(pi_local.ts)
+// 	if(what=='counts_matrix'){
+// 		var txt = '';
+// 			    var timestamp = +new Date();  // millisecs since the epoch!
+// 		//timestamp = user.username + '_' + timestamp;
+// 		var out_file = 'downloads/'+timestamp+'_matrix.fa.gz';
+// 		//pi_local.ts
+// 		        for (var n in mtx_local.columns) {
+// 		          txt += ","+mtx_local.columns[n].name;
+// 		        }
+// 		txt += '\n\r';
+// 			    var gzip = zlib.createGzip();
+//
+//
+// 			    var wstream = fs.createWriteStream(out_file);
+// 			    var rs = new Readable;
+// 		      	rs
+// 		        //.pipe(gzip)
+// 		        .pipe(wstream)
+// 		        .on('finish', function () {  // finished
+// 		          console.log('done compressing and writing file');
+// 		          // var info = {
+// 		         //        to:'avoorhis@mbl.edu',
+// 		         //        from:"vamps@mbl.edu",
+// 		         //        subject:"fasta file is ready",
+// 		         //        text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+// 		         //      }
+// 		         //  send_mail(info);
+// 		        });
+// 	}
+//
+// }
+//
 // TAX TABLE
 //
 function create_counts_table() {
@@ -548,7 +641,7 @@ function create_counts_table() {
       
       for (var i in mtx_local.rows){
         html += "<tr class='chart_row'>";
-        html += "<td class='right_justify'>"+mtx_local.rows[i].name +"</td>";
+        html += "<td class='left_justify'>"+mtx_local.rows[i].name +"</td>";
         for (var d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
@@ -562,7 +655,12 @@ function create_counts_table() {
       html += "<tr>";
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (var m in mtx_local.column_totals){
-        html += "<td class='right_justify'>" + mtx_local.column_totals[m] + "</td>";
+		  if(pi_local.normalization == 'frequency'){
+			  var total = mtx_local.column_totals[m].toFixed(6);
+		  }else{
+			  var total = mtx_local.column_totals[m];
+		  }
+		html += "<td class='right_justify'>" + total + "</td>";
       }
       html += "</tr>";
       html += "</table>";
