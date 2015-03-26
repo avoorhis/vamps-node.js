@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Plato - routes/projects.js</title>
+  <title>Plato - public/javascripts/view_selection_bb.js</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
@@ -36,7 +36,7 @@
 
 <div class="jumbotron">
   <div class="container">
-    <h1>routes/projects.js</h1>
+    <h1>public/javascripts/view_selection_bb.js</h1>
   </div>
 </div>
 
@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">71.29</p>
+      <p class="stat">100.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">40</p>
+      <p class="stat">1</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">12.34</p>
+      <p class="stat">0.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.27</p>
+      <p class="stat">0.00</p>
     </div>
   </div>
 </div>
@@ -89,46 +89,92 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
-var router = express.Router();
+    <textarea id="file-source" class="col-md-12">// //  var pi_local  = JSON.parse(&#039;&lt;%- post_items %&gt;&#039;);
+// //  var mtx_local = JSON.parse(&#039;&lt;%- matrix %&gt;&#039;);
+// //  var md_local  = JSON.parse(&#039;&lt;%- metadata %&gt;&#039;);
+// //  var ds_local  = JSON.parse(&#039;&lt;%- chosen_id_name_hash %&gt;&#039;);
 
-// These are all under /projects
-/* GET New User page. */
-router.get(&#039;/index_projects&#039;, function(req, res) {
-    var db = req.db;
-    var qSelect = &quot;SELECT project_id, project, title, project_description from project&quot;;
-    console.log(qSelect);
-    var collection = db.query(qSelect, function (err, rows, fields){
-      if (err) {
-      throw err;
-    } else {
-        res.render(&#039;projects/index_projects&#039;, { 
-                        title          : &#039;VAMPS Projects&#039;,
-                        &quot;all_projects&quot; : rows, 
-                        user: req.user });
-      }
-    });
+// var PostItems = Backbone.Model.extend({
+//   initialize: function(){
+//       console.log(&#039;This model has been initialized.&#039;);
+//   },
+//   defaults: {
+//     unit_choice: &#039;&#039;,
+//     no_of_datasets: 0,
+//     normalization: &#039;none&#039;,
+//     visuals: undefined,
+//     selected_distance: &#039;morisita_horn&#039;,
+//     tax_depth: &#039;phylum&#039;,
+//     domains: [ ],
+//     custom_taxa: [ &#039;NA&#039; ],
+//     include_nas: &#039;yes&#039;,
+//     min_range: 0,
+//     max_range: 100,
+//     metadata: [],
+//     ts: &#039;&#039;,
+//     max_ds_count: 0
 
-});
+//   }
 
-router.get(&#039;/:id&#039;, function(req, res) {
-    var db = req.db;
-    var qSelect = &quot;SELECT project_id, project, title, project_description from project where project_id = &#039;&quot; + req.params.id +&quot;&#039;&quot;;
-    console.log(qSelect);
-    var collection = db.query(qSelect, function (err, row, fields){
-      if (err)  {
-      throw err;
-    } else {
-        res.render(&#039;projects/profile&#039;, { 
-                                title  : &#039;VAMPS Project&#039;,
-                                project: row, 
-                                user   : req.user });
-      }
-    });
+// });
+// var user_choices = new PostItems();
+// for(n in pi_local){
+//   user_choices.set(n,pi_local[n])
+// }
+// //alert(user_choices.get(&#039;ts&#039;));
+// //////////////////////////////////////////////////////////////////////////////////
+// //
+// //  Datasets
+// //
+// var Dataset = Backbone.Model.extend({
+//   initialize: function(){
+//       console.log(&#039;This model has been initialized.&#039;);
+//   },
+//   defaults: {
+//     did: 0,
+//     name: &#039;&#039; 
+//   }
+// });
+// var DatasetCollection = Backbone.Collection.extend({  model: Dataset });
+// var datasetsCollection = new DatasetCollection({ localStorage: new Backbone.LocalStorage(&#039;datasets-backbone&#039;), });
+// for(n in ds_local.ids){
+//   //alert(ds_local.names[n])
+//   datasetsCollection.add(  new Dataset({ id:n, did:ds_local.ids[n], name:ds_local.names[n] }));
+// }
+// //alert(&quot;Collection size: &quot; + datasets.length);
+// //var ds1 = datasetsCollection.get(1);
+// //datasetsCollection.get(1).save();
+// //alert(ds1.get(&#039;id&#039;))
 
-});
+// //////////////////////////////////////////////////////////////////////////////////
+// //
+// // METADATA
+// //
+// var Metadata = Backbone.Model.extend({
 
-module.exports = router;</textarea>
+// });
+// //////////////////////////////////////////////////////////////////////////////////
+// //
+// // DATA MATRIX
+// //
+// var MatrixRow = Backbone.Model.extend({
+//   defaults: {    
+//     type: &#039;taxonomy&#039;,
+//     taxname: &#039;&#039;,
+//     data: []
+//   }
+//   // validate that user_choices.get(&#039;no_of_datasets&#039;) === length of data
+// });
+// var MatrixRowCollection = Backbone.Collection.extend({  model: MatrixRow });
+// var matrixRowsCollection = new MatrixRowCollection();
+// for(i in mtx_local.data){
+//   //alert(mtx_local.rows[i].name)
+//   matrixRowsCollection.add(  new MatrixRow({ id:i, taxname:mtx_local.rows[i].name, data:mtx_local.data[i] }));
+// }
+
+// //alert(matrixRowsCollection.pluck(&#039;taxname&#039;))
+// //////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////</textarea>
   </div>
 </div>
 
