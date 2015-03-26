@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">68.31</p>
+      <p class="stat">64.16</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">673</p>
+      <p class="stat">1174</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">48.87</p>
+      <p class="stat">77.24</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.47</p>
+      <p class="stat">12.89</p>
     </div>
   </div>
 </div>
@@ -89,88 +89,427 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">//var COMMON  = require(&#039;./routes_common&#039;);
-// visualization: unit_selection.js
+    <textarea id="file-source" class="col-md-12">$(&quot;#metadata_local_table_div&quot;).on(&quot;click&quot;, &quot;#metadata_table&quot;, function () {
+    new Tablesort(document.getElementById(&#039;metadata_table&#039;));
+});
+
+
+// code for tooltips
+
+
+
+var $liveTip = $(&#039;&lt;div id=&quot;livetip_chart&quot;&gt;&lt;/div&gt;&#039;).hide().appendTo(&#039;body&#039;),
+    $win = $(window),
+    showTip;
+
+var tip = {
+  title: &#039;&#039;,
+  offset: 12,
+  delay: 300,
+  position: function(event) {
+    var positions = {x: event.pageX, y: event.pageY};
+    var dimensions = {
+      x: [
+        $win.width(),
+        $liveTip.outerWidth()
+      ],
+      y: [
+        $win.scrollTop() + $win.height(),
+        $liveTip.outerHeight()
+      ]
+    };
+ 
+    for ( var axis in dimensions ) {
+ 
+      if (dimensions[axis][0] &lt;dimensions[axis][1] + positions[axis] + this.offset) {
+        positions[axis] -= dimensions[axis][1] + this.offset;
+      } else {
+        positions[axis] += this.offset;
+      }
+ 
+    }
+ 
+    $liveTip.css({
+      top: positions.y,
+      left: positions.x
+    });
+  }
+};
+
+
+$(&quot;body&quot;).delegate(&quot;.tooltip&quot;, &quot;mouseover mouseout mousemove&quot;, function (event) {
+      var link = this,
+      html = &#039;&#039;;
+      $link = $(this);
+     
+      if (event.type == &#039;mouseover&#039;) {
+        tip.id = link.id;
+        link.id = &#039;&#039;;
+        id_items = tip.id.split(&#039;-|-&#039;);
+        html = &quot;&lt;table&gt;&lt;tr&gt;&quot;;
+        if(id_items[0] == &#039;dheatmap&#039;) {
+          html += &quot;&lt;td&gt;&quot;+id_items[1]+&quot;&lt;/td&gt;&quot;;
+          html += &quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+          html += &quot;&lt;td&gt;&quot;+id_items[2]+&quot;&lt;/td&gt;&quot;;
+          html += &quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+          html += &quot;&lt;td&gt;Distance: &quot;+id_items[3]+&quot;&lt;/td&gt;&quot;;
+        }else if(id_items[0] == &#039;frequencies&#039;){
+          html += &quot;&lt;td&gt;&quot;+id_items[1]+&quot;&lt;/td&gt;&quot;;
+          html += &quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+          html += &quot;&lt;td&gt;&quot;+id_items[2]+&quot;&lt;/td&gt;&quot;;
+          html += &quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+          html += &quot;&lt;td&gt;Count: &quot;+id_items[3]+&quot; (&quot;+id_items[4]+&quot;%)&lt;/td&gt;&quot;;
+        }else{  // barcharts and piecharts            
+          html += &quot;&lt;td&gt;&quot;+id_items[1]+&quot;&lt;/td&gt;&quot;;
+          html += &quot;&lt;/tr&gt;&lt;tr&gt;&quot;;
+          html += &quot;&lt;td&gt;Count: &quot;+id_items[2]+&quot; (&quot;+id_items[3]+&quot;%)&lt;/td&gt;&quot;;
+        }
+        html += &quot;&lt;/tr&gt;&lt;table&gt;&quot;;
+
+        showTip = setTimeout(function() {
+     
+          $link.data(&#039;tipActive&#039;, true);
+          
+          tip.position(event);
+     //alert(event.pageX)
+          $liveTip
+          .html(&#039;&lt;div&gt;&#039; + html  + &#039;&lt;/div&gt;&#039;)
+          .fadeOut(0)
+          .fadeIn(200);
+     
+        }, tip.delay);
+      }
+     
+      if (event.type == &#039;mouseout&#039;) {
+        link.id = tip.id || link.id;
+        if ($link.data(&#039;tipActive&#039;)) {
+          $link.removeData(&#039;tipActive&#039;);
+          $liveTip.hide();
+        } else {
+          clearTimeout(showTip);
+        }
+      }
+     
+      if (event.type == &#039;mousemove&#039; &amp;&amp; $link.data(&#039;tipActive&#039;)) {
+        tip.position(event);
+      }
+              
+});              
+          
+
+
 // COUNTS
-tax_counts_link = document.getElementById(&#039;counts_table&#039;);
+var tax_counts_link = document.getElementById(&#039;counts_table_link_id&#039;);
+var tax_counts_btn = document.getElementById(&#039;counts_table_hide_btn&#039;);
+var tax_counts_div = document.getElementById(&#039;tax_table_div&#039;);
 if (typeof tax_counts_link !==&quot;undefined&quot;) {
   tax_counts_link.addEventListener(&#039;click&#039;, function () {
-      
-      create_counts_table();
+      //alert(tax_table_created)
+      if(typeof tax_table_created == &quot;undefined&quot;){
+        get_user_input(&#039;counts_table&#039;, pi_local.ts);
+      }else{
+        if(tax_counts_btn.value == &#039;close&#039;){
+          toggle_visual_element(tax_counts_div,&#039;show&#039;,tax_counts_btn);
+        }else{
+          toggle_visual_element(tax_counts_div,&#039;hide&#039;,tax_counts_btn);
+        }
+      }
   });
 }
-// tax_counts_btn = document.getElementById(&#039;counts_table_hide_btn&#039;);
-// tax_counts_div = document.getElementById(&#039;tax_table_div&#039;);
-// if (typeof tax_counts_btn !==&quot;undefined&quot;) {
-//   tax_counts_btn.addEventListener(&#039;click&#039;, function () {
-//       //alert(&#039;here in tt&#039;)
-//       if(tax_counts_btn.value == &#039;close&#039;){
-//         hide_visual_element(tax_counts_div,tax_counts_btn);
-//       }else{
-//         show_visual_element(tax_counts_div,tax_counts_btn);
-//       }
+if (typeof tax_counts_btn !==&quot;undefined&quot;) {
+  tax_counts_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(tax_counts_btn.value == &#039;close&#039;){
+        toggle_visual_element(tax_counts_div,&#039;show&#039;,tax_counts_btn);
+      }else{
+        toggle_visual_element(tax_counts_div,&#039;hide&#039;,tax_counts_btn);
+      }
       
-//   });
-// }
-metadata_link = document.getElementById(&#039;metadata2_table&#039;);
+  });
+}
+//
+// METADATA
+//
+var metadata_link = document.getElementById(&#039;metadata_table_link_id&#039;);
+var metadata_btn = document.getElementById(&#039;metadata_table_hide_btn&#039;);
+var metadata_div = document.getElementById(&#039;metadata_local_table_div&#039;);
 if (typeof metadata_link !==&quot;undefined&quot;) {
   metadata_link.addEventListener(&#039;click&#039;, function () {
-      create_metadata_table();
+      if(typeof metadata_table_created == &quot;undefined&quot;){
+        get_user_input(&#039;metadata_table&#039;, pi_local.ts);
+      }else{
+        if(metadata_btn.value == &#039;close&#039;){
+          toggle_visual_element(metadata_div,&#039;show&#039;,metadata_btn);
+        }else{
+          toggle_visual_element(metadata_div,&#039;hide&#039;,metadata_btn);
+        }
+      }
+      
+  });
+}
+if (typeof metadata_btn !==&quot;undefined&quot;) {
+  metadata_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(metadata_btn.value == &#039;close&#039;){
+        toggle_visual_element(metadata_div,&#039;show&#039;,metadata_btn);
+      }else{
+        toggle_visual_element(metadata_div,&#039;hide&#039;,metadata_btn);
+      }
+      
   });
 }
 //
 // PIECHARTS
 //
-piecharts_link = document.getElementById(&#039;piecharts&#039;);
+var piecharts_link = document.getElementById(&#039;piecharts_link_id&#039;);
+var piecharts_btn = document.getElementById(&#039;piecharts_hide_btn&#039;);
+var piecharts_div = document.getElementById(&#039;piecharts_div&#039;);
 if (typeof piecharts_link !==&quot;undefined&quot;) {
   piecharts_link.addEventListener(&#039;click&#039;, function () {
-      //alert(&#039;here in pc&#039;)
-      create_piecharts(pi_local.ts);
+      if(typeof piecharts_created == &quot;undefined&quot;){
+        get_user_input(&#039;piecharts&#039;, pi_local.ts);
+      }else{
+        if(piecharts_btn.value == &#039;close&#039;){
+          toggle_visual_element(piecharts_div,&#039;show&#039;,piecharts_btn);
+        }else{
+          toggle_visual_element(piecharts_div,&#039;hide&#039;,piecharts_btn);
+        }
+      }
+      
   });
 }
-// piecharts_btn = document.getElementById(&#039;piecharts_hide_btn&#039;);
-// piecharts_div = document.getElementById(&#039;piecharts_div&#039;);
-// if (typeof piecharts_btn !==&quot;undefined&quot;) {
-//   piecharts_btn.addEventListener(&#039;click&#039;, function () {
-//       //alert(&#039;here in tt&#039;)
-//       if(piecharts_btn.value == &#039;close&#039;){
-//         hide_visual_element(piecharts_div,piecharts_btn);
-//       }else{
-//         show_visual_element(piecharts_div,piecharts_btn);
-//       }
+if (typeof piecharts_btn !==&quot;undefined&quot;) {
+  piecharts_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(piecharts_btn.value == &#039;close&#039;){
+        toggle_visual_element(piecharts_div,&#039;show&#039;,piecharts_btn);
+      }else{
+        toggle_visual_element(piecharts_div,&#039;hide&#039;,piecharts_btn);
+      }
       
-//   });
-// }
+  });
+}
 //
 // BARCHARTS
 //
-barchart_link = document.getElementById(&#039;barcharts&#039;);
+var barchart_link = document.getElementById(&#039;barcharts_link_id&#039;);
+var barcharts_btn = document.getElementById(&#039;barcharts_hide_btn&#039;);
+var barcharts_div = document.getElementById(&#039;barcharts_div&#039;);
 if (typeof barchart_link !==&quot;undefined&quot;) {
   barchart_link.addEventListener(&#039;click&#039;, function () {
-      //alert(&#039;here in pc&#039;)
-      create_barcharts(pi_local.ts);
+      if(typeof barcharts_created == &quot;undefined&quot;){
+        get_user_input(&#039;barcharts&#039;, pi_local.ts);
+      }else{
+        if(barcharts_btn.value == &#039;close&#039;){        
+          toggle_visual_element(barcharts_div,&#039;show&#039;,barcharts_btn);
+        }else{
+          toggle_visual_element(barcharts_div,&#039;hide&#039;,barcharts_btn);
+        }
+      }
+      
   });
 }
-// barcharts_btn = document.getElementById(&#039;barcharts_hide_btn&#039;);
-// barcharts_div = document.getElementById(&#039;barcharts_div&#039;);
-// if (typeof barcharts_btn !==&quot;undefined&quot;) {
-//   barcharts_btn.addEventListener(&#039;click&#039;, function () {
-//       //alert(&#039;here in tt&#039;)
-//       if(barcharts_btn.value == &#039;close&#039;){
-//         hide_visual_element(barcharts_div,barcharts_btn);
-//       }else{
-//         show_visual_element(barcharts_div,barcharts_btn);
-//       }
+if (typeof barcharts_btn !==&quot;undefined&quot;) {
+  barcharts_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(barcharts_btn.value == &#039;close&#039;){        
+        toggle_visual_element(barcharts_div,&#039;show&#039;,barcharts_btn);
+      }else{
+        toggle_visual_element(barcharts_div,&#039;hide&#039;,barcharts_btn);
+      }
       
-//   });
-// }
+  });
+}
+//
+// DISTANCE HEATMAP
+//
+var dheatmap_link = document.getElementById(&#039;dheatmap_link_id&#039;);
+var dheatmap_btn = document.getElementById(&#039;dheatmap_hide_btn&#039;);
+var dheatmap_div = document.getElementById(&#039;dheatmap_div&#039;);
+if (typeof dheatmap_link !==&quot;undefined&quot;) {
+  dheatmap_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof dheatmap_created == &quot;undefined&quot;){
+        get_user_input(&#039;dheatmap&#039;, pi_local.ts);
+      }else{
+        if(dheatmap_btn.value == &#039;close&#039;){        
+          toggle_visual_element(dheatmap_div,&#039;show&#039;,dheatmap_btn);
+        }else{
+          toggle_visual_element(dheatmap_div,&#039;hide&#039;,dheatmap_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dheatmap_btn !== &quot;undefined&quot;) {
+  dheatmap_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(dheatmap_btn.value == &#039;close&#039;){        
+        toggle_visual_element(dheatmap_div,&#039;show&#039;,dheatmap_btn);
+      }else{
+        toggle_visual_element(dheatmap_div,&#039;hide&#039;,dheatmap_btn);
+      }
+      
+  });
+}
+//
+// FREQUENCY HEATMAP
+//
+var fheatmap_link = document.getElementById(&#039;fheatmap_link_id&#039;);
+var fheatmap_btn = document.getElementById(&#039;fheatmap_hide_btn&#039;);
+var fheatmap_div = document.getElementById(&#039;fheatmap_div&#039;);
+if (typeof fheatmap_link !==&quot;undefined&quot;) {
+  fheatmap_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof fheatmap_created == &quot;undefined&quot;){
+        get_user_input(&#039;fheatmap&#039;, pi_local.ts);
+      }else{
+        if(fheatmap_btn.value == &#039;close&#039;){        
+          toggle_visual_element(fheatmap_div,&#039;show&#039;,fheatmap_btn);
+        }else{
+          toggle_visual_element(fheatmap_div,&#039;hide&#039;,fheatmap_btn);
+        }
+      }      
+  });
+}
+if (typeof fheatmap_btn !== &quot;undefined&quot;) {
+  fheatmap_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(fheatmap_btn.value == &#039;close&#039;){        
+        toggle_visual_element(fheatmap_div,&#039;show&#039;,fheatmap_btn);
+      }else{
+        toggle_visual_element(fheatmap_div,&#039;hide&#039;,fheatmap_btn);
+      }
+      
+  });
+}
+//
+// DENDROGRAM  D3
+//
+var dendrogram_link = document.getElementById(&#039;dendrogram_link_id&#039;);
+var dendrogram_btn = document.getElementById(&#039;dendrogram_hide_btn&#039;);
+var dendrogram_div = document.getElementById(&#039;dendrogram_div&#039;);
+if (typeof dendrogram_link !==&quot;undefined&quot;) {
+  dendrogram_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof dendrogram_created == &quot;undefined&quot;){
+        get_user_input(&#039;dendrogram&#039;, pi_local.ts);
+      }else{
+        if(dendrogram_btn.value == &#039;close&#039;){        
+          toggle_visual_element(dendrogram_div,&#039;show&#039;,dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram_div,&#039;hide&#039;,dendrogram_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dendrogram_btn !== &quot;undefined&quot;) {
+  dendrogram_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(dendrogram_btn.value == &#039;close&#039;){        
+        toggle_visual_element(dendrogram_div,&#039;show&#039;,dendrogram_btn);
+      }else{
+        toggle_visual_element(dendrogram_div,&#039;hide&#039;,dendrogram_btn);
+      }      
+  });
+}
+//
+// DENDROGRAM PNG
+//
+var dendrogram_pdf_link = document.getElementById(&#039;dendrogram_pdf_link_id&#039;);
+var dendrogram_pdf_btn = document.getElementById(&#039;dendrogram_pdf_hide_btn&#039;);
+var dendrogram_pdf_div = document.getElementById(&#039;dendrogram_pdf_div&#039;);
+if (typeof dendrogram_pdf_link !==&quot;undefined&quot;) {
+  dendrogram_pdf_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof dendrogram_pdf_created == &quot;undefined&quot;){
+        get_user_input(&#039;dendrogram_pdf&#039;, pi_local.ts);
+      }else{
+        if(dendrogram_pdf_btn.value == &#039;close&#039;){        
+          toggle_visual_element(dendrogram_pdf_div,&#039;show&#039;,dendrogram_pdf_btn);
+        }else{
+          toggle_visual_element(dendrogram_pdf_div,&#039;hide&#039;,dendrogram_pdf_btn);
+        }
+      }
+      
+  });
+}
+if (typeof dendrogram_pdf_btn !== &quot;undefined&quot;) {
+  dendrogram_pdf_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(dendrogram_pdf_btn.value == &#039;close&#039;){        
+        toggle_visual_element(dendrogram_pdf_div,&#039;show&#039;,dendrogram_pdf_btn);
+      }else{
+        toggle_visual_element(dendrogram_png_div,&#039;hide&#039;,dendrogram_pdf_btn);
+      }      
+  });
+}
+//
+// PCOA
+//
+var pcoa_link = document.getElementById(&#039;pcoa_link_id&#039;);
+var pcoa_btn = document.getElementById(&#039;pcoa_hide_btn&#039;);
+var pcoa_div = document.getElementById(&#039;pcoa_div&#039;);
+if (typeof pcoa_link !==&quot;undefined&quot;) {
+  pcoa_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof pcoa_created == &quot;undefined&quot;){
+        get_user_input(&#039;pcoa&#039;, pi_local.ts);
+      }else{
+        if(pcoa_btn.value == &#039;close&#039;){        
+          toggle_visual_element(pcoa_div,&#039;show&#039;,pcoa_btn);
+        }else{
+          toggle_visual_element(pcoa_div,&#039;hide&#039;,pcoa_btn);
+        }
+      }      
+  });
+}
+if (typeof pcoa_btn !== &quot;undefined&quot;) {
+  pcoa_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(pcoa_btn.value == &#039;close&#039;){        
+        toggle_visual_element(pcoa_div,&#039;show&#039;,pcoa_btn);
+      }else{
+        toggle_visual_element(pcoa_div,&#039;hide&#039;,pcoa_btn);
+      }
+      
+  });
+}
+//
+// GEOSPATIAL
+//
+var geospatial_link = document.getElementById(&#039;geospatial_link_id&#039;);
+var geospatial_btn = document.getElementById(&#039;geospatial_hide_btn&#039;);
+var geospatial_div = document.getElementById(&#039;map-canvas&#039;);
+if (typeof geospatial_link !==&quot;undefined&quot;) {
+  //google.maps.event.addDomListener(window, &#039;load&#039;, initialize);
+
+  geospatial_link.addEventListener(&#039;click&#039;, function () {
+      if(typeof geospatial_created == &quot;undefined&quot;){
+          get_user_input(&#039;geospatial&#039;, pi_local.ts);
+      }else{
+        if(geospatial_btn.value == &#039;close&#039;){        
+          toggle_visual_element(geospatial_div,&#039;show&#039;,geospatial_btn);
+        }else{
+          toggle_visual_element(geospatial_div,&#039;hide&#039;,geospatial_btn);
+        }
+      }      
+  });
+}
+if (typeof geospatial_btn !== &quot;undefined&quot;) {
+  geospatial_btn.addEventListener(&#039;click&#039;, function () {
+      //alert(&#039;here in tt&#039;)
+      if(geospatial_btn.value == &#039;close&#039;){        
+        toggle_visual_element(geospatial_div,&#039;show&#039;,geospatial_btn);
+      }else{
+        toggle_visual_element(geospatial_div,&#039;hide&#039;,geospatial_btn);
+      }
+      
+  });
+}
 
 //
 //
 //
 // TEST
 //
-test_link = document.getElementById(&#039;test_page&#039;);
+test_link = document.getElementById(&#039;test_page_link_id&#039;);
 if (typeof test_link !==&quot;undefined&quot;) {
   test_link.addEventListener(&#039;click&#039;, function () {
       //alert(&#039;here in pc&#039;)
@@ -179,99 +518,116 @@ if (typeof test_link !==&quot;undefined&quot;) {
 }
 function create_test_page(ts) {
   
-
-var opened = window.open(&quot;&quot;);
-opened.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;My title&lt;/title&gt;&lt;/head&gt;&lt;body&gt;test&lt;/body&gt;&lt;/html&gt;&quot;);
-
+    var opened = window.open(&quot;&quot;);
+    opened.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;My title&lt;/title&gt;&lt;/head&gt;&lt;body&gt;open in another page:  test&lt;/body&gt;&lt;/html&gt;&quot;);
 
 }
+save_dataset_btn = document.getElementById(&#039;save_dataset_btn&#039;);
+if (typeof save_dataset_btn !==&quot;undefined&quot;) {
+  save_dataset_btn.addEventListener(&#039;click&#039;, function () {
+      alert(&#039;here in pc&#039;)
+      //create_test_page(pi_local.ts);
+  });
+}
+
+function create_test_page(ts) {
 //
 //
+// DOWNLOAD
 //
-// function load_tooltip(visual) {
-
-//   if(visual === &#039;counts_table&#039;) {
-
-//     $(&quot;.counts_tbl_tooltip&quot;).tooltip({               
-//         tip: &quot;#counts_tt_span&quot;,          
-//         position: &#039;center below&#039;,          
-//         offset: [-40,0],
-//         opacity: 0.95,          
-//         delay: 0,
-//         onBeforeShow: function() {
-
-//             var passthru = this.getTrigger().attr(&quot;id&quot;);            
-//             var stuff = passthru.split(&#039;-|-&#039;)
-//             dname = stuff[0];
-//             cnt = stuff[1];
-//             pct   = stuff[2];
-//             count = cnt + &#039; (&#039;+pct+&#039; %)&#039;                       
-//             $(&quot;#counts_tt_span table td#dataset&quot;).text(dname);
-//             $(&quot;#counts_tt_span table td#count&quot;).text(count);               
-//         },           
-//     });        
-//     $(&quot;.counts_tbl_tooltip&quot;).hover(function() {         
-//          var cell = $(this);   
-//     });  
-
-//   }else if(visual === &#039;piecharts&#039; || visual === &#039;barcharts&#039;) {
-
-//     $(&quot;.piebarchart_tooltip&quot;).tooltip({               
-//         tip: &quot;#piebarchart_tt_span&quot;,          
-//         position: &#039;center below&#039;,          
-//         offset: [-30,0],
-//         opacity: 0.95,          
-//         delay: 0,
-//         onBeforeShow: function(){  
-           
-//           var passthru = this.getTrigger().attr(&quot;id&quot;);
-//           var stuff = passthru.split(&#039;-|-&#039;)
-//           uname = stuff[0];
-//           cnt = stuff[1];
-//           pct   = stuff[2];
-//           count = cnt + &#039; (&#039;+pct+&#039; %)&#039;
-//           $(&quot;#piebarchart_tt_span table td#unit&quot;).text(uname); 
-//           $(&quot;#piebarchart_tt_span table td#count&quot;).text(count);      
-//         },       
-//     });           
-//     $(&quot;.piebarchart_tooltip&quot;).hover(function() {         
-//        var cell = $(this);  
-//     });
-
-//   }else if(visual === &#039;metadata&#039;){
-
-//   }
-
+// download_metadata_id = document.getElementById(&#039;download_metadata_id&#039;);
+// if (typeof download_metadata_id !==&quot;undefined&quot;) {
+//   download_metadata_id.addEventListener(&#039;click&#039;, function () {
+      
+//       var timestamp = +new Date();  // millisecs since the epoch!
+//       var user = user || &#039;no-user&#039;;
+//       timestamp = user + &#039;_&#039; + timestamp;
+//       var out_file = &#039;downloads/&#039;+timestamp+&#039;.metadata.gz&#039;;
+//       console.log(out_file)
+//       var file = fs.createWriteStream(out_file);
+//       //var request = http.get(&quot;http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg&quot;, function(response) {
+//       //  response.pipe(file);
+//       //});
+//   });
 // }
-function hide_visual_element(table_div, btn){
-  table_div.style.display = &#039;none&#039;;
-  btn.value = &#039;open&#039;;
+// download_fasta_id = document.getElementById(&#039;download_fasta_id&#039;);
+// if (typeof download_fasta_id !==&quot;undefined&quot;) {
+//   download_fasta_id.addEventListener(&#039;click&#039;, function () {
+      
+//       var timestamp = +new Date();  // millisecs since the epoch!
+//       var user = user || &#039;no-user&#039;;
+//       timestamp = user + &#039;_&#039; + timestamp;
+//       var out_file = &#039;downloads/&#039;+timestamp+&#039;.metadata.gz&#039;;
+//       console.log(out_file)
+//       var file = fs.createWriteStream(out_file);
+//       //var request = http.get(&quot;http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg&quot;, function(response) {
+//       //  response.pipe(file);
+//       //});
+//   });
+// }
+//
+// visual choices 
+//
+test_link = document.getElementsByName(&#039;normalization&#039;);
+
+
 }
 
-function show_visual_element(table_div, btn){
-  table_div.style.display = &#039;block&#039;;
-  btn.value = &#039;close&#039;;
+
+
+
+
+function toggle_visual_element(table_div, tog, btn){
+  if(tog == &#039;show&#039;) {
+    table_div.style.display = &#039;none&#039;;
+    btn.value = &#039;open&#039;;
+  }else{
+    table_div.style.display = &#039;block&#039;;
+    btn.value = &#039;close&#039;;
+  }
 }
 
+
+function get_user_input(visual, ts) {
+   
+    if(visual === &#039;counts_table&#039;){
+      create_counts_table();      
+    }else if(visual === &#039;metadata_table&#039;){
+      create_metadata_table();
+    }else if(visual === &#039;piecharts&#039;){
+      create_piecharts(ts)
+    }else if(visual === &#039;barcharts&#039;){
+      create_barcharts(ts)
+    }else if(visual === &#039;dheatmap&#039;){
+      create_dheatmap(ts)
+    }else if(visual === &#039;dendrogram&#039;){
+      create_dendrogram(ts,&#039;svg&#039;)
+    }else if(visual === &#039;dendrogram_pdf&#039;){
+      create_dendrogram(ts,&#039;pdf&#039;)
+    }else if(visual === &#039;pcoa&#039;){
+      create_pcoa(ts)
+    }else if(visual === &#039;fheatmap&#039;){
+      create_fheatmap(ts)
+    }else if(visual === &#039;geospatial&#039;){
+      create_geospatial(ts)
+    }else{
+
+    }
+}
 //
 // TAX TABLE
 //
 function create_counts_table() {
-
-      var count_table_window = window.open();
+      
+      tax_table_created = true;
+      var info_line = create_header(&#039;ftable&#039;, pi_local);
+      document.getElementById(&#039;counts_table_title&#039;).innerHTML = info_line;
+      document.getElementById(&#039;pre_counts_table_div&#039;).style.display = &#039;block&#039;;
+      var tax_counts_div = document.getElementById(&#039;tax_table_div&#039;);
       var html = &#039;&#039;;
-      //var html = &quot;&lt;div id=&#039;&#039; class=&#039;visual_top_div&#039;&gt;&quot;;
-      //html += &quot;&lt;input type=&#039;button&#039; id=&#039;counts_table_hide_btn&#039; value=&#039;close&#039;&gt;&quot;;
-      //html += &quot;&lt;/div&gt;&quot;;
-      html += &quot;&lt;table border=&#039;1&#039; class=&#039;single_border center_table font_small&#039;&gt;&quot;;
-      html += &#039;&lt;tr&gt;&lt;td&gt;Current Normalization&lt;/td&gt;&lt;td&gt;&#039;+pi_local.normalization+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;;
-      //html += COMMON.get_selection_markup(&#039;counts_table&#039;, pi_local);     // block for listing prior selections: domains,include_NAs ...
-      html += &quot;&lt;tr&gt;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; selected value=&#039;none&#039;&gt;none&lt;/td&gt;&quot;;
-      html += &quot;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; value=&#039;max&#039;&gt;max&lt;/td&gt;&quot;;
-      html += &quot;&lt;td&gt;&lt;input type=&#039;radio&#039; name=&#039;norm&#039; value=&#039;freq&#039;&gt;freq&lt;/td&gt;&lt;/tr&gt;&quot;;
-      //html += COMMON.get_choices_markup(&#039;counts_table&#039;, pi_local);       // block for controls to normalize, change tax percentages or distance
-      html += &#039;&lt;/table&gt;&#039;;
-
+         
+      html += &quot;&lt;/table&gt;  &quot;;
+      html += &quot;&lt;/span&gt;&quot;;
 
       html += &quot;&lt;table border=&#039;1&#039; class=&#039;single_border small_font counts_table&#039; &gt;&quot;;
       html += &quot;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&quot;;
@@ -286,10 +642,9 @@ function create_counts_table() {
         for (var d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = mtx_local.rows[i].name+&#039;-|-&#039;+mtx_local.columns[d].name+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
-          //html += &quot;&lt;td data-ot=&#039;&quot;+id+&quot;&#039; data-ot-title=&#039;&quot;+mtx_local.columns[d].name+&quot;&#039; data-ot-fixed=&#039;true&#039; id=&#039;&quot;+id+&quot;&#039; class=&#039;counts_tbl_tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
-          html += &quot;&lt;td id=&#039;&quot;+id+&quot;&#039; class=&#039;chart_tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
-          //html += &quot;&lt;td&gt;&quot;+mtx_local.data[i][d] +&quot;&lt;/td&gt;&quot;;
+          var id  = &#039;frequencies-|-&#039;+mtx_local.rows[i].name+&#039;-|-&#039;+mtx_local.columns[d].name+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
+          html += &quot;&lt;td id=&#039;&quot;+id+&quot;&#039; class=&#039;tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
+          
         }
         html += &quot;&lt;/tr&gt;&quot;;
       }
@@ -301,44 +656,23 @@ function create_counts_table() {
       }
       html += &quot;&lt;/tr&gt;&quot;;
       html += &quot;&lt;/table&gt;&quot;;
-      
+
+      //document.getElementById(&#039;counts_tooltip_div&#039;).innerHTML = tooltip_tbl;
+      tax_counts_div.innerHTML = html;
+
 
      
-      
-      count_table_window.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;VAMPS Counts&lt;/title&gt;\n&quot;);
-      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/style.css\&quot;&gt;\n&quot;);
-      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/960.css\&quot;&gt;\n&quot;);
-      count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/visualization.css\&quot;&gt;\n&quot;);
-      
-      
-      //count_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/opentip.css\&quot;&gt;\n&quot;);
-      //count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/opentip-native.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
+};
 
-      count_table_window.document.write(&quot;&lt;/head&gt;&lt;body&gt;&quot;+html+&quot;\n&quot;);
-      
-
-      count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/jquery-2.1.1.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
-      count_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/view_selection_client.js\&quot;&gt;&lt;/script&gt;\n&quot;);
-                  
-
-
-      //count_table_window.document.write(&quot;&lt;script type=\&quot;text/javascript\&quot; src=\&quot;/public/javascripts/global.js\&quot;&gt;&lt;/script&gt;&quot;);
-      count_table_window.document.write(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
-      count_table_window.document.close();
-      //load_tooltip(&#039;counts_table&#039;);
-}
 //
 //  CREATE METADATA TABLE
 //
 function create_metadata_table() {
      
-      var metadata_table_window = window.open();
-      metadata_table_window.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;VAMPS Metadata&lt;/title&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/style.css\&quot;&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/960.css\&quot;&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;link rel=\&quot;stylesheet\&quot; type=\&quot;text/css\&quot; href=\&quot;/stylesheets/visualization.css\&quot;&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;/head&gt;&lt;body&gt;\n&quot;);
-
+      metadata_table_created = true;
+      var info_line = create_header(&#039;mtable&#039;, pi_local);
+      var metadata_div = document.getElementById(&#039;metadata_local_table_div&#039;);
+      document.getElementById(&#039;pre_metadata_table_div&#039;).style.display = &#039;block&#039;;
       var html = &#039;&#039;;
       html += &quot;&lt;table border=&#039;1&#039; id=&#039;metadata_table&#039; class=&#039;single_border small_font md_table&#039; &gt;&quot;;
       html += &quot;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Dataset (sortable)&lt;/th&gt;&lt;th&gt;Name (sortable)&lt;/th&gt;&lt;th&gt;Value (sortable)&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&quot;;
@@ -355,200 +689,358 @@ function create_metadata_table() {
           }        
       }
       html += &quot;&lt;/tbody&gt;&lt;/table&gt;&quot;;
+
+      //alert(md_local[0].env_matter)
+      metadata_div.innerHTML = html;
+};
+
+//
+//  CREATE Dendrogram
+//
+
+function create_dendrogram(ts, image_type) {
+      //alert(&#039;im DEND&#039;)
+      
+      var info_line = create_header(&#039;dend&#039;, pi_local);
+
+      if(image_type == &#039;pdf&#039;){
+        dendrogram_pdf_created = true;
+        var dend_div = document.getElementById(&#039;dendrogram_pdf_div&#039;);
+        document.getElementById(&#039;pre_dendrogram_pdf_div&#039;).style.display = &#039;block&#039;;
+        document.getElementById(&#039;dendrogram_pdf_title&#039;).innerHTML = info_line;
+      }else{  // svg
+        dendrogram_created = true;
+        var dend_div = document.getElementById(&#039;dendrogram_div&#039;);
+        document.getElementById(&#039;pre_dendrogram_div&#039;).style.display = &#039;block&#039;;
+        document.getElementById(&#039;dendrogram_title&#039;).innerHTML = info_line;
+      }
       
       
-      metadata_table_window.document.write(html+&quot;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/jquery-2.1.1.min.js\&quot;&gt;&lt;/script&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;script type=&#039;text/javascript&#039; src=&#039;/javascripts/tablesort.min.js&#039;&gt;&lt;/script&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;script&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;  new Tablesort(document.getElementById(&#039;metadata_table&#039;)); \n&quot;);
-      metadata_table_window.document.write(&quot;&lt;/script&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;script src=\&quot;/javascripts/view_selection_client.js\&quot;&gt;&lt;/script&gt;\n&quot;);
-      metadata_table_window.document.write(&quot;&lt;/body&gt;&lt;/html&gt;&quot;);
-      metadata_table_window.document.close();
-}
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      
+      
+      
+      
+      var html = &#039;&#039;
+      var args =  &quot;metric=&quot;+pi_local.selected_distance;
+      args += &quot;&amp;ts=&quot;+ts;
+      args += &quot;&amp;image_type=&quot;+image_type;
+      
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;POST&quot;, &#039;/visuals/dendrogram&#039;, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+           html = &quot;&lt;div id=&#039;&#039; &gt;&quot;+htmlstring+&quot;&lt;/div&gt;&quot;
+           dend_div.innerHTML = html;
+        }
+      };
+      xmlhttp.send(args);
+ 
+};
+
+
 //
-//  CREATE HEATMAP
+//  CREATE PCoA
 //
-function create_heatmap() {
-       alert(&#039;im HM&#039;);
-       hm_div = document.getElementById(&#039;distance_heatmap_div&#039;);
-       html = &#039;&#039;;
-       for (var i in md_local) {
-        html += &quot;&lt;li&gt;&quot;+md_local[i]+&quot;&lt;/li&gt;&quot;;
-       }
-      hm_div.innerHTML = html;
+function create_pcoa(ts) {
+      //alert(&#039;JS PCoA&#039;)
+      pcoa_created = true;
+      var pcoa_div = document.getElementById(&#039;pcoa_div&#039;);
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = create_header(&#039;pcoa&#039;, pi_local);
+      document.getElementById(&#039;pcoa_title&#039;).innerHTML = info_line;
+      
+
+      var html = &#039;&#039;
+      var args =  &quot;metric=&quot;+pi_local.selected_distance;
+      args += &quot;&amp;ts=&quot;+ts;
+      document.getElementById(&#039;pre_pcoa_div&#039;).style.display = &#039;block&#039;;
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;POST&quot;, &#039;/visuals/pcoa&#039;, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.onreadystatechange = function() {
+
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;
+           pcoa_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);
+      
+};
+//
+//  CREATE DIST HEATMAP
+//
+function create_dheatmap(ts) {
+      //alert(&#039;im HM&#039;)
+      dheatmap_created = true;
+      var dhm_div = document.getElementById(&#039;dheatmap_div&#039;);
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = create_header(&#039;dhm&#039;, pi_local);
+      document.getElementById(&#039;dheatmap_title&#039;).innerHTML = info_line;
+      
+      var html = &#039;&#039;
+      var args =  &quot;metric=&quot;+pi_local.selected_distance;
+      args += &quot;&amp;ts=&quot;+ts;
+      document.getElementById(&#039;pre_dheatmap_div&#039;).style.display = &#039;block&#039;;
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;POST&quot;, &#039;/visuals/heatmap&#039;, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;           
+           dhm_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);      
+};
+//
+//  CREATE FREQUENCY HEATMAP
+//
+function create_fheatmap(ts) {
+      //alert(&#039;im HM&#039;)
+      fheatmap_created = true;
+      var fhm_div = document.getElementById(&#039;fheatmap_div&#039;);
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = create_header(&#039;fhm&#039;, pi_local);
+      document.getElementById(&#039;fheatmap_title&#039;).innerHTML = info_line;
+      
+      var html = &#039;&#039;
+      var args =  &quot;metric=&quot;+pi_local.selected_distance;
+      args += &quot;&amp;ts=&quot;+ts;
+      document.getElementById(&#039;pre_fheatmap_div&#039;).style.display = &#039;block&#039;;
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;POST&quot;, &#039;/visuals/frequency_heatmap&#039;, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;           
+           fhm_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);   
+      
+};
+//
+//  CREATE GEOSPATIAL
+//
+function create_geospatial(ts) {
+      //alert(&#039;in GEO&#039;)
+      geospatial_created = true;
+      var geo_div = document.getElementById(&#039;map-canvas&#039;);
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      
+      var info_line = create_header(&#039;geo&#039;, pi_local);
+      
+      document.getElementById(&#039;geospatial_title&#039;).innerHTML = info_line;
+       
+      document.getElementById(&#039;pre_geospatial_div&#039;).style.display = &#039;block&#039;;
+      
+      var markers = [];
+      var lat_lon_collector = {};
+      var latlon;
+      
+      for (var ds in md_local) {
+          var lat = &#039;&#039;
+          var lon = &#039;&#039;
+          for (var k in md_local[ds]) {
+            md_item = k;
+            if(md_item == &#039;latitude&#039;) {
+              lat = Number(md_local[ds][k]);
+            }
+            if(md_item == &#039;longitude&#039;){              
+              lon = Number(md_local[ds][k]);
+            }           
+            
+          } 
+          
+          if(typeof lat == &#039;number&#039; &amp;&amp; typeof lon == &#039;number&#039;){
+            latlon = lat.toString() +&#039;;&#039;+ lon.toString();
+            if (latlon in lat_lon_collector) {
+              newds = lat_lon_collector[latlon] + &quot;&lt;br&gt;&quot; + ds
+              lat_lon_collector[latlon] = newds;
+            }else{
+              lat_lon_collector[latlon] = ds;
+            }            
+          }
+      }
+      var z = 1;
+
+      for(latlon in lat_lon_collector){
+        //alert(latlon)
+        ds = lat_lon_collector[latlon];
+        var latlons =  latlon.split(&#039;;&#039;);
+        markers.push([ds,latlons[0],latlons[1],z]);
+        z+=1; 
+
+      }
+
+      if(markers.length == 0){
+          geospatial_div.innerHTML=&#039;No Lat/Lon Data Found/Selected&#039;;
+      }else{
+        var center = new google.maps.LatLng(markers[0][2],markers[0][1]); // wants lon, lat order
+
+        var mapCanvas = document.getElementById(&#039;map-canvas&#039;);
+          var mapOptions = {
+            center:center,
+            zoom: 5,
+            //zoom: 2,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          }
+        var map = new google.maps.Map(mapCanvas, mapOptions);
+        var infowindow =  new google.maps.InfoWindow({
+          content: &#039;&#039;
+        });
+
+        setMarkers(map, markers, infowindow);
+      }  
+};
+
+function bindInfoWindow(marker, map, infowindow, html) { 
+  google.maps.event.addListener(marker, &#039;click&#039;, function() { 
+    infowindow.setContent(html); 
+    infowindow.open(map, marker); 
+  }); 
+} 
+function setMarkers(map, locations,infowindow) {
+  for (var i = 0; i &lt; locations.length; i++) {
+    // create a marker
+    var ds = locations[i];
+    var myLatLng = new google.maps.LatLng(ds[2], ds[1]); // wants lon, lat order
+    var marker = new google.maps.Marker({
+      title: ds[0].title,
+      position: myLatLng,
+      map: map
+    });
+    
+    // add an event listener for this marker
+    bindInfoWindow(marker, map, infowindow, &quot;&lt;p&gt;&quot; + ds[0] + &quot;&lt;/p&gt;&quot;); 
+
+  }
+
 }
 //
 //  CREATE PIECHARTS
 //
 function create_piecharts(ts) {
-      
-      var piecharts_window = window.open(&#039;&#039;);
-
-      piecharts_window.document.close();
      
-      var newWindowRoot = d3.select(piecharts_window.document.body);
-      newWindowRoot.append(&quot;div&quot;)
-          .attr(&quot;class&quot;, &quot;pies&quot;)
-          .attr(&quot;id&quot;,&quot;viz&quot;)
-          .style(&quot;width&quot;,&quot;800px&quot;)
-          .style(&quot;text-align&quot;,&quot;center&quot;)
-          .style(&quot;background&quot;,&quot;lightgray&quot;)
-          .style(&quot;border&quot;,&quot;1px solid black&quot;);
-
-
-     var myjson_obj=[];
-     
-     for(var g in mtx_local.columns) {  // per ds
-        
-        var ds = mtx_local.columns[g].name;
-        var tdata = [];
-        var ttax = [];        
-        //total = 0;
-        //var totals = [];
-        total = mtx_local.column_totals[g];
-        for (var k in mtx_local.data) {
-          tdata.push(mtx_local.data[k][g]);
-          ttax.push(mtx_local.rows[k].name);
-          //total = mtx_local.data[k][g]
-          
-        }
-        //for(k in mtx_local.data) {
-          //totals.push(total)
-        //}
-
-        myjson_obj.push({ name:ds, data:tdata, tax:ttax, total:total });  // one for each dataset
-        //var total = d3.sum(tdata, function(d){ return d; });
-        //alert(totals);
-     }
-
-
-//alert(JSON.stringify(myjson_obj))
-
-      var unit_list = [];
-      for (var o in mtx_local.rows) {
-        unit_list.push(mtx_local.rows[o].name);
+    piecharts_created = true;
+    
+    var info_line = create_header(&#039;pies&#039;, pi_local);
+    document.getElementById(&#039;piecharts_title&#039;).innerHTML = info_line;
+    document.getElementById(&#039;pre_piecharts_table_div&#039;).style.display = &#039;block&#039;;
+    //d3.select(&#039;svg&#039;).remove();
+    var counts_per_ds = [];
+    var tmp={};
+    for(var i in mtx_local.columns){
+      tmp[mtx_local.columns[i].name]=[]; // datasets
+    }
+    for(var x in mtx_local.data){
+      for(var i in mtx_local.columns){
+        tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
       }
-      var colors = get_colors(unit_list);
-  
-      var radius = 100;
-      //var pies_per_row = 4;
+    }
+    var myjson_obj={};
+    myjson_obj.names=[];
+    myjson_obj.values=[];
+    for(var x in tmp) {
+        counts_per_ds.push(tmp[x]);
+        myjson_obj.names.push(x);
+        myjson_obj.values.push(tmp[x]);
+    }
+    //alert(myjson_obj.names);
+    var unit_list = [];
+    for(o in mtx_local.rows){
+        unit_list.push(mtx_local.rows[o].name);
+    }
+    
+    
+    var colors = get_colors(unit_list);
+    var pies_per_row = 4;
+    var m = 20; // margin
+    var r = 320/pies_per_row; // five pies per row
+    var image_w = 2*(r+m)*pies_per_row;
+    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
+    var arc = d3.svg.arc()
+        .innerRadius(r / 2)
+        .outerRadius(r);
+    //var counts_per_ds = [[100,20,5],[20,20,20]];
+    //for(i in counts_per_ds){
+    var svgContainer = d3.select(&quot;#piecharts_div&quot;).append(&quot;svg&quot;)
+        .attr(&quot;width&quot;,image_w)
+        .attr(&quot;height&quot;,image_h);
+    
+    var pies = svgContainer.selectAll(&quot;svg&quot;)
+        .data(myjson_obj.values)
+        .enter().append(&quot;g&quot;)
+        .attr(&quot;transform&quot;, function(d, i){
+            
+            var modulo_i = i+1;
+            var d = r+m;
+            var h_spacer = d*2*(i % pies_per_row);
+            var v_spacer = d*2*Math.floor(i / pies_per_row);
+            return &quot;translate(&quot; + (d + h_spacer) + &quot;,&quot; + (d + v_spacer) + &quot;)&quot;;
+        })
+        .append(&quot;a&quot;)
+        .attr(&quot;xlink:xlink:href&quot;, function(d,i) { return &#039;piechart_single?ds=&#039;+myjson_obj.names[i]+&#039;&amp;ts=&#039;+ts;} );
 
-      var arc = d3.svg.arc()
-          .outerRadius(radius - 10);       
-                
-      var pie = d3.layout.pie()
-            .value(function (d) { return d; })
-            .sort(null);
-      
-      var ttip = newWindowRoot
-          .append(&quot;div&quot;)  // declare the tooltip div 
-          .attr(&quot;class&quot;, &quot;tooltip&quot;)              // apply the &#039;tooltip&#039; class
-          .style(&quot;opacity&quot;, 1e-6);    // set the opacity to nil
-
-
-      //var svg = newWindowRoot
-      var svg = newWindowRoot.select(&quot;#viz&quot;)
-            .selectAll(&#039;svg&#039;)
-            .data(myjson_obj)
-            .enter().append(&quot;svg&quot;)
-      //var svgContainer = d3.select(&#039;#viz_div&#039;).append(&#039;svg&#039;)
-            .attr(&#039;width&#039;, radius*2)
-            .attr(&#039;height&#039;,radius*2)
-            .append(&quot;g&quot;)
-            .attr(&quot;transform&quot;, &quot;translate(&quot; + radius + &quot;,&quot; + radius + &quot;)&quot;)
+    pies.selectAll(&quot;path&quot;)
+        .data(d3.layout.pie())
+        .enter().append(&quot;path&quot;)
+        .attr(&quot;d&quot;, d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(r))
+        .attr(&quot;id&quot;,function(d,i) {
+            var cnt = d.value;
+            var total = 0;
+            for(k in this.parentNode.__data__){
+              total += this.parentNode.__data__[k];
+            }           
+            
+            var ds = &#039;&#039;; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = &#039;piecharts-|-&#039;+unit_list[i]+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct;
+            //alert(unit_list[i]+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+total+&#039;-|-&#039;+pct)
+            return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
-            .append(&quot;a&quot;)
-            .attr(&quot;id&quot;, function(d,i) { return myjson_obj[i].name; } )
-            .attr(&quot;xlink:href&quot;, function(d,i) { return &#039;piechart_single?ds=&#039;+myjson_obj[i].name+&#039;&amp;ts=&#039;+ts;} );           
-      
-     
-      var arcs = svg.selectAll(&quot;g&quot;)
-          .data(function (d,i) { 
-            //alert(JSON.stringify(d.name)) 
-            
-            return pie(d.data); })
-          .enter().append(&quot;g&quot;)
-          .attr(&quot;class&quot;, &quot;chart_tooltip&quot;)
-          .attr(&quot;id&quot;,function(d,i) {
-                              
-                var total = this.parentNode.__data__.total; 
-                //alert(JSON.stringify(this.parentNode.__data__.total))                           
-                var pct = (d.value * 100 / total).toFixed(2);
-                return unit_list[i]+&#039;-|-&#039;+d.value.toString()+&#039;-|-&#039;+pct.toString();
-          })
-          .on(&quot;mouseover&quot;, function(d,i) { 
-              
-      //        ttip.transition()
-      //          .duration(0)  
-      //          .style(&quot;opacity&quot;, 1);                             
-              })
-          
-          .on(&quot;mousemove&quot;, function(d,i){
-            var pnode = this.parentNode;
-            var ds = pnode.__data__.name; 
-                //alert(JSON.stringify(pnode.__data__))
-            var total = pnode.__data__.total; 
-            var pct = (d.value * 100 / total).toFixed(2);
-            ttip
-             .html( 
-                &#039;&lt;table&gt;&#039; + // The first &lt;a&gt; tag
-                &#039;&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&#039; +  ds +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
-                 &#039;&lt;tr&gt;&lt;td bgcolor=&quot;&#039;+colors[i]+&#039;&quot; width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&#039;+unit_list[i] +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+
-                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Count &#039; +  d.value.toString() +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
-                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Frequency &#039; +  pct.toString() +&#039;%&#039;+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+                    // closing &lt;/a&gt; tag
-                &#039;&lt;/table&gt;&#039;
-              ).style(&#039;position&#039;,&#039;absolute&#039;)
-             .style(&#039;top&#039;, (d3.event.pageY)+&#039;px&#039;)
-             .style(&#039;left&#039;, (d3.event.pageX+20)+&#039;px&#039;)
-             .style(&#039;background&#039;,&#039;lightsteelblue&#039;)
-             .style(&#039;padding&#039;,&#039;3px&#039;)
-             .style(&#039;font&#039;,&#039;9px sans-serif&#039;)
-             .style(&#039;border&#039;,&#039;0px&#039;)
-             .style(&#039;border-radius&#039;,&#039;8px&#039;)
-             .style(&quot;opacity&quot;, 1);
-            
-//alert(JSON.stringify(this.parentNode))
-              
-          })
-          .on(&quot;mouseout&quot;, function (d) {
-                 // Hide the tooltip
-              ttip
-                .style(&quot;opacity&quot;, 1e-6);
-          });
+        })
+        .attr(&quot;class&quot;,&quot;tooltip&quot;)
+        .style(&quot;fill&quot;, function(d, i) {
+            return colors[i];
+        });
 
-
-      arcs.append(&quot;path&quot;)
-          .attr(&quot;d&quot;, arc)         
-          .style(&quot;fill&quot;, function (d,i) { return colors[i]; });
+    d3.selectAll(&quot;g&quot;)
+      .data(myjson_obj.names)
+      .append(&quot;text&quot;)
+      .attr(&quot;dx&quot;, -(r+m))
+      .attr(&quot;dy&quot;, r+m)
+      .attr(&quot;text-anchor&quot;, &quot;left&quot;)
+      .attr(&quot;font-size&quot;,&quot;9px&quot;)
+      .text(function(d, i) {
+          return d;
+      });
    
-}
+
+};
+
+
+
 //
 //  CREATE BARCHARTS
 //
 function create_barcharts(ts) {
 
-        //document.getElementById(&#039;pre_barcharts_table_div&#039;).style.display = &#039;block&#039;;
-
-      var barcharts_window = window.open(&#039;&#039;);      
-      barcharts_window.document.close();
-      //piecharts_window.document.write()
-      var newWindowRoot = d3.select(barcharts_window.document.body);
-      newWindowRoot
-        .append(&quot;div&quot;)
-          .attr(&quot;class&quot;, &quot;bars&quot;)
-          .attr(&quot;id&quot;,&quot;viz&quot;)
-          .style(&quot;background&quot;,&quot;lightgray&quot;)
-          .style(&quot;border&quot;,&quot;1px solid black&quot;);
-
-     
-      var unit_list = [];
-      for (var o in mtx_local.rows){
-        unit_list.push(mtx_local.rows[o].name);
-      }
-      var colors = get_colors(unit_list);  
-
+        
+        barcharts_created = true;
+        var info_line = create_header(&#039;bars&#039;, pi_local);
+        
+        document.getElementById(&#039;barcharts_title&#039;).innerHTML = info_line;
+        document.getElementById(&#039;pre_barcharts_table_div&#039;).style.display = &#039;block&#039;;
 
 
         data = [];
@@ -562,6 +1054,12 @@ function create_barcharts(ts) {
         }
 
       
+        var unit_list = [];
+        // TODO: &quot;&#039;o&#039; is already defined.&quot;
+        for (var o in mtx_local.rows){
+          unit_list.push(mtx_local.rows[o].name);
+        }
+        
 
         var ds_count = mtx_local.shape[1];      
         var bar_height = 15;
@@ -581,7 +1079,6 @@ function create_barcharts(ts) {
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
-          //alert(d.total)
           //console.log(d.total);
         });
 
@@ -597,9 +1094,9 @@ function create_barcharts(ts) {
         });
       
         
-        create_svg_object(props, color, colors, data, ts, newWindowRoot);
-     
-}
+        create_svg_object(props, color, data, ts);
+        
+};
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -633,16 +1130,10 @@ function get_image_properties(bar_height, ds_count) {
 //
 //
 //
-function create_svg_object(props, color, colors, data, ts, window) {
+function create_svg_object(props, color, data, ts) {
+       //d3.select(&#039;svg&#039;).remove();
       
-      //d3.select(&#039;svg&#039;).remove();
-      
-      var ttip = window
-          .append(&quot;div&quot;)  // declare the tooltip div 
-          .attr(&quot;class&quot;, &quot;tooltip&quot;)              // apply the &#039;tooltip&#039; class
-          .style(&quot;opacity&quot;, 1e-6);    // set the opacity to nil
-
-      var svg = window.select(&quot;#viz&quot;).append(&quot;svg&quot;)
+      var svg = d3.select(&quot;#barcharts_div&quot;).append(&quot;svg&quot;)
                   .attr(&quot;width&quot;,  props.width)
                   .attr(&quot;height&quot;, props.height)
                 .append(&quot;g&quot;)
@@ -672,6 +1163,15 @@ function create_svg_object(props, color, colors, data, ts, window) {
           .text(&quot;Percent&quot;);
      
      
+      
+
+      // var datasetBar = svg.selectAll(&quot;a&quot;)
+      //     .data(data)
+      //   .enter().append(&quot;a&quot;)
+      //   .attr(&quot;xlink:href&quot;,  &#039;http://www.google.com&#039; )
+      //   .append(&quot;g&quot;)
+      //     .attr(&quot;class&quot;, &quot;g&quot;)
+      //     .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.DatasetName) + &quot;)&quot;; })
        var datasetBar = svg.selectAll(&quot;.bar&quot;)
           .data(data)
         .enter() .append(&quot;g&quot;)
@@ -690,63 +1190,61 @@ function create_svg_object(props, color, colors, data, ts, window) {
           .attr(&quot;y&quot;, 15)  // adjust where first bar starts on x-axis
           .attr(&quot;width&quot;, function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr(&quot;height&quot;,  18)
-          .attr(&quot;id&quot;,function(d,i) { 
-            var pnode = this.parentNode;
-            var cnt =  pnode.__data__[d.name];
-            var total = pnode.__data__[&#039;total&#039;];
+          .attr(&quot;id&quot;,function(d) { 
+            var cnt =  this.parentNode.__data__[d.name];
+            var total = this.parentNode.__data__[&#039;total&#039;];
             //console.log(this._parentNode.__data__[&#039;total&#039;]);
+            var ds = &#039;&#039;; // PLACEHOLDER for TT
             var pct = (cnt * 100 / total).toFixed(2);
-            return d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            var id = &#039;barcharts-|-&#039; + d.name + &#039;-|-&#039;+ cnt.toString() + &#039;-|-&#039; + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
             //return this._parentNode.__data__.DatasetName + &#039;-|-&#039; + d.name + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
-          .on(&quot;mouseover&quot;, function(d,i) { 
-              
-                            
-              })
-          
-          .on(&quot;mousemove&quot;, function(d,i){
-            var pnode = this.parentNode;
-            //var ds = pnode.__data__.name; 
-            //alert(JSON.stringify(pnode.__data__))
-            var ds = pnode.__data__.DatasetName;
-            var cnt =  pnode.__data__[d.name];
-            var total = pnode.__data__[&#039;total&#039;];
-            //console.log(this._parentNode.__data__[&#039;total&#039;]);
-            var pct = (cnt * 100 / total).toFixed(2);
-            ttip
-             .html( 
-                &#039;&lt;table&gt;&#039; + // The first &lt;a&gt; tag
-                &#039;&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&#039; +  ds +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
-                 &#039;&lt;tr&gt;&lt;td bgcolor=&quot;&#039;+colors[i]+&#039;&quot; width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&#039;+d.name +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+
-                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Count &#039; +  cnt.toString() +&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+ 
-                 &#039;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Frequency &#039; +  pct.toString() +&#039;%&#039;+&#039;&lt;/td&gt;&lt;/tr&gt;&#039;+                    // closing &lt;/a&gt; tag
-                &#039;&lt;/table&gt;&#039;
-              ).style(&#039;position&#039;,&#039;absolute&#039;)
-             .style(&#039;top&#039;, (d3.event.pageY)+&#039;px&#039;)
-             .style(&#039;left&#039;, (d3.event.pageX+20)+&#039;px&#039;)
-             .style(&#039;background&#039;,&#039;lightsteelblue&#039;)
-             .style(&#039;padding&#039;,&#039;3px&#039;)
-             .style(&#039;font&#039;,&#039;9px sans-serif&#039;)
-             .style(&#039;border&#039;,&#039;0px&#039;)
-             .style(&#039;border-radius&#039;,&#039;8px&#039;)
-             .style(&quot;opacity&quot;, 1);
-            
-//alert(JSON.stringify(this.parentNode))
-              
-          })
-          .on(&quot;mouseout&quot;, function (d) {
-                 // Hide the tooltip
-              ttip
-                .style(&quot;opacity&quot;, 1e-6);
-          })
-          //.attr(&quot;class&quot;,&quot;piebarchart_tooltip&quot;)
-          .style(&quot;fill&quot;,   function(d,i) { return colors[i]; });
+
+          .attr(&quot;class&quot;,&quot;tooltip&quot;)
+          .style(&quot;fill&quot;,   function(d) { return color(d.name); });
+
 
        //rect.append(&quot;svg:a&quot;).attr(&quot;xlink:href&quot;,  &#039;http://www.google.com&#039;)
-       
 }
 
 
+function create_header(viz, pi) {
+  
+  var txt;
+  //viz_possibles = [&#039;bars&#039;,&#039;pies&#039;,&#039;geo&#039;,&#039;dhm&#039;,&#039;fhm&#039;,&#039;dend-svg&#039;,&#039;dend-pdf&#039;,&#039;pcoa&#039;,&#039;ftable&#039;,&#039;mtable&#039;];
+  
+    if(viz == &#039;geo&#039;){
+      txt = &#039;Geospatial -- &#039;;
+      txt += &#039; Metric: &#039; + pi.selected_distance+&#039;; &#039;;  
+    }else if(viz == &#039;bars&#039;){
+      txt = &#039;Barcharts -- &#039;;
+    }else if(viz == &#039;pies&#039;){
+      txt = &#039;Barcharts -- &#039;;
+    }else if(viz == &#039;dhm&#039;){
+      txt = &#039;Distance Heatmap -- &#039;;
+      txt += &#039; Metric: &#039; + pi.selected_distance+&#039;; &#039;;  
+    }else if(viz == &#039;fhm&#039;){
+      txt = &#039;Frequency Heatmap -- &#039;;
+      txt += &#039; Metric: &#039; + pi.selected_distance+&#039;; &#039;;  
+    }else if(viz == &#039;dend&#039;){
+      txt = &#039;Dendrogram -- &#039;;
+      txt += &#039; Metric: &#039; + pi.selected_distance+&#039;; &#039;;  
+    }else if(viz == &#039;pcoa&#039;){
+      txt = &#039;PCoA -- &#039;;
+      txt += &#039; Metric: &#039; + pi.selected_distance+&#039;; &#039;;  
+    }else if(viz == &#039;ftable&#039;){
+      txt = &#039;Frequency Table -- &#039;;
+    }else if(viz == &#039;mtable&#039;){
+      txt = &#039;Metadata Table -- &#039;;
+    }else{
+      txt = &#039;ERROR in fxn create_headers &#039;+viz;
+    }
+  txt += &#039; Normalization: &#039; + pi.normalization+&#039;; &#039;;
+  txt += &#039; Counts Min/Max: &#039; + pi.min_range+&#039;% -- &#039;+pi.max_range+&#039;%&#039;;
+     
+  return txt;
+}
 function get_colors(unit_names){
   var colors = [];
   for(var n in unit_names){
