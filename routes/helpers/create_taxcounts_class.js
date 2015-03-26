@@ -36,7 +36,10 @@ var converter = require('json-2-csv');
 
 function test_chunks()
 {
+  helpers.start = process.hrtime();     
+  
   var dataset_seq_tax_dict = {};
+  console.log("Started test_chunks");
   
   var query = connection.db.query('SELECT * \
     FROM taxa_counts_temp \
@@ -78,9 +81,10 @@ function test_chunks()
         dataset_id = parseInt(in_obj["dataset_id"]);
         count = in_obj["seq_count"]
 
-        console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+        // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
         init_dataset_seq_tax_dict(dataset_seq_tax_dict);
         rank_attr = ""
+        // helpers.start = process.hrtime();     
 
         for (var field_name in in_obj)
         {
@@ -89,22 +93,32 @@ function test_chunks()
            if (is_rank)
            {
              rank_attr += ("_" + in_obj[field_name]);
-             helpers.start = process.hrtime();     
              count_taxa(dataset_seq_tax_dict);
-             helpers.elapsed_time("This is the running time for count_taxa");         
            }       
          }
        // }
-       console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
-       helpers.write_to_file(file_name, JSON.stringify(dataset_seq_tax_dict));
+       // helpers.elapsed_time("This is the running time for count_taxa");         
 
       
       //===
       
       connection.db.resume();
+      // console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+      
+  });
+  // console.log("DDD5 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+  
+  query.on('end', function(err) {
+    if (err) throw err;
+    // console.log("DDD6 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+    helpers.elapsed_time("This is the running time for test_chunks");         
+    helpers.start = process.hrtime();     
+    helpers.write_to_file(file_name, JSON.stringify(dataset_seq_tax_dict));
+    helpers.elapsed_time("This is the running time for write_to_file");         
+    return dataset_seq_tax_dict;
+    
   });
   
-  return dataset_seq_tax_dict;
   // connection.end();
 }
 
@@ -296,7 +310,7 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
          rank_attr += ("_" + in_obj[field_name]);
          helpers.start = process.hrtime();     
          count_taxa(dataset_seq_tax_dict);
-         helpers.elapsed_time("This is the running time for some code");         
+         helpers.elapsed_time("This is the running time for make_taxa_count_dict");         
        }       
      }
    }
@@ -335,7 +349,7 @@ function make_taxa_count_dict_by_line(in_obj, dataset_seq_tax_dict)
          rank_attr += ("_" + in_obj[field_name]);
          helpers.start = process.hrtime();     
          count_taxa(dataset_seq_tax_dict);
-         helpers.elapsed_time("This is the running time for some code");         
+         helpers.elapsed_time("This is the running time for make_taxa_count_dict_by_line");         
        }       
      }
    // }
@@ -358,7 +372,10 @@ function TaxCounts(total_amount) {
   
   this.dataset_seq_tax_dict_res = {};
   this.dataset_seq_tax_dict_res = test_chunks();
-  console.log("DDD4 this.dataset_seq_tax_dict_res = " + JSON.stringify(this.dataset_seq_tax_dict_res));
+  console.log("DDD4");
+  console.log("this.dataset_seq_tax_dict_res = " + JSON.stringify(this.dataset_seq_tax_dict_res));
+  
+// asynchron
   // get_table_chunks(total_amount);
   // this.obj_dataset_seq_tax_dict;
   
