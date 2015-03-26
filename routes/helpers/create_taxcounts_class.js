@@ -36,6 +36,8 @@ var converter = require('json-2-csv');
 
 function test_chunks()
 {
+  var dataset_seq_tax_dict = {};
+  
   var query = connection.db.query('SELECT * \
     FROM taxa_counts_temp \
   ');
@@ -44,10 +46,10 @@ function test_chunks()
       throw err;
   });
 
-  query.on('fields', function(fields) {
-    console.log("SSS1 fields");
-      // console.log(fields);
-  });
+  // query.on('fields', function(fields) {
+  //   console.log("SSS1 fields");
+  //     console.log(fields);
+  // });
 
   // query.on('result', function(row) {
   //   console.log("SSS2 fields");
@@ -58,14 +60,50 @@ function test_chunks()
       connection.db.pause();
       // Do some more processing on the row
       // helpers.write_to_file(file_name, JSON.stringify(row));
-      converter.json2csv(row, json2csvCallback);
+      // converter.json2csv(row, json2csvCallback);
+      // todo call dict creation
+      // make_taxa_count_dict_by_line(row);
+      // console.log("SSS2 fields");
+      // console.log(row);
       
-      console.log("SSS2 fields");
-      console.log(row);
+      //===
+      // console.log("HHH1");
+      // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
+      // for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
+      // {
+      // 
+      //  in_obj = dataset_seq_tax_obj[i];
+        // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
+        in_obj = row;
+        dataset_id = parseInt(in_obj["dataset_id"]);
+        count = in_obj["seq_count"]
+
+        console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+        init_dataset_seq_tax_dict(dataset_seq_tax_dict);
+        rank_attr = ""
+
+        for (var field_name in in_obj)
+        {
+
+           var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
+           if (is_rank)
+           {
+             rank_attr += ("_" + in_obj[field_name]);
+             helpers.start = process.hrtime();     
+             count_taxa(dataset_seq_tax_dict);
+             helpers.elapsed_time("This is the running time for some code");         
+           }       
+         }
+       // }
+       console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+
+      
+      //===
+      
       connection.db.resume();
   });
   
-
+  return dataset_seq_tax_dict;
   // connection.end();
 }
 
@@ -266,6 +304,44 @@ function make_taxa_count_dict(dataset_seq_tax_obj)
 }
 
 
+function make_taxa_count_dict_by_line(in_obj, dataset_seq_tax_dict)
+{
+  console.log("HHH1");
+  console.log("in_obj = " + JSON.stringify(in_obj));  
+  // console.log("dataset_seq_tax_dict = " + JSON.stringify(this.dataset_seq_tax_dict));  
+
+  var dataset_seq_tax_dict_1 = {};
+  // // console.log("HHH1");
+  // // console.log("dataset_seq_tax_obj = " + JSON.stringify(dataset_seq_tax_obj));  
+  // for (var i=0, len = dataset_seq_tax_obj.length; i < len; i++)
+  // {
+    
+    // in_obj = dataset_seq_tax_obj[i];
+    // console.log("\n=======\nTTT1 dataset_seq_tax_obj[i] = " + JSON.stringify(in_obj));
+    dataset_id = parseInt(in_obj["dataset_id"]);
+    count = in_obj["seq_count"]
+    
+    // console.log("NNN1 in_obj[dataset_id] = dataset_id = " + JSON.stringify(dataset_id));
+    init_dataset_seq_tax_dict(dataset_seq_tax_dict);
+    rank_attr = ""
+
+    for (var field_name in in_obj)
+    {
+     
+       var is_rank = helpers.check_if_rank(field_name.slice(0,-3));
+       if (is_rank)
+       {
+         rank_attr += ("_" + in_obj[field_name]);
+         helpers.start = process.hrtime();     
+         count_taxa(dataset_seq_tax_dict);
+         helpers.elapsed_time("This is the running time for some code");         
+       }       
+     }
+   // }
+   console.log("DDD3 dataset_seq_tax_dict = " + JSON.stringify(dataset_seq_tax_dict));
+}
+
+
 // Public
 module.exports = TaxCounts;
 
@@ -279,10 +355,11 @@ function TaxCounts(total_amount) {
   console.log("FFF2 in TaxCounts");
   console.log("total_amount = " + total_amount);
   
-  test_chunks();
-  get_table_chunks(total_amount);
-  this.obj_dataset_seq_tax_dict;
-  this.dataset_seq_tax_dict = {};
+  this.dataset_seq_tax_dict_res = {};
+  this.dataset_seq_tax_dict_res = test_chunks();
+  console.log("DDD4 this.dataset_seq_tax_dict_res = " + JSON.stringify(this.dataset_seq_tax_dict_res));
+  // get_table_chunks(total_amount);
+  // this.obj_dataset_seq_tax_dict;
   
   
   // fs.readFile(file_name, function (err, data) {
