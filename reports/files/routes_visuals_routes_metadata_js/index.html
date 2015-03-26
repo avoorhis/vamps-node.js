@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">52.89</p>
+      <p class="stat">48.39</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">105</p>
+      <p class="stat">124</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">23.94</p>
+      <p class="stat">26.67</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.55</p>
+      <p class="stat">0.79</p>
     </div>
   </div>
 </div>
@@ -134,31 +134,50 @@ module.exports = {
 			
 			var metadata = [];
 			var metadata2 = {};
+			var file_name = post_items.ts+&#039;_metadata.txt&#039;;
+			var metadata_filename = path.join(__dirname, &#039;../../tmp/&#039;+file_name);
+			var txt = &#039;DATASET&#039;;
+			for (var n in metadata_names) {				
+					var name = metadata_names[n];
+					txt += 		&quot;\t&quot; + name;	
+			}
+			txt += 		&quot;\tproject_dataset\n&quot;;
+			var txt2 = &#039;&#039;;
 			for (var i in chosen_id_name_hash.names) {
-				var line = {};
+				var ds_row = {};
 				var pjds = chosen_id_name_hash.names[i];
 				metadata2[pjds] = {};
 				var tmp = pjds.split(&#039;--&#039;);
 				var did = chosen_id_name_hash.ids[i];
+				txt2 = pjds;
 				
 				for (var n in metadata_names) {				
 					var name = metadata_names[n];
 
 					if(did in MetadataValues) {
-						line[name] = MetadataValues[did][name];
+						ds_row[name] = MetadataValues[did][name];
 						metadata2[pjds][name] = MetadataValues[did][name];
-					}						
+						txt2 += &quot;\t&quot; + metadata2[pjds][name];
+					}else{
+						txt2 += &quot;\tno_value&quot;;
+					}
+				}
+				
+				console.log(txt2.length)
+				if(txt2.length &gt; pjds.length+2){  // the +2 is to account for tabs in the txt2
+					txt += txt2 + &quot;\t&quot;+pjds+&quot;\n&quot;;
 				}
 				metadata2[pjds].project = tmp[0];
 				metadata2[pjds].dataset = tmp[1];
-				line.project_dataset = pjds;
-				line.project = tmp[0];
-				line.dataset = tmp[1];
-				metadata.push(line);
-				//txt += ds + &quot;\t&quot; + tmp[0] + &quot;\t&quot; + tmp[1] + &quot;\n&quot;;  // just put project and dataset in here for now				
-				//metadata.push({&#039;project_dataset&#039;:ds,&#039;project&#039;:tmp[0],&#039;dataset&#039;:tmp[1]});
+				
+				ds_row.project_dataset = pjds;
+				ds_row.project = tmp[0];
+				ds_row.dataset = tmp[1];
+
+				metadata.push(ds_row);
 				
 			}
+			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},
 
