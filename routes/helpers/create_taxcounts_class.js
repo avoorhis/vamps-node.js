@@ -33,6 +33,37 @@ var fs = require('fs');
 var silvaTaxonomy = require(app_root + '/models/silva_taxonomy');
 var all_silva_taxonomy = new silvaTaxonomy();
 
+function test_chunks()
+{
+  var query = connection.db.query('SELECT * \
+    FROM taxa_counts_temp \
+  ');
+
+  query.on('error', function(err) {
+      throw err;
+  });
+
+  query.on('fields', function(fields) {
+    console.log("SSS1 fields");
+      console.log(fields);
+  });
+
+  query.on('result', function(row) {
+    console.log("SSS2 fields");
+      console.log(row);
+  });
+  // 
+  // query.on('result', function(row) {
+  //     connection.pause();
+  //     // Do some more processing on the row
+  //     console.log(row);
+  //     connection.resume();
+  // });
+  // 
+
+  // connection.end();
+}
+
 function get_table_chunks(total_amount)
 {
   console.log("FFF1 in get_table_chunks");
@@ -234,6 +265,7 @@ function TaxCounts(total_amount) {
   console.log("FFF2 in TaxCounts");
   console.log("total_amount = " + total_amount);
   
+  test_chunks();
   get_table_chunks(total_amount);
   this.obj_dataset_seq_tax_dict;
   this.dataset_seq_tax_dict = {};
