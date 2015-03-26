@@ -207,7 +207,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 });
 
 var taxCounts = require('./routes/helpers/create_taxcounts_class');
-var taxcounts = new taxCounts();
+new taxCounts();
 
 module.exports = app;
 
