@@ -199,7 +199,9 @@ def push_sequences(args):
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
             distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
+            print ds,seq,silva_tax_id
             rank_id = str(SEQ_COLLECTOR[ds][seq]['rank_id'])
+            print rank_id
             q = "INSERT ignore into silva_taxonomy_info_per_seq"
             q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
             q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
@@ -298,6 +300,7 @@ def push_taxonomy(args):
                 tax_string = items[3]
                 refhvr_ids = items[4]
                 rank = items[5]
+                if rank == 'class': rank = 'klass'
                 seq_count = items[6]
                 distance = items[8]
                 
@@ -315,10 +318,14 @@ def push_taxonomy(args):
                                       'distance':distance
                                       }
                 q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
+                
                 cur.execute(q1)
                 db.commit()
-                for row in cur.fetchall():
-                    SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
+               
+                    
+                row = cur.fetchone()
+                
+                SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
                     
                 
                 tax_items = tax_string.split(';')

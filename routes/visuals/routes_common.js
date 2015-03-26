@@ -80,11 +80,11 @@ module.exports = {
 
 
     html += '<li>Normalization: ';
-    if(obj.normalization === 'freq') {
+    if(obj.normalization === 'frequency' || obj.normalization === 'freq') {
       html += '<input type="radio" name="norm" value="none" >None &nbsp;&nbsp;&nbsp;';
       html += '<input type="radio" name="norm" value="max"  >To Maximum Count &nbsp;&nbsp;&nbsp;';
       html += '<input type="radio" name="norm" value="freq" checked="checked">To Frequency';
-    } else if (obj.normalization === 'max') {
+    } else if (obj.normalization === 'maximum' || obj.normalization === 'max') {
       html += '<input type="radio" name="norm" value="none" >None &nbsp;&nbsp;&nbsp;';
       html += '<input type="radio" name="norm" value="max"  checked="checked">To Maximum Count &nbsp;&nbsp;&nbsp;';
       html += '<input type="radio" name="norm" value="freq" >To Frequency';

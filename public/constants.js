@@ -29,8 +29,8 @@ config.VISUALOUTPUTCHOICES = { choices: [
 
 config.NORMALIZATIONCHOICES = { choices: [
         {id: 'none',            show: 'Not Normalized (default)'},
-        {id: 'max',             show: 'Normalized to the Maximum Sample'},
-        {id: 'freq',            show: 'Normalized to Frequency'}
+        {id: 'maximum',         show: 'Normalized to the Maximum Sample'},
+        {id: 'frequency',       show: 'Normalized to Frequency'}
     ]};
 
    
@@ -90,7 +90,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Dendrogram (d3-svg)',        thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_link_id'    },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  link:'user_data/dendrogram',    id:'dendrogram_pdf_link_id'    },
     {name:'PCoA Analyses (R-pdf)',      thumb:'/images/visuals/pcoa.png',        link:'user_data/pcoa',          id: 'pcoa_link_id'    },
-    {name:'Frequency Table',            thumb:'/images/visuals/counts_table.png',link:'user_data/counts_table',  id:'counts_table_link_id'    },
+    {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',link:'user_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    link:'user_data/metadata_table',id:'metadata_table_link_id'     },
     {name:'Data Location',              thumb:'/images/visuals/map.png',         link:'user_data/geospatial',    id:'geospatial_link_id'     },
     {name:'TEST_TEST',                  thumb:'',                                link:'user_data/test_page',     id:'test_page_link_id'     }
