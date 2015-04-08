@@ -48,7 +48,7 @@ Search-3
 <% if(s.search1.datasets.length == 0){ %>
 		<b>no data found</b>
 <% }else{ %>
-		<form id='' name='' method='POST' action='unit_selection'>
+		<form id='' name='' method='POST' action='/visuals/unit_selection'>
 			<div class='search_ds_result_box'>
 			<% for(i in s.search1.ds_plus) { %>
 				<li>
@@ -61,7 +61,7 @@ Search-3
 
 			</div>
 			
-			<input type='submit' name='' value='Use These' >
+			<input type='submit' name='' value='Use These Datasets' >
 			<input type='hidden' name='search' value='1' >
 			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >
 		</form>
@@ -72,7 +72,7 @@ Search-3
 		<% if(s.search2.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
-			<form id='' name='' method='POST' action='unit_selection'>
+			<form id='' name='' method='POST' action='/visuals/unit_selection'>
 				<div class='search_ds_result_box'>
 				<% for(i in s.search2.ds_plus) { %>
 					<li>
@@ -83,7 +83,7 @@ Search-3
 
 				</div>
 				
-				<input type='submit' name='' value='Use These' >
+				<input type='submit' name='' value='Use These Datasets' >
 			<input type='hidden' name='search' value='1' >
 			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >
 			</form>
@@ -95,7 +95,7 @@ Search-3
 		<% if(s.search3.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
-			<form id='' name='' method='POST' action='unit_selection'>
+			<form id='' name='' method='POST' action='/visuals/unit_selection'>
 				<div class='search_ds_result_box'>
 				<% for(i in s.search3.ds_plus) { %>
 					<li>
@@ -106,7 +106,7 @@ Search-3
 			
 				</div>
 				
-				<input type='submit' name='' value='Use These' >
+				<input type='submit' name='' value='Use These Datasets' >
 				<input type='hidden' name='search' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >
 			</form>
@@ -126,7 +126,7 @@ Search-3
 	<% if(f.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
-			<form id='' name='' method='POST' action='unit_selection'>
+			<form id='' name='' method='POST' action='/visuals/unit_selection'>
 				<div class='search_ds_result_box'>
 				<% for(i in f.ds_plus) { %>
 					<li>
@@ -136,7 +136,7 @@ Search-3
 			
 				</div>
 				
-				<input type='submit' name='' value='Use These' >
+				<input type='submit' name='' value='Use These Datasets' >
 				<input type='hidden' name='search' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >
 			</form>

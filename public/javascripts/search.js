@@ -70,6 +70,7 @@ if (typeof metadata_search_field1 !=="undefined") {
           
           html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
           for(var i in selection_choices) {
+			
 			html += "      <option class='' value='"+selection_choices[i]+"'>"+selection_choices[i]+"</option>";
           } 
           html += "</select> ";
@@ -188,27 +189,27 @@ if (typeof metadata_search_field3 !=="undefined") {
 function change_comparison(comparison, item){
   if(item==1){
     var comparison_input = document.getElementById('input1_comparison');
-    var minname = 'search1_min-comparison-value';
-    var maxname = 'search1_max-comparison-value';
-    var name = 'search1_single-comparison-value';
+    var minval = 'search1_min-comparison-value';
+    var maxval = 'search1_max-comparison-value';
+    var oneval = 'search1_single-comparison-value';
   }else if(item==2){
     var comparison_input = document.getElementById('input2_comparison');
-    var minname = 'search2_min-comparison-value';
-    var maxname = 'search2_max-comparison-value';
-    var name = 'search2_single-comparison-value';
+    var minval = 'search2_min-comparison-value';
+    var maxval = 'search2_max-comparison-value';
+    var oneval = 'search2_single-comparison-value';
   }else if(item==3){
     var comparison_input = document.getElementById('input3_comparison');
-    var minname = 'search3_min-comparison-value';
-    var maxname = 'search3_max-comparison-value';
-    var name = 'search3_single-comparison-value';
+    var minval = 'search3_min-comparison-value';
+    var maxval = 'search3_max-comparison-value';
+    var oneval = 'search3_single-comparison-value';
   }
   
-  if(comparison[0]==5 || comparison[0]==6){
-    var html = " Enter Min: <input type='text' id='' name='"+minname+"' value='' maxlength='10' size='7' >";
-    html += "  Max: <input type='text' id='' name='"+maxname+"' value='' maxlength='10' size='7' > (numeric only)";
+  if(comparison == selection_choices[4] || comparison == selection_choices[5]){  // inside or outside range
+    var html = " Enter Min: <input type='text' id='' name='"+minval+"' value='' maxlength='10' size='7' >";
+    html += "  Max: <input type='text' id='' name='"+maxval+"' value='' maxlength='10' size='7' > (numeric only)";
     comparison_input.innerHTML = html;
-  }else{
-    var html = " Enter: <input type='text' id='' name='"+name+"' value='' maxlength='10' size='10' > (numeric only)";
+  }else{  // single value
+    var html = " Enter: <input type='text' id='' name='"+oneval+"' value='' maxlength='10' size='10' > (numeric only)";
     comparison_input.innerHTML = html;
   }
   
