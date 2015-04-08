@@ -63,3 +63,22 @@ module.exports.write_to_file = function(fileName, text)
   fs.writeFile(fileName, text);
 }
 
+module.exports.IsJsonString = function(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+module.exports.onlyUnique = function(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+module.exports.mkdirSync = function (path) {
+  try {
+    fs.mkdirSync(path);
+  } catch(e) {
+    if ( e.code != 'EEXIST' ) throw e;
+  }
+}
