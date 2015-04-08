@@ -1,11 +1,11 @@
-<% include add_ins/begin.ejs %>
+<% include ../add_ins/begin.ejs %>
 <% var metaitems = JSON.parse(metadata_items) %>
 <script>  
   var mi_local  = JSON.parse('<%- metadata_items %>');
 </script>
 <p class='title'>Search</p>
 <div id='metadata_search_div' >
-		<form id='metadata_search_form1' name='' method='POST' action='/visuals/search_datasets' >	
+		<form id='metadata_search_form1' name='' method='POST' action='/search/search_datasets_result' >	
 			<div id='' class='float_right' >Join searches by: 
 					<input type='radio' name='join_type' value='intersection' checked='checked' />Intersection
 					<input type='radio' name='join_type' value='addition' />Summation
@@ -71,5 +71,5 @@
 	</ul>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/search.js"></script>
-<% include add_ins/end.ejs %>
+<% include ../add_ins/end.ejs %>
 
