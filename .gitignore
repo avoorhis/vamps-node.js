@@ -1,5 +1,6 @@
 *.sql
 db.sql
+config/*
 config/database-dev.js
 config/database-test.js
 config/db_vamps_node.sql.gz
@@ -23,6 +24,7 @@ temp/
 downloads/*
 tmp/
 public/tmp_images/
+public/json/*
 public/scripts/*.json
 public/json/*.json
 visuals_testing/
