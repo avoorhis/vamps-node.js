@@ -83,13 +83,13 @@ function init_dataset_seq_tax_dict(dataset_seq_tax_dict)
 }
 
 // Public
-module.exports = TaxCounts;
-
-function TaxCounts() {
-  helpers.start = process.hrtime();
-  file_name = "public/json/dataset_seq_tax_dict.json";
-  helpers.clear_file(file_name);
-
-  query_dataset_seq_tax();
-}
+// module.exports = TaxCounts;
+//
+// function TaxCounts() {
+//   helpers.start = process.hrtime();
+//   file_name = "public/json/dataset_seq_tax_dict.json";
+//   helpers.clear_file(file_name);
+//
+//   query_dataset_seq_tax();
+// }
 
