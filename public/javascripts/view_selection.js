@@ -536,12 +536,6 @@ function create_test_page(ts) {
 //
 // visual choices 
 //
-test_link = document.getElementsByName('normalization');
-
-
-}
-
-
 
 
 

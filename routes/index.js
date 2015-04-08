@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs   = require('fs');
+var path  = require('path');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var zlib = require('zlib');
@@ -25,43 +26,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       res.render('overview', { title: 'VAMPS:Overview', user: req.user });
   });
 
-  /* GET Search page. */
-  router.get('/search', helpers.isLoggedIn, function(req, res) {
-      //console.log(MetadataValues)
-      var tmp_metadata_fields = {};
-      var metadata_fields = {};
-      for(did in MetadataValues){
-        for(name in MetadataValues[did]){
-            val = MetadataValues[did][name];
-            if(name in tmp_metadata_fields){
-              tmp_metadata_fields[name].push(val); 
-            }else{
-              if(IsNumeric(val)){
-                tmp_metadata_fields[name]=[];
-              }else{
-                tmp_metadata_fields[name]=['non-numeric'];
-              }
-              tmp_metadata_fields[name].push(val); 
-            }           
-        }
-      }
-      //console.log(tmp_metadata_fields)
-      for(name in tmp_metadata_fields){
-        if(tmp_metadata_fields[name][0] == 'non-numeric'){
-          tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
-          metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
-        }else{
-          var min = Math.min.apply(null, tmp_metadata_fields[name]);
-          var max = Math.max.apply(null, tmp_metadata_fields[name]);
-          metadata_fields[name] = {"min":min,"max":max};
-        }
-      }
-      //console.log(metadata_fields)
-      res.render('search', { title: 'VAMPS:Search',
-                            metadata_items: JSON.stringify(metadata_fields),
-      											 user: req.user
-      											});
-  });
+
 
   /* GET Import Data page. */
   router.get('/import_data', helpers.isLoggedIn, function(req, res) {
@@ -83,9 +48,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   });
   /* GET Export Data page. */
   router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
-      
-      var user = req.user.username;  
-      var export_dir = 'downloads';
+        
+      var export_dir = path.join('user_data',req.user.username);
       var mtime = {};
       var size = {};
       var file_info = {};
@@ -95,7 +59,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       fs.readdir(export_dir, function(err, files){   
         for(f in files){
           var pts = files[f].split('_');
-          if(pts[0] === req.user.username){
+          if(pts[1] === 'metadata' || pts[1] === 'fasta'){
             file_info.files.push(files[f]);
             stat = fs.statSync(export_dir+'/'+files[f]);
             file_info.mtime[files[f]] = stat.mtime;  // modify time
@@ -104,26 +68,50 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
         }
         //console.log(file_info)
         res.render('file_retrieval', { title: 'VAMPS:Export Data', 
-                             user: user,
-                             finfo: JSON.stringify(file_info)                             
+                             user: req.user.username,
+                             finfo: JSON.stringify(file_info)
                             });
       });
   });
 
   router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 
-    console.log('dnld')
-    console.log(req.query.filename)
-    var file = 'downloads/'+req.query.filename;
-    
-    if(req.query.fxn == 'download' && req.query.type == 'fasta'){
-      res.download(file); // Set disposition and send it.
-    }else if(req.query.fxn == 'download' && req.query.type == 'metadata'){
-      res.download(file); // Set disposition and send it.
-    }else if(req.query.fxn == 'delete'){
-      fs.unlink(file); // 
-      res.redirect("/file_retrieval")
-    }
+	//console.log('dnld');
+	//console.log(req.query.filename);
+	var user = req.query.user;
+	var file = path.join('user_data',user,req.query.filename);
+	//console.log(file);
+	//// DOWNLOAD //////
+	if(req.query.fxn == 'download' && req.query.type == 'fasta'){
+		res.download(file); // Set disposition and send it.
+	}else if(req.query.fxn == 'download' && req.query.type == 'metadata'){
+		res.download(file); // Set disposition and send it.
+	}
+	
+	//// DELETE FILES /////
+	if(req.query.fxn == 'delete'){
+		fs.unlink(file); // 	  
+	}
+	
+	//// VIEW DATA (datasets) /////
+	if(req.query.fxn == 'view'){
+			  
+	}
+	//// USE DATA (datasets) /////
+	// redirect to /visuals/unit_selection
+	if(req.query.fxn == 'usethese'){
+		
+			  
+	}
+	
+	////  FINALLY REDIRECT /////
+	if(req.query.type == 'datasets'){		
+		res.redirect("/visuals/show_saved_datasets");
+	}else if (req.query.type == 'metadata' || req.query.type == 'fasta'){
+		res.redirect("/file_retrieval");
+	}else{
+		res.redirect("/");
+	}
   });
 
   /* GET Geo-Distribution page. */
@@ -207,15 +195,21 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     qSelect += " join project using (project_id)\n";
     var seq, seqid, seq_count, pjds;
     var timestamp = +new Date();  // millisecs since the epoch!
-    timestamp = req.user.username + '_' + timestamp;
+    
+	var data_dir = 'user_data';
+	var user_dir = path.join(data_dir,req.user.username);
+	helpers.mkdirSync(user_dir);  // create dir if not exists
+	
     if(req.body.download_type == 'whole_project'){
-      var pid = req.body.project_id
-      var project = req.body.project
-      var out_file = 'downloads/'+timestamp+'_'+project+'.fa.gz';
-      qSelect += " where project_id = '"+pid+"'";
+		var pid = req.body.project_id;
+		var project = req.body.project;
+		var file_name = req.user.username+'_fasta_'+timestamp+'_'+project+'.fa.gz';
+      	var out_file_path = path.join(user_dir,file_name);
+      	qSelect += " where project_id = '"+pid+"'";
     }else{
-      var pids = JSON.parse(req.body.datasets).ids
-      var out_file = 'downloads/'+timestamp+'_custom.fa.gz';
+      	var pids = JSON.parse(req.body.datasets).ids
+		var file_name = req.user.username+'_fasta_'+timestamp+'_'+'_custom.fa.gz';
+      var out_file_path = path.join(user_dir,file_name);
       qSelect += " where dataset_id in ("+pids+")";
       console.log(pids);
              
@@ -229,7 +223,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     var gzip = zlib.createGzip();
     console.log(qSelect);
     
-    var wstream = fs.createWriteStream(out_file);
+    var wstream = fs.createWriteStream(out_file_path);
     var rs = new Readable;
     var collection = db.query(qSelect, function (err, rows, fields){
       if (err) {
@@ -274,15 +268,20 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     var db = req.db;
     console.log(req.body);
     var timestamp = +new Date();  // millisecs since the epoch!
-    timestamp = req.user.username + '_' + timestamp;
-    if(req.body.download_type == 'whole_project'){      
-      var pid  = req.body.project_id
-      var dids = DATASET_IDS_BY_PID[pid];
-      var project = req.body.project
-      var out_file = 'downloads/'+timestamp+'_'+project+'.metadata.gz';
+    
+	var data_dir = 'user_data';
+	var user_dir = path.join(data_dir,req.user.username);
+	helpers.mkdirSync(user_dir);  // create dir if not exists
+	if(req.body.download_type == 'whole_project'){      
+		var pid  = req.body.project_id;
+      	var dids = DATASET_IDS_BY_PID[pid];
+      	var project = req.body.project;
+	  	var file_name = req.user.username+'_metadata_'+timestamp+'_'+project+'.gz'
+      	var out_file_path = path.join(user_dir,file_name);
     }else{
-      var dids = JSON.parse(req.body.datasets).ids  
-      var out_file = 'downloads/'+timestamp+'.metadata.gz';    
+		var dids = JSON.parse(req.body.datasets).ids;
+		var file_name = req.user.username+'_metadata_'+timestamp+'.gz'
+      	var out_file_path = path.join(user_dir,file_name);    
     }
     console.log('dids')
     console.log(dids)
@@ -302,7 +301,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     var myrows = {}; // myrows[mdname] == [] list of values
     var header = 'Project: '+project+"\n\t"
     
-    var wstream = fs.createWriteStream(out_file);
+    var wstream = fs.createWriteStream(out_file_path);
     var rs = new Readable;
     var filetxt;
     
@@ -360,6 +359,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
     //console.log(datasets);
   });
+
 // transporter.sendMail(mailOptions, function (error, info) {
 //                 if (error) {
 //                     console.log(error);
@@ -388,12 +388,19 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     //       });
 
   }
-  function IsNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
-  function onlyUnique(value, index, self) { 
-    return self.indexOf(value) === index;
-  }
+  // function IsNumeric(n) {
+  //   return !isNaN(parseFloat(n)) && isFinite(n);
+  // }
+  // function onlyUnique(value, index, self) {
+  //   return self.indexOf(value) === index;
+  // }
+  // var mkdirSync = function (path) {
+  //   try {
+  //     fs.mkdirSync(path);
+  //   } catch(e) {
+  //     if ( e.code != 'EEXIST' ) throw e;
+  //   }
+  // }
 
 });
 
