@@ -1,8 +1,9 @@
-
-<% include add_ins/begin.ejs %>
+<% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
-<p class='title'>Export Data</p>
-<br><strong>Your Downloads</strong>
+  <div class='title'>Saved Datasets</div>
+  <div class='subtitle'></div>
+
+<br><strong>Your saved datasets:</strong>
 <ol>
 
 <% for(f in file_info.files){ %>
@@ -31,8 +32,11 @@
 						<li>File: <%= filename %><% sizer %>
 						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
 						 
-						<li><a href='file_utils?fxn=download&user=<%= user %>&type=fasta&filename=<%= filename %>' >download</a> | 
-								<a href='file_utils?fxn=delete&user=<%= user %>&filename=<%= filename %>' >delete from the server</a>
+						<li><a href='../file_utils?fxn=view&user=<%= user %>&type=datasets&filename=<%= filename %>' >view</a> |
+							<a href='' name='view_array[]' value='<%= filename %>'>view2</a> |
+							<a href='../file_utils?fxn=usethese&user=<%= user %>&type=datasets&filename=<%= filename %>' >use these</a> |
+							<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>
+						<div id='dataset_view_div'></div>
 					</ul>
 				</li>
 			
@@ -40,6 +44,7 @@
 <% } %>
 </ol>
 
-<% include add_ins/end.ejs %>
 
-
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/saved_datasets.js"></script>
+<% include ../add_ins/end.ejs %>
