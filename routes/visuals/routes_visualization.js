@@ -168,11 +168,25 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: unit_selection-->>');
   console.log(req.body);
   console.log('req.body: unit_selection');
+  var dataset_ids = [];
   if(req.body.search == '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }else{
     dataset_ids = req.body.dataset_ids;
   }
+  // Global TAXCOUNTS
+  TAXCOUNTS = {};
+  // Gather just the tax data of selected datasets
+  for(var i in dataset_ids){
+    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json'
+	
+	var jsonfile = require(path_to_file);
+	TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
+	
+	 
+  }
+  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
+  console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
   var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
   // GLOBAL Variable
@@ -197,7 +211,6 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   
-     
   console.log('chosen_id_name_hash-->');
   console.log(chosen_id_name_hash);
   console.log('<--chosen_id_name_hash');
@@ -231,6 +244,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   console.log(ALL_DATASETS);
+  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   //console.log(req.user)
   res.render('visuals/index_visuals', { 
                                 title   : 'VAMPS: Select Datasets',
@@ -241,7 +255,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
                             });
 });
 //
-//
+//  SEARCH DATASETS
 //
 router.post('/search_datasets', helpers.isLoggedIn, function(req, res) {
   console.log('req.body-->>');
@@ -397,7 +411,7 @@ router.post('/download_counts_matrix', function(req, res) {
 	var gzip = zlib.createGzip();
     var rs = new Readable;
 	
-	header_txt = '';
+	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
 	for(i in biom_matrix.columns){
 		header_txt += ','+biom_matrix.columns[i].name;
 	}
