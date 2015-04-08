@@ -52,39 +52,18 @@ strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id,
 
 ranks = ['domain','phylum','klass','order','family','genus','species','strain']
 queries = [{"rank":"domain","query":domain_query},
-		   {"rank":"phylum","query":phylum_query},
-		   {"rank":"klass","query":class_query},
- 		   {"rank":"order","query":order_query},
- 		   {"rank":"family","query":family_query},
- 		   {"rank":"genus","query":genus_query},
- 		   {"rank":"species","query":species_query},
- 		   {"rank":"strain","query":strain_query}
+		   {"rank":"phylum","query":phylum_query}
+           {"rank":"klass","query":class_query},
+           {"rank":"order","query":order_query},
+           {"rank":"family","query":family_query},
+           {"rank":"genus","query":genus_query},
+           {"rank":"species","query":species_query},
+           {"rank":"strain","query":strain_query}
 		   ]
 def go(args):
     """
-		count_lookup_per_dsid[dsid][rank][taxid] = count
+		count_lookup_per_dsid[dsid][tax_id_str] = count
 		
-		count_lookup_per_dsid[dsid] = 
-		{
-		"domain":[
-			Archaea_id:23,
-			Bacteria_id:234,
-		],
-		"phylum":[
-
-		],
-		"klass":[
-
-		],
-		"order":[
-
-		],
-		"family":[
-
-		],
-		"order":[
-
-		]}
 		
 
     """
