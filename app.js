@@ -27,9 +27,10 @@ var zlib = require('zlib');
 connection = require('./config/database-dev');
 //connection.connect();
 var routes = require('./routes/index');  // This grabs ALL_DATASETS
-var users = require('./routes/users');
-var projects = require('./routes/projects');
-var datasets = require('./routes/datasets');
+var users = require('./routes/routes_users');
+var search = require('./routes/routes_search');
+var projects = require('./routes/routes_projects');
+var datasets = require('./routes/routes_datasets');
 //var ALL_DATASETS = require('./routes/load_all_datasets2')(connection);
 var visuals = require('./routes/visuals/routes_visualization');
 var C = require('./public/constants');
@@ -103,6 +104,7 @@ app.use('/users', users);
 app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
+app.use('/search', search);
 
 
 // for non-routing pages such as heatmap, counts and bar_charts
