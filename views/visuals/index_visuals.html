@@ -12,6 +12,7 @@
         <tr>
           <td>
               Dataset Selection
+			  <a class='small_font' href='show_saved_datasets'>View Saved Datasets</a>
           </td>
           <td>
             <input type='button' name='Next' value='Next: Unit Selection' id="unit_selection" >
@@ -19,8 +20,13 @@
           </tr>
           <tr>
           <td>
-            <div id='projects_select_div'><% include all_projects_datasets_list.html %></div>
+            <div id='projects_select_div'>
+				<% include all_projects_datasets_list.html %>
+			</div>
           </td>
+		  <td class='td_top'>
+			  <div class='small_font'>To save your list of datasets<br>go to the next page.</div>
+		  </td>
         </tr>
       </table>
        <input type='hidden' name='Next2' value='Next: Unit Selection2' id="unit_selection2" >

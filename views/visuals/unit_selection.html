@@ -2,6 +2,10 @@
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/mktree.css">-->
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
+<script>
+  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var user_local  = '<%= user.username %>';
+</script>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
       

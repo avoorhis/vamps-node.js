@@ -400,10 +400,6 @@ check_initial_status: function(url) {
   }
   console.log('values_updated: '+values_updated.toString())
   return values_updated;
-},
-
-save_datasets: function(datasets) {
-  console.log('in save_datasets');
 }
 
 };   // end module.exports
