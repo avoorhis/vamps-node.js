@@ -95,6 +95,8 @@ def start(args):
     get_config_data(args)
     check_user(args)  ## script dies if user not in db
     recreate_ranks()
+    create_env_source()
+    create_classifier()
     push_taxonomy(args)  #
     push_sequences(args)
     push_project(args)   # 
@@ -104,7 +106,16 @@ def start(args):
     
     #print SEQ_COLLECTOR
     pp.pprint(CONFIG_ITEMS)
+def create_env_source():
+    q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
+    cur.execute(q)
+    db.commit()
 
+def create_classifier():
+    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST')"
+    cur.execute(q)
+    db.commit()
+    
 def recreate_ranks():
     for i,rank in enumerate(ranks):
         
@@ -261,8 +272,18 @@ def push_summed_counts(args):
                     #db.commit()
                     #row = cur.fetchone()
                     id = RANK_COLLECTOR[ranks[i]]
-                    #print 'id',id
-                    values_sql.append(str(TAX_ID_BY_RANKID_N_TAX[id][tax_items[i]]))
+                    print 'RANK_COLLECTOR id',id
+                    if tax_items[i][-2:] != 'NA':
+                        if ranks[i] == 'species':
+                            t = tax_items[i].lower()
+                        else:
+                            t = tax_items[i].capitalize()
+                    else:
+                        t = tax_items[i]
+                        
+                    #if t in TAX_ID_BY_RANKID_N_TAX[id]:
+                    values_sql.append(str(TAX_ID_BY_RANKID_N_TAX[id][t]))
+                    
                 #print  'valueholder_sql',valueholder_sql   
                 q = "INSERT into summed_counts (dataset_id,"+", ".join(fields_sql)+",rank_id,count)"
                 q += " VALUES('"+str(did)+"',"
@@ -301,6 +322,7 @@ def push_taxonomy(args):
                 refhvr_ids = items[4]
                 rank = items[5]
                 if rank == 'class': rank = 'klass'
+                if rank == 'orderx': rank = 'order'
                 seq_count = items[6]
                 distance = items[8]
                 
@@ -322,12 +344,10 @@ def push_taxonomy(args):
                 cur.execute(q1)
                 db.commit()
                
-                    
                 row = cur.fetchone()
                 
                 SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
                     
-                
                 tax_items = tax_string.split(';')
                 #print tax_string
                 sumtax = ''
@@ -362,8 +382,9 @@ def push_taxonomy(args):
                         #print i,len(tax_items),tax_items[i]
                         rank_name = ranks[i]
                         rank_id = RANK_COLLECTOR[ranks[i]]
+                        
                         if len(tax_items) > i:
-                            if tax_items[i].lower() == 'species':
+                            if ranks[i] == 'species':
                                 t = tax_items[i].lower()
                             else:
                                 t = tax_items[i].capitalize()
@@ -488,7 +509,8 @@ if __name__ == '__main__':
        uploads to new vamps  
          where
             
-            -dir/--indir   This should be all you need.
+            -dir/--indir   This is the base directory where analysis/gast/ is located.
+                            This should be all you need.
                      Steps 1 & 2 are in py_mbl_sequencing_pipeline (modified)
                      
                      Step 1) ./1-vamps-load.py
