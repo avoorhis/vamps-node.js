@@ -22,6 +22,7 @@ views/visuals/partials/tax_silva108_simple.html
 grep_code.sh
 temp/
 downloads/*
+user_data/*
 tmp/
 public/tmp_images/
 public/json/*

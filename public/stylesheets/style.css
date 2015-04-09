@@ -78,6 +78,13 @@ vertical-align:top;
   margin-left:auto;
   margin-right:auto;
 }
+.auto_height200 {
+	height:200;
+	overflow:auto;
+}
+.border1 {
+	border:1px solid black;
+}
 /* CSSTerm.com Simple CSS menu */
 .main_menu  {
     

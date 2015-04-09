@@ -93,7 +93,7 @@ def clean_all(args):
     print 'cleaning'
     print "This will remove everything from",NODE_DATABASE
     if(NODE_DATABASE == 'vamps_js_development'):
-        sys.exit('Exiting')
+        sys.exit('You cannot delete vamps_js_development -- Exiting')
     
     # metadata
     q = "DELETE from required_metadata_info"
@@ -107,32 +107,58 @@ def clean_all(args):
             cur.execute(q)
     db.commit()
     
+    
     q = "DELETE from sequence_pdr_info"
+    cur.execute(q)
+    q = "ALTER TABLE sequence_pdr_info AUTO_INCREMENT = 10"
     cur.execute(q)
     
     q = "DELETE from sequence_uniq_info"
     cur.execute(q)
+    q = "ALTER TABLE sequence_uniq_info AUTO_INCREMENT = 10"
+    cur.execute(q)
     
     q = "DELETE from silva_taxonomy_info_per_seq"
+    cur.execute(q)
+    q = "ALTER TABLE silva_taxonomy_info_per_seq AUTO_INCREMENT = 10"
     cur.execute(q)
     
     q = "DELETE from silva_taxonomy"
     cur.execute(q)
+    q = "ALTER TABLE silva_taxonomy AUTO_INCREMENT = 10"
+    cur.execute(q)
+    
     q = "DELETE from summed_counts"
     cur.execute(q)
-    print q
+    q = "ALTER TABLE summed_counts AUTO_INCREMENT = 10"
+    cur.execute(q)
+    
     # tax domains
     for table in ranks:
-        if table != 'domain':
-            q = 'DELETE from `'+table+'` where '+table+'_id > 1'
-            print q
-            cur.execute(q)
+        
+        q = "DELETE from `"+table+"` where "+table+"_id > 1"
+        cur.execute(q)
+        q = "ALTER TABLE `"+table+"` AUTO_INCREMENT = 10"
+        cur.execute(q)
     
     q = 'DELETE from dataset'
     cur.execute(q)
+    q = "ALTER TABLE dataset AUTO_INCREMENT = 10"
+    cur.execute(q)
+    
     q = 'DELETE from project'
     cur.execute(q)
+    q = "ALTER TABLE project AUTO_INCREMENT = 10"
+    cur.execute(q)
+    
     q = 'DELETE from sequence'
+    cur.execute(q)
+    q = "ALTER TABLE sequence AUTO_INCREMENT = 10"
+    cur.execute(q)
+    
+    q = "DELETE from rank"
+    cur.execute(q)
+    q = "ALTER TABLE rank AUTO_INCREMENT = 10"
     cur.execute(q)
     
     db.commit()
