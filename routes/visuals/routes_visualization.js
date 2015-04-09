@@ -171,9 +171,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   var dataset_ids = [];
   if(req.body.search == '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);
+	
   }else{
     dataset_ids = req.body.dataset_ids;
   }
+  console.log('dataset_ids '+req.body.dataset_ids)
   // Global TAXCOUNTS
   TAXCOUNTS = {};
   // Gather just the tax data of selected datasets
@@ -268,7 +270,34 @@ router.get('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-
+router.post('/useview_saved_datasets', function(req, res) {
+  
+    fxn = req.body.fxn;
+	console.log(req.body.filename);
+	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
+	console.log(file_path);
+	var dataset_ids = [];
+	fs.readFile(file_path, 'utf8',function(err,data) {
+		if (err) throw err;
+		
+		
+		// dataset_ids = obj.ids;
+// 		//if(fxn == 'use'){
+//
+// 			//}else{
+// 			for( var i in obj.ids ){
+// 				var id =  obj.ids[i];
+// 				var dsname = obj.names[i];
+// 				html += '<tr><td>'+id+'</td><td>'+dsname+'</td></tr>';
+//
+// 			}
+// 			html += '</table></div>';
+		
+			res.send(data);
+			//}
+	});
+	
+});
 //
 // Download Counts Matrix
 router.post('/download_counts_matrix', function(req, res) {
@@ -602,7 +631,9 @@ router.post('/visuals/save_datasets',  function(req, res) {
     console.log(req.body);
     console.log('req.body: save_datasets');
 	
-	var filename_path = path.join('user_data',req.user.username,req.body.filename);
+	var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,req.body.filename);
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username));
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
 	return 'Saved!';
@@ -618,7 +649,7 @@ router.get('/show_saved_datasets',  function(req, res) {
     //console.log('req.body: show_saved_datasets-->>');
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
-    var saved_datasets_dir = path.join('user_data',req.user.username);
+    var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
     var mtime = {};
     var size = {};
     var file_info = {};

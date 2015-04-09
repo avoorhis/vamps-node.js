@@ -87,7 +87,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{  // summation
-      var md_hash =  MetadataValues;
+    var md_hash =  MetadataValues;
     //}
     var result = get_search_datasets(req.user, searches.search2, md_hash);
     ds2 = result.datasets;
