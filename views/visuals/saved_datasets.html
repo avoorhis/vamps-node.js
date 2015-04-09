@@ -29,14 +29,14 @@
 			
 				<li>
 					<ul>
-						<li>File: <%= filename %><% sizer %>
-						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
+						<li>File: <%= filename %><% sizer %></li>
+						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %></li>
 						 
-						<li><a href='../file_utils?fxn=view&user=<%= user %>&type=datasets&filename=<%= filename %>' >view</a> |
-							<a href='' name='view_array[]' value='<%= filename %>'>view2</a> |
-							<a href='../file_utils?fxn=usethese&user=<%= user %>&type=datasets&filename=<%= filename %>' >use these</a> |
+						<li>							
+							<input type="submit" onClick="sendAjaxUseOrView('<%= filename %>','<%= user %>','view')" value="view" />
 							<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>
-						<div id='dataset_view_div'></div>
+						</li>
+						<div id='<%= filename %>_div'></div>
 					</ul>
 				</li>
 			
