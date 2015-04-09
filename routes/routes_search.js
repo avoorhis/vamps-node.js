@@ -36,8 +36,9 @@ router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(metadata_fields)
     res.render('search/search_datasets', { title: 'VAMPS:Search',
-                          metadata_items: JSON.stringify(metadata_fields),
-    											 user: req.user
+                          	metadata_items: JSON.stringify(metadata_fields),
+							message: req.flash('nodataMessage'),
+    						user: req.user
     											});
 });
 //
@@ -139,25 +140,16 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
   //searches.search1.dataset_count = ds.dataset_ids.length;
 
 
-  console.log('searches')
-  console.log(searches)
+  //console.log('searches')
+  //console.log(searches)
 
-  console.log('final');
-  console.log(filtered.datasets);
-  //searches.dataset_count = result.datasets.length;
-
-//  { dataset_ids:
-//   [ '142--BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step',
-//     '146--BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step' ],
-//   }
-
-  //if(ds.dataset_ids.length != 0){
-  // if(('data' in searches.search1 && searches.search1['data'].length > 0) || 
-  //    ('single-comparison-value' in searches.search1 && searches.search1['single-comparison-value'] != '')  || 
-  //    (('min-comparison-value'   in searches.search1 && searches.search1['min-comparison-value']    != '') &&
-  //     ('max-comparison-value'   in searches.search1 && searches.search1['max-comparison-value']    != ''))
-  //     ){
-  //if(!('single-comparison-value' in searches.search1)){
+  //console.log('final');
+  //console.log(filtered.datasets);
+  if(filtered.datasets.length === 0){
+  	console.log('redirecting back -- no data found');
+	req.flash('nodataMessage', 'No Data Found');
+	res.redirect('search_datasets'); 
+  }else{
           res.render('search/search_datasets_result', {   
                     title    : 'VAMPS: Search Datasets',
                     filtered : JSON.stringify(filtered),
@@ -166,9 +158,8 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
                     //dids     : JSON.stringify(result.datasets),
                     user     : req.user
           });  // 
-  //}else{
-  //  console.log('no data selected or entered')
-  //}
+   }
+ 
 });
 
 //

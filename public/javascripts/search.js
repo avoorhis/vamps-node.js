@@ -19,8 +19,8 @@ var search_metadata_btn = document.getElementById('search_metadata_btn');
 if (typeof search_metadata_btn !=="undefined") {
   search_metadata_btn.addEventListener('click', function () {
 	  var form = document.getElementById('metadata_search_form');
-	  //var search1_comparison = document.getElementById('search1_comparison');
-	  //alert(metadata_search_range_div1.innerHTML);
+	  var search1_comparison = document.getElementById('search1_comparison');
+	  //alert(search1_comparison.value);
 	  
 	  form.submit();
     
