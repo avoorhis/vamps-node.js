@@ -1,11 +1,21 @@
 <% include ../add_ins/begin.ejs %>
-<% var metaitems = JSON.parse(metadata_items) %>
+<% var metaitems = JSON.parse(metadata_items); %>
+<% // sort keys %>
+<% mkeys = []; %>
+<% for(k in metaitems) { %>
+<%    if (metaitems.hasOwnProperty(k))%>
+<%     { %>
+<%        mkeys.push(k); %>
+<%     } %>
+<% } %>
+<% mkeys.sort(); %>
+	
 <script>  
   var mi_local  = JSON.parse('<%- metadata_items %>');
 </script>
 <p class='title'>Search</p>
 <div id='metadata_search_div' >
-		<form id='metadata_search_form1' name='' method='POST' action='/search/search_datasets_result' >	
+	<form id='metadata_search_form' name='' method='POST' action='/search/search_datasets_result' >	
 			<div id='' class='float_right' >Join searches by: 
 					<input type='radio' name='join_type' value='intersection' checked='checked' />Intersection
 					<input type='radio' name='join_type' value='addition' />Summation
@@ -18,9 +28,9 @@
 			<li>
 				
 					<select id='field1_metadata_search' name='search1_metadata-item'>
-						<option value='NONE'>select</option>
-						<% for(field in metaitems) { %>
-							<option class='' value='<%= field %>'><%= field %></option>
+						<option value='NONE'>select</option>						
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
 						<% } %>
 					</select>					
 					<div id='metadata_search_range_div1' class='display_none'></div>
@@ -30,8 +40,8 @@
 					<input id='search_metadata_activate_btn2' type='checkbox' value='activate' >
 					<select id='field2_metadata_search' name='search2_metadata-item' disabled='disabled' >
 						<option value='NONE'>select</option>
-						<% for(field in metaitems) { %>
-							<option class='' value='<%= field %>'><%= field %></option>
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
 						<% } %>
 					</select> 
 					<div id='metadata_search_range_div2' class='display_none'></div>
@@ -41,15 +51,17 @@
 					<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >
 					<select id='field3_metadata_search' name='search3_metadata-item' disabled='disabled' >
 						<option value='NONE'>select</option>
-						<% for(field in metaitems) { %>
-							<option class='' value='<%= field %>'><%= field %></option>
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
 						<% } %>
 					</select>	
 					<div id='metadata_search_range_div3' class='display_none'></div>
 					
 			</li>	
 		</ol>
-					<br><input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' >
+					<br>
+				<!--	<input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' > -->
+					<input id='search_metadata_btn' disabled='disabled' type='button' value='Search Datasets' >
 					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
 				
 				
@@ -59,7 +71,7 @@
 			
 		
 	
-<form>
+	<form>
 </div>
 
 <br><strong>Taxonomy</strong>
