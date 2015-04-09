@@ -156,6 +156,10 @@ td.left_justify {
 .alert {
   visibility:hidden;
 }
+.alert_flash_message {
+	font: bold 12px Arial;
+	color:orange;
+}
 #project_profile_div ul{
   list-style-type: none;
   text-decoration: none;

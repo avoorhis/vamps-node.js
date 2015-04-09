@@ -9,11 +9,15 @@
 <%     } %>
 <% } %>
 <% mkeys.sort(); %>
-	
+
 <script>  
   var mi_local  = JSON.parse('<%- metadata_items %>');
 </script>
 <p class='title'>Search</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+ 
 <div id='metadata_search_div' >
 	<form id='metadata_search_form' name='' method='POST' action='/search/search_datasets_result' >	
 			<div id='' class='float_right' >Join searches by: 
