@@ -14,6 +14,18 @@ var metadata_search_range_div3 = document.getElementById('metadata_search_range_
 var metadata_search_field3 = document.getElementById('field3_metadata_search');
 var search_metadata_activate_btn2 = document.getElementById('search_metadata_activate_btn2');
 var search_metadata_activate_btn3 = document.getElementById('search_metadata_activate_btn3');
+var search_metadata_btn = document.getElementById('search_metadata_btn');
+
+if (typeof search_metadata_btn !=="undefined") {
+  search_metadata_btn.addEventListener('click', function () {
+	  var form = document.getElementById('metadata_search_form');
+	  //var search1_comparison = document.getElementById('search1_comparison');
+	  //alert(metadata_search_range_div1.innerHTML);
+	  
+	  form.submit();
+    
+  });
+}
 
 if (typeof search_metadata_activate_btn2 !=="undefined") {
   search_metadata_activate_btn2.addEventListener('click', function () {
@@ -85,7 +97,7 @@ if (typeof metadata_search_field1 !=="undefined") {
         metadata_search_range_div1.style.background = "#C0C0C0";
         metadata_search_range_div1.style.padding    = "3px";
         metadata_search_range_div1.style.width      = "95%";
-        document.getElementById('search_metadata_btn').style.display    = "block";
+        document.getElementById('search_metadata_btn').disabled    = false;
       }
   });
 }
@@ -134,7 +146,7 @@ if (typeof metadata_search_field2 !=="undefined") {
         metadata_search_range_div2.style.background = "#C0C0C0";
         metadata_search_range_div2.style.padding    = "3px";
         metadata_search_range_div2.style.width      = "95%";
-        document.getElementById('search_metadata_btn').style.display    = "block";
+        document.getElementById('search_metadata_btn').disabled    = false;
       }
   });
 }
@@ -181,12 +193,13 @@ if (typeof metadata_search_field3 !=="undefined") {
         metadata_search_range_div3.style.background = "#C0C0C0";
         metadata_search_range_div3.style.padding    = "3px";
         metadata_search_range_div3.style.width      = "95%";
-        document.getElementById('search_metadata_btn').style.display    = "block";
+        document.getElementById('search_metadata_btn').disabled    = false;
       }
   });
 }
 
 function change_comparison(comparison, item){
+  
   if(item==1){
     var comparison_input = document.getElementById('input1_comparison');
     var minval = 'search1_min-comparison-value';
