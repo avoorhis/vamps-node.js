@@ -49,7 +49,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   /* GET Export Data page. */
   router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
         
-      var export_dir = path.join('user_data',req.user.username);
+      var export_dir = path.join('user_data',NODE_DATABASE,req.user.username);
       var mtime = {};
       var size = {};
       var file_info = {};
@@ -79,7 +79,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	//console.log('dnld');
 	//console.log(req.query.filename);
 	var user = req.query.user;
-	var file = path.join('user_data',user,req.query.filename);
+	var file = path.join('user_data',NODE_DATABASE,user,req.query.filename);
 	//console.log(file);
 	//// DOWNLOAD //////
 	if(req.query.fxn == 'download' && req.query.type == 'fasta'){
@@ -90,7 +90,11 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	
 	//// DELETE FILES /////
 	if(req.query.fxn == 'delete'){
-		fs.unlink(file); // 	  
+		fs.unlink(file, function(err){
+			if(err){ console.log(err) };
+			res.redirect("/file_retrieval");	
+		}); // 
+		  
 	}
 	
 	//// VIEW DATA (datasets) /////
@@ -105,13 +109,13 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	}
 	
 	////  FINALLY REDIRECT /////
-	if(req.query.type == 'datasets'){		
-		res.redirect("/visuals/show_saved_datasets");
-	}else if (req.query.type == 'metadata' || req.query.type == 'fasta'){
-		res.redirect("/file_retrieval");
-	}else{
-		res.redirect("/");
-	}
+	// if(req.query.type == 'datasets'){
+	// 	res.redirect("/visuals/show_saved_datasets");
+	// }else if (req.query.type == 'metadata' || req.query.type == 'fasta'){
+	// 	res.redirect("/file_retrieval");
+	// }else{
+	// 	res.redirect("/");
+	// }
   });
 
   /* GET Geo-Distribution page. */
@@ -196,8 +200,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     var seq, seqid, seq_count, pjds;
     var timestamp = +new Date();  // millisecs since the epoch!
     
-	var data_dir = 'user_data';
-	var user_dir = path.join(data_dir,req.user.username);
+	var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 	helpers.mkdirSync(user_dir);  // create dir if not exists
 	
     if(req.body.download_type == 'whole_project'){
@@ -269,8 +273,9 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     console.log(req.body);
     var timestamp = +new Date();  // millisecs since the epoch!
     
-	var data_dir = 'user_data';
-	var user_dir = path.join(data_dir,req.user.username);
+	
+	var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 	helpers.mkdirSync(user_dir);  // create dir if not exists
 	if(req.body.download_type == 'whole_project'){      
 		var pid  = req.body.project_id;
