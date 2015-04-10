@@ -296,14 +296,15 @@ var save_datasets_list = function(ds_local,user)
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
     args += "&user="+user;
-	console.log(args);
+	//console.log('args '+args);
 	var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'visuals/save_datasets', true);
+    xmlhttp.open("POST", 'save_datasets', true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
 
        if (xmlhttp.readyState == 4 ) {
          var string = xmlhttp.responseText;
+		 alert(string);
        }
     };
     xmlhttp.send(args);
