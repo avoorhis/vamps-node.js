@@ -3,7 +3,9 @@
 <div class='title'>Community Visualization</div>
 
 <div class='subtitle'>Dataset Selection Page</div>
-
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
     <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
@@ -12,7 +14,7 @@
         <tr>
           <td>
               Dataset Selection
-			  <a class='small_font' href='show_saved_datasets'>View Saved Datasets</a>
+			  <a class='small_font' href='saved_datasets'>View Saved Datasets</a>
           </td>
           <td>
             <input type='button' name='Next' value='Next: Unit Selection' id="unit_selection" >
