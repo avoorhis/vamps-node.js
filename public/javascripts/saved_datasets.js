@@ -10,7 +10,7 @@ for(i = 0; i < view_array.length; i++){
 function sendAjaxUseOrView( filename, user, fxn ){
 	
         
-		args ='filename='+filename;
+		args  = 'filename='+filename;
 		args += '&user='+user;
 		args += '&fxn='+fxn;
 		var xmlhttp = new XMLHttpRequest();

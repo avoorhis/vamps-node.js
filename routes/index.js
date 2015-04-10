@@ -69,7 +69,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
         //console.log(file_info)
         res.render('file_retrieval', { title: 'VAMPS:Export Data', 
                              user: req.user.username,
-                             finfo: JSON.stringify(file_info)
+                             finfo: JSON.stringify(file_info),
+							message : req.flash('deleteMessage'),
                             });
       });
   });
@@ -90,10 +91,19 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	
 	//// DELETE FILES /////
 	if(req.query.fxn == 'delete'){
-		fs.unlink(file, function(err){
-			if(err){ console.log(err) };
-			res.redirect("/file_retrieval");	
-		}); // 
+		if(req.query.type == 'datasets'){
+			fs.unlink(file, function(err){
+				if(err){ console.log(err) };
+				req.flash('deleteMessage', 'Deleted');
+				res.redirect("/visuals/saved_datasets");	
+			}); //
+		}else{
+			fs.unlink(file, function(err){
+				if(err){ console.log(err) };
+				req.flash('deleteMessage', 'Deleted');
+				res.redirect("/file_retrieval");	
+			}); // 
+		}
 		  
 	}
 	
