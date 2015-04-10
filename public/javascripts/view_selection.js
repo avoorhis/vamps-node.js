@@ -6,8 +6,6 @@ $("#metadata_local_table_div").on("click", "#metadata_table", function () {
 
 // code for tooltips
 
-
-
 var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
     $win = $(window),
     showTip;
@@ -490,52 +488,6 @@ function create_test_page(ts) {
     opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
 
 }
-save_dataset_btn = document.getElementById('save_dataset_btn');
-if (typeof save_dataset_btn !=="undefined") {
-  save_dataset_btn.addEventListener('click', function () {
-      alert('here in pc')
-      //create_test_page(pi_local.ts);
-  });
-}
-
-function create_test_page(ts) {
-//
-//
-// DOWNLOAD
-//
-// download_metadata_id = document.getElementById('download_metadata_id');
-// if (typeof download_metadata_id !=="undefined") {
-//   download_metadata_id.addEventListener('click', function () {
-      
-//       var timestamp = +new Date();  // millisecs since the epoch!
-//       user || 'no-user';
-//       timestamp = user + '_' + timestamp;
-//       var out_file = 'downloads/'+timestamp+'.metadata.gz';
-//       console.log(out_file)
-//       var file = fs.createWriteStream(out_file);
-//       //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
-//       //  response.pipe(file);
-//       //});
-//   });
-// }
-// download_fasta_id = document.getElementById('download_fasta_id');
-// if (typeof download_fasta_id !=="undefined") {
-//   download_fasta_id.addEventListener('click', function () {
-      
-//       var timestamp = +new Date();  // millisecs since the epoch!
-//       var user = user || 'no-user';
-//       timestamp = user + '_' + timestamp;
-//       var out_file = 'downloads/'+timestamp+'.metadata.gz';
-//       console.log(out_file)
-//       var file = fs.createWriteStream(out_file);
-//       //var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
-//       //  response.pipe(file);
-//       //});
-//   });
-// }
-//
-// visual choices 
-//
 
 
 
@@ -576,41 +528,7 @@ function get_user_input(visual, ts) {
 
     }
 }
-//
-//
-// function download_matrix(what) {
-// 	alert(pi_local.ts)
-// 	if(what=='counts_matrix'){
-// 		var txt = '';
-// 			    var timestamp = +new Date();  // millisecs since the epoch!
-// 		//timestamp = user.username + '_' + timestamp;
-// 		var out_file = 'downloads/'+timestamp+'_matrix.fa.gz';
-// 		//pi_local.ts
-// 		        for (var n in mtx_local.columns) {
-// 		          txt += ","+mtx_local.columns[n].name;
-// 		        }
-// 		txt += '\n\r';
-// 			    var gzip = zlib.createGzip();
-//
-//
-// 			    var wstream = fs.createWriteStream(out_file);
-// 			    var rs = new Readable;
-// 		      	rs
-// 		        //.pipe(gzip)
-// 		        .pipe(wstream)
-// 		        .on('finish', function () {  // finished
-// 		          console.log('done compressing and writing file');
-// 		          // var info = {
-// 		         //        to:'avoorhis@mbl.edu',
-// 		         //        from:"vamps@mbl.edu",
-// 		         //        subject:"fasta file is ready",
-// 		         //        text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-// 		         //      }
-// 		         //  send_mail(info);
-// 		        });
-// 	}
-//
-// }
+
 //
 // TAX TABLE
 //
