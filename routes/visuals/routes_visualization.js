@@ -650,7 +650,7 @@ router.post('/save_datasets',  function(req, res) {
 	//res.redirect('unit_selection');
 	//var json_str = JSON.stringify(visual_post_items);
 	//console.log(json_str);
-	res.send('Saved');
+	res.send('OK');
 	
 });
 //
