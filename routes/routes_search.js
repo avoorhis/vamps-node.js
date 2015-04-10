@@ -155,7 +155,6 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
                     join_type: join_type,
-                    //dids     : JSON.stringify(result.datasets),
                     user     : req.user
           });  // 
    }
