@@ -74,14 +74,22 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // Make our db accessible to our router
+// app.use(function(req, res, next){
+//     if(!connection.db) {return next(new Error('no db connection'));}
+//     req.db = connection.db;
+//     req.C = C;
+//     return next();
+// });
 app.use(function(req, res, next){
-    if(!connection.db) {return next(new Error('no db connection'));}
-    req.db = connection.db;
-    req.C = C;
-    return next();
+	if (connection.db == null) {
+	   this.send('We cannot reach the database right now, please try again later.');
+	   return;
+	 }else{
+	    req.db = connection.db;
+	    req.C = C;
+	    return next();
+	}
 });
-
-
 //var hdf5 = require('hdf5').hdf5;
 // example of roll-your-own middleware:
 // GET: localhost:3000/?id=324
