@@ -2,7 +2,9 @@
 <% var file_info = JSON.parse(finfo) %>
   <div class='title'>Saved Datasets</div>
   <div class='subtitle'></div>
-
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
 <br><strong>Your saved datasets:</strong>
 <ol>
 
