@@ -46,11 +46,12 @@
   	  			in a 'downloads' directory where it can be retrieved.
   	  			The user should get an email when its ready.
   	   -->
-  	  <input type='submit' value='Create Fasta File' />
+  	  <input type='button' id='download_project_fasta_form_btn' value='Create Fasta File' />
   	  <input type='hidden' name='download_type' value='whole_project' />
   	  <input type='hidden' name='project_id' value='<%= pid %>' />
   	  <input type='hidden' name='project' value='<%= data.project %>' />
-    </form>
+	  <span  class='alert_flash_message' id='download_fasta_response' style='' ></span>
+    </form> 
     </li>
     <li>
     <form id='download_project_metadata_form_id' method='POST' action='../download_selected_metadata'>
@@ -58,18 +59,17 @@
   	  			in a 'downloads' directory where it can be retrieved.
   	  			The user should get an email when its ready.
   	   -->
-  	  <input type='submit' value='Create Metadata File' />
+  	  <input type='button'  id='download_project_metadata_form_btn' value='Create Metadata File' />
   	  <input type='hidden' name='download_type' value='whole_project' />
   	  <input type='hidden' name='project_id' value='<%= pid %>' />
   	  <input type='hidden' name='project' value='<%= data.project %>' />
-    </form>
+	  <span  class='alert_flash_message' id='download_metadata_response' ></span>
+    </form> 
     </li>
   <% } %>
   <li>
 
-		You will receive an email
-  	when the files are ready
-  	and they can be downloaded here: <a href='../file_retrieval'>Files</a>
+		When ready, the files can be downloaded here: <a href='../file_retrieval'>Files</a>
   </li>
 
 </ul>
