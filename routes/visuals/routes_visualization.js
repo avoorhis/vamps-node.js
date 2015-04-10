@@ -106,7 +106,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),   
                                   user      :           req.user,
-                                  messages  : {}
+                                  message  : req.flash()
                    });
     helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<"); 
   
@@ -133,7 +133,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),          
                                   user      :           req.user,
-                                  messages  : {}
+			  						message  :  req.flash(),
                        });
           
         }
@@ -170,61 +170,70 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: unit_selection');
   var dataset_ids = [];
   if(req.body.search == '1'){
-    dataset_ids = JSON.parse(req.body.dataset_ids);
-	
+    dataset_ids = JSON.parse(req.body.dataset_ids);	
   }else{
     dataset_ids = req.body.dataset_ids;
   }
-  console.log('dataset_ids '+req.body.dataset_ids)
-  // Global TAXCOUNTS
-  TAXCOUNTS = {};
-  // Gather just the tax data of selected datasets
-  for(var i in dataset_ids){
-    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json'
+  
+  console.log('dataset_ids '+req.body.dataset_ids);
+  if(dataset_ids == undefined || dataset_ids.length === 0){
+      console.log('redirecting back -- no data selected');
+   	 req.flash('nodataMessage', 'Select Some Datasets');
+   	 res.redirect('index_visuals'); 
+  }else{
+	  // Global TAXCOUNTS
+	  TAXCOUNTS = {};
+	  // Gather just the tax data of selected datasets
+	  for(var i in dataset_ids){
+	    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json'
 	
-	var jsonfile = require(path_to_file);
-	TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
+		var jsonfile = require(path_to_file);
+		TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
 	
 	 
-  }
-  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
-  console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
-  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
+	  }
+	  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
+	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
+	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
-  // GLOBAL Variable
-  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+	  // GLOBAL Variable
+	  console.log('dataset_ids2 '+dataset_ids)
+	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
   
-  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
-  //console.log('chosen_id_name_hash')
-  //console.log(chosen_id_name_hash)
-  // // benchmarking
-  // var start = process.hrtime();
-  // 
-  // // benchmarking
-  // var elapsed_time = function(note){
-  //     var precision = 3; // 3 decimal places
-  //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
-  //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
-  //     //start = process.hrtime(); // reset the timer
-  // };
+	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
+	  //console.log('chosen_id_name_hash')
+	  //console.log(chosen_id_name_hash)
+	  // // benchmarking
+	  // var start = process.hrtime();
+	  // 
+	  // // benchmarking
+	  // var elapsed_time = function(note){
+	  //     var precision = 3; // 3 decimal places
+	  //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
+	  //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
+	  //     //start = process.hrtime(); // reset the timer
+	  // };
 
-  // benchmarking
-  helpers.start = process.hrtime();
-  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
+	  // benchmarking
+	  helpers.start = process.hrtime();
+	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
   
   
-  console.log('chosen_id_name_hash-->');
-  console.log(chosen_id_name_hash);
-  console.log('<--chosen_id_name_hash');
+	  console.log('chosen_id_name_hash-->');
+	  console.log(chosen_id_name_hash);
+	  console.log(chosen_id_name_hash.ids.length)
+	  console.log('<--chosen_id_name_hash');
     
-
-  res.render('visuals/unit_selection', {   
-                    title: 'VAMPS: Units Selection',
-                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-                    constants    : JSON.stringify(req.C),
-                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
-                    user         : req.user
-  });  // end render
+  
+	  res.render('visuals/unit_selection', {   
+	                    title: 'VAMPS: Units Selection',
+	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+	                    constants    : JSON.stringify(req.C),
+	                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
+		  				message : req.flash('savedMessage'),
+	                    user         : req.user
+	  });  // end render
+  }
     // benchmarking
   helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");   
    
@@ -253,6 +262,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
                                 rows    : JSON.stringify(ALL_DATASETS),
                                 permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
                                 constants    : JSON.stringify(req.C),
+	  							message : req.flash('nodataMessage'),
                                 user: req.user
                             });
 });
@@ -625,7 +635,7 @@ router.get('/partials/med_nodes',  function(req, res) {
     res.render('visuals/partials/med_nodes',{});
 });
 
-router.post('/visuals/save_datasets',  function(req, res) {
+router.post('/save_datasets',  function(req, res) {
     
     console.log('req.body: save_datasets-->>');
     console.log(req.body);
@@ -636,15 +646,17 @@ router.post('/visuals/save_datasets',  function(req, res) {
 	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username));
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
-	return 'Saved!';
+	//req.flash('savedMessage', 'Saved!');
+	//res.redirect('unit_selection');
 	//var json_str = JSON.stringify(visual_post_items);
 	//console.log(json_str);
-	//res.render('visuals/partials/med_nodes',{});
+	res.send('Saved');
+	
 });
 //
 //
 //
-router.get('/show_saved_datasets',  function(req, res) {
+router.get('/saved_datasets',  function(req, res) {
     console.log('in show_saved_datasets')
     //console.log('req.body: show_saved_datasets-->>');
     //console.log(req.body);
@@ -669,6 +681,7 @@ router.get('/show_saved_datasets',  function(req, res) {
 	  res.render('visuals/saved_datasets', 
 	    { title: 'saved_datasets',
 	      finfo: JSON.stringify(file_info),
+	  	  message:req.flash('deleteMessage'),
 	      user: 	req.user.username
 	    });
 	  
