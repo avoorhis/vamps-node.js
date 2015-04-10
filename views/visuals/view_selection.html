@@ -14,6 +14,7 @@
   var mtx_local = JSON.parse('<%- matrix %>');
   var md_local  = JSON.parse('<%- metadata %>');
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  var user_local  = '<%= user.username %>';
 </script>
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
@@ -225,7 +226,7 @@
 <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
 <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
-<!-- HERE IS THE SCRIPT THAT LOADS THE IMAGES: -->
+<script type="text/javascript" src="/javascripts/common_selection.js"></script>
 <script type="text/javascript" src="/javascripts/view_selection.js"></script>
  
  
