@@ -65,50 +65,50 @@ module.exports = {
 			var unit_name_lookup = {};
 			var unit_name_lookup_per_dataset = {};
 			var unit_name_counts = {};
-		  
+		
 			// TESTING
 			// data from DB or JSON_file or HTF5
 			//var read_choices = ['DB','JSON','HTF5'];
 			//var read_from = read_choices[0];
 		  //if(read_from === 'JSON') {
-				  
+				
 		  for (var n in chosen_id_name_hash.ids) { // has correct order
-				  
+				
 				  did = chosen_id_name_hash.ids[n];	
-
+          var tax_long_name;
+					
 
 				  if(post_items.unit_choice === 'tax_silva108_simple') {
 							rank = post_items.tax_depth;
-							
 							//console.log('did '+did+' rank: '+rank);
 							for(var r in new_taxonomy.taxa_tree_dict_map_by_rank[rank]) {
-								console.log(' ')
-								var dbids = []
-								console.log('POSTf')
-								node = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r]
-								console.log(node)
-								var parent_id = node.parent_id
-								var domain_id = node.db_id
-								console.log('init parentID '+parent_id)
-								//rank+'_id' = db_id
-								dbids.push(domain_id)
+								console.log(' ');
+								var dbids = [];
+								console.log('POSTf');
+								node = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r];
+								console.log(node);
+								var parent_id = node.parent_id;
+								var domain_id = node.db_id;
+								console.log('init parentID '+parent_id);
+								//rank+'_id' = db_id;
+								dbids.push(domain_id);
 								
 								
 								for( i=0; i<C.RANKS.indexOf(rank); i++ ){
-									parnt = new_taxonomy.taxa_tree_dict_map_by_id[parent_id]
+									parnt = new_taxonomy.taxa_tree_dict_map_by_id[parent_id];
 									//console.log(JSON.stringify(parnt,null,4))
-									parent_id = parnt.parent_id
+									parent_id = parnt.parent_id;
 									dbids.unshift(parnt.db_id);  // add to front of array
 									
 								}
 								//console.log(dbids)
-								x = TaxaCounts[did][rank]
-								console.log('count: '+x.toString())
+								x = TaxaCounts[did][rank];
+								console.log('count: '+x.toString());
 								for(n in dbids){
-									x = x[dbids[n]]
+									x = x[dbids[n]];
 								}
-								count = x
-								console.log('count: '+count.toString())
+								count = x;
+								console.log('count: '+count.toString());
 								//console.log('parent: ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[parent_id],null,4))
 							
 								db_tax_id = new_taxonomy.taxa_tree_dict_map_by_rank[rank][r].db_id;
@@ -118,12 +118,12 @@ module.exports = {
 								//node_id = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_tax_id+'_'+rank].node_id;
 								
 								//cnt = TaxaCounts[did][rank][r]
-								var tax_long_name = create_concatenated_tax_name(node);
+								tax_long_name = create_concatenated_tax_name(node);
 								
 								unit_name_lookup[tax_long_name] = 1;
 								//console.log('POSTf')
 								//console.log(did)
-								console.log(tax_long_name)
+								console.log(tax_long_name);
 								
 								//console.log(tax_long_name.split(';')[0])
 								if( post_items.domains.indexOf(tax_long_name.split(';')[0]) != -1 ) {
@@ -148,16 +148,16 @@ module.exports = {
 									db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
 									node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
 									// TODO: 'tax_long_name' is already defined.
-									var tax_long_name = create_concatenated_tax_name(node_id);
+									tax_long_name = create_concatenated_tax_name(node_id);
 									unit_name_lookup[tax_long_name] = 1;									
 									cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
 									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 							} // END :: for(t in post_items.custom_taxa) {
-					} 
+					}
 
 			}
 			console.log('POSTy');
-			console.log(unit_name_lookup_per_dataset)
+			console.log(unit_name_lookup_per_dataset);
 			//console.log(chosen_id_name_hash);
 			//console.log(unit_name_lookup_per_dataset);
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
@@ -175,8 +175,8 @@ module.exports = {
 		  //console.log(post_items);
 
 		  biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
-		  
-		  if(post_items.update_data == true){
+		
+		  if(post_items.update_data === true){
 		  	
 		  	biom_matrix = this.get_custom_biom_matrix( post_items, biom_matrix );
 		  	
@@ -185,14 +185,14 @@ module.exports = {
 		  }
 
 		  matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-		    
+		
 			
 			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
 			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
 
 			return biom_matrix;
 
-			function onlyUnique(value, index, self) { 
+			function onlyUnique(value, index, self) {
 	    	return self.indexOf(value) === index;
 			}
 
@@ -203,27 +203,27 @@ module.exports = {
   //
   get_custom_biom_matrix: function(visual_post_items, mtx) {
     var custom_count_matrix = extend({},mtx);  // this clones count_matrix which keeps original intact.
-    
+
     var max_cnt = mtx.max_dataset_count,
         min     = visual_post_items.min_range,
         max     = visual_post_items.max_range,
         norm    = visual_post_items.normalization;
 
     //console.log('in custom biom '+max_cnt.toString());
-        
-        // Adjust for percent limit change  
+
+        // Adjust for percent limit change
         var new_counts = [];
         var new_units = [];
         for(var c in custom_count_matrix.data) {
-          
+
           var got_one = false;
           for(var k in custom_count_matrix.data[c]) {
             var thispct = (custom_count_matrix.data[c][k]*100)/custom_count_matrix.column_totals[k];
             if(thispct > min && thispct < max){
               got_one = true;
             }
-          }      
-          
+          }
+
           if(got_one){
             new_counts.push(custom_count_matrix.data[c]);
             new_units.push(custom_count_matrix.rows[c]);
@@ -233,32 +233,26 @@ module.exports = {
         }
         custom_count_matrix.data = new_counts;
         custom_count_matrix.rows = new_units;
-                
+
 
         // Adjust for normalization
         var tmp = [];
         if (norm === 'max') {
-          // TODO: "'c' is already defined."          
-            for(var c in custom_count_matrix.data) {
-              // TODO: "'new_counts' is already defined."          
-              var new_counts = [];
-              // TODO: "'k' is already defined."          
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseInt( ( custom_count_matrix.data[c][k] * max_cnt ) / custom_count_matrix.column_totals[k], 10) );
-                  
-              }    
-              tmp.push(new_counts);              
+            for (var nc in custom_count_matrix.data) {
+              new_counts = [];
+              for (var nk in custom_count_matrix.data[nc]) {
+                  new_counts.push(parseInt( ( custom_count_matrix.data[nc][nk] * max_cnt ) / custom_count_matrix.column_totals[nk], 10) );
+
+              }
+              tmp.push(new_counts);
             }
             custom_count_matrix.data = tmp;
-        }else if(norm === 'freq'){
-          // TODO: "'c' is already defined."          
-            for(var c in custom_count_matrix.data) {              
-              // TODO: "'new_counts' is already defined."          
-              var new_counts = [];
-              // TODO: "'k' is already defined."          
-              for(var k in custom_count_matrix.data[c]) {                
-                  new_counts.push(parseFloat( custom_count_matrix.data[c][k] / custom_count_matrix.column_totals[k].toFixed(8) ) );                    
-              }    
+        }else if (norm === 'freq'){
+            for (var cc in custom_count_matrix.data) {
+              new_counts = [];
+              for (var ck in custom_count_matrix.data[cc]) {
+                  new_counts.push(parseFloat( custom_count_matrix.data[cc][ck] / custom_count_matrix.column_totals[ck].toFixed(8) ) );
+              }
               tmp.push(new_counts);
             }
             custom_count_matrix.data = tmp;
@@ -268,20 +262,20 @@ module.exports = {
 
         // re-calculate totals
         var tots = [];
-        // TODO: "'tmp' is already defined."          
+        // TODO: "'tmp' is already defined."
         var tmp = {};
-        // TODO: "'c' is already defined."          
-        for(var c in custom_count_matrix.data) {
-          // TODO: "'k' is already defined."          
-          for(var k in custom_count_matrix.data[c]) {
+        // TODO: "'c' is already defined."
+        for (var c in custom_count_matrix.data) {
+          // TODO: "'k' is already defined."
+          for (var k in custom_count_matrix.data[c]) {
             if(k in tmp){
               tmp[k] += custom_count_matrix.data[c][k];
             }else{
               tmp[k] = custom_count_matrix.data[c][k];
-            }            
+            }
           }
         }
-        // TODO: "'k' is already defined."          
+        // TODO: "'k' is already defined."
         for(var k in custom_count_matrix.columns){
           tots.push(tmp[k]);
         }
@@ -322,12 +316,12 @@ function remove_empty_rows(taxa_counts) {
 function create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset) {
 		
 		var taxa_counts={};
-	  
+	
 	  for(var tax_name in unit_name_lookup){
 	  	taxa_counts[tax_name]=[];
 	  }	
-	  
-	  
+	
+	
 		for (var n in chosen_id_name_hash.ids) { // correct order
 	  	did = chosen_id_name_hash.ids[n];				  	
       // TODO: "'tax_name' is already defined."
@@ -408,8 +402,8 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 //   		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon  +';'+ tax_name;
 //   		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;
 //   	}
-//   	return tax_name.replace(/;+$/,''); // remove trailing ';' 
-//   	//return tax_name; // remove trailing ';' 
+//   	return tax_name.replace(/;+$/,''); // remove trailing ';'
+//   	//return tax_name; // remove trailing ';'
 // }
 //
 //
@@ -428,8 +422,8 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 // 			got_one = true;
 // 			for(n in ukeys2 ){
 // 				if(ukeys2[n].indexOf(name_array[i]) === 0){
-// 						console.log('MATCH! -no add '+ name_array[i]); 
-// 						got_one = false; 
+// 						console.log('MATCH! -no add '+ name_array[i]);
+// 						got_one = false;
 // 					}else{
 // 						//console.log('add '+ukeys[i]+' test against '+ukeys2[n])
 // 						//ukeys2.push(ukeys[i]);
@@ -448,7 +442,7 @@ function find_count_per_ds_and_rank(did, rank, db_tax_id) {
 //
 //
 //
-function onlyUnique(value, index, self) { 
+function onlyUnique(value, index, self) {
 	return self.indexOf(value) === index;
 }
 //
