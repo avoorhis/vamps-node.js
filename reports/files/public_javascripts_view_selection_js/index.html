@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">64.48</p>
+      <p class="stat">64.40</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">1184</p>
+      <p class="stat">1180</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">77.97</p>
+      <p class="stat">77.89</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">13.89</p>
+      <p class="stat">13.90</p>
     </div>
   </div>
 </div>
@@ -244,7 +244,7 @@ if (typeof tax_counts_link !==&quot;undefined&quot;) {
       //alert(tax_table_created)
       if(typeof tax_table_created == &quot;undefined&quot;){
         get_user_input(&#039;counts_table&#039;, pi_local.ts);
-		counts_table_download_btn.disabled = false
+		    counts_table_download_btn.disabled = false;
       }else{
         if(tax_counts_btn.value == &#039;close&#039;){
           toggle_visual_element(tax_counts_div,&#039;show&#039;,tax_counts_btn);
@@ -278,7 +278,7 @@ if (typeof counts_table_download_btn !==&quot;undefined&quot;) {
 	  s.setAttribute(&#039;type&#039;,&quot;submit&quot;);
 	  s.setAttribute(&#039;value&#039;,&quot;Submit&quot;);
 	  
-	  f.appendChild(s)
+	  f.appendChild(s);
 	  document.getElementsByTagName(&#039;body&#039;)[0].appendChild(f);
 	  f.submit();
   });
@@ -599,21 +599,21 @@ function get_user_input(visual, ts) {
     }else if(visual === &#039;metadata_table&#039;){
       create_metadata_table();
     }else if(visual === &#039;piecharts&#039;){
-      create_piecharts(ts)
+      create_piecharts(ts);
     }else if(visual === &#039;barcharts&#039;){
-      create_barcharts(ts)
+      create_barcharts(ts);
     }else if(visual === &#039;dheatmap&#039;){
-      create_dheatmap(ts)
+      create_dheatmap(ts);
     }else if(visual === &#039;dendrogram&#039;){
-      create_dendrogram(ts,&#039;svg&#039;)
+      create_dendrogram(ts,&#039;svg&#039;);
     }else if(visual === &#039;dendrogram_pdf&#039;){
-      create_dendrogram(ts,&#039;pdf&#039;)
+      create_dendrogram(ts,&#039;pdf&#039;);
     }else if(visual === &#039;pcoa&#039;){
-      create_pcoa(ts)
+      create_pcoa(ts);
     }else if(visual === &#039;fheatmap&#039;){
-      create_fheatmap(ts)
+      create_fheatmap(ts);
     }else if(visual === &#039;geospatial&#039;){
-      create_geospatial(ts)
+      create_geospatial(ts);
     }else{
 
     }
@@ -644,10 +644,10 @@ function create_counts_table() {
       for (var i in mtx_local.rows){
         html += &quot;&lt;tr class=&#039;chart_row&#039;&gt;&quot;;
         html += &quot;&lt;td class=&#039;left_justify&#039;&gt;&quot;+mtx_local.rows[i].name +&quot;&lt;/td&gt;&quot;;
-        for (var d in mtx_local.data[i]) {
-          var cnt = mtx_local.data[i][d];
-          var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = &#039;frequencies-|-&#039;+mtx_local.rows[i].name+&#039;-|-&#039;+mtx_local.columns[d].name+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
+        for (var da in mtx_local.data[i]) {
+          var cnt = mtx_local.data[i][da];
+          var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
+          var id  = &#039;frequencies-|-&#039;+mtx_local.rows[i].name+&#039;-|-&#039;+mtx_local.columns[da].name+&#039;-|-&#039;+cnt.toString()+&#039;-|-&#039;+pct.toString();
           html += &quot;&lt;td id=&#039;&quot;+id+&quot;&#039; class=&#039;tooltip right_justify&#039;&gt;&quot;+cnt+&#039;&lt;/td&gt;&#039;;
           
         }
@@ -657,22 +657,20 @@ function create_counts_table() {
       html += &quot;&lt;tr&gt;&quot;;
       html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&lt;strong&gt;Sums:&lt;/strong&gt;&lt;/td&gt;&quot;;
       for (var m in mtx_local.column_totals){
-		  if(pi_local.normalization == &#039;frequency&#039;){
-			  var total = mtx_local.column_totals[m].toFixed(6);
-		  }else{
-			  var total = mtx_local.column_totals[m];
-		  }
-		html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot; + total + &quot;&lt;/td&gt;&quot;;
+        var total;
+  		  if(pi_local.normalization == &#039;frequency&#039;){
+  			  total = mtx_local.column_totals[m].toFixed(6);
+  		  }else{
+  			  total = mtx_local.column_totals[m];
+  		  }
+  		  html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot; + total + &quot;&lt;/td&gt;&quot;;
       }
       html += &quot;&lt;/tr&gt;&quot;;
       html += &quot;&lt;/table&gt;&quot;;
 
       //document.getElementById(&#039;counts_tooltip_div&#039;).innerHTML = tooltip_tbl;
-      tax_counts_div.innerHTML = html;
-
-
-     
-};
+      tax_counts_div.innerHTML = html;   
+}
 
 //
 //  CREATE METADATA TABLE
@@ -702,7 +700,7 @@ function create_metadata_table() {
 
       //alert(md_local[0].env_matter)
       metadata_div.innerHTML = html;
-};
+}
 
 //
 //  CREATE Dendrogram
@@ -712,15 +710,15 @@ function create_dendrogram(ts, image_type) {
       //alert(&#039;im DEND&#039;)
       
       var info_line = create_header(&#039;dend&#039;, pi_local);
-
+      var dend_div;
       if(image_type == &#039;pdf&#039;){
         dendrogram_pdf_created = true;
-        var dend_div = document.getElementById(&#039;dendrogram_pdf_div&#039;);
+        dend_div = document.getElementById(&#039;dendrogram_pdf_div&#039;);
         document.getElementById(&#039;pre_dendrogram_pdf_div&#039;).style.display = &#039;block&#039;;
         document.getElementById(&#039;dendrogram_pdf_title&#039;).innerHTML = info_line;
       }else{  // svg
         dendrogram_created = true;
-        var dend_div = document.getElementById(&#039;dendrogram_div&#039;);
+        dend_div = document.getElementById(&#039;dendrogram_div&#039;);
         document.getElementById(&#039;pre_dendrogram_div&#039;).style.display = &#039;block&#039;;
         document.getElementById(&#039;dendrogram_title&#039;).innerHTML = info_line;
       }
@@ -730,8 +728,7 @@ function create_dendrogram(ts, image_type) {
       
       
       
-      
-      var html = &#039;&#039;
+      var html = &#039;&#039;;
       var args =  &quot;metric=&quot;+pi_local.selected_distance;
       args += &quot;&amp;ts=&quot;+ts;
       args += &quot;&amp;image_type=&quot;+image_type;
@@ -743,13 +740,13 @@ function create_dendrogram(ts, image_type) {
 
         if (xmlhttp.readyState == 4 ) {
            var htmlstring = xmlhttp.responseText;
-           html = &quot;&lt;div id=&#039;&#039; &gt;&quot;+htmlstring+&quot;&lt;/div&gt;&quot;
+           html = &quot;&lt;div id=&#039;&#039; &gt;&quot;+htmlstring+&quot;&lt;/div&gt;&quot;;
            dend_div.innerHTML = html;
         }
       };
       xmlhttp.send(args);
  
-};
+}
 
 
 //
@@ -764,7 +761,7 @@ function create_pcoa(ts) {
       document.getElementById(&#039;pcoa_title&#039;).innerHTML = info_line;
       
 
-      var html = &#039;&#039;
+      var html = &#039;&#039;;
       var args =  &quot;metric=&quot;+pi_local.selected_distance;
       args += &quot;&amp;ts=&quot;+ts;
       document.getElementById(&#039;pre_pcoa_div&#039;).style.display = &#039;block&#039;;
@@ -781,7 +778,7 @@ function create_pcoa(ts) {
       };
       xmlhttp.send(args);
       
-};
+}
 //
 //  CREATE DIST HEATMAP
 //
@@ -793,7 +790,7 @@ function create_dheatmap(ts) {
       var info_line = create_header(&#039;dhm&#039;, pi_local);
       document.getElementById(&#039;dheatmap_title&#039;).innerHTML = info_line;
       
-      var html = &#039;&#039;
+      var html = &#039;&#039;;
       var args =  &quot;metric=&quot;+pi_local.selected_distance;
       args += &quot;&amp;ts=&quot;+ts;
       document.getElementById(&#039;pre_dheatmap_div&#039;).style.display = &#039;block&#039;;
@@ -808,7 +805,7 @@ function create_dheatmap(ts) {
         }
       };
       xmlhttp.send(args);      
-};
+}
 //
 //  CREATE FREQUENCY HEATMAP
 //
@@ -820,7 +817,7 @@ function create_fheatmap(ts) {
       var info_line = create_header(&#039;fhm&#039;, pi_local);
       document.getElementById(&#039;fheatmap_title&#039;).innerHTML = info_line;
       
-      var html = &#039;&#039;
+      var html = &#039;&#039;;
       var args =  &quot;metric=&quot;+pi_local.selected_distance;
       args += &quot;&amp;ts=&quot;+ts;
       document.getElementById(&#039;pre_fheatmap_div&#039;).style.display = &#039;block&#039;;
@@ -835,7 +832,7 @@ function create_fheatmap(ts) {
       };
       xmlhttp.send(args);   
       
-};
+}
 //
 //  CREATE GEOSPATIAL
 //
@@ -856,8 +853,8 @@ function create_geospatial(ts) {
       var latlon;
       
       for (var ds in md_local) {
-          var lat = &#039;&#039;
-          var lon = &#039;&#039;
+          var lat = &#039;&#039;;
+          var lon = &#039;&#039;;
           for (var k in md_local[ds]) {
             md_item = k;
             if(md_item == &#039;latitude&#039;) {
@@ -872,7 +869,7 @@ function create_geospatial(ts) {
           if(typeof lat == &#039;number&#039; &amp;&amp; typeof lon == &#039;number&#039;){
             latlon = lat.toString() +&#039;;&#039;+ lon.toString();
             if (latlon in lat_lon_collector) {
-              newds = lat_lon_collector[latlon] + &quot;&lt;br&gt;&quot; + ds
+              newds = lat_lon_collector[latlon] + &quot;&lt;br&gt;&quot; + ds;
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
@@ -890,18 +887,18 @@ function create_geospatial(ts) {
 
       }
 
-      if(markers.length == 0){
+      if (markers.length === 0){
           geospatial_div.innerHTML=&#039;No Lat/Lon Data Found/Selected&#039;;
       }else{
         var center = new google.maps.LatLng(markers[0][2],markers[0][1]); // wants lon, lat order
 
         var mapCanvas = document.getElementById(&#039;map-canvas&#039;);
-          var mapOptions = {
-            center:center,
-            zoom: 5,
-            //zoom: 2,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-          }
+        var mapOptions = {
+          center:center,
+          zoom: 5,
+          //zoom: 2,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
         var map = new google.maps.Map(mapCanvas, mapOptions);
         var infowindow =  new google.maps.InfoWindow({
           content: &#039;&#039;
@@ -909,7 +906,7 @@ function create_geospatial(ts) {
 
         setMarkers(map, markers, infowindow);
       }  
-};
+}
 
 function bindInfoWindow(marker, map, infowindow, html) { 
   google.maps.event.addListener(marker, &#039;click&#039;, function() { 
@@ -947,25 +944,25 @@ function create_piecharts(ts) {
     //d3.select(&#039;svg&#039;).remove();
     var counts_per_ds = [];
     var tmp={};
-    for(var i in mtx_local.columns){
+    for (var i in mtx_local.columns){
       tmp[mtx_local.columns[i].name]=[]; // datasets
     }
-    for(var x in mtx_local.data){
-      for(var i in mtx_local.columns){
-        tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
+    for (var x in mtx_local.data){
+      for (var y in mtx_local.columns){
+        tmp[mtx_local.columns[y].name].push(mtx_local.data[x][y]);
       }
     }
     var myjson_obj={};
     myjson_obj.names=[];
     myjson_obj.values=[];
-    for(var x in tmp) {
-        counts_per_ds.push(tmp[x]);
-        myjson_obj.names.push(x);
-        myjson_obj.values.push(tmp[x]);
+    for (var z in tmp) {
+        counts_per_ds.push(tmp[z]);
+        myjson_obj.names.push(z);
+        myjson_obj.values.push(tmp[z]);
     }
     //alert(myjson_obj.names);
     var unit_list = [];
-    for(o in mtx_local.rows){
+    for (var o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
     }
     
@@ -1008,7 +1005,7 @@ function create_piecharts(ts) {
         .attr(&quot;id&quot;,function(d,i) {
             var cnt = d.value;
             var total = 0;
-            for(k in this.parentNode.__data__){
+            for (var k in this.parentNode.__data__){
               total += this.parentNode.__data__[k];
             }           
             
@@ -1035,8 +1032,7 @@ function create_piecharts(ts) {
           return d;
       });
    
-
-};
+}
 
 
 
@@ -1106,7 +1102,7 @@ function create_barcharts(ts) {
         
         create_svg_object(props, color, data, ts);
         
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
