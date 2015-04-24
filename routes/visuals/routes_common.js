@@ -108,12 +108,12 @@ module.exports = {
     html += "</select>";
     html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
     // TODO: "'n' is already defined."
-     for (var n=1; n < C.PCT_RANGE.length; n++ ) {
+     for (var n1=1; n1 < C.PCT_RANGE.length; n1++ ) {
        
-       if(obj.max_range.toString() === C.PCT_RANGE[n].toString()) {
-         html += "<option value='"+C.PCT_RANGE[n]+"' selected='selected'>"+C.PCT_RANGE[n]+" %</option>";
+       if(obj.max_range.toString() === C.PCT_RANGE[n1].toString()) {
+         html += "<option value='"+C.PCT_RANGE[n1]+"' selected='selected'>"+C.PCT_RANGE[n1]+" %</option>";
        }else{
-         html += "<option value='"+C.PCT_RANGE[n]+"'>"+C.PCT_RANGE[n]+" %</option>";
+         html += "<option value='"+C.PCT_RANGE[n1]+"'>"+C.PCT_RANGE[n1]+" %</option>";
        }
      }
     html += "</select></li>";
@@ -130,10 +130,10 @@ module.exports = {
   //
   //
   save_post_items: function(req) {
+    // GLOBAL Variable
+    var post_hash = {};
 
     if(req.body.ds_order === undefined) {
-          // GLOBAL Variable
-          var post_hash = {};
           
           post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
@@ -257,7 +257,7 @@ module.exports = {
     for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
     // int/hash to hex
     // TODO: "'i' is already defined."
-    for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+    for (var i1 = 0, colour = "#"; i1 < 3; colour += ("00" + ((hash >> i1++ * 8) & 0xFF).toString(16)).slice(-2));
     return colour;
   },
   string_to_color_code: function (str){
@@ -279,7 +279,7 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     
     var title = 'VAMPS';
     
-    var distmtx_file_name = ts+'_distance.csv'
+    var distmtx_file_name = ts+'_distance.csv';
     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
     var options = {
       scriptPath : 'public/scripts',
@@ -288,7 +288,7 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     console.log('options:', options);
     PythonShell.run('distance.py', options, function (err, mtx) {
       if (err) throw err;
-      console.log(JSON.parse(mtx))
+      console.log(JSON.parse(mtx));
       return mtx;
  
       
@@ -300,16 +300,16 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
 run_script_cmd: function (req,res, ts, command, visual_name) {
      var exec = require('child_process').exec;
 
-    console.log(command)
+    console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
         if(visual_name == 'fheatmap'){
-            var image = '/tmp_images/'+ts+'_heatmap.pdf'
+            var image = '/tmp_images/'+ts+'_heatmap.pdf';
             var html = "<div id='pdf'>";
             html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
             html += " <p>ERROR in loading pdf file</p>";
-            html += "</object></div>"
+            html += "</object></div>";
             //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-            console.log(html)
+            console.log(html);
             res.send(html);  
         }    
 
@@ -327,7 +327,7 @@ create_chosen_id_name_hash: function(dataset_ids) {
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
 
-  for(i in dataset_ids){
+  for (var i in dataset_ids){
       did   = dataset_ids[i];
       dname = DATASET_NAME_BY_DID[did];
       pid   = PROJECT_ID_BY_DID[did];
@@ -398,7 +398,7 @@ check_initial_status: function(url) {
     // 
     values_updated = false;  // return to initial state
   }
-  console.log('values_updated: '+values_updated.toString())
+  console.log('values_updated: '+values_updated.toString());
   return values_updated;
 }
 
