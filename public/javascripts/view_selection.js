@@ -896,12 +896,12 @@ function create_piecharts(ts) {
         .data(myjson_obj.values)
         .enter().append("g")
         .attr("transform", function(d, i){
-            
+
             var modulo_i = i+1;
-            var d = r+m;
-            var h_spacer = d*2*(i % pies_per_row);
-            var v_spacer = d*2*Math.floor(i / pies_per_row);
-            return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";
+            var diam = r+m;
+            var h_spacer = diam*2*(i % pies_per_row);
+            var v_spacer = diam*2*Math.floor(i / pies_per_row);
+            return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
         .append("a")
         .attr("xlink:xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
