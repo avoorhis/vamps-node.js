@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">61.38</p>
+      <p class="stat">61.23</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">692</p>
+      <p class="stat">702</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">44.20</p>
+      <p class="stat">44.11</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">7.11</p>
+      <p class="stat">7.12</p>
     </div>
   </div>
 </div>
@@ -120,7 +120,7 @@ var PythonShell = require(&#039;python-shell&#039;);
 var app = express();
 var d3 = require(&quot;d3&quot;);
 var xmldom = require(&#039;xmldom&#039;);
-// // init_node var node_class = 
+// // init_node var node_class =
 // var CustomTaxa  = require(&#039;./custom_taxa_class&#039;);
 
 /*
@@ -150,7 +150,7 @@ router.post(&#039;/view_selection&#039;, helpers.isLoggedIn, function(req, res) 
   console.log(&#039;req.body: view_selection&#039;);
   //console.log(TaxaCounts[&#039;27&#039;])
   //console.log(&#039;1&#039;);
-  
+
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);
 
@@ -168,8 +168,8 @@ router.post(&#039;/view_selection&#039;, helpers.isLoggedIn, function(req, res) 
     distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-    
-    
+
+
     // GLOBAL
     console.log(&#039;metadata&#039;);
     metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
@@ -184,59 +184,59 @@ router.post(&#039;/view_selection&#039;, helpers.isLoggedIn, function(req, res) 
     //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
     // {unit_id:[cnt1,cnt2...] // counts are in ds order
     console.log(&#039;visual_post_items:&gt;&gt;&#039;);
-    console.log(visual_post_items); 
+    console.log(visual_post_items);
     console.log(&#039;&lt;&lt;visual_post_items:&#039;);
-    //console.log(biom_matrix);        
-     
+    //console.log(biom_matrix);
+
     //req.flash(&#039;info&#039;, &#039;Datasets are updated!&#039;)
-    res.render(&#039;visuals/view_selection&#039;, { 
+    res.render(&#039;visuals/view_selection&#039;, {
                                   title     :           &#039;VAMPS: Visuals Select&#039;,
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix    :           JSON.stringify(biom_matrix),
                                   metadata  :           JSON.stringify(metadata),
                                   constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),   
+                                  post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
                                   message  : req.flash()
                    });
-    helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 2 After Page Render using data_source_testing= &quot;+data_source_testing+&quot; &lt;&lt;&lt;&lt;&lt;&lt;&quot;); 
-  
+    helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 2 After Page Render using data_source_testing= &quot;+data_source_testing+&quot; &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
+
   }else if(data_source_testing == &#039;db&#039;) {
     var uitems = visual_post_items.unit_choice.split(&#039;_&#039;);
     unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
     req.db.query(unit_name_query, function(err, rows, fields){
         if (err) {
           throw err;
-        } else {   
-          
+        } else {
+
 
           // GLOBAL
           distance_matrix = {};
           biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
           visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
           metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-          
-          res.render(&#039;visuals/view_selection&#039;, { 
+
+          res.render(&#039;visuals/view_selection&#039;, {
                                   title     :           &#039;VAMPS: Visuals Select&#039;,
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix    :           JSON.stringify(biom_matrix),
                                   metadata  :           JSON.stringify(metadata),
                                   constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),          
+                                  post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
 			  						message  :  req.flash(),
                        });
-          
+
         }
-        helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 2 After Page Render using data_source_testing= &quot;+data_source_testing+&quot; &lt;&lt;&lt;&lt;&lt;&lt;&quot;); 
+        helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 2 After Page Render using data_source_testing= &quot;+data_source_testing+&quot; &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
     });
-    
+
 
   }else if(data_source_testing == &#039;hdf5&#039;) {
     // TODO TODO
   }
-  
- 
+
+
 });
 
 
@@ -244,7 +244,7 @@ router.post(&#039;/view_selection&#039;, helpers.isLoggedIn, function(req, res) 
 // logged in users only
 router.post(&#039;/unit_selection&#039;, helpers.isLoggedIn, function(req, res) {
 //router.post(&#039;/unit_selection&#039;,  function(req, res) {
-  
+
   // TESTING:
   //    There should be one or more datasets shown in list
   //    The Submit button should return with an alert error if no display checkboxes are checked
@@ -265,38 +265,38 @@ router.post(&#039;/unit_selection&#039;, helpers.isLoggedIn, function(req, res) 
   }else{
     dataset_ids = req.body.dataset_ids;
   }
-  
+
   console.log(&#039;dataset_ids &#039;+req.body.dataset_ids);
-  if(dataset_ids == undefined || dataset_ids.length === 0){
+  if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log(&#039;redirecting back -- no data selected&#039;);
    	 req.flash(&#039;nodataMessage&#039;, &#039;Select Some Datasets&#039;);
-   	 res.redirect(&#039;index_visuals&#039;); 
+   	 res.redirect(&#039;index_visuals&#039;);
   }else{
 	  // Global TAXCOUNTS
 	  TAXCOUNTS = {};
 	  // Gather just the tax data of selected datasets
 	  for(var i in dataset_ids){
-	    var path_to_file = &quot;../../public/json/&quot;+NODE_DATABASE+&quot;--taxcounts/&quot; + dataset_ids[i] +&#039;.json&#039;
+	    var path_to_file = &quot;../../public/json/&quot;+NODE_DATABASE+&quot;--taxcounts/&quot; + dataset_ids[i] +&#039;.json&#039;;
 	
 		var jsonfile = require(path_to_file);
 		TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
 	
-	 
+	
 	  }
 	  console.log(&#039;Pulling TAXCOUNTS ONLY for datasets selected (from files)&#039;);
 	  //console.log(&#039;TAXCOUNTS= &#039;+JSON.stringify(TAXCOUNTS));
 	  var available_units = req.C.AVAILABLE_UNITS; // [&#039;med_node_id&#039;,&#039;otu_id&#039;,&#039;taxonomy_gg_id&#039;]
 
 	  // GLOBAL Variable
-	  console.log(&#039;dataset_ids2 &#039;+dataset_ids)
+	  console.log(&#039;dataset_ids2 &#039;+dataset_ids);
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-  
-	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
+
+	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids);
 	  //console.log(&#039;chosen_id_name_hash&#039;)
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
 	  // var start = process.hrtime();
-	  // 
+	  //
 	  // // benchmarking
 	  // var elapsed_time = function(note){
 	  //     var precision = 3; // 3 decimal places
@@ -308,15 +308,15 @@ router.post(&#039;/unit_selection&#039;, helpers.isLoggedIn, function(req, res) 
 	  // benchmarking
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time(&quot;START: select from sequence_pdr_info and sequence_uniq_info--&gt;&gt;&gt;&gt;&gt;&gt;&quot;);
-  
-  
+
+
 	  console.log(&#039;chosen_id_name_hash--&gt;&#039;);
 	  console.log(chosen_id_name_hash);
-	  console.log(chosen_id_name_hash.ids.length)
+	  console.log(chosen_id_name_hash.ids.length);
 	  console.log(&#039;&lt;--chosen_id_name_hash&#039;);
-    
-  
-	  res.render(&#039;visuals/unit_selection&#039;, {   
+
+
+	  res.render(&#039;visuals/unit_selection&#039;, {
 	                    title: &#039;VAMPS: Units Selection&#039;,
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
@@ -326,8 +326,8 @@ router.post(&#039;/unit_selection&#039;, helpers.isLoggedIn, function(req, res) 
 	  });  // end render
   }
     // benchmarking
-  helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4 After Page Render &lt;&lt;&lt;&lt;&lt;&lt;&quot;);   
-   
+  helpers.elapsed_time(&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4 After Page Render &lt;&lt;&lt;&lt;&lt;&lt;&quot;);
+
 
 }); // end fxn
 
@@ -348,7 +348,7 @@ router.get(&#039;/index_visuals&#039;, helpers.isLoggedIn, function(req, res) {
   console.log(ALL_DATASETS);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   //console.log(req.user)
-  res.render(&#039;visuals/index_visuals&#039;, { 
+  res.render(&#039;visuals/index_visuals&#039;, {
                                 title   : &#039;VAMPS: Select Datasets&#039;,
                                 rows    : JSON.stringify(ALL_DATASETS),
                                 permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
@@ -362,8 +362,8 @@ router.get(&#039;/index_visuals&#039;, helpers.isLoggedIn, function(req, res) {
 //
 //
 router.get(&#039;/reorder_datasets&#039;, helpers.isLoggedIn, function(req, res) {
-  
-  res.render(&#039;visuals/reorder_datasets&#039;, { 
+
+  res.render(&#039;visuals/reorder_datasets&#039;, {
                                 title   : &#039;VAMPS: Reorder Datasets&#039;,
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                                 constants    : JSON.stringify(req.C),
@@ -372,7 +372,7 @@ router.get(&#039;/reorder_datasets&#039;, helpers.isLoggedIn, function(req, res)
   //console.log(chosen_id_name_hash)
 });
 router.post(&#039;/useview_saved_datasets&#039;, function(req, res) {
-  
+
     fxn = req.body.fxn;
 	console.log(req.body.filename);
 	var file_path = path.join(&#039;user_data&#039;,NODE_DATABASE,req.body.user,req.body.filename);
@@ -409,30 +409,30 @@ router.post(&#039;/download_counts_matrix&#039;, function(req, res) {
 	var out_file = &quot;downloads/&quot;+timestamp+&quot;_matrix.csv.gz&quot;;
     var wstream = fs.createWriteStream(out_file);
 	var gzip = zlib.createGzip();
-    var rs = new Readable;
+    var rs = new Readable();
 	
 	header_txt = &quot;Taxonomy (&quot;+visual_post_items.tax_depth+&quot; level)&quot;;
-	for(i in biom_matrix.columns){
-		header_txt += &#039;,&#039;+biom_matrix.columns[i].name;
+	for (var y in biom_matrix.columns){
+		header_txt += &#039;,&#039;+biom_matrix.columns[y].name;
 	}
 	header_txt += &#039;\n\r&#039;;
 	rs.push(header_txt);
-	for(i in biom_matrix.rows){
+	for (var i in biom_matrix.rows){
 		row_txt = &#039;&#039;;
 		row_txt += biom_matrix.rows[i].name;
-		for(k in biom_matrix.data[i]){
+		for (var k in biom_matrix.data[i]){
 			row_txt += &#039;,&#039;+biom_matrix.data[i][k];
 		}
 		row_txt += &#039;\n\r&#039;;
 		rs.push(row_txt);
 	}
 	rs.push(&#039;\n\r&#039;);
-	rs.push(null);  
-  	rs  
-	  .pipe(gzip)  
+	rs.push(null);
+  	rs
+	  .pipe(gzip)
       .pipe(wstream)
       .on(&#039;finish&#039;, function () {  // finished
-        console.log(&#039;done compressing and writing file&#039;);    
+        console.log(&#039;done compressing and writing file&#039;);
       });
 });
 //
@@ -446,38 +446,38 @@ router.post(&#039;/heatmap&#039;, function(req, res) {
     //console.log(&#039;req.body hm&#039;);
     //console.log(req.body);
     //console.log(&#039;req.body hm&#039;);
-    var ts = req.body.ts
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
     var biom_file = path.join(__dirname, &#039;../../tmp/&#039;+biom_file_name);
-    
+
     //console.log(&#039;mtx1&#039;)
-  
+
   //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, &#039;heatmap&#039;, metric);
     var exec = require(&#039;child_process&#039;).exec;
     //var PythonShell = require(&#039;python-shell&#039;);
     var html = &#039;&#039;;
     var title = &#039;VAMPS&#039;;
-    
-    var distmtx_file_name = ts+&#039;_distance.csv&#039;
+
+    var distmtx_file_name = ts+&#039;_distance.csv&#039;;
     var distmtx_file = path.join(__dirname, &#039;../../tmp/&#039;+distmtx_file_name);
     var site_base = path.join(__dirname, &#039;../../&#039;);
     var options = {
       scriptPath : &#039;public/scripts&#039;,
-      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;dheatmap&#039;, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts], 
+      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;dheatmap&#039;, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts],
     };
-    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;))
+    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;));
     PythonShell.run(&#039;distance.py&#039;, options, function (err, mtx) {
       if (err) throw err;
       distance_matrix = JSON.parse(mtx);
-      console.log(&#039;dmtx&#039;)
-      console.log(distance_matrix)
-      var m = JSON.stringify(mtx)
+      console.log(&#039;dmtx&#039;);
+      console.log(distance_matrix);
+      var m = JSON.stringify(mtx);
       res.render(&#039;visuals/partials/load_distance&#039;,{
                                         dm        : distance_matrix,
                                         constants : JSON.stringify(req.C),
-                                      })
-      
+                                      });
+
     });
 
 });
@@ -486,62 +486,71 @@ router.post(&#039;/heatmap&#039;, function(req, res) {
 //   F R E Q U E N C Y  H E A T M A P
 //
 router.post(&#039;/frequency_heatmap&#039;, function(req, res) {
-  
-  console.log(&#039;in Freq HP&#039;)
-  var ts = req.body.ts
+
+  console.log(&#039;in Freq HP&#039;);
+  var ts = req.body.ts;
   var metric = req.body.metric;
   var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
   var biom_file = path.join(__dirname, &#039;../../tmp/&#039;+biom_file_name);
-    
+
   var exec = require(&#039;child_process&#039;).exec;
   //var PythonShell = require(&#039;python-shell&#039;);
   var html = &#039;&#039;;
   var title = &#039;VAMPS&#039;;
-    
-  var distmtx_file_name = ts+&#039;_distance.csv&#039;
+
+  var distmtx_file_name = ts+&#039;_distance.csv&#039;;
   var distmtx_file = path.join(__dirname, &#039;../../tmp/&#039;+distmtx_file_name);
   var site_base = path.join(__dirname, &#039;../../&#039;);
-  
+
   var fheatmap_script_file = path.resolve(__dirname, &#039;../../public/scripts/fheatmap.R&#039;);
 
   shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(&#039; &#039;);
-     
+
   COMMON.run_script_cmd(req, res, ts, shell_command, &#039;fheatmap&#039;);
-      
+
 
 });
 router.post(&#039;/dendrogram&#039;, function(req, res) {
-    console.log(&#039;found routes_dendrogram&#039;)
-    
+    console.log(&#039;found routes_dendrogram&#039;);
+
     //console.log(&#039;req.body dnd&#039;);
     //console.log(req.body);
     //console.log(&#039;req.body dnd&#039;);
-    var ts = req.body.ts
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var image_type = req.body.image_type;
     var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
     var biom_file = path.join(__dirname, &#039;../../tmp/&#039;+biom_file_name);
-    
-   
+
+
     var exec = require(&#039;child_process&#039;).exec;
     //var PythonShell = require(&#039;python-shell&#039;);
     var html = &#039;&#039;;
     var title = &#039;VAMPS&#039;;
-    
-    var distmtx_file_name = ts+&#039;_distance.csv&#039;
+
+    var distmtx_file_name = ts+&#039;_distance.csv&#039;;
     var distmtx_file = path.join(__dirname, &#039;../../tmp/&#039;+distmtx_file_name);
     var site_base = path.join(__dirname, &#039;../../&#039;);
-    
+
     var options = {
       scriptPath : &#039;public/scripts&#039;,
-      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;dendrogram-&#039;+image_type, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts ], 
+      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;dendrogram-&#039;+image_type, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts ],
     };
-    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;))
-    
+    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;));
+
     PythonShell.run(&#039;distance.py&#039;, options, function (err, output) {
       if (err) throw err;
-      
+      function buildNewickNodes(node, callback) {
+        newickNodes.push(node);
+        if (node.branchset) {
+          for (var i=0; i &lt; node.branchset.length; i++) {
+            buildNewickNodes(node.branchset[i]);
+          }
+        }
+      }
+
       //var m = JSON.stringify(mtx)
+      var html;
       if(image_type == &#039;svg&#039;){
         //console.log(JSON.parse(output))
         var d3 = require(&quot;d3&quot;);
@@ -553,14 +562,16 @@ router.post(&#039;/dendrogram&#039;, function(req, res) {
         var json  = Newick.parse(newick);
         //console.log(JSON.stringify(json,null,4))
         var newickNodes = [];
-        function buildNewickNodes(node, callback) {
-          newickNodes.push(node);
-          if (node.branchset) {
-            for (var i=0; i &lt; node.branchset.length; i++) {
-              buildNewickNodes(node.branchset[i]);
-            }
-          }
-        }
+        // Validator: &quot;Function declarations should not be placed in blocks. Use a function expression or move the statement to the top of the outer function.&quot;
+
+        // function buildNewickNodes(node, callback) {
+        //   newickNodes.push(node);
+        //   if (node.branchset) {
+        //     for (var i=0; i &lt; node.branchset.length; i++) {
+        //       buildNewickNodes(node.branchset[i]);
+        //     }
+        //   }
+        // }
         buildNewickNodes(json);
 		
         var tree_data = d3.phylogram.build(&#039;body&#039;, json, {
@@ -570,22 +581,21 @@ router.post(&#039;/dendrogram&#039;, function(req, res) {
 		
         var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
 		
-        var html = &quot;&lt;svg height=&#039;&quot;+(visual_post_items.no_of_datasets*100)+&quot;&#039; width=&#039;900&#039;&gt;&quot;+svgXML+&quot;&lt;/svg&gt;&quot;;
-         
-        d3.select(&#039;svg&#039;).remove(); 
-        
-        //console.log(html);
-        
-      }else{
+        html = &quot;&lt;svg height=&#039;&quot;+(visual_post_items.no_of_datasets*100)+&quot;&#039; width=&#039;900&#039;&gt;&quot;+svgXML+&quot;&lt;/svg&gt;&quot;;
 
-         var image = &#039;/tmp_images/&#039;+ts+&#039;_dendrogram.pdf&#039;
-            var html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
-            html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
-            html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
-            html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;
+        d3.select(&#039;svg&#039;).remove();
+
+        //console.log(html);
+
+      }else{
+        var image = &#039;/tmp_images/&#039;+ts+&#039;_dendrogram.pdf&#039;;
+        html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
+        html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
+        html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
+        html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;;
       }
       res.send(html);
-      
+
 
     });
 
@@ -599,7 +609,7 @@ router.get(&#039;/user_data/piechart_single&#039;, function(req, res) {
     var ts = myurl.query.ts;
     var ds_name = myurl.query.ds;
     var html  = COMMON.start_visuals_html(&#039;piechart&#039;);
-    
+
     html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
     res.render(&#039;visuals/user_data/piechart_single&#039;, {
@@ -616,9 +626,9 @@ router.get(&#039;/user_data/piechart_single&#039;, function(req, res) {
 // P C O A
 //
 router.post(&#039;/pcoa&#039;, function(req, res) {
-    console.log(&#039;in PCoA&#039;)
-    console.log(metadata)
-    var ts = req.body.ts
+    console.log(&#039;in PCoA&#039;);
+    console.log(metadata);
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
     var biom_file = path.join(__dirname, &#039;../../tmp&#039;, biom_file_name);
@@ -626,25 +636,25 @@ router.post(&#039;/pcoa&#039;, function(req, res) {
     var exec = require(&#039;child_process&#039;).exec;
     var options = {
       scriptPath : &#039;public/scripts&#039;,
-      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;pcoa&#039;, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts], 
+      args :       [ &#039;-in&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;pcoa&#039;, &#039;--site_base&#039;, site_base, &#039;--prefix&#039;, ts],
     };
-    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;))
+    console.log(options.scriptPath+&#039;/distance.py &#039;+options.args.join(&#039; &#039;));
     PythonShell.run(&#039;distance.py&#039;, options, function (err, pcoa_data) {
       if (err) throw err;
       //console.log(pcoa_data)
       //pcoa_data = JSON.parse(pcoa_data)
-      //console.log(pcoa_data); 
+      //console.log(pcoa_data);
 
-      var image = &#039;/tmp_images/&#039;+ts+&#039;_pcoa.pdf&#039;
+      var image = &#039;/tmp_images/&#039;+ts+&#039;_pcoa.pdf&#039;;
       var html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
       html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
       html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
-      html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;
-      console.log(html)
+      html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;;
+      console.log(html);
       res.send(html);
 
-      
-    });    
+
+    });
 
 });
 
@@ -654,26 +664,26 @@ router.post(&#039;/pcoa&#039;, function(req, res) {
 //
 router.get(&#039;/user_data/geospatial&#039;, function(req, res) {
   var myurl = url.parse(req.url, true);
-  
+
   var ts    = myurl.query.ts;
   var html  = COMMON.start_visuals_html(&#039;geospatial&#039;);
-  
+
   res.render(&#039;visuals/user_data/geospatial&#039;, {
             title: &#039;VAMPS Geospatial Data&#039;,
             timestamp: ts || &#039;default_timestamp&#039;,
             html : html+&quot;&lt;h2&gt;Not Coded Yet&lt;/h2&gt;&quot;,
             user: req.user
       });
- 
+
 
 });
 router.get(&#039;/user_data/test_page&#039;, function(req, res) {
-  
+
   res.render(&#039;visuals/user_data/test_page&#039;, {
             title: &#039;VAMPS TEST&#039;,
-            
+
       });
- 
+
 
 });
 /*
@@ -693,7 +703,7 @@ router.get(&#039;/partials/tax_silva108_simple&#039;,  function(req, res) {
 
 // benchmarking
 // var start = process.hrtime();
-// 
+//
 // var elapsed_time = function(note){
 //     var precision = 3; // 3 decimal places
 //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
@@ -702,14 +712,14 @@ router.get(&#039;/partials/tax_silva108_simple&#039;,  function(req, res) {
 // };
 router.get(&#039;/partials/load_metadata&#039;,  function(req, res) {
   var myurl = url.parse(req.url, true);
-  var load = myurl.query.load  || &#039;all&#039;   // either &#039;all&#039; or &#039;selected&#039;
-  res.render(&#039;visuals/partials/load_metadata&#039;, 
+  var load = myurl.query.load  || &#039;all&#039;;   // either &#039;all&#039; or &#039;selected&#039;
+  res.render(&#039;visuals/partials/load_metadata&#039;,
     { title   : &#039;metadata_table&#039;,
       load    : load
     });
 });
 router.get(&#039;/partials/tax_silva108_custom&#039;,  function(req, res) {
-  res.render(&#039;visuals/partials/tax_silva108_custom&#039;, 
+  res.render(&#039;visuals/partials/tax_silva108_custom&#039;,
     { title   : &#039;Silva(v108) Custom Taxonomy Selection&#039;});
 });
 
@@ -727,7 +737,7 @@ router.get(&#039;/partials/med_nodes&#039;,  function(req, res) {
 });
 
 router.post(&#039;/save_datasets&#039;,  function(req, res) {
-    
+
     console.log(&#039;req.body: save_datasets--&gt;&gt;&#039;);
     console.log(req.body);
     console.log(&#039;req.body: save_datasets&#039;);
@@ -748,7 +758,7 @@ router.post(&#039;/save_datasets&#039;,  function(req, res) {
 //
 //
 router.get(&#039;/saved_datasets&#039;,  function(req, res) {
-    console.log(&#039;in show_saved_datasets&#039;)
+    console.log(&#039;in show_saved_datasets&#039;);
     //console.log(&#039;req.body: show_saved_datasets--&gt;&gt;&#039;);
     //console.log(req.body);
     //console.log(&#039;req.body: show_saved_datasets&#039;);
@@ -759,8 +769,8 @@ router.get(&#039;/saved_datasets&#039;,  function(req, res) {
     file_info.mtime ={};
     file_info.size = {};
     file_info.files = [];
-    fs.readdir(saved_datasets_dir, function(err, files){   
-      for(f in files){
+    fs.readdir(saved_datasets_dir, function(err, files){
+      for (var f in files){
         var pts = files[f].split(&#039;_&#039;);
         if(pts[1] === &#039;datasets&#039;){
           file_info.files.push(files[f]);
@@ -769,13 +779,13 @@ router.get(&#039;/saved_datasets&#039;,  function(req, res) {
           file_info.size[files[f]] = stat.size;
         }
       }
-	  res.render(&#039;visuals/saved_datasets&#039;, 
+	  res.render(&#039;visuals/saved_datasets&#039;,
 	    { title: &#039;saved_datasets&#039;,
 	      finfo: JSON.stringify(file_info),
 	  	  message:req.flash(&#039;deleteMessage&#039;),
 	      user: 	req.user.username
 	    });
-	  
+	
     });
 	
 });
