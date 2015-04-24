@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">64.16</p>
+      <p class="stat">64.48</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">1174</p>
+      <p class="stat">1184</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">77.24</p>
+      <p class="stat">77.97</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">12.89</p>
+      <p class="stat">13.89</p>
     </div>
   </div>
 </div>
@@ -95,8 +95,6 @@
 
 
 // code for tooltips
-
-
 
 var $liveTip = $(&#039;&lt;div id=&quot;livetip_chart&quot;&gt;&lt;/div&gt;&#039;).hide().appendTo(&#039;body&#039;),
     $win = $(window),
@@ -196,17 +194,57 @@ $(&quot;body&quot;).delegate(&quot;.tooltip&quot;, &quot;mouseover mouseout mous
               
 });              
           
-
-
+// normalization radio-buttons
+var norm_counts_radios = document.getElementsByName(&#039;normalization&#039;);
+if (typeof norm_counts_radios[0] !==&quot;undefined&quot;) {
+  norm_counts_radios[0].addEventListener(&#039;click&#039;, function () {
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+  });
+  norm_counts_radios[1].addEventListener(&#039;click&#039;, function () {
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+  });
+  norm_counts_radios[2].addEventListener(&#039;click&#039;, function () {
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+  });
+}
+// Distance Metric Select (Combo)
+selected_distance_combo = document.getElementById(&#039;selected_distance&#039;);
+if (typeof selected_distance_combo !==&quot;undefined&quot;) {
+	selected_distance_combo.addEventListener(&#039;change&#039;, function () {
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+	});
+}
+// MIN Select (Combo)
+min_range_combo = document.getElementById(&#039;min_range&#039;);
+if (typeof min_range_combo !==&quot;undefined&quot;) {
+	min_range_combo.addEventListener(&#039;change&#039;, function () {
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+	});
+}
+// MAX Select (Combo)
+max_range_combo = document.getElementById(&#039;max_range&#039;);
+if (typeof max_range_combo !==&quot;undefined&quot;) {
+	max_range_combo.addEventListener(&#039;change&#039;, function () {
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).disabled = false;
+  	  document.getElementById(&#039;output_choices_submit_btn&#039;).style.background = &#039;#FF6600&#039;;
+	});
+}
 // COUNTS
 var tax_counts_link = document.getElementById(&#039;counts_table_link_id&#039;);
 var tax_counts_btn = document.getElementById(&#039;counts_table_hide_btn&#039;);
 var tax_counts_div = document.getElementById(&#039;tax_table_div&#039;);
+var counts_table_download_btn = document.getElementById(&#039;counts_table_download_btn&#039;);
 if (typeof tax_counts_link !==&quot;undefined&quot;) {
   tax_counts_link.addEventListener(&#039;click&#039;, function () {
       //alert(tax_table_created)
       if(typeof tax_table_created == &quot;undefined&quot;){
         get_user_input(&#039;counts_table&#039;, pi_local.ts);
+		counts_table_download_btn.disabled = false
       }else{
         if(tax_counts_btn.value == &#039;close&#039;){
           toggle_visual_element(tax_counts_div,&#039;show&#039;,tax_counts_btn);
@@ -225,6 +263,24 @@ if (typeof tax_counts_btn !==&quot;undefined&quot;) {
         toggle_visual_element(tax_counts_div,&#039;hide&#039;,tax_counts_btn);
       }
       
+  });
+}
+if (typeof counts_table_download_btn !==&quot;undefined&quot;) {
+  
+  counts_table_download_btn.addEventListener(&#039;click&#039;, function () {
+	  //download_matrix(&#039;counts_matrix&#039;); 
+	  
+	  var f = document.createElement(&quot;form&quot;);
+	  f.setAttribute(&#039;method&#039;,&quot;POST&quot;);
+	  f.setAttribute(&#039;action&#039;,&quot;download_counts_matrix&quot;);
+	  
+	  var s = document.createElement(&quot;input&quot;); //input element, text
+	  s.setAttribute(&#039;type&#039;,&quot;submit&quot;);
+	  s.setAttribute(&#039;value&#039;,&quot;Submit&quot;);
+	  
+	  f.appendChild(s)
+	  document.getElementsByTagName(&#039;body&#039;)[0].appendChild(f);
+	  f.submit();
   });
 }
 //
@@ -522,58 +578,6 @@ function create_test_page(ts) {
     opened.document.write(&quot;&lt;html&gt;&lt;head&gt;&lt;title&gt;My title&lt;/title&gt;&lt;/head&gt;&lt;body&gt;open in another page:  test&lt;/body&gt;&lt;/html&gt;&quot;);
 
 }
-save_dataset_btn = document.getElementById(&#039;save_dataset_btn&#039;);
-if (typeof save_dataset_btn !==&quot;undefined&quot;) {
-  save_dataset_btn.addEventListener(&#039;click&#039;, function () {
-      alert(&#039;here in pc&#039;)
-      //create_test_page(pi_local.ts);
-  });
-}
-
-function create_test_page(ts) {
-//
-//
-// DOWNLOAD
-//
-// download_metadata_id = document.getElementById(&#039;download_metadata_id&#039;);
-// if (typeof download_metadata_id !==&quot;undefined&quot;) {
-//   download_metadata_id.addEventListener(&#039;click&#039;, function () {
-      
-//       var timestamp = +new Date();  // millisecs since the epoch!
-//       var user = user || &#039;no-user&#039;;
-//       timestamp = user + &#039;_&#039; + timestamp;
-//       var out_file = &#039;downloads/&#039;+timestamp+&#039;.metadata.gz&#039;;
-//       console.log(out_file)
-//       var file = fs.createWriteStream(out_file);
-//       //var request = http.get(&quot;http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg&quot;, function(response) {
-//       //  response.pipe(file);
-//       //});
-//   });
-// }
-// download_fasta_id = document.getElementById(&#039;download_fasta_id&#039;);
-// if (typeof download_fasta_id !==&quot;undefined&quot;) {
-//   download_fasta_id.addEventListener(&#039;click&#039;, function () {
-      
-//       var timestamp = +new Date();  // millisecs since the epoch!
-//       var user = user || &#039;no-user&#039;;
-//       timestamp = user + &#039;_&#039; + timestamp;
-//       var out_file = &#039;downloads/&#039;+timestamp+&#039;.metadata.gz&#039;;
-//       console.log(out_file)
-//       var file = fs.createWriteStream(out_file);
-//       //var request = http.get(&quot;http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg&quot;, function(response) {
-//       //  response.pipe(file);
-//       //});
-//   });
-// }
-//
-// visual choices 
-//
-test_link = document.getElementsByName(&#039;normalization&#039;);
-
-
-}
-
-
 
 
 
@@ -614,6 +618,7 @@ function get_user_input(visual, ts) {
 
     }
 }
+
 //
 // TAX TABLE
 //
@@ -638,7 +643,7 @@ function create_counts_table() {
       
       for (var i in mtx_local.rows){
         html += &quot;&lt;tr class=&#039;chart_row&#039;&gt;&quot;;
-        html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot;+mtx_local.rows[i].name +&quot;&lt;/td&gt;&quot;;
+        html += &quot;&lt;td class=&#039;left_justify&#039;&gt;&quot;+mtx_local.rows[i].name +&quot;&lt;/td&gt;&quot;;
         for (var d in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][d];
           var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
@@ -652,7 +657,12 @@ function create_counts_table() {
       html += &quot;&lt;tr&gt;&quot;;
       html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&lt;strong&gt;Sums:&lt;/strong&gt;&lt;/td&gt;&quot;;
       for (var m in mtx_local.column_totals){
-        html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot; + mtx_local.column_totals[m] + &quot;&lt;/td&gt;&quot;;
+		  if(pi_local.normalization == &#039;frequency&#039;){
+			  var total = mtx_local.column_totals[m].toFixed(6);
+		  }else{
+			  var total = mtx_local.column_totals[m];
+		  }
+		html += &quot;&lt;td class=&#039;right_justify&#039;&gt;&quot; + total + &quot;&lt;/td&gt;&quot;;
       }
       html += &quot;&lt;/tr&gt;&quot;;
       html += &quot;&lt;/table&gt;&quot;;
