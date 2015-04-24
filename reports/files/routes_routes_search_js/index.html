@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - routes/routes_search.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>routes/routes_search.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">47.68</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">321</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">65.64</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.32</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
+var router = express.Router();
+var passport = require(&#039;passport&#039;);
+var helpers = require(&#039;./helpers/helpers&#039;);
+
+/* GET Search page. */
+router.get(&#039;/search_datasets&#039;, helpers.isLoggedIn, function(req, res) {
+    
+    var tmp_metadata_fields = {};
+    var metadata_fields = {};
+    for(did in MetadataValues){
+      for(name in MetadataValues[did]){
+          val = MetadataValues[did][name];
+          if(name in tmp_metadata_fields){
+            tmp_metadata_fields[name].push(val); 
+          }else{
+            if(IsNumeric(val)){
+              tmp_metadata_fields[name]=[];
+            }else{
+              tmp_metadata_fields[name]=[&#039;non-numeric&#039;];
+            }
+            tmp_metadata_fields[name].push(val); 
+          }           
+      }
+    }
+    //console.log(tmp_metadata_fields)
+    for(name in tmp_metadata_fields){
+      if(tmp_metadata_fields[name][0] == &#039;non-numeric&#039;){
+        tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
+        metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
+      }else{
+        var min = Math.min.apply(null, tmp_metadata_fields[name]);
+        var max = Math.max.apply(null, tmp_metadata_fields[name]);
+        metadata_fields[name] = {&quot;min&quot;:min,&quot;max&quot;:max};
+      }
+    }
+    //console.log(metadata_fields)
+    res.render(&#039;search/search_datasets&#039;, { title: &#039;VAMPS:Search&#039;,
+                          	metadata_items: JSON.stringify(metadata_fields),
+							message: req.flash(&#039;nodataMessage&#039;),
+    						user: req.user
+    											});
+});
+//
+//  SEARCH DATASETS
+//
+router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(req, res) {
+  console.log(&#039;req.body--&gt;&gt;&#039;);
+  console.log(req.body);
+  console.log(&#039;&lt;&lt;--req.body&#039;);
+
+  var search_function = req.body.search_function;
+  var searches = {};
+  var allowed = [ &#039;search1&#039;, &#039;search2&#039;, &#039;search3&#039; ];
+  if(search_function === &#039;search_metadata_all_datasets&#039;){
+    for(name in req.body){  
+      items = name.split(&#039;_&#039;);
+      var search = items[0];
+      if(allowed.indexOf(search) != -1){
+        if( !(search  in searches)){
+          searches[search] = {};
+        }
+        searches[search][items[1]] = req.body[name];
+      }
+    }
+  }
+  var join_type = req.body.join_type;
+  console.log(searches)
+
+  // search datasets
+  //console.log(MetadataValues);
+  // This assumes that ALL datasets are in MetadataValues. 
+  //var datasets = [];
+   // use for posting to unit_selection
+  //
+  //
+
+  //
+  var ds1, ds2, ds3 = [];
+  var result = get_search_datasets(req.user, searches.search1, MetadataValues);
+  ds1 = result.datasets
+  searches.search1.datasets = result.datasets;
+  searches.search1.dataset_count = searches.search1.datasets.length;
+  searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
+
+
+  if(&#039;search2&#039; in searches){
+    //if(join_type == &#039;intersect&#039;){
+    //  var md_hash = result.mdv
+    //}else{  // summation
+    var md_hash =  MetadataValues;
+    //}
+    var result = get_search_datasets(req.user, searches.search2, md_hash);
+    ds2 = result.datasets;
+    searches.search2.datasets = result.datasets;
+    searches.search2.dataset_count = searches.search2.datasets.length;
+    //console.log(&#039;result.mdv2&#039;)
+    //console.log(result.mdv)
+    searches.search2.ds_plus = get_dataset_search_info(result.datasets, searches.search2);
+
+  }
+
+  if(&#039;search3&#039; in searches){
+    //if(join_type == &#039;intersect&#039;){
+    //  var md_hash = result.mdv
+    //}else{
+      var md_hash =  MetadataValues;
+    //}
+    var result = get_search_datasets(req.user, searches.search3, md_hash);
+    ds3 = result.datasets;
+    searches.search3.datasets = result.datasets;
+    searches.search3.dataset_count = searches.search3.datasets.length;
+    //console.log(&#039;result.mdv3&#039;)
+    //console.log(result.mdv)
+    searches.search3.ds_plus = get_dataset_search_info(result.datasets, searches.search3);
+  }
+  //
+  // Calculate (sum or intersect) final datasets
+  //
+  var filtered = {};
+  if(join_type == &#039;combination&#039;){
+    filtered.datasets = ds1.concat(ds2, ds3);
+    filtered.datasets = filtered.datasets.filter(onlyUnique);
+  }else{   // intersection
+    filtered.datasets = ds1;
+    if(&#039;search2&#039; in searches) { 
+      filtered.datasets = ds1.filter(function(n) {
+          return ds2.indexOf(n) != -1
+      });
+    }
+    if(&#039;search3&#039; in searches) { 
+      filtered.datasets = filtered.datasets.filter(function(n) {
+          return ds3.indexOf(n) != -1
+      });
+    }
+  }
+  filtered.ds_plus = get_dataset_search_info(filtered.datasets, {});
+  //
+  //
+  //searches.search1.dataset_count = ds.dataset_ids.length;
+
+
+  //console.log(&#039;searches&#039;)
+  //console.log(searches)
+
+  //console.log(&#039;final&#039;);
+  //console.log(filtered.datasets);
+  if(filtered.datasets.length === 0){
+  	console.log(&#039;redirecting back -- no data found&#039;);
+	req.flash(&#039;nodataMessage&#039;, &#039;No Data Found&#039;);
+	res.redirect(&#039;search_datasets&#039;); 
+  }else{
+          res.render(&#039;search/search_datasets_result&#039;, {   
+                    title    : &#039;VAMPS: Search Datasets&#039;,
+                    filtered : JSON.stringify(filtered),
+                    searches : JSON.stringify(searches),
+                    join_type: join_type,
+                    user     : req.user
+          });  // 
+   }
+ 
+});
+
+//
+//  REGULAR FXNS
+//
+
+  //
+  // GET SEARCH DATASETS
+  //
+  function get_search_datasets(user, search, metadata){
+    //var datasets_plus = [];
+    var datasets = [];  // use for posting to unit_selection
+    var tmp_metadata = {};
+    for(did in metadata){
+    
+      // search only if did allowed by permissions
+      var pid = PROJECT_ID_BY_DID[did];
+      if(user.security_level === 1 || PROJECT_PERMISSION_BY_PID[pid]  === 0 || PROJECT_PERMISSION_BY_PID[pid] === user.user_id ){
+        console.log(&#039;IN METADATA&#039;)
+        for(mdname in metadata[did]){
+          if(mdname === search[&#039;metadata-item&#039;]){
+          
+            mdvalue = metadata[did][mdname];
+            
+            if((&#039;comparison&#039; in search) &amp;&amp; (search[&#039;comparison&#039;] === &#039;equal_to&#039;)){
+              search_value = Number(search[&#039;single-comparison-value&#039;]);
+              if( Number(mdvalue) ===  search_value ){
+                console.log(&#039;equal-to: val &#039;+mdname+&#039; - &#039;+mdvalue)
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+            }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;less_than&#039;){
+              search_value = Number(search[&#039;single-comparison-value&#039;]);
+              if(Number(mdvalue) &lt;= search_value){
+                console.log(&#039;less_than: val &#039;+mdname+&#039; - &#039;+mdvalue)
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+            }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;greater_than&#039;){
+              search_value = Number(search[&#039;single-comparison-value&#039;]);
+              if(Number(mdvalue) &gt;= search_value){
+                console.log(&#039;greater_than: val &#039;+mdname+&#039; - &#039;+mdvalue);
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+            }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;not_equal_to&#039;){
+              search_value = Number(search[&#039;single-comparison-value&#039;]);
+              if(Number(mdvalue) !== search_value){
+                console.log(&#039;not_equal_to: val &#039;+mdname+&#039; - &#039;+mdvalue);
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+            }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;between_range&#039;){
+              min_search_value = Number(search[&#039;min-comparison-value&#039;]);
+              max_search_value = Number(search[&#039;max-comparison-value&#039;]);
+              if(Number(mdvalue) &gt; min_search_value &amp;&amp; Number(mdvalue) &lt; max_search_value){
+                console.log(&#039;outside_range - mdval: &#039;+mdname+&#039; -- &#039;+mdvalue+&#039; search: &#039;+min_search_value + &#039; - &#039;+max_search_value );
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+
+            }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;outside_range&#039;){
+              min_search_value = Number(search[&#039;min-comparison-value&#039;]);
+              max_search_value = Number(search[&#039;max-comparison-value&#039;]);
+              if(Number(mdvalue) &lt; min_search_value || Number(mdvalue) &gt; max_search_value){
+                console.log(&#039;outside_range - mdval: &#039;+mdname+&#039; -- &#039;+mdvalue+&#039; search: &#039;+min_search_value + &#039; - &#039;+max_search_value );
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+
+            }else if(&#039;data&#039; in search){
+              list = search[&#039;data&#039;]
+              if(list.indexOf(mdvalue) != -1){
+                console.log(&#039;DATA: val &#039;+did+&#039; - &#039;+mdname+&#039; - &#039;+mdvalue);
+                datasets.push(did);
+                //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
+                //ds.dataset_ids.push(ds_req);
+                if(did in tmp_metadata){
+                  tmp_metadata[did] = metadata[did];
+                }else{
+                  tmp_metadata[did]={};
+                  tmp_metadata[did] = metadata[did];
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return {datasets:datasets, mdv:tmp_metadata};
+  }
+  //
+  // GET DATASET SEARCH ORDER
+  //
+  function get_dataset_search_info(ds, search){
+      var ds_plus = [];
+      for(var i in ds){
+        var did = ds[i];
+        var dname = DATASET_NAME_BY_DID[did];
+        var pid = PROJECT_ID_BY_DID[did];
+        var pname = PROJECT_INFORMATION_BY_PID[pid].project
+        //var ds_req = did+&#039;--&#039;+pname+&#039;--&#039;+dname;
+        if(search == {}){
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
+        }else{
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:MetadataValues[did][search[&quot;metadata-item&quot;]] });
+        }
+      }
+      return ds_plus;
+  }
+  
+  function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
+  }
+  function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+  module.exports = router;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
