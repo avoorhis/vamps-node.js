@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">47.68</p>
+      <p class="stat">47.45</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">321</p>
+      <p class="stat">322</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,7 +62,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">65.64</p>
+      <p class="stat">65.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -99,8 +99,8 @@ router.get(&#039;/search_datasets&#039;, helpers.isLoggedIn, function(req, res) 
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
-    for(did in MetadataValues){
-      for(name in MetadataValues[did]){
+    for (var did in MetadataValues){
+      for (var name in MetadataValues[did]){
           val = MetadataValues[did][name];
           if(name in tmp_metadata_fields){
             tmp_metadata_fields[name].push(val); 
@@ -115,14 +115,14 @@ router.get(&#039;/search_datasets&#039;, helpers.isLoggedIn, function(req, res) 
       }
     }
     //console.log(tmp_metadata_fields)
-    for(name in tmp_metadata_fields){
-      if(tmp_metadata_fields[name][0] == &#039;non-numeric&#039;){
-        tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
-        metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
+    for (var tmp_name in tmp_metadata_fields){
+      if(tmp_metadata_fields[tmp_name][0] == &#039;non-numeric&#039;){
+        tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
+        metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
       }else{
-        var min = Math.min.apply(null, tmp_metadata_fields[name]);
-        var max = Math.max.apply(null, tmp_metadata_fields[name]);
-        metadata_fields[name] = {&quot;min&quot;:min,&quot;max&quot;:max};
+        var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
+        var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
+        metadata_fields[tmp_name] = {&quot;min&quot;:min,&quot;max&quot;:max};
       }
     }
     //console.log(metadata_fields)
@@ -143,8 +143,8 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
   var search_function = req.body.search_function;
   var searches = {};
   var allowed = [ &#039;search1&#039;, &#039;search2&#039;, &#039;search3&#039; ];
-  if(search_function === &#039;search_metadata_all_datasets&#039;){
-    for(name in req.body){  
+  if (search_function === &#039;search_metadata_all_datasets&#039;){
+    for (var name in req.body){  
       items = name.split(&#039;_&#039;);
       var search = items[0];
       if(allowed.indexOf(search) != -1){
@@ -156,7 +156,7 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
     }
   }
   var join_type = req.body.join_type;
-  console.log(searches)
+  console.log(searches);
 
   // search datasets
   //console.log(MetadataValues);
@@ -169,19 +169,20 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
   //
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1, MetadataValues);
-  ds1 = result.datasets
+  ds1 = result.datasets;
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
 
+  var md_hash =  MetadataValues;
 
   if(&#039;search2&#039; in searches){
     //if(join_type == &#039;intersect&#039;){
     //  var md_hash = result.mdv
     //}else{  // summation
-    var md_hash =  MetadataValues;
+    // var md_hash =  MetadataValues;
     //}
-    var result = get_search_datasets(req.user, searches.search2, md_hash);
+    result = get_search_datasets(req.user, searches.search2, md_hash);
     ds2 = result.datasets;
     searches.search2.datasets = result.datasets;
     searches.search2.dataset_count = searches.search2.datasets.length;
@@ -195,9 +196,9 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
     //if(join_type == &#039;intersect&#039;){
     //  var md_hash = result.mdv
     //}else{
-      var md_hash =  MetadataValues;
+      // var md_hash =  MetadataValues;
     //}
-    var result = get_search_datasets(req.user, searches.search3, md_hash);
+    result = get_search_datasets(req.user, searches.search3, md_hash);
     ds3 = result.datasets;
     searches.search3.datasets = result.datasets;
     searches.search3.dataset_count = searches.search3.datasets.length;
@@ -216,12 +217,12 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
     filtered.datasets = ds1;
     if(&#039;search2&#039; in searches) { 
       filtered.datasets = ds1.filter(function(n) {
-          return ds2.indexOf(n) != -1
+          return ds2.indexOf(n) != -1;
       });
     }
     if(&#039;search3&#039; in searches) { 
       filtered.datasets = filtered.datasets.filter(function(n) {
-          return ds3.indexOf(n) != -1
+          return ds3.indexOf(n) != -1;
       });
     }
   }
@@ -263,13 +264,13 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
     //var datasets_plus = [];
     var datasets = [];  // use for posting to unit_selection
     var tmp_metadata = {};
-    for(did in metadata){
+    for (var did in metadata){
     
       // search only if did allowed by permissions
       var pid = PROJECT_ID_BY_DID[did];
       if(user.security_level === 1 || PROJECT_PERMISSION_BY_PID[pid]  === 0 || PROJECT_PERMISSION_BY_PID[pid] === user.user_id ){
-        console.log(&#039;IN METADATA&#039;)
-        for(mdname in metadata[did]){
+        console.log(&#039;IN METADATA&#039;);
+        for (var mdname in metadata[did]){
           if(mdname === search[&#039;metadata-item&#039;]){
           
             mdvalue = metadata[did][mdname];
@@ -277,7 +278,7 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
             if((&#039;comparison&#039; in search) &amp;&amp; (search[&#039;comparison&#039;] === &#039;equal_to&#039;)){
               search_value = Number(search[&#039;single-comparison-value&#039;]);
               if( Number(mdvalue) ===  search_value ){
-                console.log(&#039;equal-to: val &#039;+mdname+&#039; - &#039;+mdvalue)
+                console.log(&#039;equal-to: val &#039;+mdname+&#039; - &#039;+mdvalue);
                 datasets.push(did);
                 //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
                 //ds.dataset_ids.push(ds_req);
@@ -291,7 +292,7 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
             }else if(&#039;comparison&#039; in search &amp;&amp; search[&#039;comparison&#039;] === &#039;less_than&#039;){
               search_value = Number(search[&#039;single-comparison-value&#039;]);
               if(Number(mdvalue) &lt;= search_value){
-                console.log(&#039;less_than: val &#039;+mdname+&#039; - &#039;+mdvalue)
+                console.log(&#039;less_than: val &#039;+mdname+&#039; - &#039;+mdvalue);
                 datasets.push(did);
                 //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
                 //ds.dataset_ids.push(ds_req);
@@ -363,7 +364,7 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
               }
 
             }else if(&#039;data&#039; in search){
-              list = search[&#039;data&#039;]
+              list = search[&#039;data&#039;];
               if(list.indexOf(mdvalue) != -1){
                 console.log(&#039;DATA: val &#039;+did+&#039; - &#039;+mdname+&#039; - &#039;+mdvalue);
                 datasets.push(did);
@@ -392,7 +393,7 @@ router.post(&#039;/search_datasets_result&#039;, helpers.isLoggedIn, function(re
         var did = ds[i];
         var dname = DATASET_NAME_BY_DID[did];
         var pid = PROJECT_ID_BY_DID[did];
-        var pname = PROJECT_INFORMATION_BY_PID[pid].project
+        var pname = PROJECT_INFORMATION_BY_PID[pid].project;
         //var ds_req = did+&#039;--&#039;+pname+&#039;--&#039;+dname;
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
