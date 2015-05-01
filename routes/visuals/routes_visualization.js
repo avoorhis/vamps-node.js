@@ -57,19 +57,25 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: view_selection-->>');
   console.log(req.body);
   console.log('req.body: view_selection');
+  //console.log('chosen_id_name_hash:>>');
+  //console.log(chosen_id_name_hash);
+  //console.log('<<chosen_id_name_hash:');
   //console.log(TaxaCounts['27'])
   //console.log('1');
-
+  if(req.body.resorted === '1'){
+  	dataset_ids = req.body.ds_order;
+	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
+  } 
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);
 
-  var data_source_testing = 'json';   // options: json, db, hdf5
+  
   helpers.start = process.hrtime();
-  helpers.elapsed_time("START: in view_selection using data_source_testing= "+data_source_testing+" -->>>>>>");
+  
   //
   //
   //
-  if(data_source_testing == 'json') {
+  
     // GLOBAL
     var timestamp = +new Date();  // millisecs since the epoch!
     timestamp = req.user.username + '_' + timestamp;
@@ -106,44 +112,11 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
-                                  message  : req.flash()
+                                  message   : req.flash()
                    });
-    helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<");
+    
 
-  }else if(data_source_testing == 'db') {
-    var uitems = visual_post_items.unit_choice.split('_');
-    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    req.db.query(unit_name_query, function(err, rows, fields){
-        if (err) {
-          throw err;
-        } else {
-
-
-          // GLOBAL
-          distance_matrix = {};
-          biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
-          visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-          metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-
-          res.render('visuals/view_selection', {
-                                  title     :           'VAMPS: Visuals Select',
-                                  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix    :           JSON.stringify(biom_matrix),
-                                  metadata  :           JSON.stringify(metadata),
-                                  constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),
-                                  user      :           req.user,
-			  						message  :  req.flash(),
-                       });
-
-        }
-        helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<");
-    });
-
-
-  }else if(data_source_testing == 'hdf5') {
-    // TODO TODO
-  }
+  
 
 
 });
@@ -169,13 +142,15 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log(req.body);
   console.log('req.body: unit_selection');
   var dataset_ids = [];
-  if(req.body.search == '1'){
+  if(req.body.resorted === '1'){
+  	dataset_ids = req.body.ds_order;	
+  }else if(req.body.search === '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);	
   }else{
     dataset_ids = req.body.dataset_ids;
   }
 
-  console.log('dataset_ids '+req.body.dataset_ids);
+  console.log('dataset_ids '+dataset_ids);
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	 req.flash('nodataMessage', 'Select Some Datasets');
@@ -230,7 +205,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
 	                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
-		  				message : req.flash('savedMessage'),
+		  				message : req.flash(),
 	                    user         : req.user
 	  });  // end render
   }
@@ -270,12 +245,14 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-
-  res.render('visuals/reorder_datasets', {
+router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
+    
+	var referer = req.body.referer;
+    res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                                 constants    : JSON.stringify(req.C),
+								referer: referer,
                                 user: req.user
                             });
   //console.log(chosen_id_name_hash)
@@ -656,10 +633,7 @@ router.post('/save_datasets',  function(req, res) {
 	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username));
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
-	//req.flash('savedMessage', 'Saved!');
-	//res.redirect('unit_selection');
-	//var json_str = JSON.stringify(visual_post_items);
-	//console.log(json_str);
+		
 	res.send('OK');
 	
 });
