@@ -10,14 +10,16 @@
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
     <form id='dataset_select_form' class='' name='dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
 
-      <table border='1'>
+      <table class='table table-bordered'>
         <tr>
           <td>
-              Dataset Selection
-			  <a class='small_font' href='saved_datasets'>View Saved Datasets</a>
+              <h4>Select Datasets Below:</h4>
+			  
+			  <button type="button" class="btn btn-xs btn-primary pull-right"  id="view_saved_datasets_btn">View Saved Datasets</button>
           </td>
           <td>
-            <input type='button' name='Next' value='Next: Unit Selection' id="unit_selection" >
+            
+			<button type="button" class="btn pull-right btn-sm btn-warning" name='Next' id="unit_selection">next &gt;&gt; Unit Selection</button>
           </td>
           </tr>
           <tr>
@@ -27,7 +29,7 @@
 			</div>
           </td>
 		  <td class='td_top'>
-			  <div class='small_font'>To save your list of datasets<br>go to the next page.</div>
+			  <div class='small_font'>To save your list of datasets go to the next page.</div>
 		  </td>
         </tr>
       </table>
@@ -84,7 +86,7 @@
     };
 
 
-    $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+    $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
           var link = this,
           html = '';
           $link = $(this);
@@ -144,3 +146,6 @@
 
 
 <% include ../add_ins/end.ejs %>
+ <script type="text/javascript" src="/javascripts/index_visuals.js"></script>
+ </body>
+ </html>
