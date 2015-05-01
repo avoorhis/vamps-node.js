@@ -354,16 +354,18 @@ router.post('/heatmap', function(req, res) {
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     PythonShell.run('distance.py', options, function (err, mtx) {
-      if (err) throw err;
-      distance_matrix = JSON.parse(mtx);
-      console.log('dmtx');
-      console.log(distance_matrix);
-      var m = JSON.stringify(mtx);
-      res.render('visuals/partials/load_distance',{
-                                        dm        : distance_matrix,
-                                        constants : JSON.stringify(req.C),
-                                      });
-
+      if (err) {
+  		  res.send(err);
+  	  }else{
+	      distance_matrix = JSON.parse(mtx);
+	      console.log('dmtx');
+	      console.log(distance_matrix);
+	      var m = JSON.stringify(mtx);
+	      res.render('visuals/partials/load_distance',{
+	                                        dm        : distance_matrix,
+	                                        constants : JSON.stringify(req.C),
+	                                      });
+	  }
     });
 
 });
@@ -425,63 +427,65 @@ router.post('/dendrogram', function(req, res) {
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
 
     PythonShell.run('distance.py', options, function (err, output) {
-      if (err) throw err;
-      function buildNewickNodes(node, callback) {
-        newickNodes.push(node);
-        if (node.branchset) {
-          for (var i=0; i < node.branchset.length; i++) {
-            buildNewickNodes(node.branchset[i]);
-          }
-        }
-      }
+      if (err) {
+		  res.send(err);  // for now we'll send errors to the browser
+	  }else{
+	      function buildNewickNodes(node, callback) {
+	        newickNodes.push(node);
+	        if (node.branchset) {
+	          for (var i=0; i < node.branchset.length; i++) {
+	            buildNewickNodes(node.branchset[i]);
+	          }
+	        }
+	      }
 
-      //var m = JSON.stringify(mtx)
-      var html;
-      if(image_type == 'svg'){
-        //console.log(JSON.parse(output))
-        var d3 = require("d3");
-        var xmldom = require('xmldom');
-        var Newick    = require('../../public/javascripts/newick');
-        var Phylogram = require('../../public/javascripts/d3.phylogram');
-        newick = JSON.parse(output);
-        //console.log('Newick ',newick)
-        var json  = Newick.parse(newick);
-        //console.log(JSON.stringify(json,null,4))
-        var newickNodes = [];
-        // Validator: "Function declarations should not be placed in blocks. Use a function expression or move the statement to the top of the outer function."
+	      //var m = JSON.stringify(mtx)
+	      var html;
+	      if(image_type == 'svg'){
+	        //console.log(JSON.parse(output))
+	        var d3 = require("d3");
+	        var xmldom = require('xmldom');
+	        var Newick    = require('../../public/javascripts/newick');
+	        var Phylogram = require('../../public/javascripts/d3.phylogram');
+	        newick = JSON.parse(output);
+	        //console.log('Newick ',newick)
+	        var json  = Newick.parse(newick);
+	        //console.log(JSON.stringify(json,null,4))
+	        var newickNodes = [];
+	        // Validator: "Function declarations should not be placed in blocks. Use a function expression or move the statement to the top of the outer function."
 
-        // function buildNewickNodes(node, callback) {
-        //   newickNodes.push(node);
-        //   if (node.branchset) {
-        //     for (var i=0; i < node.branchset.length; i++) {
-        //       buildNewickNodes(node.branchset[i]);
-        //     }
-        //   }
-        // }
-        buildNewickNodes(json);
+	        // function buildNewickNodes(node, callback) {
+	        //   newickNodes.push(node);
+	        //   if (node.branchset) {
+	        //     for (var i=0; i < node.branchset.length; i++) {
+	        //       buildNewickNodes(node.branchset[i]);
+	        //     }
+	        //   }
+	        // }
+	        buildNewickNodes(json);
 		
-        var tree_data = d3.phylogram.build('body', json, {
-          width: 300,
-          height: visual_post_items.no_of_datasets*100
-        });
+	        var tree_data = d3.phylogram.build('body', json, {
+	          width: 300,
+	          height: visual_post_items.no_of_datasets*100
+	        });
 		
-        var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+	        var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
 		
-        html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
+	        html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
 
-        d3.select('svg').remove();
+	        d3.select('svg').remove();
 
-        //console.log(html);
+	        //console.log(html);
 
-      }else{
-        var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-        html = "<div id='pdf'>";
-        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-        html += " <p>ERROR in loading pdf file</p>";
-        html += "</object></div>";
-      }
-      res.send(html);
-
+	      }else{
+	        var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+	        html = "<div id='pdf'>";
+	        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	        html += " <p>ERROR in loading pdf file</p>";
+	        html += "</object></div>";
+	      }
+	      res.send(html);
+  	  }
 
     });
 
@@ -526,19 +530,21 @@ router.post('/pcoa', function(req, res) {
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     PythonShell.run('distance.py', options, function (err, pcoa_data) {
-      if (err) throw err;
-      //console.log(pcoa_data)
-      //pcoa_data = JSON.parse(pcoa_data)
-      //console.log(pcoa_data);
+      if (err) {
+		  res.send(err); // for now we'll send errors to the browser
+	  }else{
+	      //console.log(pcoa_data)
+	      //pcoa_data = JSON.parse(pcoa_data)
+	      //console.log(pcoa_data);
 
-      var image = '/tmp_images/'+ts+'_pcoa.pdf';
-      var html = "<div id='pdf'>";
-      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-      html += " <p>ERROR in loading pdf file</p>";
-      html += "</object></div>";
-      console.log(html);
-      res.send(html);
-
+	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
+	      var html = "<div id='pdf'>";
+	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	      html += " <p>ERROR in loading pdf file</p>";
+	      html += "</object></div>";
+	      console.log(html);
+	      res.send(html);
+  	}
 
     });
 
@@ -652,22 +658,38 @@ router.get('/saved_datasets',  function(req, res) {
     file_info.mtime ={};
     file_info.size = {};
     file_info.files = [];
+	file_info2 = {};
+	modify_times = [];
     fs.readdir(saved_datasets_dir, function(err, files){
-      for (var f in files){
-        var pts = files[f].split('_');
-        if(pts[1] === 'datasets'){
-          file_info.files.push(files[f]);
-          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-          file_info.mtime[files[f]] = stat.mtime;  // modify time
-          file_info.size[files[f]] = stat.size;
-        }
-      }
-	  res.render('visuals/saved_datasets',
-	    { title: 'saved_datasets',
-	      finfo: JSON.stringify(file_info),
-	  	  message:req.flash('deleteMessage'),
-	      user: 	req.user.username
-	    });
+		if(err){
+			console.log(err);
+		}else{
+		  for (var f in files){
+	        var pts = files[f].split('_');
+	        if(pts[1] === 'datasets'){
+	          file_info.files.push(files[f]);
+	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
+	          
+			  file_info.mtime[files[f]] = stat.mtime;  // modify time
+	          file_info.size[files[f]] = stat.size;
+			  file_info2[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+			  modify_times.push(stat.mtime.getTime());
+			  
+	        }
+	      }
+	  
+		  modify_times.sort().reverse();
+		  
+		  console.log(JSON.stringify(file_info2));
+		  res.render('visuals/saved_datasets',
+		    { title: 'saved_datasets',
+		      finfo:  JSON.stringify(file_info),
+		      finfo2: JSON.stringify(file_info2),
+		      times: modify_times,
+		  	  message:req.flash('deleteMessage'),
+		      user: 	req.user.username
+		    });
+		}
 	
     });
 	
