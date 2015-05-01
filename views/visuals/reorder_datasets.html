@@ -4,58 +4,84 @@
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/mktree.css">-->
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
 
-  <div class='title'>Community Visualization</div>
-  <div class='subtitle'>Re-Order Datasets</div>
+  <div class='title'>Re-Order Datasets</div>
+  
       
 <div id='' class=''>
 Here are your <%= items.names.length %> selected datasets:<br>
 
-<div id='' class='small_font'>
-<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
-    <table>
-      <tr><td>Original Order</td><td>Drag to Re-Order</td></tr>
+<div id='' class=''>
+<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/<%= referer %>'>
+    <table class='table'>
+      <tr><td>Original order</td><td>Drag this column to re-order</td></tr>
       <tr><td class='td_top'>
-        <table border='1' id='' class='small_font center_table' >
+        
+		<table  id='' class='table table-condensed' >
         <% for (var i in items.names){ %>
             <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
         <% } %>
         </table>
-    </td><td>
+		
+      </td>
+	  <td>
         <div id='reorder_div'>
-        <table border='1' id='drag_table' class='small_font center_table' >
-        <% for (var i in items.names){ %>
-            <tr class='tooltip_row'>
-              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
-                <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > 
-                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
-              </td>
-            </tr>
-        <% } %> 
-        </table>
-
-        
-        
-       
+	       
+		   
+		    <table id='drag_table' class='table table-condensed' >
+	        <% for (var i in items.names){ %>
+	            <tr class='tooltip_row'>
+	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
+	              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
+					<input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
+	                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
+	              </td>
+	            </tr>
+	        <% } %> 
+	        </table>
+			
+			
         </div>
 
     </td>
-    <td class='td_top'>
+    <td class=''>
         
-        <table border='1' class='single_border '>
-          <tr><td class='small_font'><div id='ds_save_order_div' class='small_font'><input type='submit' id='save_order_btn' class='' value='Save Order and Return'></td></tr>
+        <table class='table'>
+          <tr>
+			<td class=''>
+			  <div id='ds_save_order_div' class='small_font'>
+				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-primary'>Save Order and Return</button>
+				  <input  type='hidden' id='' class='' name='resorted' value='1'>
+				  <button type='button' id='reset_order_btn'class='btn btn-xs btn-primary'>Reset Order</button>
+				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();'   class='btn btn-xs btn-primary'>Cancel and Return</button>
+				
+			  </div>
+			</td>
+		  </tr>
           
-          <tr><td class='small_font'>Drag rows to re-order<br>OR</td></tr>
+          <tr>
+			<td class=''>
+				Drag rows to re-order
+			</td>
+		  </tr>
         
-          <tr><td class='small_font'><input type='button' value='Alphabetize'><br>OR</td></tr>
-          <tr><td class='small_font'>Select distance metric<br>to cluster by:<br>
+          <tr>
+			<td class='small_font'>
+				<button type='button' class='btn btn-xs btn-primary'>Alphabetize<button>
+			</td>
+		  </tr>
+          <tr>
+			<td class=''>
+				Select distance metric<br>to cluster by:<br>
 
-                        <select name='selected_heatmap_distance' class='small_font'>
+                        <select id='' name='selected_heatmap_distance' class='small_font' >
                         <% for(d in distrows ) { %>
                           <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
                         <% } %>
                         </select>   
-          <br>OR</td></tr> 
-          <tr><td class='small_font'><input type='button' value='Reset Order'></td></tr>            
+          			  	
+	  		 </td>
+		   </tr> 
+                 
         </table>
         
     </td>
@@ -70,10 +96,13 @@ Here are your <%= items.names.length %> selected datasets:<br>
 <br>
 
 
-  <div id='DEBUG_div'></div>
-<script src="/javascripts/jquery-2.1.1.min.js"></script>
-<script src="/javascripts/jquery.tablednd.js"></script>
-<script src="/javascripts/drag_rows.js"></script>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-  
+
 <% include ../add_ins/end.ejs %>
+ <script src="/javascripts/jquery.tablednd.js"></script>
+ <script src="/javascripts/drag_rows.js"></script>
+ <script type="text/javascript" src="/javascripts/global.js"></script>
+ 
+
+</body>
+</html>
+

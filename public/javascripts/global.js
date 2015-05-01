@@ -7,6 +7,8 @@
 //     });
 // });
 
+
+
 function is_checked(id_names)
 {
   return $('input[name="'+id_names+'"]:checked').length > 0; 
