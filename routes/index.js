@@ -93,15 +93,21 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	if(req.query.fxn == 'delete'){
 		if(req.query.type == 'datasets'){
 			fs.unlink(file, function(err){
-				if(err){ console.log(err); }
-				req.flash('deleteMessage', 'Deleted');
-				res.redirect("/visuals/saved_datasets");	
+				if(err){ 
+					console.log(err); 
+				}else{
+					req.flash('deleteMessage', 'Deleted: '+req.query.filename);
+					res.redirect("/visuals/saved_datasets");
+				}	
 			}); //
 		}else{
 			fs.unlink(file, function(err){
-				if(err){ console.log(err); }
-				req.flash('deleteMessage', 'Deleted');
-				res.redirect("/file_retrieval");	
+				if(err){ 
+					console.log(err); 
+				}else{
+					req.flash('deleteMessage', 'Deleted: '+req.query.filename);
+					res.redirect("/file_retrieval");	
+				}
 			}); //
 		}
 		
