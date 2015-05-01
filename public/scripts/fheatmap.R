@@ -159,8 +159,7 @@ print(paste("rows:",nrow(x),"h:",h,"rmarg:",r_margin))
 print(paste("cols:",ncol(x),"w:",w))
 #print(paste("fontsize_row:",fontsize_row))
 
-                    
-
+              
 fontsize_row = 8
 
 # clustering methods
@@ -198,6 +197,7 @@ if(method=='horn'){
 main_label=paste("The VAMPS Frequency Heatmap\n--Taxonomic Level:",depth,"\n--Clustering: ",text)
 drows<-vegdist(x, method=meth)
 dcols<-vegdist(t(x), method=meth, na.rm=TRUE)
+
 #print('drows')
 #print(drows)
 #print(x)
@@ -232,11 +232,17 @@ mypalette6<-colorRampPalette(brewer.pal(12,"Paired"))(256)
 # scale will be yes if data is unnormalize; scale is un-needed otherwise
 
 x1<-scale(x, center=FALSE, scale=colSums(x))
+
+
 #print(x1)
+
+
 pheatmap(x1,  scale="none", color=mypalette6,
 			clustering_distance_rows=drows,
 			clustering_distance_cols=dcols, margins=c(15,r_margin),
 		   fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
+
+
 
 
 #20130619
@@ -283,6 +289,8 @@ pheatmap(x1,  scale="none", color=mypalette6,
         
 #legend(0,-4, legend=c("one", "two")) 
 #title(main=main_label)
+
+
 print(warnings())
 dev.off()
 

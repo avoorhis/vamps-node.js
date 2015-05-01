@@ -272,28 +272,31 @@ module.exports = {
  //
 //
 //
-run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
-    var exec = require('child_process').exec;
-    var PythonShell = require('python-shell');
-    var html = this.start_visuals_html(visual_name);
-    
-    var title = 'VAMPS';
-    
-    var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '-fxn', visual_name, '-out',  distmtx_file], 
-    };
-    console.log('options:', options);
-    PythonShell.run('distance.py', options, function (err, mtx) {
-      if (err) throw err;
-      console.log(JSON.parse(mtx));
-      return mtx;
- 
-      
-    });   
-},
+// run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
+//     var exec = require('child_process').exec;
+//     var PythonShell = require('python-shell');
+//     var html = this.start_visuals_html(visual_name);
+//
+//     var title = 'VAMPS';
+//
+//     var distmtx_file_name = ts+'_distance.csv';
+//     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
+//     var options = {
+//       scriptPath : 'public/scripts',
+//       args :       [ '-in', biom_file, '-metric', metric, '-fxn', visual_name, '-out',  distmtx_file],
+//     };
+//     console.log('options:', options);
+//     PythonShell.run('distance.py', options, function (err, mtx) {
+//         if(err) {
+//         	return 'ERROR: '+err;
+//         }else{
+//       	    console.log(JSON.parse(mtx));
+//       		return mtx;
+//   		}
+//
+//
+//     });
+// },
 //
 //
 //
@@ -301,17 +304,21 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
      var exec = require('child_process').exec;
 
     console.log(command);
-    exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
-        if(visual_name == 'fheatmap'){
-            var image = '/tmp_images/'+ts+'_heatmap.pdf';
-            var html = "<div id='pdf'>";
-            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-            html += " <p>ERROR in loading pdf file</p>";
-            html += "</object></div>";
-            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-            console.log(html);
-            res.send(html);  
-        }    
+    exec(command, {maxBuffer:16000*1024}, function (err, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
+        if(err) {
+        	res.send('ERROR: '+err);
+        }else{
+			if(visual_name == 'fheatmap'){
+	            var image = '/tmp_images/'+ts+'_heatmap.pdf';
+	            var html = "<div id='pdf'>";
+	            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	            html += " <p>ERROR in loading pdf file</p>";
+	            html += "</object></div>";
+	            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
+	            console.log(html);
+	            res.send(html);  
+	        }
+		}    
 
     });
  },
