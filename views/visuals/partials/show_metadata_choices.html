@@ -6,9 +6,9 @@
 <table class='tiny_font'><tr>
     <% for (i in meta) { %>       
        <% if(meta[i] === 'latitude' || meta[i] == 'longitude' ) { %> 
-          <td><input type='checkbox' class='required_meta_ckbx' checked name='selected_metadata[]' value='<%= meta[i] %>'><%= meta[i] %></td>
+          <td><input type='checkbox' class='required_meta_ckbx' checked name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
        <% }else{ %>  
-          <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= meta[i] %>'><%= meta[i] %></td>
+          <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
        <% } %>  
        <% if(i % no_of_rows === no_of_rows-1) { %>        	   		
      			</tr><tr>
@@ -21,7 +21,7 @@
     <% i = 0 %>
     <% for (md_name in md) { %>       
        
-       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'><%= md_name %></td>
+       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'> <%= md_name %></td>
        
        <% if(i % no_of_rows === no_of_rows-1) { %>         	   		
      			</tr><tr>
