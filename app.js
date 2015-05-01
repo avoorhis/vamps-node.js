@@ -18,7 +18,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
-
+var favicon = require('serve-favicon');
 var fs = require('fs');
 var zlib = require('zlib');
 //var db = require('mysql2');
@@ -46,11 +46,13 @@ app.set('view engine', 'html');
 
 app.set(express.static(__dirname + '/tmp'));
 // MIDDLEWARE  <-- must be in correct order:
-app.use(favicon());
+app.use(favicon( path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser({limit: 1024000000 })); // 1024MB
+//app.use(bodyParser({limit: 1024000000 })); // 1024MB
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
 app.use(cookieParser());
 
 app.use(compression());
@@ -58,16 +60,20 @@ app.use(compression());
  * maxAge used to cache the content, # msec
  * to "uncache" some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
-app.use(express.static(__dirname + '/public', {maxAge: '24h' }));
+app.use(express.static(path.join(__dirname, 'public'), {maxAge: '24h' }));
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
-app.use('public/javascripts', express.static(path.join(__dirname, '/public/javascripts')));
-app.use('public/stylesheets', express.static(path.join(__dirname, '/public/stylesheets')));
+app.use('public/javascripts', express.static(path.join(__dirname, 'public', 'javascripts')));
+app.use('public/stylesheets', express.static(path.join(__dirname, 'public', 'stylesheets')));
 
 // app.use('views/add_ins', express.static(path.join(__dirname, '/views/add_ins')));
 // required for passport
 // app.use(session({ secret: 'keyboard cat',  cookie: {maxAge: 900000}})); // session secret
-app.use(session({ secret: 'keyboard cat'})); // session secret
+app.use(session({ 
+	secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+})); // session secret
 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
