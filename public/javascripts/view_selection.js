@@ -45,7 +45,7 @@ var tip = {
 };
 
 
-$("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+$("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
       $link = $(this);
@@ -934,7 +934,7 @@ function create_piecharts(ts) {
             return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
         })
-        .attr("class","tooltip")
+        .attr("class","tooltipx")
         .style("fill", function(d, i) {
             return colors[i];
         });
@@ -1126,7 +1126,7 @@ function create_svg_object(props, color, data, ts) {
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
 
-          .attr("class","tooltip")
+          .attr("class","tooltipx")
           .style("fill",   function(d) { return color(d.name); });
 
 
