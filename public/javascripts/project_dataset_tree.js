@@ -60,7 +60,7 @@ var uncheck_closed = function(parent_place) {
 };
 
 $(document).ready(function () {
-  // alert("HERE");
+   
 
   // by default everything is visible, in case there is no js
   $('.datasets_per_pr').addClass( "display_none" );
@@ -68,6 +68,7 @@ $(document).ready(function () {
   $('a.project_toggle').click(function(){
     // e.preventDefault();
     toggle_datasets(this);
+	//alert(JSON.stringify(this))
     toggle_checking_all(this);
     toggle_plus_img(this);
     uncheck_closed($(this.parentNode.parentNode));
@@ -75,9 +76,10 @@ $(document).ready(function () {
   });
 
   $('input.project_toggle').click(function() {
-    var checkbox = $(this),
-      datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
-
+    
+	  var checkbox = $(this);
+      var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
+    
     // if (!is_visible(datasets_per_pr)) {
     if (datasets_per_pr.not(":visible")) {
       datasets_per_pr.show();
