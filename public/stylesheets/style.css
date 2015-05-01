@@ -177,33 +177,5 @@ td.left_justify {
   border: 1px solid grey;
 }
 
-/*  SEARCH */
-#metadata_search_div{
-  background: lightgrey;
-  padding: 3px;
-  border:1px solid grey;
-}
-#metadata_search_div ul{
-  list-style-type: none;
-  text-decoration: none;
-}
 
-#input1_comparison{
-  display: inline-block;
-}
-#input2_comparison{
-  display: inline-block;
-} 
-#input3_comparison{
-  display: inline-block;
-}
-.search_ds_result_box{
-  list-style-type: none;
-  text-decoration: none;
-  border: 1px solid grey;
-  background:#F0FFF0;
-  height:100px;
-  width:250px;
-  overflow:auto;
-}
 

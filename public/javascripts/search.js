@@ -1,5 +1,5 @@
 // search.js
-
+ $('.selectpicker').selectpicker();
 // $(document).ready(function(){
 //     $('a.back').click(function(){
 //         parent.history.back();
@@ -29,8 +29,10 @@ if (typeof search_metadata_btn !=="undefined") {
 
 if (typeof search_metadata_activate_btn2 !=="undefined") {
   search_metadata_activate_btn2.addEventListener('click', function () {
-    if(metadata_search_field2.disabled === true){
-      metadata_search_field2.disabled = false;
+    alert('here')
+	if(metadata_search_field2.disabled === true){
+      
+	  metadata_search_field2.disabled = false;
     }else{
       metadata_search_field2.disabled = true;
     }
@@ -46,7 +48,6 @@ if (typeof search_metadata_activate_btn3 !=="undefined") {
     }
   });
 }
-
 
 
 
