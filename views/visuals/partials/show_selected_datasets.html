@@ -8,5 +8,22 @@ Here are your <%= items.names.length %> selected datasets:<br>
 <% } %>
 </ul>
 </div>
-To change these go back to the <a href="/visuals/index_visuals">dataset selection page</a>.<br>
-To save datasets for re-use: <input type='button' value='go' id='save_datasets_btn'> <span class='alert_flash_message' id='save_ds_result'></span>
+<table class='button_row'><tr>
+<td>
+	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
+		-->
+	<form action='reorder_datasets' method='POST'>
+		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
+		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
+	</form>
+
+</td>
+
+<td>
+	<button type="button" class="btn btn-xs btn-primary" id='change_datasets_btn'  >Change Datasets</button>
+</td>
+<td>
+	<button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn'    >Save Datasets</button>
+	<span id='save_ds_result'></span>
+</td>
+</tr></table>

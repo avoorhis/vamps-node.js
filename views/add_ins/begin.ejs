@@ -1,24 +1,41 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <title><%= title %></title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">  
+  <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" >
+  <link rel="stylesheet" href="/stylesheets/bootstrap-theme.min.css">
+ 
+ <style type="text/css">
+   body {
+     padding-top: 60px;
+     padding-bottom: 40px;
+   }
+   .sidebar-nav {
+     padding: 9px 0;
+   }
+
+ </style>
+ <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>
+ 
+ 
 </head>
 <body>
-  <div class='container_12' id="body">
-    <div  class='header grid_12' id='header'>
+  	<!-- Fixed navbar at top -->
+  	<% include nav-bar.html %>
+	
+	<div class="container-fluid">
+	  <div class="row-fluid">
+	
+  
+    <div  class='header' id='header'>
       <% include header.html %>
-    </div>
+   </div>
 
     <div class="main_menu grid_3" id='main_menu'>
       <% include main_menu.html %>
     </div>
 
-    <div class="grid_9" id='title'>
-      <div id='' class='login_link'><%=  include login_line.html %></div>
-     
-      
-    </div>
-
-    <div class="grid_9" id="content">  <!-- ends in end.ejs -->
+   
+   <div class="span9" id="content">  <!-- ends in end.ejs -->
