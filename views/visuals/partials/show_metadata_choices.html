@@ -2,7 +2,7 @@
 <%   var md = JSON.parse(md_cust) %>
 <% no_of_rows = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
-<hr>Required Fields: (<input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'>Toggle</span>)
+<hr><strong>Required Fields:</strong> ( <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> )
 <table class='tiny_font'><tr>
     <% for (i in meta) { %>       
        <% if(meta[i] === 'latitude' || meta[i] == 'longitude' ) { %> 
@@ -15,7 +15,7 @@
        <% } %>            
     <% } %>
 </tr></table>
-<hr>Custom Fields for these Datasets: (<input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'>Toggle</span>)
+<hr><strong>Custom Fields for these Datasets:</strong> ( <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> )
 <% no_of_rows = 2 %>
 <table class='tiny_font'><tr>
     <% i = 0 %>
