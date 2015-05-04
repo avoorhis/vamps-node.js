@@ -19,12 +19,13 @@ var bodyParser = require('body-parser');
 var flash = require('express-flash');
 var passport = require('passport');
 var favicon = require('serve-favicon');
-var fs = require('fs');
+var fs = require('fs-extra');
 var zlib = require('zlib');
+var multer = require('multer');
 //var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
-connection = require('./config/database-dev');
+connection = require('./config/database');
 //connection.connect();
 var routes = require('./routes/index');  // This grabs ALL_DATASETS
 var users = require('./routes/routes_users');
@@ -53,6 +54,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+app.use(multer({ dest: './user_data/'+NODE_DATABASE }));  // for multipart uploads
 app.use(cookieParser());
 
 app.use(compression());
