@@ -1,5 +1,5 @@
 // search.js
- $('.selectpicker').selectpicker();
+// $('.selectpicker').selectpicker();
 // $(document).ready(function(){
 //     $('a.back').click(function(){
 //         parent.history.back();
@@ -29,7 +29,7 @@ if (typeof search_metadata_btn !=="undefined") {
 
 if (typeof search_metadata_activate_btn2 !=="undefined") {
   search_metadata_activate_btn2.addEventListener('click', function () {
-    alert('here')
+    
 	if(metadata_search_field2.disabled === true){
       
 	  metadata_search_field2.disabled = false;
@@ -65,7 +65,7 @@ if (typeof metadata_search_field1 !=="undefined") {
           for(var i in mi_local[item]){
             val = mi_local[item][i];
             name = 'search1_data_'+item+'[]';
-            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >&nbsp;"+val;
             //html += " <input type='checkbox' id='"+val+"' name='data[]' value='"+val+"' onclick=\"save_value1(this.value,'"+item+"')\" >"+val;
           }
         }else{
@@ -116,7 +116,7 @@ if (typeof metadata_search_field2 !=="undefined") {
           for (var i in mi_local[item]){
             val = mi_local[item][i];
             name = 'search2_data_'+item+'[]';
-            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >&nbsp;"+val;
           }
         }else{
           var min = mi_local[item].min;
@@ -164,7 +164,7 @@ if (typeof metadata_search_field3 !=="undefined") {
           for (var i in mi_local[item]){
             val = mi_local[item][i];
             name = 'search3_data_'+item+'[]';
-            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >"+val;
+            html += " <input type='checkbox' id='"+val+"' name='"+name+"' value='"+val+"' >&nbsp;"+val;
           }
         }else{
           var min = mi_local[item].min;

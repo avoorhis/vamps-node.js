@@ -1,8 +1,6 @@
 *.sql
 db.sql
-config/*
-config/database-dev.js
-config/database-test.js
+config/db-connect*
 config/db_vamps_node.sql.gz
 node_modules/
 colony/
