@@ -1,9 +1,9 @@
 <% include ../add_ins/begin.ejs %>
-  <div class='title'>VAMPS User List</div>
+  <div class='title left_justify'>VAMPS User List</div>
   <div class='subtitle'></div>
 
   <% user_rows = rows %>
-  <div id='user_list_div' class='general_table' >
+  <div id='user_list_div' class='left_justify table' >
     <ul>
     <% for (i=0; i < user_rows.length; i++) { %>
       <li value='<%= user_rows[i].username %>'>
