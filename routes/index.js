@@ -11,6 +11,7 @@ var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
 var ds = require('./load_all_datasets');
+var PythonShell = require('python-shell');
 var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   
@@ -181,55 +182,79 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       console.log(req.body);
 	  console.log(req.files);
       console.log('req.body upload_data');
-	  var data_repository = path.join('./user_data',NODE_DATABASE,req.user.username);
+	  var data_repository = path.join('./user_data',NODE_DATABASE,req.user.username,req.body.project);
 	  console.log(data_repository);
 	  // continuity checks:
 	  
 	  
 	  
-	  if(req.body.type == 'single'){
+	  
 		 
-		  if(req.body.project==undefined || req.body.dataset==undefined){
-			  req.flash('failMessage', 'FAIL (project and dataset names are required)');
-		  	  res.redirect("/import_data");
-		  }else if(req.files.fasta==undefined || req.files.fasta.size==0){
-		  	req.flash('failMessage', 'FAIL (A fasta file is required)');
-			res.redirect("/import_data");
-		  }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
-		  	req.flash('failMessage', 'FAIL (A metadata csv file is required)');
-			res.redirect("/import_data");
-		  }else{
-		  	req.flash('successMessage', 'Upload in Progress');
-			var project = req.body.project;
-			var original_fastafile = path.join('./user_data', NODE_DATABASE, req.files.fasta.name);
-			var original_metafile  = path.join('./user_data', NODE_DATABASE, req.files.metadata.name);
-			console.log(original_fastafile);
-			console.log(original_metafile);
-  		 	// move files to user_data/<username>/ and rename
-  		  	fs.move(original_fastafile, path.join(data_repository,project,'fasta.fa'), function (err) {
-  		    	if (err) return console.error(err);
-  		  	fs.move(original_metafile,  path.join(data_repository,project,'meta.csv'), function (err) {
-  		    	if (err) return console.error(err);
-				// create a config file and analysis/gast/<ds> directory tree
-				
-				console.log("success!");
-  			    res.redirect("/import_data");
-  		  	});
-			});
-		  } 
-		
-		 
-		
-		
-		  
-	  }else if(req.body.type == 'multi') {
-	  	console.log('Multi-in upload_data')
+	  if(req.body.project==undefined || req.body.dataset==undefined){
+		req.flash('failMessage', 'FAIL (project and dataset names are required)');
+	  	res.redirect("/import_data");
+	  }else if(req.files.fasta==undefined || req.files.fasta.size==0){
+	  	req.flash('failMessage', 'FAIL (A fasta file is required)');
+		res.redirect("/import_data");
+	  }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
+	  	req.flash('failMessage', 'FAIL (A metadata csv file is required)');
+		res.redirect("/import_data");
 	  }else{
-	  	// ERROR
-		  console.log('ERROR-in upload_data')
-	  }
+	  	req.flash('successMessage', 'Upload in Progress');
+		var project = req.body.project;
+		var original_fastafile = path.join('./user_data', NODE_DATABASE, req.files.fasta.name);
+		var original_metafile  = path.join('./user_data', NODE_DATABASE, req.files.metadata.name);
+		//console.log(original_fastafile);
+		//console.log(original_metafile);
+	 	// move files to user_data/<username>/ and rename
+	  	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
+	    	if (err) return console.error(err);
+	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
+	    	if (err) return console.error(err);
+			// create a config file and analysis/gast/<ds> directory tree
+			// run python script "load_trimmed_data.py"
+			//
+		    
+			if(req.body.type == 'single'){
+				var options = {
+			      scriptPath : 'public/scripts',
+			      args :       [ '-dir', data_repository, '-t', 'single', '-d', req.body.dataset ],
+			    };
+		  	}else if(req.body.type == 'multi') {
+		  		console.log('Multi-in upload_data');
+  				var options = {
+  			      scriptPath : 'public/scripts',
+  			      args :       [ '-dir', data_repository, '-t', 'multi' ],
+  			    };
+	  
+	  
+		  	}else{
+		  	  	// ERROR
+		  		  console.log('ERROR-in upload_data')
+		  	}
+			
+		    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
+
+		    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
+		      if (err) {
+				  res.send(err);  // for now we'll send errors to the browser
+			  }else{
+				  console.log('NO ERRORS')
+			  }
+			  console.log("success!");
+			  res.redirect("/import_data");
+		    });
+			
+	  	});
+		});
+	  } 
+		
+		 
 	
   });
+  //
+  //
+  //
   router.post('/contact', function(req, res) {
 
     //Validate captcha
