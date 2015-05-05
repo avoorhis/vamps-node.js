@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">  
+  <link rel="stylesheet" href="/stylesheets/bootstrap.min.css" >
+  <link rel="stylesheet" href="/stylesheets/bootstrap-theme.min.css">
+ 
+ <style type="text/css">
+   body {
+     padding-top: 60px;
+     padding-bottom: 40px;
+   }
+   .sidebar-nav {
+     padding: 9px 0;
+   }
+
+ </style>
+ <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>
+ 
+ 
+</head>
+<body>
+  	<!-- Fixed navbar at top -->
+  	<% include nav-bar.html %>
+	
+	<div class="container-fluid">
+	  <div class="row-fluid">
+	
+  
+    <div  class='header' id='header'>
+      <% include header.html %>
+   </div>
+
+    <div class="main_menu grid_3" id='main_menu'>
+      <% include main_menu.html %>
+    </div>
+
+   
+   <div class="span9" id="content">  <!-- ends in end.ejs -->

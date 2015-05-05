@@ -8,8 +8,8 @@ router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
-    for(did in MetadataValues){
-      for(name in MetadataValues[did]){
+    for (var did in MetadataValues){
+      for (var name in MetadataValues[did]){
           val = MetadataValues[did][name];
           if(name in tmp_metadata_fields){
             tmp_metadata_fields[name].push(val); 
@@ -24,14 +24,14 @@ router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(tmp_metadata_fields)
-    for(name in tmp_metadata_fields){
-      if(tmp_metadata_fields[name][0] == 'non-numeric'){
-        tmp_metadata_fields[name].shift(); //.filter(onlyUnique);
-        metadata_fields[name] = tmp_metadata_fields[name].filter(onlyUnique);
+    for (var tmp_name in tmp_metadata_fields){
+      if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+        tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
+        metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
       }else{
-        var min = Math.min.apply(null, tmp_metadata_fields[name]);
-        var max = Math.max.apply(null, tmp_metadata_fields[name]);
-        metadata_fields[name] = {"min":min,"max":max};
+        var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
+        var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
+        metadata_fields[tmp_name] = {"min":min,"max":max};
       }
     }
     //console.log(metadata_fields)
@@ -52,8 +52,8 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
   var search_function = req.body.search_function;
   var searches = {};
   var allowed = [ 'search1', 'search2', 'search3' ];
-  if(search_function === 'search_metadata_all_datasets'){
-    for(name in req.body){  
+  if (search_function === 'search_metadata_all_datasets'){
+    for (var name in req.body){  
       items = name.split('_');
       var search = items[0];
       if(allowed.indexOf(search) != -1){
@@ -65,7 +65,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
     }
   }
   var join_type = req.body.join_type;
-  console.log(searches)
+  console.log(searches);
 
   // search datasets
   //console.log(MetadataValues);
@@ -78,19 +78,20 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
   //
   var ds1, ds2, ds3 = [];
   var result = get_search_datasets(req.user, searches.search1, MetadataValues);
-  ds1 = result.datasets
+  ds1 = result.datasets;
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
 
+  var md_hash =  MetadataValues;
 
   if('search2' in searches){
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{  // summation
-    var md_hash =  MetadataValues;
+    // var md_hash =  MetadataValues;
     //}
-    var result = get_search_datasets(req.user, searches.search2, md_hash);
+    result = get_search_datasets(req.user, searches.search2, md_hash);
     ds2 = result.datasets;
     searches.search2.datasets = result.datasets;
     searches.search2.dataset_count = searches.search2.datasets.length;
@@ -104,9 +105,9 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{
-      var md_hash =  MetadataValues;
+      // var md_hash =  MetadataValues;
     //}
-    var result = get_search_datasets(req.user, searches.search3, md_hash);
+    result = get_search_datasets(req.user, searches.search3, md_hash);
     ds3 = result.datasets;
     searches.search3.datasets = result.datasets;
     searches.search3.dataset_count = searches.search3.datasets.length;
@@ -125,12 +126,12 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
     filtered.datasets = ds1;
     if('search2' in searches) { 
       filtered.datasets = ds1.filter(function(n) {
-          return ds2.indexOf(n) != -1
+          return ds2.indexOf(n) != -1;
       });
     }
     if('search3' in searches) { 
       filtered.datasets = filtered.datasets.filter(function(n) {
-          return ds3.indexOf(n) != -1
+          return ds3.indexOf(n) != -1;
       });
     }
   }
@@ -172,13 +173,13 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
     //var datasets_plus = [];
     var datasets = [];  // use for posting to unit_selection
     var tmp_metadata = {};
-    for(did in metadata){
+    for (var did in metadata){
     
       // search only if did allowed by permissions
       var pid = PROJECT_ID_BY_DID[did];
       if(user.security_level === 1 || PROJECT_PERMISSION_BY_PID[pid]  === 0 || PROJECT_PERMISSION_BY_PID[pid] === user.user_id ){
-        console.log('IN METADATA')
-        for(mdname in metadata[did]){
+        console.log('IN METADATA');
+        for (var mdname in metadata[did]){
           if(mdname === search['metadata-item']){
           
             mdvalue = metadata[did][mdname];
@@ -186,7 +187,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
             if(('comparison' in search) && (search['comparison'] === 'equal_to')){
               search_value = Number(search['single-comparison-value']);
               if( Number(mdvalue) ===  search_value ){
-                console.log('equal-to: val '+mdname+' - '+mdvalue)
+                console.log('equal-to: val '+mdname+' - '+mdvalue);
                 datasets.push(did);
                 //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
                 //ds.dataset_ids.push(ds_req);
@@ -200,7 +201,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
             }else if('comparison' in search && search['comparison'] === 'less_than'){
               search_value = Number(search['single-comparison-value']);
               if(Number(mdvalue) <= search_value){
-                console.log('less_than: val '+mdname+' - '+mdvalue)
+                console.log('less_than: val '+mdname+' - '+mdvalue);
                 datasets.push(did);
                 //datasets_plus.push({did:did,dname:dname,pid:pid,pname:pname});
                 //ds.dataset_ids.push(ds_req);
@@ -272,7 +273,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
               }
 
             }else if('data' in search){
-              list = search['data']
+              list = search['data'];
               if(list.indexOf(mdvalue) != -1){
                 console.log('DATA: val '+did+' - '+mdname+' - '+mdvalue);
                 datasets.push(did);
@@ -301,7 +302,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
         var did = ds[i];
         var dname = DATASET_NAME_BY_DID[did];
         var pid = PROJECT_ID_BY_DID[did];
-        var pname = PROJECT_INFORMATION_BY_PID[pid].project
+        var pname = PROJECT_INFORMATION_BY_PID[pid].project;
         //var ds_req = did+'--'+pname+'--'+dname;
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });

@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">73.08</p>
+      <p class="stat">72.51</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">222</p>
+      <p class="stat">254</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">19.92</p>
+      <p class="stat">20.71</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.69</p>
+      <p class="stat">1.72</p>
     </div>
   </div>
 </div>
@@ -110,15 +110,18 @@ var bodyParser = require(&#039;body-parser&#039;);
 var flash = require(&#039;express-flash&#039;);
 var passport = require(&#039;passport&#039;);
 
+var fs = require(&#039;fs&#039;);
+var zlib = require(&#039;zlib&#039;);
 //var db = require(&#039;mysql2&#039;);
 // without var declaration connection is global
 // needed for DATASETS initialization
 connection = require(&#039;./config/database-dev&#039;);
 //connection.connect();
 var routes = require(&#039;./routes/index&#039;);  // This grabs ALL_DATASETS
-var users = require(&#039;./routes/users&#039;);
-var projects = require(&#039;./routes/projects&#039;);
-var datasets = require(&#039;./routes/datasets&#039;);
+var users = require(&#039;./routes/routes_users&#039;);
+var search = require(&#039;./routes/routes_search&#039;);
+var projects = require(&#039;./routes/routes_projects&#039;);
+var datasets = require(&#039;./routes/routes_datasets&#039;);
 //var ALL_DATASETS = require(&#039;./routes/load_all_datasets2&#039;)(connection);
 var visuals = require(&#039;./routes/visuals/routes_visualization&#039;);
 var C = require(&#039;./public/constants&#039;);
@@ -162,13 +165,23 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // Make our db accessible to our router
+// app.use(function(req, res, next){
+//     if(!connection.db) {return next(new Error(&#039;no db connection&#039;));}
+//     req.db = connection.db;
+//     req.C = C;
+//     return next();
+// });
 app.use(function(req, res, next){
-    if(!connection.db) {return next(new Error(&#039;no db connection&#039;));}
-    req.db = connection.db;
-    req.C = C;
-    return next();
+	if (connection.db == null) {
+	   this.send(&#039;We cannot reach the database right now, please try again later.&#039;);
+	   return;
+	 }else{
+	    req.db = connection.db;
+	    req.C = C;
+	    return next();
+	}
 });
-
+//var hdf5 = require(&#039;hdf5&#039;).hdf5;
 // example of roll-your-own middleware:
 // GET: localhost:3000/?id=324
 // app.use(function (req, res,next) {
@@ -190,6 +203,7 @@ app.use(&#039;/users&#039;, users);
 app.use(&#039;/projects&#039;, projects);
 app.use(&#039;/datasets&#039;, datasets);
 app.use(&#039;/visuals&#039;, visuals);
+app.use(&#039;/search&#039;, search);
 
 
 // for non-routing pages such as heatmap, counts and bar_charts
@@ -262,9 +276,21 @@ var TreeModel = require(&#039;tree-model&#039;);;
 console.log(&#039;Loading DATABASE: &#039;+NODE_DATABASE+&#039; (see file config/database-xxx.js)&#039;)
 
 // these files are manually created before server startup using the scripts in public/scripts
-TaxaCounts     = require(&#039;./public/json/tax_counts--&#039;+NODE_DATABASE+&#039;.json&#039;);
+// var rstream = fs.createReadStream(&#039;./public/json/tax_counts--&#039;+NODE_DATABASE+&#039;.json.gz&#039;);
+// var unzip = zlib.createGunzip();
+// var taxcounts =&#039;&#039;
+// var chunk;
+// rstream.pipe(unzip)
+// 	.on(&#039;data&#039;, function (chunk) {
+// 		taxcounts += chunk;
+//   	})
+// 	.on(&#039;end&#039;, function() {
+// 		    console.log(&#039;Finished reading TAXCOUNTS&#039;);
+// 	});
+
+//TAXCOUNTS     = require(&#039;./public/json/tax_counts--&#039;+NODE_DATABASE+&#039;.json.gz&#039;);
 MetadataValues = require(&#039;./public/json/metadata--&#039; + NODE_DATABASE+&#039;.json&#039;);
-//console.log(MetadataValues)
+
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
@@ -273,7 +299,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   {
     //console.log(&quot;AAA all_silva_taxonomy from app = &quot; + JSON.stringify(results));
     
-// var small_rows = [ {&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;D-F10&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:33,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Group_C3&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:52,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Marine_Benthic_Group_A&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:58,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Acidobacteria&quot;,&quot;order&quot;:&quot;Acidobacteriales&quot;,&quot;family&quot;:&quot;Acidobacteriaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:2,&quot;order_id&quot;:7,&quot;family_id&quot;:8,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;Holophagales&quot;,&quot;family&quot;:&quot;Holophagaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:73,&quot;family_id&quot;:138,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;Acidimicrobiaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:6,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1}];
+	//TAXCOUNTS = JSON.parse(taxcounts);
+	//console.log(&#039;TAXCOUNTS2 &#039;+JSON.stringify(TAXCOUNTS));
+	// var small_rows = [ {&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;D-F10&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:33,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Group_C3&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:52,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Archaea&quot;,&quot;phylum&quot;:&quot;Crenarchaeota&quot;,&quot;klass&quot;:&quot;Marine_Benthic_Group_A&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:1,&quot;phylum_id&quot;:13,&quot;klass_id&quot;:58,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:1,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:1,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Acidobacteria&quot;,&quot;order&quot;:&quot;Acidobacteriales&quot;,&quot;family&quot;:&quot;Acidobacteriaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:2,&quot;order_id&quot;:7,&quot;family_id&quot;:8,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Acidobacteria&quot;,&quot;klass&quot;:&quot;Holophagae&quot;,&quot;order&quot;:&quot;Holophagales&quot;,&quot;family&quot;:&quot;Holophagaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:2,&quot;klass_id&quot;:55,&quot;order_id&quot;:73,&quot;family_id&quot;:138,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:1,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:1,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1},{&quot;domain&quot;:&quot;Bacteria&quot;,&quot;phylum&quot;:&quot;Actinobacteria&quot;,&quot;klass&quot;:&quot;Actinobacteria&quot;,&quot;order&quot;:&quot;Acidimicrobiales&quot;,&quot;family&quot;:&quot;Acidimicrobiaceae&quot;,&quot;genus&quot;:&quot;&quot;,&quot;species&quot;:&quot;&quot;,&quot;strain&quot;:&quot;&quot;,&quot;domain_id&quot;:2,&quot;phylum_id&quot;:3,&quot;klass_id&quot;:5,&quot;order_id&quot;:5,&quot;family_id&quot;:6,&quot;genus_id&quot;:1,&quot;species_id&quot;:1,&quot;strain_id&quot;:1}];
     // var new_taxonomy = new CustomTaxa(small_rows);
     // uncomment when we want all data:
     new_taxonomy = new CustomTaxa(results);
@@ -287,8 +315,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //console.log(&quot;\ntaxa_tree_dict_map_by_id = &quot; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
 
+
     // console.log(&#039;taxa_tree_dict_map_by_db_id_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     // console.log(&#039;taxa_tree_dict_map_by_rank[&quot;phylum&quot;] = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank[&#039;phylum&#039;]));
+
     // console.log(&#039;taxa_tree_dict_map_by_name_n_rank = &#039; + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
 
     
@@ -297,8 +327,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
-var taxCounts = require(&#039;./routes/helpers/create_taxcounts_class&#039;);
-var taxcounts = new taxCounts();
+
+//var taxCounts = require(&#039;./routes/helpers/create_taxcounts_class&#039;);
+//new taxCounts();
+
 
 module.exports = app;
 
