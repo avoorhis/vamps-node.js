@@ -1,20 +1,30 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>VAMPS</title>
+  <title><%= title %></title>
   <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-  <link rel="stylesheet" type="text/css" href="/stylesheets/960.css">
   <link rel="stylesheet" type="text/css" href="/stylesheets/visualization.css">  
+  <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+  <link href="/stylesheets/bootstrap-theme.min.css" rel="stylesheet">
+  <link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet">
+ <style type="text/css">
+   body {
+     padding-top: 60px;
+     padding-bottom: 40px;
+   }
+   .sidebar-nav {
+     padding: 9px 0;
+   }
+
+ </style>
 </head>
 <body>
-  <div class='container_12' id="body">
-    <div  class='header grid_12' id='header'>
-      <% include header.html %>
-    </div>
+  	<!-- Fixed navbar at top -->
+  	<% include nav-bar.html %>
+	
+	<div class="container-fluid">
+	  <div class="row-fluid">
 
-    
-    <div class="grid_9" id='title'>
-      
-      
-    </div>
 
-    <div class="grid_9" id="content">  <!-- ends in end.ejs -->
+   
+   
