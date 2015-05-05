@@ -60,7 +60,13 @@ module.exports.append_to_file = function(fileName, text)
 
 module.exports.write_to_file = function(fileName, text) 
 {
-  fs.writeFile(fileName, text);
+  fs.writeFile(fileName, text, function(err){
+	  if(err) { 
+		  throw err;
+      } else {
+        
+	  }
+  });
 }
 
 module.exports.IsJsonString = function(str) {

@@ -2,26 +2,26 @@
 <%   var md = JSON.parse(md_cust) %>
 <% no_of_rows = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
-<hr>Required Fields: (<input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'>Toggle</span>)
+<hr><strong>Required Fields:</strong> ( <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> )
 <table class='tiny_font'><tr>
     <% for (i in meta) { %>       
        <% if(meta[i] === 'latitude' || meta[i] == 'longitude' ) { %> 
-          <td><input type='checkbox' class='required_meta_ckbx' checked name='selected_metadata[]' value='<%= meta[i] %>'><%= meta[i] %></td>
+          <td><input type='checkbox' class='required_meta_ckbx' checked name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
        <% }else{ %>  
-          <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= meta[i] %>'><%= meta[i] %></td>
+          <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
        <% } %>  
        <% if(i % no_of_rows === no_of_rows-1) { %>        	   		
      			</tr><tr>
        <% } %>            
     <% } %>
 </tr></table>
-<hr>Custom Fields for these Datasets: (<input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'>Toggle</span>)
+<hr><strong>Custom Fields for these Datasets:</strong> ( <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> )
 <% no_of_rows = 2 %>
 <table class='tiny_font'><tr>
     <% i = 0 %>
     <% for (md_name in md) { %>       
        
-       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'><%= md_name %></td>
+       <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'> <%= md_name %></td>
        
        <% if(i % no_of_rows === no_of_rows-1) { %>         	   		
      			</tr><tr>

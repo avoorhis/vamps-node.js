@@ -25,7 +25,6 @@
 }
 #projects_select_div {
     border: 1px solid gray;
-    width: 350px;
     height: 500px;
     overflow:auto;
     font-size: small;
@@ -61,18 +60,18 @@
     margin-left: -30px;
 }
 #show_selected_datasets_div {
-    
+    height:250px;
     
 }
 #dataset_names_div  {
-    height: 100px;
+    height: 150px;
     width:100%;
     overflow: auto;
     border:1px solid gray;
 
 }
 #show_select_items_div {
-    
+    height:250px;
 }
 #dataset_names_div ul li {
     list-style-type: none;
@@ -117,6 +116,10 @@
 	height:500px;
 	overflow:auto;
 }
+.button_row td{
+	padding:2px;
+}
+
 /*  COUNTS TABLE */
 .table_title {
     float:left;
@@ -145,8 +148,6 @@
 
 /* METADATA TABLE */
 #metadata_local_table_div{
-    
-    width:900px;
     overflow:auto;
 }
 #metadata_table_div {
@@ -155,7 +156,7 @@
 }
 #metadata_table {
     font-size:small;
-    background: #8FBC8F;
+    background: #FFFFCC;
 }
 #metadata_table th {
     background: ivory;
@@ -165,64 +166,49 @@
 }
 /* PIECHARTS */
 #piecharts_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* BARCHARTS */
 #barcharts_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dist HEATMAP */
 #dheatmap_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Freq HEATMAP */
 #fheatmap_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dendrogram */
 #dendrogram_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Dendrogram png */
 #dendrogram_pdf_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* PCoA */
 #pcoa_div {
-    width: 900px;
     margin-right:20px;
     padding-right:20px;
 }
 /* GeoSpatial */
 #map-canvas {
-    width: 900px;
-    height: 400px;
     margin-right:20px;
     padding-right:20px;
 }
 /* Frequency Heatmap */
 
-#fheatmap_div {
-    width: 500px;
-    margin-right:20px;
-    padding-right:20px;
-}
+
 .blue {
     background:blue;
-    width:60px;
-    height:12px;
     color:white;
     padding:2px;
     display: inline-block;
@@ -230,8 +216,6 @@
 }
 .red {
     background:red;
-    width:60px;
-    height:12px;
     color:white;
     padding:2px;
     display: inline-block;
@@ -250,7 +234,8 @@
 }
 .ds_cell {
    text-align:right;
-    white-space: nowrap
+    white-space: nowrap;
+	padding:0 5px 0 5px;
 }
 .heatmap_table {
     border-collapse:collapse;
@@ -264,7 +249,11 @@
     font-size:large;
     text-align:center;
 }
-
+.well h5 {
+	
+	text-decoration: none  !important;
+	
+}
 #show_visuals_links_div {
     width: 180px;
 }

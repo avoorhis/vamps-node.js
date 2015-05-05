@@ -24,8 +24,8 @@ a {
     font: 9px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 .content {
-    margin: 30px 0 0 230px;  /* the menu is float left 200px */
-    font: 11px "Lucida Grande", Helvetica, Arial, sans-serif;
+    margin: 0px 0 0 0px;  /* the menu is float left 200px */
+   
     text-align:center;
 }
 .title {
@@ -79,31 +79,34 @@ vertical-align:top;
   margin-right:auto;
 }
 .auto_height200 {
-	height:200;
+	height:200px;
 	overflow:auto;
 }
 .border1 {
 	border:1px solid black;
 }
 /* CSSTerm.com Simple CSS menu */
-.main_menu  {
-    
-  
-}
+
 .color_red{
   color:red;
 }
 td.right_justify {
   text-align:right;
 }
+.left_justify {
+	text-align:left;
+}
 td.left_justify {
   text-align:left;
+}
+.main_menu  {
+   
 }
 .main_menu ul {
     float:left;
     margin: 0;
     padding: 0;
-    width:200px;
+    
     list-style-type: none;
 }
 
@@ -111,6 +114,7 @@ td.left_justify {
     text-decoration: none;
     color: white;
     padding: 10.5px 11px;
+	
     background-color: #005555;
     display:block;
 }
@@ -177,33 +181,24 @@ td.left_justify {
   border: 1px solid grey;
 }
 
-/*  SEARCH */
-#metadata_search_div{
-  background: lightgrey;
-  padding: 3px;
-  border:1px solid grey;
+ uploads form 
+.btn-file {
+    margin-left: 20px;
 }
-#metadata_search_div ul{
-  list-style-type: none;
-  text-decoration: none;
+/*
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
 }
-
-#input1_comparison{
-  display: inline-block;
-}
-#input2_comparison{
-  display: inline-block;
-} 
-#input3_comparison{
-  display: inline-block;
-}
-.search_ds_result_box{
-  list-style-type: none;
-  text-decoration: none;
-  border: 1px solid grey;
-  background:#F0FFF0;
-  height:100px;
-  width:250px;
-  overflow:auto;
-}
-
+*/
