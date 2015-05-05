@@ -1,6 +1,6 @@
 
 var pool = require("generic-pool");
-var fs = require('fs');
+var fs = require('fs-extra');
 mysql = require('mysql2');
 
 //
