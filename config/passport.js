@@ -185,7 +185,7 @@ function signup_user(req, username, password, done, db){
                                     " 1,"+
                                     " 1,"+
                                     " CURRENT_TIMESTAMP(), "+
-                                    " '0000-00-00 00:00:00' )";
+                                    " '' )";
 
 
                 console.log(insertQuery);

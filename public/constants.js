@@ -92,8 +92,8 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'PCoA Analyses (R-pdf)',      thumb:'/images/visuals/pcoa.png',        link:'user_data/pcoa',          id: 'pcoa_link_id'    },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',link:'user_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    link:'user_data/metadata_table',id:'metadata_table_link_id'     },
-    {name:'Data Location',              thumb:'/images/visuals/map.png',         link:'user_data/geospatial',    id:'geospatial_link_id'     },
-    {name:'TEST_TEST',                  thumb:'',                                link:'user_data/test_page',     id:'test_page_link_id'     }
+    {name:'Data Location',              thumb:'/images/visuals/map.png',         link:'user_data/geospatial',    id:'geospatial_link_id'     }
+   
 ]};
     
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];

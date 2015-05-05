@@ -5,7 +5,7 @@ var util = require('util');
 var url  = require('url');
 var http = require('http');
 var path = require('path');
-var fs   = require('fs');
+var fs   = require('fs-extra');
 var async = require('async');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
@@ -29,7 +29,7 @@ var PythonShell = require('python-shell');
 var app = express();
 var d3 = require("d3");
 var xmldom = require('xmldom');
-// // init_node var node_class = 
+// // init_node var node_class =
 // var CustomTaxa  = require('./custom_taxa_class');
 
 /*
@@ -57,19 +57,25 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: view_selection-->>');
   console.log(req.body);
   console.log('req.body: view_selection');
+  //console.log('chosen_id_name_hash:>>');
+  //console.log(chosen_id_name_hash);
+  //console.log('<<chosen_id_name_hash:');
   //console.log(TaxaCounts['27'])
   //console.log('1');
-  
+  if(req.body.resorted === '1'){
+  	dataset_ids = req.body.ds_order;
+	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
+  } 
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);
 
-  var data_source_testing = 'json';   // options: json, db, hdf5
+  
   helpers.start = process.hrtime();
-  helpers.elapsed_time("START: in view_selection using data_source_testing= "+data_source_testing+" -->>>>>>");
+  
   //
   //
   //
-  if(data_source_testing == 'json') {
+  
     // GLOBAL
     var timestamp = +new Date();  // millisecs since the epoch!
     timestamp = req.user.username + '_' + timestamp;
@@ -77,8 +83,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     distance_matrix = {};
     biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-    
-    
+
+
     // GLOBAL
     console.log('metadata');
     metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
@@ -93,59 +99,26 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
     // {unit_id:[cnt1,cnt2...] // counts are in ds order
     console.log('visual_post_items:>>');
-    console.log(visual_post_items); 
+    console.log(visual_post_items);
     console.log('<<visual_post_items:');
-    //console.log(biom_matrix);        
-     
-    //req.flash('info', 'Datasets are updated!')
-    res.render('visuals/view_selection', { 
-                                  title     :           'VAMPS: Visuals Select',
-                                  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix    :           JSON.stringify(biom_matrix),
-                                  metadata  :           JSON.stringify(metadata),
-                                  constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),   
-                                  user      :           req.user,
-                                  message  : req.flash()
-                   });
-    helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<"); 
-  
-  }else if(data_source_testing == 'db') {
-    var uitems = visual_post_items.unit_choice.split('_');
-    unit_name_query = QUERY.get_taxonomy_query( req.db, uitems, chosen_id_name_hash, visual_post_items );
-    req.db.query(unit_name_query, function(err, rows, fields){
-        if (err) {
-          throw err;
-        } else {   
-          
+    //console.log(biom_matrix);
 
-          // GLOBAL
-          distance_matrix = {};
-          biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items, rows);
-          visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
-          metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items, rows);
-          
-          res.render('visuals/view_selection', { 
+    //req.flash('info', 'Datasets are updated!')
+    res.render('visuals/view_selection', {
                                   title     :           'VAMPS: Visuals Select',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                   matrix    :           JSON.stringify(biom_matrix),
                                   metadata  :           JSON.stringify(metadata),
                                   constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),          
+                                  post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
-			  						message  :  req.flash(),
-                       });
-          
-        }
-        helpers.elapsed_time(">>>>>>>> 2 After Page Render using data_source_testing= "+data_source_testing+" <<<<<<"); 
-    });
+                                  message   : req.flash()
+                   });
     
 
-  }else if(data_source_testing == 'hdf5') {
-    // TODO TODO
-  }
   
- 
+
+
 });
 
 
@@ -153,7 +126,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 // logged in users only
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 //router.post('/unit_selection',  function(req, res) {
-  
+
   // TESTING:
   //    There should be one or more datasets shown in list
   //    The Submit button should return with an alert error if no display checkboxes are checked
@@ -169,43 +142,45 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log(req.body);
   console.log('req.body: unit_selection');
   var dataset_ids = [];
-  if(req.body.search == '1'){
+  if(req.body.resorted === '1'){
+  	dataset_ids = req.body.ds_order;	
+  }else if(req.body.search === '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);	
   }else{
     dataset_ids = req.body.dataset_ids;
   }
-  
-  console.log('dataset_ids '+req.body.dataset_ids);
-  if(dataset_ids == undefined || dataset_ids.length === 0){
+
+  console.log('dataset_ids '+dataset_ids);
+  if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	 req.flash('nodataMessage', 'Select Some Datasets');
-   	 res.redirect('index_visuals'); 
+   	 res.redirect('index_visuals');
   }else{
 	  // Global TAXCOUNTS
 	  TAXCOUNTS = {};
 	  // Gather just the tax data of selected datasets
 	  for(var i in dataset_ids){
-	    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json'
+	    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json';
 	
 		var jsonfile = require(path_to_file);
 		TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
 	
-	 
+	
 	  }
 	  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
-	  console.log('dataset_ids2 '+dataset_ids)
+	  console.log('dataset_ids2 '+dataset_ids);
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
-  
-	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids)
+
+	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids);
 	  //console.log('chosen_id_name_hash')
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
 	  // var start = process.hrtime();
-	  // 
+	  //
 	  // // benchmarking
 	  // var elapsed_time = function(note){
 	  //     var precision = 3; // 3 decimal places
@@ -217,26 +192,26 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  // benchmarking
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
-  
-  
+
+
 	  console.log('chosen_id_name_hash-->');
 	  console.log(chosen_id_name_hash);
-	  console.log(chosen_id_name_hash.ids.length)
+	  console.log(chosen_id_name_hash.ids.length);
 	  console.log('<--chosen_id_name_hash');
-    
-  
-	  res.render('visuals/unit_selection', {   
+
+
+	  res.render('visuals/unit_selection', {
 	                    title: 'VAMPS: Units Selection',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
 	                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
-		  				message : req.flash('savedMessage'),
+		  				message : req.flash(),
 	                    user         : req.user
 	  });  // end render
   }
     // benchmarking
-  helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");   
-   
+  helpers.elapsed_time(">>>>>>>> 4 After Page Render <<<<<<");
+
 
 }); // end fxn
 
@@ -257,7 +232,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   console.log(ALL_DATASETS);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   //console.log(req.user)
-  res.render('visuals/index_visuals', { 
+  res.render('visuals/index_visuals', {
                                 title   : 'VAMPS: Select Datasets',
                                 rows    : JSON.stringify(ALL_DATASETS),
                                 permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
@@ -270,18 +245,20 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
-  
-  res.render('visuals/reorder_datasets', { 
+router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
+    
+	var referer = req.body.referer;
+    res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                                 constants    : JSON.stringify(req.C),
+								referer: referer,
                                 user: req.user
                             });
   //console.log(chosen_id_name_hash)
 });
 router.post('/useview_saved_datasets', function(req, res) {
-  
+
     fxn = req.body.fxn;
 	console.log(req.body.filename);
 	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
@@ -318,30 +295,30 @@ router.post('/download_counts_matrix', function(req, res) {
 	var out_file = "downloads/"+timestamp+"_matrix.csv.gz";
     var wstream = fs.createWriteStream(out_file);
 	var gzip = zlib.createGzip();
-    var rs = new Readable;
+    var rs = new Readable();
 	
 	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
-	for(i in biom_matrix.columns){
-		header_txt += ','+biom_matrix.columns[i].name;
+	for (var y in biom_matrix.columns){
+		header_txt += ','+biom_matrix.columns[y].name;
 	}
 	header_txt += '\n\r';
 	rs.push(header_txt);
-	for(i in biom_matrix.rows){
+	for (var i in biom_matrix.rows){
 		row_txt = '';
 		row_txt += biom_matrix.rows[i].name;
-		for(k in biom_matrix.data[i]){
+		for (var k in biom_matrix.data[i]){
 			row_txt += ','+biom_matrix.data[i][k];
 		}
 		row_txt += '\n\r';
 		rs.push(row_txt);
 	}
 	rs.push('\n\r');
-	rs.push(null);  
-  	rs  
-	  .pipe(gzip)  
+	rs.push(null);
+  	rs
+	  .pipe(gzip)
       .pipe(wstream)
       .on('finish', function () {  // finished
-        console.log('done compressing and writing file');    
+        console.log('done compressing and writing file');
       });
 });
 //
@@ -355,38 +332,40 @@ router.post('/heatmap', function(req, res) {
     //console.log('req.body hm');
     //console.log(req.body);
     //console.log('req.body hm');
-    var ts = req.body.ts
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-    
+
     //console.log('mtx1')
-  
+
   //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
     var exec = require('child_process').exec;
     //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
-    
-    var distmtx_file_name = ts+'_distance.csv'
+
+    var distmtx_file_name = ts+'_distance.csv';
     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
     var site_base = path.join(__dirname, '../../');
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', site_base, '--prefix', ts], 
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', site_base, '--prefix', ts],
     };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     PythonShell.run('distance.py', options, function (err, mtx) {
-      if (err) throw err;
-      distance_matrix = JSON.parse(mtx);
-      console.log('dmtx')
-      console.log(distance_matrix)
-      var m = JSON.stringify(mtx)
-      res.render('visuals/partials/load_distance',{
-                                        dm        : distance_matrix,
-                                        constants : JSON.stringify(req.C),
-                                      })
-      
+      if (err) {
+  		  res.send(err);
+  	  }else{
+	      distance_matrix = JSON.parse(mtx);
+	      console.log('dmtx');
+	      console.log(distance_matrix);
+	      var m = JSON.stringify(mtx);
+	      res.render('visuals/partials/load_distance',{
+	                                        dm        : distance_matrix,
+	                                        constants : JSON.stringify(req.C),
+	                                      });
+	  }
     });
 
 });
@@ -395,106 +374,118 @@ router.post('/heatmap', function(req, res) {
 //   F R E Q U E N C Y  H E A T M A P
 //
 router.post('/frequency_heatmap', function(req, res) {
-  
-  console.log('in Freq HP')
-  var ts = req.body.ts
+
+  console.log('in Freq HP');
+  var ts = req.body.ts;
   var metric = req.body.metric;
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-    
+
   var exec = require('child_process').exec;
   //var PythonShell = require('python-shell');
   var html = '';
   var title = 'VAMPS';
-    
-  var distmtx_file_name = ts+'_distance.csv'
+
+  var distmtx_file_name = ts+'_distance.csv';
   var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
   var site_base = path.join(__dirname, '../../');
-  
+
   var fheatmap_script_file = path.resolve(__dirname, '../../public/scripts/fheatmap.R');
 
   shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
-     
+
   COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
-      
+
 
 });
 router.post('/dendrogram', function(req, res) {
-    console.log('found routes_dendrogram')
-    
+    console.log('found routes_dendrogram');
+
     //console.log('req.body dnd');
     //console.log(req.body);
     //console.log('req.body dnd');
-    var ts = req.body.ts
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var image_type = req.body.image_type;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-    
-   
+
+
     var exec = require('child_process').exec;
     //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
-    
-    var distmtx_file_name = ts+'_distance.csv'
+
+    var distmtx_file_name = ts+'_distance.csv';
     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
     var site_base = path.join(__dirname, '../../');
-    
+
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', site_base, '--prefix', ts ], 
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', site_base, '--prefix', ts ],
     };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
-    
-    PythonShell.run('distance.py', options, function (err, output) {
-      if (err) throw err;
-      
-      //var m = JSON.stringify(mtx)
-      if(image_type == 'svg'){
-        //console.log(JSON.parse(output))
-        var d3 = require("d3");
-        var xmldom = require('xmldom');
-        var Newick    = require('../../public/javascripts/newick');
-        var Phylogram = require('../../public/javascripts/d3.phylogram');
-        newick = JSON.parse(output);
-        //console.log('Newick ',newick)
-        var json  = Newick.parse(newick);
-        //console.log(JSON.stringify(json,null,4))
-        var newickNodes = [];
-        function buildNewickNodes(node, callback) {
-          newickNodes.push(node);
-          if (node.branchset) {
-            for (var i=0; i < node.branchset.length; i++) {
-              buildNewickNodes(node.branchset[i]);
-            }
-          }
-        }
-        buildNewickNodes(json);
-		
-        var tree_data = d3.phylogram.build('body', json, {
-          width: 300,
-          height: visual_post_items.no_of_datasets*100
-        });
-		
-        var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-		
-        var html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
-         
-        d3.select('svg').remove(); 
-        
-        //console.log(html);
-        
-      }else{
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
 
-         var image = '/tmp_images/'+ts+'_dendrogram.pdf'
-            var html = "<div id='pdf'>";
-            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-            html += " <p>ERROR in loading pdf file</p>";
-            html += "</object></div>"
-      }
-      res.send(html);
-      
+    PythonShell.run('distance.py', options, function (err, output) {
+      if (err) {
+		  res.send(err);  // for now we'll send errors to the browser
+	  }else{
+	      function buildNewickNodes(node, callback) {
+	        newickNodes.push(node);
+	        if (node.branchset) {
+	          for (var i=0; i < node.branchset.length; i++) {
+	            buildNewickNodes(node.branchset[i]);
+	          }
+	        }
+	      }
+
+	      //var m = JSON.stringify(mtx)
+	      var html;
+	      if(image_type == 'svg'){
+	        //console.log(JSON.parse(output))
+	        var d3 = require("d3");
+	        var xmldom = require('xmldom');
+	        var Newick    = require('../../public/javascripts/newick');
+	        var Phylogram = require('../../public/javascripts/d3.phylogram');
+	        newick = JSON.parse(output);
+	        //console.log('Newick ',newick)
+	        var json  = Newick.parse(newick);
+	        //console.log(JSON.stringify(json,null,4))
+	        var newickNodes = [];
+	        // Validator: "Function declarations should not be placed in blocks. Use a function expression or move the statement to the top of the outer function."
+
+	        // function buildNewickNodes(node, callback) {
+	        //   newickNodes.push(node);
+	        //   if (node.branchset) {
+	        //     for (var i=0; i < node.branchset.length; i++) {
+	        //       buildNewickNodes(node.branchset[i]);
+	        //     }
+	        //   }
+	        // }
+	        buildNewickNodes(json);
+		
+	        var tree_data = d3.phylogram.build('body', json, {
+	          width: 300,
+	          height: visual_post_items.no_of_datasets*100
+	        });
+		
+	        var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+		
+	        html = "<svg height='"+(visual_post_items.no_of_datasets*100)+"' width='900'>"+svgXML+"</svg>";
+
+	        d3.select('svg').remove();
+
+	        //console.log(html);
+
+	      }else{
+	        var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+	        html = "<div id='pdf'>";
+	        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	        html += " <p>ERROR in loading pdf file</p>";
+	        html += "</object></div>";
+	      }
+	      res.send(html);
+  	  }
 
     });
 
@@ -508,7 +499,7 @@ router.get('/user_data/piechart_single', function(req, res) {
     var ts = myurl.query.ts;
     var ds_name = myurl.query.ds;
     var html  = COMMON.start_visuals_html('piechart');
-    
+
     html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
     res.render('visuals/user_data/piechart_single', {
@@ -525,9 +516,9 @@ router.get('/user_data/piechart_single', function(req, res) {
 // P C O A
 //
 router.post('/pcoa', function(req, res) {
-    console.log('in PCoA')
-    console.log(metadata)
-    var ts = req.body.ts
+    console.log('in PCoA');
+    console.log(metadata);
+    var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp', biom_file_name);
@@ -535,25 +526,27 @@ router.post('/pcoa', function(req, res) {
     var exec = require('child_process').exec;
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts], 
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts],
     };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '))
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     PythonShell.run('distance.py', options, function (err, pcoa_data) {
-      if (err) throw err;
-      //console.log(pcoa_data)
-      //pcoa_data = JSON.parse(pcoa_data)
-      //console.log(pcoa_data); 
+      if (err) {
+		  res.send(err); // for now we'll send errors to the browser
+	  }else{
+	      //console.log(pcoa_data)
+	      //pcoa_data = JSON.parse(pcoa_data)
+	      //console.log(pcoa_data);
 
-      var image = '/tmp_images/'+ts+'_pcoa.pdf'
-      var html = "<div id='pdf'>";
-      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-      html += " <p>ERROR in loading pdf file</p>";
-      html += "</object></div>"
-      console.log(html)
-      res.send(html);
+	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
+	      var html = "<div id='pdf'>";
+	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	      html += " <p>ERROR in loading pdf file</p>";
+	      html += "</object></div>";
+	      console.log(html);
+	      res.send(html);
+  	}
 
-      
-    });    
+    });
 
 });
 
@@ -563,26 +556,26 @@ router.post('/pcoa', function(req, res) {
 //
 router.get('/user_data/geospatial', function(req, res) {
   var myurl = url.parse(req.url, true);
-  
+
   var ts    = myurl.query.ts;
   var html  = COMMON.start_visuals_html('geospatial');
-  
+
   res.render('visuals/user_data/geospatial', {
             title: 'VAMPS Geospatial Data',
             timestamp: ts || 'default_timestamp',
             html : html+"<h2>Not Coded Yet</h2>",
             user: req.user
       });
- 
+
 
 });
 router.get('/user_data/test_page', function(req, res) {
-  
+
   res.render('visuals/user_data/test_page', {
             title: 'VAMPS TEST',
-            
+
       });
- 
+
 
 });
 /*
@@ -602,7 +595,7 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 
 // benchmarking
 // var start = process.hrtime();
-// 
+//
 // var elapsed_time = function(note){
 //     var precision = 3; // 3 decimal places
 //     var elapsed = process.hrtime(start)[1] / 1000000; // divide by a million to get nano to milli
@@ -611,14 +604,14 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 // };
 router.get('/partials/load_metadata',  function(req, res) {
   var myurl = url.parse(req.url, true);
-  var load = myurl.query.load  || 'all'   // either 'all' or 'selected'
-  res.render('visuals/partials/load_metadata', 
+  var load = myurl.query.load  || 'all';   // either 'all' or 'selected'
+  res.render('visuals/partials/load_metadata',
     { title   : 'metadata_table',
       load    : load
     });
 });
 router.get('/partials/tax_silva108_custom',  function(req, res) {
-  res.render('visuals/partials/tax_silva108_custom', 
+  res.render('visuals/partials/tax_silva108_custom',
     { title   : 'Silva(v108) Custom Taxonomy Selection'});
 });
 
@@ -636,7 +629,7 @@ router.get('/partials/med_nodes',  function(req, res) {
 });
 
 router.post('/save_datasets',  function(req, res) {
-    
+
     console.log('req.body: save_datasets-->>');
     console.log(req.body);
     console.log('req.body: save_datasets');
@@ -646,10 +639,7 @@ router.post('/save_datasets',  function(req, res) {
 	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username));
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
-	//req.flash('savedMessage', 'Saved!');
-	//res.redirect('unit_selection');
-	//var json_str = JSON.stringify(visual_post_items);
-	//console.log(json_str);
+		
 	res.send('OK');
 	
 });
@@ -657,7 +647,7 @@ router.post('/save_datasets',  function(req, res) {
 //
 //
 router.get('/saved_datasets',  function(req, res) {
-    console.log('in show_saved_datasets')
+    console.log('in show_saved_datasets');
     //console.log('req.body: show_saved_datasets-->>');
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
@@ -668,23 +658,39 @@ router.get('/saved_datasets',  function(req, res) {
     file_info.mtime ={};
     file_info.size = {};
     file_info.files = [];
-    fs.readdir(saved_datasets_dir, function(err, files){   
-      for(f in files){
-        var pts = files[f].split('_');
-        if(pts[1] === 'datasets'){
-          file_info.files.push(files[f]);
-          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-          file_info.mtime[files[f]] = stat.mtime;  // modify time
-          file_info.size[files[f]] = stat.size;
-        }
-      }
-	  res.render('visuals/saved_datasets', 
-	    { title: 'saved_datasets',
-	      finfo: JSON.stringify(file_info),
-	  	  message:req.flash('deleteMessage'),
-	      user: 	req.user.username
-	    });
+	file_info2 = {};
+	modify_times = [];
+    fs.readdir(saved_datasets_dir, function(err, files){
+		if(err){
+			console.log(err);
+		}else{
+		  for (var f in files){
+	        var pts = files[f].split('_');
+	        if(pts[1] === 'datasets'){
+	          file_info.files.push(files[f]);
+	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
+	          
+			  file_info.mtime[files[f]] = stat.mtime;  // modify time
+	          file_info.size[files[f]] = stat.size;
+			  file_info2[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+			  modify_times.push(stat.mtime.getTime());
+			  
+	        }
+	      }
 	  
+		  modify_times.sort().reverse();
+		  
+		  console.log(JSON.stringify(file_info2));
+		  res.render('visuals/saved_datasets',
+		    { title: 'saved_datasets',
+		      finfo:  JSON.stringify(file_info),
+		      finfo2: JSON.stringify(file_info2),
+		      times: modify_times,
+		  	  message:req.flash('deleteMessage'),
+		      user: 	req.user.username
+		    });
+		}
+	
     });
 	
 });

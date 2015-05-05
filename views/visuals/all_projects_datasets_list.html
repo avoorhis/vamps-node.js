@@ -16,10 +16,10 @@
         <label id='<%= pname %>' class='project-select'>
           <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
             <img alt='plus' src='/images/tree_plus.gif'/>
-          </a>
+          
           <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
           <a href='/projects/<%= pid %>'>
-            <span id='<%= tt_pj_id %>' class='tooltip'><%= pname %></span></a>
+            <span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %></span></a></a>
         </label>
         <ul>
           <div id='<%= pname %>_ds_div' class='datasets_per_pr'>
@@ -34,7 +34,7 @@
               <li>
                 <label id='<%= pd %>' class='dataset-select'  >
                    <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= did %>'/>
-                   <span id='<%= tt_ds_id %>' class='tooltip'><%= dname %></span>
+                   <span id='<%= tt_ds_id %>' class='tooltipx'><%= dname %></span>
                 </label>
               </li>
             <% } %>

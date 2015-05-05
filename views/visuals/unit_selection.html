@@ -2,29 +2,33 @@
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/mktree.css">-->
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var referer = 'unit_selection'; %>
 <script>
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';
+  
 </script>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
-<% } %>      
+ 
+<% if(messages.info){ %>
+  <span><%= messages.info %></span>
+<% } %> 
+<button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>next &gt;&gt; Show Available Graphics</button>
+
+        
+        
+		
 <div id='show_selected_datasets_div' class='div_border table'>
                 <% include partials/show_selected_datasets.html %>
 </div>
 <br>
 <div id='' class=''>
 <!-- autocomplete="off" clears the checkboxes on page refresh -->
-<form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
 
+<form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
   <table  class='center_table table' >
-    <tr><td colspan='2' class='center'>
-        <span class='bold_font'>Next:</span> 
-        <input type='button' id="get_graphics" name='get_graphics' value='Show Available Graphics' >
-        <hr>
-    </td></tr>
+    
     <tr>
       <td>
            <% include partials/unit_selection_choices.html %>
@@ -41,7 +45,7 @@
 
         </div>
       </td>
-      <td class='td_top small_font'>
+      <td class='td_top small_font left_justify'>
         <div id='metadata_select_choices_div' class='metadata_selection_page_div_border '>
           <% include partials/show_metadata_choices.html %>
         </div>
@@ -53,9 +57,12 @@
 
 
 
-  <div id='DEBUG_div'></div>
-  <script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
+ 
+  
+ <% include ../add_ins/end.ejs %>
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/common_selection.js"></script>
   <script type="text/javascript" src="/javascripts/unit_selection.js"></script>
-<% include ../add_ins/end.ejs %>
+ 
+ </body>
+ </html>
