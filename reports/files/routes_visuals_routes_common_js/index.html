@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">59.15</p>
+      <p class="stat">58.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">408</p>
+      <p class="stat">404</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">57.79</p>
+      <p class="stat">57.56</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.39</p>
+      <p class="stat">4.40</p>
     </div>
   </div>
 </div>
@@ -171,11 +171,11 @@ module.exports = {
 
 
     html += &#039;&lt;li&gt;Normalization: &#039;;
-    if(obj.normalization === &#039;freq&#039;) {
+    if(obj.normalization === &#039;frequency&#039; || obj.normalization === &#039;freq&#039;) {
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  &gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; checked=&quot;checked&quot;&gt;To Frequency&#039;;
-    } else if (obj.normalization === &#039;max&#039;) {
+    } else if (obj.normalization === &#039;maximum&#039; || obj.normalization === &#039;max&#039;) {
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;none&quot; &gt;None &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;max&quot;  checked=&quot;checked&quot;&gt;To Maximum Count &amp;nbsp;&amp;nbsp;&amp;nbsp;&#039;;
       html += &#039;&lt;input type=&quot;radio&quot; name=&quot;norm&quot; value=&quot;freq&quot; &gt;To Frequency&#039;;
@@ -199,12 +199,12 @@ module.exports = {
     html += &quot;&lt;/select&gt;&quot;;
     html += &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp; MAX &lt;select name=&#039;max_range&#039; class=&#039;small_font&#039;&gt;&quot;;
     // TODO: &quot;&#039;n&#039; is already defined.&quot;
-     for (var n=1; n &lt; C.PCT_RANGE.length; n++ ) {
+     for (var n1=1; n1 &lt; C.PCT_RANGE.length; n1++ ) {
        
-       if(obj.max_range.toString() === C.PCT_RANGE[n].toString()) {
-         html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+       if(obj.max_range.toString() === C.PCT_RANGE[n1].toString()) {
+         html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n1]+&quot;&#039; selected=&#039;selected&#039;&gt;&quot;+C.PCT_RANGE[n1]+&quot; %&lt;/option&gt;&quot;;
        }else{
-         html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n]+&quot;&#039;&gt;&quot;+C.PCT_RANGE[n]+&quot; %&lt;/option&gt;&quot;;
+         html += &quot;&lt;option value=&#039;&quot;+C.PCT_RANGE[n1]+&quot;&#039;&gt;&quot;+C.PCT_RANGE[n1]+&quot; %&lt;/option&gt;&quot;;
        }
      }
     html += &quot;&lt;/select&gt;&lt;/li&gt;&quot;;
@@ -221,10 +221,10 @@ module.exports = {
   //
   //
   save_post_items: function(req) {
+    // GLOBAL Variable
+    var post_hash = {};
 
     if(req.body.ds_order === undefined) {
-          // GLOBAL Variable
-          var post_hash = {};
           
           post_hash.unit_choice                  = req.body.unit_choice;
           //visual_post_items.max_ds_count                 = COMMON.get_max_dataset_count(selection_obj);
@@ -348,7 +348,7 @@ module.exports = {
     for (var i = 0, hash = 0; i &lt; str.length; hash = str.charCodeAt(i++) + ((hash &lt;&lt; 5) - hash));
     // int/hash to hex
     // TODO: &quot;&#039;i&#039; is already defined.&quot;
-    for (var i = 0, colour = &quot;#&quot;; i &lt; 3; colour += (&quot;00&quot; + ((hash &gt;&gt; i++ * 8) &amp; 0xFF).toString(16)).slice(-2));
+    for (var i1 = 0, colour = &quot;#&quot;; i1 &lt; 3; colour += (&quot;00&quot; + ((hash &gt;&gt; i1++ * 8) &amp; 0xFF).toString(16)).slice(-2));
     return colour;
   },
   string_to_color_code: function (str){
@@ -370,7 +370,7 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     
     var title = &#039;VAMPS&#039;;
     
-    var distmtx_file_name = ts+&#039;_distance.csv&#039;
+    var distmtx_file_name = ts+&#039;_distance.csv&#039;;
     var distmtx_file = path.join(__dirname, &#039;../../tmp/&#039;+distmtx_file_name);
     var options = {
       scriptPath : &#039;public/scripts&#039;,
@@ -379,7 +379,7 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
     console.log(&#039;options:&#039;, options);
     PythonShell.run(&#039;distance.py&#039;, options, function (err, mtx) {
       if (err) throw err;
-      console.log(JSON.parse(mtx))
+      console.log(JSON.parse(mtx));
       return mtx;
  
       
@@ -391,16 +391,16 @@ run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
 run_script_cmd: function (req,res, ts, command, visual_name) {
      var exec = require(&#039;child_process&#039;).exec;
 
-    console.log(command)
+    console.log(command);
     exec(command, {maxBuffer:16000*1024}, function (error, stdout, stderr) {  // currently 16000*1024 handles 232 datasets
         if(visual_name == &#039;fheatmap&#039;){
-            var image = &#039;/tmp_images/&#039;+ts+&#039;_heatmap.pdf&#039;
+            var image = &#039;/tmp_images/&#039;+ts+&#039;_heatmap.pdf&#039;;
             var html = &quot;&lt;div id=&#039;pdf&#039;&gt;&quot;;
             html += &quot;&lt;object data=&#039;&quot;+image+&quot;?zoom=100&amp;scrollbar=0&amp;toolbar=0&amp;navpanes=0&#039; type=&#039;application/pdf&#039; width=&#039;1000&#039; height=&#039;900&#039; /&gt;&quot;;
             html += &quot; &lt;p&gt;ERROR in loading pdf file&lt;/p&gt;&quot;;
-            html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;
+            html += &quot;&lt;/object&gt;&lt;/div&gt;&quot;;
             //var html = &quot;&lt;img alt=&#039;alt_freq-heatmap-fig&#039; src=&#039;&quot;+image+&quot;&#039; /&gt;&quot;
-            console.log(html)
+            console.log(html);
             res.send(html);  
         }    
 
@@ -418,7 +418,7 @@ create_chosen_id_name_hash: function(dataset_ids) {
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
 
-  for(i in dataset_ids){
+  for (var i in dataset_ids){
       did   = dataset_ids[i];
       dname = DATASET_NAME_BY_DID[did];
       pid   = PROJECT_ID_BY_DID[did];
@@ -489,12 +489,8 @@ check_initial_status: function(url) {
     // 
     values_updated = false;  // return to initial state
   }
-  console.log(&#039;values_updated: &#039;+values_updated.toString())
+  console.log(&#039;values_updated: &#039;+values_updated.toString());
   return values_updated;
-},
-
-save_datasets: function(datasets) {
-  console.log(&#039;in save_datasets&#039;);
 }
 
 };   // end module.exports</textarea>
