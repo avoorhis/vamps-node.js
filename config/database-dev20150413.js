@@ -1,3 +1,4 @@
+
 var fs = require('fs-extra');
 mysql = require('mysql2');
 // public/json/tax_counts--<NODE_DATABASE>.json 
@@ -5,12 +6,13 @@ mysql = require('mysql2');
 // public/json/metadata--<NODE_DATABASE>.json
 // need to be present for the web-app to work correctly
 
+////
+///
+//
 //
 eval(fs.readFileSync('config/db-connect-dev.js').toString());
 //eval(fs.readFileSync('config/db-connect-test.js').toString());
 //eval(fs.readFileSync('config/db-connect-production.js').toString());
-
-
 
 //var connection;
 
@@ -18,8 +20,7 @@ eval(fs.readFileSync('config/db-connect-dev.js').toString());
 // Edited: replaced all "db" with "exports.db"
 (function(){
    var handleDisconnect, this$ = this;
-
-
+  
    //config = require('./config');
    exports.db = null;
    handleDisconnect = function(){
@@ -47,9 +48,7 @@ eval(fs.readFileSync('config/db-connect-dev.js').toString());
      });
    };
    handleDisconnect();
-
 }).call(this);
 
  
 
->>>>>>> 8d2fe10d18053934da9cf769b64b583b6a3a573b
