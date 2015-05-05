@@ -45,7 +45,7 @@ var tip = {
 };
 
 
-$("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) {
+$("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
       $link = $(this);
@@ -103,7 +103,8 @@ $("body").delegate(".tooltip", "mouseover mouseout mousemove", function (event) 
       }
               
 });              
-          
+
+
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
 if (typeof norm_counts_radios[0] !=="undefined") {
@@ -150,36 +151,31 @@ var tax_counts_btn = document.getElementById('counts_table_hide_btn');
 var tax_counts_div = document.getElementById('tax_table_div');
 var counts_table_download_btn = document.getElementById('counts_table_download_btn');
 if (typeof tax_counts_link !=="undefined") {
-  tax_counts_link.addEventListener('click', function () {
-      //alert(tax_table_created)
-      if(typeof tax_table_created == "undefined"){
+  	tax_counts_link.addEventListener('click', function () {
+    if(typeof tax_table_created == "undefined"){
         get_user_input('counts_table', pi_local.ts);
-		counts_table_download_btn.disabled = false
-      }else{
-        if(tax_counts_btn.value == 'close'){
+		    counts_table_download_btn.disabled = false;
+    }else{
+        if(tax_counts_btn.value == 'hide'){
           toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
         }else{
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
-      }
+    }
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
-  tax_counts_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(tax_counts_btn.value == 'close'){
+	tax_counts_btn.addEventListener('click', function () {
+      if(tax_counts_btn.value == 'hide'){
         toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
       }else{
         toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
       }
-      
   });
 }
 if (typeof counts_table_download_btn !=="undefined") {
   
   counts_table_download_btn.addEventListener('click', function () {
-	  //download_matrix('counts_matrix'); 
-	  
 	  var f = document.createElement("form");
 	  f.setAttribute('method',"POST");
 	  f.setAttribute('action',"download_counts_matrix");
@@ -188,7 +184,7 @@ if (typeof counts_table_download_btn !=="undefined") {
 	  s.setAttribute('type',"submit");
 	  s.setAttribute('value',"Submit");
 	  
-	  f.appendChild(s)
+	  f.appendChild(s);
 	  document.getElementsByTagName('body')[0].appendChild(f);
 	  f.submit();
   });
@@ -200,11 +196,11 @@ var metadata_link = document.getElementById('metadata_table_link_id');
 var metadata_btn = document.getElementById('metadata_table_hide_btn');
 var metadata_div = document.getElementById('metadata_local_table_div');
 if (typeof metadata_link !=="undefined") {
-  metadata_link.addEventListener('click', function () {
+  	metadata_link.addEventListener('click', function () {
       if(typeof metadata_table_created == "undefined"){
         get_user_input('metadata_table', pi_local.ts);
       }else{
-        if(metadata_btn.value == 'close'){
+        if(metadata_btn.value == 'hide'){
           toggle_visual_element(metadata_div,'show',metadata_btn);
         }else{
           toggle_visual_element(metadata_div,'hide',metadata_btn);
@@ -216,7 +212,7 @@ if (typeof metadata_link !=="undefined") {
 if (typeof metadata_btn !=="undefined") {
   metadata_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(metadata_btn.value == 'close'){
+      if(metadata_btn.value == 'hide'){
         toggle_visual_element(metadata_div,'show',metadata_btn);
       }else{
         toggle_visual_element(metadata_div,'hide',metadata_btn);
@@ -235,7 +231,7 @@ if (typeof piecharts_link !=="undefined") {
       if(typeof piecharts_created == "undefined"){
         get_user_input('piecharts', pi_local.ts);
       }else{
-        if(piecharts_btn.value == 'close'){
+        if(piecharts_btn.value == 'hide'){
           toggle_visual_element(piecharts_div,'show',piecharts_btn);
         }else{
           toggle_visual_element(piecharts_div,'hide',piecharts_btn);
@@ -247,7 +243,7 @@ if (typeof piecharts_link !=="undefined") {
 if (typeof piecharts_btn !=="undefined") {
   piecharts_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(piecharts_btn.value == 'close'){
+      if(piecharts_btn.value == 'hide'){
         toggle_visual_element(piecharts_div,'show',piecharts_btn);
       }else{
         toggle_visual_element(piecharts_div,'hide',piecharts_btn);
@@ -266,7 +262,7 @@ if (typeof barchart_link !=="undefined") {
       if(typeof barcharts_created == "undefined"){
         get_user_input('barcharts', pi_local.ts);
       }else{
-        if(barcharts_btn.value == 'close'){        
+        if(barcharts_btn.value == 'hide'){        
           toggle_visual_element(barcharts_div,'show',barcharts_btn);
         }else{
           toggle_visual_element(barcharts_div,'hide',barcharts_btn);
@@ -278,7 +274,7 @@ if (typeof barchart_link !=="undefined") {
 if (typeof barcharts_btn !=="undefined") {
   barcharts_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(barcharts_btn.value == 'close'){        
+      if(barcharts_btn.value == 'hide'){        
         toggle_visual_element(barcharts_div,'show',barcharts_btn);
       }else{
         toggle_visual_element(barcharts_div,'hide',barcharts_btn);
@@ -297,7 +293,7 @@ if (typeof dheatmap_link !=="undefined") {
       if(typeof dheatmap_created == "undefined"){
         get_user_input('dheatmap', pi_local.ts);
       }else{
-        if(dheatmap_btn.value == 'close'){        
+        if(dheatmap_btn.value == 'hide'){        
           toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
         }else{
           toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
@@ -309,7 +305,7 @@ if (typeof dheatmap_link !=="undefined") {
 if (typeof dheatmap_btn !== "undefined") {
   dheatmap_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(dheatmap_btn.value == 'close'){        
+      if(dheatmap_btn.value == 'hide'){        
         toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
       }else{
         toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
@@ -328,7 +324,7 @@ if (typeof fheatmap_link !=="undefined") {
       if(typeof fheatmap_created == "undefined"){
         get_user_input('fheatmap', pi_local.ts);
       }else{
-        if(fheatmap_btn.value == 'close'){        
+        if(fheatmap_btn.value == 'hide'){        
           toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
         }else{
           toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
@@ -339,7 +335,7 @@ if (typeof fheatmap_link !=="undefined") {
 if (typeof fheatmap_btn !== "undefined") {
   fheatmap_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(fheatmap_btn.value == 'close'){        
+      if(fheatmap_btn.value == 'hide'){        
         toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
       }else{
         toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
@@ -358,7 +354,7 @@ if (typeof dendrogram_link !=="undefined") {
       if(typeof dendrogram_created == "undefined"){
         get_user_input('dendrogram', pi_local.ts);
       }else{
-        if(dendrogram_btn.value == 'close'){        
+        if(dendrogram_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
         }else{
           toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
@@ -370,7 +366,7 @@ if (typeof dendrogram_link !=="undefined") {
 if (typeof dendrogram_btn !== "undefined") {
   dendrogram_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(dendrogram_btn.value == 'close'){        
+      if(dendrogram_btn.value == 'hide'){        
         toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
       }else{
         toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
@@ -388,7 +384,7 @@ if (typeof dendrogram_pdf_link !=="undefined") {
       if(typeof dendrogram_pdf_created == "undefined"){
         get_user_input('dendrogram_pdf', pi_local.ts);
       }else{
-        if(dendrogram_pdf_btn.value == 'close'){        
+        if(dendrogram_pdf_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
         }else{
           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
@@ -400,7 +396,7 @@ if (typeof dendrogram_pdf_link !=="undefined") {
 if (typeof dendrogram_pdf_btn !== "undefined") {
   dendrogram_pdf_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(dendrogram_pdf_btn.value == 'close'){        
+      if(dendrogram_pdf_btn.value == 'hide'){        
         toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
       }else{
         toggle_visual_element(dendrogram_png_div,'hide',dendrogram_pdf_btn);
@@ -418,7 +414,7 @@ if (typeof pcoa_link !=="undefined") {
       if(typeof pcoa_created == "undefined"){
         get_user_input('pcoa', pi_local.ts);
       }else{
-        if(pcoa_btn.value == 'close'){        
+        if(pcoa_btn.value == 'hide'){        
           toggle_visual_element(pcoa_div,'show',pcoa_btn);
         }else{
           toggle_visual_element(pcoa_div,'hide',pcoa_btn);
@@ -429,7 +425,7 @@ if (typeof pcoa_link !=="undefined") {
 if (typeof pcoa_btn !== "undefined") {
   pcoa_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(pcoa_btn.value == 'close'){        
+      if(pcoa_btn.value == 'hide'){        
         toggle_visual_element(pcoa_div,'show',pcoa_btn);
       }else{
         toggle_visual_element(pcoa_div,'hide',pcoa_btn);
@@ -450,7 +446,7 @@ if (typeof geospatial_link !=="undefined") {
       if(typeof geospatial_created == "undefined"){
           get_user_input('geospatial', pi_local.ts);
       }else{
-        if(geospatial_btn.value == 'close'){        
+        if(geospatial_btn.value == 'hide'){        
           toggle_visual_element(geospatial_div,'show',geospatial_btn);
         }else{
           toggle_visual_element(geospatial_div,'hide',geospatial_btn);
@@ -461,7 +457,7 @@ if (typeof geospatial_link !=="undefined") {
 if (typeof geospatial_btn !== "undefined") {
   geospatial_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(geospatial_btn.value == 'close'){        
+      if(geospatial_btn.value == 'hide'){        
         toggle_visual_element(geospatial_div,'show',geospatial_btn);
       }else{
         toggle_visual_element(geospatial_div,'hide',geospatial_btn);
@@ -494,10 +490,12 @@ function create_test_page(ts) {
 function toggle_visual_element(table_div, tog, btn){
   if(tog == 'show') {
     table_div.style.display = 'none';
-    btn.value = 'open';
+    btn.value = 'show';
+	btn.innerHTML = 'show';
   }else{
     table_div.style.display = 'block';
-    btn.value = 'close';
+    btn.value = 'hide';
+	btn.innerHTML = 'hide';
   }
 }
 
@@ -509,21 +507,21 @@ function get_user_input(visual, ts) {
     }else if(visual === 'metadata_table'){
       create_metadata_table();
     }else if(visual === 'piecharts'){
-      create_piecharts(ts)
+      create_piecharts(ts);
     }else if(visual === 'barcharts'){
-      create_barcharts(ts)
+      create_barcharts(ts);
     }else if(visual === 'dheatmap'){
-      create_dheatmap(ts)
+      create_dheatmap(ts);
     }else if(visual === 'dendrogram'){
-      create_dendrogram(ts,'svg')
+      create_dendrogram(ts,'svg');
     }else if(visual === 'dendrogram_pdf'){
-      create_dendrogram(ts,'pdf')
+      create_dendrogram(ts,'pdf');
     }else if(visual === 'pcoa'){
-      create_pcoa(ts)
+      create_pcoa(ts);
     }else if(visual === 'fheatmap'){
-      create_fheatmap(ts)
+      create_fheatmap(ts);
     }else if(visual === 'geospatial'){
-      create_geospatial(ts)
+      create_geospatial(ts);
     }else{
 
     }
@@ -539,12 +537,14 @@ function create_counts_table() {
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
       var tax_counts_div = document.getElementById('tax_table_div');
+	  tax_counts_div.style.display = 'block';
       var html = '';
          
       html += "</table>  ";
       html += "</span>";
 
-      html += "<table border='1' class='single_border small_font counts_table' >";
+      //html += "<table border='1' class='single_border small_font counts_table' >";
+	  html += "<table border='1' class='table table-condensed' >";
       html += "<tr><td></td>";
       for (var n in mtx_local.columns) {
         html += "<td class=''>"+mtx_local.columns[n].name +"</td>";
@@ -554,11 +554,12 @@ function create_counts_table() {
       for (var i in mtx_local.rows){
         html += "<tr class='chart_row'>";
         html += "<td class='left_justify'>"+mtx_local.rows[i].name +"</td>";
-        for (var d in mtx_local.data[i]) {
-          var cnt = mtx_local.data[i][d];
-          var pct =  (cnt * 100 / mtx_local.column_totals[d]).toFixed(2);
-          var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[d].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          html += "<td id='"+id+"' class='tooltip right_justify'>"+cnt+'</td>';
+        for (var da in mtx_local.data[i]) {
+          var cnt = mtx_local.data[i][da];
+		  
+          var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
+          var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[da].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          html += "<td id='"+id+"' class='tooltipx right_justify'>"+String(cnt)+'</td>';
           
         }
         html += "</tr>";
@@ -567,22 +568,20 @@ function create_counts_table() {
       html += "<tr>";
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (var m in mtx_local.column_totals){
-		  if(pi_local.normalization == 'frequency'){
-			  var total = mtx_local.column_totals[m].toFixed(6);
-		  }else{
-			  var total = mtx_local.column_totals[m];
-		  }
-		html += "<td class='right_justify'>" + total + "</td>";
+        var total;
+  		  if(pi_local.normalization == 'frequency'){
+  			  total = mtx_local.column_totals[m].toFixed(6);
+  		  }else{
+  			  total = mtx_local.column_totals[m];
+  		  }
+  		  html += "<td class='right_justify'>" + total + "</td>";
       }
       html += "</tr>";
       html += "</table>";
 
       //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
-      tax_counts_div.innerHTML = html;
-
-
-     
-};
+      tax_counts_div.innerHTML = html;   
+}
 
 //
 //  CREATE METADATA TABLE
@@ -592,9 +591,11 @@ function create_metadata_table() {
       metadata_table_created = true;
       var info_line = create_header('mtable', pi_local);
       var metadata_div = document.getElementById('metadata_local_table_div');
+	  metadata_div.style.display = 'block';
       document.getElementById('pre_metadata_table_div').style.display = 'block';
       var html = '';
-      html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
+      //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
+	  html += "<table border='1' id='metadata_table' class='table table-condensed' >";
       html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
       
       for (var ds in md_local) {
@@ -612,7 +613,7 @@ function create_metadata_table() {
 
       //alert(md_local[0].env_matter)
       metadata_div.innerHTML = html;
-};
+}
 
 //
 //  CREATE Dendrogram
@@ -622,16 +623,18 @@ function create_dendrogram(ts, image_type) {
       //alert('im DEND')
       
       var info_line = create_header('dend', pi_local);
-
+      var dend_div;
       if(image_type == 'pdf'){
         dendrogram_pdf_created = true;
         var dend_div = document.getElementById('dendrogram_pdf_div');
         document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';
+  	    dend_div.style.display = 'block';
         document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
       }else{  // svg
         dendrogram_created = true;
         var dend_div = document.getElementById('dendrogram_div');
         document.getElementById('pre_dendrogram_div').style.display = 'block';
+  	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram_title').innerHTML = info_line;
       }
       
@@ -640,8 +643,7 @@ function create_dendrogram(ts, image_type) {
       
       
       
-      
-      var html = ''
+      var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
@@ -653,13 +655,13 @@ function create_dendrogram(ts, image_type) {
 
         if (xmlhttp.readyState == 4 ) {
            var htmlstring = xmlhttp.responseText;
-           html = "<div id='' >"+htmlstring+"</div>"
+           html = "<div id='' >"+htmlstring+"</div>";
            dend_div.innerHTML = html;
         }
       };
       xmlhttp.send(args);
  
-};
+}
 
 
 //
@@ -669,12 +671,10 @@ function create_pcoa(ts) {
       //alert('JS PCoA')
       pcoa_created = true;
       var pcoa_div = document.getElementById('pcoa_div');
-      //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('pcoa', pi_local);
+	  pcoa_div.style.display = 'block';
       document.getElementById('pcoa_title').innerHTML = info_line;
-      
-
-      var html = ''
+      var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_pcoa_div').style.display = 'block';
@@ -691,7 +691,7 @@ function create_pcoa(ts) {
       };
       xmlhttp.send(args);
       
-};
+}
 //
 //  CREATE DIST HEATMAP
 //
@@ -699,11 +699,12 @@ function create_dheatmap(ts) {
       //alert('im HM')
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
+	  dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
       
-      var html = ''
+      var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_dheatmap_div').style.display = 'block';
@@ -718,7 +719,7 @@ function create_dheatmap(ts) {
         }
       };
       xmlhttp.send(args);      
-};
+}
 //
 //  CREATE FREQUENCY HEATMAP
 //
@@ -726,11 +727,12 @@ function create_fheatmap(ts) {
       //alert('im HM')
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
+	  fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('fhm', pi_local);
       document.getElementById('fheatmap_title').innerHTML = info_line;
       
-      var html = ''
+      var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       document.getElementById('pre_fheatmap_div').style.display = 'block';
@@ -745,7 +747,7 @@ function create_fheatmap(ts) {
       };
       xmlhttp.send(args);   
       
-};
+}
 //
 //  CREATE GEOSPATIAL
 //
@@ -753,6 +755,7 @@ function create_geospatial(ts) {
       //alert('in GEO')
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
+	  geo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
       var info_line = create_header('geo', pi_local);
@@ -766,8 +769,8 @@ function create_geospatial(ts) {
       var latlon;
       
       for (var ds in md_local) {
-          var lat = ''
-          var lon = ''
+          var lat = '';
+          var lon = '';
           for (var k in md_local[ds]) {
             md_item = k;
             if(md_item == 'latitude') {
@@ -782,7 +785,7 @@ function create_geospatial(ts) {
           if(typeof lat == 'number' && typeof lon == 'number'){
             latlon = lat.toString() +';'+ lon.toString();
             if (latlon in lat_lon_collector) {
-              newds = lat_lon_collector[latlon] + "<br>" + ds
+              newds = lat_lon_collector[latlon] + "<br>" + ds;
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
@@ -800,18 +803,18 @@ function create_geospatial(ts) {
 
       }
 
-      if(markers.length == 0){
+      if (markers.length === 0){
           geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
       }else{
         var center = new google.maps.LatLng(markers[0][2],markers[0][1]); // wants lon, lat order
 
         var mapCanvas = document.getElementById('map-canvas');
-          var mapOptions = {
-            center:center,
-            zoom: 5,
-            //zoom: 2,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-          }
+        var mapOptions = {
+          center:center,
+          zoom: 5,
+          //zoom: 2,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
         var map = new google.maps.Map(mapCanvas, mapOptions);
         var infowindow =  new google.maps.InfoWindow({
           content: ''
@@ -819,7 +822,7 @@ function create_geospatial(ts) {
 
         setMarkers(map, markers, infowindow);
       }  
-};
+}
 
 function bindInfoWindow(marker, map, infowindow, html) { 
   google.maps.event.addListener(marker, 'click', function() { 
@@ -852,30 +855,32 @@ function create_piecharts(ts) {
     piecharts_created = true;
     
     var info_line = create_header('pies', pi_local);
+	var piecharts_div = document.getElementById('piecharts_div');
+	piecharts_div.style.display = 'block';
     document.getElementById('piecharts_title').innerHTML = info_line;
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
     var counts_per_ds = [];
     var tmp={};
-    for(var i in mtx_local.columns){
+    for (var i in mtx_local.columns){
       tmp[mtx_local.columns[i].name]=[]; // datasets
     }
-    for(var x in mtx_local.data){
-      for(var i in mtx_local.columns){
-        tmp[mtx_local.columns[i].name].push(mtx_local.data[x][i]);
+    for (var x in mtx_local.data){
+      for (var y in mtx_local.columns){
+        tmp[mtx_local.columns[y].name].push(mtx_local.data[x][y]);
       }
     }
     var myjson_obj={};
     myjson_obj.names=[];
     myjson_obj.values=[];
-    for(var x in tmp) {
-        counts_per_ds.push(tmp[x]);
-        myjson_obj.names.push(x);
-        myjson_obj.values.push(tmp[x]);
+    for (var z in tmp) {
+        counts_per_ds.push(tmp[z]);
+        myjson_obj.names.push(z);
+        myjson_obj.values.push(tmp[z]);
     }
     //alert(myjson_obj.names);
     var unit_list = [];
-    for(o in mtx_local.rows){
+    for (var o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
     }
     
@@ -899,12 +904,12 @@ function create_piecharts(ts) {
         .data(myjson_obj.values)
         .enter().append("g")
         .attr("transform", function(d, i){
-            
+
             var modulo_i = i+1;
-            var d = r+m;
-            var h_spacer = d*2*(i % pies_per_row);
-            var v_spacer = d*2*Math.floor(i / pies_per_row);
-            return "translate(" + (d + h_spacer) + "," + (d + v_spacer) + ")";
+            var diam = r+m;
+            var h_spacer = diam*2*(i % pies_per_row);
+            var v_spacer = diam*2*Math.floor(i / pies_per_row);
+            return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
         .append("a")
         .attr("xlink:xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
@@ -918,7 +923,7 @@ function create_piecharts(ts) {
         .attr("id",function(d,i) {
             var cnt = d.value;
             var total = 0;
-            for(k in this.parentNode.__data__){
+            for (var k in this.parentNode.__data__){
               total += this.parentNode.__data__[k];
             }           
             
@@ -929,7 +934,7 @@ function create_piecharts(ts) {
             return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
         })
-        .attr("class","tooltip")
+        .attr("class","tooltipx")
         .style("fill", function(d, i) {
             return colors[i];
         });
@@ -945,8 +950,7 @@ function create_piecharts(ts) {
           return d;
       });
    
-
-};
+}
 
 
 
@@ -958,7 +962,8 @@ function create_barcharts(ts) {
         
         barcharts_created = true;
         var info_line = create_header('bars', pi_local);
-        
+		var barcharts_div = document.getElementById('barcharts_div');
+		barcharts_div.style.display = 'block';
         document.getElementById('barcharts_title').innerHTML = info_line;
         document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
@@ -1016,7 +1021,7 @@ function create_barcharts(ts) {
         
         create_svg_object(props, color, data, ts);
         
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -1121,7 +1126,7 @@ function create_svg_object(props, color, data, ts) {
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
 
-          .attr("class","tooltip")
+          .attr("class","tooltipx")
           .style("fill",   function(d) { return color(d.name); });
 
 
@@ -1140,7 +1145,7 @@ function create_header(viz, pi) {
     }else if(viz == 'bars'){
       txt = 'Barcharts -- ';
     }else if(viz == 'pies'){
-      txt = 'Barcharts -- ';
+      txt = 'Piecharts -- ';
     }else if(viz == 'dhm'){
       txt = 'Distance Heatmap -- ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
