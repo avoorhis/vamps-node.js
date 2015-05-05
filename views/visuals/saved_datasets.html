@@ -1,16 +1,20 @@
 <% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
+<% var file_info2 = JSON.parse(finfo2) %>
   <div class='title'>Saved Datasets</div>
   <div class='subtitle'></div>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-<br><strong>Your saved datasets:</strong>
+<div class='left_justify'>
+<br><strong>Your saved datasets:</strong> (most recent at the top)
+<br>
 <ol>
 
-<% for(f in file_info.files){ %>
-	<% var filename = file_info.files[f] %>
-	<% var fileSizeInBytes = file_info.size[filename] %>
+
+<% for(t in times){ %>
+	<% var filename = file_info2[times[t]].filename %>
+	<% var fileSizeInBytes = file_info2[times[t]].size %>
 	<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 	<% var sizer = 'Bytes' %>
 	<% if(fileSizeInBytes > 1000) { %>
@@ -32,19 +36,19 @@
 				<li>
 					<ul>
 						<li>File: <%= filename %><% sizer %></li>
-						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %></li>
-						 
+						<li><%= fileSize %> <%= sizer %> | created: <%= file_info2[times[t]].mtime %></li>
 						<li>							
-							<input type="submit" onClick="sendAjaxUseOrView('<%= filename %>','<%= user %>','view')" value="view" />
-							<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>
+	<button type="submit" class='btn btn-xs btn-success' onClick="sendAjaxUseOrView('<%= filename %>','<%= user %>','view')" value="view" >view</button>
+	<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>
 						</li>
 						<div id='<%= filename %>_div'></div>
 					</ul>
-				</li>
+				</li><br>
 			
 	<% } %>
 <% } %>
 </ol>
+</div>
 
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
