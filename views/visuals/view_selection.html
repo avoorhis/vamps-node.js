@@ -1,10 +1,11 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <%  var cnsts  = JSON.parse(constants) %>
 <%  var mtx    = JSON.parse(matrix); %>
 <%  var pi     = JSON.parse(post_items); %>
 <%  var md     = JSON.parse(metadata); %>
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var referer = 'view_selection'; %>
 <%  console.log('items') %>
 <%  console.log(items) %>
 <%  //console.log(cnsts.VISUAL_THUMBNAILS.visuals)%>
@@ -15,78 +16,76 @@
   var md_local  = JSON.parse('<%- metadata %>');
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';
+ 
 </script>
+
+
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
 <% if(messages.info){ %>
   <span><%= messages.info %></span>
 <% } %>
-<table class='small_font' border='1'><tr><td>
-<div id='show_selected_datasets_div' class='div_border table'>
-                <% include partials/show_selected_datasets.html %>
-</div>
+
+
+<table class="table table-striped">
+<tbody>
+<tr><td>
+
+	<div id='show_selected_datasets_div' class='div_border table'>
+	                <% include partials/show_selected_datasets.html %>
+	</div>
+
 </td><td>
-<div id='show_select_items_div' class='div_border table'>
-              <% include partials/show_visual_output_choices.html %>
-</div>
-</td></tr></table>
-<table class='small_font'>
-<tr>
-  <td><a href='reorder_datasets'>Reorder Datasets</a></td>
-<td>|</td> 
-<td>
-<a href="#" class="back">Select Other Units (Taxonomy) or Metadata</a></td>
-<td>|</td> 
- <td>
+	<div id='show_select_items_div' class='div_border table'>
+	              <% include partials/show_visual_output_choices.html %>
+			  	
 
-
-<% if(mtx.data == '') { %>
-  <% disable_thumbs = true %>
-  <div id='' class='no_data'>
-        <h3>No Sequences Found</h3>
-  </div>
-<% } else { %>
-  <!-- <input id='download_fasta_id' type='button' value='Download Fasta File'>  -->
-  <form id='download_fasta_id' method='POST' action='../download_selected_seqs'>
-    <!-- This form should run in the background and place the seqs file 
-          in a 'downloads' directory where it can be retrieved.
-          The user should get an email when its ready.
-     -->
-    <input type='submit' value='Create Fasta File' />
-    <input type='hidden' name='download_type' value='partial_project' />
-    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-    
-  </form>
-  
-  </td><td>|</td><td>
-  
-  <!-- <input id='download_metadata_id' type='button' value='Download Metadata'> -->
-  <form id='download_metadata_id' method='POST' action='../download_selected_metadata'>
-    <!-- This form should run in the background and place the seqs file 
-          in a 'downloads' directory where it can be retrieved.
-          The user should get an email when its ready.
-     -->
-    <input type='submit' value='Create Metadata File' />
-    <input type='hidden' name='download_type' value='partial_project' />
-    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-  </form>
-<% } %>
-  
-  
-  
-  </td>
-</tr>
+</td></tr>
+</tbody>
 </table>
 
+<div class="row">
+	<% if(mtx.data == '') { %>
+	  <% disable_thumbs = true %>
+	  <div id='' class='no_data'>
+	        <h3>No Sequences Found</h3>
+	  </div>
+	<% } else { %>
+		<div class="col-md-1">
+			<form id='download_fasta_id' method='POST' action='../download_selected_seqs'>
+		    <!-- This form should run in the background and place the seqs file 
+		          in a 'downloads' directory where it can be retrieved.
+		          The user should get an email when its ready.
+		     -->
+		    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
+		    <input type='hidden' name='download_type' value='partial_project' />
+		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+    
+		  	</form>
+		</div>
+		<div class="col-md-1">
+		    <form id='download_metadata_id' method='POST' action='../download_selected_metadata'>
+		      <!-- This form should run in the background and place the seqs file 
+		            in a 'downloads' directory where it can be retrieved.
+		            The user should get an email when its ready.
+		       -->
+		      <input type='submit' class="btn btn-xs btn-success" value='Create Metadata File' />
+		      <input type='hidden' name='download_type' value='partial_project' />
+		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+		    </form>
+		</div>
+	<% } %>
+</div>  <!-- .row -->
 <br>
-      <table border='1' class='small_font'>
+ 
+<table border='1' class='table'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
           <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb                                  %>
           <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
           <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
-          <%    var cols = 8 %>
+          <%    var cols = 5 %>
           <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' || name.substring(0,10) === 'Dendrogram' || name.substring(0,17) === 'Frequency Heatmap' || name.substring(0,13) === 'PCoA Analyses' )) { %>
                     <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
           <%    } else { %>
@@ -97,10 +96,10 @@
           <%        }else{                                                                            %>
                   <td class='td_top'>
                <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
-                    <a href='#<%= link_id %>' id='<%= link_id %>'  ><%= name %><br>
+                    <center><a href='#<%= link_id %>' id='<%= link_id %>'  ><%= name %><br>
                <!-- <input type='button' id='<%= link_id %>' value='pushme'> -->
                       <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
-                    </a>  
+                    </a></center>  
                  </td>
           <%        }                                                                                 %>              
           <%    }                                                                                     %>
@@ -111,102 +110,144 @@
           <% }                                                                                        %>
         </tr>
       </table>
-      <a href="#" class="back">Go back</a> to the previous page.   
+       
  </div>  <!-- end grid_9  content --> 
-  
-
-<div class='grid_12'>
-  
-  <!-- Counts -->
-  <br><br>
-  <div id='pre_counts_table_div' class='viz_hidden_div display_nonex'>
-    <span id='counts_table_title' class='table_title'>Tax Counts Table</span>
+	 
 	
-    <input type='button' id='counts_table_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='tax_table'><div id='tax_table_div'          class='overflow_500'></div></a>
+  <!-- Counts -->
+  <nav id='pre_counts_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	    
+	  <span id='counts_table_title' class="navbar-brand table_title" >Frequency Table</span>  
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-default'>download</button>
+  </nav>
+  <a name='tax_table' class=''></a>
+  <div id='tax_table_div'   class='display_none well overflow_500'></div>
   
   <!-- Metadata -->
-  <br><br>
-  <div id='pre_metadata_table_div' class='viz_hidden_div display_nonex'>
-    <span id='metadata_title' class='table_title'>Metadata Table</span>
-    <input type='button' id='metadata_table_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='metadata'><div id='metadata_local_table_div' class='overflow_500'></div> </a>
+  <br>
+  <nav id='pre_metadata_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+	  <span id='metadata_title' class="navbar-brand table_title" >Metadata Table</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='metadata'></a>
+  <div id='metadata_local_table_div' class='display_none well overflow_500'></div>
+  
   
   <!-- Distance Heatmap -->
-  <br><br>
-  <div id='pre_dheatmap_div' class='viz_hidden_div display_nonex'>
-    <span id='dheatmap_title' class='table_title'>Distance Heatmap</span>
-    <input type='button' id='dheatmap_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='dheatmap'><div id='reorder_div'><div id='dheatmap_div' class=''></div></div></a> 
+  <br>
+  <nav id='pre_dheatmap_div' class="navbar navbar-inverse viz_hidden_div display_none">
+    <div class="navbar-header">	      
+      <span id='dheatmap_title' class="navbar-brand table_title" >Distance Heatmap</span> 
+    </div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+ 	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+ 	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='dheatmap'></a>
+  <div id='reorder_div' class=''><div id='dheatmap_div' class='display_none well'></div></div>
   
+
 <!-- Frequency Heatmap -->
-  <br><br>
-  <div id='pre_fheatmap_div' class='viz_hidden_div display_nonex'>
-    <span id='fheatmap_title' class='table_title'>Frequency Heatmap</span>
-    <input type='button' id='fheatmap_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='freq_heatmap'><div id='fheatmap_div' class=''></div></a> 
-  
+  <br>
+  <nav id='pre_fheatmap_div' class="navbar navbar-inverse viz_hidden_div display_none">
+    <div class="navbar-header">	      
+      <span id='fheatmap_title' class="navbar-brand table_title" >Frequency Heatmap</span> 
+    </div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+ 	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+ 	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='freq_heatmap'></a>
+  <div id='fheatmap_div' class='display_none well'></div>
+
+
   <!-- BarCharts -->
-  <br><br>
-  <div id='pre_barcharts_table_div' class='viz_hidden_div display_nonex'>
-    <span id='barcharts_title' class='table_title'>Bar Charts</span>
-    <input type='button' id='barcharts_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='barcharts'><div id='barcharts_div'           class=''></div> </a>
+  <br>
+  
+  <nav id='pre_barcharts_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+	    <span id='barcharts_title' class="navbar-brand table_title" >Bar Charts</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='barcharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='barcharts'></a>
+  <div id='barcharts_div' class='display_none well'></div>
+
   
   <!-- PieCharts -->
-  <br><br>
-  <div id='pre_piecharts_table_div' class='viz_hidden_div display_nonex'>
-    <span id='piecharts_title' class='table_title'>Pie Charts</span>
-    <input type='button' id='piecharts_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='piecharts'><div id='piecharts_div'           class=''></div></a>
+  <br>
+  <nav id='pre_piecharts_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+	  <span id='piecharts_title' class="navbar-brand table_title" >Pie Charts</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='piecharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='piecharts'></a>
+  <div id='piecharts_div' class='display_none well'></div>
   
   <!-- Dendrogram -->
-  <br><br>
-  <div id='pre_dendrogram_div' class='viz_hidden_div display_nonex'>
-    <span id='dendrogram_title' class='table_title'>Dendrogram</span>
-    <input type='button' id='dendrogram_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='dendrogram_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='dendrogram'><div id='dendrogram_div'        class=''></div></a>
+  <br>
+  <nav id='pre_dendrogram_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+	  <span id='dendrogram_title' class="navbar-brand table_title" >Dendrogram</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='dendrogram_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='dendrogram_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='dendrogram'></a>
+  <div id='dendrogram_div'        class='display_none well '></div>
   
   <!-- Dendrogram png-->
-  <br><br>
-  <div id='pre_dendrogram_pdf_div' class='viz_hidden_div display_nonex'>
-    <span id='dendrogram_pdf_title' class='table_title'>Dendrogram</span>
-    <input type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='dendrogram_pdf'><div id='dendrogram_pdf_div'        class=''></div></a>
+  <br>
+  
+  <nav id='pre_dendrogram_pdf_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+	  <span id='dendrogram_pdf_title' class="navbar-brand table_title" >Dendrogram</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='dendrogram_pdf'></a>
+  <div id='dendrogram_pdf_div'        class='display_none well'></div>
 
   <!-- PCoA-->
-  <br><br>
-  <div id='pre_pcoa_div' class='viz_hidden_div display_nonex'>
-    <span id='pcoa_title' class='table_title'>PCoA</span>
-    <input type='button' id='pcoa_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='pcoa'><div id='pcoa_div'                    class=''></div></a> 
+  <br>
+  <nav id='pre_pcoa_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='pcoa'></a>
+  <div id='pcoa_div'                    class='display_none well'></div> 
 
   <!-- GEOSPATIAL -->
-  <br><br> 
-  <div id='pre_geospatial_div' class='viz_hidden_div display_nonex'>
-    <span id='geospatial_title' class='table_title'>GeoSpatial</span>
-    <input type='button' id='geospatial_hide_btn' class='close_open_btn' value='close'>
-	<input type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn' value='download'>
-  </div>
-  <a name='geospatial'><div id='map-canvas'            class=''></div></a> 
+  <br>
+  <nav id='pre_geospatial_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+		  <span id='geospatial_title' class="navbar-brand table_title" >GeoSpatial</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <a name='geospatial'></a>
+  <div id='map-canvas'            class='display_none well '></div> 
   
  
   
@@ -218,18 +259,21 @@
 
 
   
-<script type="text/javascript" src="/javascripts/jquery-2.1.1.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js"></script>
-<script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
-<script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
-<script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
-<script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
-<script type="text/javascript" src="/javascripts/drag_rows.js"></script>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/common_selection.js"></script>
-<script type="text/javascript" src="/javascripts/view_selection.js"></script>
+
  
  
-<% //include ../add_ins/end.ejs %>
+  <% include ../add_ins/end.ejs %>
+
+ <script src="https://maps.googleapis.com/maps/api/js"></script>
+ <script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
+ <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
+ <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
+ <script type="text/javascript" src="/javascripts/global.js"></script>
+ <script type="text/javascript" src="/javascripts/common_selection.js"></script>
+ <script type="text/javascript" src="/javascripts/view_selection.js"></script>
+</body>
+</html>
 
 

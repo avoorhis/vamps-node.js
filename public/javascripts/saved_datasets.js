@@ -24,17 +24,18 @@ function sendAjaxUseOrView( filename, user, fxn ){
 				dataset_ids = obj.ids;
 				var html = "<div class='auto_height200 border1'>"
 				html += "<form id='' name='' method='POST' action='unit_selection'>"
-				html += "<input type='submit' value='use in visualizations' />"
+				html += "<button type='submit' class='btn btn-xs btn-primary'>use these in visualizations</button>"
 				html += "<input type='hidden' name='search' value='1' >"
 				html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >"
 				html += "</form>"
-				html += "<table class='small_font'>";
-			 	html += '<tr><th>SampleID</th><th>project--dataset</th></tr>';
+				
+				html += "<table class='small_font table table-condensed' >";
+			 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';
  		
  			for( var i in obj.ids ){
  				var id =  obj.ids[i];
  				var dsname = obj.names[i];
- 				html += '<tr><td>'+id+'</td><td>'+dsname+'</td></tr>';
+ 				html += '<tr><td>'+i.toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
 		
  			}
  			html += '</table></div>';
