@@ -39,7 +39,8 @@
     "sweetcaptcha": "",
     "uid-safe": "",
     "xmldom": "",
-    "ya-csv": ""
+    "ya-csv": "",
+	"serve-favicon": ""
   },
   "devDependencies": {
     "debug": "",
