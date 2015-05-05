@@ -231,7 +231,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //      return to the page.
   console.log(ALL_DATASETS);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  //console.log(req.user)
+  //console.log(PROJECT_PERMISSION_BY_PID)
   res.render('visuals/index_visuals', {
                                 title   : 'VAMPS: Select Datasets',
                                 rows    : JSON.stringify(ALL_DATASETS),
@@ -257,7 +257,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-router.post('/useview_saved_datasets', function(req, res) {
+router.post('/useview_saved_datasets', helpers.isLoggedIn, function(req, res) {
 
     fxn = req.body.fxn;
 	console.log(req.body.filename);
@@ -287,7 +287,7 @@ router.post('/useview_saved_datasets', function(req, res) {
 });
 //
 // Download Counts Matrix
-router.post('/download_counts_matrix', function(req, res) {
+router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
 	//console.log('in download_counts_matrix')
 	//console.log(biom_matrix)
     var timestamp = +new Date();  // millisecs since the epoch!
@@ -327,7 +327,7 @@ router.post('/download_counts_matrix', function(req, res) {
 
 
 
-router.post('/heatmap', function(req, res) {
+router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('found routes_test_heatmap')
     //console.log('req.body hm');
     //console.log(req.body);
@@ -373,7 +373,7 @@ router.post('/heatmap', function(req, res) {
 //
 //   F R E Q U E N C Y  H E A T M A P
 //
-router.post('/frequency_heatmap', function(req, res) {
+router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   console.log('in Freq HP');
   var ts = req.body.ts;
@@ -398,7 +398,7 @@ router.post('/frequency_heatmap', function(req, res) {
 
 
 });
-router.post('/dendrogram', function(req, res) {
+router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     console.log('found routes_dendrogram');
 
     //console.log('req.body dnd');
@@ -493,7 +493,7 @@ router.post('/dendrogram', function(req, res) {
 //
 // P I E C H A R T  -- S I N G L E
 //
-router.get('/user_data/piechart_single', function(req, res) {
+router.get('/user_data/piechart_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log(myurl)
     var ts = myurl.query.ts;
@@ -515,7 +515,7 @@ router.get('/user_data/piechart_single', function(req, res) {
 //
 // P C O A
 //
-router.post('/pcoa', function(req, res) {
+router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     console.log('in PCoA');
     console.log(metadata);
     var ts = req.body.ts;
@@ -554,7 +554,7 @@ router.post('/pcoa', function(req, res) {
 //
 //  G E O S P A T I A L
 //
-router.get('/user_data/geospatial', function(req, res) {
+router.get('/user_data/geospatial', helpers.isLoggedIn, function(req, res) {
   var myurl = url.parse(req.url, true);
 
   var ts    = myurl.query.ts;
@@ -569,22 +569,14 @@ router.get('/user_data/geospatial', function(req, res) {
 
 
 });
-router.get('/user_data/test_page', function(req, res) {
 
-  res.render('visuals/user_data/test_page', {
-            title: 'VAMPS TEST',
-
-      });
-
-
-});
 /*
 *   PARTIALS
 *      These six partials all belong to the unit_selection page
 *      and are shown via ajax depending on user selection in combo box
 *       on that page.  AAV
 */
-router.get('/partials/tax_silva108_simple',  function(req, res) {
+router.get('/partials/tax_silva108_simple', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_silva108_simple', {
         doms: req.C.DOMAINS
     });
@@ -602,7 +594,7 @@ router.get('/partials/tax_silva108_simple',  function(req, res) {
 //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 //     start = process.hrtime(); // reset the timer
 // };
-router.get('/partials/load_metadata',  function(req, res) {
+router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
   var myurl = url.parse(req.url, true);
   var load = myurl.query.load  || 'all';   // either 'all' or 'selected'
   res.render('visuals/partials/load_metadata',
@@ -610,25 +602,25 @@ router.get('/partials/load_metadata',  function(req, res) {
       load    : load
     });
 });
-router.get('/partials/tax_silva108_custom',  function(req, res) {
+router.get('/partials/tax_silva108_custom', helpers.isLoggedIn,  function(req, res) {
   res.render('visuals/partials/tax_silva108_custom',
     { title   : 'Silva(v108) Custom Taxonomy Selection'});
 });
 
-router.get('/partials/tax_gg_custom',  function(req, res) {
+router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
 });
-router.get('/partials/tax_gg_simple',  function(req, res) {
+router.get('/partials/tax_gg_simple', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_simple',{});
 });
-router.get('/partials/otus',  function(req, res) {
+router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/otus',{});
 });
-router.get('/partials/med_nodes',  function(req, res) {
+router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/med_nodes',{});
 });
 
-router.post('/save_datasets',  function(req, res) {
+router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
     console.log('req.body: save_datasets-->>');
     console.log(req.body);
@@ -646,7 +638,7 @@ router.post('/save_datasets',  function(req, res) {
 //
 //
 //
-router.get('/saved_datasets',  function(req, res) {
+router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
     //console.log('req.body: show_saved_datasets-->>');
     //console.log(req.body);
@@ -665,8 +657,8 @@ router.get('/saved_datasets',  function(req, res) {
 			console.log(err);
 		}else{
 		  for (var f in files){
-	        var pts = files[f].split('_');
-	        if(pts[1] === 'datasets'){
+	        var pts = files[f].split(':');
+	        if(pts[0] === 'datasets'){
 	          file_info.files.push(files[f]);
 	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
 	          
