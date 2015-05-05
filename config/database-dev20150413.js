@@ -1,5 +1,5 @@
 
-var fs = require('fs');
+var fs = require('fs-extra');
 mysql = require('mysql2');
 // public/json/tax_counts--<NODE_DATABASE>.json 
 // and

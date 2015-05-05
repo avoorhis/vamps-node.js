@@ -132,6 +132,7 @@ def write_seqfiles(args,owner,project):
     return stats
     #for ds in datasets:
         #os.mkdir()
+        
 def write_metafile(args,owner,project):
     m = open(mdfile, 'rt')
     f = open(mdfile_clean, 'wt')
