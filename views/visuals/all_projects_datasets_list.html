@@ -4,6 +4,7 @@
   <% for (i in all_pr_dat) { %>
     <% pid = all_pr_dat[i].pid %>
     <!-- admin OR public-project OR this-users-project -->
+	<!-- permissions[pid]  === 0   means PUBLIC -->
     <% if(user.security_level === 1 || permissions[pid]  === 0 || permissions[pid] === user.user_id ) { %>
       <% pname = all_pr_dat[i].name %>
       <% title = all_pr_dat[i].title %>
@@ -19,7 +20,11 @@
           
           <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
           <a href='/projects/<%= pid %>'>
-            <span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %></span></a></a>
+          <% if(status == 'public') { %>
+			<span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %> </span></a></a><small><i>(public)</i></small>
+		  <% }else{ %>
+		  	<span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %> </span></a></a>
+		  <% } %>
         </label>
         <ul>
           <div id='<%= pname %>_ds_div' class='datasets_per_pr'>
