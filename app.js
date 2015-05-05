@@ -29,6 +29,7 @@ connection = require('./config/database');
 //connection.connect();
 var routes = require('./routes/index');  // This grabs ALL_DATASETS
 var users = require('./routes/routes_users');
+var user_data = require('./routes/routes_user_data');
 var search = require('./routes/routes_search');
 var projects = require('./routes/routes_projects');
 var datasets = require('./routes/routes_datasets');
@@ -54,7 +55,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(multer({ dest: './user_data/'+NODE_DATABASE }));  // for multipart uploads
+app.use(multer({ dest: path.join('user_data',NODE_DATABASE,'tmp') }));  // for multipart uploads: files
 app.use(cookieParser());
 
 app.use(compression());
@@ -121,6 +122,7 @@ app.use('/projects', projects);
 app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 app.use('/search', search);
+app.use('/user_data', user_data);
 
 
 // for non-routing pages such as heatmap, counts and bar_charts
