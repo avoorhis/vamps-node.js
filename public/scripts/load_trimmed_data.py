@@ -102,22 +102,27 @@ def write_seqfiles(args,owner,project):
                 fp.write('>'+id+"\n"+f.seq+"\n")
             else:    
             
-                tmp = defline.split(' ')
-                ds = tmp[0].split('_')[0]
-                id = tmp[1]
-                file_dir = os.path.join(gast_dir,ds)
-                file = os.path.join(file_dir,'seqfile.fa')
-                if ds in datasets:
-                    datasets[ds] +=1
-                else:
-                    datasets[ds] = 1
-                if ds in files:
-                    files[ds].write('>'+id+"\n"+f.seq+"\n")
-                else:
-                    os.makedirs(file_dir)
-                    fp = open(file,'w')
-                    files[ds] = fp
-                    fp.write('>'+id+"\n"+f.seq+"\n")
+                try:
+                    tmp = defline.split(' ')
+                    #print defline
+                    ds = tmp[0].split('_')[0]
+                
+                    id = tmp[1]
+                    file_dir = os.path.join(gast_dir,ds)
+                    file = os.path.join(file_dir,'seqfile.fa')
+                    if ds in datasets:
+                        datasets[ds] +=1
+                    else:
+                        datasets[ds] = 1
+                    if ds in files:
+                        files[ds].write('>'+id+"\n"+f.seq+"\n")
+                    else:
+                        os.makedirs(file_dir)
+                        fp = open(file,'w')
+                        files[ds] = fp
+                        fp.write('>'+id+"\n"+f.seq+"\n")
+                except:
+                    sys.exit("Please check the multi-dataset format: ( defline='>" + defline+"' )")
             
             seq_count += 1
         ds_count = len(datasets)
@@ -133,30 +138,62 @@ def write_seqfiles(args,owner,project):
     #for ds in datasets:
         #os.mkdir()
         
-def write_metafile(args,owner,project):
-    m = open(mdfile, 'rt')
+def write_metafile(args,owner,project,stats):
+    
     f = open(mdfile_clean, 'wt')
-    reader = csv.reader(m, delimiter=',', quotechar='"')
-    writer = csv.writer(f)
+    
+    
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
-    for i,items in enumerate(reader):
-        r = [row.strip().strip('"') for row in items]
-        if i==0:
-            if len(r) == 0:
-                sys.exit('Empty Line at beginning of file.')
-            headers = r
-            header_count = len(headers)
-            for n,req in enumerate(req_metadata):
-                if req not in headers:
-                    sys.exit('Found Missing Required Metadata: '+req)
-        if len(r) > 0:
-            if len(r) != header_count:
-                sys.exit('Missing Data: '+','.join(r))     
-            writer.writerow(r)
-            
+    req_for_multi = ['sample_name','dataset']
+    with open(mdfile, mode='r') as infile:
+        reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter
+        with open(mdfile_clean, mode='w') as outfile:
+            writer = csv.writer(outfile, delimiter='\t')  # TAB Only delimiter
+        
+            md_datasets = []
+            dataset_index = -1
+            for i,items in enumerate(reader):
+                if i==0:
+                    if len(items) == 0:
+                        sys.exit('No empty lines allowed.')
+                    headers = items
+                    header_count = len(headers)
+                    #print headers
+                    for n,req in enumerate(req_metadata):
+                        if req not in headers:
+                            sys.exit('Found Missing Required Metadata: '+req)
+                    
+                    if args.upload_type == 'multi':
+                        ds_in_headers = False
+                        if req_for_multi[0] in headers:
+                            ds_in_headers = True
+                            dataset_index = headers.index(req_for_multi[0])
+                        elif req_for_multi[1] in headers:
+                            ds_in_headers = True
+                            dataset_index = headers.index(req_for_multi[1])
+                        else:
+                            sys.exit("No dataset column found (allowed column names: 'dataset', 'sample_name')")
+                        
+                else:
+                    if args.upload_type == 'multi':
+                        md_datasets.append(items[dataset_index])
+                       
+                
+                if len(items) > 0:
+                    if len(items) != header_count:
+                        sys.exit('Missing Data: '+','.join(items))
+                    writer.writerow(items)
+            if args.upload_type == 'multi':
+            # check for datasets column in metadata -- needed to assign metadata to datasets
+            # each dataset in the fasta (stats.datasets) MUST be in the metadata file (md_datasets)
+                #print md_datasets
+                #print stats['datasets']
+                for ds in stats['datasets']:
+                    if ds not in md_datasets:
+                        sys.exit('Found a dataset that is not in the metadata file: '+ds)
 
-    f.close()
-    m.close()
+    outfile.close()
+    infile.close()
             
 def write_config(args,owner,project,stats):
     ini_file = os.path.join(args.outdir,'config.ini') 
@@ -200,14 +237,11 @@ if __name__ == '__main__':
          Takes fasta file and directory as input
          where
             
-            -fa/--fastafile           REQUIRED  fasta file (2 formats)
-            -md/--metafile           REQUIRED  csv (2 formats)
+           
             
             -dir/--outdir         REQUIRED  path for creating dir structure
             
-            -o/--owner            REQUIRED
-                             
-            -p/--project          REQUIRED project_name
+          
             
             -t/--upload_type    REQUIRED defaults to 'multi' [single or multi] (Most MBE projects are multi)
             
@@ -284,6 +318,6 @@ if __name__ == '__main__':
     
     create_dirs(args,owner,project)    
     stats = write_seqfiles(args,owner,project)
-    write_metafile(args,owner,project)
+    write_metafile(args,owner,project,stats)
     write_config(args,owner,project,stats)
         
