@@ -30,7 +30,7 @@ var save_datasets_list = function(ds_local, user)
 	
     var timestamp = +new Date();  // millisecs since the epoch!
     
-	var filename = user + '_datasets_' + timestamp + '.json';
+	var filename = 'datasets:' + timestamp + '.json';
     
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
