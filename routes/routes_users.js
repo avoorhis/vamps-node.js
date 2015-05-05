@@ -14,19 +14,32 @@ var helpers = require('./helpers/helpers');
 router.get('/index_users', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
 	console.log('in indexusers')
-    var qSelect = "SELECT * from user";
-    var collection = db.query(qSelect, function (err, rows, fields){
-      if (err)  {
-      throw err;
-    } else {
+	console.log(req.user)
+    if(req.user.security_level == 1){
+		var qSelect = "SELECT * from user";
+	    var collection = db.query(qSelect, function (err, rows, fields){
+	      if (err)  {
+	      throw err;
+	    } else {
 
-        res.render('user_admin/index_users', { 
-                              title: 'users',
-                              rows : rows, 
-                              user: req.user  });
+	        res.render('user_admin/index_users', { 
+	                              title: 'users',
+	                              rows : rows, 
+	                              user: req.user,
+								  message:''  
+			});
 
-      }
-    });
+	      }
+	    });
+	}else{
+        res.render('denied', { 
+                              title: 'users',                              
+                              user: req.user,
+							  message: req.flash('nopermissionMessage', 'Permission Denied') 
+		});
+
+          
+	}
 
 });
 // =====================================

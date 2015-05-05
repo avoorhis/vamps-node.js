@@ -33,55 +33,15 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 
 
-  /* GET Import Data page. */
-  router.get('/import_data', helpers.isLoggedIn, function(req, res) {
-      res.render('import_data', { 
-		    title: 'VAMPS:Import Data',
-	  		message: req.flash('successMessage'),
-		    failmessage: req.flash('failMessage'),
-            user: req.user
-                            });
-  });
+  
   /* GET Saved Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
       res.render('saved_data', { title: 'VAMPS:Saved Data',
                              user: req.user
                             });
   });
-  /* GET Import Data page. */
-  router.get('/export_data', helpers.isLoggedIn, function(req, res) {
-      res.render('export_data', { title: 'VAMPS:Import Data',
-                             user: req.user
-                            });
-  });
-  /* GET Export Data page. */
-  router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
-
-      var export_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-      var mtime = {};
-      var size = {};
-      var file_info = {};
-      file_info.mtime ={};
-      file_info.size = {};
-      file_info.files = [];
-      fs.readdir(export_dir, function(err, files){
-        for (var f in files){
-          var pts = files[f].split('_');
-          if(pts[1] === 'metadata' || pts[1] === 'fasta'){
-            file_info.files.push(files[f]);
-            stat = fs.statSync(export_dir+'/'+files[f]);
-            file_info.mtime[files[f]] = stat.mtime;  // modify time
-            file_info.size[files[f]] = stat.size;
-          }
-        }
-        //console.log(file_info)
-        res.render('file_retrieval', { title: 'VAMPS:Export Data',
-                             user: req.user.username,
-                             finfo: JSON.stringify(file_info),
-							message : req.flash('deleteMessage'),
-                            });
-      });
-  });
+ 
+ 
 
   router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 
@@ -93,8 +53,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	//// DOWNLOAD //////
 	if(req.query.fxn == 'download' && req.query.type == 'fasta'){
 		res.download(file); // Set disposition and send it.
+		
 	}else if(req.query.fxn == 'download' && req.query.type == 'metadata'){
 		res.download(file); // Set disposition and send it.
+		
 	}
 	
 	//// DELETE FILES /////
@@ -121,16 +83,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 		
 	}
 	
-	//// VIEW DATA (datasets) /////
-	if(req.query.fxn == 'view'){
-			
-	}
-	//// USE DATA (datasets) /////
-	// redirect to /visuals/unit_selection
-	if(req.query.fxn == 'usethese'){
-		
-			
-	}
+	
 	
 	////  FINALLY REDIRECT /////
 	// if(req.query.type == 'datasets'){
@@ -176,82 +129,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                });
         });
   });
-  router.post('/upload_data',  function(req,res){
-      
-	  console.log('req.body upload_data');
-      console.log(req.body);
-	  console.log(req.files);
-      console.log('req.body upload_data');
-	  var data_repository = path.join('./user_data',NODE_DATABASE,req.user.username,req.body.project);
-	  console.log(data_repository);
-	  // continuity checks:
-	  
-	  
-	  
-	  
-		 
-	  if(req.body.project==undefined || req.body.dataset==undefined){
-		req.flash('failMessage', 'FAIL (project and dataset names are required)');
-	  	res.redirect("/import_data");
-	  }else if(req.files.fasta==undefined || req.files.fasta.size==0){
-	  	req.flash('failMessage', 'FAIL (A fasta file is required)');
-		res.redirect("/import_data");
-	  }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
-	  	req.flash('failMessage', 'FAIL (A metadata csv file is required)');
-		res.redirect("/import_data");
-	  }else{
-	  	req.flash('successMessage', 'Upload in Progress');
-		var project = req.body.project;
-		var original_fastafile = path.join('./user_data', NODE_DATABASE, req.files.fasta.name);
-		var original_metafile  = path.join('./user_data', NODE_DATABASE, req.files.metadata.name);
-		//console.log(original_fastafile);
-		//console.log(original_metafile);
-	 	// move files to user_data/<username>/ and rename
-	  	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
-	    	if (err) return console.error(err);
-	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
-	    	if (err) return console.error(err);
-			// create a config file and analysis/gast/<ds> directory tree
-			// run python script "load_trimmed_data.py"
-			//
-		    
-			if(req.body.type == 'single'){
-				var options = {
-			      scriptPath : 'public/scripts',
-			      args :       [ '-dir', data_repository, '-t', 'single', '-d', req.body.dataset ],
-			    };
-		  	}else if(req.body.type == 'multi') {
-		  		console.log('Multi-in upload_data');
-  				var options = {
-  			      scriptPath : 'public/scripts',
-  			      args :       [ '-dir', data_repository, '-t', 'multi' ],
-  			    };
-	  
-	  
-		  	}else{
-		  	  	// ERROR
-		  		  console.log('ERROR-in upload_data')
-		  	}
-			
-		    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
-
-		    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
-		      if (err) {
-				  res.send(err);  // for now we'll send errors to the browser
-			  }else{
-				  console.log('NO ERRORS')
-			  }
-			  console.log("success!");
-			  res.redirect("/import_data");
-		    });
-			
-	  	});
-		});
-	  } 
-		
-		 
-	
-  });
+ 
+  
   //
   //
   //
@@ -312,12 +191,12 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     {
   		var pid = req.body.project_id;
   		var project = req.body.project;
-  		file_name = req.user.username+'_fasta_'+timestamp+'_'+project+'.fa.gz';
+  		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
     	out_file_path = path.join(user_dir,file_name);
     	qSelect += " where project_id = '"+pid+"'";
     }else{
       var pids = JSON.parse(req.body.datasets).ids;
-		  file_name = req.user.username+'_fasta_'+timestamp+'_'+'_custom.fa.gz';
+		  file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
       out_file_path = path.join(user_dir,file_name);
       qSelect += " where dataset_id in ("+pids+")";
       console.log(pids);
@@ -391,11 +270,11 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
     var pid  = req.body.project_id;
     dids = DATASET_IDS_BY_PID[pid];
     project = req.body.project;
-    file_name = req.user.username+'_metadata_'+timestamp+'_'+project+'.gz';
+    file_name = 'metadata:'+timestamp+'_'+project+'.csv.gz';
     out_file_path = path.join(user_dir,file_name);
   }else{
     dids = JSON.parse(req.body.datasets).ids;
-    file_name = req.user.username+'_metadata_'+timestamp+'.gz';
+    file_name = 'metadata:'+timestamp+'.csv.gz';
     out_file_path = path.join(user_dir, file_name);
     }
     console.log('dids');
