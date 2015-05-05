@@ -1,5 +1,6 @@
 
-<% include add_ins/begin.ejs %>
+<% include ../add_ins/begin.ejs %>
+
 <% var file_info = JSON.parse(finfo) %>
 <p class='title'>Export Data</p>
 <% if (message) { %>
@@ -27,22 +28,22 @@
 	<% } %>
 
 	<% parts = filename.split('_') %>
-	<% if(user == parts[0]) { %> 
+	
 			
-				<li>
-					<ul>
-						<li>File: <%= filename %><% sizer %>
-						<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
-						 
-						<li><a href='file_utils?fxn=download&user=<%= user %>&type=fasta&filename=<%= filename %>' >download</a> | 
-								<a href='file_utils?fxn=delete&user=<%= user %>&filename=<%= filename %>' >delete from the server</a>
-					</ul>
-				</li>
+		<li>
+			<ul>
+				<li>File: <%= filename %><% sizer %>
+				<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
+				 
+				<li><a href='file_utils?fxn=download&user=<%= user %>&type=fasta&filename=<%= filename %>' >download</a> | 
+						<a href='file_utils?fxn=delete&user=<%= user %>&filename=<%= filename %>' >delete from the server</a>
+			</ul>
+		</li>
 			
-	<% } %>
+	
 <% } %>
 </ol>
 
-<% include add_ins/end.ejs %>
+<% include ../add_ins/end.ejs %>
 
 
