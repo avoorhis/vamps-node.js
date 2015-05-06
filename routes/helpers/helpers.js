@@ -48,6 +48,16 @@ module.exports.check_if_rank = function(field_name)
   return ranks.indexOf(field_name) > -1;
 }
 
+module.exports.render_error_page = function(req,res,msg)
+{
+  req.flash('errorMessage', msg);
+  res.render('error',
+    { title :  'Fail',	     
+  	  message : req.flash('errorMessage'),
+      user : 	req.user.username
+    });
+}
+
 module.exports.clear_file = function(fileName)
 {
   fs.openSync(fileName, "w");
