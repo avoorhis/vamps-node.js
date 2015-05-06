@@ -9,15 +9,17 @@ var helpers = require('./helpers/helpers');
 //var crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
-router.get('/index_projects', helpers.isLoggedIn, function(req, res) {
+router.get('/index_projects', function(req, res) {
     var db = req.db;
     
-    console.log(ALL_DATASETS);
+    //console.log(ALL_DATASETS);
+	console.log(PROJECT_INFORMATION_BY_PID)
+  	//console.log(PROJECT_PERMISSION_BY_PID)
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
     res.render('projects/index_projects', { 
                         title          : 'VAMPS Projects',
-                        ALL    : JSON.stringify(ALL_DATASETS),
+                        projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
                         user: req.user 
                 });
@@ -30,7 +32,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var dsinfo = []; 
     var dscounts = {};  
     // PROJECT_INFORMATION_BY_PID is a global variable created on server start in 'load_all_datasets.js'
-    var info = PROJECT_INFORMATION_BY_PID[req.params.id]
+	var info = PROJECT_INFORMATION_BY_PID[req.params.id]
     var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
     //console.log(info);
 

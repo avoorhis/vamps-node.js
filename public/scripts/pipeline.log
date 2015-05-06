@@ -1,0 +1,16 @@
+2015-05-06 12:35:24,397 - INFO - Checking for uniques file
+2015-05-06 12:35:29,403 - INFO - Starting Clustergast
+2015-05-06 12:35:29,403 - INFO - Not using cluster
+2015-05-06 12:35:29,403 - INFO - Cluster nodes set to: 100
+2015-05-06 12:35:29,403 - INFO - tax_file: /databases/refssu.tax
+2015-05-06 12:35:29,403 - INFO - ref_file: /databases/refssu.fa.gz
+2015-05-06 12:35:29,404 - DEBUG - grep -c > ./user_data/vamps_dev_mobe/andy/project:samp56/analysis/gast/fff/unique.fa
+2015-05-06 12:35:29,408 - DEBUG - fff count 34
+2015-05-06 12:44:54,134 - INFO - Checking for uniques file
+2015-05-06 12:44:59,137 - INFO - Starting Clustergast
+2015-05-06 12:44:59,137 - INFO - Not using cluster
+2015-05-06 12:44:59,137 - INFO - Cluster nodes set to: 100
+2015-05-06 12:44:59,137 - INFO - tax_file: /databases/refssu.tax
+2015-05-06 12:44:59,137 - INFO - ref_file: /databases/refssu.fa.gz
+2015-05-06 12:44:59,137 - DEBUG - grep -c > ./user_data/vamps_dev_mobe/andy/project:samp56/analysis/gast/fff/unique.fa
+2015-05-06 12:44:59,142 - DEBUG - fff count 34
