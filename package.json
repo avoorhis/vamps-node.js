@@ -33,6 +33,7 @@
     "nodemon": "",
     "nodetime": "",
     "passport": "",
+    "ini": "",
     "passport-local": "",
     "python-shell": "",
     "static-favicon": "",
