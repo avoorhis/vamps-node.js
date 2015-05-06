@@ -19,17 +19,18 @@ router.get('/index_users', helpers.isLoggedIn, function(req, res) {
 		var qSelect = "SELECT * from user";
 	    var collection = db.query(qSelect, function (err, rows, fields){
 	      if (err)  {
-	      throw err;
-	    } else {
+  			msg = 'ERROR Message '+err;
+  			helpers.render_error_page(req,res,msg);
+		   } else {
 
-	        res.render('user_admin/index_users', { 
-	                              title: 'users',
-	                              rows : rows, 
-	                              user: req.user,
-								  message:''  
-			});
+		        res.render('user_admin/index_users', { 
+		                              title: 'users',
+		                              rows : rows, 
+		                              user: req.user,
+									  message:''  
+				});
 
-	      }
+		   }
 	    });
 	}else{
         res.render('denied', { 

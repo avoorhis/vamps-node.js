@@ -38,7 +38,9 @@ import subprocess
 
 def get_input_data(args):
     lineitems = args.outdir.split('/')
-    return [lineitems[-1],lineitems[-2]]
+    owner = lineitems[-2]
+    project = lineitems[-1].split(':')[1]
+    return [project,owner]
     
 def create_dirs(args,owner,project):
     outdir = args.outdir
@@ -201,13 +203,12 @@ def write_config(args,owner,project,stats):
     f = open(ini_file, 'w')
     f.write('[GENERAL]'+"\n")
     f.write('project='+project+"\n")
+    f.write('baseoutputdir='+args.outdir+"\n")
+    f.write('configPath='+ini_file+"\n")
     f.write('fasta_file='+fafile+"\n")
-    #f.write('input_files=/MBL/new_vamps/10068_136_109/preprocessed_fasta.fna'+"\n")
     f.write('platform=new_vamps'+"\n")
     f.write('owner='+owner+"\n")
-    f.write('configPath='+ini_file+"\n")
     f.write('config_file_type=ini'+"\n")
-    f.write('baseoutputdir='+args.outdir+"\n")
     f.write('public=False'+"\n")
     f.write('dna_region='+args.dna_region+"\n")
     f.write('project_sequence_count='+str(stats['seq_count'])+"\n")
@@ -215,6 +216,7 @@ def write_config(args,owner,project,stats):
     f.write('number_of_datasets='+str(stats['ds_count'])+"\n")
     f.write('sequence_counts=RAW'+"\n")
     f.write('env_source_id='+str(args.envid)+"\n")
+     f.write('has_tax=0'+"\n")
     f.write("\n")
     f.write('[DATASETS]'+"\n")
     print stats
