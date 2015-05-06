@@ -265,23 +265,15 @@ router.post('/useview_saved_datasets', helpers.isLoggedIn, function(req, res) {
 	console.log(file_path);
 	var dataset_ids = [];
 	fs.readFile(file_path, 'utf8',function(err,data) {
-		if (err) throw err;
+		if (err) {
+			msg = 'ERROR Message '+err;
+  			helpers.render_error_page(req,res,msg);
 		
-		
-		// dataset_ids = obj.ids;
-// 		//if(fxn == 'use'){
-//
-// 			//}else{
-// 			for( var i in obj.ids ){
-// 				var id =  obj.ids[i];
-// 				var dsname = obj.names[i];
-// 				html += '<tr><td>'+id+'</td><td>'+dsname+'</td></tr>';
-//
-// 			}
-// 			html += '</table></div>';
+		}else{		
 		
 			res.send(data);
-			//}
+		}
+			
 	});
 	
 });
@@ -644,27 +636,20 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     //console.log(req.body);
     //console.log('req.body: show_saved_datasets');
     var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-    var mtime = {};
-    var size = {};
-    var file_info = {};
-    file_info.mtime ={};
-    file_info.size = {};
-    file_info.files = [];
-	file_info2 = {};
+   
+	file_info = {};
 	modify_times = [];
     fs.readdir(saved_datasets_dir, function(err, files){
 		if(err){
-			console.log(err);
+  			msg = 'ERROR Message '+err;
+  			helpers.render_error_page(req,res,msg);
 		}else{
 		  for (var f in files){
 	        var pts = files[f].split(':');
 	        if(pts[0] === 'datasets'){
-	          file_info.files.push(files[f]);
+	          //file_info.files.push(files[f]);
 	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-	          
-			  file_info.mtime[files[f]] = stat.mtime;  // modify time
-	          file_info.size[files[f]] = stat.size;
-			  file_info2[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+			  file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
 			  modify_times.push(stat.mtime.getTime());
 			  
 	        }
@@ -672,11 +657,11 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 	  
 		  modify_times.sort().reverse();
 		  
-		  console.log(JSON.stringify(file_info2));
+		  console.log(JSON.stringify(file_info));
 		  res.render('visuals/saved_datasets',
 		    { title: 'saved_datasets',
-		      finfo:  JSON.stringify(file_info),
-		      finfo2: JSON.stringify(file_info2),
+		     
+		      finfo: JSON.stringify(file_info),
 		      times: modify_times,
 		  	  message:req.flash('deleteMessage'),
 		      user: 	req.user.username

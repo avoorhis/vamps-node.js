@@ -1,6 +1,28 @@
 var config = {};
 
 //console.log( JSON.stringify(datasets_by_project_all) );
+config.ENV_SOURCE = { 
+        10: "air",
+         20: "extreme habitat",
+        30: "host associated",
+         40: "human associated",
+		 41: "human-skin",
+		 42: "human-oral",
+		 43: "human-gut",
+		 45: "human-amniotic-fluid",
+		 46: "human-urine",
+		 47: "human-blood",	
+	     50: "microbial mat/biofilm",
+		 60: "miscellaneous_natural_or_artificial_environment",
+		 70: "plant associated",
+		 80: "sediment",
+		 90: "soil/sand",
+		 100: "unknown",
+		 110: "wastewater/sludge",
+		 120: "water-freshwater",
+		 130: "water-marine",
+		 140: "indoor"
+    };
 config.DOMAINS = { domains: [
         {id: 1, name: "Archaea"},
         {id: 2, name: "Bacteria"},

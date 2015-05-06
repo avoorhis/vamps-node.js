@@ -1,11 +1,14 @@
 <ul>
-<% for (var i = 0; i < projects.length; i++) {%>
-    <% var obj = projects[i];%>
-    <br/>
-    <li>
-      <a href='/projects/<%= obj.pid %>'> <%= obj.name %> </a>
-      		<br>&nbsp;&nbsp;Title: <%= obj.title %>; 
-    </li>
+<% for (pid in proj) { %>
+	<% var public = proj[pid].public; %>
+	<% if(public == 1) { %>
+	    <br/>
+	    <li>
+	      <a href='/projects/<%= pid %>'> <%= proj[pid].project %> </a>
+	      		<br>&nbsp;&nbsp;Title: <%= proj[pid].title %>; 
+	    </li>
+	<% } %>
+    
 <% }%>
 </ul>
 
