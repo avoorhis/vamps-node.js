@@ -1,9 +1,5 @@
 var fs = require('fs-extra');
 mysql = require('mysql2');
-// public/json/tax_counts--<NODE_DATABASE>.json 
-// and
-// public/json/metadata--<NODE_DATABASE>.json
-// need to be present for the web-app to work correctly
 
 //
 eval(fs.readFileSync('config/db-connect-dev.js').toString());
@@ -49,7 +45,3 @@ eval(fs.readFileSync('config/db-connect-dev.js').toString());
    handleDisconnect();
 
 }).call(this);
-
- 
-
->>>>>>> 8d2fe10d18053934da9cf769b64b583b6a3a573b
