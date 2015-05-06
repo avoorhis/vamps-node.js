@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
-<% var file_info2 = JSON.parse(finfo2) %>
+
   <div class='title'>Saved Datasets</div>
   <div class='subtitle'></div>
 <% if (message) { %>
@@ -13,8 +13,8 @@
 
 
 <% for(t in times){ %>
-	<% var filename = file_info2[times[t]].filename %>
-	<% var fileSizeInBytes = file_info2[times[t]].size %>
+	<% var filename = file_info[times[t]].filename %>
+	<% var fileSizeInBytes = file_info[times[t]].size %>
 	<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 	<% var sizer = 'Bytes' %>
 	<% if(fileSizeInBytes > 1000) { %>
@@ -36,7 +36,7 @@
 				<li>
 					<ul>
 						<li>File: <%= filename %><% sizer %></li>
-						<li><%= fileSize %> <%= sizer %> | created: <%= file_info2[times[t]].mtime %></li>
+						<li><%= fileSize %> <%= sizer %> | created: <%= file_info[times[t]].mtime %></li>
 						<li>							
 	<button type="submit" class='btn btn-xs btn-success' onClick="sendAjaxUseOrView('<%= filename %>','<%= user %>','view')" value="view" >view</button>
 	<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>

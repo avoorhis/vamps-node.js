@@ -4,10 +4,11 @@ var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var path  = require('path');
 var fs   = require('fs-extra');
+var ini = require('ini');
 //
 //
 //
-router.get('/your_data', helpers.isLoggedIn,  function(req,res){
+router.get('/your_data',  function(req,res){
   console.log('in your data');
     res.render('user_data/your_data', {        
       title: 'VAMPS:Data Administration',
@@ -58,7 +59,6 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-/* GET Import Data page. */
 router.get('/export_data', helpers.isLoggedIn, function(req, res) {
     res.render('user_data/export_data', { title: 'VAMPS:Import Data',
                            user: req.user
@@ -67,12 +67,95 @@ router.get('/export_data', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
+    console.log(req.params.id);
+	var project = req.params.id;
+    var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+	var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+	console.log(config)
+	res.render('user_data/profile', { 
+			project : project,
+			pinfo   : JSON.stringify(config),
+			title   : project,
+	        user    : req.user 
+         });
+});
+//
+//
+//
+router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(req,res){
+    console.log('start gast');
+	console.log(req.params.project);
+	var project = req.params.project;
+	var method = req.params.method;
+	var base_dir = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project);
+	var config_file = path.join(base_dir,'config.ini');
+  	
+	if(method == 'gast'){
+		flash_message = 'GAST has been started for '+project
+	}else{
+		flash_message = 'RDP has been started for '+project
+	}
+	req.flash('successMessage', flash_message);
+	res.redirect("/user_data/your_projects");
+	
+	
+	
+});
+//
+//
+//
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   
-    res.render('user_data/your_projects', {        
-      title: 'VAMPS:Data Administration',
-      user: req.user
-       });
+    var user_projects_base_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+   
+	project_info = {};
+	modify_times = [];
+    fs.readdir(user_projects_base_dir, function(err, items){
+		if(err){		  
+			msg = 'ERROR Message '+err;
+			helpers.render_error_page(req,res,msg);
+		  
+		}else{
+		  for (var d in items){
+	        var pts = items[d].split(':');
+	        if(pts[0] === 'project'){
+	          
+	          stat = fs.statSync(path.join(user_projects_base_dir,items[d]));
+			  if(stat.isDirectory()){
+				  // stat.mtime.getTime() is for sorting to list in oreder
+				  project_info[stat.mtime.getTime()] = {}
+				  modify_times.push(stat.mtime.getTime());
+				  // need to read config file
+				  // check status?? dir strcture: analisis/gast/<ds>
+				  var config_file = path.join(user_projects_base_dir,items[d],'config.ini');
+				  var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+				  project_info[stat.mtime.getTime()].config = config;
+				  project_info[stat.mtime.getTime()].directory = items[d];
+				  project_info[stat.mtime.getTime()].mtime = stat.mtime;
+			  }
+			  
+			  
+	        }
+	      }
+	  
+		  modify_times.sort().reverse();
+		  
+		  console.log(JSON.stringify(project_info));
+		  res.render('user_data/your_projects',
+		    { title: 'User Projects',
+		     
+		      pinfo: JSON.stringify(project_info),
+		      times: modify_times,
+		  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+		  	  deletemessage : req.flash('deleteMessage'),
+		  	  successmessage : req.flash('successMessage'),
+		      user: 	req.user.username
+		    });
+		}
+	
+    });
+   
 });
 //
 //
