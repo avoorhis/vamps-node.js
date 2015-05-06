@@ -1,0 +1,33 @@
+<% include ../add_ins/begin.ejs %>
+<% var project_info = JSON.parse(pinfo) %>
+  <div class='title fa fa-anchor'><%= project %> (Project Profile)</div>
+  <!-- PROJECT INFORMATION -->
+  
+  
+<!--							  							
+<button type="submit" class='btn btn-xs btn-success' onClick="sendAjaxUseOrView('<%= project %>','<%= user %>','view')" value="view" >View Datasets</button>
+<button type="submit" class='btn btn-xs btn-success' onClick="sendAjaxUseOrView('<%= project %>','<%= user %>','view')" value="view" >Assign Taxonomy</button>
+-->
+	<div class='col-md-1'></div>
+	<div class='col-md-8'>
+
+	<br>
+	<div class='well'>
+		
+		<table class='table'>
+			<tr><th>dataset</th><th>count</th></tr>
+		<% for(ds in project_info.DATASETS) { %>
+			<tr><td><%= ds %></td><td><%= project_info.DATASETS[ds] %></td></tr>
+		<% } %>
+		</table>
+		
+		
+	
+	</div>
+  
+  
+  </div>
+  
+  
+  <script type="text/javascript" src="/javascripts/project.js"></script>
+<% include ../add_ins/end.ejs %>

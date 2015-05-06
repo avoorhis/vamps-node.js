@@ -16,15 +16,24 @@
 	<h4>Simple (single dataset) Import Form: <small>(All fields are required)</small></h4>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="project">Project Name:</label>
-      <div class="col-sm-4">
-        <input type="text" name='project' class="form-control" id="project" placeholder="Enter Project Name">
+      <div class="col-sm-3">
+        <select>
+			<option>select project name</option>
+		</select>	  
+	  </div>
+	  <div class="col-sm-1">OR</div>
+	  <div class="col-sm-3">
+        <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
+		
       </div><small>(<a href='#'>required name format</a>)</small>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="meta">Dataset Name:</label>
-      <div class="col-sm-4">          
+      <div class="col-sm-3">          
         <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter Dataset Name">
-      </div><small>(<a href='#'>required name format</a>)</small>
+      </div>
+	  <div class="col-sm-1"></div>
+	  <small>(<a href='#'>required name format</a>)</small>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
@@ -53,8 +62,14 @@
 	<h4>Multi-dataset Import Form: <small>(All fields are required)</small></h4>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="project">Project Name:</label>
-      <div class="col-sm-4">
-        <input type="text" name='project' class="form-control" id="project" placeholder="Enter Project Name">
+      <div class="col-sm-3">
+        <select class=''>
+			<option>select project name</option>
+		</select>   
+	  </div>
+	  <div class="col-sm-1">OR</div>
+	  <div class="col-sm-3">
+        <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
       </div><small>(<a href='#'>required name format</a>)</small>
     </div>
 	<div class="form-group">
