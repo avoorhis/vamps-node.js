@@ -26,7 +26,7 @@ public/tmp_images/
 public/json/*
 public/scripts/*.json
 public/json/*.json
-public/json/vamps*
+public/json/vamps*/*
 visuals_testing/
 .DS_Store
 
