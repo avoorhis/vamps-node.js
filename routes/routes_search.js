@@ -4,7 +4,7 @@ var passport = require('passport');
 var helpers = require('./helpers/helpers');
 
 /* GET Search page. */
-router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
+router.get('/index_search', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
@@ -35,7 +35,7 @@ router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(metadata_fields)
-    res.render('search/search_datasets', { title: 'VAMPS:Search',
+    res.render('search/index_search', { title: 'VAMPS:Search',
                           	metadata_items: JSON.stringify(metadata_fields),
 							message: req.flash('nodataMessage'),
     						user: req.user
@@ -44,7 +44,7 @@ router.get('/search_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //  SEARCH DATASETS
 //
-router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
+router.post('/search_result', helpers.isLoggedIn, function(req, res) {
   console.log('req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -151,7 +151,7 @@ router.post('/search_datasets_result', helpers.isLoggedIn, function(req, res) {
 	req.flash('nodataMessage', 'No Data Found');
 	res.redirect('search_datasets'); 
   }else{
-          res.render('search/search_datasets_result', {   
+          res.render('search/search_result', {   
                     title    : 'VAMPS: Search Datasets',
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
