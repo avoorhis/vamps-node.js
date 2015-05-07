@@ -18,10 +18,12 @@
           <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
             <img alt='plus' src='/images/tree_plus.gif'/>
           
-          <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id' name='project_names[]' value='<%= pname %>'/>
+          <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id'
+		  	 	name='project_names[]' value='<%= pname %>'/>
           <a href='/projects/<%= pid %>'>
           <% if(status == 'public') { %>
-			<span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %> </span></a></a><small><i>(public)</i></small>
+			<span id='<%= tt_pj_id %>' class='tooltipx'>
+				<%= pname %></span></a></a><small><i>(public)</i></small>
 		  <% }else{ %>
 		  	<span id='<%= tt_pj_id %>' class='tooltipx'><%= pname %> </span></a></a>
 		  <% } %>
