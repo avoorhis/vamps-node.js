@@ -11,7 +11,7 @@ var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
 var ds = require('./load_all_datasets');
-var PythonShell = require('python-shell');
+
 var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   
