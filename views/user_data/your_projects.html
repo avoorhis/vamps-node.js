@@ -6,8 +6,8 @@
 
   <div class='title'><%= user %>'s Projects</div>
   <div class='subtitle'></div>
-<% if (deletemessage) { %>
-	<div class="alert_flash_message"><%= deletemessage %></div>
+<% if (failmessage) { %>
+	<div class="alert_flash_message"><%= failmessage %></div>
 <% } %>
 <% if (successmessage) { %>
 	<div class="alert_flash_message"><%= successmessage %></div>
@@ -34,7 +34,7 @@
 			
 	<table class='table'>
 		<tr>	
-			<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> 
+			<td>Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
 			</td>
 			<td></td>
 			<td></td>
@@ -62,8 +62,8 @@
 		
 		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
 	    
-		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete Taxonomy</a></li>
-	    
+		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete Taxonomy Only</a></li>
+	    <li role="presentation" class="divider"></li>
 		<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete this Project from Server</a></li>
 	  </ul>
 	</div>
