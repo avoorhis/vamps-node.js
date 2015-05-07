@@ -192,7 +192,7 @@ var TreeModel = require('tree-model');;
 // GLOBAL if leave off 'var':
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/database-xxx.js)')
+console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/db-connect-xxx.js)')
 
 // these files are manually created before server startup using the scripts in public/scripts
 // var rstream = fs.createReadStream('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
@@ -208,7 +208,9 @@ console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/database-xxx.j
 // 	});
 
 //TAXCOUNTS     = require('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
-MetadataValues = require('./public/json/metadata--' + NODE_DATABASE+'.json');
+var meta_file = './public/json/metadata--' + NODE_DATABASE+'.json'
+MetadataValues = require(meta_file);
+console.log('Loading METADATA from: '+meta_file)
 
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
