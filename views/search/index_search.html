@@ -1,4 +1,4 @@
-<% include ../add_ins/begin-search.ejs %>
+<% include ../add_ins/begin.ejs %>
 
 <% var metaitems = JSON.parse(metadata_items); %>
 <% // sort keys %>
@@ -20,7 +20,7 @@
 <% } %>
  
 <div id='metadata_search_div' class='well'>
-	<form id='metadata_search_form' name='' method='POST' action='/search/search_datasets_result' >	
+	<form id='metadata_search_form' name='' method='POST' action='/search/search_result' >	
 			<div id='' class='pull-right' >Join searches by: 
 					<input type='radio' name='join_type' value='intersection' checked='checked' /> Intersection
 					&nbsp;&nbsp;

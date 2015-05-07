@@ -664,7 +664,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 		      finfo: JSON.stringify(file_info),
 		      times: modify_times,
 		  	  message:req.flash('deleteMessage'),
-		      user: 	req.user.username
+		      user: 	req.user
 		    });
 		}
 	
