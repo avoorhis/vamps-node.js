@@ -5,6 +5,7 @@ var helpers = require('./helpers/helpers');
 var path  = require('path');
 var fs   = require('fs-extra');
 var ini = require('ini');
+var PythonShell = require('python-shell');
 //
 //
 //
@@ -92,12 +93,32 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 	var config_file = path.join(base_dir,'config.ini');
   	
 	if(method == 'gast'){
-		flash_message = 'GAST has been started for '+project
+		
+		var options = {
+	      scriptPath : 'public/scripts',
+	      args :       [ '-c', config_file ],
+	    };
+	    console.log(options.scriptPath+'/gast.py '+options.args.join(' '));
+
+	    PythonShell.run('gast.py', options, function (err, output) {
+	      if (err) {
+			  req.flash('failMessage', 'Script Failure '+err);
+			  res.redirect("/user_data/your_projects");
+		  }else{
+			  
+		  }
+		  req.flash('successMessage', 'GAST has been started for '+project);
+	      res.redirect("/user_data/your_projects");
+	    });
+		
+		
 	}else{
-		flash_message = 'RDP has been started for '+project
+		
+		req.flash('successMessage', 'RDP has been started for '+project);
+		res.redirect("/user_data/your_projects");
+		
 	}
-	req.flash('successMessage', flash_message);
-	res.redirect("/user_data/your_projects");
+	
 	
 	
 	
@@ -148,7 +169,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 		      pinfo: JSON.stringify(project_info),
 		      times: modify_times,
 		  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-		  	  deletemessage : req.flash('deleteMessage'),
+		  	  failmessage : req.flash('failMessage'),
 		  	  successmessage : req.flash('successMessage'),
 		      user: 	req.user.username
 		    });
