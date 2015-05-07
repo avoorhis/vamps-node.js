@@ -39,7 +39,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
       }
       //console.log(file_info)
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
-                           user: req.user.username,
+                           user: req.user,
                            finfo: JSON.stringify(file_info),
 						message : req.flash('deleteMessage'),
                           });
@@ -171,7 +171,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 		  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
 		  	  failmessage : req.flash('failMessage'),
 		  	  successmessage : req.flash('successMessage'),
-		      user: 	req.user.username
+		      user: 	req.user
 		    });
 		}
 	
