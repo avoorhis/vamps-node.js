@@ -18,7 +18,7 @@ qSequenceCounts += " FROM sequence_pdr_info";
 qSequenceCounts += " JOIN dataset using(dataset_id)";
 qSequenceCounts += " GROUP BY project_id, dataset_id";
 console.log(qSequenceCounts)
-// This connection object is made global in app.js
+// This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
 module.exports.get_datasets = function(callback){
   
   connection.db.query(qSelectDatasets, function(err, rows, fields){

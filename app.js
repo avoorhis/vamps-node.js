@@ -27,7 +27,7 @@ var multer = require('multer');
 // needed for DATASETS initialization
 connection = require('./config/database');
 //connection.connect();
-var routes = require('./routes/index');  // This grabs ALL_DATASETS
+var routes = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
 var users = require('./routes/routes_users');
 var user_data = require('./routes/routes_user_data');
 var search = require('./routes/routes_search');
