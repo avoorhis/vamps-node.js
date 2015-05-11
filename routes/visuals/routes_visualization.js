@@ -639,10 +639,14 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
    
 	file_info = {};
 	modify_times = [];
+	helpers.mkdirSync(saved_datasets_dir);
     fs.readdir(saved_datasets_dir, function(err, files){
 		if(err){
-  			msg = 'ERROR Message '+err;
-  			helpers.render_error_page(req,res,msg);
+  			
+				msg = 'ERROR Message '+err;
+				helpers.render_error_page(req,res,msg);
+			
+			
 		}else{
 		  for (var f in files){
 	        var pts = files[f].split(':');
@@ -653,20 +657,20 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 			  modify_times.push(stat.mtime.getTime());
 			  
 	        }
-	      }
-	  
+	      }	  
 		  modify_times.sort().reverse();
-		  
 		  console.log(JSON.stringify(file_info));
-		  res.render('visuals/saved_datasets',
+		} 
+		  
+		res.render('visuals/saved_datasets',
 		    { title: 'saved_datasets',
 		     
 		      finfo: JSON.stringify(file_info),
 		      times: modify_times,
-		  	  message:req.flash('deleteMessage'),
+		  	  message: req.flash('message'),
 		      user: 	req.user
-		    });
-		}
+		});
+			//}
 	
     });
 	

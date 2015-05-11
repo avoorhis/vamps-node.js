@@ -21,12 +21,23 @@ import types
 import time
 import random
 import csv
+import logging
 from time import sleep
 import ConfigParser
-
-
+try:
+    import database_importer as uploader
+except:
+    print "database_importer is not avalable"
+try:
+    import run_gast as gast
+except:
+    print "run_gast is not avalable"
+try:
+    import run_rdp as rdp
+except:
+    print "run_rdp is not avalable"
 import datetime
-today     = str(datetime.date.today())
+datetime     = str(datetime.date.today())
 import subprocess
 
 # /groups/vampsweb/vampsdev/vamps_gast.py 
@@ -57,29 +68,21 @@ def start_gast(args):
     """
       Doc string
     """
-    project         = args.project
-    dataset         = args.dataset
-    dna_region      = args.dna_region
-    domain          = args.domain
+    
     platform        = 'new_vamps'
     runcode         = 'NONE'
     site            = 'new_vamps'
-    datetime        = args.datetime
-    user            = args.user
-    use64bit        = args.use64bit
     load_db         = True
-    env_source_id   = args.env_source_id
-    steps           = args.steps
-    fasta_file_from_cl  = args.fasta_file
-    use_cluster         = args.use_cluster
-    use_full_length     = args.use_full_length
-    classifier      = args.classifier
-    mobedac         = args.mobedac # True or False
+    steps           = 'gast,new_vamps'
+    fasta_file_from_cl  = '' #args.fasta_file
+    use_cluster     = False
+    mobedac         = False # True or False
     gast_input_source = 'file'
-    
-    #myobject['baseoutputdir']
     seq_count   = 0
-    
+    log_file_path = os.path.join(args.baseoutputdir,'log.txt')
+    logging.basicConfig(level=logging.DEBUG, filename=log_file_path, filemode="a+",
+                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+    os.chdir(args.baseoutputdir)
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):
         print "Could not find config file ("+info_load_infile+") **Exiting**"
@@ -226,7 +229,7 @@ if __name__ == '__main__':
     
    
     
-    myusage = """usage: 2-vamps-gast.py  [options]
+    myusage = """usage: gast.py  [options]
          
          This is will start the (customized) python_pipeline
          for the GAST process, creating the vamps_* files
@@ -242,75 +245,4 @@ if __name__ == '__main__':
     
     
     """
-    parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
-    
-    
-   
-    parser.add_argument("-c", "--config",             
-    			required=True,  action="store",   dest = "config", default='',
-                help="config file with path") 
-                
-###################################################################
-    parser.add_argument("-o", "--owner",             
-    			required=False,  action="store",   dest = "user", 
-                help="user name -- in config")         
-    parser.add_argument("-p", "--project",          
-    			required=False,  action='store', dest = "project",  default='',
-                help="") 
-    parser.add_argument('-d',"--dataset",           
-    			required=False,  action="store",   dest = "dataset", default='',
-                help = '')                                                 
-    parser.add_argument('-reg',"--dna_region",       
-    			required=False, action="store",   dest = "dna_region", default='',
-                help = '') 
-    parser.add_argument('-dom',"--domain",          
-    			required=False,  action="store",   dest = "domain", default='',
-                help = '')
-    parser.add_argument('-platform',"--platform",   
-    			required=False,  action="store",   dest = "platform", default='unknown',
-                help = '')
-    parser.add_argument('-full_length',"--full_length",   
-    			required=False,  action="store_true",   dest = "use_full_length", default=False,
-                help = '')                                                                                                 
-    parser.add_argument('-f',"--fasta_file",             
-    			required=False,  action="store",   dest = "fasta_file", default='',
-                help = '')  
-    parser.add_argument("-b", "--baseoutputdir",    
-    			required=False,  action="store",   dest = "baseoutputdir", default='/xraid2-2/vampsweb/vampsdev/tmp',
-                help = '')
-                                                                                                
-    parser.add_argument("-env", "--envsource",      
-    			required=False,  action="store",   dest = "env_source_id", default='100',
-                help = 'See list in VAMPS db')
-    parser.add_argument("-tcount", "--total_count",     
-    			required=False,  action="store",   dest = "total_count", default='',
-                help = '')                                             
-    parser.add_argument("-classifier", "--classifier",     
-    			required=False,  action="store",   dest = "classifier", default='GAST-SILVA102',
-                help = '') 
-    parser.add_argument("-mobedac", "--mobedac",     
-    			required=False,  action="store_true",   dest = "mobedac", default=False,
-                help = 'is this a MoBeDAC upload?')  
-    parser.add_argument("-use64bit", "--use64bit",     
-    			required=False,  action="store_true",   dest = "use64bit", default=False,
-                help = 'use 64bit usearch')                                            
-    parser.add_argument("-cl", "--use_cluster",     
-    			required=False,  action="store_true",   dest = "use_cluster", 
-                help = 'not for use with 64bit usearch')     
-    parser.add_argument('-s', '--steps',         
-    			required=False,   action="store",          dest = "steps",          default='gast,new_vamps',       
-                help = 'steps to run')                                            
-    
-    #steps ='gast'
-    #steps ='vampsupload'
-    args = parser.parse_args()
-    
-  
-    args.datetime     = str(datetime.date.today())
-    
-    args.project      = args.project[:1].capitalize() + args.project[1:] 
-
-    os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
-    
-    start_gast(args)
-        
+ 
