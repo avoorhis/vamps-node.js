@@ -2,6 +2,8 @@ var constants = require(app_root + '/public/constants');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport();
 
 module.exports = {
 
@@ -91,10 +93,33 @@ module.exports.IsJsonString = function(str) {
 module.exports.onlyUnique = function(value, index, self) { 
     return self.indexOf(value) === index;
 }
+
 module.exports.mkdirSync = function (path) {
   try {
     fs.mkdirSync(path);
   } catch(e) {
     if ( e.code != 'EEXIST' ) throw e;
   }
+}
+
+module.exports.send_mail = function(mail_info) {
+  var to_addr = mail_info.addr;
+  var from_addr = mail_info.from;
+  var subj = mail_info.subj;
+  var msg = mail_info.msg;
+  transporter.sendMail(mail_info, function (error, info) {
+              if (error) {
+                  console.log(error);
+              } else {
+                  console.log('Message sent: ' + info.messageId);
+              }
+    });
+
+  // transporter.sendMail({
+  //         from: from_addr,
+  //         to: to_addr,
+  //         subject: subj,
+  //         text: msg
+  //       });
+
 }
