@@ -128,10 +128,10 @@ def clean_all(args):
     q = "ALTER TABLE silva_taxonomy AUTO_INCREMENT = 10"
     cur.execute(q)
     
-    q = "DELETE from summed_counts"
-    cur.execute(q)
-    q = "ALTER TABLE summed_counts AUTO_INCREMENT = 10"
-    cur.execute(q)
+    # q = "DELETE from summed_counts"
+ #    cur.execute(q)
+ #    q = "ALTER TABLE summed_counts AUTO_INCREMENT = 10"
+ #    cur.execute(q)
     
     # tax domains
     for table in ranks:

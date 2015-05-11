@@ -216,7 +216,7 @@ def write_config(args,owner,project,stats):
     f.write('number_of_datasets='+str(stats['ds_count'])+"\n")
     f.write('sequence_counts=RAW'+"\n")
     f.write('env_source_id='+str(args.envid)+"\n")
-     f.write('has_tax=0'+"\n")
+    f.write('has_tax=0'+"\n")
     f.write("\n")
     f.write('[DATASETS]'+"\n")
     print stats

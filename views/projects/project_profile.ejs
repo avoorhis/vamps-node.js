@@ -41,7 +41,7 @@
   <% if(user.security_level === 1 || permissions[pid]  === 0 || permissions[pid] === user.user_id ) { %>
 
     <li>
-    <form id='download_project_fasta_form_id' method='POST' action='../download_selected_seqs'>
+    <form id='download_project_fasta_form_id' method='POST' action='/user_data/download_selected_seqs'>
   	  <!-- This form should run in the background and place the seqs file 
   	  			in a 'downloads' directory where it can be retrieved.
   	  			The user should get an email when its ready.
@@ -50,11 +50,12 @@
   	  <input type='hidden' name='download_type' value='whole_project' />
   	  <input type='hidden' name='project_id' value='<%= pid %>' />
   	  <input type='hidden' name='project' value='<%= data.project %>' />
+	  <input type='hidden' name='referer' value='/projects/project_profile' />
 	  <span  class='alert_flash_message' id='download_fasta_response' style='' ></span>
     </form> 
     </li>
     <li>
-    <form id='download_project_metadata_form_id' method='POST' action='../download_selected_metadata'>
+    <form id='download_project_metadata_form_id' method='POST' action='/user_data/download_selected_metadata'>
   	  <!-- This form should run in the background and place the seqs file 
   	  			in a 'downloads' directory where it can be retrieved.
   	  			The user should get an email when its ready.
@@ -63,6 +64,7 @@
   	  <input type='hidden' name='download_type' value='whole_project' />
   	  <input type='hidden' name='project_id' value='<%= pid %>' />
   	  <input type='hidden' name='project' value='<%= data.project %>' />
+	  <input type='hidden' name='referer' value='/projects/project_profile' />
 	  <span  class='alert_flash_message' id='download_metadata_response' ></span>
     </form> 
     </li>
