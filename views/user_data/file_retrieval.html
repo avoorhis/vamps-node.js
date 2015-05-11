@@ -35,8 +35,8 @@
 				<li>File: <%= filename %><% sizer %>
 				<li><%= fileSize %> <%= sizer %> | created: <%= file_info.mtime[filename] %>
 				 
-				<li><a href='file_utils?fxn=download&user=<%= user %>&type=fasta&filename=<%= filename %>' >download</a> | 
-						<a href='file_utils?fxn=delete&user=<%= user %>&filename=<%= filename %>' >delete from the server</a>
+				<li><a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' >download</a> | 
+					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
 			</ul>
 		</li>
 			
