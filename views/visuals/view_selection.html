@@ -52,7 +52,7 @@
 	  </div>
 	<% } else { %>
 		<div class="col-md-1">
-			<form id='download_fasta_id' method='POST' action='../download_selected_seqs'>
+			<form id='download_fasta_id' method='POST' action='/user_data/download_selected_seqs'>
 		    <!-- This form should run in the background and place the seqs file 
 		          in a 'downloads' directory where it can be retrieved.
 		          The user should get an email when its ready.
@@ -60,11 +60,12 @@
 		    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
 		    <input type='hidden' name='download_type' value='partial_project' />
 		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+			<input type='hidden' name='referer' value='/visuals/view_selection' />
     
 		  	</form>
 		</div>
 		<div class="col-md-1">
-		    <form id='download_metadata_id' method='POST' action='../download_selected_metadata'>
+		    <form id='download_metadata_id' method='POST' action='/user_data/download_selected_metadata'>
 		      <!-- This form should run in the background and place the seqs file 
 		            in a 'downloads' directory where it can be retrieved.
 		            The user should get an email when its ready.
@@ -72,8 +73,11 @@
 		      <input type='submit' class="btn btn-xs btn-success" value='Create Metadata File' />
 		      <input type='hidden' name='download_type' value='partial_project' />
 		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+			  <input type='hidden' name='referer' value='/visuals/view_selection' />
 		    </form>
+			
 		</div>
+		<span class=''>XX</span>
 	<% } %>
 </div>  <!-- .row -->
 <br>
@@ -119,7 +123,7 @@
 	<div class="navbar-header">	    
 	  <span id='counts_table_title' class="navbar-brand table_title" >Frequency Table</span>  
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-default'>download</button>
   </nav>
@@ -132,7 +136,7 @@
 	<div class="navbar-header">	      
 	  <span id='metadata_title' class="navbar-brand table_title" >Metadata Table</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -146,7 +150,7 @@
     <div class="navbar-header">	      
       <span id='dheatmap_title' class="navbar-brand table_title" >Distance Heatmap</span> 
     </div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
  	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -160,7 +164,7 @@
     <div class="navbar-header">	      
       <span id='fheatmap_title' class="navbar-brand table_title" >Frequency Heatmap</span> 
     </div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
  	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -175,7 +179,7 @@
 	<div class="navbar-header">	      
 	    <span id='barcharts_title' class="navbar-brand table_title" >Bar Charts</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='barcharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -189,7 +193,7 @@
 	<div class="navbar-header">	      
 	  <span id='piecharts_title' class="navbar-brand table_title" >Pie Charts</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='piecharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -202,7 +206,7 @@
 	<div class="navbar-header">	      
 	  <span id='dendrogram_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='dendrogram_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -216,7 +220,7 @@
 	<div class="navbar-header">	      
 	  <span id='dendrogram_pdf_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -229,7 +233,7 @@
 	<div class="navbar-header">	      
 		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
@@ -242,7 +246,7 @@
 	<div class="navbar-header">	      
 		  <span id='geospatial_title' class="navbar-brand table_title" >GeoSpatial</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)">top</a>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>

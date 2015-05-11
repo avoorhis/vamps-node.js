@@ -5,14 +5,10 @@ var router = express.Router();
 
 var fs   = require('fs-extra');
 var path  = require('path');
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport();
-var zlib = require('zlib');
-var Readable = require('stream').Readable;
-var helpers = require('./helpers/helpers');
-var ds = require('./load_all_datasets');
-
 var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
+var helpers = require('./helpers/helpers');
+
+var ds = require('./load_all_datasets');
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
@@ -43,57 +39,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
  
  
 
-  router.get('/file_utils', helpers.isLoggedIn, function(req, res){
-
-	//console.log('dnld');
-	//console.log(req.query.filename);
-	var user = req.query.user;
-	var file = path.join('user_data',NODE_DATABASE,user,req.query.filename);
-	//console.log(file);
-	//// DOWNLOAD //////
-	if(req.query.fxn == 'download' && req.query.type == 'fasta'){
-		res.download(file); // Set disposition and send it.
-		
-	}else if(req.query.fxn == 'download' && req.query.type == 'metadata'){
-		res.download(file); // Set disposition and send it.
-		
-	}
-	
-	//// DELETE FILES /////
-	if(req.query.fxn == 'delete'){
-		if(req.query.type == 'datasets'){
-			fs.unlink(file, function(err){
-				if(err){ 
-					console.log(err); 
-				}else{
-					req.flash('deleteMessage', 'Deleted: '+req.query.filename);
-					res.redirect("/visuals/saved_datasets");
-				}	
-			}); //
-		}else{
-			fs.unlink(file, function(err){
-				if(err){ 
-					console.log(err); 
-				}else{
-					req.flash('deleteMessage', 'Deleted: '+req.query.filename);
-					res.redirect("/file_retrieval");	
-				}
-			}); //
-		}
-		
-	}
-	
-	
-	
-	////  FINALLY REDIRECT /////
-	// if(req.query.type == 'datasets'){
-	// 	res.redirect("/visuals/show_saved_datasets");
-	// }else if (req.query.type == 'metadata' || req.query.type == 'fasta'){
-	// 	res.redirect("/file_retrieval");
-	// }else{
-	// 	res.redirect("/");
-	// }
-  });
 
   /* GET Geo-Distribution page. */
   router.get('/geodistribution', function(req, res) {
@@ -167,192 +112,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 });
 
 
-  //
-  // DOWNLOAD SEQUENCES
-  //
-  router.post('/download_selected_seqs', function(req, res) {
-    var db = req.db;
-    console.log(req.body);
-
-    var qSelect = "select UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
-    //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
-    qSelect += " join sequence using (sequence_id)\n";
-    qSelect += " join dataset using (dataset_id)\n";
-    qSelect += " join project using (project_id)\n";
-    var seq, seqid, seq_count, pjds;
-    var timestamp = +new Date();  // millisecs since the epoch!
-
-	var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
-	helpers.mkdirSync(user_dir);  // create dir if not exists
-	  var file_name;
-	  var out_file_path;
-    if(req.body.download_type == 'whole_project')
-    {
-  		var pid = req.body.project_id;
-  		var project = req.body.project;
-  		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
-    	out_file_path = path.join(user_dir,file_name);
-    	qSelect += " where project_id = '"+pid+"'";
-    }else{
-      var pids = JSON.parse(req.body.datasets).ids;
-		  file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
-      out_file_path = path.join(user_dir,file_name);
-      qSelect += " where dataset_id in ("+pids+")";
-      console.log(pids);
-
-    }
-    qSelect += " limit 100 ";                     // <<<<-----  for testing
-
-
-
-
-                 // <<<<-----  for testing
-    var gzip = zlib.createGzip();
-    console.log(qSelect);
-
-    var wstream = fs.createWriteStream(out_file_path);
-    var rs = new Readable();
-    var collection = db.query(qSelect, function (err, rows, fields){
-      if (err) {
-          throw err;
-      } else {
-        for (var i in rows){
-          seq = rows[i].seq.toString();
-          //var buffer = new Buffer(rows[i].seq, 'base64');
-          //console.log(seq);
-          seq_id = rows[i].sequence_id.toString();
-          seq_count = rows[i].seq_count.toString();
-          //project = rows[i].project;
-          pjds = rows[i].project+'--'+rows[i].dataset;
-          entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
-          //console.log(entry);
-          rs.push(entry);
-        }
-
-        rs.push(null);
-      }
-      rs
-        .pipe(gzip)
-        .pipe(wstream)
-        .on('finish', function () {  // finished
-          console.log('done compressing and writing file');
-          var info = {
-                to:'avoorhis@mbl.edu',
-                from:"vamps@mbl.edu",
-                subject:"fasta file is ready",
-                text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-              };
-          send_mail(info);
-        });
-    });
-
-  });
-
-  //
-  // DOWNLOAD METADATA
-  //
-  router.post('/download_selected_metadata', function(req, res) {
-    var db = req.db;
-    console.log(req.body);
-    var timestamp = +new Date();  // millisecs since the epoch!
-
-	
-	var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
-	helpers.mkdirSync(user_dir);  // create dir if not exists
-	var dids;
-	var project;
-	var file_name;
-	var out_file_path;
-	
-	if(req.body.download_type == 'whole_project'){
-    var pid  = req.body.project_id;
-    dids = DATASET_IDS_BY_PID[pid];
-    project = req.body.project;
-    file_name = 'metadata:'+timestamp+'_'+project+'.csv.gz';
-    out_file_path = path.join(user_dir,file_name);
-  }else{
-    dids = JSON.parse(req.body.datasets).ids;
-    file_name = 'metadata:'+timestamp+'.csv.gz';
-    out_file_path = path.join(user_dir, file_name);
-    }
-    console.log('dids');
-    console.log(dids);
-
-
-    // check if custom metadata table exists
-    //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
-
-    // get the fields from required_metadata_info as they may vary
-    //var qSelect = "SHOW columns from required_metadata_info";
-    //console.log('in projects-->');
-    //console.log(MetadataValues);
-    //console.log('<--in projects');
-    // we have all the metadata in MetadataValues by did
-
-    var gzip = zlib.createGzip();
-    var myrows = {}; // myrows[mdname] == [] list of values
-    var header = 'Project: '+project+"\n\t";
-
-    var wstream = fs.createWriteStream(out_file_path);
-    var rs = new Readable();
-    var filetxt;
-
-        for (var i in dids){
-          did = dids[i];
-          dname = DATASET_NAME_BY_DID[did];
-          header += dname+"\t";
-          for (var k in MetadataValues[did]){
-            nm = k;
-            val = MetadataValues[did][k];
-            if(nm in myrows){
-              myrows[nm].push(val);
-            }else{
-              myrows[nm] = [];
-              myrows[nm].push(val);
-            }
-          }
-        }
-
-      // print
-      header += "\n";
-      rs.push(header);
-      if(Object.keys(myrows).length === 0){
-        rs.push("NO METADATA FOUND\n");
-      }else{
-        for (var mdname in myrows){
-          filetxt = mdname+"\t";  // restart sting
-          for(i in myrows[mdname]){
-            filetxt += myrows[mdname][i]+"\t";
-          }
-          filetxt += "\n";
-          rs.push(filetxt);
-        }
-      }
-      rs.push(null);
-      rs
-        .pipe(gzip)
-        .pipe(wstream)
-        .on('finish', function () {  // finished
-          console.log('done compressing and writing file');
-          var info = {
-                to:'avoorhis@mbl.edu',
-                from:"vamps@mbl.edu",
-                subject:"metadata is ready",
-                text:"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-          };
-          send_mail(info);
-          // transporter.sendMail({
-          //   from: 'vamps@mbl.edu',
-          //   to: 'avoorhis@mbl.edu',
-          //   subject: 'metadata is ready',
-          //   text: "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
-          // });
-        });
-
-    //console.log(datasets);
-  });
 
 // transporter.sendMail(mailOptions, function (error, info) {
 //                 if (error) {
@@ -361,27 +120,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 //                     console.log('Message sent: ' + info.response);
 //                 }
 //             });
-  function send_mail(mail_info) {
-    var to_addr = mail_info.addr;
-    var from_addr = mail_info.from;
-    var subj = mail_info.subj;
-    var msg = mail_info.msg;
-    transporter.sendMail(mail_info, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Message sent: ' + info.response);
-                }
-            });
 
-    // transporter.sendMail({
-    //         from: from_addr,
-    //         to: to_addr,
-    //         subject: subj,
-    //         text: msg
-    //       });
-
-  }
   // function IsNumeric(n) {
   //   return !isNaN(parseFloat(n)) && isFinite(n);
   // }
