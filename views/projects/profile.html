@@ -1,4 +1,9 @@
 <% include ../add_ins/begin.ejs %>
+  
+  <% if (message) { %>
+  	<div class="alert_flash_message"><%= message %></div>
+  <% } %>
+  
   <div class='title fa fa-anchor'>Project Profile</div>
   <!-- PROJECT INFORMATION -->
   <div id='project_info_div'>
