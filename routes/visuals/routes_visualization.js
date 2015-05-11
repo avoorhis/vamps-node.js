@@ -257,10 +257,10 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-router.post('/useview_saved_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 
     fxn = req.body.fxn;
-	console.log(req.body.filename);
+	//console.log('XX'+JSON.stringify(req.body));
 	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
 	console.log(file_path);
 	var dataset_ids = [];
