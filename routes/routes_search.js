@@ -68,8 +68,8 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
   console.log(searches);
 
   // search datasets
-  //console.log(ALLMetadata);
-  // This assumes that ALL datasets are in ALLMetadata. 
+  //console.log(AllMetadata);
+  // This assumes that ALL datasets are in AllMetadata. 
   //var datasets = [];
    // use for posting to unit_selection
   //
@@ -77,19 +77,19 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
 
   //
   var ds1, ds2, ds3 = [];
-  var result = get_search_datasets(req.user, searches.search1, ALLMetadata);
+  var result = get_search_datasets(req.user, searches.search1, AllMetadata);
   ds1 = result.datasets;
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
 
-  var md_hash =  ALLMetadata;
+  var md_hash =  AllMetadata;
 
   if('search2' in searches){
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{  // summation
-    // var md_hash =  ALLMetadata;
+    // var md_hash =  AllMetadata;
     //}
     result = get_search_datasets(req.user, searches.search2, md_hash);
     ds2 = result.datasets;
@@ -105,7 +105,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{
-      // var md_hash =  ALLMetadata;
+      // var md_hash =  AllMetadata;
     //}
     result = get_search_datasets(req.user, searches.search3, md_hash);
     ds3 = result.datasets;
@@ -307,7 +307,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
         }else{
-          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:ALLMetadata[did][search["metadata-item"]] });
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:AllMetadata[did][search["metadata-item"]] });
         }
       }
       return ds_plus;
