@@ -4,8 +4,8 @@
 <% var project_info = JSON.parse(pinfo) %>
 <% var env = JSON.parse(env_sources) %>
 
-  <div class='title'><%= user.username %>'s Projects</div>
-  <div class='subtitle'></div>
+ <div class='title'>Projects (username: <%= user.username %>)</div>
+ <div class='subtitle'></div>
 <% if (failmessage) { %>
 	<div class="alert_flash_message"><%= failmessage %></div>
 <% } %>
@@ -29,6 +29,7 @@
 		<% var env_source = env[env_source_id] %>
 		<% var tax = project_info[times[t]].config.GENERAL.has_tax %>
 		<% var datasets = project_info[times[t]].config.DATASETS %>
+		<% var status = project_info[times[t]].status %>
 	
 		<div class='well'>
 		
@@ -37,16 +38,15 @@
 
 		<table class='table'>
 			<tr>	
-				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> 
-				</td>
+				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
 				<td></td>
-				<td></td>
+				<td>Status: <strong><%= status %></strong></td>				
 				<td><a href="#" class="pull-right">edit</a></td>
 			</tr><tr>
 				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
 				<td>Public: <%= public %></td>
 				<td>Environmental Source: <%= env_source %></td>
-				<td>Taxonomy: <%= tax %></td>
+				<td>Taxonomy: <%= tax %></td>				
 			</tr>
 		</table>			
 						
@@ -65,9 +65,9 @@
 		
 			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
 	    
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete Taxonomy Only</a></li>
+			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax_only">Delete Taxonomy Only</a></li>
 	    	<li role="presentation" class="divider"></li>
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Delete this Project from Server</a></li>
+			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
 	  	  </ul>
 		</div>
 
