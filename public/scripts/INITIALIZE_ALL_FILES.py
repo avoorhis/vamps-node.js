@@ -50,7 +50,8 @@ strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_i
 strain_query += query_core
 strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
+# these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
 req_pquery = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
@@ -107,6 +108,7 @@ def go(args):
     write_all_taxcounts_file(prefix, counts_lookup)
     for w in warnings:
         print w
+        
 def write_all_metadata_file(prefix, metadata_lookup):
     md_file = "../json/"+NODE_DATABASE+"--metadata.json"
     #print md_file
@@ -225,7 +227,7 @@ if __name__ == '__main__':
         each containing taxcounts and metadata from the database
         
         **THIS SCRIPT WILL DELETE AND RE-CREATE ALL THE FILES** for the chosen database.
-        It will create a /public/json/<NODE_DATABASE>/<datasetid>.json file for each dataset.
+        It will create a /public/json/<NODE_DATABASE>--datasets/<datasetid>.json file for each dataset.
           These files have taxonomic counts and metadata for that dataset for
           use when selecting datsets for visualization.
         Also the script will create 2 other files:
