@@ -10,6 +10,7 @@ import sys,os
 import argparse
 import MySQLdb
 import json
+import logging
 
 
 """
@@ -35,7 +36,10 @@ GROUP BY dataset_id, domain_id, phylum_id
 """
 
 
-parser = argparse.ArgumentParser(description="") 
+db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                         read_default_file="~/.my.cnf_node"  ) 
+cur = db.cursor()
+
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
 query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
@@ -92,7 +96,7 @@ queries = [{"rank":"domain","query":domain_query},
            {"rank":"strain","query":strain_query}
 		   ]
 
-def go_list(args):
+def go_list(NODE_DATABASE):
     counts_lookup = read_original_taxcounts(NODE_DATABASE)
     
     q = "SELECT DISTINCT project,project.project_id from dataset"
@@ -112,14 +116,14 @@ def go_list(args):
         num += 1
     print 'Number of Projects:',num
     
-def go_delete(args):
+def go_delete(NODE_DATABASE, pid):
     
     counts_lookup = read_original_taxcounts(NODE_DATABASE)
 
-    dids = get_dataset_ids(args.pid)  
+    dids = get_dataset_ids(pid)  
     print dids  
     # just delete files 
-    prefix = os.path.join('../json',NODE_DATABASE+'--taxcounts')
+    prefix = os.path.join(os.getcwd(),'public','json',NODE_DATABASE+'--taxcounts')
     print prefix
     #files = os.listdir(base)
     #for infile in files:
@@ -133,12 +137,12 @@ def go_delete(args):
             os.remove(file_path)
     #write_json_file(out_file,counts_lookup)
     
-def go_add(args):
-    
-    counts_lookup = read_original_taxcounts(NODE_DATABASE)
-    prefix = os.path.join('../json',NODE_DATABASE+'--taxcounts')
+def go_add(NODE_DATABASE, pid, process_dir):
+    cur.execute("USE "+NODE_DATABASE)
+    counts_lookup = read_original_taxcounts(NODE_DATABASE,process_dir)
+    prefix = os.path.join(process_dir,'public','json',NODE_DATABASE+'--taxcounts')
     print prefix
-    dids = get_dataset_ids(args.pid)    
+    dids = get_dataset_ids(pid)    
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
@@ -198,7 +202,7 @@ def go_add(args):
     write_json_file(prefix,counts_lookup)
     # print 'DONE (must now move file into place)'
   
-def write_json_file(prefix,counts_lookup):
+def write_json_file(prefix, counts_lookup):
     #json_str = json.dumps(counts_lookup)    
     # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
     # f = open(outfile,'w')
@@ -209,12 +213,15 @@ def write_json_file(prefix,counts_lookup):
         f = open(file_path,'w') 
         mystr = json.dumps(counts_lookup[did]) 
         print mystr
-        f.write('{"'+str(did)+'":'+mystr+"}\n") 
+        #f.write('{"'+str(did)+'":'+mystr+"}\n")
+        f.write('{"taxcounts":'+mystr+',"metadata":{}}'+"\n");
         f.close()
 
-def read_original_taxcounts(db):
+def read_original_taxcounts(db,process_dir):
     counts_lookup = {}
-    base = os.path.join('../json',db+'--taxcounts')
+    print('process_dir '+process_dir)
+    base = os.path.join(process_dir,'public','json',db+'--taxcounts')
+    
     files = os.listdir(base)
     for infile in files:
         file_path = os.path.join(base,infile)
@@ -251,7 +258,7 @@ def get_dataset_ids(pid):
 #
 #
 if __name__ == '__main__':
-
+    parser = argparse.ArgumentParser(description="") 
     usage = """
         -pid/--project_id  ID  Must be combined with --add or --delete
         
@@ -275,72 +282,36 @@ if __name__ == '__main__':
 
     """
     parser.add_argument("-pid","--pid",                   
-                required=False,  action="store",   dest = "pid", default='',
-                help="""ProjectID""") 
-    
+               required=False,  action="store",   dest = "pid", default='',
+               help="""ProjectID""") 
+   
     parser.add_argument("-del","--del",                   
-                required=False,  action="store_true",   dest = "delete", default='',
-                help="""ProjectID""") 
-                
+               required=False,  action="store_true",   dest = "delete", default='',
+               help="""ProjectID""") 
+               
     parser.add_argument("-add","--add",                   
-                required=False,  action="store_true",   dest = "add", default='',
-                help="""ProjectID""")
-                
+               required=False,  action="store_true",   dest = "add", default='',
+               help="""ProjectID""")
+               
     parser.add_argument("-list","--list",                   
-                required=False,  action="store_true",   dest = "list", default='',
-                help="""ProjectID""") 
-                
+               required=False,  action="store_true",   dest = "list", default='',
+               help="""ProjectID""") 
+    parser.add_argument("-db","--database",                   
+               required=False,  action="store",   dest = "NODE_DATABASE", default='',
+               help="""ProjectID""")            
     args = parser.parse_args()
-    
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          user="ruby", # your username
-                          passwd="ruby") # name of the data base
-    cur = db.cursor()
-    cur.execute("SHOW databases like 'vamps%'")
-    dbs = []
-    db_str = ''
-    for i, row in enumerate(cur.fetchall()):
-        dbs.append(row[0])
-        db_str += str(i)+'-'+row[0]+';  '
-    print db_str
-    db_no = input("\nchoose database number: ")
-    if int(db_no) < len(dbs):
-        NODE_DATABASE = dbs[db_no]
-    else:
-        sys.exit("unrecognized number -- Exiting")
-        
-    print
-    cur.execute("USE "+NODE_DATABASE)
-    
-    #out_file = "tax_counts--"+NODE_DATABASE+".json"
-    #in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
-    
-    print 'DATABASE:',NODE_DATABASE
-    
-    
-    if not args.list and not args.pid and not args.delete and not args.add:
-        print usage        
-        sys.exit('need command line parameter(s)')
-        
-    if args.delete and not args.pid:
-        print usage        
-        sys.exit('need pid to delete') 
+   
            
-    if args.add and not args.pid:
-        print usage        
-        sys.exit('need pid to add')
-    
-    if args.delete and args.add:
-        print usage        
-        sys.exit('cannot add AND delete')
-            
     if args.list:
-        go_list(args)
+       go_list(args)
     elif args.delete and args.pid:
-        go_delete(args)
-    elif args.add and args.pid:
-        go_add(args)
+       go_delete(args)
+    elif args.add and args.pid and args.NODE_DATABASE:
+       go_add(args.NODE_DATABASE, args.pid)
     else:
-        print usage 
+       print usage 
+       
+
+   
         
 
