@@ -8,6 +8,7 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
+	var metadata_fields_array = [];
     for (var did in AllMetadata){
       for (var name in AllMetadata[did]){
           val = AllMetadata[did][name];
@@ -24,8 +25,10 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(tmp_metadata_fields)
+	
     for (var tmp_name in tmp_metadata_fields){
-      if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+      metadata_fields_array.push(tmp_name)
+	  if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
         tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
         metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
       }else{
@@ -35,9 +38,11 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(metadata_fields)
+	metadata_fields_array.sort();
     res.render('search/index_search', { title: 'VAMPS:Search',
                           	metadata_items: JSON.stringify(metadata_fields),
 							message: req.flash('nodataMessage'),
+							mkeys: metadata_fields_array,
     						user: req.user
     											});
 });
@@ -161,7 +166,15 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
    }
  
 });
-
+//
+//  SEARCH DATASETS
+//
+router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
+	console.log('in gethint');
+	console.log(req.params.hint);
+	
+	
+});
 //
 //  REGULAR FXNS
 //
