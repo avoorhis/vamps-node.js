@@ -60,7 +60,12 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                              user: req.user
                             });
   });
-
+  /* GET FAQ page. */
+  router.get('/faq', function(req, res) {
+      res.render('faq', { title: 'VAMPS:FAQ',
+                             user: req.user
+                            });
+  });
   /* GET Contact Us page. */
   router.get('/contact', function(req, res) {
 

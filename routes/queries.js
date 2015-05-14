@@ -4,6 +4,46 @@ var router = express.Router();
 var C = require('../public/constants');
 module.exports = {
 
+get_select_datasets_query: function(){
+		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
+		qSelectDatasets += " FROM dataset";
+		qSelectDatasets += " JOIN project USING(project_id)";
+		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
+		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+		qSelectDatasets += " ORDER BY project, dataset";
+		return qSelectDatasets;
+	
+},
+get_select_datasets_queryPID: function(pid){
+		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
+		qSelectDatasets += " FROM dataset";
+		qSelectDatasets += " JOIN project USING(project_id)";
+		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
+		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
+		qSelectDatasets += " WHERE project_id='"+pid+"'";
+		qSelectDatasets += " ORDER BY project, dataset";
+		return qSelectDatasets;
+	
+},
+get_select_sequences_query: function(){
+		
+		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+		qSequenceCounts += " FROM sequence_pdr_info";
+		qSequenceCounts += " JOIN dataset using(dataset_id)";
+		qSequenceCounts += " GROUP BY project_id, dataset_id";
+		return qSequenceCounts;
+	
+},	
+get_select_sequences_queryPID: function(pid){
+		
+		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+		qSequenceCounts += " FROM sequence_pdr_info";
+		qSequenceCounts += " JOIN dataset using(dataset_id)";
+		qSequenceCounts += " WHERE project_id='"+pid+"'";
+		qSequenceCounts += " GROUP BY project_id, dataset_id";
+		return qSequenceCounts;
+	
+},	
 get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     //console.log(body);
     //selection_obj = selection_obj;

@@ -23,7 +23,7 @@ router.get('/your_data',  function(req,res){
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 
-    var export_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+    var export_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
     var mtime = {};
     var size = {};
     var file_info = {};
@@ -87,77 +87,242 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
+router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,res){
+	
+	var delete_kind = req.params.kind;
+	var project = req.params.project;
+	console.log('in delete_project: '+project+' - '+delete_kind);
+	console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
+	if(project in PROJECT_INFORMATION_BY_PNAME){
+		var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
+	
+	
+		console.log('in delete_project: '+project+' - '+pid);
+	
+		if(delete_kind == 'all'){
+			// must delete pid data from mysql ()
+			// and all datasets files
+			var options = {
+		      scriptPath : 'public/scripts',
+		      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--action', 'delete_project' ],
+		    };
+			var spawn = require('child_process').spawn;
+			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+			// script will remove data from mysql and datset taxfile
+			var delete_process = spawn( options.scriptPath+'/node_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+			var output = '';
+			delete_process.stdout.on('data', function (data) {
+			  //console.log('stdout: ' + data);
+			  data = data.toString().replace(/^\s+|\s+$/g, '');
+			  output += data;
+			  var lines = data.split('\n')
+			  for(var n in lines){
+			  	//console.log('line: ' + lines[n]);
+				if(lines[n].substring(0,4) == 'PID='){
+					console.log('pid line '+lines[n]);
+				}
+			  }
+			});
+		 
+			delete_process.on('close', function (code) {
+			   console.log('delete_process process exited with code ' + code);
+			   var ary = output.split("\n");
+			   var last_line = ary[ary.length - 1];
+			   if(code == 0){
+				   console.log('GAST Success');
+				   //console.log('PID last line: '+last_line)
+				   var ll = last_line.split('=');
+				   var pid = ll[1];
+				   console.log('GOT NEW PID=: '+pid);
+				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));
+			   
+				   helpers.update_global_variables(pid, 'del');
+				   console.log('ALL_DATASETS2: '+JSON.stringify(ALL_DATASETS));
+				   
+			   }else{
+			   	  // python script error
+			   }
+		   
+		    });
+		
+		
+		}else if(delete_kind == 'tax_only'){
+		
+		}else{
+			console.log('ERROR')
+		}
+	}else{
+		// project not in db?
+		console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME')
+		
+	}
+    console.log('req.body: dele-->>');
+    console.log(req.user.username);
+    console.log('req.body: del');
+		   // still need to delete directoru in user_data:
+		   var project_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		   console.log('project_data_dir '+project_data_dir)
+		   if(fs.lstatSync(project_data_dir).isDirectory()){
+			   console.log('is DIR')
+			   fs.remove(project_data_dir, function (err) {
+ 				     if (err) {
+ 				        console.error(err);
+				 		req.flash('failmessage', 'Error removing'+project+' Here is the error: '+err);
+				       	res.redirect("/user_data/your_projects");
+ 				     }else{
+ 				     	console.log('DELETED: '+project_data_dir)
+				 		req.flash('successmessage', 'Completely Removing '+project);
+				       	res.redirect("/user_data/your_projects");
+						 
+ 				     }
+ 				   });
+		   }else{
+		   		console.log('is NOT DIR')
+		
+		   }
+	
+});
 router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(req,res){
     
+	var queries = require('./queries');
 	console.log(req.params.project);
 	var project = req.params.project;
 	var method = req.params.method;
 	console.log('start: '+project+' - '+method);
-	var base_dir = path.join(process.cwd(),'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+	//var base_dir = path.join(process.cwd(),'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+	var process_dir = process.env.PWD;
 	var data = ''
 	
-		
+	console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
 	
-	var config_file = path.join(base_dir,'config.ini');
+	var config_file = path.join(data_dir,'config.ini');
   	
 	if(method == 'gast'){
 		
-		var options = {
+		var gast_options = {
 	      scriptPath : 'public/scripts',
-	      args :       [ '--classifier','gast', '--config', config_file, '-dir', base_dir, '-db', NODE_DATABASE ],
+	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
 	    };
-	    console.log(options.scriptPath+'/assign_taxonomy.py '+options.args.join(' '));
+	    console.log(gast_options.scriptPath+'/node_script_assign_taxonomy.py '+gast_options.args.join(' '));
 		
 		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(base_dir,'node.log'), 'a');
-		var python = spawn( options.scriptPath+'/assign_taxonomy.py', options.args, {detached: true, stdio: [ log, log, log ]} );
-		// python.stdout.on('data', function (data) {
-// 		  console.log('stdout: ' + data);
-// 		});
+		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+		var gast_process = spawn( gast_options.scriptPath+'/node_script_assign_taxonomy.py', gast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+
 
 		// python.stderr.on('data', function (data) {
 		//   console.log('stderr: ' + data);
 		// });
 		//
-		 python.on('close', function (code) {
-		   console.log('child process exited with code ' + code);
-		   
-		   //var ds = require('./load_all_datasets');
-		   
-		   
-		 });
+		// python.stdout.on('data', function (data) {
+		//   console.log('python stdout ' + data);
+		// });
+		//
+		// python.stderr.on('data', function (data) {
+		//   console.log('python stderr: ' + data);
+		// });
+		var output = ''
+		// communicating with an external python process
+		// all the print statements in the py script are printed to stdout
+		// so you can grab the projectID here at the end of the process.
+		// use looging in the script to log to a file.
+		gast_process.stdout.on('data', function (data) {
+		  //console.log('stdout: ' + data);
+		  data = data.toString().replace(/^\s+|\s+$/g, '');
+		  output += data;
+		  var lines = data.split('\n')
+		  for(var n in lines){
+		  	//console.log('line: ' + lines[n]);
+			if(lines[n].substring(0,4) == 'PID='){
+				console.log('pid line '+lines[n]);
+			}
+		  }
+		});
+		 
+		gast_process.on('close', function (code) {
+		   console.log('gast_process process exited with code ' + code);
+		   var ary = output.split("\n");
+		   var last_line = ary[ary.length - 1];
+		   if(code == 0){
+			   console.log('GAST Success');
+			   //console.log('PID last line: '+last_line)
+			   var ll = last_line.split('=');
+			   var pid = ll[1];
+			   console.log('GOT NEW PID=: '+pid);
+			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+			   if(helpers.isInt(pid)){
+				   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows, fields){			       
+					   if (err)  {
+				 		  console.log('Query error: ' + err);
+				 		  console.log(err.stack);
+				 		  process.exit(1);
+				       } else {
+						   console.log('query ok '+JSON.stringify(rows));
+				           helpers.run_select_datasets_query(rows);
+					       console.log(' UPDATED ALL_DATASETS');
+					       console.log(' UPDATED PROJECT_ID_BY_DID');
+						   
+					       console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
+					       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
+					       console.log(' UPDATED DATASET_IDS_BY_PID');
+					       console.log(' UPDATED DATASET_NAME_BY_DID');
+					   } // end else
+				       
+				   });
+			   
+				   //
+				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows, fields){  			     
+				       if (err)  {
+				 		  	console.log('Query error: ' + err);
+				 		  	console.log(err.stack);
+				 		  	process.exit(1);
+				       } else {        
+				         	helpers.run_select_sequences_query(rows);
+  				       	 	console.log(' UPDATED ALL_DCOUNTS_BY_DID');
+  				       	 	console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+		 				   var mdv_file = path.join(process_dir,'public','json','metadata--' + NODE_DATABASE+'.json')
+		 				   
+				       }
+				       
+				   });
+				   
+					// 			   		var options = {
+					// 			   	      scriptPath : 'public/scripts',
+					// 			   	      args :       [ '--pid',pid, '-db', NODE_DATABASE, '--add',  ],
+					// 			   	    };
+					// 			   		var counts_process = spawn( options2.scriptPath+'/process_add_project_taxcounts.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+					//
+					// counts_process.stdout.on('data', function (data) {
+					// 			   		  console.log('counts_process stdout: ' + data);
+					//
+					// 			   		});
+					// 			   		counts_process.on('close', function (code) {
+					// 			   		   console.log('counts_process.py process exited with code ' + code);
+					// 			   	    });// end counts_process ON Close
+	           }else{ // end if int
+				    console.log('ERROR pid is not an integer: '+pid)
+			   }
+		   }else{
+		   		// ERROR
+			   console.log('ERROR last line: '+last_line)
+	   	  		//req.flash('message', 'Script Error');
+	         	//res.redirect("/user_data/your_projects");
+		   }
+		});  // end gast_process ON Close
 		
-		// PythonShell.run('assign_taxonomy.py', options, function (err, output) {
-		// 	      if (err) {
-		// 	  console.log('Script ERROR: '+err)
-		//   }else{
-		// 	console.log('requiring load_all_datasets');
-		// 	  		var ds = require('load_all_datasets');
-		// 	console.log('running get_datasets');
-		// 	  		var rs_ds = ds.get_datasets(function(ALL_DATASETS){
-		// 		console.log('re-gathering data');
-		// 	});
-		//   }
-		  
-	    //});
-		// this returns immediately
 		
-		
-			
-	  	req.flash('successMessage', 'GAST has been started for '+project);
+	  	
+		// called imediately
+		req.flash('successMessage', 'GAST has been started for '+project);
       	res.redirect("/user_data/your_projects");
 		
 	}else{
-		var options = {
-	      scriptPath : 'public/scripts',
-	      args :       [ '--classifier','rdp', '--config', config_file, '-dir', base_dir, '-db', NODE_DATABASE ],
-	    };
+		
 		req.flash('successMessage', 'RDP has been started for '+project);
 		res.redirect("/user_data/your_projects");
 		
 	}
-	
-	
 	
 	
 });
@@ -166,7 +331,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   
-    var user_projects_base_dir = path.join(process.cwd(),'user_data',NODE_DATABASE,req.user.username);
+    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
    
 	project_info = {};
 	modify_times = [];
@@ -180,8 +345,8 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	        var pts = items[d].split(':');
 	        if(pts[0] === 'project'){
 				
-				
-  	          var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
+				var project_name = pts[1];
+  	          	var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
 			  
   			  if(stat_dir.isDirectory()){
   				  // stat.mtime.getTime() is for sorting to list in oreder
@@ -203,6 +368,14 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   				  	  project_info[stat_dir.mtime.getTime()].config = config;
   				  	  project_info[stat_dir.mtime.getTime()].directory = items[d];
   				  	  project_info[stat_dir.mtime.getTime()].mtime = stat_dir.mtime;
+					  if(project_name in PROJECT_INFORMATION_BY_PNAME){
+					  		project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
+					  }else{
+						  project_info[stat_dir.mtime.getTime()].pid = 0;
+						  project_info[stat_dir.mtime.getTime()].status = 'No Taxonomic Assignments Yet'
+					  }
+					  
 				  }
 				  catch (err) {
 				  	console.log('nofile ',err)
@@ -267,7 +440,7 @@ router.post('/upload_data',  function(req,res){
 	req.flash('failMessage', 'A project name is required.');
 	res.redirect("/user_data/import_data");
   }
-  var data_repository = path.join(process.cwd(),'user_data',NODE_DATABASE,req.user.username,'project:'+req.body.project);
+  var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+req.body.project);
   console.log(data_repository);
   // continuity checks:
   
@@ -311,7 +484,6 @@ router.post('/upload_data',  function(req,res){
 			      args :       [ '-dir', data_repository, '-t', 'multi' ],
 			    };
   
-  
 	  	}else{
 	  	  	// ERROR
 	  		  console.log('ERROR-in upload_data')
@@ -344,40 +516,40 @@ router.post('/upload_data',  function(req,res){
 //
 router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 
-console.log('in file_utils');
-//console.log(req.query.filename);
-var user = req.query.user;
-var file = path.join('user_data',NODE_DATABASE,user,req.query.filename);
-console.log(file);
-//// DOWNLOAD //////
-if(req.query.fxn == 'download' ){
+	console.log('in file_utils');
+	//console.log(req.query.filename);
+	var user = req.query.user;
+	var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
+	console.log(file);
+	//// DOWNLOAD //////
+	if(req.query.fxn == 'download' ){
 	
-		res.download(file); // Set disposition and send it.
+			res.download(file); // Set disposition and send it.
 	
 	
-}else if(req.query.fxn == 'delete'){
+	}else if(req.query.fxn == 'delete'){
 	
-	if(req.query.type == 'datasets'){
-		fs.unlink(file, function(err){
-			if(err){ 
-				console.log(err); 
-			}else{
-				req.flash('message', 'Deleted: '+req.query.filename);
-				res.redirect("/visuals/saved_datasets");
-			}	
-		}); //
-	}else{
-		fs.unlink(file, function(err){
-			if(err){ 
-				console.log(err); 
-			}else{
-				req.flash('message', 'Deleted: '+req.query.filename);
-				res.redirect("/user_data/file_retrieval");	
-			}
-		}); 
+		if(req.query.type == 'datasets'){
+			fs.unlink(file, function(err){
+				if(err){ 
+					console.log(err); 
+				}else{
+					req.flash('message', 'Deleted: '+req.query.filename);
+					res.redirect("/visuals/saved_datasets");
+				}	
+			}); //
+		}else{
+			fs.unlink(file, function(err){
+				if(err){ 
+					console.log(err); 
+				}else{
+					req.flash('message', 'Deleted: '+req.query.filename);
+					res.redirect("/user_data/file_retrieval");	
+				}
+			}); 
+		}
+	
 	}
-	
-}
 
 
 
@@ -405,7 +577,7 @@ router.post('/download_selected_seqs', function(req, res) {
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
 
-var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
@@ -526,9 +698,9 @@ if(req.body.download_type == 'whole_project'){
         did = dids[i];
         dname = DATASET_NAME_BY_DID[did];
         header += dname+"\t";
-        for (var k in MetadataValues[did]){
+        for (var k in METADATA[did]){
           nm = k;
-          val = MetadataValues[did][k];
+          val = METADATA[did][k];
           if(nm in myrows){
             myrows[nm].push(val);
           }else{

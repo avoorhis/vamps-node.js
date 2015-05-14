@@ -156,18 +156,19 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
    	 req.flash('nodataMessage', 'Select Some Datasets');
    	 res.redirect('index_visuals');
   }else{
-	  // Global TAXCOUNTS
+	  // Global TAXCOUNTS, METADATA
 	  TAXCOUNTS = {};
+	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
 	  for(var i in dataset_ids){
-	    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json';
-	
+	    var path_to_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets", dataset_ids[i] +'.json');
 		var jsonfile = require(path_to_file);
-		TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
-	
-	
+		TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+		METADATA[dataset_ids[i]]  = jsonfile['metadata'];
 	  }
-	  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
+	  console.log(JSON.stringify(METADATA))
+	  //console.log(JSON.stringify(TAXCOUNTS))
+	  console.log('Pulling TAXCOUNTS and METADATA ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
@@ -175,7 +176,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  console.log('dataset_ids2 '+dataset_ids);
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
 
-	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids);
+	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids,METADATA);
 	  //console.log('chosen_id_name_hash')
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
@@ -231,14 +232,15 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //      return to the page.
   console.log(ALL_DATASETS);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  //console.log(PROJECT_PERMISSION_BY_PID)
+  METADATA  = {}
+  
   res.render('visuals/index_visuals', {
-                                title   : 'VAMPS: Select Datasets',
-                                rows    : JSON.stringify(ALL_DATASETS),
-                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
-                                constants    : JSON.stringify(req.C),
-	  							message : req.flash('nodataMessage'),
-                                user: req.user
+                                title    : 'VAMPS: Select Datasets',
+                                rows     : JSON.stringify(ALL_DATASETS),
+                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                constants: JSON.stringify(req.C),
+	  							message  : req.flash('nodataMessage'),
+                                user     : req.user
                             });
 });
 
