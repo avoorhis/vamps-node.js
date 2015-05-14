@@ -24,7 +24,10 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
   /* GET Overview page. */
   router.get('/overview', function(req, res) {
-      res.render('overview', { title: 'VAMPS:Overview', user: req.user });
+      res.render('overview', { title: 'VAMPS:Overview', 
+	  user: req.user,
+  		message:'',
+   });
   });
 
 
@@ -33,7 +36,8 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   /* GET Saved Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
       res.render('saved_data', { title: 'VAMPS:Saved Data',
-                             user: req.user
+                             user: req.user,
+	  message:'',
                             });
   });
  
@@ -43,26 +47,30 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   /* GET Geo-Distribution page. */
   router.get('/geodistribution', function(req, res) {
       res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
-                             user: req.user
+                             user: req.user,
+	  message:'',
                             });
   });
 
   /* GET metadata page. */
   router.get('/metadata', function(req, res) {
       res.render('metadata', { title: 'VAMPS:Metadata',
-                             user: req.user
+                             user: req.user,
+	  message:'',
                             });
   });
 
   /* GET Portals page. */
   router.get('/portals', function(req, res) {
       res.render('portals', { title: 'VAMPS:Portals',
-                             user: req.user
+                             user: req.user,
+	  message:'',
                             });
   });
   /* GET FAQ page. */
   router.get('/faq', function(req, res) {
       res.render('faq', { title: 'VAMPS:FAQ',
+	  						message:'',
                              user: req.user
                             });
   });
