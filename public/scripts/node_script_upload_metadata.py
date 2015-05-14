@@ -41,15 +41,11 @@ DATASET_ID_BY_NAME = {}
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
-required_metadata_fields = ("altitude", "assigned_from_geo", "collection_date", "depth",
-                            "country", "elevation", "env_biome", "env_feature",
-                             "env_matter", "latitude", "longitude", "public", 
-                             "taxon_id", 'common_name','description');
-required_metadata_fields6 = ("altitude", "assigned_from_geo", "collection_date", "depth",
-                            "country", "elevation")
-test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
-'408170','human gut metagenome','American Gut Project Stool sample')
-test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+
+#test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
+#'408170','human gut metagenome','American Gut Project Stool sample')
+#test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
 
 db = MySQLdb.connect(host="localhost", # your host, usually localhost
                          read_default_file="~/.my.cnf_node"  ) 

@@ -1,15 +1,9 @@
 <% include ../add_ins/begin.ejs %>
 
 <% var metaitems = JSON.parse(metadata_items); %>
+
 <% // sort keys %>
-<% mkeys = []; %>
-<% for(k in metaitems) { %>
-<%    if (metaitems.hasOwnProperty(k))%>
-<%     { %>
-<%        mkeys.push(k); %>
-<%     } %>
-<% } %>
-<% mkeys.sort(); %>
+
 
 <script>  
   var mi_local  = JSON.parse('<%- metadata_items %>');
@@ -39,7 +33,8 @@
 						<% for (i = 0; i < mkeys.length; i++) { %>	
 							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
 						<% } %>
-					</select>					
+					</select>
+					or type <input type='text'  onkeyup="showMetadataHint(this.value)">	<p>Suggestions: <span id="txtHint"></span></p>				
 					<div id='metadata_search_range_div1' class='display_none'></div>
 					
 			</li>
@@ -73,19 +68,33 @@
 					<button id='search_metadata_btn' class='btn btn-default' disabled='disabled' type='button'>Search Datasets</button>
 					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
 				
-				
-				<li>Save the datasets to be able to use them in the visualizations.
-				<li>Search all datasets or select subset of datasets then search in subset?
-				
+				<ul>
+					<li>DONE: Save the datasets to be able to use them in the visualizations.
+					<li>Search all datasets or select subset of datasets then search in subset?
+				</ul>
 			
 		
 	
 	<form>
 </div>
-<div id='taxonomy_search_div' class='well'><strong>Taxonomy</strong></div>
-<div id='sequence_search_div' class='well'><strong>Sequences (to be run on cluster)</strong></div>
-<div id='names_search_div' class='well'><strong>Names (key words)</strong></div>
-<div id='blast_search_div' class='well'><strong>Blast (to be run on cluster)</strong>
+<div id='taxonomy_search_div' class='well'><strong>Taxonomy</strong>
+	<ul>
+	<li>Enter a full or partial taxonomic name and get what in return?
+		datasets? sequences? metadata?
+	</ul>
+</div>
+<div id='sequence_search_div' class='well'><strong>Sequences (This search needs to be run on cluster)</strong>
+  <ul>
+  	<li>This shouldn't be needed if the blast function works.
+  </ul>
+</div>
+<div id='names_search_div' class='well'><strong>Names (key words)</strong>
+	<ul>
+	<li>project name, title, description
+	<li>dataset name, dataset_description
+	</ul>			
+</div>
+<div id='blast_search_div' class='well'><strong>Blast (This search needs to be run on cluster)</strong>
 	<ul>
 			<li>Must create and maintain VAMPS Blast Database.
 	</ul>
