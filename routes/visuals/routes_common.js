@@ -349,7 +349,8 @@ create_chosen_id_name_hash: function(dataset_ids) {
 //
 //
 //
-get_custom_meta_selection: function(dataset_ids,metadata) {
+
+get_metadata_selection: function(dataset_ids, metadata, type) {
     req_metadata = C.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
@@ -360,12 +361,19 @@ get_custom_meta_selection: function(dataset_ids,metadata) {
         for (var field in metadata[did]) {
           
           console.log('field_name '+field)
-          if (req_metadata.indexOf(field) === -1) {
-            //console.log('PUT IN CUSTOM '+field)
-            fields_lookup[field] = 1;
-          }else{
-            //console.log('IN REQ '+field)
-          }
+			if(type == 'custom'){
+	  		  if (req_metadata.indexOf(field) === -1 ) {
+	              //console.log('PUT IN CUSTOM '+field)
+	              fields_lookup[field] = 1;
+	          }
+			
+			}else{
+  	  		  if (req_metadata.indexOf(field) >= 0 ) {
+  	              //console.log('PUT IN CUSTOM '+field)
+  	              fields_lookup[field] = 1;
+  	          }
+			}
+		  
         }
       }
 
