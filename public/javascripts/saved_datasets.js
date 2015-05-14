@@ -35,7 +35,7 @@ function view_datasets_ajax( filename, user, fxn ){
  			for( var i in obj.ids ){
  				var id =  obj.ids[i];
  				var dsname = obj.names[i];
- 				html += '<tr><td>'+i.toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
+ 				html += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
 		
  			}
  			html += '</table></div>';
@@ -44,4 +44,5 @@ function view_datasets_ajax( filename, user, fxn ){
 	    };
 	    xmlhttp.send(args);
 }
+
 

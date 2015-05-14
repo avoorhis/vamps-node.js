@@ -31,8 +31,8 @@ def go_required_metadata():
 		metadata_lookup_per_dsid[dsid][metadataName] = value			
 
 	"""
-	required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
-
+    required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+	
 	req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 	#print req_query
 	
