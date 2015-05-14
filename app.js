@@ -12,7 +12,6 @@ var session = require('express-session');
 var path = require('path');
 global.app_root = path.resolve(__dirname);
 
-//var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -206,11 +205,12 @@ console.log('Loading DATABASE: '+NODE_DATABASE+' (see file config/db-connect-xxx
 // 	.on('end', function() {
 // 		    console.log('Finished reading TAXCOUNTS');
 // 	});
-
-//TAXCOUNTS     = require('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
-var meta_file = './public/json/metadata--' + NODE_DATABASE+'.json'
-MetadataValues = require(meta_file);
-console.log('Loading METADATA from: '+meta_file)
+var taxcounts_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--taxcounts.json');
+AllTaxCounts       = require(taxcounts_file);
+console.log('Loading ALL TAXCOUNTS from: '+taxcounts_file);
+var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
+AllMetadata        = require(meta_file);
+console.log('Loading ALL METADATA from: '+meta_file);
 
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
