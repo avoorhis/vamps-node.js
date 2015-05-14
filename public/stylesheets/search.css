@@ -16,6 +16,8 @@
   border: 1px solid grey;
   background:#F0FFF0;
   height:100px;
-  width:250px;
+  
   overflow:auto;
+  font: small;
 }
+
