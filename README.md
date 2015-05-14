@@ -133,6 +133,7 @@ downloads - will contain user downloaded files for retrieval
   * Refactoring!
   * DONE:   projects/:id via REST
   * DONE:   user login and auth
-  * add 960.gs grid to pages
+  * 2015-05-11 Fix select-all-datasets when select project checkbox on index_visuals (community visualization) page
+  * 2015-05-11 fix formating/style on search result page http://localhost:3000/search/search_result
 
 

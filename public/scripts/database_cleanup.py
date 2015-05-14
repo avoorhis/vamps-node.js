@@ -54,8 +54,16 @@ def clean(args):
         print "No project found -- Exiting"
         sys.exit()
     for row in cur.fetchall():
-        dids.append(str(row[0]))
+        did = str(row[0])
+        dids.append(did)
         pid = row[1]
+        did_file = os.path.join('public','json', NODE_DATABASE+'--taxcounts', did+'.json')
+        print did_file
+        try:
+            os.remove(did_file)
+        except OSError:
+            print "File Not Found: "+did_file
+        
     
     q = "DELETE from required_metadata_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
