@@ -173,10 +173,10 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
-	  console.log('dataset_ids2 '+dataset_ids);
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
 
-	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids,METADATA);
+	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'custom');
+	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'required');
 	  //console.log('chosen_id_name_hash')
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
@@ -205,8 +205,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    title: 'VAMPS: Units Selection',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
-	                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
-		  				message : req.flash(),
+	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
+		  				md_req       : JSON.stringify(required_metadata_headers),
+		  				message      : req.flash(),
 	                    user         : req.user
 	  });  // end render
   }
