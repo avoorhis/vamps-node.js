@@ -224,14 +224,14 @@ if __name__ == '__main__':
         Output will be files json/NODE_DATABASE/<dataset>.json
         each containing taxcounts and metadata from the database
         
-        **THIS SCRIPT WILL DELETE AND RE-CREATE ALL THE FILES** for the chosen database
-        will create /public/json/<NODE_DATABASE>/<datasetid>.json file for each dataset.
+        **THIS SCRIPT WILL DELETE AND RE-CREATE ALL THE FILES** for the chosen database.
+        It will create a /public/json/<NODE_DATABASE>/<datasetid>.json file for each dataset.
           These files have taxonomic counts and metadata for that dataset for
           use when selecting datsets for visualization.
         Also the script will create 2 other files:
           /public/json/<NODE_DATABASE>--taxcounts.json
           /public/json/<NODE_DATABASE>--metadata.json
-          These files contain all the taxcounts and metadata for use
+          These files contain ALL the taxcounts and metadata for use
           in searches
         
     """
