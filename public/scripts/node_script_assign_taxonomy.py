@@ -23,26 +23,47 @@ import random
 import csv
 from time import sleep
 import logging
+
 import ConfigParser
 sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
-print sys.path
-import run_gast as gast
-try:
-    import database_importer as uploader
-    print 'found database_importer script'
-except:
-    print "database_importer is not avalable"
-try:
-    import run_gast as gast
-    print 'found gast script'
-except:
-    print "run_gast is not avalable"
-try:
-    import run_rdp as rdp
-except:
-    print "run_rdp is not avalable"
-    
-    
+logging.info(sys.path)
+
+#try:
+import node_script_gast_run as gast
+#    logging.info('found gast script')
+#except:
+#    logging.info("run_gast is not avalable")
+
+#try:
+#import node_script_rdp_run as rdp
+#except:
+#    logging.info("run_rdp is not avalable")
+
+#try:
+import node_script_database_loader as uploader
+#    logging.info('found database_loader script')
+#except:
+#    logging.info("database_loader is not avalable")
+
+#try:
+import node_script_upload_metadata as upload_metadata
+#    logging.info('found node_script_upload_metadata script')
+#except:
+#    logging.info("node_script_upload_metadata is not avalable")   
+
+#try:
+import node_script_create_json_dataset_files as dataset_files_creator
+#    logging.info('found add_taxcounts script')
+#except:
+#    logging.info("add_taxcounts is not avalable")    
+
+
+
+#try:
+#import node_script_metadata_lookup as metadata_file_creator
+#    logging.info('found node_script_metadata_lookup script')
+#except:
+#    logging.info("node_script_metadata_lookup is not avalable")    
 import datetime
 today     = str(datetime.date.today())
 import subprocess
@@ -73,11 +94,14 @@ if __name__ == '__main__':
          
          where
             
-            -c/--config    REQUIRED path to config file.
+            -c/--config    REQUIRED full path to config file.
                             
                     SHOULD be the only thing needed
                     (create config file with 1-vamps-load.py   )   
-           
+          -classifier gast or rdp
+           -db NODE_DATABASE
+           --process_dir  base id node js
+           --data_dir  where the fasta and meta are
     
     
     """
@@ -90,14 +114,16 @@ if __name__ == '__main__':
                 help="config file with path") 
     parser.add_argument('-db', '--NODE_DATABASE',         
     			required=True,   action="store",  dest = "NODE_DATABASE",            
-                help = 'steps to run')                                           
+                help = 'node database')                                           
     parser.add_argument('-class', '--classifier',         
     			required=True,   action="store",  dest = "classifier",              
-                help = 'steps to run')  
-    parser.add_argument("-dir", "--baseoutputdir",    
+                help = 'gast or rdp')  
+    parser.add_argument("-ddir", "--data_dir",    
     			required=True,  action="store",   dest = "baseoutputdir", 
                 help = '')         
-
+    parser.add_argument("-pdir", "--process_dir",    
+                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                help = '')
     args = parser.parse_args() 
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
     #os.chdir(args.baseoutputdir)
@@ -105,9 +131,12 @@ if __name__ == '__main__':
     LOG_FILENAME = args.baseoutputdir+'/log.txt'
     
     logger = logging.getLogger('')
-    logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
-                            format="%(asctime)-15s %(levelname)-8s %(message)s")
-                            
+    #logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+    #                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)                       
+    
+    
+    #logger.addHandler(ch)
     
                   
     logger.info("log: "+LOG_FILENAME)
@@ -116,22 +145,40 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
 
-   
+    # 1-1-1-1-1-1
     if args.classifier == 'gast':
-        print 'starting GAST'
         logger.info("starting GAST")
         gast.start_gast(args)
     else:
-        print 'starting RDP'
         logging.info("starting RDP")
-        #rdp.start_rdp(args)
+        rdp.start_rdp(args)
     
-    print args.NODE_DATABASE, args.baseoutputdir
-    print 'Starting Database Upload'
+    # 2-2-2-2-2-2
+    # load seq data from user_upload dir to database
+    logging.info(args.NODE_DATABASE, args.baseoutputdir)
     logging.info("starting db upload")
+    pid = uploader.start(args.NODE_DATABASE, args.baseoutputdir, args.process_dir)
     
-    uploader.start(args.NODE_DATABASE, args.baseoutputdir)
+    # 3-3-3-3-3-3
+    # load metadata from file to database
+    logging.info("starting metadata upload")
+    upload_metadata.start(args.NODE_DATABASE, args.baseoutputdir)
+    
+    # 4-4-4-4-4-4
+    # creates taxcount/metadata file
+    logging.info("starting taxcounts")
+    dataset_files_creator.go_add(args.NODE_DATABASE, pid, args.process_dir)
+    
+    
+    
+    # 5-5-5-5-5-5
+    #logging.info("starting metadata lookup")
+    #metadata_file_creator.start(args.NODE_DATABASE, args.process_dir)
     
     print "DONE"
-    logging.info("ALL DONE")
+    # this must be the last print:
+    print "PID="+str(pid)
+    
+    logging.info("ALL DONE: "+str(pid))
+    
         

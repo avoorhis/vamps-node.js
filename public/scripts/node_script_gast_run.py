@@ -24,18 +24,19 @@ import csv
 import logging
 from time import sleep
 import ConfigParser
+logger = logging.getLogger('')
 try:
     import database_importer as uploader
 except:
-    print "database_importer is not avalable"
+    logger.info( "database_importer is not avalable")
 try:
     import run_gast as gast
 except:
-    print "run_gast is not avalable"
+    logger.info( "run_gast is not avalable")
 try:
     import run_rdp as rdp
 except:
-    print "run_rdp is not avalable"
+    logger.info( "run_rdp is not avalable")
 import datetime
 datetime     = str(datetime.date.today())
 import subprocess
@@ -56,7 +57,7 @@ import subprocess
 
 use_local_pipeline = False
 py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
-print py_pipeline_path
+logger.info( py_pipeline_path)
 sys.path.append(py_pipeline_path)
 from pipeline.run import Run
 from pipelineprocessor import process
@@ -85,7 +86,7 @@ def start_gast(args):
     os.chdir(args.baseoutputdir)
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):
-        print "Could not find config file ("+info_load_infile+") **Exiting**"
+        logger.info( "Could not find config file ("+info_load_infile+") **Exiting**")
         sys.exit()
    
     config = ConfigParser.ConfigParser()
@@ -101,15 +102,15 @@ def start_gast(args):
     file_prefix = 'testing-fp'
     dir_prefix  = general_config_items['baseoutputdir']
             
-    print   'FROM INI-->'        
-    print   general_config_items 
-    print   '<<--FROM INI'    
+    logger.info(   'FROM INI-->'      )  
+    logger.info(   general_config_items) 
+    logger.info(   '<<--FROM INI'    )
     #in utils.py: def __init__(self, is_user_upload, dir_prefix, platform, lane_name = '', site = ''):
     dirs = Dirs(True, dir_prefix, platform, site = site) 
     
     analysis_dir = dirs.check_dir(dirs.analysis_dir)    
     global_gast_dir = dirs.check_dir(dirs.gast_dir) 
-    print analysis_dir,global_gast_dir
+    logger.info( analysis_dir,global_gast_dir)
    
     
     
@@ -140,7 +141,7 @@ def start_gast(args):
                             'file_prefix':          file_prefix,
                             'project':				general_config_items['project']
                         }
-    print myRunDict
+    logger.info( myRunDict)
     #
     #
     #
@@ -171,7 +172,7 @@ def start_gast(args):
     number_of_datasets = len(datasets_list)
     info_tax_file = os.path.join(general_config_items['baseoutputdir'],'INFO_CONFIG.ini')
     info_fh = open(info_tax_file,'w')
-    print 'Writing to ',info_tax_file
+    logger.info( 'Writing to ',info_tax_file)
     info_fh.write("[GENERAL]\n")
     info_fh.write('project='+general_config_items['project']+"\n")
     info_fh.write("classifier=GAST\n")
@@ -191,7 +192,7 @@ def start_gast(args):
     total_uniques = 0
     datasets = {}
     for dataset in datasets_list:
-        print "\nUnique-ing",dataset
+        logger.info( "\nUnique-ing",dataset)
         ds_dir = os.path.join(global_gast_dir, dataset)
         fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
         unique_file = os.path.join(ds_dir, 'unique.fa')

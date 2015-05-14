@@ -22,7 +22,6 @@ eval(fs.readFileSync('config/db-connect-dev.js').toString());
      console.log('Trying to Connect...');
 	 exports.db = mysql.createConnection(db_config);
      exports.db.connect(function(err){
-       console.log('Inside exports.db.connect (error=',err,')');
 	   if (err != null) {
          console.log('Error connecting to mysql:', err);
          exports.db = null;
