@@ -35,13 +35,18 @@ the server is already running
 	sudo npm install depcheck -g
 	depcheck
 	
---- START ---
+--- START The SERVER ---
+Once the database is in place and before you start the server for the first time
+go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
+It may take awhile especially if the database is large, but it is required
+to create the helper files in the public/jsn directory.
 
 Start this project:
   * npm start
 
 Install nodemon to keep from restarting server after changes
   * sudo npm install nodemon -g
+
 Then run as: 
   * nodemon bin/www
   * restart with rs
