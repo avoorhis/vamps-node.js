@@ -155,6 +155,8 @@ def write_metafile(args,owner,project,stats):
             md_datasets = []
             dataset_index = -1
             for i,items in enumerate(reader):
+                if items == []:
+                    continue
                 if i==0:
                     if len(items) == 0:
                         sys.exit('No empty lines allowed.')
@@ -175,15 +177,21 @@ def write_metafile(args,owner,project,stats):
                             dataset_index = headers.index(req_for_multi[1])
                         else:
                             sys.exit("No dataset column found (allowed column names: 'dataset', 'sample_name')")
-                        
+                    else:
+                        items.insert(0,'dataset')
                 else:
                     if args.upload_type == 'multi':
                         md_datasets.append(items[dataset_index])
-                       
+                    else:
+                        items.insert(0,args.dataset)  
                 
                 if len(items) > 0:
-                    if len(items) != header_count:
-                        sys.exit('Missing Data: '+','.join(items))
+                    #print items
+                    if args.upload_type == 'multi' and len(items) != header_count:
+                        sys.exit('1-Missing Data: '+','.join(items))
+                    elif args.upload_type == 'single' and len(items) != header_count +1:
+                        sys.exit('2-Missing Data: '+','.join(items))
+                    print "writing clean metadata file "+mdfile_clean
                     writer.writerow(items)
             if args.upload_type == 'multi':
             # check for datasets column in metadata -- needed to assign metadata to datasets
@@ -216,7 +224,7 @@ def write_config(args,owner,project,stats):
     f.write('number_of_datasets='+str(stats['ds_count'])+"\n")
     f.write('sequence_counts=RAW'+"\n")
     f.write('env_source_id='+str(args.envid)+"\n")
-     f.write('has_tax=0'+"\n")
+    f.write('has_tax=0'+"\n")
     f.write("\n")
     f.write('[DATASETS]'+"\n")
     print stats

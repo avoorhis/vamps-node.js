@@ -1,29 +1,36 @@
-<%   var meta  = JSON.parse(constants).REQ_METADATA_FIELDS %>
-<%   var md = JSON.parse(md_cust) %>
-<% no_of_rows = 3 %>
+<%   var req_meta_fields = JSON.parse(constants).REQ_METADATA_FIELDS %>
+<%   var cust_meta_found = JSON.parse(md_cust) %>
+<%   var req_meta_found  = JSON.parse(md_req) %>
+
+<% no_of_cols = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
+
 <hr><strong>Required Fields:</strong> ( <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> )
 <table class='tiny_font'><tr>
-    <% for (i in meta) { %>       
-       <% if(meta[i] === 'latitude' || meta[i] == 'longitude' ) { %> 
-          <td><input type='checkbox' class='required_meta_ckbx' checked name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
-       <% }else{ %>  
-          <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= meta[i] %>'> <%= meta[i] %></td>
-       <% } %>  
-       <% if(i % no_of_rows === no_of_rows-1) { %>        	   		
+    <% for (i in req_meta_fields) { %>
+       <% if(req_meta_fields[i] in req_meta_found) { %>		   
+		   <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
+		<% }else{ %>
+			<td><input type='checkbox' disabled title='Not Found' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
+		<% } %>   
+       
+       <% if(i % no_of_cols === no_of_cols-1) { %>
      			</tr><tr>
-       <% } %>            
+       <% } %>
     <% } %>
+	
+   
 </tr></table>
+
 <hr><strong>Custom Fields for these Datasets:</strong> ( <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> )
-<% no_of_rows = 2 %>
+<% no_of_cols = 2 %>
 <table class='tiny_font'><tr>
     <% i = 0 %>
-    <% for (md_name in md) { %>       
+    <% for (md_name in cust_meta_found) { %>       
        
        <td><input type='checkbox' class='custom_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'> <%= md_name %></td>
        
-       <% if(i % no_of_rows === no_of_rows-1) { %>         	   		
+       <% if(i % no_of_cols === no_of_cols-1) { %>         	   		
      			</tr><tr>
        <% } %> 
        <% i += 1 %>           
