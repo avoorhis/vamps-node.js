@@ -3,6 +3,7 @@
 
 #input1_comparison{
   display: inline-block;
+ 
 }
 #input2_comparison{
   display: inline-block;
@@ -13,11 +14,25 @@
 .search_ds_result_box{
   list-style-type: none;
   text-decoration: none;
-  border: 1px solid grey;
+  border: 1px solid gray;
   background:#F0FFF0;
   height:100px;
   
   overflow:auto;
   font: small;
 }
-
+.grey_border {
+	border:1px solid gray;
+}
+.my_custom_dropdown {
+	/* Used or not on the index_search page */
+	position:absolute;
+	height:250px;
+	width:200px;
+	left:290px;
+	top:190px;
+	overflow:auto;
+	background:white;
+	border:1px solid black;
+	list-style-type:decimal;
+}

@@ -13,22 +13,22 @@ Here are your <%= items.names.length %> selected datasets:<br>
 <div id='' class=''>
 <form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/<%= referer %>'>
     <table class='table'>
-      <tr><td>Original order</td><td>Drag this column to re-order</td></tr>
+      <tr><td>Original order</td><td>Drag rows to re-order</td></tr>
       <tr><td class='td_top'>
         
-		<table  id='' class='table table-condensed' >
-        <% for (var i in items.names){ %>
-            <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
-        <% } %>
-        </table>
+		  <table  id='' class='table table-condensed' >
+            <% for (var i in items.names){ %>
+               <tr><td>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</td></tr>
+            <% } %>
+          </table>
 		
       </td>
 	  <td>
         <div id='reorder_div'>
 	       
 		   
-		    <table id='drag_table' class='table table-condensed' >
-	        <% for (var i in items.names){ %>
+		    <table id='drag_table' class='table table-condensed ' >
+	          <% for (var i in items.names){ %>
 	            <tr class='tooltip_row'>
 	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
 	              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
@@ -36,7 +36,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 	                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
 	              </td>
 	            </tr>
-	        <% } %> 
+	          <% } %> 
 	        </table>
 			
 			
@@ -66,7 +66,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
         
           <tr>
 			<td class='small_font'>
-				<button type='button' class='btn btn-xs btn-primary'>Alphabetize<button>
+				<button type='button' id='alphabetize' class='btn btn-xs btn-primary'>Alphabetize<button>
 			</td>
 		  </tr>
           <tr>
@@ -101,6 +101,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
  <script src="/javascripts/jquery.tablednd.js"></script>
  <script src="/javascripts/drag_rows.js"></script>
  <script type="text/javascript" src="/javascripts/global.js"></script>
+ <script type="text/javascript" src="/javascripts/reorder_datasets.js"></script>
  
 
 </body>

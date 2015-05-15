@@ -244,6 +244,9 @@
 .dragHandle{
   cursor:pointer;
 }
+#drag_table{
+  background:#FFF8DC;
+}
 .no_data {
     color:red;
     font-size:large;
