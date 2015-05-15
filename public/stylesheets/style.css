@@ -39,6 +39,9 @@ a {
     font-size:medium;
     text-align:center;
 }
+.med_font {
+    font-size: small;
+}
 .small_font {
     font-size: x-small;
 }
