@@ -156,26 +156,27 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
    	 req.flash('nodataMessage', 'Select Some Datasets');
    	 res.redirect('index_visuals');
   }else{
-	  // Global TAXCOUNTS
+	  // Global TAXCOUNTS, METADATA
 	  TAXCOUNTS = {};
+	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
 	  for(var i in dataset_ids){
-	    var path_to_file = "../../public/json/"+NODE_DATABASE+"--taxcounts/" + dataset_ids[i] +'.json';
-	
+	    var path_to_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets", dataset_ids[i] +'.json');
 		var jsonfile = require(path_to_file);
-		TAXCOUNTS[dataset_ids[i]] = jsonfile[dataset_ids[i]];
-	
-	
+		TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+		METADATA[dataset_ids[i]]  = jsonfile['metadata'];
 	  }
-	  console.log('Pulling TAXCOUNTS ONLY for datasets selected (from files)');
+	  console.log(JSON.stringify(METADATA))
+	  //console.log(JSON.stringify(TAXCOUNTS))
+	  console.log('Pulling TAXCOUNTS and METADATA ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
-	  console.log('dataset_ids2 '+dataset_ids);
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
 
-	  var custom_metadata_selection = COMMON.get_custom_meta_selection(chosen_id_name_hash.ids);
+	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'custom');
+	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'required');
 	  //console.log('chosen_id_name_hash')
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
@@ -204,8 +205,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    title: 'VAMPS: Units Selection',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
-	                    md_cust      : JSON.stringify(custom_metadata_selection),  // should contain all the cust items that selected datasets have
-		  				message : req.flash(),
+	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
+		  				md_req       : JSON.stringify(required_metadata_headers),
+		  				message      : req.flash(),
 	                    user         : req.user
 	  });  // end render
   }
@@ -231,14 +233,15 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   //      return to the page.
   console.log(ALL_DATASETS);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  //console.log(PROJECT_PERMISSION_BY_PID)
+  METADATA  = {}
+  
   res.render('visuals/index_visuals', {
-                                title   : 'VAMPS: Select Datasets',
-                                rows    : JSON.stringify(ALL_DATASETS),
-                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
-                                constants    : JSON.stringify(req.C),
-	  							message : req.flash('nodataMessage'),
-                                user: req.user
+                                title    : 'VAMPS: Select Datasets',
+                                rows     : JSON.stringify(ALL_DATASETS),
+                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                constants: JSON.stringify(req.C),
+	  							message  : req.flash('nodataMessage'),
+                                user     : req.user
                             });
 });
 
@@ -257,10 +260,10 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-router.post('/useview_saved_datasets', helpers.isLoggedIn, function(req, res) {
+router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 
     fxn = req.body.fxn;
-	console.log(req.body.filename);
+	//console.log('XX'+JSON.stringify(req.body));
 	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
 	console.log(file_path);
 	var dataset_ids = [];
@@ -639,10 +642,14 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
    
 	file_info = {};
 	modify_times = [];
+	helpers.mkdirSync(saved_datasets_dir);
     fs.readdir(saved_datasets_dir, function(err, files){
 		if(err){
-  			msg = 'ERROR Message '+err;
-  			helpers.render_error_page(req,res,msg);
+  			
+				msg = 'ERROR Message '+err;
+				helpers.render_error_page(req,res,msg);
+			
+			
 		}else{
 		  for (var f in files){
 	        var pts = files[f].split(':');
@@ -653,20 +660,20 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 			  modify_times.push(stat.mtime.getTime());
 			  
 	        }
-	      }
-	  
+	      }	  
 		  modify_times.sort().reverse();
-		  
 		  console.log(JSON.stringify(file_info));
-		  res.render('visuals/saved_datasets',
+		} 
+		  
+		res.render('visuals/saved_datasets',
 		    { title: 'saved_datasets',
 		     
 		      finfo: JSON.stringify(file_info),
 		      times: modify_times,
-		  	  message:req.flash('deleteMessage'),
+		  	  message: req.flash('message'),
 		      user: 	req.user
-		    });
-		}
+		});
+			//}
 	
     });
 	

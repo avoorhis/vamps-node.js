@@ -1,6 +1,40 @@
 <!-- Not used -->
 <% include add_ins/begin.ejs %>
 
+
+    
+  <div class="col-sm-6"><p class='title'>Contact Us</p>
+    <div class="well">
+	<form  name="contact-form" id="contact-form" method='POST' target="contact">
+	  
+	  
+	  
+	  <div class="form-group">
+	    <label for="contact-form-name">Your Name</label>
+	    <input type="text" class="form-control" id="contact-form-name" placeholder="enter name">
+	  </div>
+	  
+	  <div class="form-group">
+	    <label for="contact-form-mail">Email address</label>
+	    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="enter email">
+	  </div>
+	  
+	  <div class="form-group">
+	    <label for="contact-form-message">Your message</label>
+	    <textarea name="contact-form-message" id="contact-form-message" rows="5" cols="50"></textarea>
+	    
+	  </div>
+      <div id="captchaHolder">
+          <%- captcha %> 
+       </div>
+      
+	  <button type="submit" class="btn btn-default">Submit</button>
+	</form>
+
+
+            
+
+<!--
 <form name="contact-form" id="contact-form" method='POST' target="contact">
  
       <div class="clear-fix">
@@ -40,12 +74,14 @@
                   </div>
               </li>
 
-               
           </ul>
 
       </div>
 
 </form>
-
+	-->
+</div>
 <% include add_ins/end.ejs %>
 
+</body>
+</html>

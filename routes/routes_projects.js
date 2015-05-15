@@ -14,7 +14,7 @@ router.get('/index_projects', function(req, res) {
     
     //console.log(ALL_DATASETS);
 	console.log(PROJECT_INFORMATION_BY_PID)
-  	//console.log(PROJECT_PERMISSION_BY_PID)
+  	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
     res.render('projects/index_projects', { 
@@ -55,7 +55,8 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                 dscounts: JSON.stringify(dscounts),
                                 pid: req.params.id,
                                 pcount: project_count,
-                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
+                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+								message: '',
                                 user   : req.user 
                               });
     
