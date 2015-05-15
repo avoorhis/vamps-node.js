@@ -34,15 +34,3 @@ function show_post_array(body) {
 }
 
 
-// $(document).ready(function(){
-//     $('#save_order_btn').click(function(){
-        
-//         table = document.getElementById('drag_table');
-//         var new_ds_order = []
-//         var i;
-//         for (i = 0; i < table.rows.length; i++) {
-//           new_ds_order.push(table.rows[i].cells[0].id);
-//         }
-//         return false;
-//     });
-// });
