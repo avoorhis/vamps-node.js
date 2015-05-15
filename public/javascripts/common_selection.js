@@ -10,7 +10,7 @@ if (typeof save_datasets_btn !=="undefined") {
 var reorder_datasets_btn = document.getElementById('reorder_datasets_btn');
 if (typeof reorder_datasets_btn !=="undefined") {
   reorder_datasets_btn.addEventListener('click', function () {
-	  window.location='reorder_datasets';
+	  //window.location='reorder_datasets';
 	  // form = 
   });
 }

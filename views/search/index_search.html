@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-search.ejs %>
 
 <% var metaitems = JSON.parse(metadata_items); %>
 
@@ -27,15 +27,26 @@
 		<ol>	
 			
 			<li>&nbsp;&nbsp;&nbsp;
-				
+				 <table><tr>
+					<td>
 					<select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
 						<option value='NONE'>select</option>						
 						<% for (i = 0; i < mkeys.length; i++) { %>	
 							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-						<% } %>
+						<% } %> 
 					</select>
-					or type <input type='text'  onkeyup="showMetadataHint(this.value)">	<p>Suggestions: <span id="txtHint"></span></p>				
-					<div id='metadata_search_range_div1' class='display_none'></div>
+				    </td>
+					<!--
+					<td>
+					<input type='text'  onkeyup="showMetadataHint(this.value)">
+				    </td><td><span id="txtHint"></span>
+					</td>
+					-->
+			    </tr>
+			</table>
+				
+								
+			   <div id='metadata_search_range_div1' class='display_none'></div>
 					
 			</li>
 			<br>	
