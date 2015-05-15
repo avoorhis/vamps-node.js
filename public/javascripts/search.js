@@ -239,17 +239,42 @@ function change_comparison(comparison, item){
 //
 //
 function showMetadataHint(str) {
-    if (str.length == 0) {
+    var html='';
+	if (str.length == 0) {
         document.getElementById("txtHint").innerHTML = "";
         return;
     } else {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                document.getElementById("txtHint").innerHTML = xmlhttp.responseText;
+                //var response = xmlhttp.responseText;
+                
+				var response = xmlhttp.responseText;
+				if(response == 'No Suggestions'){
+					html = response;
+				}else{
+				    var items = response.split('--');
+
+       	            html += "<div class='my_custom_dropdown' >";
+                   
+                    html += "<ul class='' >";
+                    for(i in items){					 
+                 	   html += "<li ><a role=\"menuitem\" tabindex=\"-1\" href='metadata_name/"+items[i]+"' >"+items[i]+"</a></li>";
+                    }
+                    html += "</ul>";
+                    html += "</div>";
+				    //html = "<div>my div</div>"
+					//alert(html)
+				}
+				//alert('here '+html)
+				document.getElementById("txtHint").innerHTML = html;
+				
             }
         }
         xmlhttp.open("GET", "gethint/" + str, true);
         xmlhttp.send();
     }
 }
+
+
+
