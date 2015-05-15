@@ -38,8 +38,8 @@
 						<li>File: <%= filename %><% sizer %></li>
 						<li><%= fileSize %> <%= sizer %> | created: <%= file_info[times[t]].mtime %></li>
 						<li>							
-	<button type="submit" class='btn btn-xs btn-success' onClick="sendAjaxUseOrView('<%= filename %>','<%= user %>','view')" value="view" >view</button>
-	<a href='../file_utils?fxn=delete&user=<%= user %>&type=datasets&filename=<%= filename %>' >delete</a>
+	<button type="submit" class='btn btn-xs btn-success' onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="view" >view</button>
+	<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=datasets&filename=<%= filename %>' >delete</a>
 						</li>
 						<div id='<%= filename %>_div'></div>
 					</ul>
