@@ -8,9 +8,10 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
-    for (var did in MetadataValues){
-      for (var name in MetadataValues[did]){
-          val = MetadataValues[did][name];
+	var metadata_fields_array = [];
+    for (var did in AllMetadata){
+      for (var name in AllMetadata[did]){
+          val = AllMetadata[did][name];
           if(name in tmp_metadata_fields){
             tmp_metadata_fields[name].push(val); 
           }else{
@@ -24,8 +25,10 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(tmp_metadata_fields)
+	
     for (var tmp_name in tmp_metadata_fields){
-      if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+      metadata_fields_array.push(tmp_name)
+	  if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
         tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
         metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
       }else{
@@ -35,9 +38,11 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(metadata_fields)
+	metadata_fields_array.sort();
     res.render('search/index_search', { title: 'VAMPS:Search',
                           	metadata_items: JSON.stringify(metadata_fields),
 							message: req.flash('nodataMessage'),
+							mkeys: metadata_fields_array,
     						user: req.user
     											});
 });
@@ -68,8 +73,8 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
   console.log(searches);
 
   // search datasets
-  //console.log(MetadataValues);
-  // This assumes that ALL datasets are in MetadataValues. 
+  //console.log(AllMetadata);
+  // This assumes that ALL datasets are in AllMetadata. 
   //var datasets = [];
    // use for posting to unit_selection
   //
@@ -77,19 +82,19 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
 
   //
   var ds1, ds2, ds3 = [];
-  var result = get_search_datasets(req.user, searches.search1, MetadataValues);
+  var result = get_search_datasets(req.user, searches.search1, AllMetadata);
   ds1 = result.datasets;
   searches.search1.datasets = result.datasets;
   searches.search1.dataset_count = searches.search1.datasets.length;
   searches.search1.ds_plus = get_dataset_search_info(result.datasets, searches.search1);
 
-  var md_hash =  MetadataValues;
+  var md_hash =  AllMetadata;
 
   if('search2' in searches){
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{  // summation
-    // var md_hash =  MetadataValues;
+    // var md_hash =  AllMetadata;
     //}
     result = get_search_datasets(req.user, searches.search2, md_hash);
     ds2 = result.datasets;
@@ -105,7 +110,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
     //if(join_type == 'intersect'){
     //  var md_hash = result.mdv
     //}else{
-      // var md_hash =  MetadataValues;
+      // var md_hash =  AllMetadata;
     //}
     result = get_search_datasets(req.user, searches.search3, md_hash);
     ds3 = result.datasets;
@@ -161,7 +166,15 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
    }
  
 });
-
+//
+//  SEARCH DATASETS
+//
+router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
+	console.log('in gethint');
+	console.log(req.params.hint);
+	
+	
+});
 //
 //  REGULAR FXNS
 //
@@ -177,7 +190,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
     
       // search only if did allowed by permissions
       var pid = PROJECT_ID_BY_DID[did];
-      if(user.security_level === 1 || PROJECT_PERMISSION_BY_PID[pid]  === 0 || PROJECT_PERMISSION_BY_PID[pid] === user.user_id ){
+      if(user.security_level === 1 || PROJECT_INFORMATION_BY_PID[pid].permissions  === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions === user.user_id ){
         console.log('IN METADATA');
         for (var mdname in metadata[did]){
           if(mdname === search['metadata-item']){
@@ -307,7 +320,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
         if(search == {}){
           ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname });
         }else{
-          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:MetadataValues[did][search["metadata-item"]] });
+          ds_plus.push({ did:did, dname:dname, pid:pid, pname:pname, value:AllMetadata[did][search["metadata-item"]] });
         }
       }
       return ds_plus;

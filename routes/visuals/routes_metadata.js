@@ -63,9 +63,9 @@ module.exports = {
 				for (var n in metadata_names) {				
 					var name = metadata_names[n];
 
-					if(did in MetadataValues) {
-						ds_row[name] = MetadataValues[did][name];
-						metadata2[pjds][name] = MetadataValues[did][name];
+					if(did in METADATA) {
+						ds_row[name] = METADATA[did][name];
+						metadata2[pjds][name] = METADATA[did][name];
 						txt2 += "\t" + metadata2[pjds][name];
 					}else{
 						txt2 += "\tno_value";
@@ -98,10 +98,10 @@ module.exports = {
 						var did = chosen_id_name_hash.ids[i];
 						var ds = chosen_id_name_hash.names[i];
 
-						for(var md_name in MetadataValues[did]) {	
+						for(var md_name in METADATA[did]) {	
 							found_metadata = true;				
 
-							var md_value = MetadataValues[did][md_name];
+							var md_value = METADATA[did][md_name];
 							if(visual_post_items.metadata.indexOf(md_name) !== -1) {  // only show selected metadata names
 									html += "<tr><td>"+ds+"</td><td>"+md_name+"</td><td>"+md_value+"</td></tr>";
 									
