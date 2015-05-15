@@ -7,14 +7,14 @@ for(i = 0; i < view_array.length; i++){
 
 }
 
-function sendAjaxUseOrView( filename, user, fxn ){
+function view_datasets_ajax( filename, user, fxn ){
 	
         
 		args  = 'filename='+filename;
 		args += '&user='+user;
 		args += '&fxn='+fxn;
 		var xmlhttp = new XMLHttpRequest();
-	    xmlhttp.open("POST", "/visuals/useview_saved_datasets", true);
+	    xmlhttp.open("POST", "/visuals/view_saved_datasets", true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	    xmlhttp.onreadystatechange = function() {
 
@@ -31,11 +31,11 @@ function sendAjaxUseOrView( filename, user, fxn ){
 				
 				html += "<table class='small_font table table-condensed' >";
 			 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';
- 		
+ 				
  			for( var i in obj.ids ){
  				var id =  obj.ids[i];
  				var dsname = obj.names[i];
- 				html += '<tr><td>'+i.toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
+ 				html += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
 		
  			}
  			html += '</table></div>';
@@ -44,4 +44,5 @@ function sendAjaxUseOrView( filename, user, fxn ){
 	    };
 	    xmlhttp.send(args);
 }
+
 
