@@ -488,7 +488,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 //
 // P I E C H A R T  -- S I N G L E
 //
-router.get('/user_data/piechart_single', helpers.isLoggedIn, function(req, res) {
+router.get('/user_viz_data/piechart_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log(myurl)
     var ts = myurl.query.ts;
@@ -497,7 +497,7 @@ router.get('/user_data/piechart_single', helpers.isLoggedIn, function(req, res) 
 
     html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
-    res.render('visuals/user_data/piechart_single', {
+    res.render('visuals/user_viz_data/piechart_single', {
           title: 'VAMPS Single PieChart:',
           subtitle: ds_name,
           timestamp: ts || 'default_timestamp',
@@ -549,13 +549,13 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 //
 //  G E O S P A T I A L
 //
-router.get('/user_data/geospatial', helpers.isLoggedIn, function(req, res) {
+router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
   var myurl = url.parse(req.url, true);
 
   var ts    = myurl.query.ts;
   var html  = COMMON.start_visuals_html('geospatial');
 
-  res.render('visuals/user_data/geospatial', {
+  res.render('visuals/user_viz_data/geospatial', {
             title: 'VAMPS Geospatial Data',
             timestamp: ts || 'default_timestamp',
             html : html+"<h2>Not Coded Yet</h2>",
@@ -678,6 +678,43 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     });
 	
 });
+//
+//
+//
+router.post('/reset', helpers.isLoggedIn,  function(req, res) {
+	var html = '';
+    html += "<table id='drag_table' class='table table-condensed' >"
+    for (var i in chosen_id_name_hash.names){
+         html += "<tr class='tooltip_row'>";
+         html += "<td class='dragHandle' id='"+chosen_id_name_hash.ids[i]+"--"+chosen_id_name_hash.names[i]+"'> ";
+		 html += "<input type='hidden' name='ds_order[]' value='"+chosen_id_name_hash.ids[i]+"'>";
+         html += (parseInt(i)+1).toString()+" - "+chosen_id_name_hash.names[i] + " (id:"+ chosen_id_name_hash.ids[i]+")"
+         html += "</td>";
+         html += "</tr>";
+     }  
+    html += "</table>";	
+	res.send(html)
+});
+router.post('/alphabetize', helpers.isLoggedIn,  function(req, res) {
+	
+	var html = '';
+    html += "<table id='drag_table' class='table table-condensed' >"
+	var names = chosen_id_name_hash.names.slice()  // slice make an independant copy of the array
+	var ids = chosen_id_name_hash.ids.slice()      // rather than copy reference
+	
+    names.sort()
+	for (var i in names){
+		id = ids[chosen_id_name_hash.names.indexOf(names[i])]
+		 html += "<tr class='tooltip_row'>";
+         html += "<td class='dragHandle' id='"+ id +"--"+names[i]+"'> ";
+		 html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
+         html += (parseInt(i)+1).toString()+" - "+names[i] + " (id:"+ id +")"
+         html += "</td>";
+         html += "</tr>";
+     }  
+    html += "</table>";	
+	res.send(html)
+});
 
 module.exports = router;
 
@@ -685,21 +722,7 @@ module.exports = router;
 * F U N C T I O N S
 **/
 
-// function IsJsonString(str) {
-//     try {
-//         JSON.parse(str);
-//     } catch (e) {
-//         return false;
-//     }
-//     return true;
-// }
-// //
-// function onlyUnique(value, index, self) {
-//     return self.indexOf(value) === index;
-// }
-
-
-
+// Generally put fuction in global.js or helpers.js
 //
 //
 //

@@ -170,9 +170,32 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
 //  SEARCH DATASETS
 //
 router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
-	console.log('in gethint');
-	console.log(req.params.hint);
-	
+	//console.log('in gethint');
+	//console.log(req.params.hint);
+	var q = req.params.hint;
+	var hint = '';
+	if (q !== "") {
+	    q = q.toLowerCase();
+	    len=q.length;
+		for(n in AllMetadataNames){
+			var name = AllMetadataNames[n];
+			
+	        
+				if(name.substring(0,len) === q){
+	              console.log('name= '+name)
+				  if (hint === "") {
+      	                hint = name;
+      	            } else {
+     	                hint += "--"+name;
+      	            }
+	        }
+	    }
+	}
+	//AllMetadataNames
+	console.log('hint= '+hint)
+	var result = (hint=="") ? ("No Suggestions") : (hint);
+	console.log('result= '+result)
+	res.send(result)
 	
 });
 //
