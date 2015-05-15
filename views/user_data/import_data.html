@@ -10,90 +10,139 @@
 	
 	
 	
+	Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+<!-- ======================================================================================================== -->	
  <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
     
-	<h4>Simple (single dataset) Import Form: <small>(All fields are required)</small></h4>
+	<h4>Import Simple (single dataset) Form: <small>(All fields are required)</small></h4>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="project">Project Name:</label>
-      <div class="col-sm-3">
-        <select>
-			<option>select project name</option>
-		</select>	  
-	  </div>
-	  <div class="col-sm-1">OR</div>
 	  <div class="col-sm-3">
         <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
-		
-      </div><small>(<a href='#'>required name format</a>)</small>
+      </div>
+	  <small>(<a href='#'>required name format</a>)</small>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="meta">Dataset Name:</label>
       <div class="col-sm-3">          
         <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter Dataset Name">
       </div>
-	  <div class="col-sm-1"></div>
 	  <small>(<a href='#'>required name format</a>)</small>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
-      <div class="col-sm-4 btn">
+      <div class="col-sm-3 btn">
         <input type="file" name='fasta' class="" id="fasta">
-      </div><small>(<a href='#'>required file format</a>)</small>
+      </div>
+	  <small>(<a href='#'>required file format</a>)</small>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="meta">Metadata File:</label>
-      <div class="col-sm-4 btn">          
+      <div class="col-sm-3 btn">          
         <input type="file" name='metadata' class="" id="meta">
       </div><small>(<a href='#'>required file format</a>)</small>
     </div>
-	
-	<input type='hidden' name='type' value='single'>
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
     </div>
-	
+	<input type='hidden' name='type' value='single'>
   </form>
-	
+<!-- ======================================================================================================== -->		
   <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
-	<h4>Multi-dataset Import Form: <small>(All fields are required)</small></h4>
+	<h4>Import Multi-Dataset Form: <small>(All fields are required)</small></h4>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="project">Project Name:</label>
-      <div class="col-sm-3">
-        <select class=''>
-			<option>select project name</option>
-		</select>   
-	  </div>
-	  <div class="col-sm-1">OR</div>
+      
 	  <div class="col-sm-3">
         <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
       </div><small>(<a href='#'>required name format</a>)</small>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
-      <div class="col-sm-4 btn">
+      <div class="col-sm-3 btn">
         <input type="file" name='fasta' class="" id="fasta" >
       </div><small>(<a href='#'>required file format</a>)</small>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" for="meta">Metadata File:</label>
-      <div class="col-sm-4 btn">          
+      <div class="col-sm-3 btn">          
         <input type="file" name='metadata' class="" id="meta" >
       </div><small>(<a href='#'>required file format</a>)</small>
     </div>
-	
-	<input type='hidden' name='type' value='multi'>
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
     </div>
+	<input type='hidden' name='type' value='multi'>
   </form>
+<!-- ======================================================================================================== -->		
+  <hr>
+  <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
+  	<h4>TODO: Import Metadata to Project: <small>(All fields are required)</small></h4>
+  	<div class="form-group">
+        <label class="control-label col-sm-2" for="project">Project Name:</label>      
+        <div class="col-sm-3">
+          <select class=''>
+			<option>select project name</option>
+		  </select>   
+	    </div>
+  	</div>
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="meta">Metadata File:</label>
+        <div class="col-sm-3 btn">          
+          <input type="file" name='metadata' class="" id="meta" >
+        </div><small>(<a href='#'>required file format</a>)</small>
+    </div>
 	
+  	
+    <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+	<input type='hidden' name='type' value='metadata' />
+  </form>
+<!-- ======================================================================================================== -->	
+  <hr>
+  <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
+  	<h4>TODO: Import New Datasets to Project: <small>(All fields are required)</small></h4>
+  	<div class="form-group">
+        <label class="control-label col-sm-2" for="project">Project Name:</label>      
+        <div class="col-sm-3">
+          <select class=''>
+			<option>select project name</option>
+		  </select>   
+	    </div>
+  	</div>
+	<div class="form-group">
+      <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
+      <div class="col-sm-3 btn">
+        <input type="file" name='fasta' class="" id="fasta" >
+      </div><small>(<a href='#'>required file format</a>)</small>
+    </div>
+	<div class="form-group">
+        <label class="control-label col-sm-2" for="meta">Metadata File:</label>
+        <div class="col-sm-3 btn">          
+          <input type="file" name='metadata' class="" id="meta" >
+        </div><small>(<a href='#'>required file format</a>)</small>
+    </div>
 	
+  	
+    <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+	<input type='hidden' name='type' value='metadata' />
+  </form>
+
+
+
 	
 <% include ../add_ins/end.ejs %>
    
