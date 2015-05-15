@@ -1,3 +1,27 @@
+2015-05-10
+To load a project into vamps:
+  User Upload::
+    Upload both fasta (either simple or multi) and metadata
+	Then separately choose gast or rdp to assign and add to db
+	TODO: 
+	1) gather taxonomy count data for each dataset in the project
+	  and put in public/json/  
+	  run the script taxcounts_dirs_utils.py -pid xx -add
+	  and create_metadata_lookup.py 
+	must programatically re-fill (from load_all_datasets.js):
+    ALL_DATASETS
+    PROJECT_ID_BY_DID
+    PROJECT_INFORMATION_BY_PID
+    PROJECT_PERMISSION_BY_PID
+    DATASET_IDS_BY_PID
+    DATASET_NAME_BY_DID
+    ALL_DCOUNTS_BY_DID
+    ALL_PCOUNTS_BY_PID
+  Outside vamps::
+    run 1-vamps-init.py (creates config.ini and diretory structure)
+	then 2-vamps-gast.py (very slow -- needs parallelization)
+	BOTH are in py_mbl_sequencing_pipeline 
+
 List of things todo: OLD VAMPS
 
 Explore: download fasta sequences
