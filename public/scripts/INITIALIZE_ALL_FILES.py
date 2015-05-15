@@ -82,7 +82,11 @@ def go(args):
     for q in queries:
         #print q["query"]
         dirs = []
-        cur.execute(q["query"])
+        try:
+            cur.execute(q["query"])
+        except:
+            print "Trying to query with:",q["query"]
+            sys.exit("This Database Doesn't Look Right -- Exiting")
         for row in cur.fetchall():
             #print row
             count = int(row[0])
@@ -108,6 +112,7 @@ def go(args):
     write_all_taxcounts_file(prefix, counts_lookup)
     for w in warnings:
         print w
+    print "DONE"
         
 def write_all_metadata_file(prefix, metadata_lookup):
     md_file = "../json/"+NODE_DATABASE+"--metadata.json"
@@ -245,11 +250,12 @@ if __name__ == '__main__':
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
     db_str = ''
+    print myusage
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '
-    print myusage
-    print db_str
+        print str(i)+' - '+row[0]+';  '
+    #print db_str
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]
