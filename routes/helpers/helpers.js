@@ -200,6 +200,38 @@ module.exports.run_select_datasets_query = function(rows){
       ALL_DATASETS.projects.push(tmp);
     }
 	
+    
+    for(did in AllMetadata){
+  	  for(mdname in AllMetadata[did] ){
+  		//console.log(mdname)
+  		if(AllMetadataNames.indexOf(mdname) == -1){
+  			AllMetadataNames.push(mdname);
+  		}
+  		if(mdname == 'latitude' || mdname == 'longitude'){
+  			
+  			if(did in DatasetsWithLatLong){
+  				if(mdname == 'latitude'){				
+  					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+  				}else{
+  					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+  				}
+  			}else{
+  				DatasetsWithLatLong[did]={}
+				
+				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+  				if(mdname == 'latitude'){				
+  					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+  				}else{
+  					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+  				}
+  			}
+  		}
+  	  }
+    }
+    AllMetadataNames.sort();
+    
+	
 }
 //
 //
