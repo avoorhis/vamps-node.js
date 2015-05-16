@@ -18,14 +18,15 @@ module.exports.get_datasets = function(callback){
       PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
 	  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
       DATASET_IDS_BY_PID          = {};
-      
-      
+      DatasetsWithLatLong         = {} 
+      AllMetadataNames            = [];
+	  
       if (err)  {
 		  console.log('Query error: ' + err);
 		  console.log(err.stack);
 		  process.exit(1);
       } else {
-        console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js):');
+        console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and helpers.run_select_datasets_query):');
         
         ALL_DATASETS.projects = [];
         //datasetsByProject.projects = []
@@ -39,7 +40,9 @@ module.exports.get_datasets = function(callback){
 	  console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
       console.log(' INITIALIZING DATASET_IDS_BY_PID');
       console.log(' INITIALIZING DATASET_NAME_BY_DID');
-      
+	  console.log(' INITIALIZING AllMetadataNames');
+	  console.log(' INITIALIZING DatasetsWithLatLong');
+	  
       callback(ALL_DATASETS);
   });
   
