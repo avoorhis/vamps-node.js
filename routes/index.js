@@ -46,8 +46,17 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
   /* GET Geo-Distribution page. */
   router.get('/geodistribution', function(req, res) {
-      res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
+      
+
+	  testpaths = {}
+	  testpaths['495'] = {"latitude":10,"longitude":-45};
+	  testpaths['496'] = {"latitude":10.23,"longitude":-10};
+	  testpaths['497'] = {"latitude":20,"longitude":-30};
+	  testpaths['498'] = {"latitude":2,"longitude":-34};
+	  
+	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
                              user: req.user,
+	  geodata: JSON.stringify(DatasetsWithLatLong),
 	  message:'',
                             });
   });
