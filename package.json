@@ -23,7 +23,6 @@
     "express-flash": "",
     "express-session": "",
     "fs-extra": "",
-    "googlemaps": "^0.1.20",
     "ini": "",
     "iniparser": "",
     "istanbul": "",
