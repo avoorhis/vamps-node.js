@@ -18,10 +18,10 @@ views/visuals/partials/tax_silva108_custom.html
 views/visuals/partials/tax_silva108_simple.html
 
 grep_code.sh
-temp/
+temp/*
 downloads/*
 user_data/*
-tmp/
+tmp/*
 public/tmp_images/
 public/json/*/
 public/json/*-taxcounts/*

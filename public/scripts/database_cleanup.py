@@ -51,8 +51,8 @@ def clean(args):
     db.commit()
     dids = []
     if not cur.rowcount:
-        print "No project found -- Exiting"
-        sys.exit()
+        print "No datasets found -- This might not work"
+        pid = args.pid
     for row in cur.fetchall():
         did = str(row[0])
         dids.append(did)
