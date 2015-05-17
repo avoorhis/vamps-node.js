@@ -44,6 +44,11 @@ RANK_COLLECTOR={}
 TAX_ID_BY_RANKID_N_TAX = {}
 SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
+REQ_METADATA_ITEMS = {}
+CUST_METADATA_ITEMS = {}
+
+required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
 #         {'name':'klass',  'id':5,'num':2},
@@ -63,7 +68,7 @@ def start(NODE_DATABASE, args):
     
     
     #logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
-                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+    #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
     os.chdir(args.indir)
     
     
@@ -76,23 +81,26 @@ def start(NODE_DATABASE, args):
     print("running get_config_data")
     get_config_data(args)
     
-    print("checking user")
-    check_user()  ## script dies if user not in db
+    # print("checking user")
+    # check_user()  ## script dies if user not in db
+    #
+    # print("recreating ranks")
+    # recreate_ranks()
+    #
+    # print("env sources")
+    # create_env_source()
+    #
+    # print("classifier")
+    # create_classifier()
+    #
+    # print("starting taxonomy")
+    # push_taxonomy(args)
+    #
+    # print("starting sequences")
+    # push_sequences()
     
-    print("recreating ranks")
-    recreate_ranks()
-    
-    print("env sources")
-    create_env_source()
-    
-    print("classifier")
-    create_classifier()
-    
-    print("starting taxonomy")
-    push_taxonomy(args)
-    
-    print("starting sequences")
-    push_sequences()
+    print("starting metadata")
+    start_metadata(args)
     
     print("projects")
     push_project()
@@ -440,39 +448,12 @@ def get_config_data(args):
     CONFIG_ITEMS['owner'] = args.owner
     CONFIG_ITEMS['project'] = args.project
     CONFIG_ITEMS['datasets'] = []
-#     # convert a vamps user upload config file: use INFO-TAX.config
-#     # change vamps_user to owner <and use one that is already in db >
-#     # owner_id and project_id gathered automatically
-#     config = ConfigParser.ConfigParser()
-#     config.optionxform=str
-#
-#
-#     if os.path.isfile(   os.path.join(indir,'INFO_CONFIG.ini') ):
-#         config_infile =  os.path.join(indir,'INFO_CONFIG.ini')
-#     elif os.path.isfile( os.path.join(indir,'config.ini') ):
-#         config_infile =  os.path.join(indir,'config.ini')
-#     else:
-#
-#         sys.exit("Could not find INFO_CONFIG.ini INFO-TAX.config or config.ini in "+indir)
-#     config.read(config_infile)
-#     try:
-#         for name, value in  config.items('GENERAL'):
-#             CONFIG_ITEMS[name] = value
-#     except:
-#         for name, value in  config.items('MAIN'):
-#             CONFIG_ITEMS[name] = value
-#     datasets = {}
-#     for dsname, count in  config.items('DATASETS'):
-#         #print '  %s = %s' % (name, value)
-#         ds = dsname
-#         datasets[ds] = count
-#     CONFIG_ITEMS['datasets'] = datasets
-    #print CONFIG_ITEMS 
+
        
-def start_metadata(NODE_DATABASE, indir):
+def start_metadata(args):
     cur.execute("USE "+NODE_DATABASE)
     #get_config_data(indir)
-    get_metadata(indir)
+    get_metadata(args.indir)
     put_required_metadata()
     put_custom_metadata()
     #print CONFIG_ITEMS
@@ -558,9 +539,9 @@ def put_custom_metadata():
     
 def get_metadata(indir):
     
-    csv_infile =   os.path.join(indir,'meta_clean.csv')
+    csv_infile =   os.path.join(indir,'metadata.csv')
     print 'csv',csv_infile
-    lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
+    lines = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
     # try:
 #         csv_infile =   os.path.join(indir,'meta_clean.csv')
 #         print csv_infile
@@ -573,88 +554,66 @@ def get_metadata(indir):
 #     else:
 #         sys.exit("FAILED TO READ METAFILE")
     TMP_METADATA_ITEMS = {}
-    
-    #print lol
-    keys = lol[0]
-    for i,key in enumerate(keys):
-        TMP_METADATA_ITEMS[key] = []
-        for line in lol[1:]:
-            TMP_METADATA_ITEMS[key].append(line[i])
-    saved_indexes = []        
-    for ds in CONFIG_ITEMS['datasets']:
-        #print  TMP_METADATA_ITEMS['sample_name'].index(ds) , ds 
-        try:
-            saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
-            dataset_header_name = 'sample_name'
-        except:
-            saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
-            dataset_header_name = 'dataset'
+    for line in lines:
+        print line
+        if line[0] == 'dataset' and line[1] == 'parameterName':
+            headers = line
         else:
-            sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
-    
-    # now get the data from just the datasets we have in CONFIG.ini
-    for key in TMP_METADATA_ITEMS:
-        
-        if key in required_metadata_fields:
-            REQ_METADATA_ITEMS[key] = []
-            REQ_METADATA_ITEMS['dataset_id'] = []
-            for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                if j in saved_indexes:
-                    if key in required_metadata_fields:
-                        REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                    ds = TMP_METADATA_ITEMS[dataset_header_name][j]
-                    did = DATASET_ID_BY_NAME[ds]
-                    REQ_METADATA_ITEMS['dataset_id'].append(did)
-        else:
-            CUST_METADATA_ITEMS[key] = []
-            CUST_METADATA_ITEMS['dataset_id'] = []
+            key = line[7]   # structured comment name
+            parameterValue = line[2]
+            dset = line[0]
+            pj = line[5]
             
-            for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                
-                if j in saved_indexes:
-                    
-                    if key not in required_metadata_fields:
-                        
-                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                    ds = TMP_METADATA_ITEMS[dataset_header_name][j]
-                    did = DATASET_ID_BY_NAME[ds]
-                    CUST_METADATA_ITEMS['dataset_id'].append(did)
-                   
-    if not 'dataset_id' in REQ_METADATA_ITEMS:
-        REQ_METADATA_ITEMS['dataset_id'] = []
-    if 'dataset_id' not in CUST_METADATA_ITEMS:
-        CUST_METADATA_ITEMS['dataset_id'] = []
             
-# def get_config_data(indir):
-#     config_infile =   os.path.join(indir,'INFO_CONFIG.ini')
-#     print config_infile
-#     config = ConfigParser.ConfigParser()
-#     config.optionxform=str
-#     config.read(config_infile)
-#     for name, value in  config.items('GENERAL'):
-#         #print '  %s = %s' % (name, value)
-#         CONFIG_ITEMS[name] = value
-#     CONFIG_ITEMS['datasets'] = []
-#     for dsname, count in  config.items('DATASETS'):
-#         CONFIG_ITEMS['datasets'].append(dsname)
-#     #print 'project',CONFIG_ITEMS['project']
-#     q = "SELECT project_id FROM project"
-#     q += " WHERE project = '"+CONFIG_ITEMS['project']+"'"
-#     print q
-#     cur.execute(q)
-#
-#     row = cur.fetchone()
-#     CONFIG_ITEMS['project_id'] = row[0]
-#
-#     q = "SELECT dataset,dataset_id from dataset"
-#     q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
-#     print q
-#     cur.execute(q)
-#     for row in cur.fetchall():
-#         DATASET_ID_BY_NAME[row[0]] = row[1]
-#
-#     db.commit()
-#
+    # for i,key in enumerate(keys):
+    #     TMP_METADATA_ITEMS[key] = []
+    #     for line in lol[1:]:
+    #         TMP_METADATA_ITEMS[key].append(line[i])
+    # saved_indexes = []
+    # for ds in CONFIG_ITEMS['datasets']:
+    #     #print  TMP_METADATA_ITEMS['sample_name'].index(ds) , ds
+    #     try:
+    #         saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
+    #         dataset_header_name = 'sample_name'
+    #     except:
+    #         saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
+    #         dataset_header_name = 'dataset'
+    #     else:
+    #         sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
+    #
+    # # now get the data from just the datasets we have in CONFIG.ini
+    # for key in TMP_METADATA_ITEMS:
+    #
+    #     if key in required_metadata_fields:
+    #         REQ_METADATA_ITEMS[key] = []
+    #         REQ_METADATA_ITEMS['dataset_id'] = []
+    #         for j,value in enumerate(TMP_METADATA_ITEMS[key]):
+    #             if j in saved_indexes:
+    #                 if key in required_metadata_fields:
+    #                     REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+    #                 ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+    #                 did = DATASET_ID_BY_NAME[ds]
+    #                 REQ_METADATA_ITEMS['dataset_id'].append(did)
+    #     else:
+    #         CUST_METADATA_ITEMS[key] = []
+    #         CUST_METADATA_ITEMS['dataset_id'] = []
+    #
+    #         for j,value in enumerate(TMP_METADATA_ITEMS[key]):
+    #
+    #             if j in saved_indexes:
+    #
+    #                 if key not in required_metadata_fields:
+    #
+    #                     CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+    #                 ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+    #                 did = DATASET_ID_BY_NAME[ds]
+    #                 CUST_METADATA_ITEMS['dataset_id'].append(did)
+    #
+    # if not 'dataset_id' in REQ_METADATA_ITEMS:
+    #     REQ_METADATA_ITEMS['dataset_id'] = []
+    # if 'dataset_id' not in CUST_METADATA_ITEMS:
+    #     CUST_METADATA_ITEMS['dataset_id'] = []
+    #
 
 if __name__ == '__main__':
     import argparse
