@@ -17,6 +17,7 @@
     "cookie-parser": "",
     "csv-parse": "",
     "d3": "",
+    "debug": "",
     "depd": "",
     "ejs": "",
     "express": "",
@@ -40,6 +41,7 @@
     "serve-favicon": "",
     "static-favicon": "",
     "sweetcaptcha": "",
+    "tree-model": "",
     "uid-safe": "",
     "xmldom": "",
     "ya-csv": ""
