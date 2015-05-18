@@ -456,7 +456,7 @@ def start_metadata(args):
     cur.execute("USE "+NODE_DATABASE)
     #get_config_data(indir)
     get_metadata(args.indir)
-    #put_required_metadata()
+    put_required_metadata()
     #put_custom_metadata()
     #print CONFIG_ITEMS
     print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
@@ -466,14 +466,26 @@ def start_metadata(args):
 def put_required_metadata():
     
     q = "INSERT into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
-    q = q+" VALUES("
+    q = q+" VALUES('"
     
-    for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
-        vals = "'"+str(did)+"',"
+    #for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
+    for ds in CONFIG_ITEMS['datasets']:
+        did = DATASET_ID_BY_NAME[ds]
+        vals = [str(did)]
         
-        for item in required_metadata_fields:
-            vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
-        q2 = q + vals[:-1] + ")"  
+        
+        
+        for key in required_metadata_fields:
+            if key in REQ_METADATA_ITEMS[did]:
+                
+                vals.append(str(REQ_METADATA_ITEMS[did][key]))
+            else:
+                vals.append('')
+        print vals
+        v = "','".join(vals)
+        
+        
+        q2 = q + v + "')"  
         print q2
         cur.execute(q2)
     db.commit()
@@ -596,7 +608,11 @@ def get_metadata(indir):
         for key in TMP_METADATA_ITEMS[ds]:
             print key
             if key in required_metadata_fields:
-                REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                if did in REQ_METADATA_ITEMS:
+                    REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                else:
+                    REQ_METADATA_ITEMS[did]= {}
+                    REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
                 # #REQ_METADATA_ITEMS['dataset_id'] = []
                 # for j,value in enumerate(TMP_METADATA_ITEMS[key]):
                 #     if j in saved_indexes:
@@ -606,7 +622,13 @@ def get_metadata(indir):
                 #         did = DATASET_ID_BY_NAME[ds]
                 #         REQ_METADATA_ITEMS['dataset_id'].append(did)
             else:
-                CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                if did in CUST_METADATA_ITEMS:
+                    CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                else:
+                    CUST_METADATA_ITEMS[did]= {}
+                    CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key] 
+                
+                
                 
                 # CUST_METADATA_ITEMS['dataset_id'] = []
 #
