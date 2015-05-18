@@ -5,7 +5,8 @@ config/db_vamps_node.sql.gz
 node_modules/
 colony/
 colony-npm/
-
+*log.txt
+*log
 # eclipse
 .jshintrc
 .npmignore
