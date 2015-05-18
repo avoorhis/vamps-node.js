@@ -83,6 +83,9 @@ def go(args):
         #print q["query"]
         dirs = []
         try:
+
+            print "running mysql query for:",q['rank']
+
             cur.execute(q["query"])
         except:
             print "Trying to query with:",q["query"]
@@ -105,10 +108,16 @@ def go(args):
             else:
                 counts_lookup[ds_id] = {}
                 counts_lookup[ds_id][tax_id_str] = count
-                
+
+    
+    print 'gathering metadata from tables'            
     metadata_lookup = go_metadata()    
+    print 'writing to individual files'
     write_data_to_files(prefix, metadata_lookup, counts_lookup)
+    print 'writing metadata file'
     write_all_metadata_file(prefix, metadata_lookup)
+    print 'writing taxcount file'
+
     write_all_taxcounts_file(prefix, counts_lookup)
     for w in warnings:
         print w
@@ -157,6 +166,8 @@ def go_metadata():
 	
     metadata_lookup = {}
 
+    print 'running mysql for required metadata'
+
     cur.execute(req_pquery)
     for row in cur.fetchall():
     	did = row[0]
@@ -175,6 +186,9 @@ def go_metadata():
 
 
     pid_collection = {}
+
+    print 'running mysql for custom metadata'
+
     cur.execute(cust_pquery)
     cust_metadata_lookup = {}
     for row in cur.fetchall():

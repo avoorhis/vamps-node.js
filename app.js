@@ -210,35 +210,12 @@ AllTaxCounts       = require(taxcounts_file);
 console.log('Loading ALL TAXCOUNTS from: '+taxcounts_file);
 var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
 AllMetadata        = require(meta_file);
-AllMetadataNames  = [];
-DatasetsWithLatLong = {} 
+
+
+
 console.log('Loading ALL METADATA from: '+meta_file);
-for(ds in AllMetadata){
-	for(mdname in AllMetadata[ds] ){
-		//console.log(mdname)
-		if(AllMetadataNames.indexOf(mdname) == -1){
-			AllMetadataNames.push(mdname);
-		}
-		if(mdname == 'latitude' || mdname == 'longitude'){
-			if(ds in DatasetsWithLatLong){
-				if(mdname == 'latitude'){				
-					DatasetsWithLatLong[ds].latitude = AllMetadata[ds].latitude;
-				}else{
-					DatasetsWithLatLong[ds].longitude = AllMetadata[ds].longitude;
-				}
-			}else{
-				DatasetsWithLatLong[ds]={}
-				if(mdname == 'latitude'){				
-					DatasetsWithLatLong[ds].latitude = AllMetadata[ds].latitude;
-				}else{
-					DatasetsWithLatLong[ds].longitude = AllMetadata[ds].longitude;
-				}
-			}
-		}
-	}
-}
-AllMetadataNames.sort();
-console.log(DatasetsWithLatLong);
+
+
 
 
 all_silva_taxonomy.get_all_taxa(function(err, results) {
@@ -279,6 +256,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();
+
 
 
 module.exports = app;
