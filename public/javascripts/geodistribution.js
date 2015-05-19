@@ -6,7 +6,7 @@
         
 		var myOptions = {
           center: new google.maps.LatLng(41.5, -70.66), // Woods Hole, MA
-          zoom: 7,
+          zoom: 3,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map"),
