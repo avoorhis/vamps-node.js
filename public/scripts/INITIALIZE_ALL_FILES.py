@@ -72,12 +72,14 @@ def go(args):
 
     """
     counts_lookup = {}
-    prefix = "../json/"+NODE_DATABASE+"--datasets/"
+    
     try:
-        shutil.rmtree(prefix)
+        shutil.rmtree(args.files_prefix)
+        shutil.move(args.taxcounts_file,os.path.join(args.json_dir,NODE_DATABASE+'taxcountsBU.json'))
+        shutil.move(args.metadata_file, os.path.join(args.json_dir,NODE_DATABASE+'metadataBU.json'))
     except:
         pass
-    os.mkdir(prefix)
+    os.mkdir(args.files_prefix)
     
     for q in queries:
         #print q["query"]
@@ -112,40 +114,42 @@ def go(args):
     
     print 'gathering metadata from tables'            
     metadata_lookup = go_metadata()    
+    
     print 'writing to individual files'
-    write_data_to_files(prefix, metadata_lookup, counts_lookup)
+    write_data_to_files(args, metadata_lookup, counts_lookup)
+    
     print 'writing metadata file'
-    write_all_metadata_file(prefix, metadata_lookup)
+    write_all_metadata_file(args, metadata_lookup)
+    
     print 'writing taxcount file'
-
-    write_all_taxcounts_file(prefix, counts_lookup)
+    write_all_taxcounts_file(args, counts_lookup)
     for w in warnings:
         print w
     print "DONE"
         
-def write_all_metadata_file(prefix, metadata_lookup):
-    md_file = "../json/"+NODE_DATABASE+"--metadata.json"
+def write_all_metadata_file(args, metadata_lookup):
+   
     #print md_file
     json_str = json.dumps(metadata_lookup)		
     #print(json_str)
-    f = open(md_file,'w')
+    f = open(args.metadata_file,'w')
     f.write(json_str+"\n")
     f.close() 
     
-def write_all_taxcounts_file(prefix, counts_lookup):
-    tc_file = "../json/"+NODE_DATABASE+"--taxcounts.json"
+def write_all_taxcounts_file(args, counts_lookup):
+    
     #print tc_file
     json_str = json.dumps(counts_lookup)		
     #print(json_str)
-    f = open(tc_file,'w')
+    f = open(args.taxcounts_file,'w')
     f.write(json_str+"\n")
     f.close()
             
-def write_data_to_files(prefix, metadata_lookup, counts_lookup):    
+def write_data_to_files(args, metadata_lookup, counts_lookup):    
     
     #print counts_lookup
     for did in counts_lookup:
-        file = prefix+str(did)+'.json'
+        file = os.path.join(args.files_prefix,str(did)+'.json')
         f = open(file,'w') 
         
         my_counts_str = json.dumps(counts_lookup[did]) 
@@ -286,5 +290,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
-
+    args.json_dir = os.path.join("../","json")
+    args.files_prefix   = os.path.join(args.json_dir,NODE_DATABASE+"--datasets")
+    args.taxcounts_file = os.path.join(args.json_dir,NODE_DATABASE+"--taxcounts.json")
+    args.metadata_file  = os.path.join(args.json_dir,NODE_DATABASE+"--metadata.json")
     go(args)
