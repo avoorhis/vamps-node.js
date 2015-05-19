@@ -48,6 +48,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       var did = dsinfo[n].did;
       dscounts[did] = ALL_DCOUNTS_BY_DID[did];
     }
+	console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
     res.render('projects/profile', { 
                                 title  : 'VAMPS Project',
                                 info: JSON.stringify(info),
@@ -55,7 +56,6 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                 dscounts: JSON.stringify(dscounts),
                                 pid: req.params.id,
                                 pcount: project_count,
-                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
 								message: '',
                                 user   : req.user 
                               });

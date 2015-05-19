@@ -1,8 +1,7 @@
 
 <% data = JSON.parse(info) %>
 <% dscounts = JSON.parse(dscounts) %>
-<% perms  = JSON.parse(proj_info) %>
-<%= perms['105'].permissions %>
+<% project_info  = JSON.parse(info) %>
 <img src='/images/projects/science.jpeg' alt="Smiley_face"  height='80'>
 <div id='project_profile_div' >
 <ul>
@@ -29,7 +28,7 @@
   	<% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
   		<li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
   	<% }else{ %>
-  		<li><%= dsinfo[n].dname %>(<%= dscounts[dsinfo[n].did] %>) Desc: <%= dsinfo[n].ddesc %> </li>
+  		<li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
   	<% } %>
   		
   <% } %>
@@ -39,7 +38,7 @@
   </li>
   
   <hr>
-  <% if(user.security_level === 1 || perms[pid].permissions  === 0 || perms[pid].permissions === user.user_id ) { %>
+  <% if(user.security_level === 1 || project_info.permissions  === 0 || project_info.permissions === user.user_id ) { %>
 
     <li>
     <form id='download_project_fasta_form_id' method='POST' action='/user_data/download_selected_seqs'>
