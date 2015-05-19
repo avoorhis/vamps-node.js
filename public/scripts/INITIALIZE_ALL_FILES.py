@@ -187,7 +187,7 @@ def go_metadata():
 
     pid_collection = {}
 
-    print 'running mysql for custom metadata'
+    print 'running mysql for custom metadata',cust_pquery
 
     cur.execute(cust_pquery)
     cust_metadata_lookup = {}
@@ -206,30 +206,31 @@ def go_metadata():
     	fields = ['dataset_id']+pid_collection[pid]
 
         cust_dquery = "SELECT " + ','.join(fields) + " from " + table
-    	#print cust_dquery
-    	try:
-            cur.execute(cust_dquery)
+    	print 'running other cust',cust_dquery
+    	#try:
+        cur.execute(cust_dquery)
 
-            print
-            for row in cur.fetchall():
-            	did = row[0]
-            	n = 1
-            	for field in pid_collection[pid]:
+        print
+        for row in cur.fetchall():
+            print row
+            did = row[0]
+            n = 1
+            for field in pid_collection[pid]:
+                #print did,n,field,row[n]
+                name = field
+                value = str(row[n])
+                if value == '':
+                    warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
 
-                    #print did,n,field,row[n]
-                    name = field
-                    value = str(row[n])
-                    if value == '':
-                        warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
-
-                    if did in metadata_lookup:				
-                     	metadata_lookup[did][name] = value
-                    else:
-                    	metadata_lookup[did] = {}
-                    	metadata_lookup[did][name] = value
-                    n += 1
-        except:
-            warnings.append('could not find/read CUSTOM table: "'+table+'" Skipping')
+                if did in metadata_lookup:				
+                 	metadata_lookup[did][name] = value
+                else:
+                	metadata_lookup[did] = {}
+                	metadata_lookup[did][name] = value
+                n += 1
+        #except:
+        #    warnings.append('could not find/read CUSTOM table: "'+table+'" Skipping')
+    db.commit()
     return metadata_lookup
             
 

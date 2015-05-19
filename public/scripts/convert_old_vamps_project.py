@@ -99,8 +99,6 @@ def start(NODE_DATABASE, args):
     print("starting sequences")
     push_sequences()
     
-    
-    
     print("projects")
     push_project()
     
@@ -117,8 +115,8 @@ def start(NODE_DATABASE, args):
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
     print("Finished database_importer.py")
-    
     return CONFIG_ITEMS['project_id']
+    
     
 def check_user():
     """
@@ -185,7 +183,7 @@ def push_project():
     rev = CONFIG_ITEMS['project'][::-1]
     fund = "myfunding"
     id = CONFIG_ITEMS['owner_id']
-    pub = 0 if CONFIG_ITEMS['public'] else 1
+    pub = CONFIG_ITEMS['public']
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
@@ -421,26 +419,7 @@ def push_taxonomy(args):
             SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
             SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
             mysql_conn.commit()
- #    for rank in tax_collector:
-#         for name in tax_collector[rank]:
-#             
-#             q = "insert ignore into `"+rank+"` (`"+rank+"`) VALUES('"+name+"')"
-#             
-#             #print q
-#             cur.execute(q)
-#             id = cur.lastrowid
-    #print 'SEQ_COLLECTOR'
-    #print SEQ_COLLECTOR
-    
-    #print SILVA_IDS_BY_TAX
-    #db.commit() 
-# def insert_nas():
-#     for table in ranks:
-#         i = table+'_NA'
-#         q = "INSERT ignore into `"+table+"` (`"+table+"`) VALUES('"+i+"')"
-#         if table != 'domain':
-#             cur.execute(q)
-#     db.commit()
+
     print( 'SUMMED_TAX_COLLECTOR')
     print( SUMMED_TAX_COLLECTOR)
              
@@ -453,11 +432,11 @@ def get_config_data(args):
 
        
 def start_metadata(args):
-    cur.execute("USE "+NODE_DATABASE)
+    
     #get_config_data(indir)
     get_metadata(args.indir)
     put_required_metadata()
-    #put_custom_metadata()
+    put_custom_metadata()
     #print CONFIG_ITEMS
     print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
     print
@@ -465,64 +444,83 @@ def start_metadata(args):
     
 def put_required_metadata():
     
-    q = "INSERT into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
-    q = q+" VALUES('"
+    
+    
+    #q_req = "INSERT into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
+    #q_req = q_req+" VALUES('"
     
     #for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
         vals = [str(did)]
-        
-        
-        
+        fields=[]
         for key in required_metadata_fields:
             if key in REQ_METADATA_ITEMS[did]:
-                
-                vals.append(str(REQ_METADATA_ITEMS[did][key]))
-            else:
-                vals.append('')
-        print vals
+                vals.append(REQ_METADATA_ITEMS[did][key])
+                fields.append(key)
+            
+        f = ",".join(fields)       
         v = "','".join(vals)
+        q_req = "INSERT into required_metadata_info (dataset_id,"+f+")"
+        q_req = q_req+" VALUES('"
+        
+        q2_req = q_req + v + "')"  
+        print q2_req
+        try:
+            cur.execute(q2_req)
+            
+        except MySQLdb.Error, e:
+            try:
+                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+            except IndexError:
+                print "MySQL Error: %s" % str(e)
         
         
-        q2 = q + v + "')"  
-        print q2
-        cur.execute(q2)
-    db.commit()
-            
-            
+        
+    mysql_conn.commit()    
+    
 def put_custom_metadata():
     """
       create new table
     """
     print 'starting put_custom_metadata'
     # TABLE-1 === custom_metadata_fields
-    for key in CUST_METADATA_ITEMS:
-        print key
-        q2 = "insert ignore into custom_metadata_fields(project_id,field_name,field_type,example)"
-        q2 += " VALUES("
-        q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-        q2 += "'"+key+"',"
-        q2 += "'varchar(128)',"
-        q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
-        print q2
-        cur.execute(q2)
+    cust_keys_array = {}
+    all_cust_keys = []  # to create new table
+    for ds in CONFIG_ITEMS['datasets']:
+        did = DATASET_ID_BY_NAME[ds]
+        cust_keys_array[did]=[]
+        
+        for key in CUST_METADATA_ITEMS[did]:
+            if key not in all_cust_keys:
+                all_cust_keys.append(key)
+            if key not in cust_keys_array[did]:
+                cust_keys_array[did].append(key)
+            q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+            q2 += " VALUES("
+            q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+            q2 += "'"+str(key)+"',"
+            q2 += "'varchar(128)',"
+            q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+            print q2
+            cur.execute(q2)
+        mysql_conn.commit()
+        
     
-    # TABLE-2 === custom_metadata_<pid>
-    cust_keys_array = CUST_METADATA_ITEMS.keys()
+    # TABLE-2 === CREATE custom_metadata_<pid>        
     custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
     q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
     q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
     q += " `project_id` int(11) unsigned NOT NULL,\n"
     q += " `dataset_id` int(11) unsigned NOT NULL,\n"
-    for key in cust_keys_array:
+    for key in all_cust_keys:
         if key != 'dataset_id':
             q += " `"+key+"` varchar(128) NOT NULL,\n" 
     q += " PRIMARY KEY (`"+custom_table+"_id` ),\n" 
     unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
-    
+
     # ONLY 16 key items allowed:    
-    for i,key in enumerate(cust_keys_array):
+    for i,key in enumerate(all_cust_keys):
         if i < 14 and key != 'dataset_id':
             unique_key += " `"+key+"`,"
     q += unique_key[:-1]+"),\n"
@@ -534,22 +532,26 @@ def put_custom_metadata():
     print q
     cur.execute(q)
     
-    for i,did in enumerate(CUST_METADATA_ITEMS['dataset_id']):
     
-        q2 = "insert ignore into "+custom_table+" (project_id,dataset_id,"
-        for key in cust_keys_array:
+    # add data
+    for ds in CONFIG_ITEMS['datasets']:
+        did = DATASET_ID_BY_NAME[ds]
+        q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
+        for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                q2 += key+","
-        q2 = q2[:-1]+ ")"
-        q2 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
-        for key in cust_keys_array:
+                q3 += key+","
+        q3 = q3[:-1]+ ")"
+        q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
+        for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                q2 += "'"+str(CUST_METADATA_ITEMS[key][i])+"',"
-        q2 = q2[:-1] + ")" 
-        print q2
-        cur.execute(q2)
+                if key in CUST_METADATA_ITEMS[did]:
+                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
+                
+        q3 = q3[:-1] + ")" 
+        print q3
+        cur.execute(q3)
     
-    db.commit()
+    mysql_conn.commit()
     
 def get_metadata(indir):
     
@@ -569,11 +571,15 @@ def get_metadata(indir):
 #         sys.exit("FAILED TO READ METAFILE")
     TMP_METADATA_ITEMS = {}
     for line in lines:
-        print line
+        #print line
         if line[0] == 'dataset' and line[1] == 'parameterName':
             headers = line
         else:
-            key = line[7]   # structured comment name
+            key = line[7].replace('(','').replace(')','').replace(',','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
+            if key == 'lat':
+                key='latitude'
+            if key == 'lon' or key == 'long':
+                key='longitude'
             parameterValue = line[2]
             dset = line[0]
             pj = line[5]
@@ -583,7 +589,7 @@ def get_metadata(indir):
                 TMP_METADATA_ITEMS[dset] = {}
                 TMP_METADATA_ITEMS[dset][key] = parameterValue
             
-    print TMP_METADATA_ITEMS
+    #print TMP_METADATA_ITEMS
            
     # for i,key in enumerate(keys):
     #     TMP_METADATA_ITEMS[key] = []
@@ -603,10 +609,11 @@ def get_metadata(indir):
 
     # now get the data from just the datasets we have in CONFIG.ini
     for ds in CONFIG_ITEMS['datasets']:
-        print ds
+        #print ds
         did = DATASET_ID_BY_NAME[ds]
         for key in TMP_METADATA_ITEMS[ds]:
-            print key
+            #print key
+            
             if key in required_metadata_fields:
                 if did in REQ_METADATA_ITEMS:
                     REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
@@ -622,6 +629,7 @@ def get_metadata(indir):
                 #         did = DATASET_ID_BY_NAME[ds]
                 #         REQ_METADATA_ITEMS['dataset_id'].append(did)
             else:
+                
                 if did in CUST_METADATA_ITEMS:
                     CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
                 else:
@@ -716,7 +724,9 @@ if __name__ == '__main__':
     
     
     if args.project and args.indir:
-        start(NODE_DATABASE, args)
+        pid = start(NODE_DATABASE, args)
+        print "PID=", str(pid)
+        print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'"
     else:
         print myusage 
         
