@@ -175,7 +175,8 @@ module.exports.run_select_datasets_query = function(rows){
       titles[project] = rows[i].title;
       
       DATASET_NAME_BY_DID[did] = dataset
-      
+      DATASET_ID_BY_DNAME[dataset] = did
+	  
       if (project === undefined){ continue; }
       if (project in datasetsByProject){
           datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});

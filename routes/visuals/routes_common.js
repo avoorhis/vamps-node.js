@@ -2,11 +2,11 @@
 var path = require('path');
 var fs = require('fs');
 var extend = require('util')._extend;
-var COMMON  = require('./routes_common');
+//var COMMON  = require('./routes_common');
 var C = require('../../public/constants');
-var HMAP    = require('./routes_distance_heatmap');
-var DEND    = require('./routes_dendrogram');
-var PCOA    = require('./routes_pcoa');
+//var HMAP    = require('./routes_distance_heatmap');
+//var DEND    = require('./routes_dendrogram');
+//var PCOA    = require('./routes_pcoa');
 
 module.exports = {
 
@@ -360,7 +360,7 @@ get_metadata_selection: function(dataset_ids, metadata, type) {
       if (did in metadata) {
         for (var field in metadata[did]) {
           
-          console.log('field_name '+field)
+          //console.log('field_name '+field)
 			if(type == 'custom'){
 	  		  if (req_metadata.indexOf(field) === -1 ) {
 	              //console.log('PUT IN CUSTOM '+field)
