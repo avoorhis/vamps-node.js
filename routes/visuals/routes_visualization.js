@@ -18,12 +18,12 @@ var QUERY = require('../queries');
 
 var COMMON  = require('./routes_common');
 var META    = require('./routes_metadata');
-var PCOA    = require('./routes_pcoa');
+//var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
-var HMAP    = require('./routes_distance_heatmap');
-var DEND    = require('./routes_dendrogram');
-var BCHARTS = require('./routes_bar_charts');
-var PCHARTS = require('./routes_pie_charts');
+//var HMAP    = require('./routes_distance_heatmap');
+//var DEND    = require('./routes_dendrogram');
+//var BCHARTS = require('./routes_bar_charts');
+//var PCHARTS = require('./routes_pie_charts');
 //var CTABLE  = require('./routes_counts_table');
 var PythonShell = require('python-shell');
 var app = express();
@@ -63,7 +63,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //console.log(TaxaCounts['27'])
   //console.log('1');
   if(req.body.resorted === '1'){
-  	dataset_ids = req.body.ds_order;
+  	req.flash('infomessage','Dataset order is updated!')
+	dataset_ids = req.body.ds_order;
 	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
   // GLOBAL Variable
@@ -112,7 +113,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
-                                  message   : req.flash()
+		locals: {flash: req.flash('infomessage')},
+                                  infomessage   : req.flash('infomessage','Dataset order is updated!')
                    });
     
 
@@ -120,6 +122,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
 
 });
+
 
 
 // use the isLoggedIn function to limit exposure of each page to
@@ -354,10 +357,24 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
   	  }else{
 	      distance_matrix = JSON.parse(mtx);
 	      console.log('dmtx');
+		  console.log(chosen_id_name_hash);
 	      console.log(distance_matrix);
 	      var m = JSON.stringify(mtx);
+		  var ids = {}
+		  for(i in chosen_id_name_hash.names){
+		  	
+		  }
+		  for(pjds in distance_matrix){
+		  	console.log(pjds)
+			  var ds = pjds.split('--')[1]
+			  var did = DATASET_ID_BY_DNAME[ds];
+			  ids[pjds] = did 
+		  }
+		  console.log(ids)
 	      res.render('visuals/partials/load_distance',{
 	                                        dm        : distance_matrix,
+			  								hash   	  : JSON.stringify(chosen_id_name_hash),
+			  							
 	                                        constants : JSON.stringify(req.C),
 	                                      });
 	  }
@@ -615,6 +632,8 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/med_nodes',{});
 });
 
+
+
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
     console.log('req.body: save_datasets-->>');
@@ -622,8 +641,8 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
     console.log('req.body: save_datasets');
 	
 	var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,req.body.filename);
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username));
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
+	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username)); // create dir if not present
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
 		
