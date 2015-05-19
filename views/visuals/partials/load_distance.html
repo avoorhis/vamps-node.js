@@ -1,41 +1,51 @@
 <%  var colors = JSON.parse(constants).HEATMAP_COLORS %>
-
+<%  var id_order = JSON.parse(hash).ids %>
+<%  var name_order = JSON.parse(hash).names %>
 <h4><small>
   <span id='dragInfoArea' >- Drag a row to rearrange the table.</span>
   <span class='label label-primary blue'>Similar</span>
   <span class='label label-danger red'>Dissimilar</span>
 </small></h4>
+
+
+
+
+
+<form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/view_selection'>
 <table border='1' id='drag_table' class='heatmap_table center_table' >
 	<tr class='nodrag nodrop' ><td></td>
-	  <td>
+	   <td>
 		  
 		  <div id='ds_save_order_div'>
-			  <button type='button' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
+			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
+			  <imput type='hidden' id='' name='resorted' value='1' >
 		  </div>
-	  </td>
-
-		  <% for(i=1; i<=Object.keys(dm).length; i++) { %>
-		      
-	  <td><div class='cell'></div></td>  
+	   </td>
+		  <% for(i=1; i<=Object.keys(dm).length; i++) { %>		      
+	          <td><div class='cell'></div></td>  
 		  <% } %>
-	</tr>
-		  <%  var n=1; %>
-		  <%  for(x_dname in dm) { %>
-	<tr id='<%= x_dname %>'>
-	  <td  id='<%= x_dname %>' class='dragHandle'><%= n.toString() %></td><td class='dragHandle ds_cell' ><%= x_dname %></td>
-		  <%    for(y_dname in dm) { %>
-		      	
-		  <%      if(x_dname === y_dname){ %>
-		        	<td id='' class='heat_map_td' bgcolor='#000'></td>
-		  <%      }else{ %>
-		  <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname]; %>
-		  <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
+	 </tr>
+		 <% n=1 %>
+		<% for(x in name_order) { %>
+			<% x_dname = name_order[x] %>
+	        <tr id='<%= x_dname %>'>
+	        <td  id='<%= x_dname %>' class='dragHandle'><%= n.toString() %></td>
+	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
+		    <%    for(y in name_order) { %>
+		    <%        y_dname = name_order[y] %>
+		    <%        if(x_dname === y_dname){ %>
+		        	    <td id='' class='heat_map_td' bgcolor='#000'></td>
+		    <%        }else{ %>
+		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname]; %>
+		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
-	  <td id='<%= id %>' class='heat_map_td tooltipx' bgcolor='#<%= colors[svalue] %>'></td>
-		  <%      } %>		        
-		  <%    } %>
+	                    <td id='<%= id %>' class='heat_map_td tooltipx' bgcolor='#<%= colors[svalue] %>'></td>
+		    <%        } %>		        
+		  <%      } %>
+		  <% n++ %>
 	</tr>
-		  <%    n+=1; %>
+		 
 		  <%  } %>
 </table>
+</form>
 		    

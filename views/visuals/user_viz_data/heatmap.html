@@ -1,5 +1,5 @@
 
-<% include ../../add_ins/begin-user_data.ejs %>
+<!--<% include ../../add_ins/begin-user_data.ejs %>
 
 <div class='title'  >Distance Heatmap</div>
 
@@ -7,20 +7,20 @@
 <div id='dragInfoArea' >- Drag a row to rearrange the table.</div>
 
 <span id='chart_tooltip' >
-  <table style='margin:0'>      
-    <tr>       
+  <table style='margin:0'>
+    <tr>
       <td class='xdataset'>X-Dataset:</td>
       <td id='xdataset'></td>
     </tr>
-    <tr>        
+    <tr>
       <td class='ydataset'>Y-Dataset:</td>
       <td id='ydataset'></td>
     </tr>
-    <tr>        
+    <tr>
       <td class='dist'>Distance:</td>
       <td id='dist'></td>
-    </tr>     
-  </table>  
+    </tr>
+  </table>
 </span>
 
 <script src="/javascripts/jquery-2.1.1.min.js"></script>
@@ -29,59 +29,59 @@
 <script src="/javascripts/drag_rows.js"></script>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type='text/javascript'>
-	
 
 
-$(document).ready(function() {  
+
+$(document).ready(function() {
 
     $(".tooltip").tooltip({
-         
-             
-          tip: "#chart_tooltip",          
-          position: 'center below',          
+
+
+          tip: "#chart_tooltip",
+          position: 'center below',
           offset: [-40,0],
-          opacity: 0.95,          
+          opacity: 0.95,
           delay: 0,
 
           onBeforeShow: function(){
-           
+
             var passthru = this.getTrigger().attr("id");
-            
+
             var stuff = passthru.split('-|-')
             dnamex = stuff[0];
             dnamey = stuff[1];
             dist   = stuff[2];
 
-                       
+
             $("#chart_tooltip table td#xdataset").text(dnamex);
             $("#chart_tooltip table td#ydataset").text(dnamey);
             $("#chart_tooltip table td#dist").text(dist);
-                    
-        
-          },        
-          
+
+
+          },
+
          onHide: function(){
-             //this.getTrigger().parents("tr").children().eq("2").css('background-color', 'grey');          
-         
-         }          
-      
-      });         
-      
+             //this.getTrigger().parents("tr").children().eq("2").css('background-color', 'grey');
+
+         }
+
+      });
+
       $(".tooltip").hover(function() {
-         
+
          var cell = $(this);
          //test = cell.parents("tr").cells;
          //alert ('test= '+test)
-  
+
     });
-  
+
  });
 
 
-</script> 
+</script>
   <div class="center" id="footer">
       <% include ../../add_ins/footer.html %>
     </div>
   </div>    <!-- end container_12 -->
 </body>
-</html>
+</html> -->

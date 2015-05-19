@@ -170,7 +170,7 @@ def push_dataset():
         try:
             cur.execute(q4)
             did = cur.lastrowid
-            DATASET_ID_BY_NAME[ds]=did
+            DATASET_ID_BY_NAME[ds]=str(did)
         except:
             print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
             sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
@@ -455,7 +455,7 @@ def put_required_metadata():
         vals = [str(did)]
         fields=[]
         for key in required_metadata_fields:
-            if key in REQ_METADATA_ITEMS[did]:
+            if did in REQ_METADATA_ITEMS and key in REQ_METADATA_ITEMS[did]:
                 vals.append(REQ_METADATA_ITEMS[did][key])
                 fields.append(key)
             
@@ -491,19 +491,20 @@ def put_custom_metadata():
         did = DATASET_ID_BY_NAME[ds]
         cust_keys_array[did]=[]
         
-        for key in CUST_METADATA_ITEMS[did]:
-            if key not in all_cust_keys:
-                all_cust_keys.append(key)
-            if key not in cust_keys_array[did]:
-                cust_keys_array[did].append(key)
-            q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-            q2 += " VALUES("
-            q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-            q2 += "'"+str(key)+"',"
-            q2 += "'varchar(128)',"
-            q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
-            print q2
-            cur.execute(q2)
+        if did in CUST_METADATA_ITEMS:
+            for key in CUST_METADATA_ITEMS[did]:
+                if key not in all_cust_keys:
+                    all_cust_keys.append(key)
+                if key not in cust_keys_array[did]:
+                    cust_keys_array[did].append(key)
+                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 += " VALUES("
+                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                q2 += "'"+str(key)+"',"
+                q2 += "'varchar(128)',"
+                q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+                print q2
+                cur.execute(q2)
         mysql_conn.commit()
         
     
@@ -575,7 +576,7 @@ def get_metadata(indir):
         if line[0] == 'dataset' and line[1] == 'parameterName':
             headers = line
         else:
-            key = line[7].replace('(','').replace(')','').replace(',','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
+            key = line[7].replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
             if key == 'lat':
                 key='latitude'
             if key == 'lon' or key == 'long':
@@ -610,31 +611,32 @@ def get_metadata(indir):
     # now get the data from just the datasets we have in CONFIG.ini
     for ds in CONFIG_ITEMS['datasets']:
         #print ds
-        did = DATASET_ID_BY_NAME[ds]
-        for key in TMP_METADATA_ITEMS[ds]:
-            #print key
+        did = str(DATASET_ID_BY_NAME[ds])
+        if ds in TMP_METADATA_ITEMS:
+            for key in TMP_METADATA_ITEMS[ds]:
+                #print key
             
-            if key in required_metadata_fields:
-                if did in REQ_METADATA_ITEMS:
-                    REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                if key in required_metadata_fields:
+                    if did in REQ_METADATA_ITEMS:
+                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                    else:
+                        REQ_METADATA_ITEMS[did]= {}
+                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                    # #REQ_METADATA_ITEMS['dataset_id'] = []
+                    # for j,value in enumerate(TMP_METADATA_ITEMS[key]):
+                    #     if j in saved_indexes:
+                    #         if key in required_metadata_fields:
+                    #             REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+                    #         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+                    #         did = DATASET_ID_BY_NAME[ds]
+                    #         REQ_METADATA_ITEMS['dataset_id'].append(did)
                 else:
-                    REQ_METADATA_ITEMS[did]= {}
-                    REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
-                # #REQ_METADATA_ITEMS['dataset_id'] = []
-                # for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                #     if j in saved_indexes:
-                #         if key in required_metadata_fields:
-                #             REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                #         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
-                #         did = DATASET_ID_BY_NAME[ds]
-                #         REQ_METADATA_ITEMS['dataset_id'].append(did)
-            else:
                 
-                if did in CUST_METADATA_ITEMS:
-                    CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
-                else:
-                    CUST_METADATA_ITEMS[did]= {}
-                    CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key] 
+                    if did in CUST_METADATA_ITEMS:
+                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                    else:
+                        CUST_METADATA_ITEMS[did]= {}
+                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key] 
                 
                 
                 
