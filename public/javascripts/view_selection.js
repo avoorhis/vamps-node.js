@@ -154,10 +154,10 @@ if (typeof tax_counts_link !=="undefined") {
   	tax_counts_link.addEventListener('click', function () {
     if(typeof tax_table_created == "undefined"){
         get_user_input('counts_table', pi_local.ts);
-		    counts_table_download_btn.disabled = false;
+		counts_table_download_btn.disabled = false;
     }else{
         if(tax_counts_btn.value == 'hide'){
-          toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
+          //toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
         }else{
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
@@ -195,13 +195,15 @@ if (typeof counts_table_download_btn !=="undefined") {
 var metadata_link = document.getElementById('metadata_table_link_id');
 var metadata_btn = document.getElementById('metadata_table_hide_btn');
 var metadata_div = document.getElementById('metadata_local_table_div');
+var metadata_download_btn = document.getElementById('metadata_download_btn');
 if (typeof metadata_link !=="undefined") {
   	metadata_link.addEventListener('click', function () {
       if(typeof metadata_table_created == "undefined"){
         get_user_input('metadata_table', pi_local.ts);
+		metadata_download_btn.disabled = false;
       }else{
         if(metadata_btn.value == 'hide'){
-          toggle_visual_element(metadata_div,'show',metadata_btn);
+          //toggle_visual_element(metadata_div,'show',metadata_btn);
         }else{
           toggle_visual_element(metadata_div,'hide',metadata_btn);
         }
@@ -226,10 +228,12 @@ if (typeof metadata_btn !=="undefined") {
 var piecharts_link = document.getElementById('piecharts_link_id');
 var piecharts_btn = document.getElementById('piecharts_hide_btn');
 var piecharts_div = document.getElementById('piecharts_div');
+var piecharts_download_btn = document.getElementById('piecharts_download_btn');
 if (typeof piecharts_link !=="undefined") {
   piecharts_link.addEventListener('click', function () {
       if(typeof piecharts_created == "undefined"){
         get_user_input('piecharts', pi_local.ts);
+		piecharts_download_btn.disabled = false;
       }else{
         if(piecharts_btn.value == 'hide'){
           toggle_visual_element(piecharts_div,'show',piecharts_btn);
@@ -257,10 +261,12 @@ if (typeof piecharts_btn !=="undefined") {
 var barchart_link = document.getElementById('barcharts_link_id');
 var barcharts_btn = document.getElementById('barcharts_hide_btn');
 var barcharts_div = document.getElementById('barcharts_div');
+var barcharts_download_btn = document.getElementById('barcharts_download_btn');
 if (typeof barchart_link !=="undefined") {
   barchart_link.addEventListener('click', function () {
       if(typeof barcharts_created == "undefined"){
         get_user_input('barcharts', pi_local.ts);
+		barcharts_download_btn.disabled = false;
       }else{
         if(barcharts_btn.value == 'hide'){        
           toggle_visual_element(barcharts_div,'show',barcharts_btn);
@@ -288,10 +294,12 @@ if (typeof barcharts_btn !=="undefined") {
 var dheatmap_link = document.getElementById('dheatmap_link_id');
 var dheatmap_btn = document.getElementById('dheatmap_hide_btn');
 var dheatmap_div = document.getElementById('dheatmap_div');
+var dheatmap_download_btn = document.getElementById('dheatmap_download_btn');
 if (typeof dheatmap_link !=="undefined") {
   dheatmap_link.addEventListener('click', function () {
       if(typeof dheatmap_created == "undefined"){
         get_user_input('dheatmap', pi_local.ts);
+		dheatmap_download_btn.disabled = false;
       }else{
         if(dheatmap_btn.value == 'hide'){        
           toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
@@ -319,10 +327,12 @@ if (typeof dheatmap_btn !== "undefined") {
 var fheatmap_link = document.getElementById('fheatmap_link_id');
 var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
 var fheatmap_div = document.getElementById('fheatmap_div');
+var fheatmap_download_btn = document.getElementById('fheatmap_download_btn');
 if (typeof fheatmap_link !=="undefined") {
   fheatmap_link.addEventListener('click', function () {
       if(typeof fheatmap_created == "undefined"){
         get_user_input('fheatmap', pi_local.ts);
+		fheatmap_download_btn.disable = false;
       }else{
         if(fheatmap_btn.value == 'hide'){        
           toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
@@ -349,10 +359,12 @@ if (typeof fheatmap_btn !== "undefined") {
 var dendrogram_link = document.getElementById('dendrogram_link_id');
 var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
 var dendrogram_div = document.getElementById('dendrogram_div');
+var dendrogram_download_btn = document.getElementById('dendrogram_download_btn');
 if (typeof dendrogram_link !=="undefined") {
   dendrogram_link.addEventListener('click', function () {
       if(typeof dendrogram_created == "undefined"){
         get_user_input('dendrogram', pi_local.ts);
+		dendrogram_download_btn.disable = false;
       }else{
         if(dendrogram_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
@@ -379,10 +391,12 @@ if (typeof dendrogram_btn !== "undefined") {
 var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id');
 var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
 var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
+var dendrogram2_download_btn = document.getElementById('dendrogram2_download_btn');
 if (typeof dendrogram_pdf_link !=="undefined") {
   dendrogram_pdf_link.addEventListener('click', function () {
       if(typeof dendrogram_pdf_created == "undefined"){
         get_user_input('dendrogram_pdf', pi_local.ts);
+		dendrogram2_download_btn.disable = false;
       }else{
         if(dendrogram_pdf_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
@@ -409,10 +423,12 @@ if (typeof dendrogram_pdf_btn !== "undefined") {
 var pcoa_link = document.getElementById('pcoa_link_id');
 var pcoa_btn = document.getElementById('pcoa_hide_btn');
 var pcoa_div = document.getElementById('pcoa_div');
+var pcoa_download_btn = document.getElementById('pcoa_download_btn');
 if (typeof pcoa_link !=="undefined") {
   pcoa_link.addEventListener('click', function () {
       if(typeof pcoa_created == "undefined"){
         get_user_input('pcoa', pi_local.ts);
+		pcoa_download_btn.disable = false;
       }else{
         if(pcoa_btn.value == 'hide'){        
           toggle_visual_element(pcoa_div,'show',pcoa_btn);
@@ -439,12 +455,14 @@ if (typeof pcoa_btn !== "undefined") {
 var geospatial_link = document.getElementById('geospatial_link_id');
 var geospatial_btn = document.getElementById('geospatial_hide_btn');
 var geospatial_div = document.getElementById('map-canvas');
+var geospatial_download_btn = document.getElementById('geospatial_download_btn');
 if (typeof geospatial_link !=="undefined") {
   //google.maps.event.addDomListener(window, 'load', initialize);
 
   geospatial_link.addEventListener('click', function () {
       if(typeof geospatial_created == "undefined"){
           get_user_input('geospatial', pi_local.ts);
+		  geospatial_download_btn.disable = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
           toggle_visual_element(geospatial_div,'show',geospatial_btn);
@@ -471,19 +489,19 @@ if (typeof geospatial_btn !== "undefined") {
 //
 // TEST
 //
-test_link = document.getElementById('test_page_link_id');
-if (typeof test_link !=="undefined") {
-  test_link.addEventListener('click', function () {
-      //alert('here in pc')
-      create_test_page(pi_local.ts);
-  });
-}
-function create_test_page(ts) {
-  
-    var opened = window.open("");
-    opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
-
-}
+// test_link = document.getElementById('test_page_link_id');
+// if (typeof test_link !=="undefined") {
+//   test_link.addEventListener('click', function () {
+//       //alert('here in pc')
+//       create_test_page(pi_local.ts);
+//   });
+// }
+// function create_test_page(ts) {
+//
+//     var opened = window.open("");
+//     opened.document.write("<html><head><title>My title</title></head><body>open in another page:  test</body></html>");
+//
+// }
 
 
 
@@ -756,6 +774,7 @@ function create_geospatial(ts) {
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
 	  geo_div.style.display = 'block';
+	  geo_div.style.height = '900px';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
       var info_line = create_header('geo', pi_local);
@@ -764,7 +783,7 @@ function create_geospatial(ts) {
        
       document.getElementById('pre_geospatial_div').style.display = 'block';
       
-      var markers = [];
+      var loc_data = [];
       var lat_lon_collector = {};
       var latlon;
       
@@ -798,29 +817,28 @@ function create_geospatial(ts) {
         //alert(latlon)
         ds = lat_lon_collector[latlon];
         var latlons =  latlon.split(';');
-        markers.push([ds,latlons[0],latlons[1],z]);
+        loc_data.push([ds,latlons[0],latlons[1],z]);
         z+=1; 
 
       }
 
-      if (markers.length === 0){
+      if (loc_data.length === 0){
           geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
       }else{
-        var center = new google.maps.LatLng(markers[0][2],markers[0][1]); // wants lon, lat order
-
+        var center = new google.maps.LatLng(loc_data[0][1],loc_data[0][2]); 
         var mapCanvas = document.getElementById('map-canvas');
         var mapOptions = {
-          center:center,
-          zoom: 5,
+          center : center,
+          zoom   : 3,
           //zoom: 2,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+          //mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(mapCanvas, mapOptions);
         var infowindow =  new google.maps.InfoWindow({
           content: ''
         });
 
-        setMarkers(map, markers, infowindow);
+        setMarkers(map, loc_data, infowindow);
       }  
 }
 
@@ -830,19 +848,21 @@ function bindInfoWindow(marker, map, infowindow, html) {
     infowindow.open(map, marker); 
   }); 
 } 
-function setMarkers(map, locations,infowindow) {
-  for (var i = 0; i < locations.length; i++) {
+function setMarkers(map, loc_data, infowindow) {
+  for (var i = 0; i < loc_data.length; i++) {
     // create a marker
-    var ds = locations[i];
-    var myLatLng = new google.maps.LatLng(ds[2], ds[1]); // wants lon, lat order
+	 // alert(locations[0])
+    var data = loc_data[i];
+	
+    var myLatLng = new google.maps.LatLng(data[1],data[2]); 
     var marker = new google.maps.Marker({
-      title: ds[0].title,
+      title: data[0],
       position: myLatLng,
       map: map
     });
     
     // add an event listener for this marker
-    bindInfoWindow(marker, map, infowindow, "<p>" + ds[0] + "</p>"); 
+    bindInfoWindow(marker, map, infowindow, "<p>" + data[0] + "</p>"); 
 
   }
 
@@ -1141,7 +1161,6 @@ function create_header(viz, pi) {
   
     if(viz == 'geo'){
       txt = 'Geospatial -- ';
-      txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'bars'){
       txt = 'Barcharts -- ';
     }else if(viz == 'pies'){
