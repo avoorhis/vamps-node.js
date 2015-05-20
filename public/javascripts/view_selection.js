@@ -332,7 +332,7 @@ if (typeof fheatmap_link !=="undefined") {
   fheatmap_link.addEventListener('click', function () {
       if(typeof fheatmap_created == "undefined"){
         get_user_input('fheatmap', pi_local.ts);
-		fheatmap_download_btn.disable = false;
+		fheatmap_download_btn.disabled = false;
       }else{
         if(fheatmap_btn.value == 'hide'){        
           toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
@@ -364,7 +364,7 @@ if (typeof dendrogram_link !=="undefined") {
   dendrogram_link.addEventListener('click', function () {
       if(typeof dendrogram_created == "undefined"){
         get_user_input('dendrogram', pi_local.ts);
-		dendrogram_download_btn.disable = false;
+		dendrogram_download_btn.disabled = false;
       }else{
         if(dendrogram_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
@@ -396,7 +396,7 @@ if (typeof dendrogram_pdf_link !=="undefined") {
   dendrogram_pdf_link.addEventListener('click', function () {
       if(typeof dendrogram_pdf_created == "undefined"){
         get_user_input('dendrogram_pdf', pi_local.ts);
-		dendrogram2_download_btn.disable = false;
+		dendrogram2_download_btn.disabled = false;
       }else{
         if(dendrogram_pdf_btn.value == 'hide'){        
           toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
@@ -428,7 +428,7 @@ if (typeof pcoa_link !=="undefined") {
   pcoa_link.addEventListener('click', function () {
       if(typeof pcoa_created == "undefined"){
         get_user_input('pcoa', pi_local.ts);
-		pcoa_download_btn.disable = false;
+		pcoa_download_btn.disabled = false;
       }else{
         if(pcoa_btn.value == 'hide'){        
           toggle_visual_element(pcoa_div,'show',pcoa_btn);
@@ -462,7 +462,7 @@ if (typeof geospatial_link !=="undefined") {
   geospatial_link.addEventListener('click', function () {
       if(typeof geospatial_created == "undefined"){
           get_user_input('geospatial', pi_local.ts);
-		  geospatial_download_btn.disable = false;
+		  geospatial_download_btn.disabled = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
           toggle_visual_element(geospatial_div,'show',geospatial_btn);
