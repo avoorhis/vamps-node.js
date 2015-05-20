@@ -141,6 +141,8 @@ def go_add(NODE_DATABASE, pid):
     
     counts_lookup = {}
     prefix = os.path.join('../json',NODE_DATABASE+'--datasets')
+    if not os.path.exists(prefix):
+        os.makedirs(prefix)
     print prefix
     dids = get_dataset_ids(pid) 
     # delete old did files if any
@@ -324,18 +326,20 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
 def read_original_taxcounts():
     
     file_path = os.path.join('../json',NODE_DATABASE+'--taxcounts.json')
-    
-    with open(file_path) as data_file:    
+    if os.path.exists(file_path):
+        with open(file_path) as data_file:    
             data = json.load(data_file)
-    
+    else:
+        data = {}
     return data  
 def read_original_metadata():
     
     file_path = os.path.join('../json',NODE_DATABASE+'--metadata.json')
-    
-    with open(file_path) as data_file:    
+    if os.path.exists(file_path):
+        with open(file_path) as data_file:    
             data = json.load(data_file)
-            
+    else:
+        data = {}        
     return data 
 # def read_original_taxcounts(infile):
 #     counts_lookup = {}
