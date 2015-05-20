@@ -156,6 +156,8 @@ def recreate_ranks():
             RANK_COLLECTOR[rank] = row[0]
         else:
             RANK_COLLECTOR[rank] = rank_id
+    q = "INSERT IGNORE into rank (rank,rank_number) VALUES('superkingdom','0'),('NA','0')"
+    cur.execute(q)
     mysql_conn.commit()
     
 def push_dataset():
@@ -279,9 +281,10 @@ def push_taxonomy(args):
     #print tax_file
     
     for line in lines:
-        print line
+        
         if line[0]=='id':
             continue
+        print line
         seq = line[1]
         pj_file = line[2]
         ds = line[3]
@@ -315,7 +318,7 @@ def push_taxonomy(args):
                               'distance':distance
                               }
         q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
-
+        print q1
         cur.execute(q1)
         mysql_conn.commit()
 

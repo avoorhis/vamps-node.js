@@ -206,11 +206,22 @@ console.log('DATABASE: '+NODE_DATABASE+' (see file config/db-connect-xxx.js)')
 // 		    console.log('Finished reading TAXCOUNTS');
 // 	});
 var taxcounts_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--taxcounts.json');
-AllTaxCounts       = require(taxcounts_file);
+try {
+	AllTaxCounts       = require(taxcounts_file);
+}
+catch (e) {
+  console.log(e);
+  AllTaxCounts = {}
+}
 console.log('Loading ALL TAXCOUNTS from: '+taxcounts_file);
 var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
-AllMetadata        = require(meta_file);
-
+try {
+	AllMetadata        = require(meta_file);
+}
+catch (e) {
+  console.log(e);
+  AllMetadata = {}
+}
 
 
 console.log('Loading ALL METADATA from: '+meta_file);
