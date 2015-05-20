@@ -1,5 +1,5 @@
 *.sql
-!schema.sql
+!db_schema.sql
 config/db-connect*
 config/db_vamps_node.sql.gz
 node_modules/
