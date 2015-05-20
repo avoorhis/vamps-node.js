@@ -2,6 +2,7 @@
 !db_schema.sql
 config/db-connect*
 config/db_vamps_node.sql.gz
+config/old/*
 node_modules/
 colony/
 colony-npm/
