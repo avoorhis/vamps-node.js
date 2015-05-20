@@ -516,7 +516,7 @@ def put_custom_metadata():
     q += " `dataset_id` int(11) unsigned NOT NULL,\n"
     for key in all_cust_keys:
         if key != 'dataset_id':
-            q += " `"+key+"` varchar(128) NOT NULL,\n" 
+            q += " `"+key+"` varchar(128) DEFAULT NULL,\n" 
     q += " PRIMARY KEY (`"+custom_table+"_id` ),\n" 
     unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
 
