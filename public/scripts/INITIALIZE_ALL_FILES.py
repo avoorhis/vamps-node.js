@@ -75,8 +75,8 @@ def go(args):
     
     try:
         shutil.rmtree(args.files_prefix)
-        shutil.move(args.taxcounts_file,os.path.join(args.json_dir,NODE_DATABASE+'taxcountsBU.json'))
-        shutil.move(args.metadata_file, os.path.join(args.json_dir,NODE_DATABASE+'metadataBU.json'))
+        shutil.move(args.taxcounts_file,os.path.join(args.json_dir,NODE_DATABASE+'--taxcountsBU.json'))
+        shutil.move(args.metadata_file, os.path.join(args.json_dir,NODE_DATABASE+'--metadataBU.json'))
     except:
         pass
     os.mkdir(args.files_prefix)

@@ -6,9 +6,10 @@
 // };
 
 var toggle_checking_all = function(clicked) {
+  
   $(clicked.parentNode.parentNode).find('input').prop('checked',
      function(idx, oldProp) {
-       return !oldProp;
+	   return !oldProp;
      });
   return false;
 };
