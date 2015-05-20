@@ -91,7 +91,7 @@ Applying new database schema from vamps2 (on vampsdev)
   CREATE TABLE custom_metadata_fields (
     custom_metadata_fields_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     project_id int(11) unsigned NOT NULL,
-    field_name varchar(32) NOT NULL DEFAULT '',
+    field_name varchar(60) NOT NULL DEFAULT '',
     field_type varchar(16) NOT NULL DEFAULT 'varchar(128)',
     example varchar(128) NOT NULL,
     PRIMARY KEY (custom_metadata_fields_id),
