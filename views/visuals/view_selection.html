@@ -100,7 +100,7 @@
           <%        }else{                                                                            %>
                   <td class='td_top'>
                <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
-                    <center><a href='#<%= link_id %>' id='<%= link_id %>'  ><%= name %><br>
+                    <center><a href='#' id='<%= link_id %>'  ><%= name %><br>
                <!-- <input type='button' id='<%= link_id %>' value='pushme'> -->
                       <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
                     </a></center>  
@@ -127,7 +127,7 @@
 	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-default'>download</button>
   </nav>
-  <div name='counts_table_link_id' id='tax_table_div'   class='display_none well overflow_500'></div>
+  <div id='tax_table_div'   class='display_none well overflow_500'></div>
   
   <!-- Metadata -->
   <br>
@@ -139,7 +139,7 @@
 	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div name='metadata_table_link_id' id='metadata_local_table_div' class='display_none well overflow_500'></div>
+  <div id='metadata_local_table_div' class='display_none well overflow_500'></div>
   
   
   <!-- Distance Heatmap -->
@@ -152,7 +152,7 @@
  	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div name='dheatmap' id='reorder_div' class=''><div id='dheatmap_div' class='display_none well'></div></div>
+  <div id='reorder_div' class=''><div id='dheatmap_div' class='display_none well'></div></div>
   
 
 <!-- Frequency Heatmap -->
@@ -165,7 +165,6 @@
  	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='freq_heatmap'></a>
   <div id='fheatmap_div' class='display_none well'></div>
 
 
@@ -180,7 +179,6 @@
 	<button type='button' id='barcharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='barcharts'></a>
   <div id='barcharts_div' class='display_none well'></div>
 
   
@@ -194,7 +192,6 @@
 	<button type='button' id='piecharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='piecharts'></a>
   <div id='piecharts_div' class='display_none well'></div>
   
   <!-- Dendrogram -->
@@ -207,10 +204,9 @@
 	<button type='button' id='dendrogram_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='dendrogram'></a>
   <div id='dendrogram_div'        class='display_none well '></div>
   
-  <!-- Dendrogram png-->
+  <!-- Dendrogram pdf-->
   <br>
   
   <nav id='pre_dendrogram_pdf_div' class="navbar navbar-inverse viz_hidden_div display_none">
@@ -221,7 +217,6 @@
 	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='dendrogram_pdf'></a>
   <div id='dendrogram_pdf_div'        class='display_none well'></div>
 
   <!-- PCoA-->
@@ -234,7 +229,6 @@
 	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='pcoa'></a>
   <div id='pcoa_div'                    class='display_none well'></div> 
 
   <!-- GEOSPATIAL -->
@@ -247,7 +241,6 @@
 	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <a name='geospatial'></a>
   <div id='map-canvas'      class='display_none well '></div> 
   
  
@@ -267,6 +260,7 @@
 
  <script src="https://maps.googleapis.com/maps/api/js"></script>
  <script type='text/javascript' src='/javascripts/tablesort.min.js'></script>
+ <script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
  <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
  <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
