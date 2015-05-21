@@ -1,12 +1,15 @@
 <%  var colors = JSON.parse(constants).HEATMAP_COLORS %>
 <%  var id_order = JSON.parse(hash).ids %>
 <%  var name_order = JSON.parse(hash).names %>
-<h4><small>
-  <span id='dragInfoArea' >- Drag a row to rearrange the table.</span>
-  <span class='label label-primary blue'>Similar</span>
-  <span class='label label-danger red'>Dissimilar</span>
-</small></h4>
 
+<center>
+	<small>
+      <span class='label label-primary blue'>Similar</span>
+      <span class='label label-danger red'>Dissimilar</span>
+      <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
+    </small>
+</center>
+<br>
 
 
 

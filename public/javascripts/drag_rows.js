@@ -55,7 +55,7 @@
       				 }	
     		    } //end of loop        
             ///// debug /////////////////////
-            var debugStr = "** Drag a row to rearrange the table. **";
+            var debugStr = " ** Drag a row to change the dataset order. **";
             
             // this gets the new sample order for saving state between distance_metric changes
             new_sample_order = '';
