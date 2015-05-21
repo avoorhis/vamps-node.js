@@ -4,6 +4,14 @@ $("#metadata_local_table_div").on("click", "#metadata_table", function () {
 });
 
 
+$.fn.scrollView = function () {
+    return this.each(function () {
+        $('html, body').animate({
+            scrollTop: $(this).offset().top -70
+        }, 500);
+    });
+}
+
 // code for tooltips
 
 var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
@@ -150,9 +158,11 @@ var tax_counts_link = document.getElementById('counts_table_link_id');
 var tax_counts_btn = document.getElementById('counts_table_hide_btn');
 var tax_counts_div = document.getElementById('tax_table_div');
 var counts_table_download_btn = document.getElementById('counts_table_download_btn');
+var pre_counts_table_div = document.getElementById('pre_counts_table_div');
 if (typeof tax_counts_link !=="undefined") {
   	tax_counts_link.addEventListener('click', function () {
-    if(typeof tax_table_created == "undefined"){
+    $(pre_counts_table_div).scrollView();
+	if(typeof tax_table_created == "undefined"){
         get_user_input('counts_table', pi_local.ts);
 		counts_table_download_btn.disabled = false;
     }else{
@@ -196,9 +206,13 @@ var metadata_link = document.getElementById('metadata_table_link_id');
 var metadata_btn = document.getElementById('metadata_table_hide_btn');
 var metadata_div = document.getElementById('metadata_local_table_div');
 var metadata_download_btn = document.getElementById('metadata_download_btn');
+var pre_metadata_table_div = document.getElementById('pre_metadata_table_div');
 if (typeof metadata_link !=="undefined") {
   	metadata_link.addEventListener('click', function () {
-      if(typeof metadata_table_created == "undefined"){
+      //alert(window)
+	  //$(window).scrollTo(500);
+	  $(pre_metadata_table_div).scrollView();
+	  if(typeof metadata_table_created == "undefined"){
         get_user_input('metadata_table', pi_local.ts);
 		metadata_download_btn.disabled = false;
       }else{
@@ -229,9 +243,11 @@ var piecharts_link = document.getElementById('piecharts_link_id');
 var piecharts_btn = document.getElementById('piecharts_hide_btn');
 var piecharts_div = document.getElementById('piecharts_div');
 var piecharts_download_btn = document.getElementById('piecharts_download_btn');
+var pre_piecharts_table_div = document.getElementById('pre_piecharts_table_div');
 if (typeof piecharts_link !=="undefined") {
   piecharts_link.addEventListener('click', function () {
-      if(typeof piecharts_created == "undefined"){
+      $(pre_piecharts_table_div).scrollView();
+	  if(typeof piecharts_created == "undefined"){
         get_user_input('piecharts', pi_local.ts);
 		piecharts_download_btn.disabled = false;
       }else{
@@ -262,9 +278,11 @@ var barchart_link = document.getElementById('barcharts_link_id');
 var barcharts_btn = document.getElementById('barcharts_hide_btn');
 var barcharts_div = document.getElementById('barcharts_div');
 var barcharts_download_btn = document.getElementById('barcharts_download_btn');
+var pre_barcharts_table_div = document.getElementById('pre_barcharts_table_div');
 if (typeof barchart_link !=="undefined") {
   barchart_link.addEventListener('click', function () {
-      if(typeof barcharts_created == "undefined"){
+      $(pre_barcharts_table_div).scrollView();
+	  if(typeof barcharts_created == "undefined"){
         get_user_input('barcharts', pi_local.ts);
 		barcharts_download_btn.disabled = false;
       }else{
@@ -295,9 +313,11 @@ var dheatmap_link = document.getElementById('dheatmap_link_id');
 var dheatmap_btn = document.getElementById('dheatmap_hide_btn');
 var dheatmap_div = document.getElementById('dheatmap_div');
 var dheatmap_download_btn = document.getElementById('dheatmap_download_btn');
+var pre_dheatmap_div = document.getElementById('pre_dheatmap_div');
 if (typeof dheatmap_link !=="undefined") {
   dheatmap_link.addEventListener('click', function () {
-      if(typeof dheatmap_created == "undefined"){
+      $(pre_dheatmap_div).scrollView();
+	  if(typeof dheatmap_created == "undefined"){
         get_user_input('dheatmap', pi_local.ts);
 		dheatmap_download_btn.disabled = false;
       }else{
@@ -328,9 +348,11 @@ var fheatmap_link = document.getElementById('fheatmap_link_id');
 var fheatmap_btn = document.getElementById('fheatmap_hide_btn');
 var fheatmap_div = document.getElementById('fheatmap_div');
 var fheatmap_download_btn = document.getElementById('fheatmap_download_btn');
+var pre_fheatmap_div = document.getElementById('pre_fheatmap_div');
 if (typeof fheatmap_link !=="undefined") {
   fheatmap_link.addEventListener('click', function () {
-      if(typeof fheatmap_created == "undefined"){
+      $(pre_fheatmap_div).scrollView();
+	  if(typeof fheatmap_created == "undefined"){
         get_user_input('fheatmap', pi_local.ts);
 		fheatmap_download_btn.disabled = false;
       }else{
@@ -360,9 +382,11 @@ var dendrogram_link = document.getElementById('dendrogram_link_id');
 var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
 var dendrogram_div = document.getElementById('dendrogram_div');
 var dendrogram_download_btn = document.getElementById('dendrogram_download_btn');
+var pre_dendrogram_div = document.getElementById('pre_dendrogram_div');
 if (typeof dendrogram_link !=="undefined") {
   dendrogram_link.addEventListener('click', function () {
-      if(typeof dendrogram_created == "undefined"){
+      $(pre_dendrogram_div).scrollView();
+	  if(typeof dendrogram_created == "undefined"){
         get_user_input('dendrogram', pi_local.ts);
 		dendrogram_download_btn.disabled = false;
       }else{
@@ -386,15 +410,17 @@ if (typeof dendrogram_btn !== "undefined") {
   });
 }
 //
-// DENDROGRAM PNG
+// DENDROGRAM PDF
 //
 var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id');
 var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
 var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
 var dendrogram2_download_btn = document.getElementById('dendrogram2_download_btn');
+var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
 if (typeof dendrogram_pdf_link !=="undefined") {
   dendrogram_pdf_link.addEventListener('click', function () {
-      if(typeof dendrogram_pdf_created == "undefined"){
+      $(pre_dendrogram_pdf_div).scrollView();
+	  if(typeof dendrogram_pdf_created == "undefined"){
         get_user_input('dendrogram_pdf', pi_local.ts);
 		dendrogram2_download_btn.disabled = false;
       }else{
@@ -424,9 +450,11 @@ var pcoa_link = document.getElementById('pcoa_link_id');
 var pcoa_btn = document.getElementById('pcoa_hide_btn');
 var pcoa_div = document.getElementById('pcoa_div');
 var pcoa_download_btn = document.getElementById('pcoa_download_btn');
+var pre_pcoa_div = document.getElementById('pre_pcoa_div');
 if (typeof pcoa_link !=="undefined") {
   pcoa_link.addEventListener('click', function () {
-      if(typeof pcoa_created == "undefined"){
+      $(pre_pcoa_div).scrollView();
+	  if(typeof pcoa_created == "undefined"){
         get_user_input('pcoa', pi_local.ts);
 		pcoa_download_btn.disabled = false;
       }else{
@@ -456,11 +484,12 @@ var geospatial_link = document.getElementById('geospatial_link_id');
 var geospatial_btn = document.getElementById('geospatial_hide_btn');
 var geospatial_div = document.getElementById('map-canvas');
 var geospatial_download_btn = document.getElementById('geospatial_download_btn');
+var pre_geospatial_div = document.getElementById('pre_geospatial_div');
 if (typeof geospatial_link !=="undefined") {
   //google.maps.event.addDomListener(window, 'load', initialize);
-
   geospatial_link.addEventListener('click', function () {
-      if(typeof geospatial_created == "undefined"){
+      $(pre_geospatial_div).scrollView();
+	  if(typeof geospatial_created == "undefined"){
           get_user_input('geospatial', pi_local.ts);
 		  geospatial_download_btn.disabled = false;
       }else{
