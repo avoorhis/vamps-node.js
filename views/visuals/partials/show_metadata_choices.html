@@ -9,7 +9,12 @@
 <table class='tiny_font'><tr>
     <% for (i in req_meta_fields) { %>
        <% if(req_meta_fields[i] in req_meta_found) { %>		   
-		   <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
+		   <% if(req_meta_fields[i] == 'latitude' || req_meta_fields[i] == 'longitude')  { %>
+		   	  <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
+		   <% } else { %>
+		   	  <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
+		   <% } %>
+		   
 		<% }else{ %>
 			<td><input type='checkbox' disabled title='Not Found' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
 		<% } %>   
