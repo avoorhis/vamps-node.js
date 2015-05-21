@@ -15,6 +15,7 @@ var toggle_checking_all = function(clicked) {
 };
 
 var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+  
   if (pr_checkbox.prop('checked')) {
    datasets_per_pr.find('input').prop('checked', true);
   }
