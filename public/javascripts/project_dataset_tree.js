@@ -55,7 +55,7 @@ var uncheck_closed = function(parent_place) {
   // if (!is_visible(parent_place.find('.datasets_per_pr'))) {
   //   parent_place.find('input').prop('checked', false);
   // }
-  if (parent_place.find('.datasets_per_pr').not(":visible")) {
+  if (parent_place.find('.datasets_per_pr').is(":hidden")) {
     parent_place.find('input').prop('checked', false);
   }
 };
@@ -82,7 +82,7 @@ $(document).ready(function () {
       var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
     
     // if (!is_visible(datasets_per_pr)) {
-    if (datasets_per_pr.not(":visible")) {
+    if (datasets_per_pr.is(":hidden")) {
       datasets_per_pr.show();
       minus_img(checkbox.siblings('a').find('img'));
     }
