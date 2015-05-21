@@ -244,10 +244,10 @@ def go_metadata():
 if __name__ == '__main__':
 
     myusage = """
-		./taxcount_metadata_files.py  (
+		./INITIALIZE_ALL_FILES.py  (
         
-        Will ask you to input which database
-        Output will be files json/NODE_DATABASE/<dataset>.json
+        Will ask you to input which database.
+        Output will be files ../json/NODE_DATABASE/<dataset>.json
         each containing taxcounts and metadata from the database
         
         **THIS SCRIPT WILL DELETE AND RE-CREATE ALL THE FILES** for the chosen database.
