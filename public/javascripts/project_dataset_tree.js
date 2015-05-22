@@ -72,17 +72,13 @@ var uncheck_closed = function(parent_place) {
 
 $(document).ready(function () {
    
-
   // by default everything is visible, in case there is no js
   $('.datasets_per_pr').addClass( "display_none" );
   
   // the minus sign should always close the tree AND uncheck all the ds cbs 
   //           the plus sign should always open the tree but not check anything.
-
   //  if the tree is closed the project cb should open AND check all the ds cbs
-
   //  if the tree is open the project cb should toggle on/off the ds cbs
-
   //  The project cb should never itself be checked — just open the tree and check ds (if tree is closed)
   //      and check or uncheck all the ds (if tree is open)
 
@@ -92,24 +88,12 @@ $(document).ready(function () {
     // toggle_checking_all(this);  
     var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');    
     toggle_checking_datasets(this, datasets_per_pr);
-    
-      
     toggle_plus_img(this);
     uncheck_closed($(this.parentNode.parentNode));
     return false;
-    
-  //   $('a.project_toggle').click(function(){
-  //     // e.preventDefault();
-  //     toggle_datasets(this);
-  // //alert(JSON.stringify(this))
-  //     toggle_checking_all(this);
-  //     toggle_plus_img(this);
-  //     uncheck_closed($(this.parentNode.parentNode));
-  //     return false;
     });
   
   // project checkbox
-
   $('input.project_toggle').click(function() {
     
 	  var checkbox = $(this);
