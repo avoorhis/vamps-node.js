@@ -2,37 +2,95 @@
 //  CREATE SINGLE BARCHART on page load
 //
 
+$("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
+      var link = this,
+      html = '';
+      $link = $(this);
+     
+      if (event.type == 'mouseover') {
+        tip.id = link.id;
+        link.id = '';
+        id_items = tip.id.split('-|-');
+        html = "<table><tr>";
+        if(id_items[0] == 'dheatmap') {
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>"+id_items[2]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Distance: "+id_items[3]+"</td>";
+        }else if(id_items[0] == 'frequencies'){
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>"+id_items[2]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+        }else{  // barcharts and piecharts            
+          html += "<td>"+id_items[1]+"</td>";
+          html += "</tr><tr>";
+          html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+        }
+        html += "</tr><table>";
+
+        showTip = setTimeout(function() {
+     
+          $link.data('tipActive', true);
+          
+          tip.position(event);
+     //alert(event.pageX)
+          $liveTip
+          .html('<div>' + html  + '</div>')
+          .fadeOut(0)
+          .fadeIn(200);
+     
+        }, tip.delay);
+      }
+     
+      if (event.type == 'mouseout') {
+        link.id = tip.id || link.id;
+        if ($link.data('tipActive')) {
+          $link.removeData('tipActive');
+          $liveTip.hide();
+        } else {
+          clearTimeout(showTip);
+        }
+      }
+     
+      if (event.type == 'mousemove' && $link.data('tipActive')) {
+        tip.position(event);
+      }
+              
+});              
+
 $(document).ready(function() {  
 
 	    var ts = pi_local.ts;
-        barcharts_created = true;
-		alert(dataset);
+		
         //var info_line = create_header('bars', pi_local);
 		var barcharts_div = document.getElementById('barcharts_div');
 		barcharts_div.style.display = 'block';
-        barcharts_div.innerHTML = 'info_line';
+        barcharts_table_div.innerHTML = get_html(mtx_local);
         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
 
         data = [];
-        for (var p in mtx_local.columns){
-          tmp={};
-          tmp.DatasetName = mtx_local.columns[p].name;
-          for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
-          }
-          data.push(tmp);
-        }
+        // for (var p in mtx_local.columns){
+           tmp={};
+           tmp.DatasetName = mtx_local.dataset;
+           for (var t in mtx_local.rows){
+             tmp[mtx_local.rows[t]] = mtx_local.data[t];
+           }
+           data.push(tmp);
+         
 
       
-        var unit_list = [];
-        // TODO: "'o' is already defined."
-        for (var o in mtx_local.rows){
-          unit_list.push(mtx_local.rows[o].name);
-        }
+        var unit_list = mtx_local.rows;
+       
+        // for (var o in mtx_local.rows){
+      //     unit_list.push(mtx_local.rows[o].name);
+      //   }
         
 
-        var ds_count = mtx_local.shape[1];      
+        var ds_count = 1;      
         var bar_height = 15;
         var props = get_image_properties(bar_height, ds_count); 
         //console.log(props)
@@ -40,7 +98,7 @@ $(document).ready(function() {
           .range( get_colors(unit_list) );
 
         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
-
+//alert(color);
         
 
         data.forEach(function(d) {
@@ -48,7 +106,7 @@ $(document).ready(function() {
           d.unitObj = color.domain().map(function(name) { 
             return { name: name, x0: x0, x1: x0 += +d[name] }; 
           });
-          //console.log(d.unitObj);
+          
           d.total = d.unitObj[d.unitObj.length - 1].x1;
           //console.log(d.total);
         });
@@ -68,7 +126,18 @@ $(document).ready(function() {
         create_svg_object(props, color, data, ts);
         
 })
-
+function get_html(obj){
+	
+	var html ='';
+	html += "<table class='table'>";
+	html += '<tr><td>Taxonomy</td><td>Count</td></tr>';
+	for(n in obj.rows){
+		html += '<tr><td>'+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
+	}
+	html += '</table>';
+	
+	return html;
+}
 //
 //
 //
@@ -86,41 +155,14 @@ function create_svg_object(props, color, data, ts) {
       props.y.domain(data.map(function(d) { return d.DatasetName; }));
       props.x.domain([0, 100]);
 
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(props.yAxis)
-          .selectAll("text")  
-             .style("text-anchor", "end")
-             .attr("dx", "-.5em")
-             .attr("dy", "1.4em"); 
-             
-             
-      svg.append("g")
-          .attr("class", "x axis")
-          .call(props.xAxis)
-        .append("text")
-          .attr("x", 650)
-          .attr("dy", ".8em")
-          .style("text-anchor", "end")
-          .text("Percent");
-     
-     
-      
 
-      // var datasetBar = svg.selectAll("a")
-      //     .data(data)
-      //   .enter().append("a")
-      //   .attr("xlink:href",  'http://www.google.com' )
-      //   .append("g")
-      //     .attr("class", "g")
-      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
           .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'bar_single?ds='+d.DatasetName+'&ts='+ts;} )
+        .attr("xlink:xlink:href",  function(d) { return 'sequences?ds='+d.DatasetName+'&ts='+ts;} )
 	    .attr("target", '_blank' );
 
       datasetBar.selectAll("rect")
@@ -155,9 +197,9 @@ function get_image_properties(bar_height, ds_count) {
   var props = {};
   
   //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-  props.margin = {top: 20, right: 100, bottom: 20, left: 300};
+  props.margin = {top: 20, right: 100, bottom: 20, left: 100};
   
-  var plot_width = 650;
+  var plot_width = 600;
   var gap = 2;  // gap on each side of bar
   props.width = plot_width + props.margin.left + props.margin.right;
   props.height = (ds_count * (bar_height + 2 * gap)) + 125;

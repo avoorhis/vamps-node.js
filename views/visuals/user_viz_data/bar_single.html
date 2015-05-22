@@ -4,7 +4,7 @@
   var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local = JSON.parse('<%- matrix %>');
   var dataset = '<%= dataset %>';
-  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
+  
   var user_local  = '<%= user.username %>';
 </script>
   
@@ -12,7 +12,15 @@
 <div class='subtitle'><%= subtitle %></div>
 <br>
 
-<div id='barcharts_div' class='display_none well'><% html %></div>
+<div id='my_div' class='well'>
+<center>
+	<div id='barcharts_div' class=''></div>
+</center>
+</div>
+
+
+<div id='barcharts_table_div' class=''></div>
+
 
 <span id='chart_tooltip' >
   <table style='margin:0'>      
