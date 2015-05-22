@@ -3,7 +3,7 @@
 <div class='title'><%= title %></div>
 <div class='subtitle'><%= subtitle %></div>
 <br>
-<div id='dataviz-container' class=''><%- html %></div>
+<div id='dataviz-container' class=''></div>
 
 
 <span id='chart_tooltip' >
@@ -20,9 +20,7 @@
   </table>  
 </span>
 </div>  <!-- end grid_9  content -->
-<script src="/javascripts/jquery-2.1.1.min.js"></script>
-<script src="/javascripts/jquery.tooltip.js"></script>
-<script type="text/javascript" src="/javascripts/global.js"></script>
+
 
 
 <script type='text/javascript'>
@@ -92,12 +90,9 @@ $(document).ready(function() {
 
 </script> 
 
+  <% include ../../add_ins/end.ejs %>
 
 
-    <div class="center" id="footer">
-      <% include ../../add_ins/footer.html %>
-    </div>
-  </div>    <!-- end container_12 -->
 </body>
 </html>
 
