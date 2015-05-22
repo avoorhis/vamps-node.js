@@ -511,7 +511,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 
 });
 //
-// P I E C H A R T  -- S I N G L E
+// B A R - C H A R T  -- S I N G L E
 //
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
@@ -522,14 +522,35 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 	var html  = 'My HTML';
 
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
-
-    res.render('visuals/user_viz_data/bar_single', {
+    
+    var new_matrix={}
+	new_matrix.rows = [];
+	new_matrix.dataset = ds_name;
+	new_matrix.data = []
+	var idx = -1;
+	
+	for(d in biom_matrix.columns){
+		if(biom_matrix.columns[d].name == ds_name){
+			idx = d;
+			break;
+		}
+	}
+	console.log('d '+d.toString())
+	new_matrix.total = 0
+	for(n in biom_matrix.data){
+		new_matrix.rows.push(biom_matrix.rows[n].name)
+		new_matrix.data.push(biom_matrix.data[n][d])
+		new_matrix.total += biom_matrix.data[n][d]
+	}
+	console.log(JSON.stringify(new_matrix))
+	
+	res.render('visuals/user_viz_data/bar_single', {
           title: 'Dataset Taxonomic Data',
           subtitle: ds_name,
           ts: ts || 'default_timestamp',
-		  matrix    :           JSON.stringify(biom_matrix),
+		  matrix    :           JSON.stringify(new_matrix),
 		  post_items:           JSON.stringify(visual_post_items),
-		  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
           dataset: ds_name,
           html: html,
           user: req.user
