@@ -109,8 +109,10 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Frequency Heatmap (R-pdf)',  thumb:'/images/visuals/frequency_heatmap.png', 	link:'user_viz_data/frequency_heatmap', id:'fheatmap_link_id'  },
     {name:'Stackbar Charts (d3-svg)',   thumb:'/images/visuals/barcharts.png',   		link:'user_viz_data/barcharts',     id:'barcharts_link_id'      },
     {name:'Pie Charts (d3-svg)',        thumb:'/images/visuals/pie_charts.png',  		link:'user_viz_data/piecharts',     id:'piecharts_link_id'    },
-    {name:'Dendrogram (d3-svg)',        thumb:'/images/visuals/dendrogram.png',			link:'user_viz_data/dendrogram',    id:'dendrogram_link_id'    },
+    {name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',			link:'user_viz_data/dendrogram',    id:'dendrogram1_link_id'    },
+	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram2_link_id'    },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram_pdf_link_id'    },
+	
     {name:'PCoA Analyses (R-pdf)',      thumb:'/images/visuals/pcoa.png',        		link:'user_viz_data/pcoa',          id: 'pcoa_link_id'    },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',		link:'user_viz_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    		link:'user_viz_data/metadata_table',id:'metadata_table_link_id'     },

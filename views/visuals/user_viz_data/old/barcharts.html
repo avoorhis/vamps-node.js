@@ -1,105 +1,17 @@
-<% include ../../add_ins/begin-user_data.ejs %>
-
-<div class='title'>Stacked Bar Charts</div>
-
-<div id='dataviz-container' class=''><%- html %></div>
 
 
-<span id='chart_tooltip' >
-  <table style='margin:0'>      
-    
-    <tr>        
-      <td class='tax'>Tax:</td>
-      <td id='unit'></td>
-    </tr>
-    <tr>        
-      <td class='knt'>Count:</td>
-      <td id='count'></td>
-    </tr>     
-  </table>  
-</span>
-</div>  <!-- end grid_9  content -->
-<script src="/javascripts/jquery-2.1.1.min.js"></script>
-<script src="/javascripts/jquery.tooltip.js"></script>
-<script type="text/javascript" src="/javascripts/global.js"></script>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
 
 
-<script type='text/javascript'>
-			// $('.tip').tipsy({ 
-   //      	gravity: 'w', 
-   //      	html: true, 
-   //      	title: function() {
-   //        	var items = this.tip.split('---'); 
-   //        	var dname = items[0], uname = items[1], count= items[2]; 
-   //        	var txt = dname+'<br>'; 
-   //     			txt += uname+'<br>'; 
-   //      		txt += 'count: '+count; 
-   //      		return txt 
-   //      	}
-   //    });		
-
-
-$(document).ready(function() {  
-
-    $(".tooltip").tooltip({
-         
-             
-          tip: "#chart_tooltip",          
-          position: 'center below',          
-          offset: [-30,0],
-          opacity: 0.95,          
-          delay: 0,
-
-          onBeforeShow: function(){
-           
-            var passthru = this.getTrigger().attr("id");
-            
-            var stuff = passthru.split('-|-')
-            //dname = stuff[0];
-            var uname = stuff[0];
-            var cnt = stuff[1];
-            var pct   = stuff[2];
-            var count;
-            if(cnt == 0) {
-                count = cnt.toString();
-            }else{
-                count = cnt + ' ('+pct+' %)'
-            }
-            
-           
-            //$("#chart_tooltip table td#dataset").text(dname);
-            $("#chart_tooltip table td#unit").text(uname); 
-            $("#chart_tooltip table td#count").text(count);
-                    
-        
-          },        
-          
-         onHide: function(){
-             //this.getTrigger().parents("tr").children().eq("2").css('background-color', 'grey');          
-         
-         }          
-      
-      });         
-      
-      $(".tooltip").hover(function() {
-         
-         var cell = $(this);
-         //test = cell.parents("tr").cells;
-         //alert ('test= '+test)
-  
-    });
-  
- });
-
-
-</script> 
-
-
-
-    <div class="center" id="footer">
-      <% include ../../add_ins/footer.html %>
-    </div>
-  </div>    <!-- end container_12 -->
+<script>
+ datasetsCollection.fetch();
+</script>
 </body>
 </html>
 
