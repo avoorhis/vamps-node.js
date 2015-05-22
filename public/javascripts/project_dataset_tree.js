@@ -87,7 +87,8 @@ $(document).ready(function () {
   //      and check or uncheck all the ds (if tree is open)
 
   // minus_plus_sign
-
+  $('a.project_toggle').click(function(){
+    toggle_datasets(this);
   //   $('a.project_toggle').click(function(){
   //     // e.preventDefault();
   //     toggle_datasets(this);
@@ -96,7 +97,7 @@ $(document).ready(function () {
   //     toggle_plus_img(this);
   //     uncheck_closed($(this.parentNode.parentNode));
   //     return false;
-  //   });
+    });
   
   // project checkbox
 
