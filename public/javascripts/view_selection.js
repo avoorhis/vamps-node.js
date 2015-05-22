@@ -1008,8 +1008,9 @@ function create_piecharts(ts) {
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
         .append("a")
-        .attr("xlink:xlink:href", function(d,i) { return 'piechart_single?ds='+myjson_obj.names[i]+'&ts='+ts;} );
-
+        .attr("xlink:xlink:href", function(d,i) { return 'bar_single?ds='+myjson_obj.names[i]+'&ts='+ts;} )
+		.attr("target", '_blank' );
+		
     pies.selectAll("path")
         .data(d3.layout.pie())
         .enter().append("path")
@@ -1199,7 +1200,8 @@ function create_svg_object(props, color, data, ts) {
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
           .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'piechart_single?ds='+d.DatasetName+'&ts='+ts;} );
+        .attr("xlink:xlink:href",  function(d) { return 'bar_single?ds='+d.DatasetName+'&ts='+ts;} )
+	    .attr("target", '_blank' );
 
       datasetBar.selectAll("rect")
      //     .append("a")
