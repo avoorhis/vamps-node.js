@@ -113,7 +113,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
-		locals: {flash: req.flash('infomessage')},
+		                          locals: {flash: req.flash('infomessage')},
                                   infomessage   : req.flash('infomessage','Dataset order is updated!')
                    });
     
@@ -485,9 +485,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 				  skipBranchLengthScaling: true
 				});
 			}
-			  	
-			  
-			
+
 			console.log('Newick2 ')
 			
 			console.log('Newick3 ')
@@ -515,21 +513,25 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 //
 // P I E C H A R T  -- S I N G L E
 //
-router.get('/piechart_single', helpers.isLoggedIn, function(req, res) {
+router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
     var ds_name = myurl.query.ds;
     //var html  = COMMON.start_visuals_html('piechart');
+	var html  = 'My HTML';
 
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
-    res.render('visuals/user_viz_data/piechart_single', {
-          title: 'VAMPS Single PieChart:',
+    res.render('visuals/user_viz_data/bar_single', {
+          title: 'Dataset Taxonomic Data',
           subtitle: ds_name,
-          timestamp: ts || 'default_timestamp',
+          ts: ts || 'default_timestamp',
+		  matrix    :           JSON.stringify(biom_matrix),
+		  post_items:           JSON.stringify(visual_post_items),
+		  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
           dataset: ds_name,
-          //html: html,
+          html: html,
           user: req.user
         });
 
