@@ -89,6 +89,11 @@ $(document).ready(function () {
   // minus_plus_sign
   $('a.project_toggle').click(function(){
     toggle_datasets(this);
+    // toggle_checking_all(this);  
+    var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');    
+    toggle_checking_datasets(this, datasets_per_pr);
+    
+      
     toggle_plus_img(this);
     uncheck_closed($(this.parentNode.parentNode));
     return false;
