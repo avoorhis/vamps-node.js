@@ -161,7 +161,7 @@ var counts_table_download_btn = document.getElementById('counts_table_download_b
 var pre_counts_table_div = document.getElementById('pre_counts_table_div');
 if (typeof tax_counts_link !=="undefined") {
   	tax_counts_link.addEventListener('click', function () {
-    $(pre_counts_table_div).scrollView();
+    
 	if(typeof tax_table_created == "undefined"){
         get_user_input('counts_table', pi_local.ts);
 		counts_table_download_btn.disabled = false;
@@ -172,6 +172,7 @@ if (typeof tax_counts_link !=="undefined") {
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
     }
+	$(pre_counts_table_div).scrollView();
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
@@ -211,7 +212,7 @@ if (typeof metadata_link !=="undefined") {
   	metadata_link.addEventListener('click', function () {
       //alert(window)
 	  //$(window).scrollTo(500);
-	  $(pre_metadata_table_div).scrollView();
+	  
 	  if(typeof metadata_table_created == "undefined"){
         get_user_input('metadata_table', pi_local.ts);
 		metadata_download_btn.disabled = false;
@@ -222,7 +223,7 @@ if (typeof metadata_link !=="undefined") {
           toggle_visual_element(metadata_div,'hide',metadata_btn);
         }
       }
-      
+      $(pre_metadata_table_div).scrollView();
   });
 }
 if (typeof metadata_btn !=="undefined") {
@@ -246,7 +247,7 @@ var piecharts_download_btn = document.getElementById('piecharts_download_btn');
 var pre_piecharts_table_div = document.getElementById('pre_piecharts_table_div');
 if (typeof piecharts_link !=="undefined") {
   piecharts_link.addEventListener('click', function () {
-      $(pre_piecharts_table_div).scrollView();
+      
 	  if(typeof piecharts_created == "undefined"){
         get_user_input('piecharts', pi_local.ts);
 		piecharts_download_btn.disabled = false;
@@ -257,7 +258,7 @@ if (typeof piecharts_link !=="undefined") {
           toggle_visual_element(piecharts_div,'hide',piecharts_btn);
         }
       }
-      
+      $(pre_piecharts_table_div).scrollView();
   });
 }
 if (typeof piecharts_btn !=="undefined") {
@@ -281,7 +282,7 @@ var barcharts_download_btn = document.getElementById('barcharts_download_btn');
 var pre_barcharts_table_div = document.getElementById('pre_barcharts_table_div');
 if (typeof barchart_link !=="undefined") {
   barchart_link.addEventListener('click', function () {
-      $(pre_barcharts_table_div).scrollView();
+      
 	  if(typeof barcharts_created == "undefined"){
         get_user_input('barcharts', pi_local.ts);
 		barcharts_download_btn.disabled = false;
@@ -292,7 +293,7 @@ if (typeof barchart_link !=="undefined") {
           toggle_visual_element(barcharts_div,'hide',barcharts_btn);
         }
       }
-      
+      $(pre_barcharts_table_div).scrollView();
   });
 }
 if (typeof barcharts_btn !=="undefined") {
@@ -316,7 +317,7 @@ var dheatmap_download_btn = document.getElementById('dheatmap_download_btn');
 var pre_dheatmap_div = document.getElementById('pre_dheatmap_div');
 if (typeof dheatmap_link !=="undefined") {
   dheatmap_link.addEventListener('click', function () {
-      $(pre_dheatmap_div).scrollView();
+      
 	  if(typeof dheatmap_created == "undefined"){
         get_user_input('dheatmap', pi_local.ts);
 		dheatmap_download_btn.disabled = false;
@@ -327,7 +328,7 @@ if (typeof dheatmap_link !=="undefined") {
           toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
         }
       }
-      
+      $(pre_dheatmap_div).scrollView();
   });
 }
 if (typeof dheatmap_btn !== "undefined") {
@@ -351,7 +352,7 @@ var fheatmap_download_btn = document.getElementById('fheatmap_download_btn');
 var pre_fheatmap_div = document.getElementById('pre_fheatmap_div');
 if (typeof fheatmap_link !=="undefined") {
   fheatmap_link.addEventListener('click', function () {
-      $(pre_fheatmap_div).scrollView();
+      
 	  if(typeof fheatmap_created == "undefined"){
         get_user_input('fheatmap', pi_local.ts);
 		fheatmap_download_btn.disabled = false;
@@ -361,7 +362,8 @@ if (typeof fheatmap_link !=="undefined") {
         }else{
           toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
         }
-      }      
+      }  
+	  $(pre_fheatmap_div).scrollView();    
   });
 }
 if (typeof fheatmap_btn !== "undefined") {
@@ -385,7 +387,7 @@ var dendrogram_download_btn = document.getElementById('dendrogram_download_btn')
 var pre_dendrogram_div = document.getElementById('pre_dendrogram_div');
 if (typeof dendrogram_link !=="undefined") {
   dendrogram_link.addEventListener('click', function () {
-      $(pre_dendrogram_div).scrollView();
+      
 	  if(typeof dendrogram_created == "undefined"){
         get_user_input('dendrogram', pi_local.ts);
 		dendrogram_download_btn.disabled = false;
@@ -396,7 +398,7 @@ if (typeof dendrogram_link !=="undefined") {
           toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
         }
       }
-      
+	  $(pre_dendrogram_div).scrollView();
   });
 }
 if (typeof dendrogram_btn !== "undefined") {
@@ -419,7 +421,7 @@ var dendrogram2_download_btn = document.getElementById('dendrogram2_download_btn
 var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
 if (typeof dendrogram_pdf_link !=="undefined") {
   dendrogram_pdf_link.addEventListener('click', function () {
-      $(pre_dendrogram_pdf_div).scrollView();
+      
 	  if(typeof dendrogram_pdf_created == "undefined"){
         get_user_input('dendrogram_pdf', pi_local.ts);
 		dendrogram2_download_btn.disabled = false;
@@ -430,7 +432,7 @@ if (typeof dendrogram_pdf_link !=="undefined") {
           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
         }
       }
-      
+      $(pre_dendrogram_pdf_div).scrollView();
   });
 }
 if (typeof dendrogram_pdf_btn !== "undefined") {
@@ -453,7 +455,7 @@ var pcoa_download_btn = document.getElementById('pcoa_download_btn');
 var pre_pcoa_div = document.getElementById('pre_pcoa_div');
 if (typeof pcoa_link !=="undefined") {
   pcoa_link.addEventListener('click', function () {
-      $(pre_pcoa_div).scrollView();
+      
 	  if(typeof pcoa_created == "undefined"){
         get_user_input('pcoa', pi_local.ts);
 		pcoa_download_btn.disabled = false;
@@ -463,7 +465,8 @@ if (typeof pcoa_link !=="undefined") {
         }else{
           toggle_visual_element(pcoa_div,'hide',pcoa_btn);
         }
-      }      
+      } 
+	  $(pre_pcoa_div).scrollView();     
   });
 }
 if (typeof pcoa_btn !== "undefined") {
@@ -488,7 +491,7 @@ var pre_geospatial_div = document.getElementById('pre_geospatial_div');
 if (typeof geospatial_link !=="undefined") {
   //google.maps.event.addDomListener(window, 'load', initialize);
   geospatial_link.addEventListener('click', function () {
-      $(pre_geospatial_div).scrollView();
+      
 	  if(typeof geospatial_created == "undefined"){
           get_user_input('geospatial', pi_local.ts);
 		  geospatial_download_btn.disabled = false;
@@ -498,7 +501,8 @@ if (typeof geospatial_link !=="undefined") {
         }else{
           toggle_visual_element(geospatial_div,'hide',geospatial_btn);
         }
-      }      
+      } 
+	  $(pre_geospatial_div).scrollView();     
   });
 }
 if (typeof geospatial_btn !== "undefined") {
