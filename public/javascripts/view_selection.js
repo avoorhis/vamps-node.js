@@ -253,7 +253,7 @@ if (typeof piecharts_link !=="undefined") {
 		piecharts_download_btn.disabled = false;
       }else{
         if(piecharts_btn.value == 'hide'){
-          toggle_visual_element(piecharts_div,'show',piecharts_btn);
+          //toggle_visual_element(piecharts_div,'show',piecharts_btn);
         }else{
           toggle_visual_element(piecharts_div,'hide',piecharts_btn);
         }
@@ -288,7 +288,7 @@ if (typeof barchart_link !=="undefined") {
 		barcharts_download_btn.disabled = false;
       }else{
         if(barcharts_btn.value == 'hide'){        
-          toggle_visual_element(barcharts_div,'show',barcharts_btn);
+          //toggle_visual_element(barcharts_div,'show',barcharts_btn);
         }else{
           toggle_visual_element(barcharts_div,'hide',barcharts_btn);
         }
@@ -323,7 +323,7 @@ if (typeof dheatmap_link !=="undefined") {
 		dheatmap_download_btn.disabled = false;
       }else{
         if(dheatmap_btn.value == 'hide'){        
-          toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
+          //toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
         }else{
           toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
         }
@@ -358,7 +358,7 @@ if (typeof fheatmap_link !=="undefined") {
 		fheatmap_download_btn.disabled = false;
       }else{
         if(fheatmap_btn.value == 'hide'){        
-          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+          //toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
         }else{
           toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
         }
@@ -393,7 +393,7 @@ if (typeof dendrogram_link !=="undefined") {
 		dendrogram_download_btn.disabled = false;
       }else{
         if(dendrogram_btn.value == 'hide'){        
-          toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+          //toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
         }else{
           toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
         }
@@ -427,7 +427,7 @@ if (typeof dendrogram_pdf_link !=="undefined") {
 		dendrogram2_download_btn.disabled = false;
       }else{
         if(dendrogram_pdf_btn.value == 'hide'){        
-          toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
+          //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
         }else{
           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
         }
@@ -461,7 +461,7 @@ if (typeof pcoa_link !=="undefined") {
 		pcoa_download_btn.disabled = false;
       }else{
         if(pcoa_btn.value == 'hide'){        
-          toggle_visual_element(pcoa_div,'show',pcoa_btn);
+          //toggle_visual_element(pcoa_div,'show',pcoa_btn);
         }else{
           toggle_visual_element(pcoa_div,'hide',pcoa_btn);
         }
@@ -497,7 +497,7 @@ if (typeof geospatial_link !=="undefined") {
 		  geospatial_download_btn.disabled = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
-          toggle_visual_element(geospatial_div,'show',geospatial_btn);
+         // toggle_visual_element(geospatial_div,'show',geospatial_btn);
         }else{
           toggle_visual_element(geospatial_div,'hide',geospatial_btn);
         }
