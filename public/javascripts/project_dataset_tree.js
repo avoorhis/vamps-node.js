@@ -74,7 +74,7 @@ $(document).ready(function () {
    
 
   // by default everything is visible, in case there is no js
-  // $('.datasets_per_pr').addClass( "display_none" );
+  $('.datasets_per_pr').addClass( "display_none" );
   
   // the minus sign should always close the tree AND uncheck all the ds cbs 
   //           the plus sign should always open the tree but not check anything.
