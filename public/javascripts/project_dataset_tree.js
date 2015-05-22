@@ -14,8 +14,7 @@ var toggle_checking_all = function(clicked) {
   return false;
 };
 
-var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
-  
+var toggle_checking_datasets_by_pr = function(pr_checkbox, datasets_per_pr) {
   if (pr_checkbox.prop('checked')) {
    datasets_per_pr.find('input').prop('checked', true);
   }
@@ -23,6 +22,16 @@ var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
    datasets_per_pr.find('input').prop('checked', false);
   }
 };
+
+var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+  if (datasets_per_pr.find('input').prop('checked')) {
+    datasets_per_pr.find('input').prop('checked', false);
+  }
+  else {
+    datasets_per_pr.find('input').prop('checked', true);
+  }
+};
+
 
 var toggle_datasets = function(clicked) {
   $(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
@@ -66,23 +75,47 @@ $(document).ready(function () {
 
   // by default everything is visible, in case there is no js
   $('.datasets_per_pr').addClass( "display_none" );
+  
+  // the minus sign should always close the tree AND uncheck all the ds cbs 
+  //           the plus sign should always open the tree but not check anything.
 
+  //  if the tree is closed the project cb should open AND check all the ds cbs
+
+  //  if the tree is open the project cb should toggle on/off the ds cbs
+
+  //  The project cb should never itself be checked — just open the tree and check ds (if tree is closed)
+  //      and check or uncheck all the ds (if tree is open)
+
+  // minus_plus_sign
   $('a.project_toggle').click(function(){
-    // e.preventDefault();
     toggle_datasets(this);
-	//alert(JSON.stringify(this))
-    toggle_checking_all(this);
+    // toggle_checking_all(this);  
+    var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');    
+    toggle_checking_datasets(this, datasets_per_pr);
+    
+      
     toggle_plus_img(this);
     uncheck_closed($(this.parentNode.parentNode));
     return false;
-  });
+    
+  //   $('a.project_toggle').click(function(){
+  //     // e.preventDefault();
+  //     toggle_datasets(this);
+  // //alert(JSON.stringify(this))
+  //     toggle_checking_all(this);
+  //     toggle_plus_img(this);
+  //     uncheck_closed($(this.parentNode.parentNode));
+  //     return false;
+    });
+  
+  // project checkbox
 
   $('input.project_toggle').click(function() {
     
 	  var checkbox = $(this);
-      var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
+    $(this).prop('checked', false)
+    var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
     
-    // if (!is_visible(datasets_per_pr)) {
     if (datasets_per_pr.is(":hidden")) {
       datasets_per_pr.show();
       minus_img(checkbox.siblings('a').find('img'));
