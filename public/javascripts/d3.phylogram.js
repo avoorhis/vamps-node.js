@@ -1,4 +1,3 @@
-var d3 = require("d3");
 /*
   d3.phylogram.js
   Wrapper around a d3-based phylogram (tree where branch lengths are scaled)
@@ -71,7 +70,7 @@ var d3 = require("d3");
   d3.phylogram.radialRightAngleDiagonal()
     d3.phylogram.rightAngleDiagonal for radial layouts.
 */
-
+var d3 = require("d3");
 if (!d3) { throw "d3 wasn't included!"};
 (function() {
   d3.phylogram = {}

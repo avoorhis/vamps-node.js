@@ -281,11 +281,11 @@ def get_json(node):
 def pcoa(args, dist):
     from cogent.cluster.metric_scaling import PCoA
     PCoA_result = PCoA(dist)
-    print PCoA_result
+    #print PCoA_result
     #dt = np.dtype(float)
     #print type(PCoA_result)
     a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
-    print a
+    
     json_array = {}
     json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
     json_array["P2"] = a[:,3].tolist()[:-2]
@@ -295,6 +295,7 @@ def pcoa(args, dist):
     #json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
+    # sprint json_array
     return json_array
     #return a
 #
@@ -331,7 +332,7 @@ def pcoa_pdf(args, data):
 		
 		ds_order = data['names']
 		
-		color_choices = ['b','g','r','c','m','y','k','w']  # limited to 8 distinct colors
+		color_choices = ['b','g','r','c','m','y','k','w']  # currently limited to 8 distinct colors
 		meta_dict = {}
 		#val_lookup = {}
 		#colors = {}

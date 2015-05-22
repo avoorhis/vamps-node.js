@@ -161,9 +161,9 @@ var counts_table_download_btn = document.getElementById('counts_table_download_b
 var pre_counts_table_div = document.getElementById('pre_counts_table_div');
 if (typeof tax_counts_link !=="undefined") {
   	tax_counts_link.addEventListener('click', function () {
-    $(pre_counts_table_div).scrollView();
+    
 	if(typeof tax_table_created == "undefined"){
-        get_user_input('counts_table', pi_local.ts);
+        create_viz('counts_table', pi_local.ts);
 		counts_table_download_btn.disabled = false;
     }else{
         if(tax_counts_btn.value == 'hide'){
@@ -172,6 +172,7 @@ if (typeof tax_counts_link !=="undefined") {
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
     }
+	$(pre_counts_table_div).scrollView();
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
@@ -211,9 +212,9 @@ if (typeof metadata_link !=="undefined") {
   	metadata_link.addEventListener('click', function () {
       //alert(window)
 	  //$(window).scrollTo(500);
-	  $(pre_metadata_table_div).scrollView();
+	  
 	  if(typeof metadata_table_created == "undefined"){
-        get_user_input('metadata_table', pi_local.ts);
+        create_viz('metadata_table', pi_local.ts);
 		metadata_download_btn.disabled = false;
       }else{
         if(metadata_btn.value == 'hide'){
@@ -222,7 +223,7 @@ if (typeof metadata_link !=="undefined") {
           toggle_visual_element(metadata_div,'hide',metadata_btn);
         }
       }
-      
+      $(pre_metadata_table_div).scrollView();
   });
 }
 if (typeof metadata_btn !=="undefined") {
@@ -246,18 +247,18 @@ var piecharts_download_btn = document.getElementById('piecharts_download_btn');
 var pre_piecharts_table_div = document.getElementById('pre_piecharts_table_div');
 if (typeof piecharts_link !=="undefined") {
   piecharts_link.addEventListener('click', function () {
-      $(pre_piecharts_table_div).scrollView();
+      
 	  if(typeof piecharts_created == "undefined"){
-        get_user_input('piecharts', pi_local.ts);
+        create_viz('piecharts', pi_local.ts);
 		piecharts_download_btn.disabled = false;
       }else{
         if(piecharts_btn.value == 'hide'){
-          toggle_visual_element(piecharts_div,'show',piecharts_btn);
+          //toggle_visual_element(piecharts_div,'show',piecharts_btn);
         }else{
           toggle_visual_element(piecharts_div,'hide',piecharts_btn);
         }
       }
-      
+      $(pre_piecharts_table_div).scrollView();
   });
 }
 if (typeof piecharts_btn !=="undefined") {
@@ -281,18 +282,18 @@ var barcharts_download_btn = document.getElementById('barcharts_download_btn');
 var pre_barcharts_table_div = document.getElementById('pre_barcharts_table_div');
 if (typeof barchart_link !=="undefined") {
   barchart_link.addEventListener('click', function () {
-      $(pre_barcharts_table_div).scrollView();
+      
 	  if(typeof barcharts_created == "undefined"){
-        get_user_input('barcharts', pi_local.ts);
+        create_viz('barcharts', pi_local.ts);
 		barcharts_download_btn.disabled = false;
       }else{
         if(barcharts_btn.value == 'hide'){        
-          toggle_visual_element(barcharts_div,'show',barcharts_btn);
+          //toggle_visual_element(barcharts_div,'show',barcharts_btn);
         }else{
           toggle_visual_element(barcharts_div,'hide',barcharts_btn);
         }
       }
-      
+      $(pre_barcharts_table_div).scrollView();
   });
 }
 if (typeof barcharts_btn !=="undefined") {
@@ -316,18 +317,18 @@ var dheatmap_download_btn = document.getElementById('dheatmap_download_btn');
 var pre_dheatmap_div = document.getElementById('pre_dheatmap_div');
 if (typeof dheatmap_link !=="undefined") {
   dheatmap_link.addEventListener('click', function () {
-      $(pre_dheatmap_div).scrollView();
+      
 	  if(typeof dheatmap_created == "undefined"){
-        get_user_input('dheatmap', pi_local.ts);
+        create_viz('dheatmap', pi_local.ts);
 		dheatmap_download_btn.disabled = false;
       }else{
         if(dheatmap_btn.value == 'hide'){        
-          toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
+          //toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
         }else{
           toggle_visual_element(dheatmap_div,'hide',dheatmap_btn);
         }
       }
-      
+      $(pre_dheatmap_div).scrollView();
   });
 }
 if (typeof dheatmap_btn !== "undefined") {
@@ -351,17 +352,18 @@ var fheatmap_download_btn = document.getElementById('fheatmap_download_btn');
 var pre_fheatmap_div = document.getElementById('pre_fheatmap_div');
 if (typeof fheatmap_link !=="undefined") {
   fheatmap_link.addEventListener('click', function () {
-      $(pre_fheatmap_div).scrollView();
+      
 	  if(typeof fheatmap_created == "undefined"){
-        get_user_input('fheatmap', pi_local.ts);
+        create_viz('fheatmap', pi_local.ts);
 		fheatmap_download_btn.disabled = false;
       }else{
         if(fheatmap_btn.value == 'hide'){        
-          toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
+          //toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
         }else{
           toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
         }
-      }      
+      }  
+	  $(pre_fheatmap_div).scrollView();    
   });
 }
 if (typeof fheatmap_btn !== "undefined") {
@@ -376,36 +378,70 @@ if (typeof fheatmap_btn !== "undefined") {
   });
 }
 //
-// DENDROGRAM  D3
+// DENDROGRAM1  D3 Phylogram
 //
-var dendrogram_link = document.getElementById('dendrogram_link_id');
-var dendrogram_btn = document.getElementById('dendrogram_hide_btn');
-var dendrogram_div = document.getElementById('dendrogram_div');
-var dendrogram_download_btn = document.getElementById('dendrogram_download_btn');
-var pre_dendrogram_div = document.getElementById('pre_dendrogram_div');
-if (typeof dendrogram_link !=="undefined") {
-  dendrogram_link.addEventListener('click', function () {
-      $(pre_dendrogram_div).scrollView();
-	  if(typeof dendrogram_created == "undefined"){
-        get_user_input('dendrogram', pi_local.ts);
-		dendrogram_download_btn.disabled = false;
+var dendrogram1_link = document.getElementById('dendrogram1_link_id');
+var dendrogram1_btn = document.getElementById('dendrogram1_hide_btn');
+var dendrogram1_div = document.getElementById('dendrogram1_div');
+var dendrogram1_download_btn = document.getElementById('dendrogram1_download_btn');
+var pre_dendrogram1_div = document.getElementById('pre_dendrogram1_div');
+if (typeof dendrogram1_link !=="undefined") {
+  dendrogram1_link.addEventListener('click', function () {
+      
+	  if(typeof dendrogram1_created == "undefined"){
+        create_viz('dendrogram1', pi_local.ts);
+		dendrogram1_download_btn.disabled = false;
       }else{
-        if(dendrogram_btn.value == 'hide'){        
-          toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        if(dendrogram1_btn.value == 'hide'){        
+          //toggle_visual_element(dendrogram1_div,'show',dendrogram1_btn);
         }else{
-          toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+          toggle_visual_element(dendrogram1_div,'hide',dendrogram1_btn);
         }
       }
-      
+	  $(pre_dendrogram1_div).scrollView();
   });
 }
-if (typeof dendrogram_btn !== "undefined") {
-  dendrogram_btn.addEventListener('click', function () {
+if (typeof dendrogram1_btn !== "undefined") {
+  dendrogram1_btn.addEventListener('click', function () {
       //alert('here in tt')
-      if(dendrogram_btn.value == 'hide'){        
-        toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+      if(dendrogram1_btn.value == 'hide'){        
+        toggle_visual_element(dendrogram1_div,'show',dendrogram1_btn);
       }else{
-        toggle_visual_element(dendrogram_div,'hide',dendrogram_btn);
+        toggle_visual_element(dendrogram1_div,'hide',dendrogram1_btn);
+      }      
+  });
+}
+//
+// DENDROGRAM2  D3 Phylonator
+//
+var dendrogram2_link = document.getElementById('dendrogram2_link_id');
+var dendrogram2_btn = document.getElementById('dendrogram2_hide_btn');
+var dendrogram2_div = document.getElementById('dendrogram2_div');
+var dendrogram2_download_btn = document.getElementById('dendrogram2_download_btn');
+var pre_dendrogram2_div = document.getElementById('pre_dendrogram2_div');
+if (typeof dendrogram2_link !=="undefined") {
+  dendrogram2_link.addEventListener('click', function () {
+      
+	  if(typeof dendrogram2_created == "undefined"){
+        create_viz('dendrogram2', pi_local.ts);
+		dendrogram2_download_btn.disabled = false;
+      }else{
+        if(dendrogram2_btn.value == 'hide'){        
+          //toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram2_div,'hide',dendrogram2_btn);
+        }
+      }
+	  $(pre_dendrogram2_div).scrollView();
+  });
+}
+if (typeof dendrogram2_btn !== "undefined") {
+  dendrogram2_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram2_btn.value == 'hide'){        
+        toggle_visual_element(dendrogram2_div,'show',dendrogram2_btn);
+      }else{
+        toggle_visual_element(dendrogram2_div,'hide',dendrogram2_btn);
       }      
   });
 }
@@ -415,22 +451,22 @@ if (typeof dendrogram_btn !== "undefined") {
 var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id');
 var dendrogram_pdf_btn = document.getElementById('dendrogram_pdf_hide_btn');
 var dendrogram_pdf_div = document.getElementById('dendrogram_pdf_div');
-var dendrogram2_download_btn = document.getElementById('dendrogram2_download_btn');
+var dendrogram_pdf_download_btn = document.getElementById('dendrogram_pdf_download_btn');
 var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
 if (typeof dendrogram_pdf_link !=="undefined") {
   dendrogram_pdf_link.addEventListener('click', function () {
-      $(pre_dendrogram_pdf_div).scrollView();
+      
 	  if(typeof dendrogram_pdf_created == "undefined"){
-        get_user_input('dendrogram_pdf', pi_local.ts);
-		dendrogram2_download_btn.disabled = false;
+        create_viz('dendrogram_pdf', pi_local.ts);
+		dendrogram_pdf_download_btn.disabled = false;
       }else{
         if(dendrogram_pdf_btn.value == 'hide'){        
-          toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
+          //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
         }else{
           toggle_visual_element(dendrogram_pdf_div,'hide',dendrogram_pdf_btn);
         }
       }
-      
+      $(pre_dendrogram_pdf_div).scrollView();
   });
 }
 if (typeof dendrogram_pdf_btn !== "undefined") {
@@ -453,17 +489,18 @@ var pcoa_download_btn = document.getElementById('pcoa_download_btn');
 var pre_pcoa_div = document.getElementById('pre_pcoa_div');
 if (typeof pcoa_link !=="undefined") {
   pcoa_link.addEventListener('click', function () {
-      $(pre_pcoa_div).scrollView();
+      
 	  if(typeof pcoa_created == "undefined"){
-        get_user_input('pcoa', pi_local.ts);
+        create_viz('pcoa', pi_local.ts);
 		pcoa_download_btn.disabled = false;
       }else{
         if(pcoa_btn.value == 'hide'){        
-          toggle_visual_element(pcoa_div,'show',pcoa_btn);
+          //toggle_visual_element(pcoa_div,'show',pcoa_btn);
         }else{
           toggle_visual_element(pcoa_div,'hide',pcoa_btn);
         }
-      }      
+      } 
+	  $(pre_pcoa_div).scrollView();     
   });
 }
 if (typeof pcoa_btn !== "undefined") {
@@ -488,17 +525,18 @@ var pre_geospatial_div = document.getElementById('pre_geospatial_div');
 if (typeof geospatial_link !=="undefined") {
   //google.maps.event.addDomListener(window, 'load', initialize);
   geospatial_link.addEventListener('click', function () {
-      $(pre_geospatial_div).scrollView();
+      
 	  if(typeof geospatial_created == "undefined"){
-          get_user_input('geospatial', pi_local.ts);
+          create_viz('geospatial', pi_local.ts);
 		  geospatial_download_btn.disabled = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
-          toggle_visual_element(geospatial_div,'show',geospatial_btn);
+         // toggle_visual_element(geospatial_div,'show',geospatial_btn);
         }else{
           toggle_visual_element(geospatial_div,'hide',geospatial_btn);
         }
-      }      
+      } 
+	  $(pre_geospatial_div).scrollView();     
   });
 }
 if (typeof geospatial_btn !== "undefined") {
@@ -547,7 +585,7 @@ function toggle_visual_element(table_div, tog, btn){
 }
 
 
-function get_user_input(visual, ts) {
+function create_viz(visual, ts) {
    
     if(visual === 'counts_table'){
       create_counts_table();      
@@ -559,10 +597,12 @@ function get_user_input(visual, ts) {
       create_barcharts(ts);
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts);
-    }else if(visual === 'dendrogram'){
-      create_dendrogram(ts,'svg');
+    }else if(visual === 'dendrogram1'){
+      create_dendrogram(ts,'svg','phylogram');
+    }else if(visual === 'dendrogram2'){
+      create_dendrogram(ts,'svg','phylonator');
     }else if(visual === 'dendrogram_pdf'){
-      create_dendrogram(ts,'pdf');
+      create_dendrogram(ts,'pdf','python');
     }else if(visual === 'pcoa'){
       create_pcoa(ts);
     }else if(visual === 'fheatmap'){
@@ -666,23 +706,29 @@ function create_metadata_table() {
 //  CREATE Dendrogram
 //
 
-function create_dendrogram(ts, image_type) {
+function create_dendrogram(ts, image_type, script) {
       //alert('im DEND')
       
       var info_line = create_header('dend', pi_local);
       var dend_div;
       if(image_type == 'pdf'){
-        dendrogram_pdf_created = true;
+        //dendrogram_pdf_created = true;
         var dend_div = document.getElementById('dendrogram_pdf_div');
         document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';
   	    dend_div.style.display = 'block';
         document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
-      }else{  // svg
-        dendrogram_created = true;
-        var dend_div = document.getElementById('dendrogram_div');
-        document.getElementById('pre_dendrogram_div').style.display = 'block';
+      }else if(script == 'phylogram'){  // svg
+        //dendrogram1_created = true;
+        var dend_div = document.getElementById('dendrogram1_div');
+        document.getElementById('pre_dendrogram1_div').style.display = 'block';
   	  	dend_div.style.display = 'block';
-        document.getElementById('dendrogram_title').innerHTML = info_line;
+        document.getElementById('dendrogram1_title').innerHTML = info_line;
+      }else if(script == 'phylonator'){  // svg
+        //dendrogram2_created = true;
+        var dend_div = document.getElementById('dendrogram2_div');
+        document.getElementById('pre_dendrogram2_div').style.display = 'block';
+  	  	dend_div.style.display = 'block';
+        document.getElementById('dendrogram2_title').innerHTML = info_line;
       }
       
       
@@ -694,6 +740,7 @@ function create_dendrogram(ts, image_type) {
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
+	  args += "&script="+script;
       
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/dendrogram', true);
