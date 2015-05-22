@@ -4,7 +4,7 @@
   <% for (i in all_pr_dat) { %>
   <% var pid = all_pr_dat[i].pid %>
     <!-- admin OR public-project OR this-users-project -->
-	<!-- permissions[pid]  === 0   means PUBLIC -->
+  <!-- permissions[pid]  === 0   means PUBLIC -->
     <% if(user.security_level === 1 || info[pid].permissions  === 0 || info[pid].permissions === user.user_id ) { %>
       <% pname = all_pr_dat[i].name %>
       <% title = all_pr_dat[i].title %>
@@ -17,21 +17,23 @@
         <label id='<%= pname %>' class='project-select'>
           <a href='#'  id='<%= pname %>_toggle' class='project_toggle'>
             <img alt='plus' src='/images/tree_plus.gif'/>
+          </a>
           
           <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id'
-		  	 	name='project_names[]' value='<%= pname %>'/>
+           name='project_names[]' value='<%= pname %>'/>
           <a href='/projects/<%= pid %>'>
-		  <span id='<%= tt_pj_id %>' class='tooltipx'>
-          <% if(status == 'public') { %>
-			
-				<%= pname %></span></a></a><small> <i>(public)</i></small>
-		  <% }else{ %>
-		  	<% if(user.security_level === 1 ){ %>
-			   <%= pname %> </span></a></a><small> <i>(PI: <%= info[pid].username %>)</i></small>
-		    <% }else{ %>
-				<%= pname %> </span></a></a>
-			<% } %>	
-		  <% } %>
+            <span id='<%= tt_pj_id %>' class='tooltipx'>
+      <% if(status == 'public') { %>      
+              <%= pname %>
+            </span>
+          </a><small> <i>(public)</i></small>
+      <% }else{ %>
+        <% if(user.security_level === 1 ){ %>
+         <%= pname %> </span></a></a><small> <i>(PI: <%= info[pid].username %>)</i></small>
+        <% }else{ %>
+        <%= pname %> </span></a></a>
+      <% } %>  
+      <% } %>
         </label>
         <ul>
           <div id='<%= pname %>_ds_div' class='datasets_per_pr'>
