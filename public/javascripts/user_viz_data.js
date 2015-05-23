@@ -105,7 +105,7 @@ $(document).ready(function() {
         //var info_line = create_header('bars', pi_local);
 		var barcharts_div = document.getElementById('barcharts_div');
 		barcharts_div.style.display = 'block';
-        barcharts_table_div.innerHTML = get_html(mtx_local);
+        barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
 
 
@@ -164,16 +164,17 @@ $(document).ready(function() {
         create_svg_object(props, color, data, ts);
         
 })
-function get_html(obj){
+function get_single_bar_html(obj){
 	
 	var html ='';
-	html += "<div class='overflow200'>";
-	html += "<table class='table overflow200'>";
+	html += "<div class='overflow_500'>";
+	html += "<table class='table table-condensed overflow200'>";
 	html += '<tr><td width="25">color</td><td>Taxonomy</td><td>Count</td></tr>';
 	for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n])
-			html += "<tr><td style='background-color:"+color+"'></td><td>"+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
+			link = 'sequences/'+obj.rows[n];
+			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n]+'</a></td><td>'+obj.data[n]+'</td></tr>';
 		}
 	}
 	html += '</table></div>';

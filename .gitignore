@@ -28,7 +28,6 @@ grep_code.sh
 temp/
 downloads/*
 user_data/*
-tmp/
 =======
 temp/*
 downloads/*
