@@ -91,7 +91,7 @@ $(document).ready(function() {
         
 
         var ds_count = 1;      
-        var bar_height = 15;
+        var bar_height = 20;
         var props = get_image_properties(bar_height, ds_count); 
         //console.log(props)
         var color = d3.scale.ordinal()                  
@@ -132,7 +132,9 @@ function get_html(obj){
 	html += "<table class='table'>";
 	html += '<tr><td>Taxonomy</td><td>Count</td></tr>';
 	for(n in obj.rows){
-		html += '<tr><td>'+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
+		if(obj.data[n] > 0){
+			html += '<tr><td>'+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
+		}
 	}
 	html += '</table>';
 	
@@ -161,45 +163,54 @@ function create_svg_object(props, color, data, ts) {
         .enter() .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
-          .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'sequences?ds='+d.DatasetName+'&ts='+ts;} )
-	    .attr("target", '_blank' );
+	 // .append("a");
+        //.attr("xlink:xlink:href",  function(d) { return 'sequences?ds='+d.DatasetName+'&ts='+ts;} )
+	    //.attr("target", '_blank' );
 
       datasetBar.selectAll("rect")
-     //     .append("a")
-     //   .attr("xlink:href",  'http://www.google.com')
+          
           .data(function(d) { return d.unitObj; })
-        .enter()
-        .append("rect")
-          .attr("x", function(d) { return props.x(d.x0); })
-          .attr("y", 15)  // adjust where first bar starts on x-axis
-          .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-          .attr("height",  18)
-          .attr("id",function(d) { 
-            var cnt =  this.parentNode.__data__[d.name];
-            var total = this.parentNode.__data__['total'];
-            //console.log(this._parentNode.__data__['total']);
-            var ds = ''; // PLACEHOLDER for TT
-            var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
-            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
-          }) 
-
+           .enter()
+         //    .append('a').attr("xlink:href",  function(d) { 
+		//	  return 'http://'+d.name
+		//	 }) 
+           .append("rect")
+             .attr("x", function(d) { return props.x(d.x0); })
+             .attr("y", 15)  // adjust where first bar starts on x-axis
+             .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+             .attr("height",  18)
+		     .on({
+		          "mouseover": function() { /* do stuff */ },
+		          "mouseout":  function() { /* do stuff */ }, 
+		          "click":  function(d) { alert(d.name); return false; }, 
+		     })
+             .attr("id",function(d) { 
+                var cnt =  this.parentNode.__data__[d.name];
+                var total = this.parentNode.__data__['total'];
+                //console.log(this._parentNode.__data__['total']);
+                var ds = ''; // PLACEHOLDER for TT
+                var pct = (cnt * 100 / total).toFixed(2);
+                var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+                return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+                //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+              }) 
+         // .append("a")
+         // .attr("xlink:href",  'http://www.google.com')
           .attr("class","tooltipx")
-          .style("fill",   function(d) { return color(d.name); });
+		 .style("fill",   function(d) { return color(d.name); });
+          
 
 
-       //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
+       //svg.selectAll("rect").append("svg:a").attr("xlink:href",  'http://www.google.com')
 }
 
 function get_image_properties(bar_height, ds_count) {
   var props = {};
   
   //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-  props.margin = {top: 20, right: 100, bottom: 20, left: 100};
+  props.margin = {top: 20, right: 0, bottom: 20, left: 0};
   
-  var plot_width = 600;
+  var plot_width = 900;
   var gap = 2;  // gap on each side of bar
   props.width = plot_width + props.margin.left + props.margin.right;
   props.height = (ds_count * (bar_height + 2 * gap)) + 125;
