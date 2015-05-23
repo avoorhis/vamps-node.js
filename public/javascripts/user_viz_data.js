@@ -1,7 +1,43 @@
 //
 //  CREATE SINGLE BARCHART on page load
 //
+var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
+    $win = $(window),
+    showTip;
 
+var tip = {
+  title: '',
+  offset: 12,
+  delay: 50,
+  position: function(event) {
+    var positions = {x: event.pageX, y: event.pageY};
+    var dimensions = {
+      x: [
+        $win.width(),
+        $liveTip.outerWidth()
+      ],
+      y: [
+        $win.scrollTop() + $win.height(),
+        $liveTip.outerHeight()
+      ]
+    };
+ 
+    for ( var axis in dimensions ) {
+ 
+      if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
+        positions[axis] -= dimensions[axis][1] + this.offset;
+      } else {
+        positions[axis] += this.offset;
+      }
+ 
+    }
+ 
+    $liveTip.css({
+      top: positions.y,
+      left: positions.x
+    });
+  }
+};
 $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
@@ -9,6 +45,7 @@ $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event)
      
       if (event.type == 'mouseover') {
         tip.id = link.id;
+		//alert(tip.id)
         link.id = '';
         id_items = tip.id.split('-|-');
         html = "<table><tr>";
@@ -76,6 +113,7 @@ $(document).ready(function() {
         // for (var p in mtx_local.columns){
            tmp={};
            tmp.DatasetName = mtx_local.dataset;
+		   //tmp.alltotal = mtx_local.total
            for (var t in mtx_local.rows){
              tmp[mtx_local.rows[t]] = mtx_local.data[t];
            }
@@ -98,7 +136,7 @@ $(document).ready(function() {
           .range( get_colors(unit_list) );
 
         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
-//alert(color);
+
         
 
         data.forEach(function(d) {
@@ -129,14 +167,16 @@ $(document).ready(function() {
 function get_html(obj){
 	
 	var html ='';
-	html += "<table class='table'>";
-	html += '<tr><td>Taxonomy</td><td>Count</td></tr>';
+	html += "<div class='overflow200'>";
+	html += "<table class='table overflow200'>";
+	html += '<tr><td width="25">color</td><td>Taxonomy</td><td>Count</td></tr>';
 	for(n in obj.rows){
 		if(obj.data[n] > 0){
-			html += '<tr><td>'+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
+			color = string_to_color_code(obj.rows[n])
+			html += "<tr><td style='background-color:"+color+"'></td><td>"+obj.rows[n]+'</td><td>'+obj.data[n]+'</td></tr>';
 		}
 	}
-	html += '</table>';
+	html += '</table></div>';
 	
 	return html;
 }
@@ -163,45 +203,31 @@ function create_svg_object(props, color, data, ts) {
         .enter() .append("g")
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
-	 // .append("a");
-        //.attr("xlink:xlink:href",  function(d) { return 'sequences?ds='+d.DatasetName+'&ts='+ts;} )
-	    //.attr("target", '_blank' );
+	 
 
-      datasetBar.selectAll("rect")
-          
-          .data(function(d) { return d.unitObj; })
+       var gnodes = datasetBar.selectAll("rect")
+           .data(function(d) { return d.unitObj; })
            .enter()
-         //    .append('a').attr("xlink:href",  function(d) { 
-		//	  return 'http://'+d.name
-		//	 }) 
-           .append("rect")
+             .append('a').attr("xlink:href",  function(d) { 
+			     return 'sequences/'+d.name
+			  }).style("fill",   function(d) { return color(d.name); });
+          
+       gnodes.append("rect")
              .attr("x", function(d) { return props.x(d.x0); })
              .attr("y", 15)  // adjust where first bar starts on x-axis
              .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-             .attr("height",  18)
-		     .on({
-		          "mouseover": function() { /* do stuff */ },
-		          "mouseout":  function() { /* do stuff */ }, 
-		          "click":  function(d) { alert(d.name); return false; }, 
-		     })
-             .attr("id",function(d) { 
-                var cnt =  this.parentNode.__data__[d.name];
-                var total = this.parentNode.__data__['total'];
-                //console.log(this._parentNode.__data__['total']);
-                var ds = ''; // PLACEHOLDER for TT
+             .attr("height",  25)
+		     
+             .attr("id",function(d,i) { 
+                var cnt =  mtx_local.data[i];
+                var total = mtx_local.total;
                 var pct = (cnt * 100 / total).toFixed(2);
-                var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+                var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct;
                 return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-                //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
               }) 
-         // .append("a")
-         // .attr("xlink:href",  'http://www.google.com')
-          .attr("class","tooltipx")
-		 .style("fill",   function(d) { return color(d.name); });
-          
+			  .attr("class","tooltipx");
 
 
-       //svg.selectAll("rect").append("svg:a").attr("xlink:href",  'http://www.google.com')
 }
 
 function get_image_properties(bar_height, ds_count) {
@@ -242,6 +268,7 @@ function get_colors(unit_names){
   }
   return colors;
 }
+
 function string_to_color_code(str){
     var hash = 0;
     for(var i=0; i < str.length; i++) {

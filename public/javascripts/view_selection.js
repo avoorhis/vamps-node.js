@@ -21,7 +21,7 @@ var $liveTip = $('<div id="livetip_chart"></div>').hide().appendTo('body'),
 var tip = {
   title: '',
   offset: 12,
-  delay: 300,
+  delay: 50,
   position: function(event) {
     var positions = {x: event.pageX, y: event.pageY};
     var dimensions = {
@@ -1203,7 +1203,7 @@ function create_svg_object(props, color, data, ts) {
         .attr("xlink:xlink:href",  function(d) { return 'bar_single?ds='+d.DatasetName+'&ts='+ts;} )
 	    .attr("target", '_blank' );
 
-      datasetBar.selectAll("rect")
+      var gnodes = datasetBar.selectAll("rect")
      //     .append("a")
      //   .attr("xlink:href",  'http://www.google.com')
           .data(function(d) { return d.unitObj; })
