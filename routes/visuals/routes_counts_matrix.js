@@ -458,7 +458,7 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], metadata: {} });
+	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
@@ -476,16 +476,16 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 		max = 0;
 	}else{
 		for (var n1 in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n1].name] = 0;
+		  	max_count[biom_matrix.columns[n1].did] = 0;
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n1].name] += biom_matrix.data[d][n1];
+		  		max_count[biom_matrix.columns[n1].did] += biom_matrix.data[d][n1];
 		  	}
 		}
 		max = 0;
-		for (var n2 in chosen_id_name_hash.names) { 		// correct order
-		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n2]]);
-		  	if(max_count[chosen_id_name_hash.names[n2]] > max){
-		  		max = max_count[chosen_id_name_hash.names[n2]];
+		for (var n2 in chosen_id_name_hash.ids) { 		// correct order
+		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.ids[n2]]);
+		  	if(max_count[chosen_id_name_hash.ids[n2]] > max){
+		  		max = max_count[chosen_id_name_hash.ids[n2]];
 		  	}
 		}
 	}
