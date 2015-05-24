@@ -1,15 +1,13 @@
 <% include ../../add_ins/begin-user_data.ejs %>
-
+<% var dataset = JSON.parse(matrix).dataset; %>
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local = JSON.parse('<%- matrix %>');
-  var dataset = '<%= dataset %>';
-  
   var user_local  = '<%= user.username %>';
 </script>
   
 <div class='title'><%= title %></div>
-<div class='subtitle'><%= subtitle %></div>
+<div class='subtitle'><%= dataset %></div>
 <br>
 
 <div id='my_div' class='well' style="height: 130px;">
