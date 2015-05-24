@@ -221,9 +221,26 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       return tmp_array;
     }
 
+  },
+  
+  get_sequences_perDID_and_taxa_query: function( did, taxa ) {
+  	var tax_items  = taxa.split(';');
+	
+  	var seqQuery = "SELECT UNCOMPRESS(sequence_comp), seq_count from `sequence`"
+  	seqQuery += "JOIN sequence_pdr_info as t1 USING(sequence_id)"
+   	seqQuery += "JOIN sequence_uniq_info as t2 USING(sequence_id)"
+  	seqQuery += "JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)"
+  	seqQuery += "JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)"
+  //  JOIN domain USING(domain_id)
+  //JOIN phylum USING(phylum_id)
+  //JOIN dataset USING(dataset_id)
+  //where domain = 'Bacteria' and phylum='Nitrospirae' and dataset='AGW_0004_2006_06_15'
+  	seqQuery += "where domain_id = '' and phylumId='' and dataset_id=''"
+	
+	
   }
-}
-
+  
+} // end of module.exports
 
 
 

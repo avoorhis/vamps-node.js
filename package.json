@@ -16,7 +16,7 @@
     "compression": "",
     "cookie-parser": "",
     "csv-parse": "",
-    "d3": "3.5.0", 
+    "d3": "3.4", 
     "debug": "2.1",
     "depd": "",
     "ejs": "",

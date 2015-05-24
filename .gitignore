@@ -6,12 +6,8 @@ config/old/*
 node_modules/
 colony/
 colony-npm/
-<<<<<<< HEAD
-
-=======
 *log.txt
 *log
->>>>>>> f628d3780e47e4de270dab09761ad294b79f7078
 # eclipse
 .jshintrc
 .npmignore
@@ -24,16 +20,10 @@ views/visuals/partials/tax_silva108_custom.html
 views/visuals/partials/tax_silva108_simple.html
 
 grep_code.sh
-<<<<<<< HEAD
-temp/
-downloads/*
-user_data/*
-=======
 temp/*
 downloads/*
 user_data/*
 tmp/*
->>>>>>> f628d3780e47e4de270dab09761ad294b79f7078
 public/tmp_images/
 public/json/*/
 public/json/*-taxcounts/*

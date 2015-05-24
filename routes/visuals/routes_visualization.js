@@ -517,7 +517,8 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
-    var ds_name = myurl.query.ds;
+    var did = myurl.query.did;
+	var ds_name = DATASET_NAME_BY_DID[did];
     //var html  = COMMON.start_visuals_html('piechart');
 	var html  = 'My HTML';
 
@@ -526,6 +527,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var new_matrix={}
 	new_matrix.rows = [];
 	new_matrix.dataset = ds_name;
+	new_matrix.did = did;
 	new_matrix.data = []
 	var idx = -1;
 	
@@ -537,6 +539,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 	}
 	console.log('d '+d.toString())
 	new_matrix.total = 0
+	
 	for(n in biom_matrix.data){
 		new_matrix.rows.push(biom_matrix.rows[n].name)
 		new_matrix.data.push(biom_matrix.data[n][d])
@@ -546,16 +549,38 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 	
 	res.render('visuals/user_viz_data/bar_single', {
           title: 'Dataset Taxonomic Data',
-          subtitle: ds_name,
           ts: ts || 'default_timestamp',
 		  matrix    :           JSON.stringify(new_matrix),
 		  post_items:           JSON.stringify(visual_post_items),
 		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-          dataset: ds_name,
           html: html,
           user: req.user
         });
 
+});
+router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
+	var myurl = url.parse(req.url, true);
+	var taxa = myurl.query.taxa;
+	var did = myurl.query.did;
+	var ds_name = DATASET_NAME_BY_DID[did];
+	console.log('in sequences '+taxa)
+// SELECT UNCOMPRESS(sequence_comp), seq_count from `sequence`
+// JOIN sequence_pdr_info as t1 USING(sequence_id)
+//  JOIN sequence_uniq_info as t2 USING(sequence_id)
+//  JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)
+//   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)
+//   JOIN domain USING(domain_id)
+// JOIN phylum USING(phylum_id)
+// JOIN dataset USING(dataset_id)
+// where domain = 'Bacteria' and phylum='Nitrospirae' and dataset='AGW_0004_2006_06_15'
+	
+	res.render('visuals/user_viz_data/sequences', {
+          title: 'Sequences',
+          ds : ds_name,
+          taxa : taxa,
+          user: req.user
+        });
+	
 });
 //
 // P C O A
