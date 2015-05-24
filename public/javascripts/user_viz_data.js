@@ -112,7 +112,7 @@ $(document).ready(function() {
         data = [];
         // for (var p in mtx_local.columns){
            tmp={};
-           tmp.DatasetName = mtx_local.dataset;
+           tmp.datasetName = mtx_local.dataset;
 		   //tmp.alltotal = mtx_local.total
            for (var t in mtx_local.rows){
              tmp[mtx_local.rows[t]] = mtx_local.data[t];
@@ -135,7 +135,7 @@ $(document).ready(function() {
         var color = d3.scale.ordinal()                  
           .range( get_colors(unit_list) );
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
 
         
 
@@ -164,6 +164,8 @@ $(document).ready(function() {
         create_svg_object(props, color, data, ts);
         
 })
+
+
 function get_single_bar_html(obj){
 	
 	var html ='';
@@ -173,7 +175,7 @@ function get_single_bar_html(obj){
 	for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n])
-			link = 'sequences/'+obj.rows[n];
+			link = 'sequences?taxa='+encodeURIComponent(obj.rows[n])+'&did='+obj.did;
 			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n]+'</a></td><td>'+obj.data[n]+'</td></tr>';
 		}
 	}
@@ -195,7 +197,7 @@ function create_svg_object(props, color, data, ts) {
       
       
       // axis legends -- would like to rotate dataset names
-      props.y.domain(data.map(function(d) { return d.DatasetName; }));
+      props.y.domain(data.map(function(d) { return d.datasetName; }));
       props.x.domain([0, 100]);
 
 
@@ -203,14 +205,14 @@ function create_svg_object(props, color, data, ts) {
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
+          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
 	 
 
        var gnodes = datasetBar.selectAll("rect")
            .data(function(d) { return d.unitObj; })
            .enter()
              .append('a').attr("xlink:href",  function(d) { 
-			     return 'sequences/'+d.name
+			     return 'sequences?taxa='+encodeURIComponent(d.name)+'&did='+mtx_local.did;
 			  }).style("fill",   function(d) { return color(d.name); });
           
        gnodes.append("rect")

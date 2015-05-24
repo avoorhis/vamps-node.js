@@ -957,24 +957,32 @@ function create_piecharts(ts) {
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
     var counts_per_ds = [];
-    var tmp={};
-    for (var i in mtx_local.columns){
-      tmp[mtx_local.columns[i].name]=[]; // datasets
-    }
-    for (var x in mtx_local.data){
-      for (var y in mtx_local.columns){
-        tmp[mtx_local.columns[y].name].push(mtx_local.data[x][y]);
-      }
-    }
-    var myjson_obj={};
-    myjson_obj.names=[];
-    myjson_obj.values=[];
-    for (var z in tmp) {
-        counts_per_ds.push(tmp[z]);
-        myjson_obj.names.push(z);
-        myjson_obj.values.push(tmp[z]);
-    }
-    //alert(myjson_obj.names);
+    
+	
+ 
+	
+	var tmp={};
+	var tmp_names={};
+	    for (var d in mtx_local.columns){
+	      tmp[mtx_local.columns[d].did]=[]; // data
+		  tmp_names[mtx_local.columns[d].did]=mtx_local.columns[d].name; // datasets
+	    }
+	    for (var x in mtx_local.data){
+	      for (var y in mtx_local.columns){
+	        tmp[mtx_local.columns[y].did].push(mtx_local.data[x][y]);
+	      }
+	    }
+	    var myjson_obj={};
+	    myjson_obj.names=[];
+	    myjson_obj.values=[];
+		myjson_obj.dids=[];
+	    for (var z in tmp) {
+	        counts_per_ds.push(tmp[z]);
+	        myjson_obj.names.push(tmp_names[z]);
+	        myjson_obj.values.push(tmp[z]);
+			myjson_obj.dids.push(z);
+	    }
+	//alert(myjson_obj.names);
     var unit_list = [];
     for (var o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
@@ -1008,7 +1016,7 @@ function create_piecharts(ts) {
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
         .append("a")
-        .attr("xlink:xlink:href", function(d,i) { return 'bar_single?ds='+myjson_obj.names[i]+'&ts='+ts;} )
+        .attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
 		.attr("target", '_blank' );
 		
     pies.selectAll("path")
@@ -1017,7 +1025,7 @@ function create_piecharts(ts) {
         .attr("d", d3.svg.arc()
         .innerRadius(0)
         .outerRadius(r))
-        .attr("id",function(d,i) {
+        .attr("id",function(d, i) {
             var cnt = d.value;
             var total = 0;
             for (var k in this.parentNode.__data__){
@@ -1068,7 +1076,8 @@ function create_barcharts(ts) {
         data = [];
         for (var p in mtx_local.columns){
           tmp={};
-          tmp.DatasetName = mtx_local.columns[p].name;
+          tmp.datasetName = mtx_local.columns[p].name;
+		  tmp.did = mtx_local.columns[p].did;
           for (var t in mtx_local.rows){
             tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
           }
@@ -1090,7 +1099,7 @@ function create_barcharts(ts) {
         var color = d3.scale.ordinal()                  
           .range( get_colors(unit_list) );
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "DatasetName"; }));
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
 
         
 
@@ -1163,7 +1172,7 @@ function create_svg_object(props, color, data, ts) {
       
       
       // axis legends -- would like to rotate dataset names
-      props.y.domain(data.map(function(d) { return d.DatasetName; }));
+      props.y.domain(data.map(function(d) { return d.datasetName; }));
       props.x.domain([0, 100]);
 
       svg.append("g")
@@ -1193,14 +1202,14 @@ function create_svg_object(props, color, data, ts) {
       //   .attr("xlink:href",  'http://www.google.com' )
       //   .append("g")
       //     .attr("class", "g")
-      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })
+      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
        var datasetBar = svg.selectAll(".bar")
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.DatasetName) + ")"; })  
+          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
           .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'bar_single?ds='+d.DatasetName+'&ts='+ts;} )
+        .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+d.did+'&ts='+ts;} )
 	    .attr("target", '_blank' );
 
       var gnodes = datasetBar.selectAll("rect")
