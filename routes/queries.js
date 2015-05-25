@@ -238,7 +238,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   	seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)"
   	seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)"
   
-  	seqQuery += " where dataset_id='"+did+"'";
+  	seqQuery += " WHERE dataset_id='"+did+"'";
 	for(t=0;t<  tax_items.length;t++){
 		var name = tax_items[t]
 		var val = name+'_'+C.RANKS[t];
@@ -246,7 +246,9 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
 		var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
 		seqQuery += " and "+C.RANKS[t]+"_id='"+id+"'"
 	}
-	
+	seqQuery += " ORDER BY seq_count DESC";
+	seqQuery += " LIMIT 10";
+	console.log(seqQuery)
 	return seqQuery;
   }
   

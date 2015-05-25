@@ -5,14 +5,12 @@
 <div class='subtitle'><%= ds %></div>
 <div class='subtitle'><%= tax %></div>
 <br>
-
+<table class='table table-condensed'>
 <% for (r in seqrows) { %>
-   <%=  seqrows[r].seq %>
-   <br>
+   <tr><td><%=  seqrows[r].seq %></td><td><%=  seqrows[r].seq_count %></td></tr>
+   
 <% } %>
-
-
-
+</table>
 
 
   <% include ../../add_ins/end.ejs %>
