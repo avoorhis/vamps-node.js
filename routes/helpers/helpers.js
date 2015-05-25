@@ -255,6 +255,14 @@ module.exports.run_select_sequences_query = function(rows){
           }
         }
 }
+module.exports.run_ranks_query = function(rank,rows){
+        for (var i=0; i < rows.length; i++) {
+		  var id = rows[i][rank+'_id'];
+          var name = rows[i][rank];
+          
+          RANK_ID_BY_NAME[rank][name] = id;
+        }
+}
 module.exports.update_global_variables = function(pid,type){
 	if(type=='del'){
 		var dids= DATASET_IDS_BY_PID[pid];
