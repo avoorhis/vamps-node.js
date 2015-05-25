@@ -594,7 +594,7 @@ function create_viz(visual, ts) {
     }else if(visual === 'piecharts'){
       create_piecharts(ts);
     }else if(visual === 'barcharts'){
-      create_barcharts(ts);
+      create_barcharts_group(ts);
     }else if(visual === 'dheatmap'){
       create_dheatmap(ts);
     }else if(visual === 'dendrogram1'){
@@ -956,54 +956,49 @@ function create_piecharts(ts) {
     document.getElementById('piecharts_title').innerHTML = info_line;
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
-    var counts_per_ds = [];
-    
-	
- 
-	
-	var tmp={};
-	var tmp_names={};
-	    for (var d in mtx_local.columns){
-	      tmp[mtx_local.columns[d].did]=[]; // data
-		  tmp_names[mtx_local.columns[d].did]=mtx_local.columns[d].name; // datasets
-	    }
-	    for (var x in mtx_local.data){
-	      for (var y in mtx_local.columns){
-	        tmp[mtx_local.columns[y].did].push(mtx_local.data[x][y]);
-	      }
-	    }
-	    var myjson_obj={};
-	    myjson_obj.names=[];
-	    myjson_obj.values=[];
-		myjson_obj.dids=[];
-	    for (var z in tmp) {
-	        counts_per_ds.push(tmp[z]);
-	        myjson_obj.names.push(tmp_names[z]);
-	        myjson_obj.values.push(tmp[z]);
-			myjson_obj.dids.push(z);
-	    }
-	//alert(myjson_obj.names);
     var unit_list = [];
     for (var o in mtx_local.rows){
         unit_list.push(mtx_local.rows[o].name);
     }
+    //var colors = get_colors(unit_list);
     
+	
+	var tmp={};
+	var tmp_names={};
+    for (var d in mtx_local.columns){
+      tmp[mtx_local.columns[d].did]=[]; // data
+      tmp_names[mtx_local.columns[d].did]=mtx_local.columns[d].name; // datasets
+    }
+    for (var x in mtx_local.data){
+      for (var y in mtx_local.columns){
+        tmp[mtx_local.columns[y].did].push(mtx_local.data[x][y]);
+      }
+    }
+    var myjson_obj={};
+    myjson_obj.names=[];
+    myjson_obj.values=[];
+    myjson_obj.dids=[];
+    for (var z in tmp) {
+        
+        myjson_obj.names.push(tmp_names[z]);
+        myjson_obj.values.push(tmp[z]);
+        myjson_obj.dids.push(z);
+    }
+	//alert(myjson_obj.names);
     
-    var colors = get_colors(unit_list);
     var pies_per_row = 4;
     var m = 20; // margin
     var r = 320/pies_per_row; // five pies per row
     var image_w = 2*(r+m)*pies_per_row;
-    var image_h = Math.ceil(counts_per_ds.length / 4 ) * ( 2 * ( r + m ) )+ 30;
+    var image_h = Math.ceil(myjson_obj.values.length / 4 ) * ( 2 * ( r + m ) )+ 30;
     var arc = d3.svg.arc()
-        .innerRadius(r / 2)
+        .innerRadius(0)
         .outerRadius(r);
-    //var counts_per_ds = [[100,20,5],[20,20,20]];
-    //for(i in counts_per_ds){
+    
     var svgContainer = d3.select("#piecharts_div").append("svg")
         .attr("width",image_w)
         .attr("height",image_h);
-    
+    var pie = d3.layout.pie();
     var pies = svgContainer.selectAll("svg")
         .data(myjson_obj.values)
         .enter().append("g")
@@ -1020,11 +1015,9 @@ function create_piecharts(ts) {
 		.attr("target", '_blank' );
 		
     pies.selectAll("path")
-        .data(d3.layout.pie())
+        .data(pie.sort(null))
         .enter().append("path")
-        .attr("d", d3.svg.arc()
-        .innerRadius(0)
-        .outerRadius(r))
+        .attr("d", arc)
         .attr("id",function(d, i) {
             var cnt = d.value;
             var total = 0;
@@ -1041,7 +1034,7 @@ function create_piecharts(ts) {
         })
         .attr("class","tooltipx")
         .style("fill", function(d, i) {
-            return colors[i];
+            return string_to_color_code(unit_list[i]);;
         });
 
     d3.selectAll("g")
@@ -1062,184 +1055,185 @@ function create_piecharts(ts) {
 //
 //  CREATE BARCHARTS
 //
-function create_barcharts(ts) {
+ function create_barcharts_group(ts) {
+// 
+//         
+         barcharts_created = true;
+         var info_line = create_header('bars', pi_local);
+// 		var barcharts_div = document.getElementById('barcharts_div');
+// 		barcharts_div.style.display = 'block';
+         document.getElementById('barcharts_title').innerHTML = info_line;
+         document.getElementById('pre_barcharts_table_div').style.display = 'block';
+		 create_barcharts('group');
 
-        
-        barcharts_created = true;
-        var info_line = create_header('bars', pi_local);
-		var barcharts_div = document.getElementById('barcharts_div');
-		barcharts_div.style.display = 'block';
-        document.getElementById('barcharts_title').innerHTML = info_line;
-        document.getElementById('pre_barcharts_table_div').style.display = 'block';
-
-
-        data = [];
-        for (var p in mtx_local.columns){
-          tmp={};
-          tmp.datasetName = mtx_local.columns[p].name;
-		  tmp.did = mtx_local.columns[p].did;
-          for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
-          }
-          data.push(tmp);
-        }
-
-      
-        var unit_list = [];
-        // TODO: "'o' is already defined."
-        for (var o in mtx_local.rows){
-          unit_list.push(mtx_local.rows[o].name);
-        }
-        
-
-        var ds_count = mtx_local.shape[1];      
-        var bar_height = 15;
-        var props = get_image_properties(bar_height, ds_count); 
-        //console.log(props)
-        var color = d3.scale.ordinal()                  
-          .range( get_colors(unit_list) );
-
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
-
-        
-
-        data.forEach(function(d) {
-          var x0 = 0;
-          d.unitObj = color.domain().map(function(name) { 
-            return { name: name, x0: x0, x1: x0 += +d[name] }; 
-          });
-          //console.log(d.unitObj);
-          d.total = d.unitObj[d.unitObj.length - 1].x1;
-          //console.log(d.total);
-        });
-
-
-        data.forEach(function(d) {
-          // normalize to 100%
-          tot = d.total;
-          d.unitObj.forEach(function(o) {
-              //console.log(o);
-              o.x0 = (o.x0*100)/tot;
-              o.x1 = (o.x1*100)/tot;
-          });
-        });
-      
-        
-        create_svg_object(props, color, data, ts);
-        
+//         var unit_list = [];
+//         for (var o in mtx_local.rows){
+//             unit_list.push(mtx_local.rows[o].name);
+//         }
+//         var colors = get_colors(unit_list);
 }
+//         data = [];
+//         did_by_names ={}
+//         for (var p in mtx_local.columns){
+//           tmp={};
+//           tmp.datasetName = mtx_local.columns[p].name;
+// 		  did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
+// 		  //tmp.did = mtx_local.columns[p].did;
+//           for (var t in mtx_local.rows){
+//             tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
+//           }
+//           data.push(tmp);
+//         }
+//         
+// 
+//         var ds_count = mtx_local.shape[1];      
+//         var bar_height = 15;
+//         var props = get_image_properties(bar_height, ds_count); 
+//         //console.log(props)
+//         var color = d3.scale.ordinal()                  
+//           .range( colors );
+// 
+//         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
+// 
+//         
+//         data.forEach(function(d) {
+//           var x0 = 0;
+//           d.unitObj = color.domain().map(function(name) { 
+//             return { name: name, x0: x0, x1: x0 += +d[name] }; 
+//           });
+//           //console.log(d.unitObj);
+//           d.total = d.unitObj[d.unitObj.length - 1].x1;
+//           //console.log(d.total);
+//         });
+// 
+// 
+//         data.forEach(function(d) {
+//           // normalize to 100%
+//           tot = d.total;
+//           d.unitObj.forEach(function(o) {
+//               //console.log(o);
+//               o.x0 = (o.x0*100)/tot;
+//               o.x1 = (o.x1*100)/tot;
+//           });
+//         });
+//       
+//         
+//         create_svg_object(props, did_by_names, data, ts);
+//         
+// }
 
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
-function get_image_properties(bar_height, ds_count) {
-  var props = {};
-  
-  //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-  props.margin = {top: 20, right: 100, bottom: 20, left: 300};
-  
-  var plot_width = 650;
-  var gap = 2;  // gap on each side of bar
-  props.width = plot_width + props.margin.left + props.margin.right;
-  props.height = (ds_count * (bar_height + 2 * gap)) + 125;
-  
-  props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-    
-  props.y = d3.scale.ordinal()
-      .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
-    
-  props.xAxis = d3.svg.axis()
-          .scale(props.x)
-          .orient("top");
-  
-  props.yAxis = d3.svg.axis()
-          .scale(props.y)
-          .orient("left");
-          
-              
-  return props;
-}
+// function get_image_properties(bar_height, ds_count) {
+//   var props = {};
+//   
+//   //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
+//   props.margin = {top: 20, right: 100, bottom: 20, left: 300};
+//   
+//   var plot_width = 650;
+//   var gap = 2;  // gap on each side of bar
+//   props.width = plot_width + props.margin.left + props.margin.right;
+//   props.height = (ds_count * (bar_height + 2 * gap)) + 125;
+//   
+//   props.x = d3.scale.linear() .rangeRound([0, plot_width]);
+//     
+//   props.y = d3.scale.ordinal()
+//       .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
+//     
+//   props.xAxis = d3.svg.axis()
+//           .scale(props.x)
+//           .orient("top");
+//   
+//   props.yAxis = d3.svg.axis()
+//           .scale(props.y)
+//           .orient("left");
+//           
+//               
+//   return props;
+// }
 //
 //
 //
-function create_svg_object(props, color, data, ts) {
-       //d3.select('svg').remove();
-      
-      var svg = d3.select("#barcharts_div").append("svg")
-                  .attr("width",  props.width)
-                  .attr("height", props.height)
-                .append("g")
-                  .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-      
-      
-      // axis legends -- would like to rotate dataset names
-      props.y.domain(data.map(function(d) { return d.datasetName; }));
-      props.x.domain([0, 100]);
-
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(props.yAxis)
-          .selectAll("text")  
-             .style("text-anchor", "end")
-             .attr("dx", "-.5em")
-             .attr("dy", "1.4em"); 
-             
-             
-      svg.append("g")
-          .attr("class", "x axis")
-          .call(props.xAxis)
-        .append("text")
-          .attr("x", 650)
-          .attr("dy", ".8em")
-          .style("text-anchor", "end")
-          .text("Percent");
-     
-     
-      
-
-      // var datasetBar = svg.selectAll("a")
-      //     .data(data)
-      //   .enter().append("a")
-      //   .attr("xlink:href",  'http://www.google.com' )
-      //   .append("g")
-      //     .attr("class", "g")
-      //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
-       var datasetBar = svg.selectAll(".bar")
-          .data(data)
-        .enter() .append("g")
-          .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
-          .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+d.did+'&ts='+ts;} )
-	    .attr("target", '_blank' );
-
-      var gnodes = datasetBar.selectAll("rect")
-     //     .append("a")
-     //   .attr("xlink:href",  'http://www.google.com')
-          .data(function(d) { return d.unitObj; })
-        .enter()
-        .append("rect")
-          .attr("x", function(d) { return props.x(d.x0); })
-          .attr("y", 15)  // adjust where first bar starts on x-axis
-          .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-          .attr("height",  18)
-          .attr("id",function(d) { 
-            var cnt =  this.parentNode.__data__[d.name];
-            var total = this.parentNode.__data__['total'];
-            //console.log(this._parentNode.__data__['total']);
-            var ds = ''; // PLACEHOLDER for TT
-            var pct = (cnt * 100 / total).toFixed(2);
-            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
-            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
-          }) 
-
-          .attr("class","tooltipx")
-          .style("fill",   function(d) { return color(d.name); });
-
-
-       //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
-}
-
+// function create_svg_object(props, did_by_names, data, ts) {
+//        //d3.select('svg').remove();
+//       
+//       var svg = d3.select("#barcharts_div").append("svg")
+//                   .attr("width",  props.width)
+//                   .attr("height", props.height)
+//                 .append("g")
+//                   .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
+//       
+//       
+//       // axis legends -- would like to rotate dataset names
+//       props.y.domain(data.map(function(d) { return d.datasetName; }));
+//       props.x.domain([0, 100]);
+// 
+//       svg.append("g")
+//           .attr("class", "y axis")
+//           .call(props.yAxis)
+//           .selectAll("text")  
+//              .style("text-anchor", "end")
+//              .attr("dx", "-.5em")
+//              .attr("dy", "1.4em"); 
+//              
+//              
+//       svg.append("g")
+//           .attr("class", "x axis")
+//           .call(props.xAxis)
+//         .append("text")
+//           .attr("x", 650)
+//           .attr("dy", ".8em")
+//           .style("text-anchor", "end")
+//           .text("Percent");
+//      
+//      
+//       
+// 
+//       // var datasetBar = svg.selectAll("a")
+//       //     .data(data)
+//       //   .enter().append("a")
+//       //   .attr("xlink:href",  'http://www.google.com' )
+//       //   .append("g")
+//       //     .attr("class", "g")
+//       //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
+//        var datasetBar = svg.selectAll(".bar")
+//           .data(data)
+//         .enter() .append("g")
+//           .attr("class", "g")
+//           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
+//           .append("a")
+//         .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+did_by_names[d.datasetName]+'&ts='+ts;} )
+// 	    .attr("target", '_blank' );
+// 
+//       datasetBar.selectAll("rect")
+//      //     .append("a")
+//      //   .attr("xlink:href",  'http://www.google.com')
+//           .data(function(d) { return d.unitObj; })
+//         .enter()
+//         .append("rect")
+//           .attr("x", function(d) { return props.x(d.x0); })
+//           .attr("y", 15)  // adjust where first bar starts on x-axis
+//           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+//           .attr("height",  18)
+//           .attr("id",function(d,i) { 
+//             var cnt =  this.parentNode.__data__[d.name];
+//             var total = this.parentNode.__data__['total'];
+//             
+//             //console.log(this._parentNode.__data__['total']);
+//             var ds = ''; // PLACEHOLDER for TT
+//             var pct = (cnt * 100 / total).toFixed(2);
+//             var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+//             return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+//             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+//           }) 
+// 
+//           .attr("class","tooltipx")
+//           .style("fill",   function(d,i) { return string_to_color_code(d.name); });
+// 
+// 
+//        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
+// }
+// 
 
 function create_header(viz, pi) {
   
@@ -1276,23 +1270,4 @@ function create_header(viz, pi) {
      
   return txt;
 }
-function get_colors(unit_names){
-  var colors = [];
-  for(var n in unit_names){
-    //alert(unit_names[n]);
-    col = string_to_color_code(unit_names[n]);
-    //console.log(col);
-    colors.push(col);
-  }
-  return colors;
-}
-function string_to_color_code(str){
-    var hash = 0;
-    for(var i=0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 3) - hash);
-    }
-    var color = Math.abs(hash).toString(16).substring(0, 6);
-    return "#" + '000000'.substring(0, 6 - color.length) + color;
-}
-
 

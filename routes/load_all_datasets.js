@@ -23,6 +23,7 @@ module.exports.get_datasets = function(callback){
       DatasetsWithLatLong         = {} 
       AllMetadataNames            = [];
 	  
+	  
 
       if (err)  {
 		  console.log('Query error: ' + err);
@@ -68,6 +69,104 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_DCOUNTS_BY_DID');
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
   });
+  
+  // connection.db.query(queries.get_ranks_query('domain'), function(err, rows, fields){
+  //
+  // 	  	RANK_ID_BY_NAME = {};   // RANK_ID_BY_NAME['phylum']['Chloroflexi'] = 158
+  // 		RANK_ID_BY_NAME['domain'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('domain',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['domain']");
+  // });
+  // connection.db.query(queries.get_ranks_query('phylum'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['phylum'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('phylum',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['phylum']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('klass'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['klass'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('klass',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['klass']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('order'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['order'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('order',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['order']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('family'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['family'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('family',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['family']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('genus'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['genus'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('genus',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['genus']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('species'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['species'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('species',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['species']");
+  //
+  // });
+  // connection.db.query(queries.get_ranks_query('strain'), function(err, rows, fields){
+  // 		RANK_ID_BY_NAME['strain'] = {};
+  //     if (err)  {
+  // 		  console.log('Query error: ' + err);
+  // 		  console.log(err.stack);
+  // 		  process.exit(1);
+  //     } else {
+  //       helpers.run_ranks_query('strain',rows);
+  //     }
+  //     console.log(" INITIALIZING RANK_ID_BY_NAME['strain']");
+  // 	  //console.log(JSON.stringify(RANK_ID_BY_NAME))
+  // });
 };
 
 // ALL_DATASETS
