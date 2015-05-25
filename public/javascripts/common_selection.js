@@ -171,20 +171,22 @@ function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
 function create_svg_object(svg,props, did_by_names, data, ts) {
       
 
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(props.yAxis)
-          .selectAll("text")  
-             .style("text-anchor", "end")
-             .attr("dx", "-.5em")
-             .attr("dy", "1.4em"); 
+      // svg.append("g")
+      //     .attr("class", "y axis")
+      // 	      .style({  'stroke-width': '1px'})
+      //     .call(props.yAxis)
+      //     .selectAll("text")
+      //        .style("text-anchor", "end")
+      //        .attr("dx", "-.5em")
+      //        .attr("dy", "1.4em");
              
              
       svg.append("g")
           .attr("class", "x axis")
+          .style({'stroke-width': '1px'})
           .call(props.xAxis)
         .append("text")
-          .attr("x", 650)
+          .attr("x", props.plot_width)
           .attr("dy", ".8em")
           .style("text-anchor", "end")
           .text("Percent");
@@ -197,11 +199,20 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
           .append("a")
         .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+did_by_names[d.datasetName]+'&ts='+ts;} )
-	    .attr("target", '_blank' );
-
+		  .attr("target", '_blank' );
+  
+  var gtext = datasetBar.selectAll("text")
+          .data(data)
+        	.enter().append("text")
+            .attr("class", "y label")
+			.attr("text-anchor", "end")
+		  .style({"font-size":  "13px","font-weight":  "normal" })
+            .attr("x", "-2")
+            .attr("y", props.bar_height*2)
+			.text(function(d) { return d.datasetName; })
+			
+			
       var gnodes = datasetBar.selectAll("rect")
-     //     .append("a")
-     //   .attr("xlink:href",  'http://www.google.com')
           .data(function(d) { return d.unitObj; })
         .enter()
         
@@ -232,35 +243,49 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
 
 function get_image_properties(imagetype, ds_count) {
   var props = {};
+  var gap = 2;  // gap on each side of bar
   if(imagetype=='single'){
-	  var bar_height = 20;
+	  props.bar_height = 20;
 	  props.margin = {top: 20, right: 0, bottom: 20, left: 0};   
-	  var plot_width = 900;
+	  props.plot_width = 900;
+	  props.width = props.plot_width + props.margin.left + props.margin.right;
+	  props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
+  
+	  props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
+    
+	  props.y = d3.scale.ordinal()
+	      .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
+    
+	  // props.xAxis = d3.svg.axis()
+ // 	          .scale(props.x)
+ // 	          .orient("top");
+ //
+ // 	  props.yAxis = d3.svg.axis()
+ // 	          .scale(props.y)
+ // 	          .orient("left");
   }else{
-	  var bar_height = 15;
+	  props.bar_height = 15;
 	  //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
 	  props.margin = {top: 20, right: 100, bottom: 20, left: 300};
-	  var plot_width = 650;
+	  props.plot_width = 650;
+	  props.width = props.plot_width + props.margin.left + props.margin.right;
+	  props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
+  
+	  props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
+    
+	  props.y = d3.scale.ordinal()
+	      .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
+    
+	  props.xAxis = d3.svg.axis()
+	          .scale(props.x)
+	          .orient("top");
+  
+	  props.yAxis = d3.svg.axis()
+	          .scale(props.y)
+	          .orient("left");
   }
   
-  var gap = 2;  // gap on each side of bar
-  props.width = plot_width + props.margin.left + props.margin.right;
-  props.height = (ds_count * (bar_height + 2 * gap)) + 125;
   
-  props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-    
-  props.y = d3.scale.ordinal()
-      .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
-    
-  props.xAxis = d3.svg.axis()
-          .scale(props.x)
-          .orient("top");
-  
-  props.yAxis = d3.svg.axis()
-          .scale(props.y)
-          .orient("left");
-          
-              
   return props;
 }
 function get_colors(unit_names){
