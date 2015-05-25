@@ -100,12 +100,12 @@ $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event)
 
 $(document).ready(function() {  
 
-	    
-		create_barcharts('single')
+	create_barcharts('single');
+	barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
         //var info_line = create_header('bars', pi_local);
 // 		var barcharts_div = document.getElementById('barcharts_div');
 // 		barcharts_div.style.display = 'block';
-//         barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+//         
 //         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
 // 
 // 
@@ -174,9 +174,9 @@ function get_single_bar_html(obj){
 	html += '<tr><td width="25">color</td><td>Taxonomy</td><td>Count</td></tr>';
 	for(n in obj.rows){
 		if(obj.data[n] > 0){
-			color = string_to_color_code(obj.rows[n])
-			link = 'sequences?taxa='+encodeURIComponent(obj.rows[n])+'&did='+obj.did;
-			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n]+'</a></td><td>'+obj.data[n]+'</td></tr>';
+			color = string_to_color_code(obj.rows[n].name)
+			link = 'sequences?did='+obj.did+'&taxa='+encodeURIComponent(obj.rows[n].name);
+			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n].name+'</a></td><td>'+obj.data[n]+'</td></tr>';
 		}
 	}
 	html += '</table></div>';

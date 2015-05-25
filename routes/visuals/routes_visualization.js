@@ -507,6 +507,64 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 
 });
 //
+// P C O A
+//
+router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
+    console.log('in PCoA');
+    console.log(metadata);
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(__dirname, '../../tmp', biom_file_name);
+    var site_base = path.join(__dirname, '../../');
+    var exec = require('child_process').exec;
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts],
+    };
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    PythonShell.run('distance.py', options, function (err, pcoa_data) {
+      if (err) {
+		  res.send('ERROR '+err); // for now we'll send errors to the browser
+	  }else{
+	      //console.log(pcoa_data)
+	      //pcoa_data = JSON.parse(pcoa_data)
+	      //console.log(pcoa_data);
+
+	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
+	      var html = "<div id='pdf'>";
+	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+	      html += " <p>ERROR in loading pdf file</p>";
+	      html += "</object></div>";
+	      console.log(html);
+	      res.send(html);
+  	}
+
+    });
+
+});
+
+
+//
+//  G E O S P A T I A L
+//
+router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
+  var myurl = url.parse(req.url, true);
+
+  var ts    = myurl.query.ts;
+  var html  = COMMON.start_visuals_html('geospatial');
+
+  res.render('visuals/user_viz_data/geospatial', {
+            title: 'VAMPS Geospatial Data',
+            timestamp: ts || 'default_timestamp',
+            html : html+"<h2>Not Coded Yet</h2>",
+            user: req.user
+      });
+
+
+});
+
+//
 // B A R - C H A R T  -- S I N G L E
 //
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
@@ -577,7 +635,17 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	  		  console.log(err.stack);
 	  		  process.exit(1);
 	      } else {
-		  	console.log(JSON.stringify(rows))
+		  	//console.log(rows)
+			//console.log(JSON.stringify(rows))
+			  for(s in rows){
+			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
+				//var seqcomp = buffer.toString('base64');
+				 rows[s].seq = rows[s].seq.toString('utf8')
+// 				  console.log(seqcomp);
+ 				  //seq = zlib.Inflate(seqcomp.toString('utf8'))
+				  //console.log(JSON.stringify(seq))
+			  }
+			
 			res.render('visuals/user_viz_data/sequences', {
 		            title: 'Sequences',
 		            ds : ds_name,
@@ -593,63 +661,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	
 	
 	
-});
-//
-// P C O A
-//
-router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
-    console.log('in PCoA');
-    console.log(metadata);
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp', biom_file_name);
-    var site_base = path.join(__dirname, '../../');
-    var exec = require('child_process').exec;
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts],
-    };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    PythonShell.run('distance.py', options, function (err, pcoa_data) {
-      if (err) {
-		  res.send('ERROR '+err); // for now we'll send errors to the browser
-	  }else{
-	      //console.log(pcoa_data)
-	      //pcoa_data = JSON.parse(pcoa_data)
-	      //console.log(pcoa_data);
-
-	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
-	      var html = "<div id='pdf'>";
-	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-	      html += " <p>ERROR in loading pdf file</p>";
-	      html += "</object></div>";
-	      console.log(html);
-	      res.send(html);
-  	}
-
-    });
-
-});
-
-
-//
-//  G E O S P A T I A L
-//
-router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
-  var myurl = url.parse(req.url, true);
-
-  var ts    = myurl.query.ts;
-  var html  = COMMON.start_visuals_html('geospatial');
-
-  res.render('visuals/user_viz_data/geospatial', {
-            title: 'VAMPS Geospatial Data',
-            timestamp: ts || 'default_timestamp',
-            html : html+"<h2>Not Coded Yet</h2>",
-            user: req.user
-      });
-
-
 });
 
 /*
