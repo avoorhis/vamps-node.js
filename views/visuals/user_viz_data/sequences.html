@@ -1,12 +1,15 @@
 <% include ../../add_ins/begin-user_data.ejs %>
-
+<% seqrows = JSON.parse(rows) %>
 
 <div class='title'><%= title %></div>
 <div class='subtitle'><%= ds %></div>
-<div class='subtitle'><%= taxa %></div>
+<div class='subtitle'><%= tax %></div>
 <br>
 
-
+<% for (r in seqrows) { %>
+   <%=  seqrows[r].seq %>
+   <br>
+<% } %>
 
 
 
