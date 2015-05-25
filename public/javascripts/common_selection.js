@@ -201,9 +201,7 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
         .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+did_by_names[d.datasetName]+'&ts='+ts;} )
 		  .attr("target", '_blank' );
   
-  var gtext = datasetBar.selectAll("text")
-          .data(data)
-        	.enter().append("text")
+  var labels = datasetBar.append("text")
             .attr("class", "y label")
 			.attr("text-anchor", "end")
 		  .style({"font-size":  "13px","font-weight":  "normal" })
