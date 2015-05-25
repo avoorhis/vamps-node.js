@@ -352,9 +352,9 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
   		  res.send(err);
   	  }else{
 	      distance_matrix = JSON.parse(mtx);
-	      console.log('dmtx');
-		  console.log(chosen_id_name_hash);
-	      console.log(distance_matrix);
+	      //console.log('dmtx');
+		  //console.log(chosen_id_name_hash);
+	      //console.log(distance_matrix);
 	      var m = JSON.stringify(mtx);
 		  var ids = {}
 		  for(i in chosen_id_name_hash.names){
@@ -366,7 +366,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 			  var did = DATASET_ID_BY_DNAME[ds];
 			  ids[pjds] = did 
 		  }
-		  console.log(ids)
+		  //console.log(ids)
 	      res.render('visuals/partials/load_distance',{
 	                                        dm        : distance_matrix,
 			  								hash   	  : JSON.stringify(chosen_id_name_hash),
@@ -460,7 +460,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   			var Newick    = require('../../public/javascripts/newick');
 			var div_width = 1200;
   			newick = JSON.parse(output);
-  			console.log('Newick ',newick)
+  			//console.log('Newick ',newick)
   			var json  = Newick.parse(newick);
   			//console.log(JSON.stringify(json,null,4))
   			var newickNodes = [];
@@ -482,11 +482,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 				});
 			}
 
-			console.log('Newick2 ')
+			//console.log('Newick2 ')
 			
-			console.log('Newick3 ')
+			//console.log('Newick3 ')
 			var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-			console.log('Newick4 ')
+			//console.log('Newick4 ')
 			html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
 
 			d3.select('svg').remove();
@@ -511,7 +511,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     console.log('in PCoA');
-    console.log(metadata);
+    //console.log(metadata);
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
@@ -536,7 +536,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
 	      html += " <p>ERROR in loading pdf file</p>";
 	      html += "</object></div>";
-	      console.log(html);
+	      //console.log(html);
 	      res.send(html);
   	}
 
@@ -569,10 +569,12 @@ router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
-    console.log('in piechart_single'+myurl)
+    //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
     var did = myurl.query.did;
-	var ds_name = DATASET_NAME_BY_DID[did];
+	var pid = PROJECT_ID_BY_DID[did]
+	//PROJECT_INFORMATION_BY_PID[pid].project
+	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
     //var html  = COMMON.start_visuals_html('piechart');
 	var html  = 'My HTML';
 
@@ -623,8 +625,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
 	var did = myurl.query.did;
-	var ds_name = DATASET_NAME_BY_DID[did];
-	console.log('in sequences '+tax)
+	var pid = PROJECT_ID_BY_DID[did]
+	//PROJECT_INFORMATION_BY_PID[pid].project
+	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+	//console.log('in sequences '+tax)
 
 	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
 	
@@ -640,7 +644,18 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 			  for(s in rows){
 			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
 				//var seqcomp = buffer.toString('base64');
-				 rows[s].seq = rows[s].seq.toString('utf8')
+				rows[s].seq = rows[s].seq.toString('utf8')
+				rows[s].tax = ''
+				for(i in req.C.RANKS){
+					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
+					//console.log(id_n_rank);
+					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
+					if(taxname.substr(-3) != '_NA'){
+						rows[s].tax += taxname+';'
+					}
+				} 
+				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
+				//rows[s].tax = domain+';'+phylum+';'+klass;
 // 				  console.log(seqcomp);
  				  //seq = zlib.Inflate(seqcomp.toString('utf8'))
 				  //console.log(JSON.stringify(seq))
