@@ -36,6 +36,7 @@ var xmldom = require('xmldom');
  * GET visualization page.
  */
 router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
+
   // This page (view_selection) comes after the datasets and units have been selected
   //    in the previous two pages.
   // It should be protected with isLoggedIn like /unit_selection below.
@@ -54,14 +55,13 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //    There should be one or more visual choices shown.
   //
   //var body = JSON.parse(req.body);
+  
   console.log('req.body: view_selection-->>');
   console.log(req.body);
   console.log('req.body: view_selection');
   //console.log('chosen_id_name_hash:>>');
-  //console.log(chosen_id_name_hash);
-  //console.log('<<chosen_id_name_hash:');
-  //console.log(TaxaCounts['27'])
-  //console.log('1');
+  
+  
   if(req.body.resorted === '1'){
   	req.flash('infomessage','Dataset order is updated!')
 	dataset_ids = req.body.ds_order;
@@ -116,10 +116,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 		                          locals: {flash: req.flash('infomessage')},
                                   infomessage   : req.flash('infomessage','Dataset order is updated!')
                    });
-    
-
-  
-
 
 });
 
@@ -525,24 +521,30 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
     
     var new_matrix={}
-	new_matrix.rows = [];
+	new_matrix.rows = biom_matrix.rows;
+	new_matrix.columns =[];
 	new_matrix.dataset = ds_name;
 	new_matrix.did = did;
 	new_matrix.data = []
+	new_matrix.total = 0
+	new_matrix.shape = [biom_matrix.shape[0],1]
 	var idx = -1;
 	
 	for(d in biom_matrix.columns){
-		if(biom_matrix.columns[d].name == ds_name){
+		if(biom_matrix.columns[d].did == did){
+			//console.log('found idx '+biom_matrix.columns[d].name)
 			idx = d;
+			new_matrix.columns.push(biom_matrix.columns[d]);
+			//new_matrix.columns.push({"name":ds_name,"did":did});
 			break;
 		}
 	}
-	console.log('d '+d.toString())
-	new_matrix.total = 0
+	
 	
 	for(n in biom_matrix.data){
-		new_matrix.rows.push(biom_matrix.rows[n].name)
-		new_matrix.data.push(biom_matrix.data[n][d])
+		//new_matrix.rows.push(biom_matrix.rows[n].name)
+		//new_matrix.data.push(biom_matrix.data[n][d])
+		new_matrix.data.push([biom_matrix.data[n][d]])
 		new_matrix.total += biom_matrix.data[n][d]
 	}
 	console.log(JSON.stringify(new_matrix))
@@ -558,28 +560,38 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
         });
 
 });
+
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
-	var taxa = myurl.query.taxa;
+	var tax = myurl.query.taxa;
 	var did = myurl.query.did;
 	var ds_name = DATASET_NAME_BY_DID[did];
-	console.log('in sequences '+taxa)
-// SELECT UNCOMPRESS(sequence_comp), seq_count from `sequence`
-// JOIN sequence_pdr_info as t1 USING(sequence_id)
-//  JOIN sequence_uniq_info as t2 USING(sequence_id)
-//  JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)
-//   JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)
-//   JOIN domain USING(domain_id)
-// JOIN phylum USING(phylum_id)
-// JOIN dataset USING(dataset_id)
-// where domain = 'Bacteria' and phylum='Nitrospirae' and dataset='AGW_0004_2006_06_15'
+	console.log('in sequences '+tax)
+
+	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
 	
-	res.render('visuals/user_viz_data/sequences', {
-          title: 'Sequences',
-          ds : ds_name,
-          taxa : taxa,
-          user: req.user
-        });
+	connection.db.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
+	  
+	      if (err)  {
+	  		  console.log('Query error: ' + err);
+	  		  console.log(err.stack);
+	  		  process.exit(1);
+	      } else {
+		  	console.log(JSON.stringify(rows))
+			res.render('visuals/user_viz_data/sequences', {
+		            title: 'Sequences',
+		            ds : ds_name,
+		            tax : tax,
+				    rows : JSON.stringify(rows),
+		            user: req.user
+		          });
+	      }
+
+	  });
+	
+	
+	
+	
 	
 });
 //
