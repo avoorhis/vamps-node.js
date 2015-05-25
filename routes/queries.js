@@ -232,7 +232,8 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   get_sequences_perDID_and_taxa_query: function( did, taxa ) {
   	var tax_items  = taxa.split(';');
 	
-  	var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count from `sequence`"
+  	var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count,gast_distance"
+	seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`"
   	seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)"
    	seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)"
   	seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)"
@@ -247,7 +248,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
 		seqQuery += " and "+C.RANKS[t]+"_id='"+id+"'"
 	}
 	seqQuery += " ORDER BY seq_count DESC";
-	seqQuery += " LIMIT 10";
+	seqQuery += " LIMIT 100";
 	console.log(seqQuery)
 	return seqQuery;
   }
