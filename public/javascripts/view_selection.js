@@ -994,11 +994,12 @@ function create_piecharts(ts) {
     var arc = d3.svg.arc()
         .innerRadius(0)
         .outerRadius(r);
-    
+    var pie = d3.layout.pie();
+	
     var svgContainer = d3.select("#piecharts_div").append("svg")
         .attr("width",image_w)
         .attr("height",image_h);
-    var pie = d3.layout.pie();
+		
     var pies = svgContainer.selectAll("svg")
         .data(myjson_obj.values)
         .enter().append("g")
@@ -1010,10 +1011,18 @@ function create_piecharts(ts) {
             var v_spacer = diam*2*Math.floor(i / pies_per_row);
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
-        .append("a")
+        
+		.append("a")
         .attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
 		.attr("target", '_blank' );
-		
+	pies.append("text")
+        .attr("dx", -(r+m))
+        .attr("dy", r+m)
+        .attr("text-anchor", "center")
+        .attr("font-size","9px")
+        .text(function(d, i) {
+			return mtx_local.columns[i].name;
+        });
     pies.selectAll("path")
         .data(pie.sort(null))
         .enter().append("path")
@@ -1037,16 +1046,17 @@ function create_piecharts(ts) {
             return string_to_color_code(unit_list[i]);;
         });
 
-    d3.selectAll("g")
-      .data(myjson_obj.names)
-      .append("text")
-      .attr("dx", -(r+m))
-      .attr("dy", r+m)
-      .attr("text-anchor", "left")
-      .attr("font-size","9px")
-      .text(function(d, i) {
-          return d;
-      });
+    // var labels = svgContainer
+   //    .data(myjson_obj.names).each
+   //    .append("text")
+   //    .attr("dx", -(r+m))
+   //    .attr("dy", r+m)
+   //    .attr("text-anchor", "left")
+   //    .attr("font-size","9px")
+   //    .text(function(d, i) {
+   //        //alert('d')
+   // 		  //return d;
+   //    });
    
 }
 
