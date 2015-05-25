@@ -5,13 +5,24 @@
 <div class='subtitle'><%= ds %></div>
 <div class='subtitle'><%= tax %></div>
 <br>
+Limited to 100 Unique Sequences
+<a href='#' onclick='window.history.back()'>&lt;&lt;--Back</a>
+<div class='overflow_500'>
 <table class='table table-condensed'>
+	<tr><td></td><th>Count</th><th>Distance</th><th>Sequence</th><th>Taxonomy</th></tr>
 <% for (r in seqrows) { %>
-   <tr><td><%=  seqrows[r].seq %></td><td><%=  seqrows[r].seq_count %></td></tr>
+   <tr>
+	   <td><%= parseInt(r)+1 %></td>
+	   <td><%= seqrows[r].seq_count %></td>
+	   <td><%= seqrows[r].gast_distance %></td>
+	   <td><%= seqrows[r].seq %></td>
+	   
+	   <td><%= seqrows[r].tax %></td>
+   </tr>
    
 <% } %>
 </table>
-
+</div>
 
   <% include ../../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
