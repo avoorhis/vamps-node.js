@@ -201,7 +201,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 	if(method == 'gast'){
 		
 		var gast_options = {
-	      scriptPath : 'public/scripts',
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
 	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
 	    };
 	    console.log(gast_options.scriptPath+'/node_script_assign_taxonomy.py '+gast_options.args.join(' '));
@@ -318,6 +318,15 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
       	res.redirect("/user_data/your_projects");
 		
 	}else{
+		var rdp_options = {
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
+	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
+	    };
+	    console.log(rdp_options.scriptPath+'/node_script_assign_taxonomy.py '+rdp_options.args.join(' '));
+		
+		var spawn = require('child_process').spawn;
+		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+		var gast_process = spawn( rdp_options.scriptPath+'/node_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		
 		req.flash('successMessage', 'RDP has been started for '+project);
 		res.redirect("/user_data/your_projects");
