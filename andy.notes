@@ -5,10 +5,11 @@ TODO: Add better pictures for ICOMM projects
 TODO: Add click fxn to all_project gmap with link to profile
 TODO: Download svg images
 TODO: check canberra distance - gives dist >> 1
-TODO: fix DENIED page
+TODO: fix-up DENIED page
 TODO: Metadata page should be a list of metadata (not search)
 		see: https://vamps.mbl.edu/portals/icomm/list_metadata.php
-		
+TODO: RDP assignment!!!
+
 2015-05-10
 To load a project into vamps:
   User Upload::
