@@ -1,3 +1,14 @@
+2015-05-26
+TODO: FIX : normalization seems to be broken
+TODO: When no lat/lon data - report if not found OR not selected on view_selection page gmap
+TODO: Add better pictures for ICOMM projects
+TODO: Add click fxn to all_project gmap with link to profile
+TODO: Download svg images
+TODO: check canberra distance - gives dist >> 1
+TODO: fix DENIED page
+TODO: Metadata page should be a list of metadata (not search)
+		see: https://vamps.mbl.edu/portals/icomm/list_metadata.php
+		
 2015-05-10
 To load a project into vamps:
   User Upload::
