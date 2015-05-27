@@ -103,7 +103,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			// must delete pid data from mysql ()
 			// and all datasets files
 			var options = {
-		      scriptPath : 'public/scripts',
+		      scriptPath : req.C.PATH_TO_SCRIPTS,
 		      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--action', 'delete_project' ],
 		    };
 			var spawn = require('child_process').spawn;
@@ -288,7 +288,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 				   });
 				   
 					// 			   		var options = {
-					// 			   	      scriptPath : 'public/scripts',
+					// 			   	      scriptPath : req.C.PATH_TO_SCRIPTS,
 					// 			   	      args :       [ '--pid',pid, '-db', NODE_DATABASE, '--add',  ],
 					// 			   	    };
 					// 			   		var counts_process = spawn( options2.scriptPath+'/process_add_project_taxcounts.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
@@ -483,13 +483,13 @@ router.post('/upload_data',  function(req,res){
 	    
 		if(req.body.type == 'single'){
 			var options = {
-		      scriptPath : 'public/scripts',
+		      scriptPath : req.C.PATH_TO_SCRIPTS,
 		      args :       [ '-dir', data_repository, '-t', 'single', '-d', req.body.dataset ],
 		    };
 	  	}else if(req.body.type == 'multi') {
 	  		console.log('Multi-in upload_data');
 				var options = {
-			      scriptPath : 'public/scripts',
+			      scriptPath : req.C.PATH_TO_SCRIPTS,
 			      args :       [ '-dir', data_repository, '-t', 'multi' ],
 			    };
   
