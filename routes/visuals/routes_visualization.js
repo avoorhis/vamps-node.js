@@ -794,7 +794,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 	
 });
 //
-//
+//  R E S E T
 //
 router.post('/reset', helpers.isLoggedIn,  function(req, res) {
 	var html = '';
@@ -810,6 +810,9 @@ router.post('/reset', helpers.isLoggedIn,  function(req, res) {
     html += "</table>";	
 	res.send(html)
 });
+//
+// A L P H A B E T I Z E
+//
 router.post('/alphabetize', helpers.isLoggedIn,  function(req, res) {
 	
 	var html = '';
