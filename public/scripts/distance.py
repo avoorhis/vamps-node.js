@@ -75,7 +75,9 @@ def calculate_distance(args):
 
 		#sys.exit()
 	elif args.metric == 'canberra':
-		#dist = dt.dist_canberra(dm)	
+		
+		#dist = dt.dist_canberra(dm)
+		#print 'canberra'
 		dist = distance.pdist(dmatrix, 'canberra')
 	
 	elif args.metric == 'jaccard':
