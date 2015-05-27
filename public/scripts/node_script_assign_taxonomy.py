@@ -28,16 +28,8 @@ import ConfigParser
 sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
 logging.info(sys.path)
 
-#try:
-import node_script_gast_run as gast
-#    logging.info('found gast script')
-#except:
-#    logging.info("run_gast is not avalable")
 
-#try:
-import node_script_rdp_run as rdp_starter
-#except:
-#    logging.info("run_rdp is not avalable")
+
 
 #try:
 import node_script_database_loader as uploader
@@ -147,13 +139,24 @@ if __name__ == '__main__':
 
     # 1-1-1-1-1-1
     if args.classifier == 'gast':
+        #try:
+        import node_script_gast_run as gast
+        #    logging.info('found gast script')
+        #except:
+        #    logging.info("run_gast is not avalable")
         logger.info("starting GAST")
         gast.start_gast(args)
-    else:
-        print "starting RDP"
+
+    elif args.classifier == 'rdp':
+        #try:
+        import node_script_rdp_run as rdp
+        #except:
+        #    logging.info("run_rdp is not avalable")
         logging.info("starting RDP")
-        rdp_starter.start_rdp(args)
-    
+        rdp.start_rdp(args)
+    else:
+        pass
+
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
 	# has sequences_file and now will load to db:

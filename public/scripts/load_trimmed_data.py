@@ -25,6 +25,7 @@ import csv
 from time import sleep
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
+py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
@@ -45,12 +46,12 @@ def get_input_data(args):
 def create_dirs(args,owner,project):
     outdir = args.outdir
     analysis_dir = os.path.join(outdir,'analysis')
-    gast_dir = os.path.join(outdir,'analysis/gast')
+    #gast_dir = os.path.join(outdir,'analysis/gast')
     if not os.path.exists(analysis_dir):
         os.makedirs(analysis_dir)
-    if os.path.exists(gast_dir):
-        shutil.rmtree(gast_dir)
-    os.makedirs(gast_dir)
+    #if os.path.exists(gast_dir):
+    #    shutil.rmtree(gast_dir)
+    #os.makedirs(gast_dir)
     
 def write_seqfiles(args,owner,project):
     outdir = args.outdir
@@ -59,7 +60,7 @@ def write_seqfiles(args,owner,project):
     files = {}
     stats = {}
     analysis_dir = os.path.join(outdir,'analysis')
-    gast_dir = os.path.join(outdir,'analysis/gast')
+    #gast_dir = os.path.join(outdir,'analysis/gast')
     if args.config_only:
         config = ConfigParser.RawConfigParser()
         
@@ -85,33 +86,37 @@ def write_seqfiles(args,owner,project):
         if args.upload_type == 'single':
             ds = args.dataset
             datasets[ds] = 0
-            file_dir = os.path.join(gast_dir,ds)
-            os.makedirs(file_dir)
-            file = os.path.join(file_dir,'seqfile.fa')
+            ds_dir = os.path.join(analysis_dir,ds)
+            os.makedirs(ds_dir)
+            file = os.path.join(ds_dir,'seqfile.fa')
             fp = open(file,'w')
             files[ds] = fp
         seq_count = 0
         ds_count = 0
-        print 'Writing seqfile.fa file to:',gast_dir 
+        
         f = fastalib.SequenceSource(fafile)
         while f.next():
             defline = f.id
             
             if args.upload_type == 'single':
                 ds = args.dataset
-                id = defline.split('|')[0].split('_')[0]
-                datasets[ds] +=1
+                # should split on pipe and space
+                #id = defline.split('|')[0].split('_')[0]
+                id = defline.replace(' ','|').split('|')[0]
+                datasets[ds] = 1
+                
                 fp.write('>'+id+"\n"+f.seq+"\n")
             else:    
             
                 try:
-                    tmp = defline.split(' ')
+                    #id = defline.replace(' ','|')
+                    tmp = defline.replace(' ','|').split('|')
                     #print defline
-                    ds = tmp[0].split('_')[0]
-                
+                    ds = tmp[0]
                     id = tmp[1]
-                    file_dir = os.path.join(gast_dir,ds)
-                    file = os.path.join(file_dir,'seqfile.fa')
+                    ds_dir = os.path.join(analysis_dir,ds)
+                    
+                    file = os.path.join(ds_dir,'seqfile.fa')
                     if ds in datasets:
                         datasets[ds] +=1
                     else:
@@ -119,7 +124,9 @@ def write_seqfiles(args,owner,project):
                     if ds in files:
                         files[ds].write('>'+id+"\n"+f.seq+"\n")
                     else:
-                        os.makedirs(file_dir)
+                        if not os.path.exists(ds_dir):
+                            os.makedirs(ds_dir)
+                        #os.makedirs(ds_dir)
                         fp = open(file,'w')
                         files[ds] = fp
                         fp.write('>'+id+"\n"+f.seq+"\n")
@@ -144,7 +151,6 @@ def write_metafile(args,owner,project,stats):
     
     f = open(mdfile_clean, 'wt')
     
-    
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
     req_for_multi = ['sample_name','dataset']
     with open(mdfile, mode='r') as infile:
@@ -165,6 +171,7 @@ def write_metafile(args,owner,project,stats):
                     #print headers
                     for n,req in enumerate(req_metadata):
                         if req not in headers:
+                            print ','.join(req_metadata)
                             sys.exit('Found Missing Required Metadata: '+req)
                     
                     if args.upload_type == 'multi':
@@ -234,7 +241,19 @@ def write_config(args,owner,project,stats):
     
     f.close()
     
-                
+def unique_seqs(args,owner,project,stats):
+    fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
+    print args
+    for dataset in stats["datasets"]:
+        print dataset
+        ds_dir = os.path.join(args.outdir, 'analysis',dataset)
+        fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
+        unique_file = os.path.join(ds_dir, 'unique.fa')
+        names_file  = os.path.join(ds_dir, 'names')
+        fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
+        ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
+        
+        
 if __name__ == '__main__':
     import argparse
     
@@ -328,6 +347,8 @@ if __name__ == '__main__':
     
     create_dirs(args,owner,project)    
     stats = write_seqfiles(args,owner,project)
+    print stats
+    unique_seqs(args,owner,project,stats)
     write_metafile(args,owner,project,stats)
     write_config(args,owner,project,stats)
         
