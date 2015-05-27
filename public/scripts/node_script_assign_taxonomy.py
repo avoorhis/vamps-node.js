@@ -35,7 +35,7 @@ import node_script_gast_run as gast
 #    logging.info("run_gast is not avalable")
 
 #try:
-#import node_script_rdp_run as rdp
+import node_script_rdp_run as rdp_starter
 #except:
 #    logging.info("run_rdp is not avalable")
 
@@ -150,11 +150,13 @@ if __name__ == '__main__':
         logger.info("starting GAST")
         gast.start_gast(args)
     else:
+        print "starting RDP"
         logging.info("starting RDP")
-        rdp.start_rdp(args)
+        rdp_starter.start_rdp(args)
     
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
+	# has sequences_file and now will load to db:
     logging.info(args.NODE_DATABASE, args.baseoutputdir)
     logging.info("starting db upload")
     pid = uploader.start(args.NODE_DATABASE, args.baseoutputdir, args.process_dir)
