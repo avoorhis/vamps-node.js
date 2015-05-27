@@ -103,7 +103,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			// must delete pid data from mysql ()
 			// and all datasets files
 			var options = {
-		      scriptPath : 'public/scripts',
+		      scriptPath : req.C.PATH_TO_SCRIPTS,
 		      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--action', 'delete_project' ],
 		    };
 			var spawn = require('child_process').spawn;
@@ -201,7 +201,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 	if(method == 'gast'){
 		
 		var gast_options = {
-	      scriptPath : 'public/scripts',
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
 	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
 	    };
 	    console.log(gast_options.scriptPath+'/node_script_assign_taxonomy.py '+gast_options.args.join(' '));
@@ -290,7 +290,23 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 				       
 				   });
 				   
+<<<<<<< HEAD
 					
+=======
+					// 			   		var options = {
+					// 			   	      scriptPath : req.C.PATH_TO_SCRIPTS,
+					// 			   	      args :       [ '--pid',pid, '-db', NODE_DATABASE, '--add',  ],
+					// 			   	    };
+					// 			   		var counts_process = spawn( options2.scriptPath+'/process_add_project_taxcounts.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+					//
+					// counts_process.stdout.on('data', function (data) {
+					// 			   		  console.log('counts_process stdout: ' + data);
+					//
+					// 			   		});
+					// 			   		counts_process.on('close', function (code) {
+					// 			   		   console.log('counts_process.py process exited with code ' + code);
+					// 			   	    });// end counts_process ON Close
+>>>>>>> c19fc0fbb62bb38b29e119c325069a6b92b25bcc
 	           }else{ // end if int
 				    console.log('ERROR pid is not an integer: '+pid.toString())
 			   }
@@ -308,10 +324,16 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		req.flash('successMessage', 'GAST has been started for '+project);
       	res.redirect("/user_data/your_projects");
 		
+<<<<<<< HEAD
 	}else if(method == 'rdp'){
 		
 		var rdp_options = {
 	      scriptPath : 'public/scripts',
+=======
+	}else{
+		var rdp_options = {
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
+>>>>>>> c19fc0fbb62bb38b29e119c325069a6b92b25bcc
 	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
 	    };
 	    console.log(rdp_options.scriptPath+'/node_script_assign_taxonomy.py '+rdp_options.args.join(' '));
@@ -479,13 +501,13 @@ router.post('/upload_data',  function(req,res){
 	    
 		if(req.body.type == 'single'){
 			var options = {
-		      scriptPath : 'public/scripts',
+		      scriptPath : req.C.PATH_TO_SCRIPTS,
 		      args :       [ '-dir', data_repository, '-t', 'single', '-d', req.body.dataset ],
 		    };
 	  	}else if(req.body.type == 'multi') {
 	  		console.log('Multi-in upload_data');
 				var options = {
-			      scriptPath : 'public/scripts',
+			      scriptPath : req.C.PATH_TO_SCRIPTS,
 			      args :       [ '-dir', data_repository, '-t', 'multi' ],
 			    };
   
