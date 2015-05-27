@@ -267,10 +267,13 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 					       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
 					       console.log(' UPDATED DATASET_IDS_BY_PID');
 					       console.log(' UPDATED DATASET_NAME_BY_DID');
+						   console.log(' UPDATED DATASET_ID_BY_DNAME');
 					   } // end else
 				       
 				   });
 			   
+				   //
+				   //  ???? what about AllMetadataNames DatasetsWithLatLong ????
 				   //
 				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows, fields){  			     
 				       if (err)  {
@@ -287,21 +290,9 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 				       
 				   });
 				   
-					// 			   		var options = {
-					// 			   	      scriptPath : 'public/scripts',
-					// 			   	      args :       [ '--pid',pid, '-db', NODE_DATABASE, '--add',  ],
-					// 			   	    };
-					// 			   		var counts_process = spawn( options2.scriptPath+'/process_add_project_taxcounts.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-					//
-					// counts_process.stdout.on('data', function (data) {
-					// 			   		  console.log('counts_process stdout: ' + data);
-					//
-					// 			   		});
-					// 			   		counts_process.on('close', function (code) {
-					// 			   		   console.log('counts_process.py process exited with code ' + code);
-					// 			   	    });// end counts_process ON Close
+					
 	           }else{ // end if int
-				    console.log('ERROR pid is not an integer: '+pid)
+				    console.log('ERROR pid is not an integer: '+pid.toString())
 			   }
 		   }else{
 		   		// ERROR
@@ -317,10 +308,22 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		req.flash('successMessage', 'GAST has been started for '+project);
       	res.redirect("/user_data/your_projects");
 		
-	}else{
+	}else if(method == 'rdp'){
+		
+		var rdp_options = {
+	      scriptPath : 'public/scripts',
+	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process_dir, '--data_dir', data_dir, '-db', NODE_DATABASE ],
+	    };
+	    console.log(rdp_options.scriptPath+'/node_script_assign_taxonomy.py '+rdp_options.args.join(' '));
+		
+		var spawn = require('child_process').spawn;
+		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+		var gast_process = spawn( rdp_options.scriptPath+'/node_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		
 		req.flash('successMessage', 'RDP has been started for '+project);
 		res.redirect("/user_data/your_projects");
+		
+	}else{
 		
 	}
 	
@@ -346,8 +349,8 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	        if(pts[0] === 'project'){
 				
 				var project_name = pts[1];
-  	          	var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
-			  
+				var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
+				
   			  if(stat_dir.isDirectory()){
   				  // stat.mtime.getTime() is for sorting to list in oreder
   				  
@@ -364,17 +367,19 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	  				  project_info[stat_dir.mtime.getTime()] = {}
 	  				  modify_times.push(stat_dir.mtime.getTime());
 					  console.log('2 ',config_file)
-  				  	  
+						if(project_name in PROJECT_INFORMATION_BY_PNAME){
+							project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
+							project_info[stat_dir.mtime.getTime()].tax = 'GAST';  // TODO this needs to be read from db or config file; vals GAST, RDP , 0 (not assigned)
+						}else{
+						  	project_info[stat_dir.mtime.getTime()].pid = 0;
+						  	project_info[stat_dir.mtime.getTime()].status = 'No Taxonomic Assignments Yet';
+						  	project_info[stat_dir.mtime.getTime()].tax = 0;
+						}
   				  	  project_info[stat_dir.mtime.getTime()].config = config;
   				  	  project_info[stat_dir.mtime.getTime()].directory = items[d];
   				  	  project_info[stat_dir.mtime.getTime()].mtime = stat_dir.mtime;
-					  if(project_name in PROJECT_INFORMATION_BY_PNAME){
-					  		project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
-							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
-					  }else{
-						  project_info[stat_dir.mtime.getTime()].pid = 0;
-						  project_info[stat_dir.mtime.getTime()].status = 'No Taxonomic Assignments Yet'
-					  }
+					  
 					  
 				  }
 				  catch (err) {
