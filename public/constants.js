@@ -122,6 +122,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 
 config.PATH_TO_SCRIPTS = path.join('public','scripts');
+config.PATH_TO_EXTERNALSCRIPTS = '/Users/avoorhis/programming/python_pipeline/';
 
 module.exports = config;
 
