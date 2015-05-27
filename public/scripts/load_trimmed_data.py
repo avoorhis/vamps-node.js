@@ -171,6 +171,7 @@ def write_metafile(args,owner,project,stats):
                     #print headers
                     for n,req in enumerate(req_metadata):
                         if req not in headers:
+                            print ','.join(req_metadata)
                             sys.exit('Found Missing Required Metadata: '+req)
                     
                     if args.upload_type == 'multi':
