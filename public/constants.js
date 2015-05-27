@@ -1,5 +1,5 @@
 var config = {};
-
+var path = require("path");
 //console.log( JSON.stringify(datasets_by_project_all) );
 config.ENV_SOURCE = { 
         10: "air",
@@ -112,7 +112,6 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',			link:'user_viz_data/dendrogram',    id:'dendrogram1_link_id'    },
 	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram2_link_id'    },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram_pdf_link_id'    },
-	
     {name:'PCoA Analyses (R-pdf)',      thumb:'/images/visuals/pcoa.png',        		link:'user_viz_data/pcoa',          id: 'pcoa_link_id'    },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',		link:'user_viz_data/counts_table',  id:'counts_table_link_id'    },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    		link:'user_viz_data/metadata_table',id:'metadata_table_link_id'     },
@@ -121,6 +120,9 @@ config.VISUAL_THUMBNAILS = { visuals: [
 ]};
     
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
+
+config.PATH_TO_SCRIPTS = path.join('public','scripts');
+config.PATH_TO_EXTERNALSCRIPTS = '/Users/avoorhis/programming/python_pipeline/';
 
 module.exports = config;
 
