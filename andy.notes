@@ -1,5 +1,5 @@
 2015-05-26
-TODO: FIX : normalization seems to be broken
+DONE: FIX : normalization seems to be broken
 TODO: When no lat/lon data - report if not found OR not selected on view_selection page gmap
 TODO: Add better pictures for ICOMM projects
 TODO: Add click fxn to all_project gmap with link to profile

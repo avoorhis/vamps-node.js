@@ -189,7 +189,7 @@ module.exports = {
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 
-			if(post_items.update_data === true){
+			if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === '1'){
 
 				biom_matrix = this.get_custom_biom_matrix( post_items, biom_matrix );
 
@@ -251,7 +251,8 @@ module.exports = {
         // Adjust for normalization
         var tmp1 = [];
         if (norm === 'maximum'|| norm === 'max') {
-            for(var cc in custom_count_matrix.data) {
+            console.log('calculating norm MAX')
+			for(var cc in custom_count_matrix.data) {
               new_counts = [];
               for (var kc in custom_count_matrix.data[cc]) {
                   new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
@@ -261,7 +262,8 @@ module.exports = {
             }
             custom_count_matrix.data = tmp1;
         }else if(norm === 'frequency' || norm === 'freq'){
-            for (var cc1 in custom_count_matrix.data) {
+            console.log('calculating norm FREQ')
+			for (var cc1 in custom_count_matrix.data) {
               new_counts = [];
               for (var kc1 in custom_count_matrix.data[cc1]) {
                   new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
@@ -271,6 +273,7 @@ module.exports = {
             custom_count_matrix.data = tmp1;
         }else{
           // nothing here
+			console.log('no-calculating norm NORM')
         }
 
         // re-calculate totals

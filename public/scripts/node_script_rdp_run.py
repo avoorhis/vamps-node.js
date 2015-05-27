@@ -28,7 +28,7 @@ import subprocess
 logger = logging.getLogger('')
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 #try:
-import node_script_fasta2tax as fasta2tax
+import rdp
 #logging.info('found node_script_fasta2tax script')
 #except:
 #    logging.info("node_script_fasta2tax is not avalable")
@@ -46,6 +46,7 @@ def start_rdp(args):
       Doc string
     """
     print args
+    datasets = {}
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):
         print( "Could not find config file ("+info_load_infile+") **Exiting**")
@@ -70,7 +71,7 @@ def start_rdp(args):
     
     global_gast_dir = os.path.join(args.baseoutputdir,'analysis','gast')
     fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
-    
+    total_uniques = 0
     for dataset_item in config.items('DATASETS'):
          dataset = dataset_item[0]
          dscount = dataset_item[1]
@@ -79,41 +80,46 @@ def start_rdp(args):
          fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
          unique_file = os.path.join(ds_dir, 'unique.fa')
          names_file  = os.path.join(ds_dir, 'names')
+         rdp_out_file = os.path.join(ds_dir, 'rdp_out.txt')
          fastaunique_call = fastaunique_cmd +" "+fasta_file+" -o "+unique_file+" -n "+names_file
+         print 'fastaunique_call',fastaunique_call
          #fastaunique_call = [fastaunique_cmd,fasta_file,"-o "+unique_file,"-n "+names_file,"-f"]
          #print fastaunique_call
-         ds_unique_seq_count = subprocess.call(fastaunique_call, shell=True)
-        
+         ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
+         print 'ds_unique_seq_count',ds_unique_seq_count
          
-         total_uniques += int(ds_unique_seq_count)
+         #total_uniques += int(ds_unique_seq_count)
+         logging.info("starting RDP")
+         print 'running rdp'
+         print unique_file,rdp_out_file
+         rdp.run_rdp(unique_file,rdp_out_file)
          
-         fasta2tax()
-        
-         datasets[dataset]=ds_seq_count
-        
-         fasta2tax_cmd = rdp_apps_directory+"/fasta2tax.pl "
-         fasta2tax_cmd += " --user="+user
-         fasta2tax_cmd += " --inputfile="+unique_file
-         fasta2tax_cmd += " --project="+project
-         fasta2tax_cmd += " --dataset="+dataset
-         fasta2tax_cmd += " --path-to-apps="+rdp_apps_directory
-         fasta2tax_cmd += " --database="+dbName_vamps
-         fasta2tax_cmd += " --table1=vamps_data_cube_uploads";
-         fasta2tax_cmd += " --table2=vamps_junk_data_cube_pipe";
-         fasta2tax_cmd += " --db_hostname="+db_hostname_vamps
-         fasta2tax_cmd += " --db-user="+db_user
-         fasta2tax_cmd += " --db-password="+db_password
-         #fasta2tax_cmd += " & ";
-           
-         print  fasta2tax_cmd
-         fasta2tax_result = subprocess.call(fasta2tax_cmd, shell=True)
-         print "updating vamps_projects_datasets_pipe"
-         updatePDP = "INSERT INTO vamps_projects_datasets_pipe (project,dataset,has_tax,date_trimmed,dataset_count)\
-                 VALUES('"+project+"','"+dataset+"','1','"+today+"','"+str(ds_seq_count)+"') \
-                 ON DUPLICATE KEY UPDATE has_tax='1'";
-                
-         #updatePDP = "UPDATE vamps_projects_datasets_pipe set has_tax='1' where project='"+project+"' and dataset='"+dataset+"'";
-         vamps_cursor.execute(updatePDP)
+         # datasets[dataset]=dscount
+         #
+         # fasta2tax_cmd = py_pipeline_path+"/fasta2tax.pl "
+         # fasta2tax_cmd += " --user="+user
+         # fasta2tax_cmd += " --inputfile="+unique_file
+         # fasta2tax_cmd += " --project="+project
+         # fasta2tax_cmd += " --dataset="+dataset
+         # #fasta2tax_cmd += " --path-to-apps="+rdp_apps_directory
+         # fasta2tax_cmd += " --database="+dbName_vamps
+         # fasta2tax_cmd += " --table1=vamps_data_cube_uploads";
+         # fasta2tax_cmd += " --table2=vamps_junk_data_cube_pipe";
+         # fasta2tax_cmd += " --db_hostname="+db_hostname_vamps
+         # fasta2tax_cmd += " --db-user="+db_user
+         # fasta2tax_cmd += " --db-password="+db_password
+         # fasta2tax_cmd += " & ";
+         #
+         # print  fasta2tax_cmd
+         sys.exit('QUIT')
+         # fasta2tax_result = subprocess.call(fasta2tax_cmd, shell=True)
+         # print "updating vamps_projects_datasets_pipe"
+         # updatePDP = "INSERT INTO vamps_projects_datasets_pipe (project,dataset,has_tax,date_trimmed,dataset_count)\
+         #         VALUES('"+project+"','"+dataset+"','1','"+today+"','"+str(ds_seq_count)+"') \
+         #         ON DUPLICATE KEY UPDATE has_tax='1'";
+         #
+         # #updatePDP = "UPDATE vamps_projects_datasets_pipe set has_tax='1' where project='"+project+"' and dataset='"+dataset+"'";
+         # vamps_cursor.execute(updatePDP)
     
 
             
