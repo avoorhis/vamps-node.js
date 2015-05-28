@@ -22,9 +22,9 @@ import time
 import random
 import csv
 from time import sleep
-#import logging
 import ConfigParser
 from IlluminaUtils.lib import fastalib
+
 import datetime
 import logging
 today = str(datetime.date.today())
@@ -83,6 +83,8 @@ RANK_COLLECTOR={}
 TAX_ID_BY_RANKID_N_TAX = {}
 SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
+silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
+accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
 #         {'name':'klass',  'id':5,'num':2},
@@ -91,19 +93,21 @@ ranks =['domain','phylum','klass','order','family','genus','species','strain']
 #         {'name':'genus',  'id':9,'num':5},
 #         {'name':'species','id':10,'num':6},
 #         {'name':'strain', 'id':11,'num':7}]
-logger = logging.getLogger('')
 
-def start(NODE_DATABASE, indir, process_dir):
+
+def start(args):
+    
+    NODE_DATABASE = args.NODE_DATABASE
+    
+    process_dir = args.process_dir
+    classifier = args.classifier
     
     global mysql_conn
     global cur
-    LOG_FILENAME = os.path.join(indir,'log.txt')
+    
+    
    
-    
-    
-    logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
-                            format="%(asctime)-15s %(levelname)-8s %(message)s")
-    os.chdir(indir)
+    os.chdir(args.basedir)
     
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
@@ -112,40 +116,40 @@ def start(NODE_DATABASE, indir, process_dir):
     cur = mysql_conn.cursor()
     
     
-    logger.info("running get_config_data")
-    get_config_data(indir)
+    logging.info("running get_config_data")
+    get_config_data(args.basedir)
     
-    logger.info("checking user")
+    logging.info("checking user")
     check_user()  ## script dies if user not in db
     
-    logger.info("recreating ranks")
+    logging.info("recreating ranks")
     recreate_ranks()
     
-    logger.info("env sources")
+    logging.info("env sources")
     create_env_source()
     
-    logger.info("classifier")
+    logging.info("classifier")
     create_classifier()
     
-    logger.info("starting taxonomy")
-    push_taxonomy(indir)
+    logging.info("starting taxonomy")
+    push_taxonomy(args)
     
-    logger.info("starting sequences")
+    logging.info("starting sequences")
     push_sequences()
     
-    logger.info("projects")
+    logging.info("projects")
     push_project()
     
-    logger.info("datasets")
+    logging.info("datasets")
     push_dataset()
     
     #push_summed_counts()
-    logger.info("starting push_pdr_seqs")
-    push_pdr_seqs()
+    logging.info("starting push_pdr_seqs")
+    push_pdr_seqs(args)
     
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
-    logger.info("Finished database_importer.py")
+    logging.info("Finished database_importer.py")
     
     return CONFIG_ITEMS['project_id']
     
@@ -176,37 +180,19 @@ def recreate_ranks():
     for i,rank in enumerate(ranks):
         
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
-        logger.info(q)
+        logging.info(q)
         cur.execute(q)
         rank_id = cur.lastrowid
         if rank_id==0:
             q = "SELECT rank_id from rank where rank='"+rank+"'"
-            logger.info(q)
+            logging.info(q)
             cur.execute(q)
             row = cur.fetchone()
             RANK_COLLECTOR[rank] = row[0]
         else:
             RANK_COLLECTOR[rank] = rank_id
     mysql_conn.commit()
-    
-def push_dataset():
-    fields = ['dataset','dataset_description','env_sample_source_id','project_id']
-    q = "INSERT into dataset ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s')"
-    for ds in CONFIG_ITEMS['datasets']:
-        desc = ds+'_description'
-        #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
-        q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
-        logger.info(q4)
-        try:
-            cur.execute(q4)
-            did = cur.lastrowid
-            DATASET_ID_BY_NAME[ds]=did
-        except:
-            print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
-            sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
-    mysql_conn.commit()
-    
+
 def push_project():
     desc = "Project Description"
     title = "Title"
@@ -216,28 +202,59 @@ def push_project():
     id = CONFIG_ITEMS['owner_id']
     pub = 0 if CONFIG_ITEMS['public'] else 1
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
-    q = "INSERT ignore into project ("+(',').join(fields)+")"
+    q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
+    print q
+    logging.info(q)
+    print cur.lastrowid
+    try:
+        cur.execute(q)
+        CONFIG_ITEMS['project_id'] = cur.lastrowid
+        logging.info("PID="+str(CONFIG_ITEMS['project_id']))
+        mysql_conn.commit()
+        print cur.lastrowid
+    except:
+        print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
+        sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
     
-    logger.info(q)
-    cur.execute(q)
     
-    CONFIG_ITEMS['project_id'] = cur.lastrowid
-    logger.info("PID="+str(CONFIG_ITEMS['project_id']))
+        
+def push_dataset():
+    fields = ['dataset','dataset_description','env_sample_source_id','project_id']
+    q = "INSERT into dataset ("+(',').join(fields)+")"
+    q += " VALUES('%s','%s','%s','%s')"
+    for ds in CONFIG_ITEMS['datasets']:
+        desc = ds+'_description'
+        #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
+        q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
+        logging.info(q4)
+        print q4
+        try:
+            cur.execute(q4)
+            did = cur.lastrowid
+            DATASET_ID_BY_NAME[ds]=did
+        except:
+            print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
+            sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
     mysql_conn.commit()
     
 
+    
 
-def push_pdr_seqs():
+
+def push_pdr_seqs(args):
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             did = DATASET_ID_BY_NAME[ds]
             seqid = SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
             q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count,classifier_id)"
-            q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
-            logger.info(q)
+            if args.classifier == 'gast':
+                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
+            elif args.classifier == 'rdp':
+                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','1')"
+            logging.info(q)
             cur.execute(q)
     mysql_conn.commit()
     
@@ -246,13 +263,13 @@ def push_sequences():
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('"+seq+"'))"
-            logger.info(q)
+            logging.info(q)
             cur.execute(q)
             mysql_conn.commit()
             seqid = cur.lastrowid
             if seqid == 0:
                 q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('"+seq+"')"
-                logger.info('DUP SEQ FOUND')
+                logging.info('DUP SEQ FOUND')
                 cur.execute(q2)
                 mysql_conn.commit() 
                 row = cur.fetchone()
@@ -260,13 +277,13 @@ def push_sequences():
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
             distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
-            logger.info( ds,seq,silva_tax_id)
+            #logging.info( ds,seq, silva_tax_id)
             rank_id = str(SEQ_COLLECTOR[ds][seq]['rank_id'])
-            logger.info( rank_id)
+            logging.info( rank_id)
             q = "INSERT ignore into silva_taxonomy_info_per_seq"
             q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
             q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
-            logger.info(q)
+            logging.info(q)
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
@@ -284,7 +301,7 @@ def push_sequences():
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
             q4 += " VALUES('"+str(seqid)+"','"+str(silva_tax_seq_id)+"')"
-            logger.info(q4)
+            logging.info(q4)
             cur.execute(q4)
             mysql_conn.commit()
         ## don't see that we need to save uniq_ids
@@ -345,177 +362,343 @@ def push_sequences():
 #                 cur.execute(q)
 #     mysql_conn.commit()
                                
-def push_taxonomy(indir):
+def run_gast_tax_file(args,ds,tax_file):
+    #tax_collector = {}
+    with open(tax_file,'r') as fh:
+        for line in fh:
+            
+            items = line.strip().split("\t")
+            if items[0] == 'HEADER': continue
+            seq = items[0]
+            ds_file = items[2]
+            if ds_file != ds:
+                sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
+            tax_string = items[3]
+            refhvr_ids = items[4]
+            rank = items[5]
+            if rank == 'class': rank = 'klass'
+            if rank == 'orderx': rank = 'order'
+            seq_count = items[6]
+            distance = items[8]
+            finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+            
+            
+            
+
+            # SEQ_COLLECTOR[ds][seq] = {'dataset':ds,
+            #                       'taxonomy':tax_string,
+            #                       'refhvr_ids':refhvr_ids,
+            #                       'rank':rank,
+            #                       'seq_count':seq_count,
+            #                       'distance':distance
+            #                       }
+            # q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
+            #
+            # cur.execute(q1)
+            # mysql_conn.commit()
+            #
+            # row = cur.fetchone()
+            #
+            # SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
+            #
+            # tax_items = tax_string.split(';')
+            #
+            #
+            #
+            #
+            #
+            # #print tax_string
+            # sumtax = ''
+            # for i in range(0,8):
+            #
+            #     rank_id = RANK_COLLECTOR[ranks[i]]
+            #     if len(tax_items) > i:
+            #
+            #         taxitem = tax_items[i]
+            #
+            #     else:
+            #         taxitem = ranks[i]+'_NA'
+            #     sumtax += taxitem+';'
+            #
+            #     #print ranks[i],rank_id,taxitem,sumtax,seq_count
+            #     if rank_id in SUMMED_TAX_COLLECTOR[ds]:
+            #         if sumtax[:-1] in SUMMED_TAX_COLLECTOR[ds][rank_id]:
+            #             SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] += int(seq_count)
+            #         else:
+            #             SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+            #
+            #     else:
+            #         SUMMED_TAX_COLLECTOR[ds][rank_id] = {}
+            #         SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+            #
+            # #for i in range(0,8):
+            # #insert_nas()
+            #
+            # if tax_items[0].lower() in accepted_domains:
+            #     ids_by_rank = []
+            #     for i in range(0,8):
+            #         #print i,len(tax_items),tax_items[i]
+            #         rank_name = ranks[i]
+            #         rank_id = RANK_COLLECTOR[ranks[i]]
+            #
+            #         if len(tax_items) > i:
+            #             if ranks[i] == 'species':
+            #                 t = tax_items[i].lower()
+            #             else:
+            #                 t = tax_items[i].capitalize()
+            #
+            #             if tax_items[i].lower() != (rank_name+'_NA').lower():
+            #                 name_found = False
+            #                 # if rank_name in tax_collector:
+            #                 #     tax_collector[rank_name].append(t)
+            #                 # else:
+            #                 #     tax_collector[rank_name] = [t]
+            #         else:
+            #             t = rank_name+'_NA'
+            #
+            #
+            #
+            #         q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
+            #         logging.info(q2)
+            #         cur.execute(q2)
+            #         mysql_conn.commit()
+            #         tax_id = cur.lastrowid
+            #         if tax_id == 0:
+            #             q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
+            #             logging.info( q3 )
+            #             cur.execute(q3)
+            #             mysql_conn.commit()
+            #             row = cur.fetchone()
+            #             tax_id=row[0]
+            #         ids_by_rank.append(str(tax_id))
+            #         #else:
+            #         logging.info( 'rank_id,t,tax_id',rank_id,t,tax_id  )
+            #         if rank_id in TAX_ID_BY_RANKID_N_TAX:
+            #             TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            #         else:
+            #             TAX_ID_BY_RANKID_N_TAX[rank_id]={}
+            #             TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            #         #ids_by_rank.append('1')
+            #     logging.info(  ids_by_rank )
+            #     q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
+            #     q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
+            #     #
+            #     logging.info(q4)
+            #     cur.execute(q4)
+            #     mysql_conn.commit()
+            #     silva_tax_id = cur.lastrowid
+            #     if silva_tax_id == 0:
+            #         q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
+            #         vals = ''
+            #         for i in range(0,len(silva)):
+            #             vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
+            #         q5 = q5 + vals[0:-3] + ')'
+            #         logging.info(q5)
+            #         cur.execute(q5)
+            #         mysql_conn.commit()
+            #         row = cur.fetchone()
+            #         silva_tax_id=row[0]
+            #
+            #     SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
+            #     SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
+            #     mysql_conn.commit()
+#
+#
+#                
+def run_rdp_tax_file(args,ds,tax_file,seq_file): 
+    minboot = 80
     
-    gast_dir = os.path.join(indir,'analysis/gast') 
+    f = fastalib.SequenceSource(seq_file)
+    tmp_seqs = {}
     
+    while f.next():
+        id = f.id.split('|')[0]
+        tmp_seqs[id]= f.seq
+    f.close()
+        
+        
+    with open(tax_file,'r') as fh:
+        for line in fh:
+            tax_items = []
+            items = line.strip().split("\t")
+            
+            # ['21|frequency:1', '', 'Bacteria', 'domain', '1.0', '"Firmicutes"', 'phylum', '1.0', '"Clostridia"', 'class', '1.0', 'Clostridiales', 'order', '1.0', '"Ruminococcaceae"', 'family', '1.0', 'Faecalibacterium', 'genus', '1.0']
+            # if boot_value > minboot add to tax_string
+            seq_id = items[0].split('|')[0]
+            seq_count = items[0].split(':')[1]
+            tax_line = items[2:]
+            #print tax_line
+            for i in range(0,len(tax_line),3):
+                  #print i,tax_line[i]
+                  tax_name = tax_line[i].strip('"').strip("'")
+                  rank = tax_line[i+1]
+                  boot = float(tax_line[i+2])*100
+                  #print boot,minboot
+                  if i==0 and tax_name.lower() in accepted_domains and boot >minboot:
+                      tax_items.append(tax_name)
+                  elif boot > minboot:
+                      tax_items.append(tax_name)
+                  else:
+                      pass
+            rank = ranks[len(tax_items)-1]
+            tax_string = ';'.join(tax_items)
+            seq= tmp_seqs[seq_id]
+            distance = 1
+            refhvr_ids = ''
+            finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+            
+            
+def finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items):
+    #tax_collector = {}        
+    if ds not in SUMMED_TAX_COLLECTOR:
+        SUMMED_TAX_COLLECTOR[ds]={}
+    
+    SEQ_COLLECTOR[ds][seq] = {'dataset':ds,
+                          'taxonomy':tax_string,
+                          'refhvr_ids':'',
+                          'rank':rank,
+                          'seq_count':seq_count,
+                          'distance':distance
+                          }
+    q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
+    
+    cur.execute(q1)
+    mysql_conn.commit()
+   
+    row = cur.fetchone()
+    
+    SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]          
+    print rank,tax_string
+    
+   
+    
+    sumtax = ''
+    for i in range(0,8):
+        
+        rank_id = RANK_COLLECTOR[ranks[i]]
+        if len(tax_items) > i:
+            
+            taxitem = tax_items[i]
+            
+        else:
+            taxitem = ranks[i]+'_NA'
+        sumtax += taxitem+';'
+        
+        #print ranks[i],rank_id,taxitem,sumtax,seq_count
+        if rank_id in SUMMED_TAX_COLLECTOR[ds]:
+            if sumtax[:-1] in SUMMED_TAX_COLLECTOR[ds][rank_id]:
+                SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] += int(seq_count)
+            else:
+                SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+                
+        else:
+            SUMMED_TAX_COLLECTOR[ds][rank_id] = {}
+            SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+
+    #for i in range(0,8):
+    #insert_nas()    
+    
+    if tax_items[0].lower() in accepted_domains:
+        ids_by_rank = []
+        for i in range(0,8):
+            #print i,len(tax_items),tax_items[i]
+            rank_name = ranks[i]
+            rank_id = RANK_COLLECTOR[ranks[i]]
+            
+            if len(tax_items) > i:
+                if ranks[i] == 'species':
+                    t = tax_items[i].lower()
+                else:
+                    t = tax_items[i].capitalize()
+                
+                if tax_items[i].lower() != (rank_name+'_NA').lower():
+                    name_found = False
+                    # if rank_name in tax_collector:
+                    #     tax_collector[rank_name].append(t)
+                    # else:
+                    #     tax_collector[rank_name] = [t]
+            else:
+                t = rank_name+'_NA'
+            
+            
+                
+            q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
+            logging.info(q2)
+            cur.execute(q2)
+            mysql_conn.commit() 
+            tax_id = cur.lastrowid
+            if tax_id == 0:
+                q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
+                logging.info( q3 )
+                cur.execute(q3)
+                mysql_conn.commit() 
+                row = cur.fetchone()
+                tax_id=row[0]
+            ids_by_rank.append(str(tax_id))
+            #else:
+            #logging.info( 'rank_id,t,tax_id',rank_id,t,tax_id  )  
+            if rank_id in TAX_ID_BY_RANKID_N_TAX:
+                TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            else:
+                TAX_ID_BY_RANKID_N_TAX[rank_id]={}
+                TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
+            #ids_by_rank.append('1')
+        logging.info(  ids_by_rank )  
+        q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
+        q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
+        #
+        logging.info(q4)
+        cur.execute(q4)
+        mysql_conn.commit() 
+        silva_tax_id = cur.lastrowid
+        if silva_tax_id == 0:
+            q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
+            vals = ''
+            for i in range(0,len(silva)):
+                vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
+            q5 = q5 + vals[0:-3] + ')'
+            logging.info(q5)
+            cur.execute(q5)
+            mysql_conn.commit() 
+            row = cur.fetchone()
+            silva_tax_id=row[0]
+        
+        SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
+        SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
+        mysql_conn.commit()
+                
+                
+                
+    #print SEQ_COLLECTOR
+                
+                
+            
+            
+            
+def push_taxonomy(args):
+    indir = args.basedir
+    classifier = args.classifier
+    #gast_dir = os.path.join(indir,'analysis/gast') 
+    analysis_dir = os.path.join(indir,'analysis') 
     #print  general_config_items
-    silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
-    accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
-    tax_collector = {}
     
-    for dir in os.listdir(gast_dir): 
+    
+    
+    for dir in os.listdir(analysis_dir): 
         ds = dir
         SEQ_COLLECTOR[ds] = {}
-        tax_file = os.path.join(gast_dir, dir, 'vamps_sequences_pipe.txt')
-        #print tax_file
-        with open(tax_file,'r') as fh:
-            for line in fh:
-                
-                items = line.strip().split("\t")
-                if items[0] == 'HEADER': continue
-                seq = items[0]
-                ds_file = items[2]
-                if ds_file != ds:
-                    sys.exit('Dataset file--name mismatch -- Confused! Exiting!')
-                tax_string = items[3]
-                refhvr_ids = items[4]
-                rank = items[5]
-                if rank == 'class': rank = 'klass'
-                if rank == 'orderx': rank = 'order'
-                seq_count = items[6]
-                distance = items[8]
-                
-                
-                if ds not in SUMMED_TAX_COLLECTOR:
-                    SUMMED_TAX_COLLECTOR[ds]={}
-                
-                
-    
-                SEQ_COLLECTOR[ds][seq] = {'dataset':ds,
-                                      'taxonomy':tax_string,
-                                      'refhvr_ids':refhvr_ids,
-                                      'rank':rank,
-                                      'seq_count':seq_count,
-                                      'distance':distance
-                                      }
-                q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
-                
-                cur.execute(q1)
-                mysql_conn.commit()
-               
-                row = cur.fetchone()
-                
-                SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]
-                    
-                tax_items = tax_string.split(';')
-                #print tax_string
-                sumtax = ''
-                for i in range(0,8):
-                    
-                    rank_id = RANK_COLLECTOR[ranks[i]]
-                    if len(tax_items) > i:
-                        
-                        taxitem = tax_items[i]
-                        
-                    else:
-                        taxitem = ranks[i]+'_NA'
-                    sumtax += taxitem+';'
-                    
-                    #print ranks[i],rank_id,taxitem,sumtax,seq_count
-                    if rank_id in SUMMED_TAX_COLLECTOR[ds]:
-                        if sumtax[:-1] in SUMMED_TAX_COLLECTOR[ds][rank_id]:
-                            SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] += int(seq_count)
-                        else:
-                            SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
-                            
-                    else:
-                        SUMMED_TAX_COLLECTOR[ds][rank_id] = {}
-                        SUMMED_TAX_COLLECTOR[ds][rank_id][sumtax[:-1]] = int(seq_count)
+        if classifier == 'gast':
+            tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
+            run_gast_tax_file(args,ds,tax_file)
+        elif classifier == 'rdp':
+            tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
+            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
+            run_rdp_tax_file(args,ds,tax_file,unique_file)
+        else:
+            sys.exit('No classifier found')
  
-                #for i in range(0,8):
-                #insert_nas()    
-                
-                if tax_items[0].lower() in accepted_domains:
-                    ids_by_rank = []
-                    for i in range(0,8):
-                        #print i,len(tax_items),tax_items[i]
-                        rank_name = ranks[i]
-                        rank_id = RANK_COLLECTOR[ranks[i]]
-                        
-                        if len(tax_items) > i:
-                            if ranks[i] == 'species':
-                                t = tax_items[i].lower()
-                            else:
-                                t = tax_items[i].capitalize()
-                            
-                            if tax_items[i].lower() != (rank_name+'_NA').lower():
-                                name_found = False
-                                if rank_name in tax_collector:
-                                    tax_collector[rank_name].append(t)
-                                else:
-                                    tax_collector[rank_name] = [t]
-                        else:
-                            t = rank_name+'_NA'
-                        
-                        
-                            
-                        q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
-                        logger.info(q2)
-                        cur.execute(q2)
-                        mysql_conn.commit() 
-                        tax_id = cur.lastrowid
-                        if tax_id == 0:
-                            q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
-                            logger.info( q3 )
-                            cur.execute(q3)
-                            mysql_conn.commit() 
-                            row = cur.fetchone()
-                            tax_id=row[0]
-                        ids_by_rank.append(str(tax_id))
-                        #else:
-                        logger.info( 'rank_id,t,tax_id',rank_id,t,tax_id  )  
-                        if rank_id in TAX_ID_BY_RANKID_N_TAX:
-                            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-                        else:
-                            TAX_ID_BY_RANKID_N_TAX[rank_id]={}
-                            TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
-                        #ids_by_rank.append('1')
-                    logger.info(  ids_by_rank )  
-                    q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
-                    q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
-                    #
-                    logger.info(q4)
-                    cur.execute(q4)
-                    mysql_conn.commit() 
-                    silva_tax_id = cur.lastrowid
-                    if silva_tax_id == 0:
-                        q5 = "SELECT silva_taxonomy_id from silva_taxonomy where ("
-                        vals = ''
-                        for i in range(0,len(silva)):
-                            vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
-                        q5 = q5 + vals[0:-3] + ')'
-                        logger.info(q5)
-                        cur.execute(q5)
-                        mysql_conn.commit() 
-                        row = cur.fetchone()
-                        silva_tax_id=row[0]
-                    
-                    SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
-                    SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
-                    mysql_conn.commit() 
- #    for rank in tax_collector:
-#         for name in tax_collector[rank]:
-#             
-#             q = "insert ignore into `"+rank+"` (`"+rank+"`) VALUES('"+name+"')"
-#             
-#             #print q
-#             cur.execute(q)
-#             id = cur.lastrowid
-    #print 'SEQ_COLLECTOR'
-    #print SEQ_COLLECTOR
-    
-    #print SILVA_IDS_BY_TAX
-    #db.commit() 
-# def insert_nas():
-#     for table in ranks:
-#         i = table+'_NA'
-#         q = "INSERT ignore into `"+table+"` (`"+table+"`) VALUES('"+i+"')"
-#         if table != 'domain':
-#             cur.execute(q)
-#     db.commit()
-    logger.info( 'SUMMED_TAX_COLLECTOR')
-    logger.info( SUMMED_TAX_COLLECTOR)
+    logging.info( 'SUMMED_TAX_COLLECTOR')
+    logging.info( SUMMED_TAX_COLLECTOR)
              
 def get_config_data(indir):
     # convert a vamps user upload config file: use INFO-TAX.config

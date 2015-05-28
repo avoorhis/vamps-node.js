@@ -39,49 +39,69 @@ cur = db.cursor()
 # Global:
 
     
-
-def clean_out_project(args):
-    print 'cleaning'
+def get_data(args):
     cur.execute("USE "+args.NODE_DATABASE)
     
-    q = "select dataset_id,project_id from dataset where project_id='"+args.pid+"'"
-    
+    q = "select dataset_id,project_id,project from dataset JOIN project USING(project_id) where project_id='"+args.pid+"'"
     
     print q
     cur.execute(q)
     db.commit()
     dids = []
+    proj = ''
     if not cur.rowcount:
-        print "No project found -- Exiting"
-        sys.exit("No project found -- Exiting")
+        print "No project found -- Continuing on"
     for row in cur.fetchall():
         did = str(row[0])
+        proj = row[2]
         dids.append(did)
         pid = row[1]
+        
+        
+    return (proj,dids)
+    
+        
+            
+            
+def delete_whole_project(args,proj,dids):
+    print 'cleaning'
+    
+    for did in dids:
         did_file = os.path.join('public','json', args.NODE_DATABASE+'--taxcounts', did+'.json')
         print did_file
         try:
             os.remove(did_file)
         except OSError:
             print "File Not Found: "+did_file
-        
+    # delete files in public/json/NODE_DATABASE/args.user/pid.json
+    # grab taxcounts
+    # grab metadata
+    # delete dir: /user_data/NODE_DATABASE/args.user/project:''
+    if proj == '':
+        proj = args.project        
+    if proj != '':
+        shutil.rmtree(os.path.join('user_data',args.NODE_DATABASE,args.user,'project:'+proj))
+    if args.pid != 0:
+        delete_metadata_only(args,proj,dids)
+        delete_tax_only(args,proj,dids)
     
+def delete_metadata_only(args,proj,dids):
     q = "DELETE from required_metadata_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
     print q
     cur.execute(q)
 
     q_drop = "DROP TABLE if exists %s"
-    q = q_drop % ('custom_metadata_'+str(pid))
+    q = q_drop % ('custom_metadata_'+str(args.pid))
     print q
     cur.execute(q)
 
     q = "DELETE from custom_metadata_fields"
-    q += " WHERE project_id = '"+str(pid)+"'"
+    q += " WHERE project_id = '"+str(args.pid)+"'"
     print q
     cur.execute(q)
     
-    
+def delete_tax_only(args,proj,dids):    
     
     q = "DELETE from sequence_pdr_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
@@ -91,13 +111,16 @@ def clean_out_project(args):
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
     cur.execute(q)
     
-    q = "DELETE from project WHERE project_id = '"+str(pid)+"'"
+    q = "DELETE from project WHERE project_id = '"+str(args.pid)+"'"
     cur.execute(q)
     
         
     db.commit()
-    return pid
     
+    
+def delete_metadata_and_tax(args,proj,dids):   
+     delete_metadata_only(args,proj,dids)
+     delete_tax_only(args,proj,dids)
 
 if __name__ == '__main__':
     import argparse
@@ -119,26 +142,38 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
     
-                                                    
     parser.add_argument("-pid","--project_id",                   
                 required=True,  action="store",   dest = "pid",
                 help="""ProjectID""")  
     
-    
     parser.add_argument("-db", "--database",          
-                required=True,  action='store', dest = "NODE_DATABASE", 
+                required=True,  action='store', dest = "NODE_DATABASE", default='NODATABASE',
                 help=" ") 
-    parser.add_argument("-action", "--action",          
-                required=True,  action='store', dest = "action", 
-                help=" ")           
-       
-                          
-    args = parser.parse_args()    
-      
-    if args.action == 'delete_project':
-        pid = clean_out_project(args)
-        print "DONE"
-        print "PID="+str(pid)
-            
     
+    parser.add_argument("-action", "--action",          
+                required=True,  action='store', dest = "action", default='NOACTION',
+                help=" ")           
+    
+    parser.add_argument("-user", "--user",          
+                required=True,  action='store', dest = "user", default='NOUSER',
+                help=" ")   
+    parser.add_argument("-proj", "--project",          
+                required=False,  action='store', dest = "project", default='',
+                help=" ")                      
+    args = parser.parse_args()    
+    
+    (proj,dids) = get_data(args)  
+    if args.action == 'delete_whole_project':
+        delete_whole_project(args,proj,dids)
         
+    elif args.action == 'delete_tax_only' and args.pid != 0:
+        delete_tax_only(args,proj,dids)
+              
+    elif args.action == 'delete_metadata_only' and args.pid != 0:
+        delete_metadata_only(args,proj,dids)
+        
+    elif args.action == 'delete_metadata_and_tax' and args.pid != 0:
+        delete_metadata_and_tax(args,proj,dids)
+        
+    print "DONE"
+    print "PID="+str(pid)
