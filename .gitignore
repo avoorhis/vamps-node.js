@@ -7,7 +7,7 @@ node_modules/
 colony/
 colony-npm/
 *log.txt
-*log
+*.log
 logs/*
 # eclipse
 .jshintrc
