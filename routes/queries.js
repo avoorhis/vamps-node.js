@@ -22,7 +22,8 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
 		qSelectDatasets += " WHERE project_id='"+pid+"'";
 		qSelectDatasets += " ORDER BY project, dataset";
-		return qSelectDatasets;
+		console.log(qSelectDatasets);
+        return qSelectDatasets;
 	
 },
 get_select_sequences_query: function(){
