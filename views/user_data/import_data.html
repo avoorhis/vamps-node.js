@@ -10,9 +10,14 @@
 	
 	
 	
-	Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
-<!-- ======================================================================================================== -->	
- <hr>
+	
+<!-- ======================================================================================================== 
+    Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
+    -->	
+ 
+ 
+ <% if(import_type == 'simple') { %>
+     <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
     
 	<h4>Import Simple (single dataset) Form: <small>(All fields are required)</small></h4>
@@ -50,6 +55,7 @@
     </div>
 	<input type='hidden' name='type' value='single'>
   </form>
+<% } else if(import_type == 'multi') { %>
 <!-- ======================================================================================================== -->		
   <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
@@ -81,6 +87,7 @@
 	<input type='hidden' name='type' value='multi'>
   </form>
 <!-- ======================================================================================================== -->		
+<% } else if(import_type == 'metadata') { %>
   <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
   	<h4>TODO: Import Metadata to Project: <small>(All fields are required)</small></h4>
@@ -108,6 +115,7 @@
 	<input type='hidden' name='type' value='metadata' />
   </form>
 <!-- ======================================================================================================== -->	
+<% } else if(import_type == 'new_data') { %>
   <hr>
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
   	<h4>TODO: Import New Datasets to Project: <small>(All fields are required)</small></h4>
@@ -140,9 +148,9 @@
     </div>
 	<input type='hidden' name='type' value='metadata' />
   </form>
-
-
-
+<% } else { %>
+    Stuff to do here
+<% } %>
 	
 <% include ../add_ins/end.ejs %>
    

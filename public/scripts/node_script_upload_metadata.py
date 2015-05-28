@@ -20,6 +20,7 @@ import shutil
 import types
 import time
 import random
+import logging
 import csv
 from time import sleep
 import ConfigParser
@@ -51,7 +52,9 @@ db = MySQLdb.connect(host="localhost", # your host, usually localhost
                          read_default_file="~/.my.cnf_node"  ) 
 cur = db.cursor()
 
-def start(NODE_DATABASE, indir):
+def start(args):
+    NODE_DATABASE = args.NODE_DATABASE
+    indir = args.basedir
     cur.execute("USE "+NODE_DATABASE)
     get_config_data(indir)
     get_metadata(indir)
@@ -74,6 +77,7 @@ def put_required_metadata():
             vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
         q2 = q + vals[:-1] + ")"  
         print q2
+        logging.info(q2)
         cur.execute(q2)
     db.commit()
             
@@ -84,15 +88,17 @@ def put_custom_metadata():
     """
     print 'starting put_custom_metadata'
     # TABLE-1 === custom_metadata_fields
+    print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
+    print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
     for key in CUST_METADATA_ITEMS:
-        print key
-        q2 = "insert ignore into custom_metadata_fields(project_id,field_name,field_type,example)"
+        logging.debug(key)
+        q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,field_type,example)"
         q2 += " VALUES("
         q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
         q2 += "'"+key+"',"
         q2 += "'varchar(128)',"
         q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
-        print q2
+        logging.info(q2)
         cur.execute(q2)
     
     # TABLE-2 === custom_metadata_<pid>
@@ -118,12 +124,12 @@ def put_custom_metadata():
     q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    print q
+    logging.info(q)
     cur.execute(q)
     
     for i,did in enumerate(CUST_METADATA_ITEMS['dataset_id']):
     
-        q2 = "insert ignore into "+custom_table+" (project_id,dataset_id,"
+        q2 = "INSERT IGNORE into "+custom_table+" (project_id,dataset_id,"
         for key in cust_keys_array:
             if key != 'dataset_id':
                 q2 += key+","
@@ -133,7 +139,7 @@ def put_custom_metadata():
             if key != 'dataset_id':
                 q2 += "'"+str(CUST_METADATA_ITEMS[key][i])+"',"
         q2 = q2[:-1] + ")" 
-        print q2
+        logging.info(q2)
         cur.execute(q2)
     
     db.commit()
@@ -142,6 +148,7 @@ def get_metadata(indir):
     
     csv_infile =   os.path.join(indir,'meta_clean.csv')
     print 'csv',csv_infile
+    logging.info('csv '+csv_infile)
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
     # try:
 #         csv_infile =   os.path.join(indir,'meta_clean.csv')
@@ -162,54 +169,78 @@ def get_metadata(indir):
         TMP_METADATA_ITEMS[key] = []
         for line in lol[1:]:
             TMP_METADATA_ITEMS[key].append(line[i])
-    saved_indexes = []        
-    for ds in CONFIG_ITEMS['datasets']:
-        #print  TMP_METADATA_ITEMS['sample_name'].index(ds) , ds 
-        try:
-            saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
-            dataset_header_name = 'sample_name'
-        except:
-            saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
-            dataset_header_name = 'dataset'
-        else:
-            sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
+    saved_indexes = []    
+    print 'dtasets',CONFIG_ITEMS['datasets']
+    
+    if CONFIG_ITEMS['fasta_type']=='multi':           
+        for ds in CONFIG_ITEMS['datasets']:
+            print  TMP_METADATA_ITEMS['sample_name'].index(ds), ds 
+            try:
+                saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
+                dataset_header_name = 'sample_name'
+            except:
+                 try:
+                     saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
+                     dataset_header_name = 'dataset'
+                 except:
+                     sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
     
     # now get the data from just the datasets we have in CONFIG.ini
+    print 'TMP_METADATA_ITEMS',TMP_METADATA_ITEMS
     for key in TMP_METADATA_ITEMS:
         
         if key in required_metadata_fields:
             REQ_METADATA_ITEMS[key] = []
             REQ_METADATA_ITEMS['dataset_id'] = []
             for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                if j in saved_indexes:
+                
+                if CONFIG_ITEMS['fasta_type']=='multi' and j in saved_indexes:
                     if key in required_metadata_fields:
                         REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                    ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+                    
+                    if CONFIG_ITEMS['fasta_type']=='multi':
+                        ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+                    else:
+                        ds = CONFIG_ITEMS['datasets'][0]
                     did = DATASET_ID_BY_NAME[ds]
                     REQ_METADATA_ITEMS['dataset_id'].append(did)
+                else:
+                    if key in required_metadata_fields:
+                        REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
         else:
             CUST_METADATA_ITEMS[key] = []
             CUST_METADATA_ITEMS['dataset_id'] = []
             
             for j,value in enumerate(TMP_METADATA_ITEMS[key]):
                 
-                if j in saved_indexes:
+                if CONFIG_ITEMS['fasta_type']=='multi' and j in saved_indexes:
                     
-                    if key not in required_metadata_fields:
-                        
+                    if key not in required_metadata_fields:                        
                         CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                    ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+                    if CONFIG_ITEMS['fasta_type']=='multi':
+                        ds = TMP_METADATA_ITEMS[dataset_header_name][j]
+                    else:
+                        ds = CONFIG_ITEMS['datasets'][0]
                     did = DATASET_ID_BY_NAME[ds]
                     CUST_METADATA_ITEMS['dataset_id'].append(did)
-                   
+                else:
+                    if key not in required_metadata_fields:                        
+                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+                    ds = CONFIG_ITEMS['datasets'][0]
+                    did = DATASET_ID_BY_NAME[ds]
+                    CUST_METADATA_ITEMS['dataset_id'].append(did)
+    print   'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
+    print   'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
+    #sys.exit()             
     if not 'dataset_id' in REQ_METADATA_ITEMS:
         REQ_METADATA_ITEMS['dataset_id'] = []
     if 'dataset_id' not in CUST_METADATA_ITEMS:
         CUST_METADATA_ITEMS['dataset_id'] = []
             
 def get_config_data(indir):
-    config_infile =   os.path.join(indir,'INFO_CONFIG.ini') 
+    config_infile =   os.path.join(indir,'config.ini') 
     print config_infile
+    logging.info(config_infile)
     config = ConfigParser.ConfigParser()
     config.optionxform=str
     config.read(config_infile)    
@@ -222,7 +253,7 @@ def get_config_data(indir):
     #print 'project',CONFIG_ITEMS['project']
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
-    print q
+    logging.info(q)
     cur.execute(q)
     
     row = cur.fetchone()     
@@ -230,7 +261,7 @@ def get_config_data(indir):
         
     q = "SELECT dataset,dataset_id from dataset"
     q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
-    print q
+    logging.info(q)
     cur.execute(q)     
     for row in cur.fetchall():        
         DATASET_ID_BY_NAME[row[0]] = row[1]

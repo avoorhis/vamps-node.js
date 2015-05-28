@@ -10,8 +10,7 @@
 import os
 import sys
 import logging
-logger = logging.getLogger('')
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
 import subprocess
 """
 	This will classify taxonomy of 16s sequences of >200nt.
@@ -41,7 +40,7 @@ def run_rdp(infile, outfile):
 	#$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.1/rdp_classifier-2.1.jar -q $1 -o $2 -t $PATH_2_HERE/train/rRNAClassifier.properties -f fixrank
 	#$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.6/dist/classifier.jar -q $1 -o $2 -t $PATH_2_HERE/rdp_classifier_2.6/rRNAClassifier.properties -f fixrank
 	rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+PATH_2_RDP+"/dist/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_RDP+"/train/rRNAClassifier.properties -f fixrank"
-	print rdp_cmd
+	logging.debug(rdp_cmd)
 	subprocess.call(rdp_cmd, shell=True)
 
 
