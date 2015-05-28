@@ -9,17 +9,34 @@
 	<div class="alert_flash_message"><%= failmessage %></div>
 <% } %>
 	
-<form id='' class='' method='POST' action='import_data'>
+
     <table>
-        <tr><td><input type='radio' name='import_type' value='simple' class='' id=''> Simple (single dataset) Fasta</td></tr>
-        <tr><td><input type='radio' name='import_type' value='multi' class='' id=''> Multi-Dataset Fasta</td></tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='import_data?type=simple_fasta'>
+                <button type='submit' name='import_type' value='simple' class='' id=''>Go</button> Simple (single dataset) Fasta
+            </form>	
+        </td></tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='import_data?type=multi_fasta'>
+                <button type='submit' name='import_type' value='multi' class='' id=''>Go</button> Multi-Dataset Fasta
+            </form>
+            </td></tr>
+                
         <tr><td><input type='radio' name='import_type' value='X' class='' id=''></td></tr>
         <tr><td><input type='radio' name='import_type' value='Y' class='' id=''></td></tr>
-        <tr><td><input type='radio' name='import_type' value='metadata' class='' id=''> Metadata for your Established Project</td><td>TODO</td></tr>
-        <tr><td><input type='radio' name='import_type' value='new_data' class='' id=''> Import Aditional Data to your Established Project</td><td>TODO</td></tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='import_data?type=metadata'>
+                <button type='submit' name='import_type' value='metadata' class='' id=''>Go</button> Metadata for your Established Project
+            </form>
+            </td><td>TODO</td></tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='import_data?type=new_data'>
+                <button type='submit' name='import_type' value='new_data' class='' id=''>Go</button> Import Aditional Data to your Established Project
+            </form>
+        </td><td>TODO</td></tr>
     </table>
     <button type='submit' name='' value='form_submitted' class='btn btn-xs' id=''>Go</button>
-</form>	
+
 	
 
 

@@ -122,36 +122,42 @@ def start(args):
     logging.info("checking user")
     check_user()  ## script dies if user not in db
     
-    logging.info("recreating ranks")
-    recreate_ranks()
+    logging.info("checking user")
+    res = check_project()  ## script dies if user not in db
     
-    logging.info("env sources")
-    create_env_source()
+    if res[0]=='ERROR':
+        sys.exit(res[1])
+    else:
+        logging.info("recreating ranks")
+        recreate_ranks()
     
-    logging.info("classifier")
-    create_classifier()
+        logging.info("env sources")
+        create_env_source()
     
-    logging.info("starting taxonomy")
-    push_taxonomy(args)
+        logging.info("classifier")
+        create_classifier()
     
-    logging.info("starting sequences")
-    push_sequences()
+        logging.info("starting taxonomy")
+        push_taxonomy(args)
     
-    logging.info("projects")
-    push_project()
+        logging.info("starting sequences")
+        push_sequences()
     
-    logging.info("datasets")
-    push_dataset()
+        logging.info("projects")
+        push_project()
     
-    #push_summed_counts()
-    logging.info("starting push_pdr_seqs")
-    push_pdr_seqs(args)
+        logging.info("datasets")
+        push_dataset()
     
-    #print SEQ_COLLECTOR
-    #pp.pprint(CONFIG_ITEMS)
-    logging.info("Finished database_importer.py")
+        #push_summed_counts()
+        logging.info("starting push_pdr_seqs")
+        push_pdr_seqs(args)
     
-    return CONFIG_ITEMS['project_id']
+        #print SEQ_COLLECTOR
+        #pp.pprint(CONFIG_ITEMS)
+        logging.info("Finished database_importer.py")
+    
+        return CONFIG_ITEMS['project_id']
     
 def check_user():
     """
@@ -165,7 +171,19 @@ def check_user():
         sys.exit('Could not find owner: '+CONFIG_ITEMS['owner']+' --Exiting')
     row = cur.fetchone()
     CONFIG_ITEMS['owner_id'] = row[0] 
-       
+
+def check_project():
+    """
+    check_project()
+      the owner/user (from config file) must be present in 'user' table for script to continue
+    """
+    proj = CONFIG_ITEMS['project']
+    q = "SELECT project from project WHERE project='"+proj+"'"
+    cur.execute(q)
+    if cur.rowcount > 0:
+        return ('ERROR','Duplicate project name')
+    return ('OK','')
+           
 def create_env_source():
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
     cur.execute(q)
@@ -215,10 +233,11 @@ def push_project():
         mysql_conn.commit()
         print cur.lastrowid
     except:
-        print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
-        sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
+        #print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
+        #sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
+        return ('ERROR: Duplicate Project Name')
     
-    
+    return 0
         
 def push_dataset():
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
@@ -364,6 +383,7 @@ def push_sequences():
                                
 def run_gast_tax_file(args,ds,tax_file):
     #tax_collector = {}
+    tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
             
@@ -380,7 +400,9 @@ def run_gast_tax_file(args,ds,tax_file):
             if rank == 'orderx': rank = 'order'
             seq_count = items[6]
             distance = items[8]
-            finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+            tax_items = tax_string.split(';')
+            if tax_items != []:
+                finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
             
             
             
@@ -516,7 +538,7 @@ def run_rdp_tax_file(args,ds,tax_file,seq_file):
         tmp_seqs[id]= f.seq
     f.close()
         
-        
+    tax_items = [] 
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
@@ -541,15 +563,17 @@ def run_rdp_tax_file(args,ds,tax_file,seq_file):
                   else:
                       pass
             rank = ranks[len(tax_items)-1]
-            tax_string = ';'.join(tax_items)
+            
             seq= tmp_seqs[seq_id]
             distance = 1
             refhvr_ids = ''
-            finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+            if tax_items != []:                
+                finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
             
             
-def finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items):
-    #tax_collector = {}        
+def finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items):
+    #tax_collector = {} 
+    tax_string = ';'.join(tax_items)       
     if ds not in SUMMED_TAX_COLLECTOR:
         SUMMED_TAX_COLLECTOR[ds]={}
     
@@ -568,10 +592,9 @@ def finish_tax(ds,tax_string,refhvr_ids,rank,distance,seq,seq_count,tax_items):
     row = cur.fetchone()
     
     SEQ_COLLECTOR[ds][seq]['rank_id'] = row[0]          
-    print rank,tax_string
+    logging.info(rank+' - '+tax_string)
     
    
-    
     sumtax = ''
     for i in range(0,8):
         
