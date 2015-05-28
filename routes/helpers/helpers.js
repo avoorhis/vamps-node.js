@@ -267,21 +267,38 @@ module.exports.update_global_variables = function(pid,type){
 	if(type=='del'){
 		var dids= DATASET_IDS_BY_PID[pid];
 		var pname = PROJECT_INFORMATION_BY_PID[pid].project;
-		
-		for(i in ALL_DATASET){
-			item = ALL_DATASETS[i];
-			// {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
+		console.log('RE-INTIALIZING ALL_DATASETS')
+		dataset_objs = []
+        for(i in ALL_DATASETS.projects){
+			item = ALL_DATASETS.projects[i];
+			console.log('item'+item);
+            // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
 			if(item.pid == pid){
-				ALL_DATASETS.splice(i,1);
+                dataset_objs = item.datasets;
+				console.log('SPLICING'+pid);
+                ALL_DATASETS.projects.splice(i,1);
 				break;
 			}
 			
 		}
-		for(d in dids){
-			
+		console.log('RE-INTIALIZING PROJECT_ID_BY_DID')
+        console.log('RE-INTIALIZING DATASET_NAME_BY_DID')
+        console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID')
+        for(d in dids){
+            			
 			delete PROJECT_ID_BY_DID[dids[d]];
 			delete DATASET_NAME_BY_DID[dids[d]];
 			delete ALL_DCOUNTS_BY_DID[dids[d]];
+            delete DatasetsWithLatLong[dids[d]];
+		}
+		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID')
+        console.log('RE-INTIALIZING DATASET_IDS_BY_PID')
+        console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID')
+		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME')
+        console.log('RE-INTIALIZING DatasetsWithLatLong')
+        console.log('RE-INTIALIZING DATASET_ID_BY_DNAME')
+        for(n in dataset_objs){			
+            delete DATASET_ID_BY_DNAME[dataset_objs[n].dname];
 		}
 		delete PROJECT_INFORMATION_BY_PID[pid];
 		delete DATASET_IDS_BY_PID[pid];

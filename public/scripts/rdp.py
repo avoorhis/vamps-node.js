@@ -28,20 +28,22 @@ def run_rdp(infile, outfile):
 	
 	
 
-	#PATH_2_JAVA="/bioware/jre/bin/java";
-	PATH_2_JAVA = "/usr/bin/java"
-	PATH_2_RDP = "/Users/avoorhis/programming/rdp_classifier_2.10.1"
-	
+    #PATH_2_JAVA="/bioware/jre/bin/java";
+    PATH_2_JAVA = "/usr/bin/java"
+    PATH_2_RDP = "/Users/avoorhis/programming/rdp_classifier"  # soft link to rdp_classifier
 
-	#java -Xmx2400m -jar /xraid/bioware/linuxOpteron/rdp_classifier/rdp_classifier-1.0.jar $1 $2  /xraid/bioware/linuxOpteron/rdp_classifier/train/rRNAClassifier.properties
-	#$PATH_2_JAVA -Xmx2400m -jar /usr/local/www/vampsdev/docs/apps/rdp_classifier-1.0.jar $1 $2  /usr/local/www/vampsdev/docs/apps/train3/rRNAClassifier.properties
-	#$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier-1.0.jar $1 $2 $PATH_2_HERE/train_may08/rRNAClassifier.properties
-	#/usr/local/jdk/bin/java -Xmx2400m -jar $PATH_2_HERE/rdp_classifier-2.1.jar -q $1 -o $2 -t $PATH_2_HERE/train/rRNAClassifier.properties -f fixrank
-	#$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.1/rdp_classifier-2.1.jar -q $1 -o $2 -t $PATH_2_HERE/train/rRNAClassifier.properties -f fixrank
-	#$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.6/dist/classifier.jar -q $1 -o $2 -t $PATH_2_HERE/rdp_classifier_2.6/rRNAClassifier.properties -f fixrank
-	rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+PATH_2_RDP+"/dist/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_RDP+"/train/rRNAClassifier.properties -f fixrank"
-	logging.debug(rdp_cmd)
-	subprocess.call(rdp_cmd, shell=True)
+
+    #java -Xmx2400m -jar /xraid/bioware/linuxOpteron/rdp_classifier/rdp_classifier-1.0.jar $1 $2  /xraid/bioware/linuxOpteron/rdp_classifier/train/rRNAClassifier.properties
+    #$PATH_2_JAVA -Xmx2400m -jar /usr/local/www/vampsdev/docs/apps/rdp_classifier-1.0.jar $1 $2  /usr/local/www/vampsdev/docs/apps/train3/rRNAClassifier.properties
+    #$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier-1.0.jar $1 $2 $PATH_2_HERE/train_may08/rRNAClassifier.properties
+    #/usr/local/jdk/bin/java -Xmx2400m -jar $PATH_2_HERE/rdp_classifier-2.1.jar -q $1 -o $2 -t $PATH_2_HERE/train/rRNAClassifier.properties -f fixrank
+    #$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.1/rdp_classifier-2.1.jar -q $1 -o $2 -t $PATH_2_HERE/train/rRNAClassifier.properties -f fixrank
+    #$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.6/dist/classifier.jar -q $1 -o $2 -t $PATH_2_HERE/rdp_classifier_2.6/rRNAClassifier.properties -f fixrank
+
+    # the classifier must be kept with its directory structure
+    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+PATH_2_RDP+"/dist/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_RDP+"/train/rRNAClassifier.properties -f fixrank"
+    logging.debug(rdp_cmd)
+    subprocess.call(rdp_cmd, shell=True)
 
 
 if __name__ == '__main__':
