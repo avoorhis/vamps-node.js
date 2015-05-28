@@ -8,6 +8,8 @@ colony/
 colony-npm/
 *log.txt
 *.log
+
+!logs/
 logs/*
 # eclipse
 .jshintrc
