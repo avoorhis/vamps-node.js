@@ -1,0 +1,30 @@
+<% include ../add_ins/begin.ejs %>
+
+<p class='title'>Data Import Format Selection</p>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<% if (failmessage) { %>
+	<div class="alert_flash_message"><%= failmessage %></div>
+<% } %>
+	
+<form id='' class='' method='POST' action='import_data'>
+    <table>
+        <tr><td><input type='radio' name='import_type' value='simple' class='' id=''> Simple (single dataset) Fasta</td></tr>
+        <tr><td><input type='radio' name='import_type' value='multi' class='' id=''> Multi-Dataset Fasta</td></tr>
+        <tr><td><input type='radio' name='import_type' value='X' class='' id=''></td></tr>
+        <tr><td><input type='radio' name='import_type' value='Y' class='' id=''></td></tr>
+        <tr><td><input type='radio' name='import_type' value='metadata' class='' id=''> Metadata for your Established Project</td><td>TODO</td></tr>
+        <tr><td><input type='radio' name='import_type' value='new_data' class='' id=''> Import Aditional Data to your Established Project</td><td>TODO</td></tr>
+    </table>
+    <button type='submit' name='' value='form_submitted' class='btn btn-xs' id=''>Go</button>
+</form>	
+	
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

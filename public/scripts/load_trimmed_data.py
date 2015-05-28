@@ -103,17 +103,26 @@ def write_seqfiles(args,owner,project):
                 # should split on pipe and space
                 #id = defline.split('|')[0].split('_')[0]
                 id = defline.replace(' ','|').split('|')[0]
-                datasets[ds] = 1
-                
+                datasets[ds] += 1                
                 fp.write('>'+id+"\n"+f.seq+"\n")
             else:    
             
                 try:
                     #id = defline.replace(' ','|')
-                    tmp = defline.replace(' ','|').split('|')
-                    #print defline
-                    ds = tmp[0]
-                    id = tmp[1]
+                    # mobe  defline='>10056.000010538_2 HWI-M00888:59:000000000-A62ET:1:1101:15096:1532 1:N:0:GACCGTAAACTC orig_bc=GACCGTAAACTC new_bc=GACCGTAAACTC bc_diffs=0'
+                    if 'orig_bc' in defline and 'new_bc' in defline:
+                        #if there are orig_bc and new_bc in defline then assume mobe/qiime file
+                        #and break up like this:
+                        print 'found mobe defline'
+                        tmp = defline.replace(' ','|').split('|')
+                        ds = tmp[0].split('_')[0]
+                        #id = tmp[1]
+                        id = tmp[0].split('_')[1]  
+                    else:
+                        tmp = defline.replace(' ','|').split('|')
+                        #print defline
+                        ds = tmp[0]
+                        id = tmp[1]
                     ds_dir = os.path.join(analysis_dir,ds)
                     
                     file = os.path.join(ds_dir,'seqfile.fa')
@@ -225,6 +234,7 @@ def write_config(args,owner,project,stats):
     f.write('owner='+owner+"\n")
     f.write('config_file_type=ini'+"\n")
     f.write('public=False'+"\n")
+    f.write('fasta_type='+args.upload_type+"\n")
     f.write('dna_region='+args.dna_region+"\n")
     f.write('project_sequence_count='+str(stats['seq_count'])+"\n")
     f.write('domain='+args.domain+"\n")
