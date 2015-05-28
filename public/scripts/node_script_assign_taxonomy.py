@@ -160,7 +160,7 @@ if __name__ == '__main__':
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
 	# has sequences_file and now will load to db:
-    logging.warning(args.NODE_DATABASE, args.basedir)
+    logging.info(args.NODE_DATABASE+' - '+ args.basedir)
     logging.info("starting db upload")
     args.pid = load_data.start(args)
     
