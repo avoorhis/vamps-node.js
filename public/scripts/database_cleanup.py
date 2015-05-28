@@ -59,7 +59,7 @@ def clean(args):
         did = str(row[0])
         dids.append(did)
         pid = row[1]
-        did_file = os.path.join('public','json', NODE_DATABASE+'--taxcounts', did+'.json')
+        did_file = os.path.join(args.process_dir,'public','json', NODE_DATABASE+'--datasets', did+'.json')
         print did_file
         try:
             os.remove(did_file)
@@ -208,7 +208,9 @@ if __name__ == '__main__':
     parser.add_argument("-all", "--all",          
                 required=False,  action='store_true', dest = "all",  default=False,
                 help=" ") 
-                
+    parser.add_argument("-pdir", "--process_dir",                   
+               required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+               help="""ProjectID""")            
        
                           
     args = parser.parse_args()    

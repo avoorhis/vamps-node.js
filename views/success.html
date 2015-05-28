@@ -5,7 +5,7 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 	
-	
+<% if(display=='Import_Success'){ %>	
 	<p class='title'>Import Data</p>
 	
 	<div class="row">
@@ -19,15 +19,15 @@
 	            <div class="panel-body">
 			  	The next step is to assign taxonomy via gast or rdp
 				<br>
-			  	see: <a href='/user_data/your_data'>Your Data</a>
+			  	see: <a href='/user_data/your_projects'>Your Projects</a>
 	            </div>
 	          </div>
 			  
 		</div>
 	</div>
-			  
+<% }else{ %>			  
 	
-
+<% } %>	
 
 	
 <% include add_ins/end.ejs %>

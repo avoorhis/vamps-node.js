@@ -26,26 +26,31 @@ import logging
 
 import ConfigParser
 sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
-logging.info(sys.path)
+LOG_FILENAME = '/Users/avoorhis/programming/vamps-node.js/logs/assign_tax.log'
+print LOG_FILENAME
+    
+    
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
+logging.debug(sys.path)
 
 
 
 
 #try:
-import node_script_database_loader as uploader
-#    logging.info('found database_loader script')
+import node_script_database_loader as load_data
+logging.warning('LOGGING found database_loader script')
 #except:
-#    logging.info("database_loader is not avalable")
+# logging.info("database_loader is not avalable")
 
 #try:
-import node_script_upload_metadata as upload_metadata
-#    logging.info('found node_script_upload_metadata script')
+import node_script_upload_metadata as load_metadata
+logging.warning('found node_script_upload_metadata script')
 #except:
 #    logging.info("node_script_upload_metadata is not avalable")   
 
 #try:
 import node_script_create_json_dataset_files as dataset_files_creator
-#    logging.info('found add_taxcounts script')
+logging.warning('found add_taxcounts script')
 #except:
 #    logging.info("add_taxcounts is not avalable")    
 
@@ -111,27 +116,22 @@ if __name__ == '__main__':
     			required=True,   action="store",  dest = "classifier",              
                 help = 'gast or rdp')  
     parser.add_argument("-ddir", "--data_dir",    
-    			required=True,  action="store",   dest = "baseoutputdir", 
+    			required=True,  action="store",   dest = "basedir", 
                 help = '')         
     parser.add_argument("-pdir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
                 help = '')
     args = parser.parse_args() 
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
-    #os.chdir(args.baseoutputdir)
+    #os.chdir(args.basedir)
     
-    LOG_FILENAME = args.baseoutputdir+'/log.txt'
-    
-    logger = logging.getLogger('')
-    #logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
-    #                            format="%(asctime)-15s %(levelname)-8s %(message)s")
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)                       
+                       
     
     
-    #logger.addHandler(ch)
+   
     
                   
-    logger.info("log: "+LOG_FILENAME)
+    logging.warning("log: "+LOG_FILENAME)
     #steps ='gast'
     #steps ='vampsupload'
     args = parser.parse_args()
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         #    logging.info('found gast script')
         #except:
         #    logging.info("run_gast is not avalable")
-        logger.info("starting GAST")
+        logging.info("starting GAST")
         gast.start_gast(args)
 
     elif args.classifier == 'rdp':
@@ -160,30 +160,31 @@ if __name__ == '__main__':
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
 	# has sequences_file and now will load to db:
-    logging.info(args.NODE_DATABASE, args.baseoutputdir)
+    logging.warning(args.NODE_DATABASE, args.basedir)
     logging.info("starting db upload")
-    pid = uploader.start(args.NODE_DATABASE, args.baseoutputdir, args.process_dir)
+    args.pid = load_data.start(args)
     
     # 3-3-3-3-3-3
     # load metadata from file to database
-    logging.info("starting metadata upload")
-    upload_metadata.start(args.NODE_DATABASE, args.baseoutputdir)
+    logging.info("starting metadata")
+    load_metadata.start(args)
+    logging.info("finishing metadata")
     
     # 4-4-4-4-4-4
     # creates taxcount/metadata file
     logging.info("starting taxcounts")
-    dataset_files_creator.go_add(args.NODE_DATABASE, pid, args.process_dir)
-    
+    dataset_files_creator.go_add(args)
+    logging.info("finishing taxcounts")
     
     
     # 5-5-5-5-5-5
     #logging.info("starting metadata lookup")
     #metadata_file_creator.start(args.NODE_DATABASE, args.process_dir)
-    
+    logging.info("DONE")
     print "DONE"
     # this must be the last print:
-    print "PID="+str(pid)
+    print "PID="+str(args.pid)
     
-    logging.info("ALL DONE: "+str(pid))
+    logging.info("ALL DONE: (PID="+str(args.pid)+')')
     
         
