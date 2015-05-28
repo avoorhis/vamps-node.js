@@ -4,6 +4,7 @@ var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var path  = require('path');
 var fs   = require('fs-extra');
+var url  = require('url');
 var ini = require('ini');
 var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
@@ -63,12 +64,12 @@ router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
 //
 //
 /* GET Import Data page. */
-router.post('/import_data', helpers.isLoggedIn, function(req, res) {
+router.get('/import_data', helpers.isLoggedIn, function(req, res) {
+    console.log('import_data')
+    console.log(JSON.stringify(req.url))
+    var myurl = url.parse(req.url, true);
     
-    console.log('req.body: import_data-->>');
-    console.log(req.body);
-    console.log('req.body: import_data');
-    var import_type = req.body.import_type;
+    var import_type    = myurl.query.import_type;
     res.render('user_data/import_data', { 
 	    title: 'VAMPS:Import Data',
   		message: req.flash('successMessage'),
@@ -585,22 +586,23 @@ router.post('/upload_data',  function(req,res){
     console.log(req.body);
   console.log(req.files);
     console.log('req.body upload_data');
+    console.log(req.body.project);
+    console.log(PROJECT_INFORMATION_BY_PNAME);
   if(req.body.project == '' || req.body.project == undefined){
 	req.flash('failMessage', 'A project name is required.');
 	res.redirect("/user_data/import_data");
-  }
-  var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+req.body.project);
-  console.log(data_repository);
-  // continuity checks:
-  
-	 
-  if(req.files.fasta==undefined || req.files.fasta.size==0){
+  }else if(req.body.project in PROJECT_INFORMATION_BY_PNAME){
+	req.flash('failMessage', 'That project name is already taken.');
+	res.redirect("/user_data/import_data");
+  }else if(req.files.fasta==undefined || req.files.fasta.size==0){
   	req.flash('failMessage', 'A fasta file is required.');
 	res.redirect("/user_data/import_data");
   }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
   	req.flash('failMessage', 'A metadata csv file is required.');
 	res.redirect("/user_data/import_data");
   }else{
+      var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+req.body.project);
+      console.log(data_repository);
 	var project = req.body.project;
 	var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
 	var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
