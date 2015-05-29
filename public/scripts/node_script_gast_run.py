@@ -24,19 +24,19 @@ import csv
 import logging
 from time import sleep
 import ConfigParser
-logger = logging.getLogger('')
+
 try:
     import database_importer as uploader
 except:
-    logger.info( "database_importer is not avalable")
+    logging.info( "database_importer is not avalable")
 try:
     import run_gast as gast
 except:
-    logger.info( "run_gast is not avalable")
+    logging.info( "run_gast is not avalable")
 try:
     import run_rdp as rdp
 except:
-    logger.info( "run_rdp is not avalable")
+    logging.info( "run_rdp is not avalable")
 import datetime
 datetime     = str(datetime.date.today())
 import subprocess
@@ -57,7 +57,7 @@ import subprocess
 
 use_local_pipeline = False
 py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
-logger.info( py_pipeline_path)
+logging.debug( py_pipeline_path)
 sys.path.append(py_pipeline_path)
 from pipeline.run import Run
 from pipelineprocessor import process
@@ -80,13 +80,12 @@ def start_gast(args):
     mobedac         = False # True or False
     gast_input_source = 'file'
     seq_count   = 0
-    log_file_path = os.path.join(args.baseoutputdir,'log.txt')
-    logging.basicConfig(level=logging.DEBUG, filename=log_file_path, filemode="a+",
-                            format="%(asctime)-15s %(levelname)-8s %(message)s")
-    os.chdir(args.baseoutputdir)
+    
+    
+    os.chdir(args.basedir)
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):
-        logger.info( "Could not find config file ("+info_load_infile+") **Exiting**")
+        logging.info( "Could not find config file ("+info_load_infile+") **Exiting**")
         sys.exit()
    
     config = ConfigParser.ConfigParser()
@@ -102,15 +101,20 @@ def start_gast(args):
     file_prefix = 'testing-fp'
     dir_prefix  = general_config_items['baseoutputdir']
             
-    logger.info(   'FROM INI-->'      )  
-    logger.info(   general_config_items) 
-    logger.info(   '<<--FROM INI'    )
+    logging.info(   'FROM INI-->'      )  
+    logging.info(   general_config_items) 
+    logging.info(   '<<--FROM INI'    )
     #in utils.py: def __init__(self, is_user_upload, dir_prefix, platform, lane_name = '', site = ''):
-    dirs = Dirs(True, dir_prefix, platform, site = site) 
+    #dirs = Dirs(True, dir_prefix, platform, site = site) 
+    if not os.path.exists(args.basedir):
+        sys.exit(args.basedir+' not found')
     
-    analysis_dir = dirs.check_dir(dirs.analysis_dir)    
-    global_gast_dir = dirs.check_dir(dirs.gast_dir) 
-    logger.info( analysis_dir,global_gast_dir)
+    analysis_dir = os.path.join(args.basedir,'analysis') 
+    if not os.path.exists(analysis_dir):  
+        os.makedirs(directory)
+    #global_gast_dir = dirs.check_dir(dirs.gast_dir) 
+    
+    logging.debug( analysis_dir)
    
     
     
@@ -141,7 +145,7 @@ def start_gast(args):
                             'file_prefix':          file_prefix,
                             'project':				general_config_items['project']
                         }
-    logger.info( myRunDict)
+    logging.info( myRunDict)
     #
     #
     #
@@ -172,7 +176,7 @@ def start_gast(args):
     number_of_datasets = len(datasets_list)
     info_tax_file = os.path.join(general_config_items['baseoutputdir'],'INFO_CONFIG.ini')
     info_fh = open(info_tax_file,'w')
-    logger.info( 'Writing to ',info_tax_file)
+    logging.info( 'Writing to '+info_tax_file)
     info_fh.write("[GENERAL]\n")
     info_fh.write('project='+general_config_items['project']+"\n")
     info_fh.write("classifier=GAST\n")
@@ -192,13 +196,19 @@ def start_gast(args):
     total_uniques = 0
     datasets = {}
     for dataset in datasets_list:
-        logger.info( "\nUnique-ing",dataset)
-        ds_dir = os.path.join(global_gast_dir, dataset)
+        logging.info( "\nUnique-ing "+dataset)
+        ds_dir = os.path.join(analysis_dir, dataset)
         fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
         unique_file = os.path.join(ds_dir, 'unique.fa')
         names_file  = os.path.join(ds_dir, 'names')
-        fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
-        ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
+        if not os.path.exists(unique_file):  
+            logging.debug('Could not find uniqe file '+unique_file)
+        #fastcount_call = "grep '>' "+unique_file+" | wc -l"
+        grep_cmd = ['grep', '-c', '>', unique_file]
+        logging.debug( ' '.join(grep_cmd) )
+        ds_unique_seq_count = subprocess.check_output(grep_cmd).strip()
+        
+        #ds_unique_seq_count = subprocess.check_output(fastcount_call, shell=True)
         total_uniques += int(ds_unique_seq_count)
         datasets[dataset]=ds_unique_seq_count
     info_fh.write("project_total_sequence_count="+general_config_items['project_sequence_count']+"\n")

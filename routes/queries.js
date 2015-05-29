@@ -252,6 +252,26 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
 	seqQuery += " LIMIT 100";
 	console.log(seqQuery)
 	return seqQuery;
+  },
+  
+  user_project_status: function( type, user, project, status, msg ) {
+  	   
+      var statQuery = ''
+      if(type == 'new'){
+          statQuery += "INSERT into user_project_status (user,project,status,message)";  
+      	  statQuery += " VALUES ('"+user+"','"+project+"','"+status+"','"+msg+"')";
+      }else if(type == 'update'){
+          statQuery += "UPDATE user_project_status set status='"+status+"' and message='"+msg+"'";  
+      	  statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
+      }else if(type == 'delete'){
+          statQuery += "DELETE from user_project_status";  
+      	  statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
+      }else{
+          return 'ERROR'
+      }
+	  console.log(statQuery);   
+	
+	  return statQuery;
   }
   
 } // end of module.exports

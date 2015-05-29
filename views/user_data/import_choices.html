@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 
-<p class='title'>Data Import Format Selection</p>
+<p class='title'>Data Import</p>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -10,32 +10,56 @@
 <% } %>
 	
 
-    <table>
+    <table class='table table-striped'>
         <tr><td>
-            <form id='' class='' method='GET' action='import_data?type=simple_fasta'>
-                <button type='submit' name='import_type' value='simple' class='' id=''>Go</button> Simple (single dataset) Fasta
+            <form id='' class='' method='GET' action='import_data'>
+                <button type='submit' name='import_type' value='simple_fasta' class='btn btn-xs btn-primary' id=''>Go</button> Simple (single dataset) Fasta
             </form>	
-        </td></tr>
+        </td>
+        <td>Upload files (metadata and fasta) for a project with a single dataset.
+            <small>(<a href='#'>see file format</a>)</small>
+        </td>
+        </tr>
         <tr><td>
-            <form id='' class='' method='GET' action='import_data?type=multi_fasta'>
-                <button type='submit' name='import_type' value='multi' class='' id=''>Go</button> Multi-Dataset Fasta
+            <form id='' class='' method='GET' action='import_data'>
+                <button type='submit' name='import_type' value='multi_fasta' class='btn btn-xs btn-primary' id=''>Go</button> Multi-Dataset Fasta
             </form>
-            </td></tr>
+            </td>
+            <td>Upload files for a project with a multiple datasets.
+            <small>(<a href='#'>see file format</a>)</small>
+        </td>
+        </tr>
                 
-        <tr><td><input type='radio' name='import_type' value='X' class='' id=''></td></tr>
-        <tr><td><input type='radio' name='import_type' value='Y' class='' id=''></td></tr>
+        
         <tr><td>
-            <form id='' class='' method='GET' action='import_data?type=metadata'>
-                <button type='submit' name='import_type' value='metadata' class='' id=''>Go</button> Metadata for your Established Project
+            <form id='' class='' method='GET' action='import_data'>
+                <button type='submit' name='import_type' value='metadata' class='btn btn-xs btn-primary' id=''>Go</button> Add Metadata to Project -TODO
             </form>
-            </td><td>TODO</td></tr>
+            </td>
+            <td>Add metadata to your established project. <small>(<a href='#'>see metadata file format</a>)</small></td>
+        </tr>
         <tr><td>
-            <form id='' class='' method='GET' action='import_data?type=new_data'>
-                <button type='submit' name='import_type' value='new_data' class='' id=''>Go</button> Import Aditional Data to your Established Project
+            <form id='' class='' method='GET' action='import_data'>
+                <button type='submit' name='import_type' value='new_data' class='btn btn-xs btn-primary' id=''>Go</button> Import Data to your Project -TODO
             </form>
-        </td><td>TODO</td></tr>
+        </td>
+        <td>Add aditional datasets to your established project. <small>(<a href='#'>see fasta file format</a>)</small></td>
+        </tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='validate_format'>
+                <button type='submit' name='file_type' value='metadata' class='btn btn-xs btn-primary' id=''>Go</button> Check Metadata File -TODO
+            </form>
+        </td>
+        <td>Validate a metadata csv file. <small>(<a href='#'>see metadata file format</a>)</small></td>
+        </tr>
+        <tr><td>
+            <form id='' class='' method='GET' action='validate_format'>
+                <button type='submit' name='file_type' value='fasta' class='btn btn-xs btn-primary' id=''>Go</button> Check Sequence File -TODO
+            </form>
+        </td><td>Validate a fasta file. <small>(<a href='#'>see fasta file format</a>)</small></td>
+        </tr>
     </table>
-    <button type='submit' name='' value='form_submitted' class='btn btn-xs' id=''>Go</button>
+    
 
 	
 
