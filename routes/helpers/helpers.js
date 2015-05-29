@@ -4,6 +4,7 @@ var router = express.Router();
 var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
+var queries = require('../queries');
 
 module.exports = {
 
@@ -202,35 +203,40 @@ module.exports.run_select_datasets_query = function(rows){
     }
 	
 
-    
+    var clean_metadata = {}
     for(did in AllMetadata){
-  	  for(mdname in AllMetadata[did] ){
-  		//console.log(mdname)
-  		if(AllMetadataNames.indexOf(mdname) == -1){
-  			AllMetadataNames.push(mdname);
-  		}
-  		if(mdname == 'latitude' || mdname == 'longitude'){
+          if(did in DATASET_NAME_BY_DID){
+              clean_metadata[did] = AllMetadata[did];        
+              for(mdname in AllMetadata[did] ){
+          		//console.log(mdname)
+          		if(AllMetadataNames.indexOf(mdname) == -1){
+          			AllMetadataNames.push(mdname);
+          		}
+          		if(mdname == 'latitude' || mdname == 'longitude'){
   			
-  			if(did in DatasetsWithLatLong){
-  				if(mdname == 'latitude'){				
-  					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-  				}else{
-  					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-  				}
-  			}else{
-  				DatasetsWithLatLong[did]={}
-				
-				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
-  				if(mdname == 'latitude'){				
-  					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-  				}else{
-  					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-  				}
-  			}
-  		}
-  	  }
+          			if(did in DatasetsWithLatLong){
+          				if(mdname == 'latitude'){				
+          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+          				}else{
+          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+          				}
+          			}else{
+          				DatasetsWithLatLong[did]={}
+        				//console.log(did)
+                        //console.log(PROJECT_ID_BY_DID[did])
+        				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+        				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+          				if(mdname == 'latitude'){				
+          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+          				}else{
+          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+          				}
+          			}
+          		}
+          	  }
+         }
     }
+    AllMetadata = clean_metadata;
     AllMetadataNames.sort();
     
 	
@@ -312,4 +318,17 @@ module.exports.update_global_variables = function(pid,type){
 	}
 }
 
+module.exports.update_project_status = function(res, p){
+    console.log('in helpers update project status')
+    connection.db.query(queries.user_project_status(p.type, p.user, p.proj, p.status, p.msg ), function(err, rows, fields){
+        if(err){ 
+            console.log('ERROR-in status update')
+        }else{
+            if(p.render){
+                res.render('success',p.render);
+            } 
+	      
+        }
+    });
+}
 
