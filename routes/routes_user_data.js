@@ -6,6 +6,7 @@ var path  = require('path');
 var fs   = require('fs-extra');
 var url  = require('url');
 var ini = require('ini');
+var queries = require('./queries');
 var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
 var zlib = require('zlib');
@@ -51,7 +52,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-/* GET Import Data page. */
+/* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
    console.log('import_choices')
     res.render('user_data/import_choices', {
@@ -71,6 +72,23 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
     
     var import_type    = myurl.query.import_type;
     res.render('user_data/import_data', { 
+	    title: 'VAMPS:Import Data',
+  		message: req.flash('successMessage'),
+	    failmessage: req.flash('failMessage'),
+        import_type: import_type,
+          user: req.user
+                          });
+});
+//
+//
+/* GET Import Data page. */
+router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
+    console.log('validate_format')
+    console.log(JSON.stringify(req.url))
+    var myurl = url.parse(req.url, true);
+    
+    var import_type    = myurl.query.import_type;
+    res.render('user_data/validate_format', { 
 	    title: 'VAMPS:Import Data',
   		message: req.flash('successMessage'),
 	    failmessage: req.flash('failMessage'),
@@ -106,74 +124,22 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 //
 //
 router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,res){
-	var queries = require('./queries');
+	
 	var delete_kind = req.params.kind;
 	var project = req.params.project;
-	console.log('in delete_project: '+project+' - '+delete_kind);
-	console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
+	console.log('in delete_project1: '+project+' - '+delete_kind);
+	//console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
 	if(project in PROJECT_INFORMATION_BY_PNAME){
 		var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
-	
+	    helpers.update_global_variables(pid,'del');
 	}else{
 		// project not in db?
 		console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME')
         var pid = 0;
 		
 	}
-		
-   // //helpers.update_global_variables(pid, 'del');
-   // console.log('QUERY: '+queries.get_select_datasets_queryPID(pid));
-   // if(helpers.isInt(pid) && pid != 0){
-   //        connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows, fields){
-   //            if (err)  {
-   //                console.log('Query error: ' + err);
-   //                console.log(err.stack);
-   //                process.exit(1);
-   //            } else {
-   //                console.log('query ok '+JSON.stringify(rows));
-   //                helpers.run_select_datasets_query(rows);
-   //                console.log(' UPDATED ALL_DATASETS');
-   //                console.log(' UPDATED PROJECT_ID_BY_DID');
-   //                console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-   //                console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-   //                console.log(' UPDATED DATASET_IDS_BY_PID');
-   //                console.log(' UPDATED DATASET_NAME_BY_DID');
-   //                console.log(' UPDATED DATASET_ID_BY_DNAME');
-   //              console.log(JSON.stringify(ALL_DATASETS))
-   //              console.log(JSON.stringify(PROJECT_INFORMATION_BY_PID))
-   //            } // end else
-   //
-   //        });
-   //
-   //        //
-   //        //
-   //        //
-   //        connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows, fields){
-   //            if (err)  {
-   //                    console.log('Query error: ' + err);
-   //                    console.log(err.stack);
-   //                    process.exit(1);
-   //            } else {
-   //                  helpers.run_select_sequences_query(rows);
-   //                     console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-   //                     console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-   //                var mdv_file = path.join(process.env.PWD,'public','json','metadata--' + NODE_DATABASE+'.json')
-   //
-   //            }
-   //
-   //        });
-   //
-   //
-   //  }else{ // end if int
-   //         console.log('ERROR pid is not an integer: '+pid.toString())
-   // }
-   
-   
-   
-       helpers.update_global_variables(pid,'del');
         
-        
-        console.log('in delete_project: '+project+' - '+pid);
+        console.log('in delete_project2: '+project+' - '+pid);
 		var options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 	      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--user',req.user.username,'--project',project,'-pdir',process.env.PWD ],
@@ -217,53 +183,48 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			   console.log('delete_process process exited with code ' + code);
 			   var ary = output.split("\n");
 			   var last_line = ary[ary.length - 1];
-			   if(code == 0){
-				   
-				   //console.log('PID last line: '+last_line)
-				   
-				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));
-			   
-				   
+			   if(code == 0){				   
+				   //console.log('PID last line: '+last_line)				   
+				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));	
+                   
+                   connection.db.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
+                       if(err){ 
+                           console.log('ERROR-in status update')
+                       }else{
+                        console.log('OK-deleted  status update')
+                        }
+                    });
+                           					   
 			   }else{
 			   	  // python script error
-			   }
-		   
-		    });
-		
+			   }		   
+		    });		
     		// called imediately
-    		req.flash('successMessage', 'You have deleted '+pid);
+    		if(delete_kind == 'all'){    			
+    			var msg = "You have deleted '"+project+"'"	    
+    		}else if(delete_kind == 'tax'){
+    			var msg = "You have deleted the taxonomy from '"+project+"'"		    
+    		}else if(delete_kind == 'meta'){
+    			var msg = "You have deleted the metadata from '"+project+"'"	    
+    		}else{
+    			req.flash('message', 'ERROR nothing deleted');
+    	      	res.redirect("/user_data/your_projects");
+    		}
+
+    		req.flash('successMessage', msg);
           	res.redirect("/user_data/your_projects");	
+            //res.redirect(req.get('referer'));
 		
 	
     console.log('req.body: dele-->>');
     console.log(req.user.username);
     console.log('req.body: del');
-		   // still need to delete directoru in user_data:
-		   // var project_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-		   // console.log('project_data_dir '+project_data_dir)
-		   // if(fs.lstatSync(project_data_dir).isDirectory()){
-		   // 			   console.log('is DIR')
-		   // 			   fs.remove(project_data_dir, function (err) {
-		   //  				     if (err) {
-		   //  				        console.error(err);
-		   // 				 		req.flash('failmessage', 'Error removing'+project+' Here is the error: '+err);
-		   // 				       	res.redirect("/user_data/your_projects");
-		   //  				     }else{
-		   //  				     	console.log('DELETED: '+project_data_dir)
-		   // 				 		req.flash('successmessage', 'Completely Removing '+project);
-		   // 				       	res.redirect("/user_data/your_projects");
-		   //
-		   //  				     }
-		   //  				   });
-		   // }else{
-		   // 		console.log('is NOT DIR')
-		   //
-		   // }
+		   
 	
 });
 router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(req,res){
     
-	var queries = require('./queries');
+	
 	console.log(req.params.project);
 	var project = req.params.project;
 	var method = req.params.method;
@@ -273,7 +234,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 	
 	var data = ''
 	
-	console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
+	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
 	
 	var config_file = path.join(data_dir,'config.ini');
   	
@@ -328,55 +289,57 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   //console.log('PID last line: '+last_line)
 			   var ll = last_line.split('=');
 			   var pid = ll[1];
-			   console.log('GOT NEW PID=: '+pid);
+			   console.log('NEW PID=: '+pid);
 			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
-				   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows, fields){			       
+                   var GASTfinishRequest = function(rows1,rows2) {
+					   console.log('query ok1 '+JSON.stringify(rows1));
+                       console.log('query ok2 '+JSON.stringify(rows2));			           
+                       helpers.run_select_datasets_query(rows1);
+				       console.log(' UPDATED ALL_DATASETS');
+				       console.log(' UPDATED PROJECT_ID_BY_DID');
+				       console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
+				       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
+				       console.log(' UPDATED DATASET_IDS_BY_PID');
+				       console.log(' UPDATED DATASET_NAME_BY_DID');
+					   console.log(' UPDATED DATASET_ID_BY_DNAME');
+                 	   console.log(' UPDATED AllMetadataNames');
+                 	   console.log(' UPDATED DatasetsWithLatLong');
+		         	   helpers.run_select_sequences_query(rows2);
+		       	 	    console.log(' UPDATED ALL_DCOUNTS_BY_DID');
+		       	 	    console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+                        status_params = {'type':'update',
+                                        'user':req.user.username,
+                                        'proj':project,
+                                        'status':'GAST-SUCCESS',
+                                        'msg':'GAST -Tax assignments'                                      
+                        }
+                        helpers.update_project_status(res, status_params);
+                           
+                   };
+                   
+                   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
 					   if (err)  {
-				 		  console.log('Query error: ' + err);
-				 		  console.log(err.stack);
-				 		  process.exit(1);
+				 		  console.log('Query error: ' + err);				 		  			 		  
 				       } else {
-						   console.log('query ok '+JSON.stringify(rows));
-				           helpers.run_select_datasets_query(rows);
-					       console.log(' UPDATED ALL_DATASETS');
-					       console.log(' UPDATED PROJECT_ID_BY_DID');
-					       console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-					       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-					       console.log(' UPDATED DATASET_IDS_BY_PID');
-					       console.log(' UPDATED DATASET_NAME_BY_DID');
-						   console.log(' UPDATED DATASET_ID_BY_DNAME');
-                     	   console.log(' UPDATED AllMetadataNames');
-                     	   console.log(' UPDATED DatasetsWithLatLong');
+        				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+        				       if (err)  {
+        				 		  	console.log('Query error: ' + err);        				 		  	
+        				       } else {        
+        				         	GASTfinishRequest(rows1,rows2);		 				   
+        				       }
+				       
+        				   });
 					   } // end else
 				       
-				   });
-			   
-				   //
-				   //  ???? what about AllMetadataNames DatasetsWithLatLong ????
-				   //
-				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows, fields){  			     
-				       if (err)  {
-				 		  	console.log('Query error: ' + err);
-				 		  	console.log(err.stack);
-				 		  	process.exit(1);
-				       } else {        
-				         	helpers.run_select_sequences_query(rows);
-  				       	 	console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-  				       	 	console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-		 				   var mdv_file = path.join(process.env.PWD,'public','json','metadata--' + NODE_DATABASE+'.json')
-		 				   
-				       }
-				       
-				   });
-				   
-
+				   });		   
+                   
 	           }else{ // end if int
-				    console.log('ERROR pid is not an integer: '+pid.toString())
+                   console.log('ERROR pid is not an integer: '+pid.toString());
 			   }
 		   }else{
 		   		// ERROR
-			   console.log('ERROR last line: '+last_line)
+			   console.log('ERROR last line: '+last_line);
 	   	  		//req.flash('message', 'Script Error');
 	         	//res.redirect("/user_data/your_projects");
 		   }
@@ -385,7 +348,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		
 	  	
 		// called imediately
-		req.flash('successMessage', 'GAST has been started for '+project);
+		req.flash('successMessage', "GAST has been started for project: '"+project+"'");
       	res.redirect("/user_data/your_projects");
 		
 
@@ -393,7 +356,6 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-
 	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE ],
 	    };
 	    console.log(rdp_options.scriptPath+'/node_script_assign_taxonomy.py '+rdp_options.args.join(' '));
@@ -413,7 +375,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		  output += data;
 		  var lines = data.split('\n')
 		  for(var n in lines){
-		  	//console.log('line: ' + lines[n]);
+		  	console.log('line: ' + lines[n]);
 			if(lines[n].substring(0,4) == 'PID='){
 				console.log('pid line '+lines[n]);
 			}
@@ -421,73 +383,75 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		});
 		 
 		rdp_process.on('close', function (code) {
-		   console.log('gast_process process exited with code ' + code);
+		   console.log('rdp_process process exited with code ' + code);
 		   var ary = output.split("\n");
 		   var last_line = ary[ary.length - 1];
 		   if(code == 0){
-			   console.log('GAST Success');
+			   console.log('RDP Success');
 			   //console.log('PID last line: '+last_line)
 			   var ll = last_line.split('=');
 			   var pid = ll[1];
-			   console.log('GOT NEW PID=: '+pid);
-			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+			   console.log('NEW PID=: '+pid);
+			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
-				   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows, fields){			       
+				   
+                   var RDPfinishRequest = function(rows1,rows2) {
+                        console.log('query ok1 '+JSON.stringify(rows1));
+                        console.log('query ok2 '+JSON.stringify(rows2));
+
+                        helpers.run_select_datasets_query(rows1);
+                        console.log(' UPDATED ALL_DATASETS');
+                        console.log(' UPDATED PROJECT_ID_BY_DID');
+                        console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
+                        console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
+                        console.log(' UPDATED DATASET_IDS_BY_PID');
+                        console.log(' UPDATED DATASET_NAME_BY_DID');
+                        console.log(' UPDATED DATASET_ID_BY_DNAME');
+                        console.log(' UPDATED AllMetadataNames');
+                        console.log(' UPDATED DatasetsWithLatLong');
+                        helpers.run_select_sequences_query(rows2);
+                        console.log(' UPDATED ALL_DCOUNTS_BY_DID');
+                        console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+                        status_params = {'type':'update',
+                                        'user':req.user.username,
+                                        'proj':project,
+                                        'status':'RDP-SUCCESS',
+                                        'msg':'RDP -Tax assignments'                                      
+                        }
+                        helpers.update_project_status(res, status_params);
+                           
+                   };
+                   
+                   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
 					   if (err)  {
-				 		  console.log('Query error: ' + err);
-				 		  console.log(err.stack);
-				 		  process.exit(1);
-				       } else {
-						   console.log('query ok '+JSON.stringify(rows));
-				           helpers.run_select_datasets_query(rows);
-					       console.log(' UPDATED ALL_DATASETS');
-					       console.log(' UPDATED PROJECT_ID_BY_DID');
-					       console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-					       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-					       console.log(' UPDATED DATASET_IDS_BY_PID');
-					       console.log(' UPDATED DATASET_NAME_BY_DID');
-						   console.log(' UPDATED DATASET_ID_BY_DNAME');
-                     	   console.log(' UPDATED AllMetadataNames');
-                     	   console.log(' UPDATED DatasetsWithLatLong');
+				 		  console.log('Query error: ' + err);				 		  				 		  
+				       } else {						   
+        				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
+        				       if (err)  {
+        				 		  	console.log('Query error: ' + err);        				 		  	
+        				       } else {        
+        				         	RDPfinishRequest(rows1,rows2);        		 				   
+        				       }
+				       
+        				   });                           
+                           
 					   } // end else
 				       
 				   });
-			   
-				   //
-				   //  ???? what about AllMetadataNames DatasetsWithLatLong ????
-				   //
-				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows, fields){  			     
-				       if (err)  {
-				 		  	console.log('Query error: ' + err);
-				 		  	console.log(err.stack);
-				 		  	process.exit(1);
-				       } else {        
-				         	helpers.run_select_sequences_query(rows);
-  				       	 	console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-  				       	 	console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-		 				   var mdv_file = path.join(process.env.PWD,'public','json','metadata--' + NODE_DATABASE+'.json')
-		 				   
-				       }
-				       
-				   });
-				   
 
 	           }else{ // end if int
-				    console.log('ERROR pid is not an integer: '+pid.toString())
+                   console.log('ERROR pid is not an integer: '+pid.toString());
 			   }
 		   }else{
 		   		// ERROR
-			   console.log('ERROR last line: '+last_line)
+			   console.log('ERROR last line: '+last_line);
 	   	  		//req.flash('message', 'Script Error');
 	         	//res.redirect("/user_data/your_projects");
 		   }
 		});  // end gast_process ON Close
         
         
-        
-        
-        
-		req.flash('successMessage', 'RDP has been started for '+project);
+		req.flash('successMessage', "RDP has been started for project: '"+project+"'");
 		res.redirect("/user_data/your_projects");
 		
 	}else{
@@ -527,13 +491,13 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 				  
 				  try{
 					  var stat_config = fs.statSync(config_file);
-	  				  console.log('1 ',config_file)
+	  				 // console.log('1 ',config_file)
 			 		 var config = iniparser.parseSync(config_file)
 			      
 			      	
 	  				  project_info[stat_dir.mtime.getTime()] = {}
 	  				  modify_times.push(stat_dir.mtime.getTime());
-					  console.log('2 ',config_file)
+					 // console.log('2 ',config_file)
 						if(project_name in PROJECT_INFORMATION_BY_PNAME){
 							project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
@@ -547,7 +511,6 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   				  	  project_info[stat_dir.mtime.getTime()].directory = items[d];
   				  	  project_info[stat_dir.mtime.getTime()].mtime = stat_dir.mtime;
 					  
-					  
 				  }
 				  catch (err) {
 				  	console.log('nofile ',err)
@@ -555,13 +518,12 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   			  	 
   			  }
 				
-
 	        }
 	      }
 	  
 		  modify_times.sort().reverse();
 		  
-		  console.log(JSON.stringify(project_info));
+		  //console.log(JSON.stringify(project_info));
 		  res.render('user_data/your_projects',
 		    { title: 'User Projects',
 		     
@@ -622,19 +584,14 @@ router.post('/upload_data',  function(req,res){
 		// create a config file and analysis/gast/<ds> directory tree
 		// run python script "load_trimmed_data.py"
 		//
-	    
+		var options = {
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
+	      args :       [ '-dir', data_repository ]
+	    };
 		if(req.body.type == 'single'){
-			var options = {
-		      scriptPath : req.C.PATH_TO_SCRIPTS,
-		      args :       [ '-dir', data_repository, '-t', 'single', '-d', req.body.dataset ],
-		    };
+			options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
 	  	}else if(req.body.type == 'multi') {
-	  		console.log('Multi-in upload_data');
-				var options = {
-			      scriptPath : req.C.PATH_TO_SCRIPTS,
-			      args :       [ '-dir', data_repository, '-t', 'multi' ],
-			    };
-  
+			options.args = options.args.concat(['-t', 'multi' ]); 
 	  	}else{
 	  	  	// ERROR
 	  		  console.log('ERROR-in upload_data')
@@ -647,13 +604,41 @@ router.post('/upload_data',  function(req,res){
 			  req.flash('failMessage', 'Script Failure '+err);
 			  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
 		  }else{
-			  req.flash('successMessage', 'Upload in Progress: '+ req.body.project);
-		      res.render('success',{
-		                    title   : 'VAMPS: Import Success',                                
-							message : req.flash('successMessage'),
-                  display: "Import_Success",
-		                    user: req.user                        
-		              });
+			  // START STATUS //
+              
+              req.flash('successMessage', 'Upload in Progress: '+ req.body.project);
+              status_params = {'type':'new',
+                  'user':req.user.username,
+                  'proj':req.body.project,
+                  'status':'LOADED',
+                  'msg':'Project is loaded --without tax assignments',
+                  'render':{  title   : 'VAMPS: Import Success',                                
+            				message : req.flash('successMessage'),
+                            display: "Import_Success",
+            		        user: req.user                        
+            		        }                  
+              }
+              helpers.update_project_status(res, status_params)
+              
+             
+              
+              
+              
+              // connection.db.query(queries.user_project_status('new', req.user.username, req.body.project, status, msg ), function(err, rows, fields){
+             //      if(err){
+             //          console.log('ERROR-in status update')
+             //      }else{
+             //
+             //                       res.render('success',{
+             //                                     title   : 'VAMPS: Import Success',
+             //                                     message : req.flash('successMessage'),
+             //                      display: "Import_Success",
+             //                                     user: req.user
+             //                               });
+             //      }
+             //  });
+              
+              
 		  }
 		  
 	    });

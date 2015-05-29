@@ -712,11 +712,13 @@ def push_taxonomy(args):
         SEQ_COLLECTOR[ds] = {}
         if classifier == 'gast':
             tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
-            run_gast_tax_file(args,ds,tax_file)
+            if os.path.exists(tax_file):
+                run_gast_tax_file(args,ds,tax_file)
         elif classifier == 'rdp':
             tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
             unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
-            run_rdp_tax_file(args,ds,tax_file,unique_file)
+            if os.path.exists(tax_file):
+                run_rdp_tax_file(args,ds,tax_file,unique_file)
         else:
             sys.exit('No classifier found')
  
