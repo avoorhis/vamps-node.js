@@ -1,0 +1,19 @@
+<% include ../add_ins/begin.ejs %>
+
+<p class='title'>Validate</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<% if (failmessage) { %>
+	<div class="alert_flash_message"><%= failmessage %></div>
+<% } %>
+	
+<a href='#' onclick="window.history.back();">&lt;&lt;--back</a>	
+	
+	
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.15, for osx10.6 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.17, for osx10.7 (x86_64)
 --
--- Host: localhost    Database: vamps_js_dev_av
+-- Host: 127.0.0.1    Database: vamps_js_development
 -- ------------------------------------------------------
--- Server version	5.6.15
+-- Server version	5.6.17
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -47,7 +47,7 @@ CREATE TABLE `custom_metadata_fields` (
   UNIQUE KEY `project_id_field_name` (`project_id`,`field_name`),
   KEY `project_id` (`project_id`),
   CONSTRAINT `custom_metadata_fields_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10970 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +69,7 @@ CREATE TABLE `dataset` (
   KEY `dataset_fk_env_sample_source_id` (`env_sample_source_id`),
   CONSTRAINT `dataset_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,
   CONSTRAINT `dataset_ibfk_2` FOREIGN KEY (`env_sample_source_id`) REFERENCES `env_sample_source` (`env_sample_source_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=782 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,7 +84,7 @@ CREATE TABLE `domain` (
   `domain` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`domain_id`),
   UNIQUE KEY `domain` (`domain`)
-) ENGINE=InnoDB AUTO_INCREMENT=192900 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,7 +114,7 @@ CREATE TABLE `family` (
   `family` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`family_id`),
   UNIQUE KEY `family` (`family`)
-) ENGINE=InnoDB AUTO_INCREMENT=184526 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2333857 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,7 +129,54 @@ CREATE TABLE `genus` (
   `genus` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`genus_id`),
   UNIQUE KEY `genus` (`genus`)
-) ENGINE=InnoDB AUTO_INCREMENT=184529 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2090419 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gg_otu`
+--
+
+DROP TABLE IF EXISTS `gg_otu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gg_otu` (
+  `gg_otu_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `otu_name` int(10) unsigned DEFAULT NULL,
+  `gg_taxonomy_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`gg_otu_id`),
+  KEY `gg_otu_fk_gg_taxonomy_id_idx` (`gg_taxonomy_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gg_taxonomy`
+--
+
+DROP TABLE IF EXISTS `gg_taxonomy`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gg_taxonomy` (
+  `gg_taxonomy_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `domain_id` int(11) unsigned DEFAULT NULL,
+  `phylum_id` int(11) unsigned DEFAULT NULL,
+  `klass_id` int(11) unsigned DEFAULT NULL,
+  `order_id` int(11) unsigned DEFAULT NULL,
+  `family_id` int(11) unsigned DEFAULT NULL,
+  `genus_id` int(11) unsigned DEFAULT NULL,
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`gg_taxonomy_id`),
+  UNIQUE KEY `all_names` (`domain_id`,`phylum_id`,`klass_id`,`order_id`,`family_id`,`genus_id`,`species_id`,`strain_id`),
+  KEY `taxonomy_fk_strain_id` (`strain_id`),
+  KEY `taxonomy_fk_klass_id` (`klass_id`),
+  KEY `taxonomy_fk_family_id` (`family_id`),
+  KEY `taxonomy_fk_genus_id` (`genus_id`),
+  KEY `taxonomy_fk_order_id` (`order_id`),
+  KEY `taxonomy_fk_phylum_id` (`phylum_id`),
+  KEY `taxonomy_fk_species_id` (`species_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,7 +191,21 @@ CREATE TABLE `klass` (
   `klass` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`klass_id`),
   UNIQUE KEY `klass` (`klass`)
-) ENGINE=InnoDB AUTO_INCREMENT=184526 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=370048 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `olygotypes`
+--
+
+DROP TABLE IF EXISTS `olygotypes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `olygotypes` (
+  `olygotypes_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `olygotype_info` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`olygotypes_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,7 +220,7 @@ CREATE TABLE `order` (
   `order` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`order_id`),
   UNIQUE KEY `order` (`order`)
-) ENGINE=InnoDB AUTO_INCREMENT=184526 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1646277 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -174,7 +235,7 @@ CREATE TABLE `phylum` (
   `phylum` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`phylum_id`),
   UNIQUE KEY `phylum` (`phylum`)
-) ENGINE=InnoDB AUTO_INCREMENT=184527 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=100381 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,7 +259,7 @@ CREATE TABLE `project` (
   UNIQUE KEY `rev_project_name` (`rev_project_name`),
   KEY `project_fk_user_id_idx` (`owner_user_id`),
   CONSTRAINT `project_ibfk_1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +275,7 @@ CREATE TABLE `rank` (
   `rank_number` tinyint(3) NOT NULL,
   PRIMARY KEY (`rank_id`),
   UNIQUE KEY `rank` (`rank`)
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -247,22 +308,7 @@ CREATE TABLE `refhvr_id` (
   `refhvr_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`refhvr_id_id`),
   UNIQUE KEY `refhvr_id_UNIQUE` (`refhvr_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `relationship_type`
---
-
-DROP TABLE IF EXISTS `relationship_type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `relationship_type` (
-  `relationship_type_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `relationship_type` varchar(16) NOT NULL,
-  PRIMARY KEY (`relationship_type_id`),
-  UNIQUE KEY `relationship_type_id` (`relationship_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=90973 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,14 +319,14 @@ DROP TABLE IF EXISTS `required_metadata_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `required_metadata_info` (
-  `required_sample_info_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `required_metadata_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `dataset_id` int(11) unsigned NOT NULL,
   `taxon_id` int(11) NOT NULL COMMENT 'Refers to the number assigned to the specific metagenome being sampled:\n  required for all sample submissions e.g. marine metagenome is 408172\n   http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi',
   `description` varchar(100) NOT NULL DEFAULT '' COMMENT 'A description of the sample that can include site, subject, sample matter',
   `common_name` varchar(100) NOT NULL DEFAULT '' COMMENT 'Name of the TAXON_ID e.g. 408172 is marine metagenome',
   `altitude` double NOT NULL COMMENT 'Height above ground or sea in the air (in meters) required for all sample submissions - 0 should be used if sample is not in the air above ground',
   `assigned_from_geo` char(1) NOT NULL COMMENT 'Is the latitude, longitude and elevation assigned from a geographic reference? y or n required for all sample submissions.',
-  `collection_date` varchar(10) NOT NULL DEFAULT '' COMMENT 'The day and time of sampling, single point in time using a 24 hour time format required for all sample submissions Date should be in MM/DD/YY format.  Time can be truncated or omitted or entered in a separate column collection_time',
+  `collection_date` date NOT NULL COMMENT 'The day and time of sampling, single point in time using a 24 hour time format required for all sample submissions Date should be in MM/DD/YY format.  Time can be truncated or omitted or entered in a separate column collection_time',
   `depth` double NOT NULL COMMENT 'Depth underground for soil or under water for aquatic samples.  Should be in meters required for all sample submissions, should be in meters',
   `country` varchar(128) NOT NULL COMMENT 'The geographical origin of the sample as defined by the country\n  required for all sample submissions, chosen from the GAZ ontology\n  http://bioportal.bioontology.org/visualize/40651',
   `elevation` int(11) NOT NULL COMMENT 'Height of land above sea level in meters\n  required for all sample submissions, distinguish from altitude which is height above land or sea in the air.',
@@ -290,10 +336,10 @@ CREATE TABLE `required_metadata_info` (
   `latitude` double NOT NULL COMMENT 'Classification of the site by latitude and longitude in decimal degrees\n  required for all sample submissions. Please convert from GPS co-ordinates  or DD MM SS to decimal degrees\n  http://www.microbio.me/qiime/fusebox.psp?page=tools_geo.psp',
   `longitude` double NOT NULL COMMENT 'Classification of the site by latitude and longitude in decimal degrees\n  required for all sample submissions. Please convert from GPS co-ordinates  or DD MM SS to decimal degrees\n  http://www.microbio.me/qiime/fusebox.psp?page=tools_geo.psp',
   `public` char(1) NOT NULL COMMENT 'Has the sample been published?\n  responses: y/n',
-  PRIMARY KEY (`required_sample_info_id`),
+  PRIMARY KEY (`required_metadata_id`),
   UNIQUE KEY `dataset_id_u` (`dataset_id`),
   CONSTRAINT `required_metadata_info_ibfk_1` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -310,7 +356,7 @@ CREATE TABLE `sequence` (
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`sequence_id`),
   UNIQUE KEY `sequence_comp` (`sequence_comp`(400))
-) ENGINE=InnoDB AUTO_INCREMENT=154942 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7191869 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -335,7 +381,7 @@ CREATE TABLE `sequence_pdr_info` (
   CONSTRAINT `sequence_pdr_info_ibfk_1` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
   CONSTRAINT `sequence_pdr_info_ibfk_2` FOREIGN KEY (`sequence_id`) REFERENCES `sequence` (`sequence_id`) ON UPDATE CASCADE,
   CONSTRAINT `sequence_pdr_info_ibfk_3` FOREIGN KEY (`classifier_id`) REFERENCES `classifier` (`classifier_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=36225 DEFAULT CHARSET=latin1 COMMENT='sequences uniqued per run / project / dataset';
+) ENGINE=InnoDB AUTO_INCREMENT=14613907 DEFAULT CHARSET=latin1 COMMENT='sequences uniqued per run / project / dataset';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -360,7 +406,7 @@ CREATE TABLE `sequence_uniq_info` (
   KEY `sequence_uniq_info_fk_olygotype_id_idx` (`oligotype_id`),
   CONSTRAINT `sequence_uniq_info_ibfk_1` FOREIGN KEY (`sequence_id`) REFERENCES `sequence` (`sequence_id`) ON UPDATE CASCADE,
   CONSTRAINT `sequence_uniq_info_ibfk_2` FOREIGN KEY (`silva_taxonomy_info_per_seq_id`) REFERENCES `silva_taxonomy_info_per_seq` (`silva_taxonomy_info_per_seq_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=154941 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7146094 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -399,7 +445,7 @@ CREATE TABLE `silva_taxonomy` (
   CONSTRAINT `silva_taxonomy_ibfk_7` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
   CONSTRAINT `silva_taxonomy_ibfk_8` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
   CONSTRAINT `silva_taxonomy_ibfk_9` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=184525 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5527996 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -428,7 +474,7 @@ CREATE TABLE `silva_taxonomy_info_per_seq` (
   CONSTRAINT `silva_taxonomy_info_per_seq_ibfk_1` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE,
   CONSTRAINT `silva_taxonomy_info_per_seq_ibfk_2` FOREIGN KEY (`silva_taxonomy_id`) REFERENCES `silva_taxonomy` (`silva_taxonomy_id`) ON UPDATE CASCADE,
   CONSTRAINT `silva_taxonomy_info_per_seq_ibfk_3` FOREIGN KEY (`sequence_id`) REFERENCES `sequence` (`sequence_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=154941 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15067747 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,7 +489,7 @@ CREATE TABLE `species` (
   `species` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`species_id`),
   UNIQUE KEY `species` (`species`)
-) ENGINE=InnoDB AUTO_INCREMENT=184526 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1532410 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -458,7 +504,51 @@ CREATE TABLE `strain` (
   `strain` varchar(300) NOT NULL DEFAULT '',
   PRIMARY KEY (`strain_id`),
   UNIQUE KEY `strain` (`strain`)
-) ENGINE=InnoDB AUTO_INCREMENT=184526 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=423659 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `summed_counts`
+--
+
+DROP TABLE IF EXISTS `summed_counts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `summed_counts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dataset_id` int(11) unsigned DEFAULT NULL,
+  `domain_id` int(11) unsigned DEFAULT NULL,
+  `phylum_id` int(11) unsigned DEFAULT NULL,
+  `klass_id` int(11) unsigned DEFAULT NULL,
+  `order_id` int(11) unsigned DEFAULT NULL,
+  `family_id` int(11) unsigned DEFAULT NULL,
+  `genus_id` int(11) unsigned DEFAULT NULL,
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `rank_id` tinyint(11) unsigned DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `summed_counts_ibfk_11` (`dataset_id`),
+  KEY `summed_counts_ibfk_1` (`strain_id`),
+  KEY `summed_counts_ibfk_3` (`genus_id`),
+  KEY `summed_counts_ibfk_4` (`domain_id`),
+  KEY `summed_counts_ibfk_5` (`family_id`),
+  KEY `summed_counts_ibfk_6` (`klass_id`),
+  KEY `summed_counts_ibfk_7` (`order_id`),
+  KEY `summed_counts_ibfk_8` (`phylum_id`),
+  KEY `summed_counts_ibfk_9` (`species_id`),
+  KEY `summed_counts_ibfk_10` (`rank_id`),
+  CONSTRAINT `summed_counts_ibfk_1` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`strain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_10` FOREIGN KEY (`rank_id`) REFERENCES `rank` (`rank_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_11` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_3` FOREIGN KEY (`genus_id`) REFERENCES `genus` (`genus_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_4` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`domain_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_5` FOREIGN KEY (`family_id`) REFERENCES `family` (`family_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_6` FOREIGN KEY (`klass_id`) REFERENCES `klass` (`klass_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_7` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_8` FOREIGN KEY (`phylum_id`) REFERENCES `phylum` (`phylum_id`) ON UPDATE CASCADE,
+  CONSTRAINT `summed_counts_ibfk_9` FOREIGN KEY (`species_id`) REFERENCES `species` (`species_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1071232 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -484,7 +574,7 @@ CREATE TABLE `taxa_counts_temp` (
   `species_id` int(11) unsigned DEFAULT NULL,
   `strain_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`taxa_counts_temp_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13483900 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -511,7 +601,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `contact_email_inst` (`first_name`,`last_name`,`email`,`institution`),
   UNIQUE KEY `username` (`username`),
   KEY `institution` (`institution`(15))
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -532,6 +622,25 @@ CREATE TABLE `user_project` (
   KEY `project_id` (`project_id`),
   CONSTRAINT `user_project_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
   CONSTRAINT `user_project_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_project_status`
+--
+
+DROP TABLE IF EXISTS `user_project_status`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_project_status` (
+  `user_project_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user` varchar(64) NOT NULL DEFAULT '',
+  `project` varchar(20) DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `message` varchar(128) DEFAULT NULL,
+  `date` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_project_status_id`),
+  UNIQUE KEY `user` (`user`,`project`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -544,4 +653,4 @@ CREATE TABLE `user_project` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-20  5:00:48
+-- Dump completed on 2015-05-29 13:37:44
