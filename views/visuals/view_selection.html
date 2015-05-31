@@ -21,8 +21,9 @@
 
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
-<% if(infomessage){ %>
-  <span><%= JSON.stringify(infomessage) %></span>
+<a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
+<% if(message){ %>
+  <div class="alert_flash_message"><%= message %></div>
 <% } %>
 
 

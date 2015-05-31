@@ -37,14 +37,18 @@ logging.debug(sys.path)
 
 
 #try:
+
 import node_script_database_loader as load_data
 logging.warning('LOGGING found database_loader script')
+
 #except:
 # logging.info("database_loader is not avalable")
 
 #try:
+
 import node_script_upload_metadata as load_metadata
 logging.warning('found node_script_upload_metadata script')
+
 #except:
 #    logging.info("node_script_upload_metadata is not avalable")   
 
@@ -162,13 +166,17 @@ if __name__ == '__main__':
 	# has sequences_file and now will load to db:
     logging.info(args.NODE_DATABASE+' - '+ args.basedir)
     logging.info("starting db upload")
+
     args.pid = load_data.start(args)
+
     
     # 3-3-3-3-3-3
     # load metadata from file to database
+
     logging.info("starting metadata")
     load_metadata.start(args)
     logging.info("finishing metadata")
+
     
     # 4-4-4-4-4-4
     # creates taxcount/metadata file

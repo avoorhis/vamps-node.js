@@ -10,23 +10,25 @@
 </script>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
- 
-<% if(messages.info){ %>
-  <span><%= messages.info %></span>
-<% } %> 
-<button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>next &gt;&gt; Show Available Graphics</button>
 
-        
-        
-		
+<a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
+<% if(messages.info){ %>
+  <div class="alert_flash_message"><%= message %></div>
+<% } %> 
+
+
 <div id='show_selected_datasets_div' class='div_border table'>
                 <% include partials/show_selected_datasets.html %>
+				<button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>next &gt;&gt; Show Available Graphics</button>
 </div>
+
 <br>
+
 <div id='' class=''>
 <!-- autocomplete="off" clears the checkboxes on page refresh -->
 
 <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
+  
   <table  class='center_table table' >
     
     <tr>
