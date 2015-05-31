@@ -63,7 +63,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   
   if(req.body.resorted === '1'){
-  	req.flash('infomessage','Dataset order is updated!')
+  	req.flash('message','Dataset order is updated!')
 	dataset_ids = req.body.ds_order;
 	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
@@ -104,7 +104,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     console.log('<<visual_post_items:');
     //console.log(biom_matrix);
 
-    //req.flash('info', 'Datasets are updated!')
+	
     res.render('visuals/view_selection', {
                                   title     :           'VAMPS: Visuals Select',
                                   chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
@@ -113,8 +113,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                   constants :           JSON.stringify(req.C),
                                   post_items:           JSON.stringify(visual_post_items),
                                   user      :           req.user,
-		                          locals: {flash: req.flash('infomessage')},
-                                  infomessage   : req.flash('infomessage','Dataset order is updated!')
+		                          //locals: {flash: req.flash('infomessage')},
+                                  message   : req.flash('message')
                    });
 
 });

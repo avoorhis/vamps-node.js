@@ -36,14 +36,8 @@ import subprocess
 """
           
     
-
-def get_input_data(args):
-    lineitems = args.outdir.split('/')
-    owner = lineitems[-2]
-    project = lineitems[-1].split(':')[1]
-    return [project,owner]
     
-def create_dirs(args,owner,project):
+def create_dirs(args):
     outdir = args.outdir
     analysis_dir = os.path.join(outdir,'analysis')
     #gast_dir = os.path.join(outdir,'analysis/gast')
@@ -53,7 +47,7 @@ def create_dirs(args,owner,project):
     #    shutil.rmtree(gast_dir)
     #os.makedirs(gast_dir)
     
-def write_seqfiles(args,owner,project):
+def write_seqfiles(args):
     outdir = args.outdir
     
     datasets = {}
@@ -82,12 +76,12 @@ def write_seqfiles(args,owner,project):
         
             
     else:    
-    
         if args.upload_type == 'single':
             ds = args.dataset
             datasets[ds] = 0
             ds_dir = os.path.join(analysis_dir,ds)
-            os.makedirs(ds_dir)
+            if not os.path.exists(ds_dir):
+                os.makedirs(ds_dir)
             file = os.path.join(ds_dir,'seqfile.fa')
             fp = open(file,'w')
             files[ds] = fp
@@ -156,7 +150,7 @@ def write_seqfiles(args,owner,project):
     #for ds in datasets:
         #os.mkdir()
         
-def write_metafile(args,owner,project,stats):
+def write_metafile(args,stats):
     
     f = open(mdfile_clean, 'wt')
     
@@ -221,17 +215,17 @@ def write_metafile(args,owner,project,stats):
     outfile.close()
     infile.close()
             
-def write_config(args,owner,project,stats):
+def write_config(args,stats):
     ini_file = os.path.join(args.outdir,'config.ini') 
     print 'Writing config.ini file:',ini_file  
     f = open(ini_file, 'w')
     f.write('[GENERAL]'+"\n")
-    f.write('project='+project+"\n")
+    f.write('project='+args.project+"\n")
     f.write('baseoutputdir='+args.outdir+"\n")
     f.write('configPath='+ini_file+"\n")
     f.write('fasta_file='+fafile+"\n")
     f.write('platform=new_vamps'+"\n")
-    f.write('owner='+owner+"\n")
+    f.write('owner='+args.owner+"\n")
     f.write('config_file_type=ini'+"\n")
     f.write('public=False'+"\n")
     f.write('fasta_type='+args.upload_type+"\n")
@@ -251,7 +245,7 @@ def write_config(args,owner,project,stats):
     
     f.close()
     
-def unique_seqs(args,owner,project,stats):
+def unique_seqs(args,stats):
     fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
     print args
     for dataset in stats["datasets"]:
@@ -341,7 +335,12 @@ if __name__ == '__main__':
     parser.add_argument("-pub", "--public",        
     			required=False,  action='store_true', dest = "public",  default=False, 
     			help="")
-    
+    parser.add_argument("-o", "--owner",        
+    			required=True,  action='store', dest = "owner",  default=False, 
+    			help="")
+    parser.add_argument("-p", "--project",        
+    			required=True,  action='store', dest = "project",  default=False, 
+    			help="")
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -353,12 +352,12 @@ if __name__ == '__main__':
     fafile = os.path.join(args.outdir,'fasta.fa')
     mdfile = os.path.join(args.outdir,'meta.csv') 
     mdfile_clean = os.path.join(args.outdir,'meta_clean.csv')
-    [project,owner] = get_input_data(args)
     
-    create_dirs(args,owner,project)    
-    stats = write_seqfiles(args,owner,project)
+    
+    create_dirs(args)    
+    stats = write_seqfiles(args)
     print stats
-    unique_seqs(args,owner,project,stats)
-    write_metafile(args,owner,project,stats)
-    write_config(args,owner,project,stats)
+    unique_seqs(args,stats)
+    write_metafile(args,stats)
+    write_config(args,stats)
         
