@@ -7,9 +7,6 @@ var helpers = require('./helpers/helpers');
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
 
-
-
-// These are all under /user
 /* GET User List (index) page. */
 router.get('/index_users', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
@@ -22,20 +19,16 @@ router.get('/index_users', helpers.isLoggedIn, function(req, res) {
   			msg = 'ERROR Message '+err;
   			helpers.render_error_page(req,res,msg);
 		   } else {
-
 		        res.render('user_admin/index_users', { 
-		                              title: 'users',
-		                              rows : rows, 
-		                              user: req.user,
-									  message:''  
+		                              title: 'users', rows : rows, 
+		                              user: req.user,  message:''  
 				});
 
 		   }
 	    });
 	}else{
         res.render('denied', { 
-                              title: 'users',                              
-                              user: req.user,
+                              title: 'users', user: req.user,
 							  message: req.flash('nopermissionMessage', 'Permission Denied') 
 		});
 

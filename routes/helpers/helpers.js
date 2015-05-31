@@ -331,4 +331,23 @@ module.exports.update_project_status = function(res, p){
         }
     });
 }
-
+module.exports.assignment_finish_request = function(rows1,rows2,status_params) {
+   console.log('query ok1 '+JSON.stringify(rows1));
+    console.log('query ok2 '+JSON.stringify(rows2));			           
+    helpers.run_select_datasets_query(rows1);
+    console.log(' UPDATED ALL_DATASETS');
+    console.log(' UPDATED PROJECT_ID_BY_DID');
+    console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
+    console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
+    console.log(' UPDATED DATASET_IDS_BY_PID');
+    console.log(' UPDATED DATASET_NAME_BY_DID');
+   console.log(' UPDATED DATASET_ID_BY_DNAME');
+   console.log(' UPDATED AllMetadataNames');
+   console.log(' UPDATED DatasetsWithLatLong');
+   helpers.run_select_sequences_query(rows2);
+    console.log(' UPDATED ALL_DCOUNTS_BY_DID');
+    console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+     
+     helpers.update_project_status(res, status_params);
+        
+};

@@ -250,18 +250,6 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
 		var gast_process = spawn( gast_options.scriptPath+'/node_script_assign_taxonomy.py', gast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 
-
-		// python.stderr.on('data', function (data) {
-		//   console.log('stderr: ' + data);
-		// });
-		//
-		// python.stdout.on('data', function (data) {
-		//   console.log('python stdout ' + data);
-		// });
-		//
-		// python.stderr.on('data', function (data) {
-		//   console.log('python stderr: ' + data);
-		// });
 		var output = ''
 		// communicating with an external python process
 		// all the print statements in the py script are printed to stdout
@@ -292,41 +280,21 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   console.log('NEW PID=: '+pid);
 			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
-                   var GASTfinishRequest = function(rows1,rows2) {
-					   console.log('query ok1 '+JSON.stringify(rows1));
-                       console.log('query ok2 '+JSON.stringify(rows2));			           
-                       helpers.run_select_datasets_query(rows1);
-				       console.log(' UPDATED ALL_DATASETS');
-				       console.log(' UPDATED PROJECT_ID_BY_DID');
-				       console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-				       console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-				       console.log(' UPDATED DATASET_IDS_BY_PID');
-				       console.log(' UPDATED DATASET_NAME_BY_DID');
-					   console.log(' UPDATED DATASET_ID_BY_DNAME');
-                 	   console.log(' UPDATED AllMetadataNames');
-                 	   console.log(' UPDATED DatasetsWithLatLong');
-		         	   helpers.run_select_sequences_query(rows2);
-		       	 	    console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-		       	 	    console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-                        status_params = {'type':'update',
-                                        'user':req.user.username,
-                                        'proj':project,
-                                        'status':'GAST-SUCCESS',
-                                        'msg':'GAST -Tax assignments'                                      
-                        }
-                        helpers.update_project_status(res, status_params);
-                           
-                   };
                    
                    connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
 					   if (err)  {
-				 		  console.log('Query error: ' + err);				 		  			 		  
+				 		  console.log('1-GAST-Query error: ' + err);				 		  			 		  
 				       } else {
         				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
         				       if (err)  {
-        				 		  	console.log('Query error: ' + err);        				 		  	
+        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
         				       } else {        
-        				         	GASTfinishRequest(rows1,rows2);		 				   
+                        		   	status_params = {'type':'update',
+                                        'user':req.user.username,
+                                        'proj':project,
+                                        'status':'GAST-SUCCESS',
+								   'msg':'GAST -Tax assignments' } 
+									helpers.assignment_finish_request(rows1,rows2,status_params)		 				   
         				       }
 				       
         				   });
@@ -394,43 +362,21 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   console.log('NEW PID=: '+pid);
 			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
-				   
-                   var RDPfinishRequest = function(rows1,rows2) {
-                        console.log('query ok1 '+JSON.stringify(rows1));
-                        console.log('query ok2 '+JSON.stringify(rows2));
-
-                        helpers.run_select_datasets_query(rows1);
-                        console.log(' UPDATED ALL_DATASETS');
-                        console.log(' UPDATED PROJECT_ID_BY_DID');
-                        console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-                        console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-                        console.log(' UPDATED DATASET_IDS_BY_PID');
-                        console.log(' UPDATED DATASET_NAME_BY_DID');
-                        console.log(' UPDATED DATASET_ID_BY_DNAME');
-                        console.log(' UPDATED AllMetadataNames');
-                        console.log(' UPDATED DatasetsWithLatLong');
-                        helpers.run_select_sequences_query(rows2);
-                        console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-                        console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-                        status_params = {'type':'update',
-                                        'user':req.user.username,
-                                        'proj':project,
-                                        'status':'RDP-SUCCESS',
-                                        'msg':'RDP -Tax assignments'                                      
-                        }
-                        helpers.update_project_status(res, status_params);
-                           
-                   };
                    
                    connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
 					   if (err)  {
-				 		  console.log('Query error: ' + err);				 		  				 		  
+				 		  console.log('1-RDP-Query error: ' + err);				 		  				 		  
 				       } else {						   
         				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
         				       if (err)  {
-        				 		  	console.log('Query error: ' + err);        				 		  	
+        				 		  	console.log('2-RDP-Query error: ' + err);        				 		  	
         				       } else {        
-        				         	RDPfinishRequest(rows1,rows2);        		 				   
+		                           status_params = {'type':'update',
+		                                           'user':req.user.username,
+		                                           'proj':project,
+		                                           'status':'RDP-SUCCESS',
+								   					'msg':'RDP -Tax assignments'  } 
+									helpers.assignment_finish_request(rows1,rows2,status_params)	       		 				   
         				       }
 				       
         				   });                           
@@ -544,16 +490,18 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 //
 router.post('/upload_data',  function(req,res){
     
+  var project = req.body.project;
+  var username = req.user.username;
   console.log('req.body upload_data');
     console.log(req.body);
   console.log(req.files);
     console.log('req.body upload_data');
-    console.log(req.body.project);
+    console.log(project);
     console.log(PROJECT_INFORMATION_BY_PNAME);
-  if(req.body.project == '' || req.body.project == undefined){
+  if(project == '' || req.body.project == undefined){
 	req.flash('failMessage', 'A project name is required.');
 	res.redirect("/user_data/import_data");
-  }else if(req.body.project in PROJECT_INFORMATION_BY_PNAME){
+  }else if(project in PROJECT_INFORMATION_BY_PNAME){
 	req.flash('failMessage', 'That project name is already taken.');
 	res.redirect("/user_data/import_data");
   }else if(req.files.fasta==undefined || req.files.fasta.size==0){
@@ -563,88 +511,66 @@ router.post('/upload_data',  function(req,res){
   	req.flash('failMessage', 'A metadata csv file is required.');
 	res.redirect("/user_data/import_data");
   }else{
-      var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+req.body.project);
+	var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
       console.log(data_repository);
-	var project = req.body.project;
+	
+	var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
+        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
+    			};
+	if(req.body.type == 'single'){
+	    if(req.body.dataset == '' || req.body.dataset == undefined){
+		  	req.flash('failMessage', 'A dataset name is required.');
+		  	res.redirect("/user_data/import_data");
+		}
+		options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
+  	}else if(req.body.type == 'multi') {
+		options.args = options.args.concat(['-t', 'multi' ]); 
+  	}else{
+		req.flash('failMessage', 'No file type Info found  '+err);
+		res.redirect("/user_data/import_data");
+  	}
 	var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
 	var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
 	//console.log(original_fastafile);
 	//console.log(original_metafile);
  	// move files to user_data/<username>/ and rename
-  	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
+  	var LoadDataFinishRequest = function() {
+		// START STATUS //
+		req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+		status_params = {'type':'new',
+		    'user':req.user.username,
+		    'proj':project,
+		    'status':'LOADED',
+		    'msg':'Project is loaded --without tax assignments',
+		    'render':{  title   : 'VAMPS: Import Success',                                
+					    message : req.flash('successMessage'),
+		                display: "Import_Success",
+			            user: req.user                        
+			        }                  
+		}
+		helpers.update_project_status(res, status_params);
+	}
+	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
     	if (err) {
 			req.flash('failMessage', '1-File move failure  '+err);
 			res.redirect("/user_data/import_data");
 		}
-  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
-    	if (err) {
-			req.flash('failMessage', '2-File move failure '+err);
-			res.redirect("/user_data/import_data");
-		}
-		// create a config file and analysis/gast/<ds> directory tree
-		// run python script "load_trimmed_data.py"
-		//
-		var options = {
-	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '-dir', data_repository ]
-	    };
-		if(req.body.type == 'single'){
-			options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
-	  	}else if(req.body.type == 'multi') {
-			options.args = options.args.concat(['-t', 'multi' ]); 
-	  	}else{
-	  	  	// ERROR
-	  		  console.log('ERROR-in upload_data')
-	  	}
-		
-	    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
-
-	    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
-	      if (err) {
-			  req.flash('failMessage', 'Script Failure '+err);
-			  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
-		  }else{
-			  // START STATUS //
-              
-              req.flash('successMessage', 'Upload in Progress: '+ req.body.project);
-              status_params = {'type':'new',
-                  'user':req.user.username,
-                  'proj':req.body.project,
-                  'status':'LOADED',
-                  'msg':'Project is loaded --without tax assignments',
-                  'render':{  title   : 'VAMPS: Import Success',                                
-            				message : req.flash('successMessage'),
-                            display: "Import_Success",
-            		        user: req.user                        
-            		        }                  
-              }
-              helpers.update_project_status(res, status_params)
-              
-             
-              
-              
-              
-              // connection.db.query(queries.user_project_status('new', req.user.username, req.body.project, status, msg ), function(err, rows, fields){
-             //      if(err){
-             //          console.log('ERROR-in status update')
-             //      }else{
-             //
-             //                       res.render('success',{
-             //                                     title   : 'VAMPS: Import Success',
-             //                                     message : req.flash('successMessage'),
-             //                      display: "Import_Success",
-             //                                     user: req.user
-             //                               });
-             //      }
-             //  });
-              
-              
-		  }
-		  
-	    });
-		
-  	});
-	});
+	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
+	    	if (err) {
+				req.flash('failMessage', '2-File move failure '+err);
+				res.redirect("/user_data/import_data");
+			}
+		    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
+		    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
+		      if (err) {
+				  req.flash('failMessage', 'Script Failure '+err);
+				  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+			  }
+			  console.log('script output: '+output);
+			  LoadDataFinishRequest();
+		    });
+	  	}); // END move 2
+	}); // END move 1
   } 
 	
 });
