@@ -13,7 +13,8 @@
     <table class='table table-striped'>
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
-                <button type='submit' name='import_type' value='simple_fasta' class='btn btn-xs btn-primary' id=''>Go</button> Simple (single dataset) Fasta
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='import_type' value='simple_fasta' > Simple (single dataset) Fasta
             </form>	
         </td>
         <td>Upload files (metadata and fasta) for a project with a single dataset.
@@ -22,7 +23,8 @@
         </tr>
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
-                <button type='submit' name='import_type' value='multi_fasta' class='btn btn-xs btn-primary' id=''>Go</button> Multi-Dataset Fasta
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='import_type' value='multi_fasta'> Multi-Dataset Fasta
             </form>
             </td>
             <td>Upload files for a project with a multiple datasets.
@@ -33,28 +35,32 @@
         
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
-                <button type='submit' name='import_type' value='metadata' class='btn btn-xs btn-primary' id=''>Go</button> Add Metadata to Project -TODO
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='import_type' value='metadata'> Add Metadata to Project -TODO
             </form>
             </td>
             <td>Add metadata to your established project. <small>(<a href='#'>see metadata file format</a>)</small></td>
         </tr>
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
-                <button type='submit' name='import_type' value='new_data' class='btn btn-xs btn-primary' id=''>Go</button> Import Data to your Project -TODO
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='import_type' value='new_data'> Import Data to your Project -TODO
             </form>
         </td>
         <td>Add aditional datasets to your established project. <small>(<a href='#'>see fasta file format</a>)</small></td>
         </tr>
         <tr><td>
             <form id='' class='' method='GET' action='validate_format'>
-                <button type='submit' name='file_type' value='metadata' class='btn btn-xs btn-primary' id=''>Go</button> Check Metadata File -TODO
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='file_type' value='metadata'> Check Metadata File -TODO
             </form>
         </td>
         <td>Validate a metadata csv file. <small>(<a href='#'>see metadata file format</a>)</small></td>
         </tr>
         <tr><td>
             <form id='' class='' method='GET' action='validate_format'>
-                <button type='submit' name='file_type' value='fasta' class='btn btn-xs btn-primary' id=''>Go</button> Check Sequence File -TODO
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
+				<input type='hidden' name='file_type' value='fasta' > Check Sequence File -TODO
             </form>
         </td><td>Validate a fasta file. <small>(<a href='#'>see fasta file format</a>)</small></td>
         </tr>
