@@ -6,7 +6,7 @@
 
 """
 
-import sys,os
+import sys,os,io
 import argparse
 import MySQLdb
 import json
@@ -189,6 +189,7 @@ def go_add(NODE_DATABASE, pid):
 
     metadata_lookup = go_required_metadata(did_sql)
     metadata_lookup = go_custom_metadata(dids, pid, metadata_lookup)
+    
     write_json_files(prefix, metadata_lookup, counts_lookup)
     
     print 'writing metadata file'
@@ -203,7 +204,7 @@ def write_all_metadata_file(metadata_lookup):
     #print md_file
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
-    json_str = json.dumps(original_metadata_lookup)		
+    json_str = json.dumps(original_metadata_lookup, ensure_ascii=False)		
     #print(json_str)
     f = open(md_file,'w')
     f.write(json_str+"\n")
@@ -236,7 +237,8 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
      for did in counts_lookup:
          file_path = os.path.join(prefix,str(did)+'.json')
          f = open(file_path,'w') 
-        
+         #print
+         #print did, counts_lookup[did]
          my_counts_str = json.dumps(counts_lookup[did]) 
          if did in metadata_lookup:
              my_metadata_str = json.dumps(metadata_lookup[did]) 
@@ -335,6 +337,7 @@ def read_original_taxcounts():
 def read_original_metadata():
     
     file_path = os.path.join('../json',NODE_DATABASE+'--metadata.json')
+    print file_path
     if os.path.exists(file_path):
         with open(file_path) as data_file:    
             data = json.load(data_file)
