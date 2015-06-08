@@ -362,8 +362,7 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today())    
     
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          user="ruby", # your username
-                          passwd="ruby") # name of the data base
+                             read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
