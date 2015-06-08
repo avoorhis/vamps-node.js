@@ -2,28 +2,30 @@
 
 Here are your <%= items.names.length %> selected datasets:<br>
 <div id='dataset_names_div' class='small_font'>
-<ul>
-<% for (var i in items.names){ %>
-    <li>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</li>
-<% } %>
-</ul>
+    <ul>
+    <% for (var i in items.names){ %>
+        <li>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</li>
+    <% } %>
+    </ul>
 </div>
-<table class='button_row'><tr>
-<td>
-	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
-		-->
-	<form action='reorder_datasets' method='POST'>
-		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
-		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
-	</form>
+<table class='button_row'>
+<tr>
+    <td>
+    	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
+    		-->
+    	<form action='reorder_datasets' method='POST'>
+    		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
+    		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
+    	</form>
 
-</td>
+    </td>
 
-<td>
-	<button type="button" class="btn btn-xs btn-primary" id='change_datasets_btn'  >Change Datasets</button>
-</td>
-<td>
-	<button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn'    >Save Datasets</button>
-	<span id='save_ds_result'></span>
-</td>
-</tr></table>
+    <td>
+    	<button type="button" class="btn btn-xs btn-primary" id='change_datasets_btn'  >Change Datasets</button>
+    </td>
+    <td>
+    	<button type="button" class="btn btn-xs btn-primary" id='save_datasets_btn'    >Save Datasets</button>
+    	<span id='save_ds_result'></span>
+    </td>
+</tr>
+</table>

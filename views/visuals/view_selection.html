@@ -33,54 +33,48 @@
 
 	<div id='show_selected_datasets_div' class='div_border table'>
 	                <% include partials/show_selected_datasets.html %>
-	</div>
+	</div> <!-- End  show_selected_datasets_div -->
 
-</td><td>
+</td>
+<td>
 	<div id='show_select_items_div' class='div_border table'>
 	              <% include partials/show_visual_output_choices.html %>
-			  	
+	</div> <!-- End  show_select_items_div -->		  	
 
 </td></tr>
 </tbody>
 </table>
 
-<div class="row">
+<table class='button_row'><tr>
 	<% if(mtx.data == '') { %>
-	  <% disable_thumbs = true %>
-	  <div id='' class='no_data'>
-	        <h3>No Sequences Found</h3>
-	  </div>
+	  <td>
+          <% disable_thumbs = true %>
+    	  <div id='' class='no_data'>
+    	        <h3>No Sequences Found</h3>
+    	  </div>
+      </td>
 	<% } else { %>
-		<div class="col-md-1">
+	    <!-- This form should run in the background and place the files 
+	          in a 'downloads' directory where it can be retrieved.
+	          The user should get an email when its ready.
+	     -->
+        <td>
 			<form id='download_fasta_id' method='POST' action='/user_data/download_selected_seqs'>
-		    <!-- This form should run in the background and place the seqs file 
-		          in a 'downloads' directory where it can be retrieved.
-		          The user should get an email when its ready.
-		     -->
 		    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
 		    <input type='hidden' name='download_type' value='partial_project' />
 		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
 			<input type='hidden' name='referer' value='/visuals/view_selection' />
-    
 		  	</form>
-		</div>&nbsp;
-		<div class="col-md-1">
+		</td><td>
 		    <form id='download_metadata_id' method='POST' action='/user_data/download_selected_metadata'>
-		      <!-- This form should run in the background and place the seqs file 
-		            in a 'downloads' directory where it can be retrieved.
-		            The user should get an email when its ready.
-		       -->
 		      <input type='submit' class="btn btn-xs btn-success" value='Create Metadata File' />
 		      <input type='hidden' name='download_type' value='partial_project' />
 		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
 			  <input type='hidden' name='referer' value='/visuals/view_selection' />
-		    </form>
-			
-		</div>
-		<span class=''></span>
+		    </form>			
+		</td>
 	<% } %>
-</div>  <!-- .row -->
-<br>
+</tr></table>  <!-- button.row -->
  
 <table border='1' class='table'>
         <tr>
@@ -115,7 +109,7 @@
         </tr>
       </table>
        
- </div>  <!-- end grid_9  content --> 
+
 	 
 	
   <!-- Counts -->
@@ -261,8 +255,6 @@
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
   <div id='metadata_tooltip_div' class=''></div>
-</div>
-
 
   
 
