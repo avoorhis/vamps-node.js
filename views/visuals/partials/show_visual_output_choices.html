@@ -5,7 +5,7 @@
 <%   var items     = JSON.parse(chosen_id_name_hash) %>
 
 <form id='' name='' method='POST' action='view_selection'>
-<table class='small_font'>
+<table class='small_font table table-striped'>
     <tr>
         <td>Normalization of Counts:<br>
             <% for (i in rows) { %>
@@ -15,7 +15,7 @@
                       <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' \> <%= rows[i].id %>
             <%     } %>
             <% } %>
-            <hr>
+            
         </td>
     </tr>
     <tr>
@@ -29,7 +29,7 @@
             <%    } %>
             <% } %>
             </select>
-            <hr>                   
+                            
         </td>
     </tr>
     <tr>
