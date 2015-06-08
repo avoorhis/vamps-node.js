@@ -63,7 +63,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   
   if(req.body.resorted === '1'){
-  	req.flash('message','Dataset order is updated!')
+  	req.flash('message','Tha dataset order has been updated.')
 	dataset_ids = req.body.ds_order;
 	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
