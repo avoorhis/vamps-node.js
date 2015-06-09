@@ -450,7 +450,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 	        }
 	      }
 		  var viz_width = 1200;
-		  var viz_height = (visual_post_items.no_of_datasets*15)+100;
+		  var viz_height = (visual_post_items.no_of_datasets*10)+50;
 	      //var m = JSON.stringify(mtx)
 	      var html;
 	      if(image_type == 'svg'){
@@ -470,13 +470,13 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 			if(script == 'phylogram'){
 				var Phylogram = require('../../public/javascripts/d3.phylogram');
 				var tree_data = d3.phylogram.build('body', json, {
-				  width: viz_width-200,
+				  width: viz_width-400,
 				  height: viz_height
 				});
 			}else if(script == 'phylonator'){
 				var Phylogram = require('../../public/javascripts/d3.phylonator');
 				var tree_data = d3.phylonator.build('body', json, {
-				  width: viz_width-200,
+				  width: viz_width-400,
 				  height: viz_height,
 				  skipBranchLengthScaling: true
 				});
@@ -500,7 +500,8 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 	        html += " <p>ERROR in loading pdf file</p>";
 	        html += "</object></div>";
 	      }
-	      res.send(html);
+	      //html = viz_height
+          res.send(html);
   	  }
 
     });
