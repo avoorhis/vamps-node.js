@@ -194,7 +194,7 @@ if(method=='horn'){
     meth <- 'horn'
     text <- "Morisita-Horn"
 }
-main_label=paste("The VAMPS Frequency Heatmap\n--Taxonomic Level:",depth,"\n--Clustering: ",text)
+main_label=paste("VAMPS Frequency Heatmap\n--Taxonomic Level:",depth,"\n--Clustering: ",text)
 drows<-vegdist(x, method=meth)
 dcols<-vegdist(t(x), method=meth, na.rm=TRUE)
 

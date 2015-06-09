@@ -280,6 +280,51 @@ def get_json(node):
 		for ch in node.children:
 			json["children"].append(get_json(ch))
 	return json
+
+#
+#
+#
+def create_emperor_pc_file(args, data, PCoA_result):
+    # pc vector number    1       2       3       4       5
+    # PC.636      0.333514620475  0.081687        0.25081 0.103746        2.50106743521e-09
+    # PC.635      0.258145479886  -0.22437        -0.25446        -0.0290044      2.50106743521e-09
+    # PC.356      -0.270663791669 -0.23983        0.18965 -0.118931       2.50106743521e-09
+    # PC.481      -0.0437436047686        0.30751 -0.077078       -0.20627        2.50106743521e-09
+    # PC.354      -0.277252703922 0.074945        -0.10898        0.245681        2.50106743521e-09
+    #
+    #
+    # eigvals     0.329912543767  0.2147172       0.1815366       0.1261003       -3.127915774e-17
+    # % variation explained       38.68853        25.18276        21.2717 14.85772        3.667478e-15
+    #print PCoA_result
+    txt = 'pc vector number'+'\t'
+    ds_number = len(data['names'])
+    for i in range(0, ds_number):
+        txt += str(i+1)+'\t'
+    txt += '\n'
+    for line in str(PCoA_result).split('\n'):
+        items = line.strip().split()
+        if items[0] == 'Eigenvectors':
+            txt += items[1]+'\t'
+            for i in range(0, ds_number):
+                txt += items[i+2]+'\t'
+            txt += '\n'        
+        if items[0] == 'Eigenvalues' and items[1] == 'eigenvalues':
+            eval_items = items
+        if items[0] == 'Eigenvalues' and items[1] == 'var':
+            pexpl_items = items
+    txt += '\n\neigvals'+'\t'
+    for i in range(0, ds_number):
+        txt += eval_items[i+2]+'\t'
+    txt += '\n% variation explained'+'\t'
+    for i in range(0, ds_number):
+        txt += pexpl_items[i+4]+'\t'
+    txt += '\n'
+    #print txt
+    pcfile = os.path.join(args.site_base,'tmp',args.prefix+'.pc')
+    pcfile_fp = open(pcfile,'w')
+    pcfile_fp.write(txt)
+    pcfile_fp.close()
+    
 #
 #
 #
@@ -287,6 +332,7 @@ def pcoa(args, dist):
     from cogent.cluster.metric_scaling import PCoA
     PCoA_result = PCoA(dist)
     #print PCoA_result
+    
     #dt = np.dtype(float)
     #print type(PCoA_result)
     a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
@@ -301,6 +347,7 @@ def pcoa(args, dist):
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
     # sprint json_array
+    create_emperor_pc_file(args, json_array, PCoA_result)
     return json_array
     #return a
 #
