@@ -39,7 +39,7 @@ the server is already running
 Once the database is in place and before you start the server for the first time
 go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
 It may take awhile especially if the database is large, but it is required
-to create the helper files in the public/jsn directory.
+to create the helper files in the public/json directory.
 
 Start this project:
   * npm start

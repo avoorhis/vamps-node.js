@@ -49,7 +49,7 @@ required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date",
 #test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
 
 db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                         read_default_file="~/.my.cnf_node"  ) 
+                         read_default_file="~/.my.cnf"  ) 
 cur = db.cursor()
 
 def start(args):
@@ -362,7 +362,7 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today())    
     
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf_node"  )
+                             read_default_file="~/.my.cnf"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
