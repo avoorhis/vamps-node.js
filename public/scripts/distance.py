@@ -166,36 +166,39 @@ def calculate_distance(args):
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
 # }
 def dendrogram_pdf(args, dm, leafLabels):
-		from scipy.cluster.hierarchy import linkage, dendrogram
-		#from hcluster import squareform, linkage, dendrogram
-		#from numpy import array
-		#import pylab
-		import matplotlib
-		matplotlib.use('PDF')   # pdf
-		import matplotlib.pyplot as plt
-		#condensed_dm = distance.squareform( dm )
-		#plt.figure(figsize=(100,10))
-		leafNodes = len(leafLabels)
-		fig = plt.figure(figsize=(14,(leafNodes*0.2)+0.8), dpi=100)
-		#fig.set_size_inches(14,(leafNodes*0.2))
-		ax = fig.add_subplot(111)
-		#plt.tight_layout()
-		ax.set_title('Dendrogram: '+args.metric.capitalize())
-		#plt.subplots_adjust(bottom=0.25)
-		#plt.subplots_adjust(top=0.05)
-		plt.subplots_adjust(left=0.01)
-		plt.subplots_adjust(right=0.65)
-		#plt.subplots_adjust(top=0.7)
-		#leafLabels = [ '\n'.join(l.split('--')) for l in leafLabels ]
-		
-		print datasets
-		linkage_matrix = linkage(dm,  method="average" )
-		dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
-		#image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
-		image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.pdf')
-		
+        from scipy.cluster.hierarchy import linkage, dendrogram
+        #from hcluster import squareform, linkage, dendrogram
+        #from numpy import array
+        #import pylab
+        import matplotlib
+        matplotlib.use('PDF')   # pdf
+        import matplotlib.pyplot as plt
+        #condensed_dm = distance.squareform( dm )
+        #plt.figure(figsize=(100,10))
+        leafNodes = len(leafLabels)
+        fig = plt.figure(figsize=(14,(leafNodes*0.25)), dpi=100)
+        #fig = plt.figure(figsize=(14,100), dpi=10)
+        #fig.set_size_inches(14,(leafNodes*0.2))
+        #ax = fig.add_subplot(111)
+        #plt.tight_layout()
+        #ax.set_title('Dendrogram: '+args.metric.capitalize())
+        # padding:
+        #plt.subplots_adjust(bottom=0.25)
+        #plt.subplots_adjust(top=0.05)
+        plt.subplots_adjust(left=0.01)
+        plt.subplots_adjust(right=0.65)
+        plt.subplots_adjust(top=0.7)
+        plt.subplots_adjust(bottom=0.25)
+        #leafLabels = [ '\n'.join(l.split('--')) for l in leafLabels ]
 
-		plt.savefig(image_file)
+        print datasets
+        linkage_matrix = linkage(dm,  method="average" )
+        dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
+        #image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
+        image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.pdf')
+
+
+        plt.savefig(image_file)
 
 def dendrogram_svg(args, dm):
 		#print json.dumps(dm)
