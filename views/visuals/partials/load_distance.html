@@ -4,8 +4,6 @@
 
 <center>
 	<small>
-      <span class='label label-primary blue'>Similar</span>
-      <span class='label label-danger red'>Dissimilar</span>
       <span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span>
     </small>
 </center>
@@ -21,6 +19,7 @@
 		  
 		  <div id='ds_save_order_div'>
 			  <button type='submit' id='ds_save_order_btn' class='btn btn-xs btn-default'>Save Order</button>
+              <span class='label blue'>Similar</span> <span class='label red'>Dissimilar</span>
 			  <imput type='hidden' id='' name='resorted' value='1' >
 		  </div>
 	   </td>
@@ -32,14 +31,14 @@
 		<% for(x in name_order) { %>
 			<% x_dname = name_order[x] %>
 	        <tr id='<%= x_dname %>'>
-	        <td  id='<%= x_dname %>' class='dragHandle'><%= n.toString() %></td>
+	        <td  id='<%= x_dname %>' class='dragHandle ds_cell'><%= n.toString() %></td>
 	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
 		    <%    for(y in name_order) { %>
 		    <%        y_dname = name_order[y] %>
 		    <%        if(x_dname === y_dname){ %>
 		        	    <td id='' class='heat_map_td' bgcolor='#000'></td>
 		    <%        }else{ %>
-		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname]; %>
+		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname].toFixed(5); %>
 		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
 	                    <td id='<%= id %>' class='heat_map_td tooltipx' bgcolor='#<%= colors[svalue] %>'></td>

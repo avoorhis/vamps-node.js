@@ -63,7 +63,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   
   if(req.body.resorted === '1'){
-  	req.flash('message','Tha dataset order has been updated.')
+  	req.flash('message','The dataset order has been updated.')
 	dataset_ids = req.body.ds_order;
 	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
@@ -88,7 +88,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
     // GLOBAL
     console.log('metadata');
-    metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+    //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+    metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
     //metadata = JSON.parse(metadata);
     console.log(metadata);
     console.log('metadata');
@@ -369,8 +370,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 		  //console.log(ids)
 	      res.render('visuals/partials/load_distance',{
 	                                        dm        : distance_matrix,
-			  								hash   	  : JSON.stringify(chosen_id_name_hash),
-			  							
+			  								hash   	  : JSON.stringify(chosen_id_name_hash),			  							
 	                                        constants : JSON.stringify(req.C),
 	                                      });
 	  }
@@ -450,7 +450,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 	        }
 	      }
 		  var viz_width = 1200;
-		  var viz_height = (visual_post_items.no_of_datasets*10)+50;
+		  var viz_height = (visual_post_items.no_of_datasets*12)+100;
 	      //var m = JSON.stringify(mtx)
 	      var html;
 	      if(image_type == 'svg'){
@@ -470,13 +470,13 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 			if(script == 'phylogram'){
 				var Phylogram = require('../../public/javascripts/d3.phylogram');
 				var tree_data = d3.phylogram.build('body', json, {
-				  width: viz_width-400,
+				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
 				  height: viz_height
 				});
 			}else if(script == 'phylonator'){
 				var Phylogram = require('../../public/javascripts/d3.phylonator');
 				var tree_data = d3.phylonator.build('body', json, {
-				  width: viz_width-400,
+				  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
 				  height: viz_height,
 				  skipBranchLengthScaling: true
 				});
