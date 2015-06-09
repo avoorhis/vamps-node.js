@@ -127,10 +127,28 @@ def go(args):
         print w
     print "DONE"
         
+
+def write_data_to_files(args, metadata_lookup, counts_lookup):    
+    
+    #print counts_lookup
+    for did in counts_lookup:
+        file = os.path.join(args.files_prefix,str(did)+'.json')
+        f = open(file,'w') 
+        
+        my_counts_str = json.dumps(counts_lookup[did]) 
+        if did in metadata_lookup:
+            my_metadata_str = json.dumps(metadata_lookup[did], encoding='latin1') 
+        else:
+            warnings.append('WARNING -- no metadata for dataset: '+str(did))
+            my_metadata_str = json.dumps({})
+        #f.write('{"'+str(did)+'":'+mystr+"}\n") 
+        f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
+        f.close()
+
 def write_all_metadata_file(args, metadata_lookup):
    
     #print md_file
-    json_str = json.dumps(metadata_lookup)		
+    json_str = json.dumps(metadata_lookup, encoding='latin1')		
     #print(json_str)
     f = open(args.metadata_file,'w')
     f.write(json_str+"\n")
@@ -144,24 +162,7 @@ def write_all_taxcounts_file(args, counts_lookup):
     f = open(args.taxcounts_file,'w')
     f.write(json_str+"\n")
     f.close()
-            
-def write_data_to_files(args, metadata_lookup, counts_lookup):    
-    
-    #print counts_lookup
-    for did in counts_lookup:
-        file = os.path.join(args.files_prefix,str(did)+'.json')
-        f = open(file,'w') 
         
-        my_counts_str = json.dumps(counts_lookup[did]) 
-        if did in metadata_lookup:
-            my_metadata_str = json.dumps(metadata_lookup[did]) 
-        else:
-            warnings.append('WARNING -- no metadata for dataset: '+str(did))
-            my_metadata_str = json.dumps({})
-        #f.write('{"'+str(did)+'":'+mystr+"}\n") 
-        f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
-        f.close()
-    
 def go_metadata():
     """
     	metadata_lookup_per_dsid[dsid][metadataName] = value			
