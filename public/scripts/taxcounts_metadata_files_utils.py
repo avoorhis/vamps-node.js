@@ -413,7 +413,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf_node"  )
+                             read_default_file="~/.my.cnf"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []

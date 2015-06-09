@@ -112,7 +112,7 @@ def start(args):
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
                           db = NODE_DATABASE,
-                          read_default_file="~/.my.cnf_node"  )
+                          read_default_file="~/.my.cnf"  )
     cur = mysql_conn.cursor()
     
     

@@ -102,7 +102,7 @@ module.exports = {
 					var name = metadata_names[n];
 					txt += 		"\t" + name;	
 			}
-			txt += 		"\tDescription\n";
+			txt += 		"\tProject\tDescription\n";
 			var txt2 = '';
 			for (var i in chosen_id_name_hash.names) {
 				var ds_row = {};
@@ -126,7 +126,7 @@ module.exports = {
 				
 				console.log(txt2.length)
 				if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
-					txt += txt2 + "\t"+pjds+"\n";
+					txt += txt2 + "\t"+tmp[0]+ "\t"+pjds+"\n";
 				}
 				metadata2[pjds].project = tmp[0];
 				metadata2[pjds].dataset = tmp[1];
