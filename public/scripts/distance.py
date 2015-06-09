@@ -355,98 +355,102 @@ def pcoa(args, dist):
 #
 #
 def pcoa_pdf(args, data):
-		import matplotlib
-		matplotlib.use('PDF')   # pdf
-		import pylab
-		from pylab import rcParams		
-		import matplotlib.pyplot as plt
+        import matplotlib
+        matplotlib.use('PDF')   # pdf
+        import pylab
+        from pylab import rcParams		
+        import matplotlib.pyplot as plt
 
-		
-		metadata = {}
-		try:
-			with open('./'+args.prefix+'_metadata.txt', 'rb') as csvfile:
-				metadata_raw = csv.DictReader(csvfile, delimiter="\t")
+
+        metadata = {}
+        try:
+            with open('./'+args.prefix+'_metadata.txt', 'rb') as csvfile:
+                metadata_raw = csv.DictReader(csvfile, delimiter="\t")
 				# each row is a dataset
-				for row in metadata_raw:
-					ds = row['DATASET'].strip("'")
-					metadata[ds] = row
-		except IOError:
-			with open('./tmp/'+args.prefix+'_metadata.txt', 'rb') as csvfile:
-				metadata_raw = csv.DictReader(csvfile, delimiter="\t")
-				for row in metadata_raw:
-					ds = row['DATASET'].strip("'")
-					metadata[ds] = row
-		except:
-			print "NO FILE FOUND ERROR"
-			sys.exit()
-		
-		
-		
-		ds_order = data['names']
-		
-		color_choices = ['b','g','r','c','m','y','k','w']  # currently limited to 8 distinct colors
-		meta_dict = {}
-		#val_lookup = {}
-		#colors = {}
-		ds_vals = {}
-		new_ds_order = []
- 		for ds in ds_order:			
- 			if ds in metadata:
- 				new_ds_order.append(ds)
-	 			for md_name in metadata[ds]:
-	 			 	md_val = metadata[ds][md_name]
-	 			
-	 				if md_name in meta_dict:
-	 					meta_dict[md_name][md_val]=1
-	 				else:
-	 					meta_dict[md_name]={}
-	 					meta_dict[md_name][md_val]=1
- 		#print colors
- 		#print ds_vals
- 		ds_order = new_ds_order
- 		ds_count = len(ds_order)
- 		meta_names_list = sorted(meta_dict.keys()) # sort the list by alpha
- 		#print meta_names_list
- 		meta_names_count = len(meta_dict) 		
+                for row in metadata_raw:
+                    ds = row['DATASET'].strip("'")
+                    metadata[ds] = row
+        except IOError:
+            with open('./tmp/'+args.prefix+'_metadata.txt', 'rb') as csvfile:
+                metadata_raw = csv.DictReader(csvfile, delimiter="\t")
+                for row in metadata_raw:
+                    ds = row['#SampleID'].strip("'")
+                    row.pop('BarcodeSequence',None)
+                    row.pop('LinkerPrimerSequence',None)
+                    #print row
+                    
+                    metadata[ds] = row
+        except:
+        	print "NO FILE FOUND ERROR"
+        	sys.exit()
 
- 		rcParams['figure.figsize'] = 10, meta_names_count*2
 
- 		#N = 50
-		#colors = np.random.rand(N)
-		ds_vals2 = {}
-		for i,mname in enumerate(meta_names_list):
-			ds_vals2[mname] = {}
-			num_of_colors_needed = len(meta_dict[mname])
-			for i,val in enumerate(meta_dict[mname]):				
-				if(num_of_colors_needed <= len(color_choices)):
-					ds_vals2[mname][val] = color_choices[i]
 
-		#print ds_vals2
-		if metadata:
-			f1, ax = plt.subplots(meta_names_count, 3, sharex=True, sharey=True)
-			for i,mname in enumerate(meta_names_list):
-				# i is 0,1,2,3...
-				num_of_colors_needed = len(meta_dict[mname])
-				#print num_colors
-				col=[]
-				for ds in ds_order:
-					if(num_of_colors_needed > len(color_choices)):
-						col.append('b')  # all blue
-					else:
-						val = metadata[ds][mname]
-						col.append(ds_vals2[mname][val])	
-				#print mname,col
-				ax[i,1].set_title(mname)			
-				ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
-				ax[i,1].scatter(data['P1'], data['P3'], c=col)
-				ax[i,2].scatter(data['P2'], data['P3'], c=col)		
-			ax[0,0].set_title('P1-P2')
-			ax[0,2].set_title('P2-P3')
-			
-			image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
-			pylab.savefig(image_file, bbox_inches='tight')
-		else:
-			print 'no metadata'
+        ds_order = data['names']
+
+        color_choices = ['b','g','r','c','m','y','k','w']  # currently limited to 8 distinct colors
+        meta_dict = {}
+        #val_lookup = {}
+        #colors = {}
+        ds_vals = {}
+        new_ds_order = []
+        for ds in ds_order:			
+            if ds in metadata:
+                new_ds_order.append(ds)
+                for md_name in metadata[ds]:
+                    md_val = metadata[ds][md_name]
+
+                    if md_name in meta_dict:
+                        meta_dict[md_name][md_val]=1
+                    else:
+                        meta_dict[md_name]={}
+                        meta_dict[md_name][md_val]=1
+        #print colors
+        #print ds_vals
+        ds_order = new_ds_order
+        ds_count = len(ds_order)
+        meta_names_list = sorted(meta_dict.keys()) # sort the list by alpha
+        #print meta_names_list
+        meta_names_count = len(meta_dict) 		
+
+        rcParams['figure.figsize'] = 10, meta_names_count*2
+
+        #N = 50
+        #colors = np.random.rand(N)
+        ds_vals2 = {}
+        for i,mname in enumerate(meta_names_list):
+            ds_vals2[mname] = {}
+            num_of_colors_needed = len(meta_dict[mname])
+            for i,val in enumerate(meta_dict[mname]):				
+                if(num_of_colors_needed <= len(color_choices)):
+                    ds_vals2[mname][val] = color_choices[i]
+
+        #print ds_vals2
+        if metadata:
+            f1, ax = plt.subplots(meta_names_count, 3, sharex=True, sharey=True)
+            for i,mname in enumerate(meta_names_list):
+                # i is 0,1,2,3...
+                num_of_colors_needed = len(meta_dict[mname])
+                #print num_colors
+                col=[]
+                for ds in ds_order:
+                    if(num_of_colors_needed > len(color_choices)):
+                        col.append('b')  # all blue
+                    else:
+                        val = metadata[ds][mname]
+                        col.append(ds_vals2[mname][val])	
+                #print mname,col
+                ax[i,1].set_title(mname)			
+                ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
+                ax[i,1].scatter(data['P1'], data['P3'], c=col)
+                ax[i,2].scatter(data['P2'], data['P3'], c=col)		
+            ax[0,0].set_title('P1-P2')
+            ax[0,2].set_title('P2-P3')
+
+            image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
+            pylab.savefig(image_file, bbox_inches='tight')
+        else:
+            print 'no metadata'
 #
 #
 #
