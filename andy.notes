@@ -1,3 +1,8 @@
+2015-06-09
+Heatmap - give numbers more room and right justify
+Heatmap - limit sig figs on tt distance
+revisit plot width on dendrograms to see dataset names
+
 2015-05-26
 DONE: FIX : normalization seems to be broken
 TODO: When no lat/lon data - report if not found OR not selected on view_selection page gmap
