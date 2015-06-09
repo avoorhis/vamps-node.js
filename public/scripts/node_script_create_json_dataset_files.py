@@ -37,7 +37,7 @@ GROUP BY dataset_id, domain_id, phylum_id
 
 
 db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                         read_default_file="~/.my.cnf_node"  ) 
+                         read_default_file="~/.my.cnf"  ) 
 cur = db.cursor()
 
 query_core = " FROM sequence_pdr_info" 
