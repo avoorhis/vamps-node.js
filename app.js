@@ -191,7 +191,7 @@ var TreeModel = require('tree-model');;
 // GLOBAL if leave off 'var':
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
 // script: /public/scripts/create_taxcounts_lookup.py
-console.log('DATABASE: '+NODE_DATABASE+' (see file config/db-connect-xxx.js)')
+
 
 // these files are manually created before server startup using the scripts in public/scripts
 // var rstream = fs.createReadStream('./public/json/tax_counts--'+NODE_DATABASE+'.json.gz');
