@@ -1,8 +1,12 @@
 
-$("#metadata_local_table_div").on("click", "#metadata_table", function () {
-    new Tablesort(document.getElementById('metadata_table'));
-});
+$(document).ready(function(){
 
+    $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+
+    $("#metadata_local_table_div").on("click", "#metadata_table", function () {
+        new Tablesort(document.getElementById('metadata_table'));
+    });
+});
 
 $.fn.scrollView = function () {
     return this.each(function () {
@@ -131,9 +135,11 @@ if (typeof norm_counts_radios[0] !=="undefined") {
 }
 // Distance Metric Select (Combo)
 selected_distance_combo = document.getElementById('selected_distance');
+
 if (typeof selected_distance_combo !=="undefined") {
-	selected_distance_combo.addEventListener('change', function () {
-  	  document.getElementById('output_choices_submit_btn').disabled = false;
+	$('.selectpicker').on('change', function () {
+  	  //alert(selected_distance_combo)
+      document.getElementById('output_choices_submit_btn').disabled = false;
   	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
 	});
 }
@@ -480,7 +486,7 @@ if (typeof dendrogram_pdf_btn !== "undefined") {
   });
 }
 //
-// PCOA
+// PCOA  2D
 //
 var pcoa_link = document.getElementById('pcoa_link_id');
 var pcoa_btn = document.getElementById('pcoa_hide_btn');
@@ -510,6 +516,41 @@ if (typeof pcoa_btn !== "undefined") {
         toggle_visual_element(pcoa_div,'show',pcoa_btn);
       }else{
         toggle_visual_element(pcoa_div,'hide',pcoa_btn);
+      }
+      
+  });
+}
+//
+// PCOA  3D
+//
+var pcoa_3d_link = document.getElementById('pcoa_3d_link_id');
+var pcoa_3d_btn = document.getElementById('pcoa_3d_hide_btn');
+var pcoa_3d_div = document.getElementById('pcoa_3d_div');
+var pcoa_3d_download_btn = document.getElementById('pcoa_3d_download_btn');
+var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
+if (typeof pcoa_3d_link !=="undefined") {
+  pcoa_3d_link.addEventListener('click', function () {
+      
+	  if(typeof pcoa_3d_created == "undefined"){
+        create_viz('pcoa_3d', pi_local.ts);
+		pcoa_3d_download_btn.disabled = false;
+      }else{
+        if(pcoa_3d_btn.value == 'hide'){        
+          //toggle_visual_element(pcoa_div,'show',pcoa_btn);
+        }else{
+          toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
+        }
+      } 
+	  $(pre_pcoa_3d_div).scrollView();     
+  });
+}
+if (typeof pcoa_3d_btn !== "undefined") {
+  pcoa_3d_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(pcoa_3d_btn.value == 'hide'){        
+        toggle_visual_element(pcoa_3d_div,'show',pcoa_3d_btn);
+      }else{
+        toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
       }
       
   });
@@ -604,7 +645,9 @@ function create_viz(visual, ts) {
     }else if(visual === 'dendrogram_pdf'){
       create_dendrogram(ts,'pdf','python');
     }else if(visual === 'pcoa'){
-      create_pcoa(ts);
+      create_pcoa(ts,'2d');
+    }else if(visual === 'pcoa_3d'){
+      create_pcoa(ts,'3d');
     }else if(visual === 'fheatmap'){
       create_fheatmap(ts);
     }else if(visual === 'geospatial'){
@@ -759,28 +802,48 @@ function create_dendrogram(ts, image_type, script) {
 
 
 //
-//  CREATE PCoA
+//  CREATE PCoA -- both 2d and 3d
 //
-function create_pcoa(ts) {
+function create_pcoa(ts,image_type) {
       //alert('JS PCoA')
-      pcoa_created = true;
-      var pcoa_div = document.getElementById('pcoa_div');
-      var info_line = create_header('pcoa', pi_local);
-	  pcoa_div.style.display = 'block';
-      document.getElementById('pcoa_title').innerHTML = info_line;
-      var html = '';
+    if(image_type == '2d'){
+        pcoa_created = true;
+        var pcoa_div = document.getElementById('pcoa_div');
+        var info_line = create_header('pcoa', pi_local);
+  	    pcoa_div.style.display = 'block';
+        document.getElementById('pcoa_title').innerHTML = info_line;
+        document.getElementById('pre_pcoa_div').style.display = 'block';
+    }else if(image_type =='3d'){
+        pcoa_created = true;
+        var pcoa_3d_div = document.getElementById('pcoa_3d_div');
+        var info_line = create_header('pcoa_3d', pi_local);
+  	    pcoa_3d_div.style.display = 'block';
+        document.getElementById('pcoa_3d_title').innerHTML = info_line;
+        document.getElementById('pre_pcoa_3d_div').style.display = 'block';
+    }else{
+        // ERROR
+    }
+      
+      
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
-      document.getElementById('pre_pcoa_div').style.display = 'block';
-       // get distance matrix via AJAX
+      args += "&image_type="+image_type;
+      
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/pcoa', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange = function() {
 
         if (xmlhttp.readyState == 4 ) {
-           var htmlstring = xmlhttp.responseText;
-           pcoa_div.innerHTML = htmlstring;
+           var response = xmlhttp.responseText;
+           
+           if(image_type == '2d'){
+               pcoa_div.innerHTML = response;
+           }else if(image_type == '3d'){
+               pcoa_3d_div.innerHTML = response;
+           }
+           
+           
         }
       };
       xmlhttp.send(args);
@@ -1267,6 +1330,9 @@ function create_header(viz, pi) {
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'pcoa'){
       txt = 'PCoA -- ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'pcoa_3d'){
+      txt = 'PCoA -- 3D';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'ftable'){
       txt = 'Frequency Table -- ';

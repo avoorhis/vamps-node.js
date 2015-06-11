@@ -144,7 +144,7 @@ module.exports = {
 										var db_id_n_rank = db_id+'_'+this_rank;
 										var tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
 										tax_long_name += tax_node.taxon+';';
-
+                                        //console.log('tax_node3 '+JSON.stringify(tax_node))
 									}
 									tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
 									//console.log('long tax_name '+tax_long_name+' - '+cnt.toString());
