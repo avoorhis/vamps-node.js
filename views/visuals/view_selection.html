@@ -225,11 +225,11 @@
   </nav>
   <div id='dendrogram_pdf_div'        class='display_none well'>Working....</div>
 
-  <!-- PCoA-->
+  <!-- PCoA 2D Python -->
   <br>
   <nav id='pre_pcoa_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
-		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA</span> 
+		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA 2D</span> 
 	</div>
 	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
 	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
@@ -237,6 +237,18 @@
   </nav>
   <div id='pcoa_div'                    class='display_none well'>Working....</div> 
 
+  <!-- PCoA 3D Emperor -->
+  <br>
+  <nav id='pre_pcoa_3d_div' class="navbar navbar-inverse viz_hidden_div display_none">
+	<div class="navbar-header">	      
+		  <span id='pcoa_3d_title' class="navbar-brand table_title" >PCoA 3D</span> 
+	</div>
+	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
+	<button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+	<button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  </nav>
+  <div id='pcoa_3d_div'                    class='display_none well'>Working....</div> 
+  
   <!-- GEOSPATIAL -->
   <br>
   <nav id='pre_geospatial_div' class="navbar navbar-inverse viz_hidden_div display_none">
@@ -272,6 +284,7 @@
  <script type="text/javascript" src="/javascripts/global.js"></script>
  <script type="text/javascript" src="/javascripts/common_selection.js"></script>
  <script type="text/javascript" src="/javascripts/view_selection.js"></script>
+ <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
 </body>
 </html>
 

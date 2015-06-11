@@ -32,13 +32,15 @@ config.DOMAINS = { domains: [
     ]};
 
 config.UNITSELECT = { units: [
-        {id : 'tax_silva108_simple',file: 'unit_selectors/taxa_silva108_simple.html', name : "Taxonomy Silva108 (Simple)"},
-        {id : 'tax_silva108_custom',file: 'unit_selectors/taxa_silva108_custom.html',   name : "Taxonomy Silva108 (Custom)"},
-        {id : 'tax_gg_simple',      file: 'unit_selectors/taxa_gg_simple.html',       name : "Taxonomy Greengenes (Simple)"},
-        {id : 'tax_gg_custom',      file: 'unit_selectors/taxa_gg_cust.html',         name : "Taxonomy Greengenes (Custom)"},
-        {id : 'tax_rdp',            file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP"},
-        {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs"},
-        {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',             name : "MED Nodes"}
+        {id : 'tax_silva108_simple',file: 'unit_selectors/taxa_silva108_simple.html', name : "Taxonomy -Simple", subtext: 'Silva108'},
+        {id : 'tax_silva108_custom',file: 'unit_selectors/taxa_silva108_custom.html', name : "Taxonomy -Custom", subtext: 'Silva108'},
+        {id : 'tax_gg_simple',      file: 'unit_selectors/taxa_gg_simple.html',       name : "Taxonomy -Simple", subtext: 'Greengenes v13.5'},
+        {id : 'tax_gg_custom',      file: 'unit_selectors/taxa_gg_cust.html',         name : "Taxonomy -Custom", subtext: 'Greengenes v13.5'},
+        {id : 'tax_rdp',            file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP",     subtext: 'Release 11'},
+        {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'ClosedRef GG v13.5'},
+        {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'UCLUST'},
+        {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'SLP'},
+        {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',            name : "MED Nodes",        subtext: ''}
     ]};
 
 config.VISUALOUTPUTCHOICES = { choices: [
@@ -113,7 +115,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
 	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram2_link_id'   },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  		link:'user_viz_data/dendrogram',    id:'dendrogram_pdf_link_id'},
     {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        		link:'user_viz_data/pcoa',          id: 'pcoa_link_id'         },
-    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/pcoa.png',        		link:'user_viz_data/pcoa',          id: 'pcoa_emp_link_id'     },
+    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        		link:'user_viz_data/pcoa',          id: 'pcoa_3d_link_id'     },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',		link:'user_viz_data/counts_table',  id:'counts_table_link_id'  },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    		link:'user_viz_data/metadata_table',id:'metadata_table_link_id'},
     {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         		link:'user_viz_data/geospatial',    id:'geospatial_link_id'    }
@@ -123,6 +125,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 
 config.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
+config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
 config.PATH_TO_EXTERNAL_SCRIPTS = '/Users/avoorhis/programming/python_pipeline/';
 
 module.exports = config;

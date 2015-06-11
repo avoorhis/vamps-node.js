@@ -5,7 +5,6 @@
 <script>
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';
-  
 </script>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
@@ -15,7 +14,6 @@
   <div class="alert_flash_message"><%= message %></div>
 <% } %> 
 
-
 <div id='show_selected_datasets_div' class='div_border table'>
                 <% include partials/show_selected_datasets.html %>				
 </div>
@@ -24,12 +22,10 @@
 </div>
 
 <div id='' class=''>
-<!-- autocomplete="off" clears the checkboxes on page refresh -->
 
 <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
   
   <table  class='center_table table' >
-    
     <tr>
       <td>
            <% include partials/unit_selection_choices.html %>
@@ -64,6 +60,7 @@
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/common_selection.js"></script>
   <script type="text/javascript" src="/javascripts/unit_selection.js"></script>
+  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
  
  </body>
  </html>
