@@ -6,6 +6,7 @@ var url  = require('url');
 var http = require('http');
 var path = require('path');
 var fs   = require('fs-extra');
+var open = require('open');
 var async = require('async');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
@@ -341,11 +342,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-    var site_base = path.join(__dirname, '../../');
+    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', site_base, '--prefix', ts],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     PythonShell.run('distance.py', options, function (err, mtx) {
@@ -387,7 +388,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var ts = req.body.ts;
   var metric = req.body.metric;
   var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+  var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
 
   var exec = require('child_process').exec;
   //var PythonShell = require('python-shell');
@@ -395,10 +396,10 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var title = 'VAMPS';
 
   var distmtx_file_name = ts+'_distance.csv';
-  var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-  var site_base = path.join(__dirname, '../../');
+  var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+  
 
-  var fheatmap_script_file = path.resolve(__dirname, '../../public/scripts/fheatmap.R');
+  var fheatmap_script_file = path.resolve(process.env.PWD, 'public','scripts','fheatmap.R');
 
   shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
 
@@ -419,7 +420,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 	
 	var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
 
 
     var exec = require('child_process').exec;
@@ -428,12 +429,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-    var site_base = path.join(__dirname, '../../');
+    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    
 
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', site_base, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
 
@@ -457,7 +458,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 	        //console.log(JSON.parse(output))
   			var d3 = require("d3");
   			var xmldom = require('xmldom');
-  			var Newick    = require('../../public/javascripts/newick');
+  			var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
 			var div_width = 1200;
   			newick = JSON.parse(output);
   			//console.log('Newick ',newick)
@@ -468,13 +469,13 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   			buildNewickNodes(json);
 			
 			if(script == 'phylogram'){
-				var Phylogram = require('../../public/javascripts/d3.phylogram');
+				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
 				var tree_data = d3.phylogram.build('body', json, {
 				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
 				  height: viz_height
 				});
 			}else if(script == 'phylonator'){
-				var Phylogram = require('../../public/javascripts/d3.phylonator');
+				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
 				var tree_data = d3.phylonator.build('body', json, {
 				  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
 				  height: viz_height,
@@ -515,34 +516,105 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     //console.log(metadata);
     var ts = req.body.ts;
     var metric = req.body.metric;
+    var image_type = req.body.image_type;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp', biom_file_name);
-    var site_base = path.join(__dirname, '../../');
+    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+    
+    
     var exec = require('child_process').exec;
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', site_base, '--prefix', ts],
-    };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    PythonShell.run('distance.py', options, function (err, pcoa_data) {
-      if (err) {
-		  res.send('ERROR '+err); // for now we'll send errors to the browser
-	  }else{
-	      //console.log(pcoa_data)
-	      //pcoa_data = JSON.parse(pcoa_data)
-	      //console.log(pcoa_data);
+    if(image_type == '2d'){
+        
+        var options = {
+          scriptPath : 'public/scripts',
+          args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', process.env.PWD, '--prefix', ts],
+        };
+        console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+        PythonShell.run('distance.py', options, function (err, pcoa_data) {
+          if (err) {
+    		  res.send('ERROR '+err); // for now we'll send errors to the browser
+    	  }else{
+    	      //console.log(pcoa_data)
+    	      //pcoa_data = JSON.parse(pcoa_data)
+    	      //console.log(pcoa_data);
 
-	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
-	      var html = "<div id='pdf'>";
-	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-	      html += " <p>ERROR in loading pdf file</p>";
-	      html += "</object></div>";
-	      //console.log(html);
-	      res.send(html);
-  	}
+    	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
+    	      var html = "<div id='pdf'>";
+    	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+    	      html += " <p>ERROR in loading pdf file</p>";
+    	      html += "</object></div>";
+    	      //console.log(html);
+              
+    	      res.send(html);
+      	}
 
-    });
+        });       
+        
+        
+    }else if(image_type == '3d'){
+        
+        var mapping_file_name = ts+'_metadata.txt';
+        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
+        var pc_file_name = ts+'.pc';
+        var pc_file = path.join(process.env.PWD,'tmp', pc_file_name);
+        
+        var dir_name = ts+'_pcoa_3d';
+        var dir_path = path.join(process.env.PWD,'tmp', dir_name);
+        
+        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+        var options1 = {
+          scriptPath : 'public/scripts',
+          args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+        };
+        var options2 = {
+          scriptPath : req.C.PATH_TO_QIIME_BIN,
+          args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+        };
+        console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+        PythonShell.run('distance.py', options1, function (err, pcoa_data) {
+          if (err) {
+    		  res.send('ERROR-1 '+err); // for now we'll send errors to the browser
+    	  }else{
+    	      //console.log(pcoa_data)
+    	      //pcoa_data = JSON.parse(pcoa_data)
+    	      //console.log(pcoa_data);
+              console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+              PythonShell.run('make_emperor.py', options2, function (err, pcoa_data) {
+                  if (err) {
+            		  res.send('ERROR-2 '+err); // for now we'll send errors to the browser
+            	  }else{
+                      // read html file
+                      //document.open(html_path)
+                      console.log(html_path);
+                      //var options = {
+                          //root: path.join(process.env.PWD,'views','tmp', dir_name),
+                      //  };
+                        
+                        console.log(html_path)
+                        open('file:///'+html_path)
+                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+                      
+                      //   res.send(html_path2);
+                     //  fs.readFile(html_path, 'utf8', function (err,html) {
+                     //    if (err) {
+                     //      res.send('ERROR-3 '+err);
+                     //    }
+                     //    console.log(html)
+                      //   res.send(html);
+                     //
+                     //  });
+                      
+                  }
+              });
+    	      
+    	      //console.log(html);
+    	      
+      	  }
 
+        });
+        
+    }
+    
 });
 
 

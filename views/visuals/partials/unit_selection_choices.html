@@ -1,16 +1,19 @@
-<%    var rows = JSON.parse(constants).UNITSELECT.units; %>
-<span class='bold_font'>Units Options:</span>
-    <select id='unit_selection_name' name='unit_selection'>
+<%    var rows = JSON.parse(constants).UNITSELECT.units; %>    
 
+    Select Other Units:
+    
+    <select id='unit_selection_id' name='unit_selection' class="selectpicker" data-style="btn btn-xs btn-info"  data-size="100">
 <%    for (var i in rows) { %>
 <%      var file_id  = rows[i].id; %>
 <%      var name     = rows[i].name; %>
 <%      var file     = rows[i].file; %>
+<%      var subtxt     = rows[i].subtext; %>
 <%      if (file_id === 'tax_silva108_simple') {  %>
-          <option selected='selected' value='<%= file_id %>'><%= name %></option>
+            <option   selected='selected' value='<%= file_id %>' data-subtext="<%= subtxt %>"><%= name %> </option>
 <%      } else { %>
-          <option value='<%= file_id %>'><%= name %></option>
+            <option   value='<%= file_id %>' data-subtext="<%= subtxt %>"><%= name %> </option>
 <%      } %>
 <%     }  %>
     </select>
 
+ 

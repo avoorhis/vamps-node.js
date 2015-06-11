@@ -16,7 +16,7 @@
     "compression": "",
     "cookie-parser": "",
     "csv-parse": "",
-    "d3": "3.4", 
+    "d3": "3.4",
     "debug": "2.1",
     "depd": "",
     "ejs": "",
@@ -27,7 +27,6 @@
     "ini": "",
     "iniparser": "",
     "istanbul": "",
-
     "morgan": "",
     "multer": "",
     "mysql2": "",
@@ -35,6 +34,7 @@
     "nodemailer": "",
     "nodemon": "",
     "nodetime": "",
+    "open": "0.0.5",
     "passport": "",
     "passport-local": "",
     "python-shell": "",
@@ -45,7 +45,6 @@
     "uid-safe": "",
     "xmldom": "",
     "ya-csv": ""
-
   },
   "devDependencies": {
     "debug": "",

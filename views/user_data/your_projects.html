@@ -4,7 +4,7 @@
 <% var project_info = JSON.parse(pinfo) %>
 <% var env = JSON.parse(env_sources) %>
 
- <div class='title'>Projects (username: <%= user.username %>)</div>
+ <div class='title'>Projects (user: <%= user.username %>)</div>
  <div class='subtitle'></div>
 <% if (failmessage) { %>
 	<div class="alert_flash_message"><%= failmessage %></div>
@@ -32,62 +32,48 @@
 		<% var status = project_info[times[t]].status %>
 		<% var tax = project_info[times[t]].tax %>
 	
-		<div class='well'>
-		
-		
-			
+		<div class='well'>			
 
-		<table class='table'>
-			<tr>	
-				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
-				<td></td>
-				<td>Status: <strong><%= status %></strong></td>				
-				<td><a href="#" class="pull-right">edit</a></td>
-			</tr><tr>
-				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
-				<td>Public: <%= public %></td>
-				<td>Environmental Source: <%= env_source %></td>
-				<td>Taxonomy: <%= tax %></td>				
-			</tr>
-		</table>			
+    		<table class='table table-condensed'>
+    			<tr>	
+    				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
+    				<td></td>
+    				<td>Status: <strong><%= status %></strong></td>				
+    				<td><a href="#" class="pull-right">edit</a></td>
+    			</tr><tr>
+    				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
+    				<td>Public: <%= public %></td>
+    				<td>Environmental Source: <%= env_source %></td>
+    				<td>Taxonomy: <%= tax %></td>				
+    			</tr>
+    		</table>			
 						
-			
-		<div class="dropdown">
-		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-		    Selection
-		    <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-		    <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li>
+    		<div class="dropdown">
+    		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    		    Selection
+    		    <span class="caret"></span>
+    		  </button>
+    		  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    		    <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li>
 	    	
-			<% if(tax == '0'){ %>
-				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/gast">Assign Taxonomy -GAST</a></li>
-				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/rdp">Assign Taxonomy -RDP</a></li>
-			<% }else{ %>
-				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
-    			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-    			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>	
-			<% } %>
+    			<% if(tax == '0'){ %>
+    				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/gast">Assign Taxonomy -GAST</a></li>
+    				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/rdp">Assign Taxonomy -RDP</a></li>
+    			<% }else{ %>
+    				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
+        			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+        			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>	
+    			<% } %>
 					
-	    	<li role="presentation" class="divider"></li>
-			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
+    	    	<li role="presentation" class="divider"></li>
+    			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
 			
-	  	  </ul>
-		</div>
+    	  	  </ul>
+    		</div>
 
-				
+		</div>  <!-- end well -->
 	
-								  
-								  
-
-	
-						
-			
-					
-		</div>
-	
-
-	<% } %>
+	<% } %>  <!-- end for(t in creation_times) -->
 <% } %>
 </ol>
 </div>
