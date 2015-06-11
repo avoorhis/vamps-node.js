@@ -567,7 +567,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         var options2 = {
-          scriptPath : req.C.PATH_TO_QIIME_BIN,
+          //scriptPath : req.C.PATH_TO_QIIME_BIN,
+            scriptPath : 'public/scripts',
           args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
         };
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
