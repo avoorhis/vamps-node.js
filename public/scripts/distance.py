@@ -347,7 +347,8 @@ def pcoa(args, dist):
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
     #json['v3'] = [x[0] for x in np.array(PCoA_result[:,4])[:-2]]
     # sprint json_array
-    create_emperor_pc_file(args, json_array, PCoA_result)
+    if args.function == 'pcoa_3d':
+        create_emperor_pc_file(args, json_array, PCoA_result)
     return json_array
     #return a
 #
@@ -492,7 +493,9 @@ if __name__ == '__main__':
     if args.function == 'dendrogram-pdf':
         #print distances
         dendrogram_pdf(args, dm1, datasets)
-
+    if args.function == 'pcoa_3d':
+        pcoa_data = pcoa(args, dm3)
+        
     if args.function == 'pcoa':
         # if not args.metadata:
         # 	print "ERROR: In PCoA and no metadata recieved"
