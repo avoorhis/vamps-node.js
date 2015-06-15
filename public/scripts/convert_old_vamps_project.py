@@ -674,7 +674,7 @@ if __name__ == '__main__':
         
         Test project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files:
-        METADATA: mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata_ICM where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        METADATA: mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
         SEQS: mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
     
        Named metadata.csv and sequences.csv

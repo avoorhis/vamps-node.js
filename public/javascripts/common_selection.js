@@ -56,12 +56,9 @@ var save_datasets_list = function(ds_local, user)
 }
 
 //
-// pies and bars
+// PIES and BARS
 //
 
-//
-//
-//
 function create_barcharts(imagetype) {
 
         var ts = pi_local.ts;
@@ -137,6 +134,9 @@ function create_barcharts(imagetype) {
         	create_svg_object(svg,props, did_by_names, data, ts);
         }
 }
+//
+//
+//
 function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
 
 	       var datasetBar = svg.selectAll(".bar")

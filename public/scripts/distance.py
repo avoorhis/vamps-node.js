@@ -64,8 +64,9 @@ def calculate_distance(args):
 	#print edited_dataset_list
 	
 	if args.metric == 'bray_curtis':
-		#dist = dt.dist_bray_curtis(dm)
-		dist = distance.pdist(dmatrix, 'braycurtis')
+		dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
+		dist = distance.squareform( dtvar )
+		#dist = distance.pdist(dmatrix, 'braycurtis')
 	
 	elif args.metric == 'morisita_horn':
 		#print dmatrix
@@ -76,9 +77,10 @@ def calculate_distance(args):
 		#sys.exit()
 	elif args.metric == 'canberra':
 		
-		#dist = dt.dist_canberra(dm)
+		dtvar = dt.dist_canberra(dmatrix, strict=False)
+		dist = distance.squareform( dtvar )
 		#print 'canberra'
-		dist = distance.pdist(dmatrix, 'canberra')
+		#dist = distance.pdist(dmatrix, 'canberra')
 	
 	elif args.metric == 'jaccard':
 		#dist = dt.binary_dist_jaccard(dm)	
@@ -86,9 +88,10 @@ def calculate_distance(args):
 	 
 	elif args.metric == 'kulczynski':
 
-		#dist = dt.dist_kulczynski(dm)	
+		dtvar = dt.dist_kulczynski(dmatrix, strict=False)
+		dist = distance.squareform( dtvar )	
 		# note different spelling
-		dist = distance.pdist(dmatrix, 'kulsinski')
+		#dist = distance.pdist(dmatrix, 'kulsinski')
 		
 	else:  # default
 		dist = distance.pdist(dmatrix, 'braycurtis')
