@@ -173,6 +173,11 @@ td.left_justify {
   
   padding:5px;
 }
+.list_style_none li{
+    list-style-type: none;
+    text-decoration: none;
+	padding:2px 5px;
+}
 #project_list_div {
   width:100%;
 }

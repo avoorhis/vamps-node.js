@@ -2,79 +2,118 @@
 <% data = JSON.parse(info) %>
 <% dscounts = JSON.parse(dscounts) %>
 <% project_info  = JSON.parse(info) %>
-<img src='/images/projects/science.jpeg' alt="Smiley_face"  height='80'>
-<div id='project_profile_div' >
-<ul>
-  <li>Project Name: <%= data.project %></li>
-  <li>Project_id: <%= pid %></li>
+<img src='/images/dna01.jpg' alt="Smiley_face"  height='80'>
+
+<div role="tabpanel" >
   
-  <li>Title: <%= data.title %></li>
-  <li>Description: <%= data.description %></li>
-  <% if(data.public) { %> 
-    <li>Status: Public</li>
-  <% } else { %>
-    <li>Status: Private</li>
-  <% } %>
-  <li>Project Sequence Count: <%= pcount %></li>
-
-  <li>Primary Investigator: <%= data.first %> <%= data.last %> (<%= data.email %>)</li>
-  <li>Institution: <%= data.institution %></li>
-  <li>Environmental Source: <%= data.env_source_name %></li>
-  <li>Number of samples (datasets): <%= dsinfo.length %></li>
-  <li>List of datasets with counts (and descriptions if available):
-  <div id='profile_dataset_list' >
-  <ol>
-  <% for(n in dsinfo){ %>
-  	<% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
-  		<li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
-  	<% }else{ %>
-  		<li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
-  	<% } %>
-  		
-  <% } %>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
+	<li role="presentation" >              <a href="#abstract" aria-controls="abstract" role="tab" data-toggle="tab">Abstract</a></li>
+	<li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
+	
+	<li role="presentation" class="dropdown" >	    
+		<a  class="dropdown-toggle" data-toggle="dropdown" href="#">Download<span class="caret"></span></a>
+		<ul class="dropdown-menu">
+	      
+		  <li>
+		    <form id='download_project_fasta_form_id' method='POST' action='/user_data/download_selected_seqs'>
+		  	  <!-- This form should run in the background and place the seqs file 
+		  	  			in a 'downloads' directory where it can be retrieved.
+		  	  			The user should get an email when its ready.
+		  	   -->
+		  	  <input type='submit' id='download_project_fasta_form_btn' value='Fasta File' />
+		  	  <input type='hidden' name='download_type' value='whole_project' />
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />
+			  <input type='hidden' name='referer' value='/projects/project_profile' />
+			  
+		    </form>		  
+		  </li>
+	      
+		  <li>
+		  	<form id='download_project_metadata_form_id' method='POST' action='/user_data/download_selected_metadata'>
+		  	  <!-- This form should run in the background and place the seqs file 
+		  	  			in a 'downloads' directory where it can be retrieved.
+		  	  			The user should get an email when its ready.
+		  	   -->
+		  	  <input type='button'  id='download_project_metadata_form_btn' value='Metadata File' />
+		  	  <input type='hidden' name='download_type' value='whole_project' />
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />
+			  <input type='hidden' name='referer' value='/projects/project_profile' />
+			  
+		    </form>		  
+		  </li>
+		 </ul>	
+	</li> <!-- End dropdown -->
+	
+	<li><span  class='alert_flash_message' id='download_metadata_response' ></span><span  class='alert_flash_message' id='download_fasta_response' style='' ></span></li>
+  </ul>
   
-  </ol>
-  </div>
-  </li>
+  <!-- Tab panes -->
+  <div class="tab-content">
   
-  <hr>
-  <% if(user.security_level === 1 || project_info.permissions  === 0 || project_info.permissions === user.user_id ) { %>
+  	<div role="tabpanel" class="list_style_none tab-pane active" id="project">
+	  <table class="table table-striped">
+	  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
+	  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
+	  <tr><td>Title:</td><td> <%= data.title %></td></tr>
+	  <tr><td>Description:</td><td> <%= data.description %></td></tr>
+	  <% if(data.public) { %> 
+	    <tr><td>Status:</td><td> Public</td></tr>
+	  <% } else { %>
+	    <tr><td>Status:</td><td> Private</td></tr>
+	  <% } %>
+	  <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
+	  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
+	  <tr><td>Institution:</td><td> <%= data.institution %></li>
+	  <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr>
+	  <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+	  </table>
+  	</div> <!-- End project div -->
+	
+	<div role="tabpanel" class="tab-pane active" id="abstract">
+	    Abstract here
+	</div> <!-- End project div -->
+	
+  	<div role="tabpanel" class="tab-pane" id="datasets">
+		  <div id='profile_dataset_list' >
+			  <ol>
+			  <% for(n in dsinfo){ %>
+			  	<% if(dsinfo[n].ddesc == dsinfo[n].dname) { %>
+			  		<li><%= dsinfo[n].dname %> (<%= dscounts[dsinfo[n].did] %>)</li>
+			  	<% }else{ %>
+			  		<li><%= dsinfo[n].dname %> (seq_count: <%= dscounts[dsinfo[n].did] %>) (description: <%= dsinfo[n].ddesc %>) </li>
+			  	<% } %>
+			  <% } %>
+			  </ol>
+		  </div>
+  	</div> <!-- End datasets div -->	
 
-    <li>
-    <form id='download_project_fasta_form_id' method='POST' action='/user_data/download_selected_seqs'>
-  	  <!-- This form should run in the background and place the seqs file 
-  	  			in a 'downloads' directory where it can be retrieved.
-  	  			The user should get an email when its ready.
-  	   -->
-  	  <input type='button' id='download_project_fasta_form_btn' value='Create Fasta File' />
-  	  <input type='hidden' name='download_type' value='whole_project' />
-  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-  	  <input type='hidden' name='project' value='<%= data.project %>' />
-	  <input type='hidden' name='referer' value='/projects/project_profile' />
-	  <span  class='alert_flash_message' id='download_fasta_response' style='' ></span>
-    </form> 
-    </li>
-    <li>
-    <form id='download_project_metadata_form_id' method='POST' action='/user_data/download_selected_metadata'>
-  	  <!-- This form should run in the background and place the seqs file 
-  	  			in a 'downloads' directory where it can be retrieved.
-  	  			The user should get an email when its ready.
-  	   -->
-  	  <input type='button'  id='download_project_metadata_form_btn' value='Create Metadata File' />
-  	  <input type='hidden' name='download_type' value='whole_project' />
-  	  <input type='hidden' name='project_id' value='<%= pid %>' />
-  	  <input type='hidden' name='project' value='<%= data.project %>' />
-	  <input type='hidden' name='referer' value='/projects/project_profile' />
-	  <span  class='alert_flash_message' id='download_metadata_response' ></span>
-    </form> 
-    </li>
-  <% } %>
-  <li>
-
-		When ready, the files can be downloaded here: <a href='../user_data/file_retrieval'>Files</a>
-  </li>
-
-</ul>
+  </div> <!-- End tab-content div -->
+</div> <!-- End tabpanel -->  
 
 
-</div>
+
+
+
+
+
+
+
+
+
+ 
+  
+  
+  
+ 
+ 
+ 
+ 
+ 
+  
+  
+
+
