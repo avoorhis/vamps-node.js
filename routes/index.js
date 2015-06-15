@@ -45,11 +45,12 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   router.get('/tmp/:dir/:file',function(req, res){
       console.log('IN TMP');
       var dir = req.params.dir
-      var emperor_index_file = req.params.file;  // index.html
-        res.render('tmp/'+dir+'/index.html', { title: 'VAMPS',
-                               user: req.user,
-                                message:'',
-                              });
+      console.log(req.params);
+      // var emperor_index_file = req.params.file;  // index.html
+     //    res.render('tmp/'+dir+'/index.html', { title: 'VAMPS',
+     //                           user: req.user,
+     //                            message:'',
+     //                          });
   })
 
 

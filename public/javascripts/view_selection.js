@@ -159,7 +159,10 @@ if (typeof max_range_combo !=="undefined") {
   	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
 	});
 }
-// COUNTS
+//
+//
+// COUNTS Table
+//
 var tax_counts_link = document.getElementById('counts_table_link_id');
 var tax_counts_btn = document.getElementById('counts_table_hide_btn');
 var tax_counts_div = document.getElementById('tax_table_div');
@@ -207,7 +210,7 @@ if (typeof counts_table_download_btn !=="undefined") {
   });
 }
 //
-// METADATA
+// METADATA  Table
 //
 var metadata_link = document.getElementById('metadata_table_link_id');
 var metadata_btn = document.getElementById('metadata_table_hide_btn');
@@ -274,6 +277,41 @@ if (typeof piecharts_btn !=="undefined") {
         toggle_visual_element(piecharts_div,'show',piecharts_btn);
       }else{
         toggle_visual_element(piecharts_div,'hide',piecharts_btn);
+      }
+      
+  });
+}
+//
+// KRONA Chart (Data Browser)
+//
+var dbrowser_link = document.getElementById('dbrowser_link_id');
+var dbrowser_btn = document.getElementById('dbrowser_hide_btn');
+var dbrowser_div = document.getElementById('dbrowser_div');
+var dbrowser_download_btn = document.getElementById('dbrowser_download_btn');
+var pre_dbrowser_div = document.getElementById('pre_dbrowser_div');
+if (typeof dbrowser_link !=="undefined") {
+  dbrowser_link.addEventListener('click', function () {
+      
+	  if(typeof dbrowser_created == "undefined"){
+        create_viz('dbrowser', pi_local.ts);
+		dbrowser_download_btn.disabled = false;
+      }else{
+        if(dbrowser_btn.value == 'hide'){
+          //toggle_visual_element(piecharts_div,'show',dbrowser_btn);
+        }else{
+          toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
+        }
+      }
+      $(pre_dbrowser_div).scrollView();
+  });
+}
+if (typeof dbrowser_btn !=="undefined") {
+  dbrowser_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dbrowser_btn.value == 'hide'){
+        toggle_visual_element(dbrowser_div,'show',dbrowser_btn);
+      }else{
+        toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
       }
       
   });
@@ -652,6 +690,8 @@ function create_viz(visual, ts) {
       create_fheatmap(ts);
     }else if(visual === 'geospatial'){
       create_geospatial(ts);
+    }else if(visual === 'dbrowser'){
+      create_dbrowser(ts);
     }else{
 
     }
@@ -848,6 +888,54 @@ function create_pcoa(ts,image_type) {
       };
       xmlhttp.send(args);
       
+}
+//
+//  CREATE DBROWSER
+//
+function create_dbrowser(ts) {
+     
+         dbrowser_created = true;
+         var info_line = create_header('dbrowser', pi_local);
+         document.getElementById('dbrowser_title').innerHTML = info_line;
+         document.getElementById('pre_dbrowser_div').style.display = 'block';
+         var args =  "ts="+ts;
+         var xmlhttp = new XMLHttpRequest();  
+         xmlhttp.open("POST", '/visuals/dbrowser', true);
+         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+         xmlhttp.onreadystatechange = function() {
+           if (xmlhttp.readyState == 4 ) {
+              var response = xmlhttp.responseText;
+              
+                  dbrowser_div.innerHTML = response; 
+           
+           }
+         };
+         xmlhttp.send(args);
+         
+         //var html = get_dbrowser_html();
+         
+
+}
+function get_dbrowser_html() {
+    
+        // var html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+        // html += "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
+        // html += "<head>\n";
+        // html += "<meta charset=\"utf-8\"/>\n";
+        // html += "<link rel='shortcut icon' href='/images/favicon.ico' />\n";
+        // html += "<script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
+        // html += "<script src=\"/javascript/krona-2.3.js\"></script>\n";
+        // html += "</head>\n";
+        // html += "<body>\n";
+        // html += "<img id='hiddenImage' src='/images/hidden.png' style='display:none' />\n";
+        // html += "<noscript>Javascript must be enabled to view this page.</noscript>\n";
+        // html += "<div style='display:none'>\n";
+        // html += "<krona  collapse='false' key='true'>\n";
+        // html += "<attributes magnitude='seqcount'>\n";
+        // html += "  <attribute display='Abundance'>seqcount</attribute>\n";
+        // html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
+        // html += "</attributes>\n";
+      //return html
 }
 //
 //  CREATE DIST HEATMAP
@@ -1109,26 +1197,14 @@ function create_piecharts(ts) {
             return string_to_color_code(unit_list[i]);;
         });
 
-    // var labels = svgContainer
-   //    .data(myjson_obj.names).each
-   //    .append("text")
-   //    .attr("dx", -(r+m))
-   //    .attr("dy", r+m)
-   //    .attr("text-anchor", "left")
-   //    .attr("font-size","9px")
-   //    .text(function(d, i) {
-   //        //alert('d')
-   // 		  //return d;
-   //    });
+
    
 }
-
-
 
 //
 //  CREATE BARCHARTS
 //
- function create_barcharts_group(ts) {
+function create_barcharts_group(ts) {
 // 
 //         
          barcharts_created = true;
@@ -1137,176 +1213,12 @@ function create_piecharts(ts) {
 // 		barcharts_div.style.display = 'block';
          document.getElementById('barcharts_title').innerHTML = info_line;
          document.getElementById('pre_barcharts_table_div').style.display = 'block';
-		 create_barcharts('group');
+		 
+         // this fxn is in common_selection.js
+         create_barcharts('group');
 
-//         var unit_list = [];
-//         for (var o in mtx_local.rows){
-//             unit_list.push(mtx_local.rows[o].name);
-//         }
-//         var colors = get_colors(unit_list);
 }
-//         data = [];
-//         did_by_names ={}
-//         for (var p in mtx_local.columns){
-//           tmp={};
-//           tmp.datasetName = mtx_local.columns[p].name;
-// 		  did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
-// 		  //tmp.did = mtx_local.columns[p].did;
-//           for (var t in mtx_local.rows){
-//             tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
-//           }
-//           data.push(tmp);
-//         }
-//         
-// 
-//         var ds_count = mtx_local.shape[1];      
-//         var bar_height = 15;
-//         var props = get_image_properties(bar_height, ds_count); 
-//         //console.log(props)
-//         var color = d3.scale.ordinal()                  
-//           .range( colors );
-// 
-//         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
-// 
-//         
-//         data.forEach(function(d) {
-//           var x0 = 0;
-//           d.unitObj = color.domain().map(function(name) { 
-//             return { name: name, x0: x0, x1: x0 += +d[name] }; 
-//           });
-//           //console.log(d.unitObj);
-//           d.total = d.unitObj[d.unitObj.length - 1].x1;
-//           //console.log(d.total);
-//         });
-// 
-// 
-//         data.forEach(function(d) {
-//           // normalize to 100%
-//           tot = d.total;
-//           d.unitObj.forEach(function(o) {
-//               //console.log(o);
-//               o.x0 = (o.x0*100)/tot;
-//               o.x1 = (o.x1*100)/tot;
-//           });
-//         });
-//       
-//         
-//         create_svg_object(props, did_by_names, data, ts);
-//         
-// }
 
-//////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
-// function get_image_properties(bar_height, ds_count) {
-//   var props = {};
-//   
-//   //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-//   props.margin = {top: 20, right: 100, bottom: 20, left: 300};
-//   
-//   var plot_width = 650;
-//   var gap = 2;  // gap on each side of bar
-//   props.width = plot_width + props.margin.left + props.margin.right;
-//   props.height = (ds_count * (bar_height + 2 * gap)) + 125;
-//   
-//   props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-//     
-//   props.y = d3.scale.ordinal()
-//       .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
-//     
-//   props.xAxis = d3.svg.axis()
-//           .scale(props.x)
-//           .orient("top");
-//   
-//   props.yAxis = d3.svg.axis()
-//           .scale(props.y)
-//           .orient("left");
-//           
-//               
-//   return props;
-// }
-//
-//
-//
-// function create_svg_object(props, did_by_names, data, ts) {
-//        //d3.select('svg').remove();
-//       
-//       var svg = d3.select("#barcharts_div").append("svg")
-//                   .attr("width",  props.width)
-//                   .attr("height", props.height)
-//                 .append("g")
-//                   .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-//       
-//       
-//       // axis legends -- would like to rotate dataset names
-//       props.y.domain(data.map(function(d) { return d.datasetName; }));
-//       props.x.domain([0, 100]);
-// 
-//       svg.append("g")
-//           .attr("class", "y axis")
-//           .call(props.yAxis)
-//           .selectAll("text")  
-//              .style("text-anchor", "end")
-//              .attr("dx", "-.5em")
-//              .attr("dy", "1.4em"); 
-//              
-//              
-//       svg.append("g")
-//           .attr("class", "x axis")
-//           .call(props.xAxis)
-//         .append("text")
-//           .attr("x", 650)
-//           .attr("dy", ".8em")
-//           .style("text-anchor", "end")
-//           .text("Percent");
-//      
-//      
-//       
-// 
-//       // var datasetBar = svg.selectAll("a")
-//       //     .data(data)
-//       //   .enter().append("a")
-//       //   .attr("xlink:href",  'http://www.google.com' )
-//       //   .append("g")
-//       //     .attr("class", "g")
-//       //     .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })
-//        var datasetBar = svg.selectAll(".bar")
-//           .data(data)
-//         .enter() .append("g")
-//           .attr("class", "g")
-//           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
-//           .append("a")
-//         .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+did_by_names[d.datasetName]+'&ts='+ts;} )
-// 	    .attr("target", '_blank' );
-// 
-//       datasetBar.selectAll("rect")
-//      //     .append("a")
-//      //   .attr("xlink:href",  'http://www.google.com')
-//           .data(function(d) { return d.unitObj; })
-//         .enter()
-//         .append("rect")
-//           .attr("x", function(d) { return props.x(d.x0); })
-//           .attr("y", 15)  // adjust where first bar starts on x-axis
-//           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-//           .attr("height",  18)
-//           .attr("id",function(d,i) { 
-//             var cnt =  this.parentNode.__data__[d.name];
-//             var total = this.parentNode.__data__['total'];
-//             
-//             //console.log(this._parentNode.__data__['total']);
-//             var ds = ''; // PLACEHOLDER for TT
-//             var pct = (cnt * 100 / total).toFixed(2);
-//             var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
-//             return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-//             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
-//           }) 
-// 
-//           .attr("class","tooltipx")
-//           .style("fill",   function(d,i) { return string_to_color_code(d.name); });
-// 
-// 
-//        //rect.append("svg:a").attr("xlink:href",  'http://www.google.com')
-// }
-// 
 
 function create_header(viz, pi) {
   
@@ -1314,30 +1226,32 @@ function create_header(viz, pi) {
   //viz_possibles = ['bars','pies','geo','dhm','fhm','dend-svg','dend-pdf','pcoa','ftable','mtable'];
   
     if(viz == 'geo'){
-      txt = 'Geospatial -- ';
+      txt = 'Geospatial --> ';
     }else if(viz == 'bars'){
-      txt = 'Barcharts -- ';
+      txt = 'Barcharts --> ';
     }else if(viz == 'pies'){
-      txt = 'Piecharts -- ';
+      txt = 'Piecharts --> ';
     }else if(viz == 'dhm'){
-      txt = 'Distance Heatmap -- ';
+      txt = 'Distance Heatmap --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'fhm'){
-      txt = 'Frequency Heatmap -- ';
+      txt = 'Frequency Heatmap --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'dend'){
-      txt = 'Dendrogram -- ';
+      txt = 'Dendrogram --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'pcoa'){
-      txt = 'PCoA -- ';
+      txt = 'PCoA 2D --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'pcoa_3d'){
-      txt = 'PCoA -- 3D';
+      txt = 'PCoA 3D -->';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'ftable'){
-      txt = 'Frequency Table -- ';
+      txt = 'Frequency Table --> ';
     }else if(viz == 'mtable'){
-      txt = 'Metadata Table -- ';
+      txt = 'Metadata Table --> ';
+    }else if(viz == 'dbrowser'){
+      txt = 'Data Browser --> ';
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }

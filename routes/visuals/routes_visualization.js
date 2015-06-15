@@ -586,14 +586,21 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             	  }else{
                       // read html file
                       //document.open(html_path)
-                      console.log(html_path);
+                      //res.redirect(path.join('/','tmp',dir_name,'index.html'))
+                      //res.render(path.join('/','tmp',dir_name,'index.html'))
                       //var options = {
                           //root: path.join(process.env.PWD,'views','tmp', dir_name),
                       //  };
                         
+
+
                         console.log(html_path)
-                        open('file:///'+html_path)
-                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+
+                        open('file:///'+html_path,'chrome')
+
+                        res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+
+
                       
                       //   res.send(html_path2);
                      //  fs.readFile(html_path, 'utf8', function (err,html) {
@@ -617,8 +624,208 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     }
     
 });
+//
+// P C O A
+//
+router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
+    var ts = req.body.ts;
+    console.log('in dbrowser');
+    console.log(JSON.stringify(biom_matrix,null,2));
+    //var max_total_count = biom_matrix.max_total_count;
+    var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+    console.log('column_totals '+biom_matrix.column_totals);
+    console.log('max_total_count '+max_total_count.toString());
+    var html = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
+    html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
+    html += "<head>\n";
+    html += " <meta charset=\"utf-8\"/>\n";
+    html += " <link rel='shortcut icon' href='/images/favicon.ico' />\n";
+    //html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
+    //html += " <script src=\"/javascript/krona-2.0.js\"></script>\n";
+    html += " <script src=\"../public/javascripts/krona-2.0.js\"></script>\n";
+    html += "</head>\n";
+    html += "<body>\n";
+    html += " <img id='hiddenImage' src='/images/hidden.png' style='display:none' />\n";
+    html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
+    html += " <div style='display:none'>\n";
+    html += "  <krona  collapse='false' key='true'>\n";
+    html += "  <attributes magnitude='seqcount'>\n";
+    html += "  <attribute display='Abundance'>seqcount</attribute>\n";
+    html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
+    html += "  </attributes>\n";
+    html += "  <color attribute='seqcount' valueStart='0' valueEnd='"+max_total_count.toString()+"' hueStart='120' hueEnd='240'></color>\n";
+    html += "  <datasets>\n";
+    for(i in chosen_id_name_hash.names){
+        html += "    <dataset>"+chosen_id_name_hash.names[i]+"</dataset>\n";
+    }
+    html += "  </datasets>\n";
+    html += "  <node id='dataset_name' name='root'>\n";
+	html += "   <seqcount>";
+    for(i in chosen_id_name_hash.names){
+        html += "<val>"+biom_matrix.column_totals[i].toString()+"</val>";
+    }
+    html += "</seqcount>\n";
+   
+    // sum counts
+    var sumator = {}
+    for(r in req.C.RANKS){
+        sumator[req.C.RANKS[r]]={};
+    }
+    //for(i in chosen_id_name_hash.ids){
+    var did = chosen_id_name_hash.ids[i]
+    var dname = chosen_id_name_hash.names[i]
+    
+    for(r in biom_matrix.rows){
+        tax_string = biom_matrix.rows[r].name;
+        tax_items = tax_string.split(';');
+        //console.log('here')
+        if(tax_items.length != req.C.RANKS.indexOf(visual_post_items.tax_depth)+1){
+            console.log('ERROR tax_items.length '+tax_items.length.toString()+' - '+req.C.RANKS.indexOf(visual_post_items.tax_depth).toString())
+            res.send('ERROR tax_items.length')
+        }
+        //console.log('here2 '+tax_string)
+        ttname = tax_items[0];
+        for(t in tax_items){
+            var tname = tax_items[t];                
+            if(t>0){
+                ttname += ';'+tax_items[t];
+            }
+            //console.log(tname)
+            var rank = req.C.RANKS[t];
+            //console.log(rank)
+            
+            //console.log('here3')
+            for(i in chosen_id_name_hash.ids){
+                if(ttname in sumator[rank]){
+                    if(i in sumator[rank][ttname]){
+                        sumator[rank][ttname][i] += biom_matrix.data[r][i];
+                    }else{
+                        sumator[rank][ttname][i] = biom_matrix.data[r][i];
+                    }                        
+                }else{                         
+                    sumator[rank][ttname] = []
+                    sumator[rank][ttname][i] = biom_matrix.data[r][i];                       
+                }
+            }                
+        }
+        //sumator[did][tax_name] = cnt
+    }    
+    console.log(JSON.stringify(sumator))
+    for(dname in sumator['domain']){
+        
+        // #### DOMAIN ####
+        var dnode_name =  dname
+        html += "<node name='"+dnode_name+"'>\n";
+	    html += "<seqcount>";
+	    for(c_domain in sumator['domain'][dname]){
+	        html += "<val>"+sumator['domain'][dname][c_domain].toString()+"</val>";
+	    }
+        html += "</seqcount>\n";
+        html += "<rank><val>domain</val></rank>\n";
+        
+        // #### PHYLUM ####
+        for(pname in sumator['phylum']){        
+            var pnode_name =  getLastPart(pname)
+            html += "<node name='"+pnode_name+"'>\n";
+    	    html += "<seqcount>";
+    	    for(c_phylum in sumator['phylum'][pname]){
+    	        html += "<val>"+sumator['phylum'][pname][c_phylum].toString()+"</val>";
+    	    }
+            html += "</seqcount>\n";
+            html += "<rank><val>phylum</val></rank>\n";
+            
+            // #### KLASS ####
+            for(kname in sumator['klass']){        
+                var knode_name =  getLastPart(kname)
+                html += "<node name='"+knode_name+"'>\n";
+        	    html += "<seqcount>";
+        	    for(c_klass in sumator['klass'][kname]){
+        	        html += "<val>"+sumator['klass'][kname][c_klass].toString()+"</val>";
+        	    }
+                html += "</seqcount>\n";
+                html += "<rank><val>klass</val></rank>\n";
+                
+                // #### ORDER ####
+                for(oname in sumator['order']){        
+                    var onode_name =  getLastPart(oname)
+                    html += "<node name='"+onode_name+"'>\n";
+            	    html += "<seqcount>";
+            	    for(c_order in sumator['order'][oname]){
+            	        html += "<val>"+sumator['order'][oname][c_order].toString()+"</val>";
+            	    }
+                    html += "</seqcount>\n";
+                    html += "<rank><val>order</val></rank>\n";
+                
+                    // #### FAMILY ####
+                    for(fname in sumator['family']){        
+                        var fnode_name =  getLastPart(fname)
+                        html += "<node name='"+fnode_name+"'>\n";
+                	    html += "<seqcount>";
+                	    for(c_family in sumator['family'][fname]){
+                	        html += "<val>"+sumator['family'][fname][c_family].toString()+"</val>";
+                	    }
+                        html += "</seqcount>\n";
+                        html += "<rank><val>family</val></rank>\n";
+                
+                        // #### GENUS ####
+                        for(gname in sumator['genus']){        
+                            var gnode_name =  getLastPart(gname)
+                            html += "<node name='"+gnode_name+"'>\n";
+                    	    html += "<seqcount>";
+                    	    for(c_genus in sumator['genus'][gname]){
+                    	        html += "<val>"+sumator['genus'][gname][c_genus].toString()+"</val>";
+                    	    }
+                            html += "</seqcount>\n";
+                            html += "<rank><val>genus</val></rank>\n";
+                
+                            // #### SPECIES ####
+        
+        ///// TODO TODO //////
+        
+                            html += "</node>\n";
+                        }         
+                        html += "</node>\n";
+                    }        
+                    html += "</node>\n";
+                }       
+                html += "</node>\n";
+            }
+            html += "</node>\n";
+        }       
+        html += "</node>\n";
+    }
+    
+    html += "  </node>\n";
+    html += "  </krona>\n";
+    html += " </div></body></html>\n";
+    // write html to a file and open it like Emperor
+    
+    
+    var file_name = ts+'.kona';
+    var html_path = path.join(process.env.PWD,'tmp', file_name);
+    console.log(html_path);
+    fs.writeFile(html_path,html,function(err){
+        if(err){
+            res.send(err)
+        }else{
+            console.log('file:///'+html_path)
+            open('file:///'+html_path);
+            res.send('data browser data')
+        }
+    })
+    //helpers.write_to_file(html_path,html);
+    //open('file:///'+html_path,'chrome')
+    //res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+    
+    
+    //console.log(html);
+    //
+});
 
-
+function getLastPart(str) {
+    var i = str.split(';');
+    return i[i.length-1];
+}
 //
 //  G E O S P A T I A L
 //
@@ -634,8 +841,6 @@ router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
             html : html+"<h2>Not Coded Yet</h2>",
             user: req.user
       });
-
-
 });
 
 //
