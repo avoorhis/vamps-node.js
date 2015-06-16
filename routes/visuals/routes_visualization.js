@@ -580,43 +580,18 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     	      //console.log(pcoa_data)
     	      //pcoa_data = JSON.parse(pcoa_data)
     	      //console.log(pcoa_data);
-              console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+              console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
               PythonShell.run('make_emperor.py', options2, function (err, pcoa_data) {
                   if (err) {
             		  res.send('ERROR-2 '+err); // for now we'll send errors to the browser
             	  }else{
-                      // read html file
-                      //document.open(html_path)
-                      //res.redirect(path.join('/','tmp',dir_name,'index.html'))
-                      //res.render(path.join('/','tmp',dir_name,'index.html'))
-                      //var options = {
-                          //root: path.join(process.env.PWD,'views','tmp', dir_name),
-                      //  };
                         
-
-
-                        console.log(html_path)
-
-                        open('file:///'+html_path,'chrome')
-
+                      console.log(html_path);
+                        open('file:///'+html_path);
                         res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
 
-
-                      
-                      //   res.send(html_path2);
-                     //  fs.readFile(html_path, 'utf8', function (err,html) {
-                     //    if (err) {
-                     //      res.send('ERROR-3 '+err);
-                     //    }
-                     //    console.log(html)
-                      //   res.send(html);
-                     //
-                     //  });
-                      
                   }
               });
-    	      
-    	      //console.log(html);
     	      
       	  }
 
@@ -631,11 +606,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     console.log('in dbrowser');
-    console.log(JSON.stringify(biom_matrix,null,2));
+    //console.log(JSON.stringify(biom_matrix,null,2));
     
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-    console.log('column_totals '+biom_matrix.column_totals);
-    console.log('max_total_count '+max_total_count.toString());
+    //console.log('column_totals '+biom_matrix.column_totals);
+    //console.log('max_total_count '+max_total_count.toString());
     var html = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
     html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
     html += "<head>\n";
@@ -667,9 +642,9 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     html += "</seqcount>\n";
    
     // sum counts
-    sumator = get_sumator2(req)
+    sumator = get_sumator(req)
  
-    console.log(JSON.stringify(sumator))
+    //console.log(JSON.stringify(sumator))
     
     for(d in sumator['domain']){
         
@@ -772,15 +747,9 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
             res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
         }
     })
-    //helpers.write_to_file(html_path,html);
-    //open('file:///'+html_path,'chrome')
-    //res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
     
-    
-    //console.log(html);
-    //
 });
-function get_sumator2(req){
+function get_sumator(req){
     
     var sumator = {};
     sumator['domain']={};
@@ -937,56 +906,7 @@ function get_sumator2(req){
     return sumator;
 }
 
-function get_sumator1(req){
-    var sumator = {}
-    for(r in req.C.RANKS){
-        sumator[req.C.RANKS[r]]={};
-    }
-    //for(i in chosen_id_name_hash.ids){
-    var did = chosen_id_name_hash.ids[i]
-    var dname = chosen_id_name_hash.names[i]
-    
-    for(r in biom_matrix.rows){
-        tax_string = biom_matrix.rows[r].name;
-        tax_items = tax_string.split(';');
-        //console.log('here')
-        if(tax_items.length != req.C.RANKS.indexOf(visual_post_items.tax_depth)+1){
-            console.log('ERROR tax_items.length '+tax_items.length.toString()+' - '+req.C.RANKS.indexOf(visual_post_items.tax_depth).toString())
-            res.send('ERROR tax_items.length')
-        }
-        //console.log('here2 '+tax_string)
-        ttname = tax_items[0];
-        for(t in tax_items){
-            var tname = tax_items[t];
-            if(t>0){
-                ttname += ';'+tax_items[t];
-            }
-            //console.log(tname)
-            //ttname = tax_items[t];
-            var rank = req.C.RANKS[t];
-            //console.log(rank)
-            
-            //console.log('here3')
-            for(i in chosen_id_name_hash.ids){
-                
-                if(ttname in sumator[rank]){
-                    if(i in sumator[rank][ttname]){
-                        sumator[rank][ttname][i] += biom_matrix.data[r][i];
-                    }else{
-                        sumator[rank][ttname][i] = biom_matrix.data[r][i];
-                    } 
-                }else{ 
-                    sumator[rank][ttname] = []
-                    sumator[rank][ttname][i] = biom_matrix.data[r][i]; 
-                }
-                
-                
-            }
-        }
-        //sumator[did][tax_name] = cnt
-    }   
-    return sumator; 
-}
+
 function getLastPart(str) {
     var i = str.split(';');
     return i[i.length-1];
