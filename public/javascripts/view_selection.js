@@ -896,6 +896,8 @@ function create_dbrowser(ts) {
      
          dbrowser_created = true;
          var info_line = create_header('dbrowser', pi_local);
+         var dbrowser_div = document.getElementById('dbrowser_div');
+         dbrowser_div.style.display = 'block';
          document.getElementById('dbrowser_title').innerHTML = info_line;
          document.getElementById('pre_dbrowser_div').style.display = 'block';
          var args =  "ts="+ts;
@@ -904,18 +906,15 @@ function create_dbrowser(ts) {
          xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
          xmlhttp.onreadystatechange = function() {
            if (xmlhttp.readyState == 4 ) {
-              var response = xmlhttp.responseText;
-              
-                  dbrowser_div.innerHTML = response; 
-           
+              var response = xmlhttp.responseText;              
+              dbrowser_div.innerHTML = response;            
            }
          };
          xmlhttp.send(args);
-         
-         //var html = get_dbrowser_html();
-         
-
 }
+//
+//
+//
 function get_dbrowser_html() {
     
         // var html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
