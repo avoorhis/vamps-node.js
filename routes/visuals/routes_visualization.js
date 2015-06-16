@@ -328,6 +328,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('req.body hm');
     //console.log(req.body);
     //console.log('req.body hm');
+    
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
@@ -598,7 +599,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 
                         open('file:///'+html_path,'chrome')
 
-                        res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
 
 
                       
@@ -631,7 +632,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     console.log('in dbrowser');
     console.log(JSON.stringify(biom_matrix,null,2));
-    //var max_total_count = biom_matrix.max_total_count;
+    
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
     console.log('column_totals '+biom_matrix.column_totals);
     console.log('max_total_count '+max_total_count.toString());
@@ -639,13 +640,12 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
     html += "<head>\n";
     html += " <meta charset=\"utf-8\"/>\n";
-    html += " <link rel='shortcut icon' href='/images/favicon.ico' />\n";
-    //html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-    //html += " <script src=\"/javascript/krona-2.0.js\"></script>\n";
+    html += " <link rel='shortcut icon' href='../public/images/favicon.ico' />\n";
+    html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
     html += " <script src=\"../public/javascripts/krona-2.0.js\"></script>\n";
     html += "</head>\n";
     html += "<body>\n";
-    html += " <img id='hiddenImage' src='/images/hidden.png' style='display:none' />\n";
+    html += " <img id='hiddenImage' src='../public/images/hidden.png' style='display:none' />\n";
     html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
     html += " <div style='display:none'>\n";
     html += "  <krona  collapse='false' key='true'>\n";
@@ -667,6 +667,277 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     html += "</seqcount>\n";
    
     // sum counts
+    sumator = get_sumator2(req)
+ 
+    console.log(JSON.stringify(sumator))
+    
+    for(d in sumator['domain']){
+        
+        // #### DOMAIN ####
+        //var dnode_name =  dname
+        html += "<node name='"+d+"'>\n";
+	    html += " <seqcount>";
+	    for(c_domain in sumator['domain'][d]['knt']){
+	        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+	    }
+        html += "</seqcount>\n";
+        html += " <rank><val>domain</val></rank>\n";
+        
+        // #### PHYLUM ####
+        for(p in sumator['domain'][d]['phylum']){        
+            //var pnode_name =  getLastPart(pname)
+            html += " <node name='"+p+"'>\n";
+    	    html += "  <seqcount>";
+    	    for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+    	        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+    	    }
+            html += "</seqcount>\n";
+            html += "  <rank><val>phylum</val></rank>\n";
+///            
+            // #### KLASS ####
+            for(k in sumator['domain'][d]['phylum'][p]['klass']){
+                //var knode_name =  getLastPart(kname)
+                html += "  <node name='"+k+"'>\n";
+                html += "   <seqcount>";
+                for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+                }
+                html += "</seqcount>\n";
+                html += "   <rank><val>klass</val></rank>\n";
+
+                // #### ORDER ####
+                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+                    //var onode_name =  getLastPart(oname)
+                    html += "   <node name='"+o+"'>\n";
+                    html += "    <seqcount>";
+                    for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                        html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
+                    }
+                    html += "</seqcount>\n";
+                    html += "    <rank><val>order</val></rank>\n";
+
+                    // #### FAMILY ####
+                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+                        //var fnode_name =  getLastPart(fname)
+                        html += "    <node name='"+f+"'>\n";
+                        html += "     <seqcount>";
+                        for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+                        }
+                        html += "</seqcount>\n";
+                        html += "     <rank><val>family</val></rank>\n";
+
+                        // #### GENUS ####
+                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+                            //var gnode_name =  getLastPart(gname)
+                            html += "     <node name='"+g+"'>\n";
+                            html += "      <seqcount>";
+                            for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
+                            }
+                            html += "</seqcount>\n";
+                            html += "      <rank><val>genus</val></rank>\n";
+
+                            // #### SPECIES ####
+
+        ///// TODO TODO //////
+
+                            html += "     </node>\n";
+                        }
+                        html += "    </node>\n";
+                    }
+                    html += "   </node>\n";
+                }
+                html += "  </node>\n";
+            }
+            html += " </node>\n";
+        }       
+        html += "</node>\n";
+    }    
+    html += "  </node>\n";
+    html += "  </krona>\n";
+    html += " </div></body></html>\n";
+    // write html to a file and open it like Emperor
+    
+    
+    var file_name = ts+'_krona.html';
+    var html_path = path.join(process.env.PWD,'tmp', file_name);
+    console.log(html_path);
+    fs.writeFile(html_path,html,function(err){
+        if(err){
+            res.send(err)
+        }else{
+            console.log('opening file:///'+html_path)
+            open('file:///'+html_path);
+            res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
+        }
+    })
+    //helpers.write_to_file(html_path,html);
+    //open('file:///'+html_path,'chrome')
+    //res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+    
+    
+    //console.log(html);
+    //
+});
+function get_sumator2(req){
+    
+    var sumator = {};
+    sumator['domain']={};
+    var did = chosen_id_name_hash.ids[i];
+    var dname = chosen_id_name_hash.names[i];
+    
+    for(r in biom_matrix.rows){
+        tax_string = biom_matrix.rows[r].name;
+        tax_items = tax_string.split(';');
+        key = tax_items[0];
+        console.log(tax_items);
+        //sumator['domain']={};
+        //sumator['domain']['phylum']={};
+        // Bacteria;Actinobacteria
+        //{
+        //  "domain":{"Bacteria":{"count":[3],
+        //    "phylum":{"Actinobacteria":{"count":[2]
+        //      "klass":{},},},
+        //    "Unknown":{}}
+            //}
+       // key = tax_items[0];
+       //console.log(biom_matrix.data[r])
+        for(t in tax_items){
+           var taxa = tax_items[t];
+           var rank = req.C.RANKS[t];
+           // if(t>0){
+           //     key += ';'+tax_items[t];
+           // }
+           if(rank=='domain'){
+               d = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+                   //console.log(i)
+                   //console.log(biom_matrix.data[r])
+                   console.log(' ')
+                   if(d in sumator['domain']){
+                       //console.log(biom_matrix.data[r][i])
+                       //console.log(sumator['domain'][d]['knt'][i])
+                       if(i in sumator['domain'][d]['knt']){
+                           sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]); 
+                       }else{
+                           sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       }
+                       //console.log(sumator['domain'][d]['knt'][i])
+                       
+                       //console.log(biom_matrix.data[r][i])
+                       
+                   }else{
+                       //console.log(biom_matrix.data[r][i])
+                       sumator['domain'][d]={};
+                       sumator['domain'][d]['phylum']={}
+                       sumator['domain'][d]['knt']=[] 
+                       sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       //console.log(sumator['domain'][d]['knt'][i])
+                       
+                   }
+                   //console.log(sumator['domain'][d]['knt'])
+                   
+                   
+               }
+           }
+           if(rank=='phylum'){
+               p = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+
+                   if(p in sumator['domain'][d]['phylum']){
+                       if(i in sumator['domain'][d]['phylum'][p]['knt']){
+                           sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]={};
+                       sumator['domain'][d]['phylum'][p]['klass']={};
+                       sumator['domain'][d]['phylum'][p]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           if(rank=='klass'){
+               k = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+
+                   if(k in sumator['domain'][d]['phylum'][p]['klass']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           if(rank=='order'){
+               o = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+
+                   if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           if(rank=='family'){
+               f = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+
+                   if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           if(rank=='genus'){
+               g = tax_items[t]
+               for(i in chosen_id_name_hash.ids){
+
+                   if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           
+         }
+    }
+    return sumator;
+}
+
+function get_sumator1(req){
     var sumator = {}
     for(r in req.C.RANKS){
         sumator[req.C.RANKS[r]]={};
@@ -686,142 +957,36 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
         //console.log('here2 '+tax_string)
         ttname = tax_items[0];
         for(t in tax_items){
-            var tname = tax_items[t];                
+            var tname = tax_items[t];
             if(t>0){
                 ttname += ';'+tax_items[t];
             }
             //console.log(tname)
+            //ttname = tax_items[t];
             var rank = req.C.RANKS[t];
             //console.log(rank)
             
             //console.log('here3')
             for(i in chosen_id_name_hash.ids){
+                
                 if(ttname in sumator[rank]){
                     if(i in sumator[rank][ttname]){
                         sumator[rank][ttname][i] += biom_matrix.data[r][i];
                     }else{
                         sumator[rank][ttname][i] = biom_matrix.data[r][i];
-                    }                        
-                }else{                         
+                    } 
+                }else{ 
                     sumator[rank][ttname] = []
-                    sumator[rank][ttname][i] = biom_matrix.data[r][i];                       
+                    sumator[rank][ttname][i] = biom_matrix.data[r][i]; 
                 }
-            }                
+                
+                
+            }
         }
         //sumator[did][tax_name] = cnt
-    }    
-    console.log(JSON.stringify(sumator))
-    for(dname in sumator['domain']){
-        
-        // #### DOMAIN ####
-        var dnode_name =  dname
-        html += "<node name='"+dnode_name+"'>\n";
-	    html += "<seqcount>";
-	    for(c_domain in sumator['domain'][dname]){
-	        html += "<val>"+sumator['domain'][dname][c_domain].toString()+"</val>";
-	    }
-        html += "</seqcount>\n";
-        html += "<rank><val>domain</val></rank>\n";
-        
-        // #### PHYLUM ####
-        for(pname in sumator['phylum']){        
-            var pnode_name =  getLastPart(pname)
-            html += "<node name='"+pnode_name+"'>\n";
-    	    html += "<seqcount>";
-    	    for(c_phylum in sumator['phylum'][pname]){
-    	        html += "<val>"+sumator['phylum'][pname][c_phylum].toString()+"</val>";
-    	    }
-            html += "</seqcount>\n";
-            html += "<rank><val>phylum</val></rank>\n";
-            
-            // #### KLASS ####
-            for(kname in sumator['klass']){        
-                var knode_name =  getLastPart(kname)
-                html += "<node name='"+knode_name+"'>\n";
-        	    html += "<seqcount>";
-        	    for(c_klass in sumator['klass'][kname]){
-        	        html += "<val>"+sumator['klass'][kname][c_klass].toString()+"</val>";
-        	    }
-                html += "</seqcount>\n";
-                html += "<rank><val>klass</val></rank>\n";
-                
-                // #### ORDER ####
-                for(oname in sumator['order']){        
-                    var onode_name =  getLastPart(oname)
-                    html += "<node name='"+onode_name+"'>\n";
-            	    html += "<seqcount>";
-            	    for(c_order in sumator['order'][oname]){
-            	        html += "<val>"+sumator['order'][oname][c_order].toString()+"</val>";
-            	    }
-                    html += "</seqcount>\n";
-                    html += "<rank><val>order</val></rank>\n";
-                
-                    // #### FAMILY ####
-                    for(fname in sumator['family']){        
-                        var fnode_name =  getLastPart(fname)
-                        html += "<node name='"+fnode_name+"'>\n";
-                	    html += "<seqcount>";
-                	    for(c_family in sumator['family'][fname]){
-                	        html += "<val>"+sumator['family'][fname][c_family].toString()+"</val>";
-                	    }
-                        html += "</seqcount>\n";
-                        html += "<rank><val>family</val></rank>\n";
-                
-                        // #### GENUS ####
-                        for(gname in sumator['genus']){        
-                            var gnode_name =  getLastPart(gname)
-                            html += "<node name='"+gnode_name+"'>\n";
-                    	    html += "<seqcount>";
-                    	    for(c_genus in sumator['genus'][gname]){
-                    	        html += "<val>"+sumator['genus'][gname][c_genus].toString()+"</val>";
-                    	    }
-                            html += "</seqcount>\n";
-                            html += "<rank><val>genus</val></rank>\n";
-                
-                            // #### SPECIES ####
-        
-        ///// TODO TODO //////
-        
-                            html += "</node>\n";
-                        }         
-                        html += "</node>\n";
-                    }        
-                    html += "</node>\n";
-                }       
-                html += "</node>\n";
-            }
-            html += "</node>\n";
-        }       
-        html += "</node>\n";
-    }
-    
-    html += "  </node>\n";
-    html += "  </krona>\n";
-    html += " </div></body></html>\n";
-    // write html to a file and open it like Emperor
-    
-    
-    var file_name = ts+'.kona';
-    var html_path = path.join(process.env.PWD,'tmp', file_name);
-    console.log(html_path);
-    fs.writeFile(html_path,html,function(err){
-        if(err){
-            res.send(err)
-        }else{
-            console.log('file:///'+html_path)
-            open('file:///'+html_path);
-            res.send('data browser data')
-        }
-    })
-    //helpers.write_to_file(html_path,html);
-    //open('file:///'+html_path,'chrome')
-    //res.send("Done - <ahref='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
-    
-    
-    //console.log(html);
-    //
-});
-
+    }   
+    return sumator; 
+}
 function getLastPart(str) {
     var i = str.split(';');
     return i[i.length-1];
