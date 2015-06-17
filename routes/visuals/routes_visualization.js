@@ -761,59 +761,29 @@ function get_sumator(req){
         tax_items = tax_string.split(';');
         key = tax_items[0];
         console.log(tax_items);
-        //sumator['domain']={};
-        //sumator['domain']['phylum']={};
-        // Bacteria;Actinobacteria
-        //{
-        //  "domain":{"Bacteria":{"count":[3],
-        //    "phylum":{"Actinobacteria":{"count":[2]
-        //      "klass":{},},},
-        //    "Unknown":{}}
-            //}
-       // key = tax_items[0];
-       //console.log(biom_matrix.data[r])
         for(t in tax_items){
            var taxa = tax_items[t];
            var rank = req.C.RANKS[t];
-           // if(t>0){
-           //     key += ';'+tax_items[t];
-           // }
            if(rank=='domain'){
                d = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-                   //console.log(i)
-                   //console.log(biom_matrix.data[r])
-                   console.log(' ')
                    if(d in sumator['domain']){
-                       //console.log(biom_matrix.data[r][i])
-                       //console.log(sumator['domain'][d]['knt'][i])
                        if(i in sumator['domain'][d]['knt']){
                            sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]); 
                        }else{
                            sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
-                       }
-                       //console.log(sumator['domain'][d]['knt'][i])
-                       
-                       //console.log(biom_matrix.data[r][i])
-                       
+                       } 
                    }else{
-                       //console.log(biom_matrix.data[r][i])
                        sumator['domain'][d]={};
                        sumator['domain'][d]['phylum']={}
                        sumator['domain'][d]['knt']=[] 
-                       sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
-                       //console.log(sumator['domain'][d]['knt'][i])
-                       
+                       sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);  
                    }
-                   //console.log(sumator['domain'][d]['knt'])
-                   
-                   
                }
            }
            if(rank=='phylum'){
                p = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-
                    if(p in sumator['domain'][d]['phylum']){
                        if(i in sumator['domain'][d]['phylum'][p]['knt']){
                            sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -831,7 +801,6 @@ function get_sumator(req){
            if(rank=='klass'){
                k = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-
                    if(k in sumator['domain'][d]['phylum'][p]['klass']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -849,7 +818,6 @@ function get_sumator(req){
            if(rank=='order'){
                o = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-
                    if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -867,7 +835,6 @@ function get_sumator(req){
            if(rank=='family'){
                f = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-
                    if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -885,7 +852,6 @@ function get_sumator(req){
            if(rank=='genus'){
                g = tax_items[t]
                for(i in chosen_id_name_hash.ids){
-
                    if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -900,17 +866,16 @@ function get_sumator(req){
                    }
                }
            }
-           
          }
     }
     return sumator;
 }
 
 
-function getLastPart(str) {
-    var i = str.split(';');
-    return i[i.length-1];
-}
+// function getLastPart(str) {
+//     var i = str.split(';');
+//     return i[i.length-1];
+// }
 //
 //  G E O S P A T I A L
 //

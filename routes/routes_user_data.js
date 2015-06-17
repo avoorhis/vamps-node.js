@@ -486,9 +486,72 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
    
 });
 //
+//   GET -- EDIT_PROJECT: When first enter the page.
+//
+router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
+	console.log('in edit project');
+	var project_name = req.params.project;
+	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
+	console.log(config_file);
+	var project_info = {};
+  	//var stat_config = fs.statSync(config_file);
+ 	project_info.config = iniparser.parseSync(config_file);
+	if(project_name in PROJECT_INFORMATION_BY_PNAME){
+		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+		project_info.status = 'Taxonomic Data Available';
+		project_info.tax = 'GAST'; 
+	}else{
+		project_info.pid =0;
+		project_info.status = 'No Taxonomic Assignments Yet';
+		project_info.tax = 0; 
+	}
+	
+	res.render('user_data/edit_project',
+	  { title: 'Edit Project',   
+		project: project_name,
+		pinfo: JSON.stringify(project_info),
+		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+		message:'',
+	    user: 	req.user
+	  });
+});
+//
+//   POST -- EDIT_PROJECT:  for accepting changes and re-showing the page
+//
+router.post('/edit_project/:project', helpers.isLoggedIn, function(req,res){
+	console.log('in edit project');
+	console.log(req.body);
+	var project_name = req.params.project;
+	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
+	console.log(config_file);
+	var project_info = {};
+  	//var stat_config = fs.statSync(config_file);
+ 	project_info.config = iniparser.parseSync(config_file);
+	if(project_name in PROJECT_INFORMATION_BY_PNAME){
+		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+		project_info.status = 'Taxonomic Data Available';
+		project_info.tax = 'GAST'; 
+	}else{
+		project_info.pid =0;
+		project_info.status = 'No Taxonomic Assignments Yet';
+		project_info.tax = 0; 
+	}
+	
+	res.render('user_data/edit_project',
+	  { title: 'Edit Project',   
+		project: project_name,
+		pinfo: JSON.stringify(project_info),
+		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+		message:'',
+	    user: 	req.user
+	  });
+});
 //
 //
-router.post('/upload_data',  function(req,res){
+//
+router.post('/upload_data', helpers.isLoggedIn, function(req,res){
     
   var project = req.body.project;
   var username = req.user.username;
@@ -631,7 +694,7 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 //
 // DOWNLOAD SEQUENCES
 //
-router.post('/download_selected_seqs', function(req, res) {
+router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   var db = req.db;
   console.log(req.body);
 
@@ -713,7 +776,7 @@ helpers.mkdirSync(user_dir);  // create dir if not exists
 //
 // DOWNLOAD METADATA
 //
-router.post('/download_selected_metadata', function(req, res) {
+router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res) {
   var db = req.db;
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!

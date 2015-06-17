@@ -39,7 +39,7 @@
     				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
     				<td></td>
     				<td>Status: <strong><%= status %></strong></td>				
-    				<td><a href="#" class="pull-right">edit</a></td>
+    				<td><a href="edit_project/<%= project %>" class="pull-right">edit</a></td>
     			</tr><tr>
     				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
     				<td>Public: <%= public %></td>
@@ -64,7 +64,7 @@
         			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
         			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>	
     			<% } %>
-					
+				<li role="presentation"><a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %>	">Duplicate this Project</a></li>	
     	    	<li role="presentation" class="divider"></li>
     			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
 			
