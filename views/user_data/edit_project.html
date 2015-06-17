@@ -1,0 +1,49 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% var project_info = JSON.parse(pinfo) %>
+<% var env = JSON.parse(env_sources) %>
+<br>
+ <div class='title'>Edit Project: <%= project %></div>
+ <div class='subtitle'></div>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<% var env_source_id = project_info.config.GENERAL.env_source_id %>
+<% var env_source = env[env_source_id] %>
+<br>
+<form name='edit_project_form' method='POST' action='/user_data/edit_project/<%= project %>'>
+	<button class='pull-right btn btn-sm btn-primary' type='submit'>Save Changes</button>
+	<table class='table table-condensed'>
+		<tr><td>Project Name:</td><td><%= project %></td><td><input type='text' name='new_project_name' maxlength="50" size='50'></td></tr>
+		<tr><td>ENV Source:</td><td><%= env_source %></td><td>new name here:dropdown</td></tr>
+		<tr><td>Public:</td><td><%= project_info.config.GENERAL.public %></td><td>
+			<% if(project_info.config.GENERAL.public == 'True') { %>
+				<input type='radio' checked='checked' name='new_privacy' value='public'> public
+				&nbsp;<input type='radio' name='new_privacy' value='private'> private
+			<% }else{ %>
+				<input type='radio' name='new_privacy' value='public'> public
+				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='private'> private
+			<% } %>
+		</td></tr>
+		<tr><td>Title:</td><td><%= project_info.title %></td><td><input type='text' name='new_project_title' maxlength="100" size='50'></td></tr>
+		<tr><td>Description:</td><td><%= project_info.description %></td><td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'></textarea></td></tr>
+	</table>
+	<br>
+	<h4><center>Datasets</center></h4>
+	<table class='table table-striped'>
+		<tr><td></td><th>Names</th><th>new name here</th><th>new description here</th></tr>
+	<% ds_counter = 1 %>
+	<% for(ds in project_info.config.DATASETS) { %>
+		<tr><td><%= ds_counter %></td><td><%= ds %></td><td>input</td><td>input</td></tr>
+		<% ds_counter += 1 %>
+	<% } %>
+	</table>
+</form>
+
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>
