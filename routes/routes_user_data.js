@@ -525,18 +525,21 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	var project_info = {};
 	var project_name = req.body.old_project_name;
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-	var project_dir = path.join(user_projects_base_dir,'project:'+project_name)
+	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name)
 	var config_file = path.join(project_dir,'config.ini');
     var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
-  	  	if (err) console.log(err)
-  		console.log("copy success!")
+  	  	if (err){
+  	  		console.log(err)
+  	  	}else{
+  	  		console.log("copy success!")
+  	  	}
 	}) // copies fi
-	console.log(config_file);
+	//console.log(config_file);
 	project_info.config = iniparser.parseSync(config_file);
-	console.log('config:');
-	console.log(JSON.stringify(project_info.config));
+	//console.log('config:');
+	//console.log(JSON.stringify(project_info.config));
 	// HAS NO ASSIGNMENTS: NEED CHANGE FILES ONLY	
 	// changing data on the system must take this into account:
 	// if the project has no assignments yet then it has no data in the database (ie no pid).
@@ -547,17 +550,19 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	
 	if(req.body.new_project_name){
 		console.log('updating project name');
-		new_config_txt += "project="+req.body.new_project_name+"\n";
-		project_info.config.GENERAL.project=req.body.new_project_name
-		new_base_dir = path.join(user_projects_base_dir,'project:'+req.body.new_project_name);
+		var new_project_name = req.body.new_project_name.replace(/[\s+,.;:]/g,'_')
+		new_config_txt += "project="+new_project_name+"\n";
+		project_info.config.GENERAL.project=new_project_name;
+		new_base_dir = path.join(user_projects_base_dir,'project\:'+new_project_name);
 		new_config_file = path.join(new_base_dir,'config.ini');
 		new_fasta_file = path.join(new_base_dir,'fasta.fa');
 		new_config_txt += "baseoutputdir="+new_base_dir+"\n";
 		new_config_txt += "configPath="+new_config_file+"\n";
 		new_config_txt += "fasta_file="+new_fasta_file+"\n";
-		project_name = req.body.new_project_name
+		project_name = new_project_name;
+		
 	}else{
-		console.log('NOT updating project name');
+		//console.log('NOT updating project name');
 		new_config_txt += "project="+project_name+"\n";
 		new_config_txt += "baseoutputdir="+project_info.config.GENERAL.baseoutputdir+"\n";
 		new_config_txt += "configPath="+project_info.config.GENERAL.configPath+"\n";
@@ -569,7 +574,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		new_config_txt += "project_title="+req.body.new_project_title+"\n";
 		project_info.config.GENERAL.project_title = req.body.new_project_title
 	}else{
-		console.log('NOT updating project title');
+		//console.log('NOT updating project title');
 		new_config_txt += "project_title="+project_info.config.GENERAL.project_title+"\n";
 		
 	}
@@ -578,7 +583,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		new_config_txt += "project_description="+req.body.new_project_description+"\n";
 		project_info.config.GENERAL.project_description = req.body.new_project_description
 	}else{
-		console.log('NOT updating project description');
+		//console.log('NOT updating project description');
 		new_config_txt += "project_description="+project_info.config.GENERAL.project_description+"\n";
 		
 	}
@@ -590,7 +595,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		new_config_txt += "public="+req.body.new_privacy+"\n";
 		project_info.config.GENERAL.public =req.body.new_privacy
 	}else{
-		console.log('NOT updating privacy');
+		//console.log('NOT updating privacy');
 		new_config_txt += "public="+project_info.config.GENERAL.public+"\n";
 		
 	}
@@ -606,23 +611,26 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		new_config_txt += "env_source_id="+req.body.new_env_source_id+"\n";
 		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
 	}else{
-		console.log('NOT updating env id');
+		//console.log('NOT updating env id');
 		new_config_txt += "env_source_id="+project_info.config.GENERAL.env_source_id+"\n";
-		
 	}
 	new_config_txt += "has_tax="+project_info.config.GENERAL.has_tax+"\n\n";
 	new_config_txt += "[DATASETS]\n";
 	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
 	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
-	console.log(old_dataset_array)
-	for(n in req.body.new_dataset_name){
+	console.log(old_dataset_array);
+	project_info.config.DATASETS={}
+	for(n in req.body.new_dataset_names){
 		
-		if(req.body.new_dataset_name[n]){
-			console.log('updating ds from '+old_dataset_array[n]+' to '+req.body.new_dataset_name[n]);
-			new_config_txt += req.body.new_dataset_name[n]+"="+counts_array[n]+"\n";
+		if(req.body.new_dataset_names[n]){
+			new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,.;:]/g,'_')
+			console.log('updating ds from '+old_dataset_array[n]+' to '+new_dataset_name);
+			new_config_txt += new_dataset_name+"="+counts_array[n]+"\n";
+			project_info.config.DATASETS[new_dataset_name] = counts_array[n];
 		}else{
-			console.log('NOT updating ds  '+old_dataset_array[n]);
+			//console.log('NOT updating ds  '+old_dataset_array[n]);
 			new_config_txt += old_dataset_array[n]+"="+counts_array[n]+"\n";
+			project_info.config.DATASETS[old_dataset_array[n]] = counts_array[n];
 		}
 	}
 	
@@ -642,7 +650,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		project_info.status = 'Taxonomic Data Available';
 		project_info.tax = 'GAST'; 
 	}else{
-		project_info.pid =0;
+		project_info.pid = 0;
 		project_info.status = 'No Taxonomic Assignments Yet';
 		project_info.tax = 0; 
 	}
@@ -661,6 +669,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 					}else{
 			  			console.log(project_name)
 						console.log(JSON.stringify(project_info))
+						update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
 						res.render('user_data/edit_project',
 			  		  	  { title: 'Edit Project',   
 			  		  		project: project_name,
@@ -670,10 +679,12 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			  		  	    user: 	req.user
 			  		  	  });
 					}
+					
 				})
 			}else{
-			  			console.log(project_name)
-						console.log(JSON.stringify(project_info))
+			  	console.log(project_name)
+				console.log(JSON.stringify(project_info))
+				update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
 				res.render('user_data/edit_project',
 			  	  { title: 'Edit Project',   
 			  		project: project_name,
@@ -686,6 +697,29 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			
         }
     })
+	
+	function update_dataset_names(ds_names, old_array, dir){
+		for(n in ds_names){
+			if(ds_names[n]){
+				if(ds_names[n]){
+					
+					old_name = old_array[n];
+					old_name_path = path.join(dir,'analysis',old_name);
+					new_name = ds_names[n].replace(/[\s+,.;:]/g,'_');
+					new_name_path =path.join(dir,'analysis',new_name);
+					console.log(old_name_path)
+					console.log(new_name_path)
+					fs.move(old_name_path, new_name_path, function(err){
+						if(err){
+							console.log('ERROR Moving dataset name '+err.toString())
+						}else{
+							console.log('moving '+old_name+' to '+new_name);
+						}
+					})
+				}
+			}
+		}
+	}
 	
 });
 //

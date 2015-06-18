@@ -17,7 +17,6 @@ if (typeof reorder_datasets_btn !=="undefined") {
 var change_datasets_btn = document.getElementById('change_datasets_btn');
 if (typeof change_datasets_btn !=="undefined") {
   change_datasets_btn.addEventListener('click', function () {
-      
 	  window.location='index_visuals';
   });
 }

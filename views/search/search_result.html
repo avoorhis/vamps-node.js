@@ -44,7 +44,7 @@
 				<% } %>
 			
 				</div>
-				<input type='hidden' name='search' value='1' >
+				<input type='hidden' name='retain_data' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >		
 	<% } %>		
 			
@@ -58,8 +58,10 @@
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
 	          	 <h3 class="panel-title">Search 2 Values
-				 <button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use These Datasets</button></h3>
-	           </div>
+				 <% if('search2' in s) { %>
+				   <button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use These Datasets</button></h3>
+	             <% } %>
+			   </div>
 			   <div class="panel-body">
 					<% if('search2' in s) { %>
 						<table class='table table-condensed'>
@@ -72,7 +74,7 @@
 						<% } %>
 						</table>
 					<% }else{ %>
-							<br>Empty
+							<br>No Search
 					<% } %>
 			   </div>
 			</div>
@@ -92,7 +94,7 @@
 				<% } %>
 
 				</div>
-			<input type='hidden' name='search' value='1' >
+			<input type='hidden' name='retain_data' value='1' >
 			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >			
 		<% } %>
 	<% } %>		
@@ -107,8 +109,10 @@
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
 	          	 <h3 class="panel-title">Search 3 Values
-				 <button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use These Datasets</button></h3>
-	           </div>
+				 <% if('search3' in s) { %>
+				 	<button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use These Datasets</button></h3>
+	           	 <% } %>
+			   </div>
 			   <div class="panel-body">
 					<% if('search3' in s) { %>
 						<table class='table table-condensed'>
@@ -121,7 +125,7 @@
 						<% } %>
 						</table>
 					<% }else{ %>
-							<br>Empty
+							<br>No Search
 					<% } %>
 			   </div>
 			</div>
@@ -140,7 +144,7 @@
 					</li>
 				<% } %>			
 				</div>
-				<input type='hidden' name='search' value='1' >
+				<input type='hidden' name='retain_data' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >			
 		<% } %>
 	<% } %>		
@@ -192,7 +196,7 @@
 				<% } %>
 			
 				</div>
-				<input type='hidden' name='search' value='1' >
+				<input type='hidden' name='retain_data' value='1' >
 				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >
 			
 		<% } %>
