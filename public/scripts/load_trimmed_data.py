@@ -221,6 +221,8 @@ def write_config(args,stats):
     f = open(ini_file, 'w')
     f.write('[GENERAL]'+"\n")
     f.write('project='+args.project+"\n")
+    f.write("project_title=\n")
+    f.write("project_description=\n")
     f.write('baseoutputdir='+args.outdir+"\n")
     f.write('configPath='+ini_file+"\n")
     f.write('fasta_file='+fafile+"\n")
