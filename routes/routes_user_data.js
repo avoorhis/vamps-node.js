@@ -519,16 +519,124 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 //
 //   POST -- EDIT_PROJECT:  for accepting changes and re-showing the page
 //
-router.post('/edit_project/:project', helpers.isLoggedIn, function(req,res){
+router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	console.log('in edit project');
 	console.log(req.body);
-	var project_name = req.params.project;
-	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
-	console.log(config_file);
 	var project_info = {};
-  	//var stat_config = fs.statSync(config_file);
- 	project_info.config = iniparser.parseSync(config_file);
+	var project_name = req.body.old_project_name;
+	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	var project_dir = path.join(user_projects_base_dir,'project:'+project_name)
+	var config_file = path.join(project_dir,'config.ini');
+    var timestamp = +new Date();  // millisecs since the epoch!
+	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
+	fs.copy(config_file, config_file_bu, function (err) {
+  	  	if (err) console.log(err)
+  		console.log("copy success!")
+	}) // copies fi
+	console.log(config_file);
+	project_info.config = iniparser.parseSync(config_file);
+	console.log('config:');
+	console.log(JSON.stringify(project_info.config));
+	// HAS NO ASSIGNMENTS: NEED CHANGE FILES ONLY	
+	// changing data on the system must take this into account:
+	// if the project has no assignments yet then it has no data in the database (ie no pid).
+	// So just (1)alter the config.ini and the (2)directory name where it is located in user_data/NODE_DATABASE/<user>/project:*
+	// Also the dataset (3)directories need to be updated.
+	
+	new_config_txt = "[GENERAL]\n";
+	
+	if(req.body.new_project_name){
+		console.log('updating project name');
+		new_config_txt += "project="+req.body.new_project_name+"\n";
+		project_info.config.GENERAL.project=req.body.new_project_name
+		new_base_dir = path.join(user_projects_base_dir,'project:'+req.body.new_project_name);
+		new_config_file = path.join(new_base_dir,'config.ini');
+		new_fasta_file = path.join(new_base_dir,'fasta.fa');
+		new_config_txt += "baseoutputdir="+new_base_dir+"\n";
+		new_config_txt += "configPath="+new_config_file+"\n";
+		new_config_txt += "fasta_file="+new_fasta_file+"\n";
+		project_name = req.body.new_project_name
+	}else{
+		console.log('NOT updating project name');
+		new_config_txt += "project="+project_name+"\n";
+		new_config_txt += "baseoutputdir="+project_info.config.GENERAL.baseoutputdir+"\n";
+		new_config_txt += "configPath="+project_info.config.GENERAL.configPath+"\n";
+		new_config_txt += "fasta_file="+project_info.config.GENERAL.fasta_file+"\n";		
+	}
+	
+	if(req.body.new_project_title){
+		console.log('updating project title');
+		new_config_txt += "project_title="+req.body.new_project_title+"\n";
+		project_info.config.GENERAL.project_title = req.body.new_project_title
+	}else{
+		console.log('NOT updating project title');
+		new_config_txt += "project_title="+project_info.config.GENERAL.project_title+"\n";
+		
+	}
+	if(req.body.new_project_description){
+		console.log('updating project description');
+		new_config_txt += "project_description="+req.body.new_project_description+"\n";
+		project_info.config.GENERAL.project_description = req.body.new_project_description
+	}else{
+		console.log('NOT updating project description');
+		new_config_txt += "project_description="+project_info.config.GENERAL.project_description+"\n";
+		
+	}
+	new_config_txt += "platform="+project_info.config.GENERAL.platform+"\n";
+	new_config_txt += "owner="+project_info.config.GENERAL.owner+"\n";
+	new_config_txt += "config_file_type="+project_info.config.GENERAL.config_file_type+"\n";
+	if(req.body.new_privacy != project_info.config.GENERAL.public){
+		console.log('updating privacy');
+		new_config_txt += "public="+req.body.new_privacy+"\n";
+		project_info.config.GENERAL.public =req.body.new_privacy
+	}else{
+		console.log('NOT updating privacy');
+		new_config_txt += "public="+project_info.config.GENERAL.public+"\n";
+		
+	}
+	new_config_txt += "fasta_type="+project_info.config.GENERAL.fasta_type+"\n";
+	new_config_txt += "dna_region="+project_info.config.GENERAL.dna_region+"\n";
+	new_config_txt += "project_sequence_count="+project_info.config.GENERAL.project_sequence_count+"\n";
+	new_config_txt += "domain="+project_info.config.GENERAL.domain+"\n";
+	new_config_txt += "number_of_datasets="+project_info.config.GENERAL.number_of_datasets+"\n";
+	new_config_txt += "sequence_counts="+project_info.config.GENERAL.sequence_counts+"\n";
+	
+	if(req.body.new_env_source_id != project_info.config.GENERAL.env_source_id){
+		console.log('updating env id');
+		new_config_txt += "env_source_id="+req.body.new_env_source_id+"\n";
+		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
+	}else{
+		console.log('NOT updating env id');
+		new_config_txt += "env_source_id="+project_info.config.GENERAL.env_source_id+"\n";
+		
+	}
+	new_config_txt += "has_tax="+project_info.config.GENERAL.has_tax+"\n\n";
+	new_config_txt += "[DATASETS]\n";
+	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
+	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
+	console.log(old_dataset_array)
+	for(n in req.body.new_dataset_name){
+		
+		if(req.body.new_dataset_name[n]){
+			console.log('updating ds from '+old_dataset_array[n]+' to '+req.body.new_dataset_name[n]);
+			new_config_txt += req.body.new_dataset_name[n]+"="+counts_array[n]+"\n";
+		}else{
+			console.log('NOT updating ds  '+old_dataset_array[n]);
+			new_config_txt += old_dataset_array[n]+"="+counts_array[n]+"\n";
+		}
+	}
+	
+	console.log(new_config_txt)
+	if(req.body.project_pid > 0){
+		// TODO: HAS ASSIGNMENTS: NEED CHANGE DB & FILES
+		// If the project has assignments:
+		// change the three places on the file system as above but also:
+		// the project_name,title,description and public in NODE_DATABASE.project
+		// and the dataset_name,description and env_id in NODE_DATABASE.dataset
+		// Also need to update PROJECT_INFORMATION_BY_PNAME and DATASET_ID_BY_DNAME
+	}
+	
+ 	
 	if(project_name in PROJECT_INFORMATION_BY_PNAME){
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = 'Taxonomic Data Available';
@@ -538,15 +646,47 @@ router.post('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 		project_info.status = 'No Taxonomic Assignments Yet';
 		project_info.tax = 0; 
 	}
+	fs.writeFile(config_file, new_config_txt,function(err){
+        if(err){
+			console.log(err);
+			res.send(err);
+        }else{
+            console.log('write new config file success')
+		  	if(req.body.new_project_name){
+				// now change the directory name if the project_name is being updated
+				fs.move(project_dir, new_base_dir, function(err){
+					if(err){
+						console.log(err);
+						res.send(err);
+					}else{
+			  			console.log(project_name)
+						console.log(JSON.stringify(project_info))
+						res.render('user_data/edit_project',
+			  		  	  { title: 'Edit Project',   
+			  		  		project: project_name,
+			  		  		pinfo: JSON.stringify(project_info),
+			  		  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+			  		  		message:'Project Updated',
+			  		  	    user: 	req.user
+			  		  	  });
+					}
+				})
+			}else{
+			  			console.log(project_name)
+						console.log(JSON.stringify(project_info))
+				res.render('user_data/edit_project',
+			  	  { title: 'Edit Project',   
+			  		project: project_name,
+			  		pinfo: JSON.stringify(project_info),
+			  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+			  		message:'Project Updated',
+			  	    user: 	req.user
+			  	  });
+			}
+			
+        }
+    })
 	
-	res.render('user_data/edit_project',
-	  { title: 'Edit Project',   
-		project: project_name,
-		pinfo: JSON.stringify(project_info),
-		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-		message:'',
-	    user: 	req.user
-	  });
 });
 //
 //
