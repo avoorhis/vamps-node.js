@@ -15,8 +15,12 @@
 <br>
 
 <form name='edit_project_form' method='POST' action='/user_data/edit_project'>
-	<button class='pull-right btn btn-sm btn-primary' type='submit'>Save Changes</button>
-	<a href='/user_data/your_projects'>&lt;&lt;- back</a>
+	<% if(project_info.pid == 0){ %>
+		<button class='pull-right btn btn-sm btn-primary' type='submit'>Save Changes</button>
+	<% }else{ %>
+		<span class='pull-right'>Cannot Edit because project already has taxonomic assignments. <button class=' btn btn-sm btn-primary' disabled type='submit'>Save Changes</button></span>
+	<% } %>
+	<a href='/user_data/your_projects'>&lt;&lt;--back</a>
 	<table class='table table-condensed'>
 		<tr><td></td><th>Current values</th><th>Enter New Values</th></tr>
 		<tr><td>Project Name (max length 50 chars):</td><td><%= project %></td><td><input type='text' name='new_project_name' maxlength="50" size='50'></td></tr>
@@ -58,7 +62,7 @@
 	<% ds_counter = 1 %>
 	<% for(ds in project_info.config.DATASETS) { %>
 		<tr><td><%= ds_counter %></td><td><%= ds %></td>
-			<td><input type='text' name='new_dataset_name[]' maxlength="50" size='50' ></td>
+			<td><input type='text' name='new_dataset_names[]' maxlength="50" size='50' ></td>
 			<td><textarea name='new_dataset_description' maxlength="255" rows='1' cols='50' ></textarea></td>
 		</tr>
 		<% ds_counter += 1 %>
