@@ -22,10 +22,11 @@ function view_datasets_ajax( filename, user, fxn ){
 				var data = xmlhttp.responseText;
 				obj = JSON.parse(data);
 				dataset_ids = obj.ids;
+				//alert(dataset_ids)
 				var html = "<div class='auto_height200 border1'>"
 				html += "<form id='' name='' method='POST' action='unit_selection'>"
 				html += "<button type='submit' class='btn btn-xs btn-primary'>use these in visualizations</button>"
-				html += "<input type='hidden' name='search' value='1' >"
+				html += "<input type='hidden' name='retain_data' value='1' >"
 				html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >"
 				html += "</form>"
 				
