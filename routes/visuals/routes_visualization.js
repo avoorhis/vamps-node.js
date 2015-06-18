@@ -145,7 +145,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   var dataset_ids = [];
   if(req.body.resorted === '1'){
   	dataset_ids = req.body.ds_order;	
-  }else if(req.body.search === '1'){
+  }else if(req.body.retain_data === '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);	
   }else{
     dataset_ids = req.body.dataset_ids;
@@ -1000,9 +1000,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	      }
 
 	  });
-	
-	
-	
 	
 	
 });

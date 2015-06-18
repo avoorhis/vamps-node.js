@@ -39,7 +39,15 @@
     				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
     				<td></td>
     				<td>Status: <strong><%= status %></strong></td>				
-    				<td><a href="edit_project/<%= project %>" class="pull-right">edit</a></td>
+    				
+					<td>
+						<% if(project_info[times[t]].pid == 0) { %>
+							<a href="edit_project/<%= project %>" class="pull-right">edit</a>
+						<% }else{ %>
+							
+							(Edit disabled becuse this project has taxonomy assigned.)
+						<% } %>
+					</td>
     			</tr><tr>
     				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
     				<td>Public: <%= public %></td>
