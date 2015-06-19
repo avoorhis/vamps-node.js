@@ -1,6 +1,6 @@
 <% include ../add_ins/begin-no_menu.ejs %>
 
-<p class='title'>Data Import</p>
+<p class='title'>Data Import Selection</p>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -14,20 +14,20 @@
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='simple_fasta' > Simple (single dataset) Fasta
+				<input type='hidden' name='import_type' value='simple_fasta' > Simple (single dataset) Fasta file
             </form>	
         </td>
-        <td>Upload files (metadata and fasta) for a project with a single dataset.
+        <td>Upload files (metadata and fasta) for a single project with a single dataset.
             <small>(<a href='#'>see file format</a>)</small>
         </td>
         </tr>
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='multi_fasta'> Multi-Dataset Fasta
+				<input type='hidden' name='import_type' value='multi_fasta'> Multi-Dataset Fasta file
             </form>
             </td>
-            <td>Upload files for a project with a multiple datasets.
+            <td>Upload files for a single project with multiple datasets.
             <small>(<a href='#'>see file format</a>)</small>
         </td>
         </tr>
@@ -36,7 +36,7 @@
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='metadata'> Add Metadata to Project -TODO
+				<input type='hidden' name='import_type' value='metadata'> Add Metadata to a Project -TODO
             </form>
             </td>
             <td>Add metadata to your established project. <small>(<a href='#'>see metadata file format</a>)</small></td>
@@ -44,7 +44,7 @@
         <tr><td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='new_data'> Import Data to your Project -TODO
+				<input type='hidden' name='import_type' value='new_data'> Add Datasets to a Project -TODO
             </form>
         </td>
         <td>Add aditional datasets to your established project. <small>(<a href='#'>see fasta file format</a>)</small></td>
