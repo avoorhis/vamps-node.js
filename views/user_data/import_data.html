@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <p class='title'>Import Data</p>
 <% if (message) { %>
@@ -92,7 +92,7 @@
 <% } else if(import_type == 'metadata') { %>
 
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
-  	<h4>TODO: Import Metadata to Project: <small>(All fields are required)</small></h4>
+  	<h4>TODO: Add Metadata to a Project: <small>(All fields are required)</small></h4>
   	<div class="form-group">
         <label class="control-label col-sm-2" for="project">Project Name:</label>      
         <div class="col-sm-3">
