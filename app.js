@@ -264,7 +264,8 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
-
+//console.log(JSON.stringify(ALL_CLASSIFIERS_BY_PID))
+//console.log(JSON.stringify(ALL_CLASSIFIERS_BY_CID))
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();
 
