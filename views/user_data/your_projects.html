@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <% var creation_times = modify_times %>
 <% var project_info = JSON.parse(pinfo) %>
@@ -38,14 +38,21 @@
     			<tr>	
     				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
     				<td></td>
-    				<td>Status: <strong><%= status %></strong></td>				
+    				
+					<td>Status:
+						<%if(project_info[times[t]].pid == 0){ %>
+							<span class="label label-info"><%= status %></span>
+						<% }else{ %>
+							<span class="label label-primary"><%= status %></span>
+						<% } %>
+					</td>				
     				
 					<td>
 						<% if(project_info[times[t]].pid == 0) { %>
 							<a href="edit_project/<%= project %>" class="pull-right">edit</a>
 						<% }else{ %>
 							
-							(Edit disabled becuse this project has taxonomy assigned.)
+							(edit disabled)
 						<% } %>
 					</td>
     			</tr><tr>

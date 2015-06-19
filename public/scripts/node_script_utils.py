@@ -85,7 +85,10 @@ def delete_whole_project(args,proj,dids):
     if proj == '':
         proj = args.project        
     if proj != '':
-        shutil.rmtree(os.path.join('user_data',args.NODE_DATABASE,args.user,'project:'+proj))
+        try:
+            shutil.rmtree(os.path.join('user_data',args.NODE_DATABASE,args.user,'project:'+proj))
+        except OSError:
+            print 'Project dir not found: '+os.path.join('user_data',args.NODE_DATABASE,args.user,'project:'+proj)
     if args.pid != 0:
         delete_metadata_only(args,proj,dids)
         delete_tax_only(args,proj,dids)

@@ -101,7 +101,12 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
 //
 router.get('/export_data', helpers.isLoggedIn, function(req, res) {
     res.render('user_data/export_data', { title: 'VAMPS:Import Data',
-                           user: req.user
+                                
+                                rows     : JSON.stringify(ALL_DATASETS),
+                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                constants: JSON.stringify(req.C),
+	  							message  : req.flash(''),
+                                user     : req.user
                           });
 });
 //
@@ -548,7 +553,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	
 	new_config_txt = "[GENERAL]\n";
 	
-	if(req.body.new_project_name){
+	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		console.log('updating project name');
 		var new_project_name = req.body.new_project_name.replace(/[\s+,.;:]/g,'_')
 		new_config_txt += "project="+new_project_name+"\n";
@@ -660,7 +665,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			res.send(err);
         }else{
             console.log('write new config file success')
-		  	if(req.body.new_project_name){
+		  	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 				// now change the directory name if the project_name is being updated
 				fs.move(project_dir, new_base_dir, function(err){
 					if(err){

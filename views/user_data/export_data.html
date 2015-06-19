@@ -1,8 +1,24 @@
 
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <p class='title'>Export Data</p>
 
-<% include ../add_ins/end.ejs %>
+ Export Options:
+<ul>
+ <li><a href="#fasta">Fasta File</a> --Choose datasets and get all sequences</li>
+ <li><a href="#metadata">Metadata</a></li>
+ <li><a href="#filter">Data Filter</a> --narrow sequences by taxonomy, metadata</li>
 
+</ul>
+
+<li>Should the fasta file be expanded out or just unique sequences?
+
+            <div id='projects_select_div' class=''>
+				<% include ../visuals/all_projects_datasets_list.html %>
+			</div>
+				
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
+</body>
+</html>
 
