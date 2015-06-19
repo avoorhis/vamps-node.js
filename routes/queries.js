@@ -26,9 +26,16 @@ get_select_datasets_queryPID: function(pid){
         return qSelectDatasets;
 	
 },
+get_select_classifier_query: function(){
+		var qSelectClassifiers = "SELECT classifier_id as cid, classifier";
+		qSelectClassifiers += " FROM classifier";
+		console.log(qSelectClassifiers);
+        return qSelectClassifiers;
+	
+},
 get_select_sequences_query: function(){
 		
-		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
+		var qSequenceCounts = "SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
 		qSequenceCounts += " JOIN dataset using(dataset_id)";
 		qSequenceCounts += " GROUP BY project_id, dataset_id";
@@ -233,7 +240,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   get_sequences_perDID_and_taxa_query: function( did, taxa ) {
   	var tax_items  = taxa.split(';');
 	
-  	var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count,gast_distance\n"
+  	var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance\n"
 	seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
   	seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
    	seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
