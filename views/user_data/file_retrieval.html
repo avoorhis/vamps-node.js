@@ -10,44 +10,44 @@
 
 <table class='table'>
 	<tr><td></td><th>file</th><th>size</th><th>creation time</th><th>links</th></tr>
-<% for(f in file_info.files){ %>
-	<% var filename = file_info.files[f] %>
-	<% var fileSizeInBytes = file_info.size[filename] %>
-	<% var fileSize = (fileSizeInBytes).toFixed(1) %>
-	<% var sizer = 'Bytes' %>
-	<% if(fileSizeInBytes > 1000) { %>
-		<% fileSize = (fileSizeInBytes / 1000.0).toFixed(1) %>
-		<% sizer = 'KB' %>
-	<% } %>
-	<% if(fileSizeInBytes > 1000000) { %>
-		<% fileSize = (fileSizeInBytes / 1000000.0).toFixed(1) %>
-		<% sizer = 'MB' %>
-	<% } %>
-	<% if(fileSizeInBytes > 1000000000) { %>
-		<% fileSize = (fileSizeInBytes / 1000000000.0).toFixed(1) %>
-		<% sizer = 'GB' %>
-	<% } %>
+	<% for(f in file_info.files){ %>
+		<% var filename = file_info.files[f] %>
+		<% var fileSizeInBytes = file_info.size[filename] %>
+		<% var fileSize = (fileSizeInBytes).toFixed(1) %>
+		<% var sizer = 'Bytes' %>
+		<% if(fileSizeInBytes > 1000) { %>
+			<% fileSize = (fileSizeInBytes / 1000.0).toFixed(1) %>
+			<% sizer = 'KB' %>
+		<% } %>
+		<% if(fileSizeInBytes > 1000000) { %>
+			<% fileSize = (fileSizeInBytes / 1000000.0).toFixed(1) %>
+			<% sizer = 'MB' %>
+		<% } %>
+		<% if(fileSizeInBytes > 1000000000) { %>
+			<% fileSize = (fileSizeInBytes / 1000000000.0).toFixed(1) %>
+			<% sizer = 'GB' %>
+		<% } %>
 
-	<% parts = filename.split('_') %>
+		<% parts = filename.split('_') %>
 	
-		<tr>
-			<td><%= parseInt(f)+1 %></td>
-			<td>
-				<%= filename %><% sizer %>
-			</td>
-			<td>
-				<%= fileSize %> <%= sizer %>
-			</td>
-			<td>
-				<%= file_info.mtime[filename] %>
-			</td>
-			<td>	 
-				<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' >download</a> | 
-				<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
-			</td>
-		</tr>
+			<tr>
+				<td><%= parseInt(f)+1 %></td>
+				<td>
+					<%= filename %><% sizer %>
+				</td>
+				<td>
+					<%= fileSize %> <%= sizer %>
+				</td>
+				<td>
+					<%= file_info.mtime[filename] %>
+				</td>
+				<td>	 
+					<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' >download</a> | 
+					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
+				</td>
+			</tr>
 		
-<% } %>
+	<% } %>
 </table>
 
 <% include ../add_ins/end.ejs %>
