@@ -122,14 +122,17 @@ var norm_counts_radios = document.getElementsByName('normalization');
 if (typeof norm_counts_radios[0] !=="undefined") {
   norm_counts_radios[0].addEventListener('click', function () {
 	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
 	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
   norm_counts_radios[1].addEventListener('click', function () {
 	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
 	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
   norm_counts_radios[2].addEventListener('click', function () {
 	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
 	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
@@ -140,6 +143,7 @@ if (typeof selected_distance_combo !=="undefined") {
 	$('.selectpicker').on('change', function () {
   	  //alert(selected_distance_combo)
       document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
   	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
 	});
 }
@@ -148,6 +152,7 @@ min_range_combo = document.getElementById('min_range');
 if (typeof min_range_combo !=="undefined") {
 	min_range_combo.addEventListener('change', function () {
   	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
   	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
 	});
 }
@@ -156,6 +161,7 @@ max_range_combo = document.getElementById('max_range');
 if (typeof max_range_combo !=="undefined") {
 	max_range_combo.addEventListener('change', function () {
   	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update Data'
   	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
 	});
 }

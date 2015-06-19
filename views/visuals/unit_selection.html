@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var referer = 'unit_selection'; %>
@@ -18,7 +18,10 @@
                 <% include partials/show_selected_datasets.html %>				
 </div>
 <div id='' class='row'>
-    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>next &gt;&gt; Show Available Graphics</button>
+    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
+	
+	next: Show Available Graphics <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+	</button>
 </div>
 
 <div id='' class=''>

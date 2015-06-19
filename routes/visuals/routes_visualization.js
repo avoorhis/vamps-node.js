@@ -274,7 +274,6 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   			helpers.render_error_page(req,res,msg);
 		
 		}else{		
-		
 			res.send(data);
 		}
 			
