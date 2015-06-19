@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <div class='title'>Community Visualization</div>
 
@@ -20,7 +20,9 @@
           </td>
           <td>
             
-			<button type="button" class="btn btn-sm btn-warning" name='Next' id="unit_selection">next &gt;&gt; Unit Selection</button>
+			<button type="button" class="btn btn-sm btn-warning" name='Next' id="unit_selection"> 
+			next: Unit Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+			</button>
           </td>
           </tr>
           <tr>
@@ -39,6 +41,7 @@
 		  </td>
         </tr>
       </table>
+	  
        <input type='hidden' name='Next2' value='Next: Unit Selection2' id="unit_selection2" >
     </form>
    
