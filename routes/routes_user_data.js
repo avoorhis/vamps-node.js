@@ -452,7 +452,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 						if(project_name in PROJECT_INFORMATION_BY_PNAME){
 							project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
-							project_info[stat_dir.mtime.getTime()].tax = 'GAST';  // TODO this needs to be read from db or config file; vals GAST, RDP , 0 (not assigned)
+							project_info[stat_dir.mtime.getTime()].tax = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
 						}else{
 						  	project_info[stat_dir.mtime.getTime()].pid = 0;
 						  	project_info[stat_dir.mtime.getTime()].status = 'No Taxonomic Assignments Yet';
