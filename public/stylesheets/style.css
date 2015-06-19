@@ -193,6 +193,10 @@ td.left_justify {
 .btn-file {
     margin-left: 20px;
 }
+.dropdown-menu {
+    width: 600px;
+    
+}
 /*
 .btn-file input[type=file] {
     position: absolute;

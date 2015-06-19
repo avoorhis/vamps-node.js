@@ -9,8 +9,8 @@
 <div class='left_justify'>
 <br><strong>Your saved datasets:</strong> (most recent at the top)
 <br>
-<ol>
-
+<table class='table'>
+	<tr><td></td><th>file</th><td></td><td></td><th>size</th><th>creation time</th></tr>
 
 <% for(t in times){ %>
 	<% var filename = file_info[times[t]].filename %>
@@ -32,22 +32,47 @@
 
 	<% parts = filename.split('_') %>
 	
+		<tr>
+		<td>
+			<%= parseInt(t)+1 %>
+		</td>
+		<td>
+			<%= filename %>
+		</td>
+			<td>						
+	<!-- <button id='<%= filename %>_open_btn_id' class='btn btn-xs btn-success' onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed" >view / open</button>
+		-->
+		<div class="dropdown">
+		  <button class="btn btn-xs btn-success dropdown-toggle" type="button" id='<%= filename %>_open_btn_id' data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed">
+		    view / open
+		    <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+		    <div id='<%= filename %>_div'></div>
+		  </ul>
+		</div>
+		
+		</td>
+		
+		<td>
+		<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=datasets&filename=<%= filename %>' >delete</a>
+		</td>
+		
+		<td>		
 			
-				<li>
-					<ul>
-						<li>File: <%= filename %><% sizer %></li>
-						<li><%= fileSize %> <%= sizer %> | created: <%= file_info[times[t]].mtime %></li>
-						<li>							
-	<button type="submit" id='<%= filename %>_open_btn_id' class='btn btn-xs btn-success' onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed" >view / open</button>
-	<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=datasets&filename=<%= filename %>' >delete</a>
-						</li>
-						<div id='<%= filename %>_div'></div>
-					</ul>
-				</li><br>
+			<%= fileSize %> <%= sizer %>
+		</td>
+		<td> 
+					<%= file_info[times[t]].mtime %>
+		</td>
+		
+		
+		
+		</tr>
 			
 
 <% } %>
-</ol>
+</table>
 </div>
 
 
