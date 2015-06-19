@@ -1,4 +1,4 @@
-<% include ../add_ins/begin-search.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 <% var metaitems = JSON.parse(metadata_items); %>
 
@@ -13,6 +13,17 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
  
+ 
+ Search Options:
+<ul>
+ <li><a href="#metadata">Metadata</a></li>
+ <li><a href="#taxonomy">Taxonomy</a></li>
+ <li><a href="#names">Names</a> (key word search)</li>
+ <li><a href="#project">Project Search</a></li>
+ <li><a href="#blast">Blast</a></li>
+</ul>
+
+<a name="metadata"></a>
 <div id='metadata_search_div' class='well'>
 	<form id='metadata_search_form' name='' method='POST' action='/search/search_result' >	
 			<div id='' class='pull-right' >Join searches by: 
@@ -88,23 +99,34 @@
 	
 	<form>
 </div>
+<a name="taxonomy"></a>
 <div id='taxonomy_search_div' class='well'><strong>Taxonomy</strong>
 	<ul>
 	<li>Enter a full or partial taxonomic name and get what in return?
 		datasets? sequences? metadata?
 	</ul>
 </div>
+<a name="sequence"></a>
 <div id='sequence_search_div' class='well'><strong>Sequences (This search needs to be run on cluster)</strong>
   <ul>
   	<li>This shouldn't be needed if the blast function works.
   </ul>
 </div>
+<a name="names"></a>
 <div id='names_search_div' class='well'><strong>Names (key words)</strong>
 	<ul>
 	<li>project name, title, description
 	<li>dataset name, dataset_description
 	</ul>			
 </div>
+<a name="project"></a>
+<div id='project_search_div' class='well'><strong>Project Search</strong>
+	<ul>
+	<li>search by owner, location(lat/lon), title(keyword)
+	<li>
+	</ul>			
+</div>
+<a name="blast"></a>
 <div id='blast_search_div' class='well'><strong>Blast (This search needs to be run on cluster)</strong>
 	<ul>
 			<li>Must create and maintain VAMPS Blast Database.
