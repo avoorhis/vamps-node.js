@@ -45,14 +45,14 @@ function view_datasets_ajax( filename, user, fxn ){
 	 			}
 	 			html += '</table></div>';
 				document.getElementById(filename+"_div").innerHTML=html;
-				document.getElementById(filename+'_open_btn_id').innerHTML = 'close'
+				document.getElementById(filename+'_open_btn_id').innerHTML = 'close <span class="caret"></span>'
 				document.getElementById(filename+'_open_btn_id').value='opened'
 		       }
 		    };
 		    xmlhttp.send(args);
 		}else{
 			document.getElementById(filename+"_div").innerHTML='';
-			document.getElementById(filename+'_open_btn_id').innerHTML = 'view/open'
+			document.getElementById(filename+'_open_btn_id').innerHTML = 'view / open <span class="caret"></span>'
 			document.getElementById(filename+'_open_btn_id').value='closed'
 		}
 }
