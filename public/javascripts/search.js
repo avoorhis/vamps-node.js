@@ -6,6 +6,9 @@
 //         return false;
 //     });
 // });
+document.getElementById("livesearch_result_div").innerHTML = '';
+document.getElementById("livesearch_result_hidden").value = ''
+document.getElementById("tax_result_btn").disabled=true;
 var metadata_search_range_div1 = document.getElementById('metadata_search_range_div1');
 var metadata_search_field1 = document.getElementById('field1_metadata_search');
 var metadata_search_range_div2 = document.getElementById('metadata_search_range_div2');
@@ -244,7 +247,12 @@ function showMetadataHint(str) {
         document.getElementById("txtHint").innerHTML = "";
         return;
     } else {
-        var xmlhttp = new XMLHttpRequest();
+	    if (window.XMLHttpRequest) {
+	      // code for IE7+, Firefox, Chrome, Opera, Safari
+	      xmlhttp=new XMLHttpRequest();
+	    } else {  // code for IE6, IE5
+	      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 //var response = xmlhttp.responseText;
@@ -275,6 +283,58 @@ function showMetadataHint(str) {
         xmlhttp.send();
     }
 }
+//
+//  SHOW  RESULTS for Taxonomy Search
+//
+function showResult(str) {
+  if (str.length==0) {
+    document.getElementById("livesearch").innerHTML="";
+    document.getElementById("livesearch").style.border="0px";
+	document.getElementById("livesearch").style.height="0";
+	document.getElementById("livesearch_result_div").innerHTML = ''
+	document.getElementById("tax_result_btn").disabled=true
+	
+	document.getElementById("livesearch_result_hidden").value = ''
+    return;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
+      document.getElementById("livesearch").style.border="1px solid #A5ACB2";
+	  document.getElementById("livesearch").style.height="200px";
+	  document.getElementById("livesearch").style.width="500px";
+	  document.getElementById("livesearch").style.overflow="auto";
+    }
+  }
+  xmlhttp.open("GET","livesearch/"+str,true);
+  xmlhttp.send();
+}
 
-
-
+//
+//
+//
+function get_tax_str(taxon,rank){
+    
+	if (window.XMLHttpRequest) {
+      // code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+    } else {  // code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			document.getElementById("tax_result_btn").disabled=false
+			var response = xmlhttp.responseText;
+			document.getElementById("livesearch_result_div").innerHTML = 'Taxon String:<br><h4><span class="label label-success">'+response.replace(';',' ')+'</span></h4>';
+			document.getElementById("livesearch_result_hidden").value = response;
+        }
+    }
+    xmlhttp.open("GET", "livesearch_result/" + rank+'/'+taxon, true);
+    xmlhttp.send();
+}
