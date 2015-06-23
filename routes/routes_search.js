@@ -41,15 +41,55 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
 	metadata_fields_array.sort();
     res.render('search/index_search', { title: 'VAMPS:Search',
                           	metadata_items: JSON.stringify(metadata_fields),
-							message: req.flash('nodataMessage'),
+							message: req.flash('message'),
 							mkeys: metadata_fields_array,
     						user: req.user
     											});
 });
 //
-//  SEARCH DATASETS
+//  TAXONOMY SEARCH
 //
-router.post('/search_result', helpers.isLoggedIn, function(req, res) {
+router.post('/taxonomy_search_result', helpers.isLoggedIn, function(req, res) {
+	console.log('in tax search result')
+    console.log('req.body-->>');
+    console.log(req.body);
+    console.log('<<--req.body');
+	if(! req.body.tax_string){
+		req.flash('message', 'Error');
+		res.redirect('index_search'); 
+	}
+	var tax_string = req.body.tax_string;
+	tax_items = tax_string.split(';');
+	if(req.body.selection == 'find_datasets'){		
+		q = "SELECT distinct dataset_id from sequence_pdr_info\n";
+		
+	}else if(req.body.selection == 'create_fasta_file'){
+		q = "SELECT UNCOMPRESS(sequence_comp) as seq from sequence\n";
+		
+	}else{
+		// ERROR
+	}
+	
+	q += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n"; 
+	q += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
+	add_where = ' WHERE '
+	for(n in tax_items){
+		rank = req.C.RANKS[n]
+		q += ' JOIN `'+rank+ '` using ('+rank+'_id)\n'
+		add_where += '`'+rank+"`='"+tax_items[n]+"' and " 
+	}
+	q = q + add_where.substring(0, add_where.length - 5)
+	console.log(q)
+	
+	
+	
+	req.flash('message', 'Done');
+	res.redirect('index_search'); 
+});
+//
+//  METADATA SEARCH
+//
+router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   console.log('req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
@@ -153,7 +193,7 @@ router.post('/search_result', helpers.isLoggedIn, function(req, res) {
   //console.log(filtered.datasets);
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
-	req.flash('nodataMessage', 'No Data Found');
+	req.flash('message', 'No Data Found');
 	res.redirect('search_datasets'); 
   }else{
           res.render('search/search_result', {   
@@ -180,7 +220,6 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 		for(n in AllMetadataNames){
 			var name = AllMetadataNames[n];
 			
-	        
 				if(name.substring(0,len) === q){
 	              console.log('name= '+name)
 				  if (hint === "") {
@@ -196,6 +235,92 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	var result = (hint=="") ? ("No Suggestions") : (hint);
 	console.log('result= '+result)
 	res.send(result)
+	
+});
+//
+//  LIVESEARCH
+//
+router.get('/livesearch/:q', helpers.isLoggedIn, function(req, res) {
+	//console.log('params>>');
+	//console.log(req.params);
+	//console.log('<<params');
+	console.log('in livesearch');
+	var q = req.params.q.toLowerCase();
+	var hint = '';
+	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
+	var taxon;
+	if(q != ''){
+		for(n in obj["domain"]){
+			taxon = obj["domain"][n].taxon;
+			if(taxon.toLowerCase() != 'domain_na' && taxon.toLowerCase().indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+			}
+		}
+		for(n in obj["phylum"]){
+			taxon = obj["phylum"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'phylum_na' && t_lower.indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','phylum');return false;\" >"+taxon + "</a> <small>(phylum)</small><br>";
+			}
+		}
+		for(n in obj["klass"]){
+			taxon = obj["klass"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'klass_na' && t_lower.indexOf(q) != -1 ){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','klass');return false;\" >"+taxon + "</a> <small>(class)</small><br>";
+			}
+		}
+		for(n in obj["order"]){
+			taxon = obj["order"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'order_na' && t_lower.indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','order');return false;\" >"+taxon + "</a> <small>(order)</small><br>";
+			}
+		}
+		for(n in obj["family"]){
+			taxon = obj["family"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'family_na' && t_lower.indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','family');return false;\" >"+taxon + "</a> <small>(family)</small><br>";
+			}
+		}
+		for(n in obj["genus"]){
+			taxon = obj["genus"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'genus_na' && t_lower.indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','genus');return false;\" >"+taxon + "</a> <small>(genus)</small><br>";
+			}
+		}
+		for(n in obj["species"]){
+			taxon = obj["species"][n].taxon;
+			t_lower = taxon.toLowerCase();
+			if(t_lower != 'species_na' && t_lower.indexOf(q) != -1){
+				hint += "<a href='' onclick=\"get_tax_str('"+taxon+"','species');return false;\" >"+taxon + " </a> <small>(species)</small><br>";
+			}
+		}
+		
+	}
+	var result = (hint=="") ? ("No Suggestions") : (hint);
+	res.send(result);
+});
+//
+//
+//
+router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+	var selected_taxon = req.params.taxon;
+	var selected_rank = req.params.rank;
+	console.log(req.params);
+	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
+	var tax_str = selected_taxon;
+	var item = this_item
+	while(item.parent_id != 0){
+		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id]
+		tax_str = item.taxon +';'+tax_str
+		//console.log(item)
+	}
+	console.log(tax_str);
+	console.log('sending tax_str')
+	res.send(tax_str);
 	
 });
 //

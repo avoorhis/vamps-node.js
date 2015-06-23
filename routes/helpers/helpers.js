@@ -282,7 +282,7 @@ module.exports.update_global_variables = function(pid,type){
             // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
 			if(item.pid == pid){
                 dataset_objs = item.datasets;
-				console.log('SPLICING'+pid);
+				console.log('SPLICING '+pid);
                 ALL_DATASETS.projects.splice(i,1);
 				break;
 			}
@@ -298,18 +298,20 @@ module.exports.update_global_variables = function(pid,type){
 			delete ALL_DCOUNTS_BY_DID[dids[d]];
             delete DatasetsWithLatLong[dids[d]];
 		}
-		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID')
-        console.log('RE-INTIALIZING DATASET_IDS_BY_PID')
-        console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID')
-		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME')
-        console.log('RE-INTIALIZING DatasetsWithLatLong')
-        console.log('RE-INTIALIZING DATASET_ID_BY_DNAME')
+		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
+        console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
+        console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
+		console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
+		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+        console.log('RE-INTIALIZING DatasetsWithLatLong');
+        console.log('RE-INTIALIZING DATASET_ID_BY_DNAME');
         for(n in dataset_objs){			
             delete DATASET_ID_BY_DNAME[dataset_objs[n].dname];
 		}
 		delete PROJECT_INFORMATION_BY_PID[pid];
 		delete DATASET_IDS_BY_PID[pid];
 		delete ALL_PCOUNTS_BY_PID[pid];
+		delete ALL_CLASSIFIERS_BY_PID[pid]
 		delete PROJECT_INFORMATION_BY_PNAME[pname];
 		
 	}else if(type=='add'){
@@ -348,6 +350,7 @@ module.exports.assignment_finish_request = function(rows1,rows2,status_params) {
    helpers.run_select_sequences_query(rows2);
     console.log(' UPDATED ALL_DCOUNTS_BY_DID');
     console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+	console.log('UPDATED ALL_CLASSIFIERS_BY_PID');
      
      helpers.update_project_status(res, status_params);
         

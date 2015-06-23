@@ -890,20 +890,23 @@ helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
-  if(req.body.download_type == 'whole_project')
-  {
+  if(req.body.download_type == 'whole_project'){
+	  
 		var pid = req.body.project_id;
 		var project = req.body.project;
 		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
-  	out_file_path = path.join(user_dir,file_name);
-  	qSelect += " where project_id = '"+pid+"'";
-  }else{
-    var pids = JSON.parse(req.body.datasets).ids;
-	  file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
-    out_file_path = path.join(user_dir,file_name);
-    qSelect += " where dataset_id in ("+pids+")";
-    console.log(pids);
+  		out_file_path = path.join(user_dir,file_name);
+  		qSelect += " where project_id = '"+pid+"'";
+  }else if(req.body.download_type == 'partial_project'){
+	  
+    	var pids = JSON.parse(req.body.datasets).ids;
+		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
+    	out_file_path = path.join(user_dir,file_name);
+    	qSelect += " where dataset_id in ("+pids+")";
+    	console.log(pids);
 
+  }else if(req.body.download_type == 'custom_taxonomy'){
+  	
   }
   qSelect += " limit 100 ";                     // <<<<-----  for testing
 
