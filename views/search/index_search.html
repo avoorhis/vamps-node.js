@@ -25,7 +25,7 @@
 
 <a name="metadata"></a>
 <div id='metadata_search_div' class='well'>
-	<form id='metadata_search_form' name='' method='POST' action='/search/search_result' >	
+	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
 			<div id='' class='pull-right' >Join searches by: 
 					<input type='radio' name='join_type' value='intersection' checked='checked' /> Intersection
 					&nbsp;&nbsp;
@@ -95,17 +95,38 @@
 					<li>Search all datasets or select subset of datasets then search in subset?
 				</ul>
 			
-		
-	
-	<form>
+	</form>
 </div>
 <a name="taxonomy"></a>
-<div id='taxonomy_search_div' class='well'><strong>Taxonomy</strong>
-	<ul>
-	<li>Enter a full or partial taxonomic name and get what in return?
-		datasets? sequences? metadata?
-	</ul>
+<div id='taxonomy_search_div' class='well'>
+	
+	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_result' >	
+		<div id='tax_result_dropdown' class="dropdown pull-right">
+		    <button id='tax_result_btn' class="btn btn-default dropdown-toggle" type="button" disabled='disabled' id="menu1" data-toggle="dropdown">Options
+		    <span class="caret"></span></button>
+		    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+	          <li role="presentation"><button role="menuitem" name='selection'  type='submit' tabindex="-1"  value='find_datasets'>Find Datasets</button></li>
+		      <li role="presentation"><button role="menuitem" name='selection'  type='submit' tabindex="-1"  value='create_fasta_file'>Create Fasta File</button></li>
+		    </ul>
+		</div>
+		<strong>Taxonomy</strong>
+		<ul>
+		  <li>Enter a full or partial taxonomic name; Options: Select Datasets or Get Sequences
+		</ul>
+		<div class="row">
+			<div class="dropdown col-md-1"></div>
+			<div class="dropdown col-md-2">
+			  <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showResult(this.value)"/>
+			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			    <div id="livesearch" class=""></div>
+			  </ul>		
+			</div>
+			<div class='col-md-8' id="livesearch_result_div" ></div>		
+			<input type='hidden' id='livesearch_result_hidden' value='' name='tax_string'>
+		</div>	
+	</form>	
 </div>
+
 <a name="sequence"></a>
 <div id='sequence_search_div' class='well'><strong>Sequences (This search needs to be run on cluster)</strong>
   <ul>
