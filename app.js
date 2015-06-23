@@ -207,7 +207,7 @@ var TreeModel = require('tree-model');;
 // 	});
 var taxcounts_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--taxcounts.json');
 try {
-	AllTaxCounts       = require(taxcounts_file);
+	AllTaxCounts   = require(taxcounts_file);
 }
 catch (e) {
   console.log(e);
@@ -226,9 +226,7 @@ catch (e) {
 
 console.log('Loading ALL METADATA from: '+meta_file);
 
-
-
-
+//see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
     throw err; // or return an error message, or something
@@ -241,31 +239,31 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 	// var small_rows = [ {"domain":"Archaea","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"D-F10","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":33,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Group_C3","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":52,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Archaea","phylum":"Crenarchaeota","klass":"Marine_Benthic_Group_A","order":"","family":"","genus":"","species":"","strain":"","domain_id":1,"phylum_id":13,"klass_id":58,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":1,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":1,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Acidobacteria","order":"Acidobacteriales","family":"Acidobacteriaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":2,"order_id":7,"family_id":8,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Acidobacteria","klass":"Holophagae","order":"Holophagales","family":"Holophagaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":2,"klass_id":55,"order_id":73,"family_id":138,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":1,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":1,"genus_id":1,"species_id":1,"strain_id":1},{"domain":"Bacteria","phylum":"Actinobacteria","klass":"Actinobacteria","order":"Acidimicrobiales","family":"Acidimicrobiaceae","genus":"","species":"","strain":"","domain_id":2,"phylum_id":3,"klass_id":5,"order_id":5,"family_id":6,"genus_id":1,"species_id":1,"strain_id":1}];
     // var new_taxonomy = new CustomTaxa(small_rows);
     // uncomment when we want all data:
-    new_taxonomy = new CustomTaxa(results);
+    //SEE require('./routes/helpers/custom_taxa_class');
+	new_taxonomy = new CustomTaxa(results);
     // uncomment to print out the object:
     // console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
     //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
-  // for(n in new_taxonomy.taxa_tree_dict){
-		//console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
-  // }
+   //for(n in new_taxonomy.taxa_tree_dict){
+	//	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
+  //}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
     
 
 
-    // console.log('taxa_tree_dict_map_by_db_id_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
-    // console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
-
-     //console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_gp22_klass"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_gp22_klass"]));
+    //console.log('taxa_tree_dict_map_by_db_id_n_rank["55219_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["55219_phylum"]));
+    //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
+	//console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
+     console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"]));
 
     
-    //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank["435_klass"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
+    //console.log('RRR333 taxa_tree_dict_map_by_db_id_n_rank = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank));
     
   }
 });
 
-//console.log(JSON.stringify(ALL_CLASSIFIERS_BY_PID))
-//console.log(JSON.stringify(ALL_CLASSIFIERS_BY_CID))
+
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();
 
