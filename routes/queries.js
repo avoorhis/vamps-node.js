@@ -23,15 +23,22 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " WHERE project_id='"+pid+"'";
 		qSelectDatasets += " ORDER BY project, dataset";
 		//console.log(qSelectDatasets);
-        return qSelectDatasets;
+    return qSelectDatasets;
 	
 },
 get_select_classifier_query: function(){
 		var qSelectClassifiers = "SELECT classifier_id as cid, classifier";
 		qSelectClassifiers += " FROM classifier";
 		//console.log(qSelectClassifiers);
-        return qSelectClassifiers;
+    return qSelectClassifiers;
 	
+},
+get_all_user_query: function(){
+    var qSelectUser = "SELECT user_id as uid, username, email, institution, last_name, first_name";
+    qSelectUser += " FROM user";
+    //console.log(qSelectClassifiers);
+    return qSelectUser;
+  
 },
 get_select_sequences_query: function(){
 		
