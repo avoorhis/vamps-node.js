@@ -223,7 +223,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
 	req.flash('message', 'No Data Found');
-	res.redirect('search_datasets'); 
+	res.redirect('index_search'); 
   }else{
           res.render('search/search_result', {   
                     title    : 'VAMPS: Search Datasets',
@@ -267,7 +267,7 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 	
 });
 //
-//  LIVESEARCH
+//  LIVESEARCH TAX
 //
 router.get('/livesearch/:q', helpers.isLoggedIn, function(req, res) {
 	//console.log('params>>');
@@ -333,6 +333,73 @@ router.get('/livesearch/:q', helpers.isLoggedIn, function(req, res) {
 	res.send(result);
 });
 //
+//  LIVESEARCH USER
+//
+router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
+  //console.log('params>>');
+  //console.log(req.params);
+  //console.log('<<params');
+  console.log('in livesearch user');
+  var q = req.params.q.toLowerCase();
+  var hint = '';
+  var obj = ALL_USERS_BY_UID;
+  var taxon;
+  if(q != ''){
+    for(n in obj){
+      user  = obj[n].username;
+      last  = obj[n].last_name;
+      first = obj[n].first_name;
+      
+      if(last.toLowerCase().indexOf(q) != -1 || first.toLowerCase().indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+        hint += "<a href='#'>"+last+', '+first+' ('+user+")</a><br>";
+      }
+    }
+  }
+  var result = (hint=="") ? ("No Suggestions") : (hint);
+  res.send(result);
+});
+//
+//  LIVESEARCH PROJECT
+//
+router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
+  //console.log('params>>');
+  //console.log(req.params);
+  //console.log('<<params');
+  console.log('in livesearch project');
+  var q = req.params.q.toLowerCase();
+  var hint = '';
+    
+  if(q != ''){
+    //hint += 'projects:<br>'
+    for(n in PROJECT_INFORMATION_BY_PID){
+      pname = PROJECT_INFORMATION_BY_PID[n].project
+      
+      console.log(pname);
+      if(pname.toLowerCase().indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+        hint += "&nbsp;&nbsp;<a href='#'>"+pname+"</a><br>";
+      }
+    }
+    //hint += 'datasets:<br>';
+    for(n in DATASET_NAME_BY_DID){
+      dname = DATASET_NAME_BY_DID[n]
+      pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[n]].project
+      console.log(dname);
+      if(dname.toLowerCase().indexOf(q) != -1){
+        //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+        hint += "&nbsp;&nbsp;<a href='#'>"+dname+" (in project: "+pname+")</a><br>";
+      }
+    }
+    
+
+
+
+  }
+  var result = (hint=="") ? ("No Suggestions") : (hint);
+  res.send(result);
+});
+//
 //
 //
 router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
@@ -384,7 +451,7 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
@@ -398,7 +465,7 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
@@ -412,7 +479,7 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
@@ -426,13 +493,20 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
             }else if('comparison' in search && search['comparison'] === 'between_range'){
               min_search_value = Number(search['min-comparison-value']);
               max_search_value = Number(search['max-comparison-value']);
+              if(min_search_value > max_search_value){
+                var tmp = max_search_value;
+                max_search_value = min_search_value;
+                min_search_value = tmp;
+                //search['max-comparison-value'] = min_search_value;
+                //search['min-comparison-value'] = max_search_value;
+              }
               if(Number(mdvalue) > min_search_value && Number(mdvalue) < max_search_value){
                 console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
                 datasets.push(did);
@@ -441,7 +515,7 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
@@ -449,6 +523,13 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
             }else if('comparison' in search && search['comparison'] === 'outside_range'){
               min_search_value = Number(search['min-comparison-value']);
               max_search_value = Number(search['max-comparison-value']);
+              if(min_search_value > max_search_value){
+                var tmp = max_search_value;
+                max_search_value = min_search_value;
+                min_search_value = tmp;
+                //search['max-comparison-value'] = min_search_value;
+                //search['min-comparison-value'] = max_search_value;
+              }
               if(Number(mdvalue) < min_search_value || Number(mdvalue) > max_search_value){
                 console.log('outside_range - mdval: '+mdname+' -- '+mdvalue+' search: '+min_search_value + ' - '+max_search_value );
                 datasets.push(did);
@@ -457,7 +538,7 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
                 if(did in tmp_metadata){
                   tmp_metadata[did] = metadata[did];
                 }else{
-                  tmp_metadata[did]={};
+                  tmp_metadata[did] = {};
                   tmp_metadata[did] = metadata[did];
                 }
               }
