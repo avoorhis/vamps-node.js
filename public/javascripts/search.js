@@ -6,9 +6,12 @@
 //         return false;
 //     });
 // });
-document.getElementById("livesearch_result_div").innerHTML = '';
-document.getElementById("livesearch_result_hidden").value = ''
-document.getElementById("tax_result_btn").disabled=true;
+document.getElementById("livesearch_result_div").value = '';
+document.getElementById("create_fasta_hidden_id").value = ''
+document.getElementById("find_datasets_hidden_id").value = ''
+document.getElementById("find_datasets_btn").disabled=true;
+document.getElementById("create_fasta_btn").disabled=true;
+
 var metadata_search_range_div1 = document.getElementById('metadata_search_range_div1');
 var metadata_search_field1 = document.getElementById('field1_metadata_search');
 var metadata_search_range_div2 = document.getElementById('metadata_search_range_div2');
@@ -290,12 +293,16 @@ function showResult(str) {
   if (str.length==0) {
     document.getElementById("livesearch").innerHTML="";
     document.getElementById("livesearch").style.border="0px";
-	document.getElementById("livesearch").style.height="0";
-	document.getElementById("livesearch_result_div").innerHTML = ''
-	document.getElementById("tax_result_btn").disabled=true
-	
-	document.getElementById("livesearch_result_hidden").value = ''
+    document.getElementById("livesearch").style.height="0";
+    document.getElementById("livesearch_result_div").value = ''
+    document.getElementById("find_datasets_btn").disabled=true;
+    document.getElementById("create_fasta_btn").disabled=true;
+    document.getElementById("create_fasta_hidden_id").value = ''
+    document.getElementById("find_datasets_hidden_id").value = ''
     return;
+  }else{
+    document.getElementById("find_datasets_btn").disabled=false;
+    document.getElementById("create_fasta_btn").disabled=false;
   }
   if (window.XMLHttpRequest) {
     // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -329,10 +336,12 @@ function get_tax_str(taxon,rank){
     }
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			document.getElementById("tax_result_btn").disabled=false
-			var response = xmlhttp.responseText;
-			document.getElementById("livesearch_result_div").innerHTML = 'Taxon String:<br><h4><span class="label label-success">'+response.replace(';',' ')+'</span></h4>';
-			document.getElementById("livesearch_result_hidden").value = response;
+          document.getElementById("find_datasets_btn").disabled=false;
+          document.getElementById("create_fasta_btn").disabled=false;
+          var response = xmlhttp.responseText;
+          document.getElementById("livesearch_result_div").value = response;
+          document.getElementById("create_fasta_hidden_id").value = response;
+          document.getElementById("find_datasets_hidden_id").value = response;
         }
     }
     xmlhttp.open("GET", "livesearch_result/" + rank+'/'+taxon, true);
