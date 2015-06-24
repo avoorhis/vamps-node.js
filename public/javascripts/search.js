@@ -314,15 +314,82 @@ function showResult(str) {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
       document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
       document.getElementById("livesearch").style.border="1px solid #A5ACB2";
-	  document.getElementById("livesearch").style.height="200px";
-	  document.getElementById("livesearch").style.width="500px";
-	  document.getElementById("livesearch").style.overflow="auto";
+      document.getElementById("livesearch").style.height="200px";
+      document.getElementById("livesearch").style.width="500px";
+      document.getElementById("livesearch").style.overflow="auto";
     }
   }
   xmlhttp.open("GET","livesearch/"+str,true);
   xmlhttp.send();
 }
-
+//
+//  SHOW  RESULTS for User Search
+//
+function showUserResult(str) {
+  if (str.length==0) {
+    document.getElementById("livesearch_user").innerHTML="";
+    document.getElementById("livesearch_user").style.border="0px";
+    document.getElementById("livesearch_user").style.height="0";
+    //document.getElementById("livesearch_result_div").value = ''
+    //document.getElementById("find_datasets_btn").disabled=true;
+    //document.getElementById("create_fasta_btn").disabled=true;
+    //document.getElementById("create_fasta_hidden_id").value = ''
+    //document.getElementById("find_datasets_hidden_id").value = ''
+    return;
+  }else{
+    //document.getElementById("find_datasets_btn").disabled=false;
+    //document.getElementById("create_fasta_btn").disabled=false;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      document.getElementById("livesearch_user").innerHTML=xmlhttp.responseText;
+      document.getElementById("livesearch_user").style.border="1px solid #A5ACB2";
+      document.getElementById("livesearch_user").style.height="200px";
+      document.getElementById("livesearch_user").style.width="500px";
+      document.getElementById("livesearch_user").style.overflow="auto";
+    }
+  }
+  xmlhttp.open("GET","livesearch_user/"+str,true);
+  xmlhttp.send();
+}
+//
+//  SHOW  RESULTS for Project Search
+//
+function showProjectResult(str) {
+  if (str.length==0) {
+    document.getElementById("livesearch_project").innerHTML="";
+    document.getElementById("livesearch_project").style.border="0px";
+    document.getElementById("livesearch_project").style.height="0";
+    
+    return;
+  }else{
+    //document.getElementById("find_datasets_btn").disabled=false;
+    //document.getElementById("create_fasta_btn").disabled=false;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+      document.getElementById("livesearch_project").innerHTML=xmlhttp.responseText;
+      document.getElementById("livesearch_project").style.border="1px solid #A5ACB2";
+      document.getElementById("livesearch_project").style.height="200px";
+      document.getElementById("livesearch_project").style.width="500px";
+      document.getElementById("livesearch_project").style.overflow="auto";
+    }
+  }
+  xmlhttp.open("GET","livesearch_project/"+str,true);
+  xmlhttp.send();
+}
 //
 //
 //

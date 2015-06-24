@@ -14,15 +14,16 @@ module.exports.get_datasets = function(callback){
   connection.db.query(queries.get_select_datasets_query(), function(err, rows, fields){
       ALL_DATASETS                = {};  // GLOBAL
       DATASET_NAME_BY_DID         = {};  // GLOBAL
-	  DATASET_ID_BY_DNAME         = {};
+      DATASET_ID_BY_DNAME         = {};
       PROJECT_ID_BY_DID           = {};
       PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
-	  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
+      PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
       DATASET_IDS_BY_PID          = {};
-	  ALL_CLASSIFIERS_BY_PID ={};
-	  ALL_CLASSIFIERS_BY_CID={};
+      ALL_CLASSIFIERS_BY_PID      = {};
+      ALL_CLASSIFIERS_BY_CID      = {};
       DatasetsWithLatLong         = {};
       AllMetadataNames            = [];
+      ALL_USERS_BY_UID            = {};
 	  
 	  
 
@@ -41,54 +42,70 @@ module.exports.get_datasets = function(callback){
         
       }
       console.log(' INITIALIZING ALL_DATASETS');
-	  //console.log(JSON.stringify(ALL_DATASETS));
+      //console.log(JSON.stringify(ALL_DATASETS));
       console.log(' INITIALIZING PROJECT_ID_BY_DID');
       console.log(' INITIALIZING PROJECT_INFORMATION_BY_PID');
-	  console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
+      console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
       console.log(' INITIALIZING DATASET_IDS_BY_PID');
       console.log(' INITIALIZING DATASET_NAME_BY_DID');
-	  console.log(' INITIALIZING DATASET_ID_BY_DNAME');
-	  console.log(' INITIALIZING AllMetadataNames');
-	  console.log(' INITIALIZING DatasetsWithLatLong');
-	  
+      console.log(' INITIALIZING DATASET_ID_BY_DNAME');
+      
+      console.log(' INITIALIZING AllMetadataNames');
+      console.log(' INITIALIZING DatasetsWithLatLong');
 
       callback(ALL_DATASETS);
   });
   
-  connection.db.query(queries.get_select_classifier_query(), function(err, rows, fields){    
-    ALL_CLASSIFIERS_BY_CID = {};    // GLOBAL  
-    
-    //console.log(qSequenceCounts)
+  connection.db.query(queries.get_all_user_query(), function(err, rows, fields){     
       if (err)  {
-		  console.log('Query error: ' + err);
-		  console.log(err.stack);
-		  process.exit(1);
+      console.log('Query error: ' + err);
+      console.log(err.stack);
+      process.exit(1);
       } else {
-	      for (var i=0; i < rows.length; i++) {
-		  	ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier;	
-	  	  }
+        for (var i=0; i < rows.length; i++) {
+          ALL_USERS_BY_UID[rows[i].uid] = {}
+          ALL_USERS_BY_UID[rows[i].uid].email       = rows[i].email;
+          ALL_USERS_BY_UID[rows[i].uid].username    = rows[i].username;
+          ALL_USERS_BY_UID[rows[i].uid].last_name   = rows[i].last_name;
+          ALL_USERS_BY_UID[rows[i].uid].first_name  = rows[i].first_name;
+          ALL_USERS_BY_UID[rows[i].uid].institution = rows[i].institution;
+        }
       }
-      console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');
-      
+      console.log(' INITIALIZING ALL_USERS_BY_UID');      
+  });
+
+  connection.db.query(queries.get_select_classifier_query(), function(err, rows, fields){     
+
+      //console.log(qSequenceCounts)
+      if (err)  {
+      console.log('Query error: ' + err);
+      console.log(err.stack);
+      process.exit(1);
+      } else {
+        for (var i=0; i < rows.length; i++) {
+      	 ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier;	
+        }
+      }
+      console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');      
   });
   
   connection.db.query(queries.get_select_sequences_query(), function(err, rows, fields){    
-    ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
-    ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
-	ALL_CLASSIFIERS_BY_PID = {}; 
-    //console.log(qSequenceCounts)
+      ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
+      ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
+      ALL_CLASSIFIERS_BY_PID = {}; 
+      //console.log(qSequenceCounts)
       if (err)  {
-		  console.log('Query error: ' + err);
-		  console.log(err.stack);
-		  process.exit(1);
+      console.log('Query error: ' + err);
+      console.log(err.stack);
+      process.exit(1);
       } else {
         helpers.run_select_sequences_query(rows);		
         
       }
-	  //console.log(JSON.stringify(ALL_CLASSIFIERS_BY_CID))
+      //console.log(JSON.stringify(ALL_CLASSIFIERS_BY_CID))
       console.log(' INITIALIZING ALL_DCOUNTS_BY_DID');
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
-	  console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
+      console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
   
 
