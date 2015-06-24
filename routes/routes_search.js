@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
+var path  = require('path');
 
 /* GET Search page. */
 router.get('/index_search', helpers.isLoggedIn, function(req, res) {
@@ -38,53 +39,81 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
       }
     }
     //console.log(metadata_fields)
-	metadata_fields_array.sort();
+    metadata_fields_array.sort();
     res.render('search/index_search', { title: 'VAMPS:Search',
-                          	metadata_items: JSON.stringify(metadata_fields),
-							message: req.flash('message'),
-							mkeys: metadata_fields_array,
-    						user: req.user
-    											});
+        metadata_items: JSON.stringify(metadata_fields),
+        message: req.flash('message'),
+        meta_message: req.flash('meta_message'),
+        tax_message: req.flash('tax_message'),
+        mkeys: metadata_fields_array,
+        user: req.user
+    		});
 });
 //
 //  TAXONOMY SEARCH
 //
-router.post('/taxonomy_search_result', helpers.isLoggedIn, function(req, res) {
+router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, res) {
 	console.log('in tax search result')
     console.log('req.body-->>');
     console.log(req.body);
     console.log('<<--req.body');
-	if(! req.body.tax_string){
-		req.flash('message', 'Error');
-		res.redirect('index_search'); 
+	
+
+  if(! req.body.tax_string){
+		req.flash('tax_message', 'Error');
+		res.redirect('index_search#taxonomy'); 
+    return;
 	}
 	var tax_string = req.body.tax_string;
 	tax_items = tax_string.split(';');
-	if(req.body.selection == 'find_datasets'){		
-		q = "SELECT distinct dataset_id from sequence_pdr_info\n";
-		
-	}else if(req.body.selection == 'create_fasta_file'){
-		q = "SELECT UNCOMPRESS(sequence_comp) as seq from sequence\n";
-		
+	if(req.body.selection == 'custom_taxonomy'){		
+		qSelect = "SELECT distinct dataset_id as did from sequence_pdr_info\n";
 	}else{
 		// ERROR
 	}
 	
-	q += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n"; 
-	q += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
+	qSelect += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n"; 
+	qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
 	add_where = ' WHERE '
 	for(n in tax_items){
 		rank = req.C.RANKS[n]
-		q += ' JOIN `'+rank+ '` using ('+rank+'_id)\n'
+		qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n'
 		add_where += '`'+rank+"`='"+tax_items[n]+"' and " 
 	}
-	q = q + add_where.substring(0, add_where.length - 5)
-	console.log(q)
+	qSelect = qSelect + add_where.substring(0, add_where.length - 5)
+	console.log(qSelect)
+	var query = req.db.query(qSelect, function (err, rows, fields){
+    if (err) {
+        req.flash('tax_message', 'SQL Error: '+err);
+        res.redirect('index_search#taxonomy'); 
+    } else {
+      var datasets = {};
+      datasets.ids = [];
+      datasets.names = [];
+      for(n in rows){
+        console.log(rows[n])
+        did = rows[n]['did'];
+        pid = PROJECT_ID_BY_DID[did];
+        pname = PROJECT_INFORMATION_BY_PID[pid].project;
+        datasets.ids.push(did)
+        datasets.names.push(pname+'--'+DATASET_NAME_BY_DID[did])
+      }
+      console.log(datasets)
+      var timestamp = +new Date();  // millisecs since the epoch!
+      var filename = 'datasets:'+timestamp+'.json';
+      var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,filename);
+      helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
+      helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username)); // create dir if not present
+      //console.log(filename);
+      helpers.write_to_file(filename_path,JSON.stringify(datasets));
+      msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>"
+      req.flash('tax_message', 'Saved as: '+msg);
+      res.redirect('index_search#taxonomy'); 
+    }
+  });
 	
 	
 	
-	req.flash('message', 'Done');
-	res.redirect('index_search'); 
 });
 //
 //  METADATA SEARCH
@@ -481,3 +510,5 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
     return self.indexOf(value) === index;
   }
   module.exports = router;
+
+

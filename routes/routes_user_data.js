@@ -1,4 +1,4 @@
-var express = require('express');
+  var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
@@ -875,13 +875,16 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 //
 router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   var db = req.db;
+  console.log('req.body-->>');
   console.log(req.body);
+  console.log('<<--req.body');
+  console.log('in DOWNLOAD SELECTED SEQS');
 
-  var qSelect = "select UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
+  var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
   //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
-  qSelect += " join sequence using (sequence_id)\n";
-  qSelect += " join dataset using (dataset_id)\n";
-  qSelect += " join project using (project_id)\n";
+  qSelect += " JOIN sequence using (sequence_id)\n";
+  qSelect += " JOIN dataset using (dataset_id)\n";
+  qSelect += " JOIN project using (project_id)\n";
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
 
@@ -891,29 +894,41 @@ helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
   if(req.body.download_type == 'whole_project'){
-	  
+	  req.flash('message', 'Fasta being created');
 		var pid = req.body.project_id;
 		var project = req.body.project;
 		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
-  		out_file_path = path.join(user_dir,file_name);
-  		qSelect += " where project_id = '"+pid+"'";
+  	out_file_path = path.join(user_dir,file_name);
+  	qSelect += " where project_id = '"+pid+"'";
   }else if(req.body.download_type == 'partial_project'){
-	  
-    	var pids = JSON.parse(req.body.datasets).ids;
+	  req.flash('message', 'Fasta being created');
+    var pids = JSON.parse(req.body.datasets).ids;
 		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
-    	out_file_path = path.join(user_dir,file_name);
-    	qSelect += " where dataset_id in ("+pids+")";
-    	console.log(pids);
+    out_file_path = path.join(user_dir,file_name);
+    qSelect += " where dataset_id in ("+pids+")";
+    console.log(pids);
 
   }else if(req.body.download_type == 'custom_taxonomy'){
-  	
+			console.log('in DOWNLOAD SEQS');
+			req.flash('tax_message', 'Fasta being created');
+			file_name = 'fasta:'+timestamp+'_custom_taxonomy.fa.gz';
+  		out_file_path = path.join(user_dir,file_name);
+			var tax_string = req.body.tax_string;
+			tax_items = tax_string.split(';');
+			qSelect += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n"; 
+			qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
+			add_where = ' WHERE '
+			for(n in tax_items){
+				rank = req.C.RANKS[n]
+				qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n'
+				add_where += '`'+rank+"`='"+tax_items[n]+"' and " 
+			}
+			qSelect = qSelect + add_where.substring(0, add_where.length - 5)
+			
   }
-  qSelect += " limit 100 ";                     // <<<<-----  for testing
+  //qSelect += " limit 100 ";                     // <<<<-----  for testing
 
 
-
-
-               // <<<<-----  for testing
   var gzip = zlib.createGzip();
   console.log(qSelect);
 
@@ -950,6 +965,8 @@ helpers.mkdirSync(user_dir);  // create dir if not exists
               text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
             };
         helpers.send_mail(info);
+        //req.flash('Done')
+				res.redirect(req.get('referer'));
       });
   });
 
@@ -1050,8 +1067,8 @@ if(req.body.download_type == 'whole_project'){
         };
         helpers.send_mail(info);
         //req.flash('Done')
-		//res.redirect(req.body.referer)
-		res.redirect(req.get('referer'));
+				req.flash('message', 'Done');
+				res.redirect(req.get('referer'));
 		
       });
 

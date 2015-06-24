@@ -96,35 +96,63 @@
 				</ul>
 			
 	</form>
+	<% if (meta_message) { %>
+		<div class="alert_flash_message"><%= meta_message %></div>
+	<% } %>	
 </div>
 <a name="taxonomy"></a>
 <div id='taxonomy_search_div' class='well'>
-	
-	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_result' >	
-		<div id='tax_result_dropdown' class="dropdown pull-right">
-		    <button id='tax_result_btn' class="btn btn-default dropdown-toggle" type="button" disabled='disabled' id="menu1" data-toggle="dropdown">Options
-		    <span class="caret"></span></button>
-		    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-	          <li role="presentation"><button role="menuitem" name='selection'  type='submit' tabindex="-1"  value='find_datasets'>Find Datasets</button></li>
-		      <li role="presentation"><button role="menuitem" name='selection'  type='submit' tabindex="-1"  value='create_fasta_file'>Create Fasta File</button></li>
+
+
+
+		    <strong>Taxonomy</strong>
+		    <ul>
+		       <li>Enter a full or partial taxonomic name; Options: Select Datasets or Get Sequences
 		    </ul>
-		</div>
-		<strong>Taxonomy</strong>
-		<ul>
-		  <li>Enter a full or partial taxonomic name; Options: Select Datasets or Get Sequences
-		</ul>
-		<div class="row">
+	
+		<div class="row">	
 			<div class="dropdown col-md-1"></div>
+
 			<div class="dropdown col-md-2">
-			  <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showResult(this.value)"/>
+			  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showResult(this.value)"/>
 			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 			    <div id="livesearch" class=""></div>
 			  </ul>		
 			</div>
-			<div class='col-md-8' id="livesearch_result_div" ></div>		
-			<input type='hidden' id='livesearch_result_hidden' value='' name='tax_string'>
+				
+			<div class='col-md-7'>or Enter Taxon String: 
+				<input type='text' id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100' onkeyup="showResult(this.value)" />
+			</div>
+
+
+			<div id='' class="col-md-2">
+				<table class='button_row'>
+				<tr>
+		    <td>    	
+		    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_for_datasets' >	
+				  		<button id='find_datasets_btn' class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Find Datasets</button>
+				  		<input type='hidden' id='find_datasets_hidden_id' name='tax_string' value=''>
+				  		<input type='hidden' name='selection' value='custom_taxonomy'>
+				  	</form>
+		    </td>
+		    <td>
+		    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
+				  		<button id='create_fasta_btn'  class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Create Fasta File</button>
+				  		<input type='hidden' id='create_fasta_hidden_id' name='tax_string' value=''>
+				  		<input type='hidden' name='download_type' value='custom_taxonomy'>
+				  	</form>
+		    </td>    
+				</tr>
+				<tr><td colspan='3'>
+					<% if (tax_message) { %>
+						<div class="alert_flash_message"><%- tax_message %></div>
+					<% } %>
+				</td></tr>
+				</table>	  	
+		  </div>
 		</div>	
-	</form>	
+				
+	
 </div>
 
 <a name="sequence"></a>

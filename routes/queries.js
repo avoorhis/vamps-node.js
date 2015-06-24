@@ -22,14 +22,14 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
 		qSelectDatasets += " WHERE project_id='"+pid+"'";
 		qSelectDatasets += " ORDER BY project, dataset";
-		console.log(qSelectDatasets);
+		//console.log(qSelectDatasets);
         return qSelectDatasets;
 	
 },
 get_select_classifier_query: function(){
 		var qSelectClassifiers = "SELECT classifier_id as cid, classifier";
 		qSelectClassifiers += " FROM classifier";
-		console.log(qSelectClassifiers);
+		//console.log(qSelectClassifiers);
         return qSelectClassifiers;
 	
 },
@@ -241,7 +241,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   	var tax_items  = taxa.split(';');
 	
   	var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance\n"
-	seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
+    seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
   	seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
    	seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
   	seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
@@ -251,7 +251,7 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
 	for(t=0;t<  tax_items.length;t++){
 		var name = tax_items[t]
 		var val = name+'_'+C.RANKS[t];
-		console.log(val)
+		//console.log(val)
 		var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
 		seqQuery += " and "+C.RANKS[t]+"_id='"+id+"'"
 	}
