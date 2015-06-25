@@ -11,6 +11,14 @@
 			<li>username: <%= user_info.username %> 
 			<li>email: <%= user_info.email %> 
 			<li>institution: <%= user_info.institution %> 
+			<% if(projects[0]) { %>
+						<li>Projects:
+						<% 	for(n in projects){ %>
+									<br><a href='/projects/<%= projects[n].project_id %>'><%= projects[n].project %></a>
+						<% 	} %>
+			<% }else{ %>
+				<li>No Projects
+			<% } %>
 	</div>
 	
 

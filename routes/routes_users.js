@@ -9,12 +9,12 @@ var helpers = require('./helpers/helpers');
 
 /* GET User List (index) page. */
 router.get('/index_users', helpers.isLoggedIn, function(req, res) {
-    var db = req.db;
+    
 	console.log('in indexusers')
 	console.log(req.user)
     if(req.user.security_level == 1){
 		var qSelect = "SELECT * from user";
-	    var collection = db.query(qSelect, function (err, rows, fields){
+	    var collection = req.db.query(qSelect, function (err, rows, fields){
 	      if (err)  {
   			 msg = 'ERROR Message '+err;
   			 helpers.render_error_page(req,res,msg);
@@ -103,12 +103,27 @@ router.get('/:id', function(req, res) {
    console.log(ALL_USERS_BY_UID[uid]);
    console.log('in indexusers:id')
    //console.log(req.user)
-   res.render('users/profile', {
-        title     :'profile',
-        message   : req.flash('message'), 
-        user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
-        user      : req.user // get the user out of session and pass to template
-    });
+
+   var qSelect = "SELECT * from project where owner_user_id='"+uid+"'";
+      var collection = req.db.query(qSelect, function (err, rows, fields){
+        if (err)  {
+          msg = 'ERROR Message '+err;
+          helpers.render_error_page(req,res,msg);
+        } else {
+            res.render('users/profile', {
+              title     :'profile',
+              message   : req.flash('message'), 
+              projects  : rows,
+              user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
+              user      : req.user // get the user out of session and pass to template
+            });  
+             
+
+        }
+      });
+
+
+   
 
 });
 
