@@ -131,10 +131,10 @@ module.exports.send_mail = function(mail_info) {
 //
 //
 module.exports.run_select_datasets_query = function(rows){
-    var pids         = {};
-    var titles       = {};
-	var datasetsByProject = {};
-	for (var i=0; i < rows.length; i++) {
+      var pids         = {};
+      var titles       = {};
+	   var datasetsByProject = {};
+	   for (var i=0; i < rows.length; i++) {
       var project = rows[i].project;
       var did = rows[i].did;
       var dataset = rows[i].dataset;
@@ -153,9 +153,9 @@ module.exports.run_select_datasets_query = function(rows){
         "env_source_name" :	rows[i].env_source_name,
         "institution" :		rows[i].institution,
         "project" :			project,
-		"pid" :			    pid,
+		    "pid" :			    pid,
         "title" :			rows[i].title,
-        "description" :		rows[i].description,
+        "description" :		rows[i].project_description,
         "public" :          rows[i].public,
 		  
       }
@@ -164,7 +164,7 @@ module.exports.run_select_datasets_query = function(rows){
       }else{
         PROJECT_INFORMATION_BY_PID[pid].permissions = user_id;
       }
-	  PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+	    PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
 	  
       if(pid in DATASET_IDS_BY_PID){
         DATASET_IDS_BY_PID[pid].push(did);

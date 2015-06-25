@@ -1,5 +1,8 @@
-<table border='1' id='metadata_table' class='single_border center_table'>
-<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>
+<table border='1' id='metadata_table' class='table sortable'>
+<thead>
+	<tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr>
+</thead>
+<tbody>
 <%	var found_metadata = false; %>
 <%	for(i in chosen_id_name_hash.ids) { %>
 <%			var did = chosen_id_name_hash.ids[i]; %>
@@ -16,7 +19,8 @@
 <%				} %>			
 <%			} %>
 <%	} %>
-		</tbody></table></div>
+	</tbody>
+	</table></div>
 <%	if( ! found_metadata ){ %>
 			<h2>No Metadata Found</h2>
 <%	} %>
