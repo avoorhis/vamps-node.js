@@ -1,7 +1,10 @@
 <% proj = JSON.parse(projects) %>
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
   <div class='title left_justify'>Public Projects Listing</div>
   <div id='project_list_div' class='left_justify table' ><% include all_projects_list %></div>
   
 <% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+</body>
+</html>

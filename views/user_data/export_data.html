@@ -12,11 +12,30 @@
 </ul>
 
 <li>Should the fasta file be expanded out or just unique sequences?
-
-<div id='projects_select_div' class=''>
-	<% include ../visuals/all_projects_datasets_list.html %>
-</div>
-				
+<table class='table'>
+<thead>
+	<tr><th>Dataset Selection:</th><th>Output Selection:</th></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>
+		<div id='projects_select_div' class=''>
+			<% include ../visuals/all_projects_datasets_list.html %>
+		</div>
+	</td>
+	<td>
+		<button>Fasta File</button>
+		<br>
+		<button>Metadata</button>
+		<br>
+		<button>Filter for Taxonomy</button>
+		<br>
+		<button>Filter for Metadata</button>
+		<br>
+	</td>
+</tr>
+</tbody>
+</table>
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 </body>
