@@ -189,13 +189,34 @@ td.left_justify {
   border: 1px solid grey;
 }
 
- uploads form 
-.btn-file {
+ uploads form .btn-file {
     margin-left: 20px;
 }
 .dropdown-menu-your-datasets {
     width: 600px;
     
+}
+#projects_select_div {
+    border: 1px solid gray;
+    height: 500px;
+    
+    overflow:auto;
+    font-size: small;
+}
+#projects_select_div ul li {
+
+    list-style-type: none;
+
+}
+#projects_select_div ul .project-select {
+    margin-left:-30px;
+}
+#projects_select_div ul .dataset-select {
+    margin-left:-30px;
+}
+.project-select a {
+  text-decoration: none;
+  color: navy;
 }
 /*
 .btn-file input[type=file] {

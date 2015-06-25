@@ -15,14 +15,17 @@
  
  
  Search Options:
-<ul>
- <li><a href="#metadata">Metadata</a></li>
- <li><a href="#taxonomy">Taxonomy</a></li>
- <li><a href="#names">Names</a> (key word search)</li>
- <li><a href="#user">User Search</a></li>
- <li><a href="#project">Project Search</a></li>
- <li><a href="#blast">Blast</a></li>
-</ul>
+ 
+
+	<a href="#metadata" role="button" class="btn btn-default btn-sm">Metadata</a>
+	<a href="#taxonomy" role="button" class="btn btn-default btn-sm">Taxonomy</a>
+	<a href="#names" role="button" class="btn btn-default btn-sm">Names (key words)</a>
+	<a href="#user" role="button" class="btn btn-default btn-sm">Users</a>
+	<a href="#project" role="button" class="btn btn-default btn-sm">Projects</a>
+	<a href="#blast" role="button" class="btn btn-default btn-sm">Blast</a>
+
+<br><br>
+
 
 <a name="metadata"></a>
 <div id='metadata_search_div' class='well'>
@@ -38,7 +41,7 @@
 		Select Field(s) to Search:<br>
 		<ol>	
 			
-			<li>&nbsp;&nbsp;&nbsp;
+			<li>
 				 <table><tr>
 					<td>
 					<select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
@@ -91,9 +94,8 @@
 					<button id='search_metadata_btn' class='btn btn-xs btn-primary' disabled='disabled' type='submit'>Search Datasets</button>
 					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
 				
-				<ul>
-					<li>DONE: Save the datasets to be able to use them in the visualizations.
-					<li>Search all datasets or select subset of datasets then search in subset?
+				<ul>					
+					<li>TODO: Search all datasets or select subset of datasets then search in subset?
 				</ul>
 			
 	</form>
@@ -151,6 +153,10 @@
 				</td></tr>
 				</table>	  	
 		  </div>
+
+		  <ul>					
+					<li>TODO: After selecting a unique name should get a list of all strings that are more refined to choose from.
+			</ul>
 		</div>	
 				
 	
@@ -168,52 +174,57 @@
 	<ul>
 	<li>project name, title, description
 	<li>dataset name, dataset_description
-	</ul>			
+	</ul>	
+	<ul>					
+		<li>TODO: search by partial names in titles and descriptions. Maybe combine this with project search??
+	</ul>		
 </div>
 
 <a name="user"></a>
 <div id='project_search_div' class='well'>
 	<strong>User Search</strong>
-	<ul>
-	 <li>Enter a full or partial name.
-	</ul>	
+	
 
 	<div class="row">	
 			<div class="dropdown col-md-1"></div>
 
-			<div class="dropdown col-md-2">
-			  Type: <input id="user_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showUserResult(this.value)"/>
+			<div class="dropdown col-md-3">
+			  Type partial name: <input id="user_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showUserResult(this.value)"/>
 			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 			    <div id="livesearch_user" class=""></div>
 			  </ul>		
 			</div>
-	</div>		
+	</div>	
+  <ul>					
+		<li>TODO: connect up to project listing (or something else)
+	</ul>		
 </div>
 
 <a name="project"></a>
 <div id='project_search_div' class='well'>
 	<strong>Project (or Dataset) Search</strong>
-	<ul>
-	<li>Enter a full or partial name.
-	</li>
+	
 	
 	</ul>		
 	<div class="row">	
 			<div class="dropdown col-md-1"></div>
 
-			<div class="dropdown col-md-2">
-			  Type: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
+			<div class="dropdown col-md-3">
+			  Type partial name: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
 			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 			    <div id="livesearch_project" class=""></div>
 			  </ul>		
 			</div>
-	</div>		
+	</div>
+	  <ul>					
+		<li>TODO: connect up to project profile
+	</ul>				
 </div>
 
 <a name="blast"></a>
 <div id='blast_search_div' class='well'><strong>Blast (This search needs to be run on cluster)</strong>
 	<ul>
-			<li>Must create and maintain VAMPS Blast Database.
+			<li>Problematic: Must create and maintain VAMPS Blast Database which is updated with each new project.
 	</ul>
 </div>
 
