@@ -70,6 +70,8 @@ MySQL db schema is included in root dir as: db_schema.sql
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
+  2015-06-25 AAV Changed the field project.project_description from varchar to text.
+
   2015-05-29 AAV Added a new table:
       CREATE TABLE `user_project_status` (
         `user_project_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -81,7 +83,7 @@ Applying new database schema from vamps2 (on vampsdev)
         PRIMARY KEY (`user_project_status_id`),
         UNIQUE KEY `user` (`user`,`project`)
       ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-  2015-02-11 AAV Added 'public' field to 'project' table. -->> 
+  2015-02-11 AAV Added 'public' field to 'project' table. -->
   2015-05-15 AAV Changed varchar size from 32 to 60 in table.field: custom_metadata_fields.field_name
   
   alter table project add column `public` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT ' 0 (private) or 1 (public)'

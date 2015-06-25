@@ -8,8 +8,11 @@
 <% } %>
 <br><strong>Your Downloads</strong>
 
-<table class='table'>
-	<tr><td></td><th>file</th><th>size</th><th>creation time</th><th>links</th></tr>
+<table class='table sortable'>
+	<thead>
+	<tr><th></th><th>file</th><th>size</th><th>creation time</th><th>links</th></tr>
+  </thead>
+  <tbody>
 	<% for(f in file_info.files){ %>
 		<% var filename = file_info.files[f] %>
 		<% var fileSizeInBytes = file_info.size[filename] %>
@@ -48,9 +51,11 @@
 			</tr>
 		
 	<% } %>
+</tbody>
 </table>
 
 <% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
 </body>
 </html>
 

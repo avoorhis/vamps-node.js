@@ -23,27 +23,7 @@
     display:inline;
     text-align:left;
 }
-#projects_select_div {
-    border: 1px solid gray;
-    height: 500px;
-    overflow:auto;
-    font-size: small;
-}
-#projects_select_div ul li {
 
-    list-style-type: none;
-
-}
-#projects_select_div ul .project-select {
-    margin-left:-30px;
-}
-#projects_select_div ul .dataset-select {
-    margin-left:-30px;
-}
-.project-select a {
-  text-decoration: none;
-  color: navy;
-}
 #units_select_div {    
     overflow: auto;
 }

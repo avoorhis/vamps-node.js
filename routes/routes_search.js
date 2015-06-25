@@ -375,7 +375,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
     for(n in PROJECT_INFORMATION_BY_PID){
       pname = PROJECT_INFORMATION_BY_PID[n].project
       
-      console.log(pname);
+      console.log(PROJECT_INFORMATION_BY_PID);
       if(pname.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
         hint += "&nbsp;&nbsp;<a href='#'>"+pname+"</a><br>";
@@ -385,7 +385,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
     for(n in DATASET_NAME_BY_DID){
       dname = DATASET_NAME_BY_DID[n]
       pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[n]].project
-      console.log(dname);
+      //console.log(dname);
       if(dname.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
         hint += "&nbsp;&nbsp;<a href='#'>"+dname+" (in project: "+pname+")</a><br>";

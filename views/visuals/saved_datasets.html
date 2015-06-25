@@ -7,11 +7,19 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 <div class='left_justify'>
-<br><strong>Your saved datasets:</strong> (most recent at the top)
+<br><strong>Your saved datasets:</strong>
 <br>
-<table class='table'>
-	<tr><td></td><th>file</th><td></td><td></td><th>size</th><th>creation time</th></tr>
-
+<table class='table sortable'>
+	<thead>
+	<tr><th></th>
+		<th>file</th>
+		<th data-defaultsort='disabled'></th>
+		<th data-defaultsort='disabled'></th>
+		<th>size</th>
+		<th>creation time</th>
+	</tr>
+  </thead>
+  <tbody>
 <% for(t in times){ %>
 	<% var filename = file_info[times[t]].filename %>
 	<% var fileSizeInBytes = file_info[times[t]].size %>
@@ -71,10 +79,15 @@
 			
 
 <% } %>
+</tbody>
 </table>
 </div>
 
 
+
+<% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/saved_datasets.js"></script>
-<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+</body>
+</html>
