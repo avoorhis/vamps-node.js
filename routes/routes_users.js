@@ -16,11 +16,12 @@ router.get('/index_users', helpers.isLoggedIn, function(req, res) {
 		var qSelect = "SELECT * from user";
 	    var collection = db.query(qSelect, function (err, rows, fields){
 	      if (err)  {
-  			msg = 'ERROR Message '+err;
-  			helpers.render_error_page(req,res,msg);
+  			 msg = 'ERROR Message '+err;
+  			 helpers.render_error_page(req,res,msg);
 		   } else {
 		        res.render('user_admin/index_users', { 
-		                              title: 'users', rows : rows, 
+		                              title: 'users', 
+                                  rows : rows, 
 		                              user: req.user,  message:''  
 				});
 
@@ -36,6 +37,8 @@ router.get('/index_users', helpers.isLoggedIn, function(req, res) {
 	}
 
 });
+
+
 // =====================================
 // LOGIN ===============================
 // =====================================
@@ -93,5 +96,21 @@ router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
+
+router.get('/:id', function(req, res) {
+   
+   var uid = req.params.id
+   console.log(ALL_USERS_BY_UID[uid]);
+   console.log('in indexusers:id')
+   //console.log(req.user)
+   res.render('users/profile', {
+        title     :'profile',
+        message   : req.flash('message'), 
+        user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
+        user      : req.user // get the user out of session and pass to template
+    });
+
+});
+
 
 module.exports = router;

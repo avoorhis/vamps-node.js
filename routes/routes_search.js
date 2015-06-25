@@ -345,14 +345,17 @@ router.get('/livesearch_user/:q', helpers.isLoggedIn, function(req, res) {
   var obj = ALL_USERS_BY_UID;
   var taxon;
   if(q != ''){
-    for(n in obj){
-      user  = obj[n].username;
-      last  = obj[n].last_name;
-      first = obj[n].first_name;
+    for(uid in obj){
+      user  = obj[uid].username;
+      last  = obj[uid].last_name;
+      first = obj[uid].first_name;
       
       if(last.toLowerCase().indexOf(q) != -1 || first.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-        hint += "<a href='#'>"+last+', '+first+' ('+user+")</a><br>";
+        //hint += "<a href='#'>"+last+', '+first+' ('+user+")</a><br>";
+        hint += "<form method='GET' action='/users/"+uid+"'>";
+        hint += "<button type='submit' id='"+uid+"' class='btn btn-xs btn-link' >"+last+', '+first+' ('+user+")</button>";
+        hint += "</form>";
       }
     }
   }
@@ -372,23 +375,31 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
     
   if(q != ''){
     //hint += 'projects:<br>'
-    for(n in PROJECT_INFORMATION_BY_PID){
-      pname = PROJECT_INFORMATION_BY_PID[n].project
+    for(pid in PROJECT_INFORMATION_BY_PID){
+      
+      pname = PROJECT_INFORMATION_BY_PID[pid].project
       
       console.log(PROJECT_INFORMATION_BY_PID);
       if(pname.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-        hint += "&nbsp;&nbsp;<a href='#'>"+pname+"</a><br>";
+        //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+pname+"</a><br>";
+        hint += "<form method='GET' action='/projects/"+pid+"'>";
+        hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+pname+"</button>";
+        hint += "</form>";
       }
     }
     //hint += 'datasets:<br>';
     for(n in DATASET_NAME_BY_DID){
       dname = DATASET_NAME_BY_DID[n]
-      pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[n]].project
+      pid = PROJECT_ID_BY_DID[n]
+      pname = PROJECT_INFORMATION_BY_PID[pid].project
       //console.log(dname);
       if(dname.toLowerCase().indexOf(q) != -1){
         //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-        hint += "&nbsp;&nbsp;<a href='#'>"+dname+" (in project: "+pname+")</a><br>";
+        //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+dname+" (in project: "+pname+")</a><br>";
+        hint += "<form method='GET' action='/projects/"+pid+"'>";
+        hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+dname+" (in project: "+pname+")</button>";
+        hint += "</form>";
       }
     }
     

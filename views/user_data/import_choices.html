@@ -11,59 +11,87 @@
 	
 
     <table class='table table-striped'>
-        <tr><td>
+    <tbody>
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='import_type' value='simple_fasta' > Simple (single dataset) Fasta file
             </form>	
-        </td>
-        <td>Upload files (metadata and fasta) for a single project with a single dataset.
-            <small>(<a href='#'>see file format</a>)</small>
-        </td>
+            </td>
+            <td>
+                Upload files (metadata and fasta) for a single project with a single dataset.
+            </td>
+            <td>
+                <small>required files: fasta, metadata</small> <small>(<a href='#'>see file formats</a>)</small>
+            </td>
         </tr>
-        <tr><td>
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='import_type' value='multi_fasta'> Multi-Dataset Fasta file
             </form>
             </td>
-            <td>Upload files for a single project with multiple datasets.
-            <small>(<a href='#'>see file format</a>)</small>
-        </td>
-        </tr>
-                
-        
-        <tr><td>
+            <td>
+                Upload files for a single project with multiple datasets.
+            </td>
+            <td>
+                <small>required files: fasta, metadata</small> <small>(<a href='#'>see file formats</a>)</small>
+            </td>
+        </tr> 
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='import_type' value='metadata'> Add Metadata to a Project -TODO
             </form>
             </td>
-            <td>Add metadata to your established project. <small>(<a href='#'>see metadata file format</a>)</small></td>
+            <td>Add metadata to your established project. 
+            </td><td>
+                <small>required files: metadata</small> <small>(<a href='#'>see metadata file format</a>)</small>
+            </td>
         </tr>
-        <tr><td>
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='import_type' value='new_data'> Add Datasets to a Project -TODO
             </form>
-        </td>
-        <td>Add aditional datasets to your established project. <small>(<a href='#'>see fasta file format</a>)</small></td>
+            </td>
+            <td>Add aditional datasets to your established project. 
+            </td>
+            <td>
+                <small>required files: fasta, metadata</small> <small>(<a href='#'>see fasta file formats</a>)</small>
+            </td>
         </tr>
-        <tr><td>
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='validate_format'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='file_type' value='metadata'> Check Metadata File -TODO
             </form>
-        </td>
-        <td>Validate a metadata csv file. <small>(<a href='#'>see metadata file format</a>)</small></td>
+            </td>
+            <td>Validate a metadata csv file. 
+            </td>
+            <td>
+                <small>required files: metadata</small> <small>(<a href='#'>see metadata file format</a>)</small>
+            </td>
         </tr>
-        <tr><td>
+        <tr>
+            <td>
             <form id='' class='' method='GET' action='validate_format'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='file_type' value='fasta' > Check Sequence File -TODO
             </form>
-        </td><td>Validate a fasta file. <small>(<a href='#'>see fasta file format</a>)</small></td>
+            </td>
+            <td>Validate a fasta file. 
+            </td>
+            <td>
+                <small>required files: fasta</small> <small>(<a href='#'>see fasta file format</a>)</small>
+            </td>
         </tr>
+    </tbody>
     </table>
     
 
