@@ -32,33 +32,39 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var dsinfo = []; 
     var dscounts = {};  
     // PROJECT_INFORMATION_BY_PID is a global variable created on server start in 'load_all_datasets.js'
-	var info = PROJECT_INFORMATION_BY_PID[req.params.id]
-    var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
-    //console.log(info);
+	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
+      var info = PROJECT_INFORMATION_BY_PID[req.params.id]
+      var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
+      //console.log(info);
 
-    dataset_counts = {};
-    for(n in ALL_DATASETS.projects){
-      
-      if(ALL_DATASETS.projects[n].pid == req.params.id){
-        dsinfo = ALL_DATASETS.projects[n].datasets
+      dataset_counts = {};
+      for(n in ALL_DATASETS.projects){
+        
+        if(ALL_DATASETS.projects[n].pid == req.params.id){
+          dsinfo = ALL_DATASETS.projects[n].datasets
 
+        }
       }
+      for(n in dsinfo){
+        var did = dsinfo[n].did;
+        dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+      }
+       console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
+      res.render('projects/profile', { 
+                                  title  : 'VAMPS Project',
+                                  info: JSON.stringify(info),
+                                  dsinfo: dsinfo,
+                                  dscounts: JSON.stringify(dscounts),
+                                  pid: req.params.id,
+                                  pcount: project_count,
+      						                message: '',
+                                  user   : req.user 
+                                });
+    }else{
+      req.flash('message','not found')
+      res.redirect(req.get('referer'));
+      //return
     }
-    for(n in dsinfo){
-      var did = dsinfo[n].did;
-      dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-    }
-	console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
-    res.render('projects/profile', { 
-                                title  : 'VAMPS Project',
-                                info: JSON.stringify(info),
-                                dsinfo: dsinfo,
-                                dscounts: JSON.stringify(dscounts),
-                                pid: req.params.id,
-                                pcount: project_count,
-								message: '',
-                                user   : req.user 
-                              });
     
 });
 

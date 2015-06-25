@@ -1,0 +1,20 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+<% user_info = JSON.parse(user_info) %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<p class='title'>Investigator Profile</p>	
+	
+	<div class='well'>
+			<li><%= user_info.first_name %> <%= user_info.last_name %>
+			<li>username: <%= user_info.username %> 
+			<li>email: <%= user_info.email %> 
+			<li>institution: <%= user_info.institution %> 
+	</div>
+	
+
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>
