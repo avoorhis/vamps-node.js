@@ -44,6 +44,20 @@
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
+                <input type='hidden' name='import_type' value='multi_fasta'> Legacy VAMPS CSV files
+            </form>
+            </td>
+            <td>
+                Upload csv files from legacy VAMPS database.
+            </td>
+            <td>
+                <small>required files: sequences, metadata</small> <small>(<a href='/help/faq#legacy_vamps_import'>see file formats</a>)</small>
+            </td>
+        </tr> 
+        <tr>
+            <td>
+            <form id='' class='' method='GET' action='import_data'>
+                <input type='radio' onclick='this.form.submit();this.checked=false;'>
 				<input type='hidden' name='import_type' value='metadata'> Add Metadata to a Project -TODO
             </form>
             </td>

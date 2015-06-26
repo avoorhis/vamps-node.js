@@ -69,7 +69,7 @@ def start(NODE_DATABASE, args):
     
     #logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
     #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
-    os.chdir(args.indir)
+    #os.chdir(args.indir)
     
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
@@ -274,10 +274,8 @@ def push_taxonomy(args):
     tax_collector = {}
     
     
-    csv_seqs_infile = os.path.join(args.indir, 'sequences.csv')
-    
-    print 'csv',csv_seqs_infile
-    lines = list(csv.reader(open(csv_seqs_infile, 'rb'), delimiter=','))
+    print 'csv',args.seqs_file
+    lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
     #print tax_file
     
     for line in lines:
@@ -295,7 +293,8 @@ def push_taxonomy(args):
         distance = line[9]
        
         if pj_file != args.project:
-            sys.exit('Project file--name mismatch ('+pj_file+' - '+args.project+') -- Confused! Exiting!')
+            pass
+            #sys.exit('Project file--name mismatch ('+pj_file+' - '+args.project+') -- Confused! Exiting!')
 
         if rank == 'class': rank = 'klass'
         if rank == 'orderx': rank = 'order'
@@ -437,7 +436,7 @@ def get_config_data(args):
 def start_metadata(args):
     
     #get_config_data(indir)
-    get_metadata(args.indir)
+    get_metadata(args.metadata_file)
     put_required_metadata()
     put_custom_metadata()
     #print CONFIG_ITEMS
@@ -557,11 +556,11 @@ def put_custom_metadata():
     
     mysql_conn.commit()
     
-def get_metadata(indir):
+def get_metadata(metafile):
     
-    csv_infile =   os.path.join(indir,'metadata.csv')
-    print 'csv',csv_infile
-    lines = list(csv.reader(open(csv_infile, 'rb'), delimiter=','))
+    
+    print 'csv',metafile
+    lines = list(csv.reader(open(metafile, 'rb'), delimiter=','))
     # try:
 #         csv_infile =   os.path.join(indir,'meta_clean.csv')
 #         print csv_infile
@@ -665,28 +664,39 @@ def get_metadata(indir):
 if __name__ == '__main__':
     import argparse
     myusage = """
-        -p/--project  project name
-        -d/--dir directory that must include:
-              files: sequences,metadata from old vamps
-        -public/--public
-        -env_source_id/--env_source_id
-        -owner/--owner
+        -p/--project  project name          REQUIRED
         
-        Test project: ICM_AGW_Bv6
-        Retrieve data from old_vams as csv files:
-        METADATA: mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
-        SEQS: mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
-    
-       Named metadata.csv and sequences.csv
-       
+        -s/--seqs_file       sequences file REQUIRED --FORMAT: see below
+        -m/--metadata_file   metadata file  REQUIRED --FORMAT: see below
+        
+        -public/--public                    DEFAULT == '1'  true
+        -env_source_id/--env_source_id      DEFAULT == '100' unknown
+        -owner/--owner                      REQUIRED
+        
+        Example project: ICM_AGW_Bv6
+        Retrieve data from old_vams as csv files like this:
+        >>METADATA: 
+        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        
+        >>SEQS: 
+        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        
+        NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
+              
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)  
     parser.add_argument("-p","--project",                   
                 required=True,  action="store",   dest = "project", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-d","--dir",                   
-                required=True,  action="store",   dest = "indir", default='',
+    #parser.add_argument("-d","--dir",                   
+    #            required=True,  action="store",   dest = "indir", default='',
+    #            help="""ProjectID""") 
+    parser.add_argument("-s","--seqs_file",                   
+                required=True,  action="store",   dest = "seqs_file", default='',
+                help="""ProjectID""") 
+    parser.add_argument("-m","--metadata_file",                   
+                required=True,  action="store",   dest = "metadata_file", default='',
                 help="""ProjectID""") 
     parser.add_argument("-public","--public",                   
                  required=False,  action="store",   dest = "public", default='1',
@@ -728,7 +738,7 @@ if __name__ == '__main__':
     
     
     
-    if args.project and args.indir:
+    if args.project and args.seqs_file and args.metadata_file:
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
         print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'"
