@@ -5,7 +5,7 @@ var router = express.Router();
 
 var fs   = require('fs-extra');
 var path  = require('path');
-var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
+
 var helpers = require('./helpers/helpers');
 
 var ds = require('./load_all_datasets');
@@ -22,13 +22,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             user: req.user });
   });
 
-  /* GET Overview page. */
-  router.get('/overview', function(req, res) {
-      res.render('overview', { title: 'VAMPS:Overview', 
-	  user: req.user,
-  		message:'',
-   });
-  });
+  
 
 
 
@@ -88,26 +82,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	  message:'',
                             });
   });
-  /* GET FAQ page. */
-  router.get('/faq', function(req, res) {
-      res.render('faq', { title: 'VAMPS:FAQ',
-	  						message:'',
-                             user: req.user
-                            });
-  });
-  /* GET Contact Us page. */
-  router.get('/contact', function(req, res) {
-
-      //get sweetcaptcha html for the contact area
-        sweetcaptcha.api('get_html', function(err,html){
-            //Send the guts of the captcha to your template
-            res.render('contact', {
-              captcha : html,
-              title: 'VAMPS:Cuntact-Us',
-              user: req.user
-               });
-        });
-  });
+  
  
   
   //

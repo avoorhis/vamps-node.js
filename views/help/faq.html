@@ -1,0 +1,170 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+<a name='top'></a>	
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+<div class="hero-unit">
+    <p class='title'>FAQ</p>
+		<p class='subtitle'>Frequently Asked Questions</p>		           
+</div>
+
+<div class="row row-offcanvas row-offcanvas-right">
+
+		 <div class="col-xs-6 col-sm-3 sidebar-offcanvas pull-right" id="sidebar">
+		  <div class="list-group">
+		  	<a href="#clustering" 			class="list-group-item">Clustering and Diversity</a>
+		  	<a href="#processing" 			class="list-group-item">Sequence Processing</a>
+		  	<a href="#export_counts" 		class="list-group-item">Exporting Taxonomic Counts</a>
+		  	<a href="#export_sequences" class="list-group-item">Exporting Sequences</a>
+		    <a href="#import_data" 			class="list-group-item">Importing Data</a>		    
+		    <a href="#databases" 				class="list-group-item">Reference Databases</a>
+		    <a href="#submissions" 			class="list-group-item">Sample Submission Process</a>
+		    <a href="#" class="list-group-item">Link</a>
+		    <a href="#" class="list-group-item">Link</a>
+		  </div>
+		</div><!--/.sidebar-offcanvas-->   
+
+
+<div class="col-xs-12 col-sm-9">
+          
+          
+      <div class="row">
+        <div class="col-md-12">			<a name='clustering'></a>
+          <h4>Clustering and Diversity</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a> 
+          
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>          
+        </div>        
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">		<a name='processing'></a>	
+          <h4>Sequence Processing</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a> 
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>          
+        </div>        
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">			<a name='export_counts'></a>
+          <h4>Exporting Taxonomic Counts</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>          
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">       <a name='export_sequences'></a>
+          <h4>Exporting Data</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a> 
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p> 
+                 
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">		<a name='import_data'></a>        	
+          <h4>Importing Data</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+
+      
+      <div class="row">
+        <div class="col-md-12">      	<a name='databases'></a>
+          <h4>Reference Databases</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+            
+					<h5>How are the reference databases created? </h5>
+					<p>We create Ref16S, a reference database of aligned full-length sequences based on all available sequences 
+					in SILVA exported using the ARB software. New updates to both SILVA and RDP are incorporated as they become available.
+					<ul>
+					<li>We flag as low-quality and delete all sequences with a sequence quality score <= 50, an alignment 
+					score <= 50 or a pintail (chimera) score <= 40.
+					<li>We flag as redundant and delete all exact copies of the full-length sequence.
+					<li>We classify all bacterial and archaeal sequences directly with the Ribosomal Database Project Classifier 
+					(RDP). We used only RDP classifications with a bootstrap value of >=80%. If the bootstrap value was <80%,
+					the taxonomic assignment was moved to a higher classification level until an 80% or better bootstrap value was 
+					achieved. For example, if the genus assignment had a bootstrap value of 70%, but the family had a value of 85%,
+					that sequence would be assigned only as far as family and not to genus. RDP Classifier does not classify 
+					sequences below the genus level.
+
+					<li>We incorporate other taxonomy sources, such as Entrez Genome accession numbers or researcher knowledge of 
+					specific entries, as they become available. These "other sources" are used preferentially over the RDP for 
+					bacteria and archaea. RDP does not classify eukaryotes. For eukaryota taxonomies, we use the EMBL taxonomy
+					from the SILVA database where we do not have other sources.
+					<br>
+					<li>We create hypervariable region specific databases (RefV6, RefV3, RefV9, etc.).
+					<ul>
+					<li>For each hypervariable region we calculate the Ref16S alignment coordinates.
+					<li>We then excise from the Ref16s aligned sequences the section corresponding to the hypervariable region.
+					<li>The gaps are removed from the aligned sequences to create a set of unaligned sequences.
+					Any hypervariable sequences that contain an 'N' are deleted.
+					Any hypervariable sequences shorter than 50 nt are deleted.
+					Any full-length sequences that were not sequenced all the way through the specific hypervariable region are deleted.
+					Two reference IDs are assigned to each reference hypervariable region. A ref16s_id (previously alt_local_gi) 
+					links the hypervariable sequence with its source full-length sequence, and a second, e.g., refv6_id 
+					(previously known as local_gi) is used to identify all entries having the exact same sequence of the 
+					hypervariable region. The taxonomy is carried directly from the full-length source. 
+					<li>Unique reference hypervariable regions sequences are exported to a blastable database for use in the 
+					assignment of taxonomy to pyrosequencing reads through GAST.
+					</ul>
+					</ul>
+					</p>
+
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">      	<a name='submissions'></a>
+          <h4>Sample Submission Process</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        	<a name='template'></a>
+          <h4>Template</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        	<a name='template'></a>
+          <h4>Template</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        	<a name='template'></a>
+          <h4>Template</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        	<a name='template'></a>
+          <h4>Template</h4><a class='btn btn-sm pull-right' href='#top'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+          </p>          
+        </div>        
+      </div>
+
+
+
+</div><!--/.col-xs-12.col-sm-9-->
+
+    
+
+
+	
+
+</div>  <!--/.row row-offcanvas row-offcanvas-right-->   
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>
