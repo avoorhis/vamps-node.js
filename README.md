@@ -4,7 +4,22 @@ Visualization and Analysis of Microbial Population Structures
 -----------------
 
 --- INSTALL ---
+**Sample config/db_connection.js**
 
+  ////
+  ///
+  //
+  NODE_DATABASE = 'vamps_starter'
+  //
+  ///
+  ////
+
+  var db_config = {
+    host     : 'localhost',
+    user     : 'mysql-username',
+    password : 'mysql-password',
+    database :  NODE_DATABASE
+  };
 To run this program first install Node.js (http://nodejs.org/)
 look in package.json to see required modules or run
  * (sudo) npm -g install
