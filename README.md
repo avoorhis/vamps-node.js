@@ -6,7 +6,7 @@ Visualization and Analysis of Microbial Population Structures
 INSTALL
 -----------------
 **Sample config/db_connection.js**
-
+```
   ////
   ///
   //
@@ -14,7 +14,7 @@ INSTALL
   //
   ///
   ////
-
+```
   var db_config = {
     host     : 'localhost',
     user     : 'mysql-username',
