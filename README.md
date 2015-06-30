@@ -33,7 +33,7 @@ Fill in the correct values for the database name and mysql user and password.
   };
 ```
 
-Install Node.js (http://nodejs.org/)
+To run this program first install Node.js (http://nodejs.org/)
 look in package.json to see required modules or run
  * (sudo) npm -g install
 
