@@ -75,13 +75,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                             });
   });
 
-  /* GET Portals page. */
-  router.get('/portals', function(req, res) {
-      res.render('portals', { title: 'VAMPS:Portals',
-                             user: req.user,
-	  message:'',
-                            });
-  });
+  
   
  
   

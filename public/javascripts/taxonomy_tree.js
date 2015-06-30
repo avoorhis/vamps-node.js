@@ -42,7 +42,7 @@ function toggle_selected_taxa(level,name) {
 
 function open_taxa(name) {
 
-  // Called from index_visuals: project--dataset tree
+  // Called from visuals_index: project--dataset tree
 //alert(name);
   var tax_div = document.getElementById(name+'_div');
   var cbs = tax_div.getElementsByTagName('input');

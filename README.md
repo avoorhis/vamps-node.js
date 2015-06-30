@@ -71,6 +71,7 @@ Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
   2015-06-25 AAV Changed the field project.project_description from varchar to text.
+  2015-06-25 AAV Changed the field project.title size from varchar 64 to varchar 255.
 
   2015-05-29 AAV Added a new table:
       CREATE TABLE `user_project_status` (
@@ -153,7 +154,7 @@ downloads - will contain user downloaded files for retrieval
   * Refactoring!
   * DONE:   projects/:id via REST
   * DONE:   user login and auth
-  * 2015-05-11 Fix select-all-datasets when select project checkbox on index_visuals (community visualization) page
+  * 2015-05-11 Fix select-all-datasets when select project checkbox on visuals_index (community visualization) page
   * 2015-05-11 fix formating/style on search result page http://localhost:3000/search/search_result
 
 

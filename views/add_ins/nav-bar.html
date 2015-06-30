@@ -24,9 +24,9 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="/">VAMPS Home</a></li>
 			<li><a href="/help/overview">Overview</a></li>
-			<li><a href="/visuals/index_visuals">Data Selection</a></li>
+			<li><a href="/visuals/visuals_index">Data Selection</a></li>
 			<li><a href="/user_data/your_data">Your Data</a></li>
-            <li><a href="/search/index_search">Search</a></li>
+            <li><a href="/search/search_index">Search</a></li>
             <li><a href="/help/contact">Contact Us</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
@@ -38,10 +38,10 @@
                 <% } %>
                 <li class="divider"></li>
                                 
-                <li><a href='/projects/index_projects'>Public Project List</a></li>
+                <li><a href='/projects/projects_index'>Public Project List</a></li>
                 <li><a href='/geodistribution'>Distribution</a></li>
                 <li><a href='/metadata'>Metadata</a></li>
-                <li><a href='/portals'>Portals</a></li>
+                <li><a href='/portals/portals_index'>Portals</a></li>
                 <li><a href='/user_data/import_choices'>Import Data</a></li>
 				        <li><a href='/user_data/export_data'>Export Data</a></li>
                 <li class="divider"></li>
@@ -51,7 +51,7 @@
                 <li><a href='/help/contact'>Contact Us</a></li>
                 <% if (user !== undefined && user.security_level === 1) { %>
                   <li class="dropdown-header">Admin</li>
-                  <li><a href='/users/index_users'>User List (admin only)</a></li>
+                  <li><a href='/users/users_index'>User List (admin only)</a></li>
                 <% } %>
                 
               </ul>

@@ -5,7 +5,7 @@ var helpers = require('./helpers/helpers');
 var path  = require('path');
 
 /* GET Search page. */
-router.get('/index_search', helpers.isLoggedIn, function(req, res) {
+router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
@@ -40,7 +40,7 @@ router.get('/index_search', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(metadata_fields)
     metadata_fields_array.sort();
-    res.render('search/index_search', { title: 'VAMPS:Search',
+    res.render('search/search_index', { title: 'VAMPS:Search',
         metadata_items: JSON.stringify(metadata_fields),
         message: req.flash('message'),
         meta_message: req.flash('meta_message'),
@@ -61,7 +61,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 
   if(! req.body.tax_string){
 		req.flash('tax_message', 'Error');
-		res.redirect('index_search#taxonomy'); 
+		res.redirect('search_index#taxonomy'); 
     return;
 	}
 	var tax_string = req.body.tax_string;
@@ -85,7 +85,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	var query = req.db.query(qSelect, function (err, rows, fields){
     if (err) {
         req.flash('tax_message', 'SQL Error: '+err);
-        res.redirect('index_search#taxonomy'); 
+        res.redirect('search_index#taxonomy'); 
     } else {
       var datasets = {};
       datasets.ids = [];
@@ -108,7 +108,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
       helpers.write_to_file(filename_path,JSON.stringify(datasets));
       msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>"
       req.flash('tax_message', 'Saved as: '+msg);
-      res.redirect('index_search#taxonomy'); 
+      res.redirect('search_index#taxonomy'); 
     }
   });
 	
@@ -223,7 +223,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
 	req.flash('message', 'No Data Found');
-	res.redirect('index_search'); 
+	res.redirect('search_index'); 
   }else{
           res.render('search/search_result', {   
                     title    : 'VAMPS: Search Datasets',

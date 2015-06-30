@@ -26,13 +26,14 @@ var multer = require('multer');
 // needed for DATASETS initialization
 connection = require('./config/database');
 //connection.connect();
-var routes = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
-var users = require('./routes/routes_users');
+var routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
+var users     = require('./routes/routes_users');
 var user_data = require('./routes/routes_user_data');
-var search = require('./routes/routes_search');
-var projects = require('./routes/routes_projects');
-var datasets = require('./routes/routes_datasets');
-var help = require('./routes/routes_help');
+var search    = require('./routes/routes_search');
+var projects  = require('./routes/routes_projects');
+var datasets  = require('./routes/routes_datasets');
+var help      = require('./routes/routes_help');
+var portals   = require('./routes/routes_portals');
 //var ALL_DATASETS = require('./routes/load_all_datasets2')(connection);
 var visuals = require('./routes/visuals/routes_visualization');
 var C = require('./public/constants');
@@ -124,6 +125,7 @@ app.use('/datasets', datasets);
 app.use('/visuals', visuals);
 app.use('/search', search);
 app.use('/user_data', user_data);
+app.use('/portals', portals);
 
 
 // for non-routing pages such as heatmap, counts and bar_charts
