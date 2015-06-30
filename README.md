@@ -3,7 +3,8 @@ VAMPS rendition using Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
---- INSTALL ---
+INSTALL
+-----------------
 **Sample config/db_connection.js**
 
   ////
