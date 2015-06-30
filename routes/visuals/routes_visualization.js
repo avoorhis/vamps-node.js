@@ -74,50 +74,47 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   helpers.start = process.hrtime();
   
-  //
-  //
-  //
   
-    // GLOBAL
-    var timestamp = +new Date();  // millisecs since the epoch!
-    timestamp = req.user.username + '_' + timestamp;
-    visual_post_items.ts = timestamp;
-    distance_matrix = {};
-    biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-    visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
+  // GLOBAL
+  var timestamp = +new Date();  // millisecs since the epoch!
+  timestamp = req.user.username + '_' + timestamp;
+  visual_post_items.ts = timestamp;
+  distance_matrix = {};
+  biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
 
 
-    // GLOBAL
-    console.log('metadata');
-    //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-    metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
-    //metadata = JSON.parse(metadata);
-    console.log(metadata);
-    console.log('metadata');
-    //console.log('MAP:::');
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
-    //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
+  // GLOBAL
+  console.log('metadata');
+  //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
+  metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+  //metadata = JSON.parse(metadata);
+  console.log(metadata);
+  console.log('metadata');
+  //console.log('MAP:::');
+  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
+  //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
 
-    //
-    //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
-    // {unit_id:[cnt1,cnt2...] // counts are in ds order
-    console.log('visual_post_items:>>');
-    console.log(visual_post_items);
-    console.log('<<visual_post_items:');
-    //console.log(biom_matrix);
+  //
+  //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
+  // {unit_id:[cnt1,cnt2...] // counts are in ds order
+  console.log('visual_post_items:>>');
+  console.log(visual_post_items);
+  console.log('<<visual_post_items:');
+  //console.log(biom_matrix);
 
-	
-    res.render('visuals/view_selection', {
-                                  title     :           'VAMPS: Visuals Select',
-                                  chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                  matrix    :           JSON.stringify(biom_matrix),
-                                  metadata  :           JSON.stringify(metadata),
-                                  constants :           JSON.stringify(req.C),
-                                  post_items:           JSON.stringify(visual_post_items),
-                                  user      :           req.user,
-		                          //locals: {flash: req.flash('infomessage')},
-                                  message   : req.flash('message')
-                   });
+
+  res.render('visuals/view_selection', {
+                                title     :           'VAMPS: Visuals Select',
+                                chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+                                matrix    :           JSON.stringify(biom_matrix),
+                                metadata  :           JSON.stringify(metadata),
+                                constants :           JSON.stringify(req.C),
+                                post_items:           JSON.stringify(visual_post_items),
+                                user      :           req.user,
+	                          //locals: {flash: req.flash('infomessage')},
+                                message   : req.flash('message')
+                 });
 
 });
 
@@ -136,9 +133,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   //    The 'Display Output' section should list the items from public/constants.js
   //    The 'Normailzation' section should list the items from public/constants.js with the NotNormalized option
   //        checked by default.
-  //console.log('START BODY>> in route/visualization.js /unit_selection');
-  //console.log(JSON.stringify(req.body));
-  //console.log('<<END BODY');
+  
   console.log('req.body: unit_selection-->>');
   console.log(req.body);
   console.log('req.body: unit_selection');
@@ -156,6 +151,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       console.log('redirecting back -- no data selected');
    	 req.flash('nodataMessage', 'Select Some Datasets');
    	 res.redirect('visuals_index');
+     return;
   }else{
 	  // Global TAXCOUNTS, METADATA
 	  TAXCOUNTS = {};
@@ -163,9 +159,18 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  // Gather just the tax data of selected datasets
 	  for(var i in dataset_ids){
 	    var path_to_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets", dataset_ids[i] +'.json');
-		var jsonfile = require(path_to_file);
-		TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-		METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+		  try{
+        var jsonfile = require(path_to_file);
+      }
+      catch(err){
+        console.log('no file '+err.toString()+' Exiting');
+        req.flash('nodataMessage', "ERROR \
+          Dataset file not found '"+dataset_ids[i] +".json' (run INITIALIZE_ALL_FILES.py in the public/scripts directory)");
+        res.redirect('visuals_index');
+        return;
+      }
+		  TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+		  METADATA[dataset_ids[i]]  = jsonfile['metadata'];
 	  }
 	  console.log(JSON.stringify(METADATA))
 	  //console.log(JSON.stringify(TAXCOUNTS))
