@@ -29,6 +29,7 @@ import datetime
 today = str(datetime.date.today())
 import subprocess
 import MySQLdb
+import logging
 
 """
 
@@ -48,17 +49,21 @@ test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome
 '408170','human gut metagenome','American Gut Project Stool sample')
 test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
 
+LOG_FILENAME = os.path.join('.','load_metadata_using_pid.log')
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+                           format="%(asctime)-15s %(levelname)-8s %(message)s")
+
 def start(args):
     get_config_data(args)
     get_metadata(args)
     #put_required_metadata(args)
     #put_custom_metadata(args)
     #print CONFIG_ITEMS
-    print 'REQ_METADATA_ITEMS'
-    print REQ_METADATA_ITEMS
-    print
-    print 'CUST_METADATA_ITEMS'
-    print CUST_METADATA_ITEMS
+    logging.debug( 'REQ_METADATA_ITEMS')
+    logging.debug( REQ_METADATA_ITEMS)
+
+    logging.debug( 'CUST_METADATA_ITEMS')
+    logging.debug(CUST_METADATA_ITEMS)
     
 def put_required_metadata(args):
     
@@ -71,7 +76,7 @@ def put_required_metadata(args):
         for item in required_metadata_fields:
             vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
         q2 = q + vals[:-1] + ")"  
-        print q2
+        logging.debug(q2)
         cur.execute(q2)
     db.commit()
             
@@ -80,7 +85,7 @@ def put_custom_metadata(args):
     """
       create new table
     """
-    print 'starting put_custom_metadata'
+    logging.debug('starting put_custom_metadata')
     # TABLE-1 === custom_metadata_fields
     for key in CUST_METADATA_ITEMS:
         print key
@@ -90,7 +95,7 @@ def put_custom_metadata(args):
         q2 += "'"+key+"',"
         q2 += "'varchar(128)',"
         q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
-        print q2
+        logging.debug(q2)
         cur.execute(q2)
     
     # TABLE-2 === custom_metadata_<pid>
@@ -116,7 +121,7 @@ def put_custom_metadata(args):
     q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    print q
+    logging.debug(q)
     cur.execute(q)
     
     for i,did in enumerate(CUST_METADATA_ITEMS['dataset_id']):
@@ -131,7 +136,7 @@ def put_custom_metadata(args):
             if key != 'dataset_id':
                 q2 += "'"+str(CUST_METADATA_ITEMS[key][i])+"',"
         q2 = q2[:-1] + ")" 
-        print q2
+        logging.debug(q2)
         cur.execute(q2)
     
     db.commit()
@@ -150,18 +155,22 @@ def get_metadata(args):
         if not header:
             continue
         TMP_METADATA_ITEMS[header] = []
-        print header
+        logging.debug(header)
         
         for line in lol[1:]:
             
             TMP_METADATA_ITEMS[header].append(line[i])
     #print TMP_METADATA_ITEMS['dataset']
     if 'structured_comment_name' not in TMP_METADATA_ITEMS:
-        sys.exit('No structured_comment_name field found -- exiting')
+        logging.debug('No structured_comment_name field found -- exiting')
+        sys.exit('No structured_comment_name field found -- exiting')        
     if 'dataset' not in TMP_METADATA_ITEMS:
-        sys.exit('No dataset field found -- exiting')
+        logging.debug('No dataset field found -- exiting')
+        sys.exit('No dataset field found -- exiting')        
     if 'parameterValue' not in TMP_METADATA_ITEMS:
+        logging.debug('No parameterValue field found -- exiting')
         sys.exit('No parameterValue field found -- exiting')
+        
         
         
     meta = {}
@@ -170,7 +179,7 @@ def get_metadata(args):
     for i,name in enumerate(TMP_METADATA_ITEMS['structured_comment_name']):
         #print i,value,TMP_METADATA_ITEMS['dataset'][i]
         meta[TMP_METADATA_ITEMS['dataset'][i]][name] = TMP_METADATA_ITEMS['parameterValue'][i]
-    print
+    logging.debug()
     #print meta
     REQ_METADATA_ITEMS['dataset_ids'] = []
     for name in required_metadata_fields:
@@ -186,7 +195,7 @@ def get_metadata(args):
                      REQ_METADATA_ITEMS[item].append(data[item])
              
                      
-    print  REQ_METADATA_ITEMS
+    logging.debug(REQ_METADATA_ITEMS)
     #print  CUST_METADATA_ITEMS               
     #saved_indexes = []        
     #print TMP_METADATA_ITEMS
@@ -195,9 +204,9 @@ def get_metadata(args):
     #    saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
     
     #print saved_indexes
-    sys.exit()
-    for key in TMP_METADATA_ITEMS:
-        
+    #sys.exit()
+    for item in TMP_METADATA_ITEMS:
+        key = item.replace(' ','_').replace('/','_').replace('+','').replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
         if key in required_metadata_fields:
             REQ_METADATA_ITEMS[key] = []
             REQ_METADATA_ITEMS['dataset_id'] = []
@@ -232,18 +241,18 @@ def get_config_data(args):
     
     q = "SELECT project FROM project"
     q += " WHERE project_id = '"+args.pid+"'" 
-    print q
+    logging.debug(q)
     cur.execute(q)
     row = cur.fetchone()     
     project_name = row[0]
-    print project_name
+    logging.debug(project_name)
     DB_ITEMS['project'] = project_name
     DB_ITEMS['datasets'] = []
     
         
     q = "SELECT dataset, dataset_id from dataset"
     q += " WHERE project_id = '"+args.pid+"'" 
-    print q
+    logging.debug(q)
     cur.execute(q)     
     for row in cur.fetchall():        
         DB_ITEMS['datasets'].append(row[0])  
@@ -323,7 +332,8 @@ if __name__ == '__main__':
         
     print
     cur.execute("USE "+NODE_DATABASE)
-    
+    print 'DATABASE:',NODE_DATABASE
+    print('See '+LOG_FILENAME)
     
     if args.pid and args.infile:
         start(args)

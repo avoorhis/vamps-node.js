@@ -10,6 +10,7 @@ import sys,os,shutil
 import argparse
 import MySQLdb
 import json
+import logging
 
 
 parser = argparse.ArgumentParser(description="") 
@@ -65,6 +66,11 @@ queries = [{"rank":"domain","query":domain_query},
            {"rank":"species","query":species_query},
            {"rank":"strain","query":strain_query}
 		   ]
+
+LOG_FILENAME = os.path.join('.','initialize_all_files.log')
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+                           format="%(asctime)-15s %(levelname)-8s %(message)s")
+
 def go(args):
     """
 		count_lookup_per_dsid[dsid][tax_id_str] = count		
@@ -77,20 +83,22 @@ def go(args):
         shutil.rmtree(args.files_prefix)
         shutil.move(args.taxcounts_file,os.path.join(args.json_dir,NODE_DATABASE+'--taxcountsBU.json'))
         shutil.move(args.metadata_file, os.path.join(args.json_dir,NODE_DATABASE+'--metadataBU.json'))
+        logging.debug('Backed up old taxcounts and metadata files')
     except:
         pass
     os.mkdir(args.files_prefix)
-    
+    logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
         #print q["query"]
         dirs = []
         try:
 
             print "running mysql query for:",q['rank']
-
+            logging.debug("running mysql query for: "+q['rank'])
             cur.execute(q["query"])
         except:
             print "Trying to query with:",q["query"]
+            logging.debug("Failing to query with: "+q["query"])
             sys.exit("This Database Doesn't Look Right -- Exiting")
         for row in cur.fetchall():
             #print row
@@ -112,20 +120,26 @@ def go(args):
                 counts_lookup[ds_id][tax_id_str] = count
 
     
-    print 'gathering metadata from tables'            
+    print 'gathering metadata from tables'  
+    logging.debug('gathering metadata from tables')          
     metadata_lookup = go_metadata()    
     
     print 'writing to individual files'
+    logging.debug('writing to individual files') 
     write_data_to_files(args, metadata_lookup, counts_lookup)
     
     print 'writing metadata file'
+    logging.debug('writing metadata file') 
     write_all_metadata_file(args, metadata_lookup)
     
     print 'writing taxcount file'
+    logging.debug('writing taxcount file') 
     write_all_taxcounts_file(args, counts_lookup)
     for w in warnings:
         print w
+        logging.debug(w)
     print "DONE"
+    logging.debug("DONE") 
         
 
 def write_data_to_files(args, metadata_lookup, counts_lookup):    
@@ -171,8 +185,7 @@ def go_metadata():
 	
     metadata_lookup = {}
 
-    print 'running mysql for required metadata'
-
+    logging.debug("running mysql for required metadata")
     cur.execute(req_pquery)
     for row in cur.fetchall():
     	did = row[0]
@@ -193,7 +206,7 @@ def go_metadata():
     pid_collection = {}
 
     print 'running mysql for custom metadata',cust_pquery
-
+    logging.debug('running mysql for custom metadata: '+cust_pquery)
     cur.execute(cust_pquery)
     cust_metadata_lookup = {}
     for row in cur.fetchall():
@@ -212,6 +225,7 @@ def go_metadata():
 
         cust_dquery = "SELECT " + ','.join(fields) + " from " + table
     	print 'running other cust',cust_dquery
+        logging.debug('running other cust: ' +cust_dquery)
     	#try:
         cur.execute(cust_dquery)
 

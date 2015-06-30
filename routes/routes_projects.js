@@ -9,7 +9,7 @@ var helpers = require('./helpers/helpers');
 //var crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
-router.get('/index_projects', function(req, res) {
+router.get('/projects_index', function(req, res) {
     var db = req.db;
     
     //console.log(ALL_DATASETS);
@@ -17,7 +17,7 @@ router.get('/index_projects', function(req, res) {
   	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
-    res.render('projects/index_projects', { 
+    res.render('projects/projects_index', { 
                         title          : 'VAMPS Projects',
                         projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
