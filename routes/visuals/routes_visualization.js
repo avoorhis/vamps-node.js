@@ -155,7 +155,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	 req.flash('nodataMessage', 'Select Some Datasets');
-   	 res.redirect('index_visuals');
+   	 res.redirect('visuals_index');
   }else{
 	  // Global TAXCOUNTS, METADATA
 	  TAXCOUNTS = {};
@@ -221,7 +221,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 /*
  * GET visualization page.
  */
-router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
+router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
@@ -236,7 +236,7 @@ router.get('/index_visuals', helpers.isLoggedIn, function(req, res) {
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {}
   
-  res.render('visuals/index_visuals', {
+  res.render('visuals/visuals_index', {
                                 title    : 'VAMPS: Select Datasets',
                                 rows     : JSON.stringify(ALL_DATASETS),
                                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),

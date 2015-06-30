@@ -22,7 +22,6 @@ import time
 import random
 import csv
 from time import sleep
-#import logging
 import ConfigParser
 from IlluminaUtils.lib import fastalib
 import datetime
@@ -57,20 +56,17 @@ required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date",
 #         {'name':'genus',  'id':9,'num':5},
 #         {'name':'species','id':10,'num':6},
 #         {'name':'strain', 'id':11,'num':7}]
-logger = logging.getLogger('')
 
+LOG_FILENAME = os.path.join('.','convert_old_vamps_project.log')
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+                           format="%(asctime)-15s %(levelname)-8s %(message)s")
+#logging = logging.getlogging('')
+#os.chdir(args.indir)
 def start(NODE_DATABASE, args):
     
     global mysql_conn
     global cur
-    #LOG_FILENAME = os.path.join('.','log.txt')
-   
-    
-    
-    #logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
-    #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
-    #os.chdir(args.indir)
-    
+    logging.debug('starting convert_old_vamps_project.log')
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
                           db = NODE_DATABASE,
@@ -78,43 +74,44 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     
     
-    print("running get_config_data")
+    logging.debug("running get_config_data")
+    logging.debug("running get_config_data")
     get_config_data(args)
     
-    print("checking user")
+    logging.debug("checking user")
     check_user()  ## script dies if user not in db
     #
-    print("recreating ranks")
+    logging.debug("recreating ranks")
     recreate_ranks()
     #
-    print("env sources")
+    logging.debug("env sources")
     create_env_source()
     #
-    print("classifier")
+    logging.debug("classifier")
     create_classifier()
     #
-    print("starting taxonomy")
+    logging.debug("starting taxonomy")
     push_taxonomy(args)
     #
-    print("starting sequences")
+    logging.debug("starting sequences")
     push_sequences()
     
-    print("projects")
+    logging.debug("projects")
     push_project()
     
-    print("datasets")
+    logging.debug("datasets")
     push_dataset()
     
     #push_summed_counts()
-    print("starting push_pdr_seqs")
+    logging.debug("starting push_pdr_seqs")
     push_pdr_seqs()
     
-    print("starting metadata")
+    logging.debug("starting metadata")
     start_metadata(args)
     
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
-    print("Finished database_importer.py")
+    logging.debug("Finished database_importer.py")
     return CONFIG_ITEMS['project_id']
     
     
@@ -145,12 +142,12 @@ def recreate_ranks():
     for i,rank in enumerate(ranks):
         
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
-        print(q)
+        logging.debug(q)
         cur.execute(q)
         rank_id = cur.lastrowid
         if rank_id==0:
             q = "SELECT rank_id from rank where rank='"+rank+"'"
-            print(q)
+            logging.debug(q)
             cur.execute(q)
             row = cur.fetchone()
             RANK_COLLECTOR[rank] = row[0]
@@ -168,13 +165,13 @@ def push_dataset():
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
         q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
-        print(q4)
+        logging.debug(q4)
         try:
             cur.execute(q4)
             did = cur.lastrowid
             DATASET_ID_BY_NAME[ds]=str(did)
         except:
-            print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
+            logging.debug('ERROR: MySQL Integrity ERROR -- duplicate dataset')
             sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
     mysql_conn.commit()
     
@@ -191,7 +188,7 @@ def push_project():
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
     
-    print(q)
+    logging.debug(q)
     cur.execute(q)
     
     CONFIG_ITEMS['project_id'] = cur.lastrowid
@@ -208,7 +205,7 @@ def push_pdr_seqs():
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
             q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count,classifier_id)"
             q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
-            print(q)
+            logging.debug(q)
             cur.execute(q)
     mysql_conn.commit()
     
@@ -217,13 +214,13 @@ def push_sequences():
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('"+seq+"'))"
-            print(q)
+            logging.debug(q)
             cur.execute(q)
             mysql_conn.commit()
             seqid = cur.lastrowid
             if seqid == 0:
                 q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('"+seq+"')"
-                print('DUP SEQ FOUND')
+                logging.debug('DUP SEQ FOUND')
                 cur.execute(q2)
                 mysql_conn.commit() 
                 row = cur.fetchone()
@@ -231,13 +228,13 @@ def push_sequences():
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
             distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
-            print( ds+' - '+seq+' - '+str(silva_tax_id))
+            logging.debug( ds+' - '+seq+' - '+str(silva_tax_id))
             rank_id = str(SEQ_COLLECTOR[ds][seq]['rank_id'])
-            print( rank_id)
+            logging.debug( rank_id)
             q = "INSERT ignore into silva_taxonomy_info_per_seq"
             q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
             q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
-            print(q)
+            logging.debug(q)
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
@@ -255,7 +252,7 @@ def push_sequences():
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
             q4 += " VALUES('"+str(seqid)+"','"+str(silva_tax_seq_id)+"')"
-            print(q4)
+            logging.debug(q4)
             cur.execute(q4)
             mysql_conn.commit()
         ## don't see that we need to save uniq_ids
@@ -274,7 +271,7 @@ def push_taxonomy(args):
     tax_collector = {}
     
     
-    print 'csv',args.seqs_file
+    logging.debug( 'csv '+args.seqs_file)
     lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
     #print tax_file
     
@@ -282,7 +279,7 @@ def push_taxonomy(args):
         
         if line[0]=='id':
             continue
-        print line
+        logging.debug( line)
         seq = line[1]
         pj_file = line[2]
         ds = line[3]
@@ -317,7 +314,7 @@ def push_taxonomy(args):
                               'distance':distance
                               }
         q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
-        print q1
+        logging.debug( q1)
         cur.execute(q1)
         mysql_conn.commit()
 
@@ -378,31 +375,31 @@ def push_taxonomy(args):
 
 
                 q2 = "INSERT ignore into `"+rank_name+"` (`"+rank_name+"`) VALUES('"+t+"')"
-                print(q2)
+                logging.debug(q2)
                 cur.execute(q2)
                 mysql_conn.commit()
                 tax_id = cur.lastrowid
                 if tax_id == 0:
                     q3 = "select "+rank_name+"_id from `"+rank_name+"` where `"+rank_name+"` = '"+t+"'"
-                    print( q3 )
+                    logging.debug( q3 )
                     cur.execute(q3)
                     mysql_conn.commit()
                     row = cur.fetchone()
                     tax_id=row[0]
                 ids_by_rank.append(str(tax_id))
                 #else:
-                print( 'rank_id,t,tax_id '+str(rank_id)+' - '+t+' - '+str(tax_id)  )
+                logging.debug( 'rank_id,t,tax_id '+str(rank_id)+' - '+t+' - '+str(tax_id)  )
                 if rank_id in TAX_ID_BY_RANKID_N_TAX:
                     TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
                 else:
                     TAX_ID_BY_RANKID_N_TAX[rank_id]={}
                     TAX_ID_BY_RANKID_N_TAX[rank_id][t] = tax_id
                 #ids_by_rank.append('1')
-            print(  ids_by_rank )
+            logging.debug(  ids_by_rank )
             q4 =  "INSERT ignore into silva_taxonomy ("+','.join(silva)+",created_at)"
             q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
             #
-            print(q4)
+            logging.debug(q4)
             cur.execute(q4)
             mysql_conn.commit()
             silva_tax_id = cur.lastrowid
@@ -412,7 +409,7 @@ def push_taxonomy(args):
                 for i in range(0,len(silva)):
                     vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
                 q5 = q5 + vals[0:-3] + ')'
-                print(q5)
+                logging.debug(q5)
                 cur.execute(q5)
                 mysql_conn.commit()
                 row = cur.fetchone()
@@ -422,8 +419,8 @@ def push_taxonomy(args):
             SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
             mysql_conn.commit()
 
-    print( 'SUMMED_TAX_COLLECTOR')
-    print( SUMMED_TAX_COLLECTOR)
+    logging.debug( 'SUMMED_TAX_COLLECTOR')
+    logging.debug( SUMMED_TAX_COLLECTOR)
              
 def get_config_data(args):
     CONFIG_ITEMS['env_source_id'] = args.env_source_id
@@ -440,9 +437,9 @@ def start_metadata(args):
     put_required_metadata()
     put_custom_metadata()
     #print CONFIG_ITEMS
-    print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
-    print
-    print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
+    logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
+   
+    logging.debug('CUST_METADATA_ITEMS '+str(CUST_METADATA_ITEMS))
     
 def put_required_metadata():
     
@@ -467,15 +464,15 @@ def put_required_metadata():
         q_req = q_req+" VALUES('"
         
         q2_req = q_req + v + "')"  
-        print q2_req
+        logging.debug( q2_req)
         try:
             cur.execute(q2_req)
             
         except MySQLdb.Error, e:
             try:
-                print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                logging.debug("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
             except IndexError:
-                print "MySQL Error: %s" % str(e)
+                logging.debug("MySQL Error: %s" % str(e))
         
         
         
@@ -485,7 +482,7 @@ def put_custom_metadata():
     """
       create new table
     """
-    print 'starting put_custom_metadata'
+    logging.debug( 'starting put_custom_metadata')
     # TABLE-1 === custom_metadata_fields
     cust_keys_array = {}
     all_cust_keys = []  # to create new table
@@ -505,7 +502,7 @@ def put_custom_metadata():
                 q2 += "'"+str(key)+"',"
                 q2 += "'varchar(128)',"
                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
-                print q2
+                logging.debug(q2)
                 cur.execute(q2)
         mysql_conn.commit()
         
@@ -532,7 +529,7 @@ def put_custom_metadata():
     q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    print q
+    logging.debug(q)
     cur.execute(q)
     
     
@@ -551,7 +548,7 @@ def put_custom_metadata():
                     q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
                 
         q3 = q3[:-1] + ")" 
-        print q3
+        logging.debug(q3)
         cur.execute(q3)
     
     mysql_conn.commit()
@@ -559,7 +556,7 @@ def put_custom_metadata():
 def get_metadata(metafile):
     
     
-    print 'csv',metafile
+    logging.debug('csv '+str(metafile))
     lines = list(csv.reader(open(metafile, 'rb'), delimiter=','))
     # try:
 #         csv_infile =   os.path.join(indir,'meta_clean.csv')
@@ -578,7 +575,7 @@ def get_metadata(metafile):
         if line[0] == 'dataset' and line[1] == 'parameterName':
             headers = line
         else:
-            key = line[7].replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
+            key = line[7].replace(' ','_').replace('/','_').replace('+','').replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
             if key == 'lat':
                 key='latitude'
             if key == 'lon' or key == 'long':
@@ -720,21 +717,21 @@ if __name__ == '__main__':
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '
-    print db_str
+    print(db_str)
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]
     else:
         sys.exit("unrecognized number -- Exiting")
         
-    print
+    
     cur.execute("USE "+NODE_DATABASE)
     
     #out_file = "tax_counts--"+NODE_DATABASE+".json"
     #in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
     
     print 'DATABASE:',NODE_DATABASE
-    
+    print('See '+LOG_FILENAME)
     
     
     
