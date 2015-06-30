@@ -15,7 +15,7 @@
    var handleDisconnect,mysql, this$ = this;
    var mysql = require('mysql2');
    var fs = require('fs-extra');
-   var config_file = 'config/db_connection.js'
+   var config_file = 'config/db-connection.js'
    eval(fs.readFileSync(config_file).toString());
    exports.db = null;
    handleDisconnect = function(){
