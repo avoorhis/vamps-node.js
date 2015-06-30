@@ -10,7 +10,7 @@ MYSQL database schema
 To run this program first install MySQL.
 There are two mysql database schemas included in the vamps-node.js installation
 One has some data included that you can use in visualizations:
-db_schema.sql and db_schema_w_data.sql
+db_schema.sql and db_schema_w_test_data.sql (they may be compressed files)
 Install one of them in your mysql installation and also create a file
 in the /config directory named 'db_connection.js' with the contents as shown below.
 Fill in the correct values for the database name and mysql user and password.
@@ -38,6 +38,26 @@ look in package.json to see required modules or run
  * (sudo) npm -g install
 
 
+	
+START The SERVER
+--------------------
+Once the database is in place but before you start the server for the first time
+go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
+This script requires that you have a .my.cnf file in your home directory
+(read about .my.cnf files here: https://dev.mysql.com/doc/refman/5.1/en/option-files.html).
+The script will prompt you for a database - just enter the one you created above.
+It may take awhile especially if the database is large, but it is required
+to create the helper files in the /public/json directory.
+
+Start the server:
+  * npm start
+
+Install nodemon to keep from restarting server (after coding changes)
+  * sudo npm install nodemon -g
+
+Then run as: 
+  * nodemon bin/www
+  * restart with rs
 
 UPDATE
 ---------------
@@ -54,25 +74,9 @@ the server is already running
     * throw er; // Unhandled 'error' event
 
 --- Test for unused modules ---
-	sudo npm install depcheck -g
-	depcheck
-	
-START The SERVER
---------------------
-Once the database is in place and before you start the server for the first time
-go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
-It may take awhile especially if the database is large, but it is required
-to create the helper files in the public/json directory.
+  sudo npm install depcheck -g
+  depcheck
 
-Start this project:
-  * npm start
-
-Install nodemon to keep from restarting server after changes
-  * sudo npm install nodemon -g
-
-Then run as: 
-  * nodemon bin/www
-  * restart with rs
 
 TESTS
 -------------
