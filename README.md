@@ -6,16 +6,27 @@ Visualization and Analysis of Microbial Population Structures
 INSTALL
 --------------
 
-MYSQL database schema
-To run this program first install MySQL.
+
+To run this program first install MySQL and Node.js (http://nodejs.org/)
+
+**Then install the source code**:
+run 'git clone https://github.com/avoorhis/vamps-node.js.git'
+Which will create the directory 'vamps-node.js'
+move into the vamps-node.js directory ('cd vamps-node.js')
+
+look in package.json to see required modules or run
+ * (sudo) npm -g install
+
+
+Install MYSQL database schema
 There are two mysql database schemas included in the vamps-node.js installation
 One has some data included that you can use in visualizations:
 db_schema.sql and db_schema_w_test_data.sql (they may be compressed files)
 Install one of them in your mysql installation and also create a file
-in the /config directory named 'db_connection.js' with the contents as shown below.
+in the /config directory named 'db-connection.js' with the contents as shown below.
 Fill in the correct values for the database name and mysql user and password.
 
-**Sample config/db_connection.js**
+**Sample config/db-connection.js**
 ```
   ////
   ///
@@ -32,10 +43,6 @@ Fill in the correct values for the database name and mysql user and password.
     database :  NODE_DATABASE
   };
 ```
-
-To run this program first install Node.js (http://nodejs.org/)
-look in package.json to see required modules or run
- * (sudo) npm -g install
 
 
 	
