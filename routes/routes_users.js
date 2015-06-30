@@ -8,7 +8,7 @@ var helpers = require('./helpers/helpers');
 //var LocalStrategy = require('passport-local').Strategy;
 
 /* GET User List (index) page. */
-router.get('/index_users', helpers.isLoggedIn, function(req, res) {
+router.get('/users_index', helpers.isLoggedIn, function(req, res) {
     
 	console.log('in indexusers')
 	console.log(req.user)
@@ -19,7 +19,7 @@ router.get('/index_users', helpers.isLoggedIn, function(req, res) {
   			 msg = 'ERROR Message '+err;
   			 helpers.render_error_page(req,res,msg);
 		   } else {
-		        res.render('user_admin/index_users', { 
+		        res.render('user_admin/users_index', { 
 		                              title: 'users', 
                                   rows : rows, 
 		                              user: req.user,  message:''  
