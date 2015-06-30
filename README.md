@@ -3,22 +3,44 @@ VAMPS rendition using Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
---- INSTALL ---
+INSTALL
+--------------
 
-To run this program first install Node.js (http://nodejs.org/)
+MYSQL database schema
+To run this program first install MySQL.
+There are two mysql database schemas included in the vamps-node.js installation
+One has some data included that you can use in visualizations:
+db_schema.sql and db_schema_w_data.sql
+Install one of them in your mysql installation and also create a file
+in the /config directory named 'db_connection.js' with the contents as shown below.
+Fill in the correct values for the database name and mysql user and password.
+
+**Sample config/db_connection.js**
+```
+  ////
+  ///
+  //
+  NODE_DATABASE = 'vamps_starter'
+  //
+  ///
+  ////
+
+  var db_config = {
+    host     : 'localhost',
+    user     : 'mysql-username',
+    password : 'mysql-password',
+    database :  NODE_DATABASE
+  };
+```
+
+Install Node.js (http://nodejs.org/)
 look in package.json to see required modules or run
  * (sudo) npm -g install
- 
-You will nead mysql running.
- * create 2 databases: 
- -- vamps_js_development 
- -- vamps_js_test
- * create a user with name and password from database-dev.js and give it permissions for those 2 databases.
- * upload the example sql: mysql -u USERNAME -p <example_db.sql
- (Please ask developers for config files, like database-dev.js, database-test.js and example_db.sql)
 
---- UPDATE ---
 
+
+UPDATE
+---------------
 To update modules:
   * npm update
 
@@ -35,7 +57,8 @@ the server is already running
 	sudo npm install depcheck -g
 	depcheck
 	
---- START The SERVER ---
+START The SERVER
+--------------------
 Once the database is in place and before you start the server for the first time
 go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
 It may take awhile especially if the database is large, but it is required
@@ -51,7 +74,8 @@ Then run as:
   * nodemon bin/www
   * restart with rs
 
---- TESTS ---
+TESTS
+-------------
 
 Test using mocha
   * make test
@@ -63,7 +87,8 @@ To check code quality:
 
 Then see file vamps-node.js/reports/index.html in a browser.
 
---- DB ---
+DB
+---------------
 
 MySQL db schema is included in root dir as: db_schema.sql
 
@@ -149,7 +174,8 @@ sbin - additional scripts
 downloads - will contain user downloaded files for retrieval
 
 
---- TODO ---
+TODO
+---------------
   * Testing!
   * Refactoring!
   * DONE:   projects/:id via REST
