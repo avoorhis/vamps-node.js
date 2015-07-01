@@ -6,13 +6,14 @@ Visualization and Analysis of Microbial Population Structures
 INSTALL
 --------------
 
-
-To run this program first install MySQL and Node.js (http://nodejs.org/)
+Requirements: 
+- MySQL (https://www.mysql.com/)
+- Node.js (http://nodejs.org/)
 
 **Then install the source code**:
 run 'git clone https://github.com/avoorhis/vamps-node.js.git'
-Which will create the directory 'vamps-node.js'
-move into the vamps-node.js directory ('cd vamps-node.js')
+Which will create the directory 'vamps-node.js'.
+Move into the vamps-node.js directory ('cd vamps-node.js')
 
 look in package.json to see required modules or run
  * (sudo) npm -g install
