@@ -10,13 +10,15 @@ Requirements:
 - MySQL (https://www.mysql.com/)
 - Node.js (http://nodejs.org/)
 
-**Then install the source code**:
-run 'git clone https://github.com/avoorhis/vamps-node.js.git'
+**Install the source code**
+- run 'git clone https://github.com/avoorhis/vamps-node.js.git'
 Which will create the directory 'vamps-node.js'.
 Move into the vamps-node.js directory ('cd vamps-node.js')
 
-look in package.json to see required modules or run
- * (sudo) npm -g install
+**Install node packages**
+- (sudo) npm -g install
+- look in file 'package.json' to see required modules.
+
 
 
 Install MYSQL database schema
