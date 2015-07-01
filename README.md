@@ -16,7 +16,7 @@ Which will create the directory 'vamps-node.js'.
 
 **Install node packages**
  * Move into the vamps-node.js directory ('cd vamps-node.js')
- * (sudo) npm -g install
+ * (sudo) npm install
  * look in file 'package.json' to see required modules.
 
 **Install MYSQL database schema**
@@ -60,6 +60,8 @@ START The SERVER
 
 Start the server:
   * npm start
+  * If you've installed the schema with data (db_schema_w_test_data.sql), you can log in with the guest
+  account (username:'guest'; password:'guest'), otherwise you should register a new account.
 
 Optional: Install nodemon to keep from restarting server (after coding changes)
   * sudo npm install nodemon -g
