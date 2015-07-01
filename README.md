@@ -54,7 +54,7 @@ The script will prompt you for a database - just enter the one you created above
 It may take awhile especially if the database is large, but it is required
 to create the helper files in the /public/json directory.
 
-  
+
 START The SERVER
 ----------------
 
