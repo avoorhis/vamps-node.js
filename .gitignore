@@ -20,6 +20,10 @@ tmp/*
 user_data/*
 !user_dir/.gitignore
 !user_dir/read.me
+public/json/*
+!public/json/.gitignore
+public/tmp_images/*
+!public/tmp_images/.gitignore
 
 # eclipse
 .jshintrc
