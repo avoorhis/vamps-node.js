@@ -12,7 +12,7 @@ colony-npm/
 *log.txt
 *.log
 
-# keep empty /logs dir
+# keeping empty dirs
 logs/*
 !logs/.gitignore
 tmp/*
@@ -20,8 +20,6 @@ tmp/*
 user_data/*
 !user_dir/.gitignore
 !user_dir/read.me
-downloads/*
-!downloads/.gitignore
 
 # eclipse
 .jshintrc
