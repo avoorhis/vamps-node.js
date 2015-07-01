@@ -11,11 +11,11 @@ INSTALL
 - Node.js (http://nodejs.org/)
 
 **Install the source code**
-- run 'git clone https://github.com/avoorhis/vamps-node.js.git'
+- run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
 Which will create the directory 'vamps-node.js'.
-Move into the vamps-node.js directory ('cd vamps-node.js')
 
 **Install node packages**
+- Move into the vamps-node.js directory ('cd vamps-node.js')
 - (sudo) npm -g install
 - look in file 'package.json' to see required modules.
 
@@ -23,9 +23,10 @@ Move into the vamps-node.js directory ('cd vamps-node.js')
 - There are two mysql database schemas included in the vamps-node.js installation.
 One has some data included that you can use in visualizations:
 db_schema.sql and db_schema_w_test_data.sql (they may be compressed files)
-Install one of them in your mysql installation and also create a file
+Install one of them in your mysql installation.
+- Create a file
 in the /config directory named 'db-connection.js' with the contents as shown below.
-Fill in the correct values for the database name and mysql user and password.
+- Fill in the correct values for the database name and mysql user and password.
 
 **Sample config/db-connection.js**
 ```
@@ -44,18 +45,18 @@ Fill in the correct values for the database name and mysql user and password.
     database :  NODE_DATABASE
   };
 ```
-
-
-	
-START The SERVER
---------------------
-Once the database is in place but before you start the server for the first time
+**Before starting the server**
+- Once the database is in place but before you start the server for the first time
 go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
 This script requires that you have a .my.cnf file in your home directory
 (read about .my.cnf files here: https://dev.mysql.com/doc/refman/5.1/en/option-files.html).
 The script will prompt you for a database - just enter the one you created above.
 It may take awhile especially if the database is large, but it is required
 to create the helper files in the /public/json directory.
+
+	
+START The SERVER
+----------------
 
 Start the server:
   * npm start
