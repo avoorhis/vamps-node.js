@@ -17,7 +17,7 @@
     "cookie-parser": "",
     "csv-parse": "",
     "d3": "3.4",
-    "debug": "2.1",
+    "debug": "",
     "depd": "",
     "ejs": "",
     "express": "",
@@ -39,7 +39,6 @@
     "passport-local": "",
     "python-shell": "",
     "serve-favicon": "",
-    "static-favicon": "",
     "sweetcaptcha": "",
     "tree-model": "",
     "uid-safe": "",
@@ -59,3 +58,4 @@
     "zombie": ""
   }
 }
+
