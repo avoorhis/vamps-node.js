@@ -38,15 +38,7 @@ views/visuals/partials/tax_silva108_simple.html
 
 grep_code.sh
 
-
-public/tmp_images/
-public/json/*/
-public/json/*
-public/json/*-taxcounts/*
 public/scripts/*.json
-public/json/*.json
-public/json/vamps*/*
-public/json/metadata*
 visuals_testing/
 .DS_Store
 
