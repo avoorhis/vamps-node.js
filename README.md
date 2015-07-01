@@ -7,17 +7,17 @@ INSTALL
 --------------
 
 **Requirements**
-* MySQL (https://www.mysql.com/)
-* Node.js (http://nodejs.org/)
+ * MySQL (https://www.mysql.com/)
+ * Node.js (http://nodejs.org/)
 
 **Install the source code**
-* run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
+ * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
 Which will create the directory 'vamps-node.js'.
 
 **Install node packages**
-* Move into the vamps-node.js directory ('cd vamps-node.js')
-* (sudo) npm -g install
-* look in file 'package.json' to see required modules.
+ * Move into the vamps-node.js directory ('cd vamps-node.js')
+ * (sudo) npm -g install
+ * look in file 'package.json' to see required modules.
 
 **Install MYSQL database schema**
  * There are two mysql database schemas included in the vamps-node.js installation.
@@ -61,11 +61,9 @@ START The SERVER
 Start the server:
   * npm start
 
-Optional:Install nodemon to keep from restarting server (after coding changes)
+Optional: Install nodemon to keep from restarting server (after coding changes)
   * sudo npm install nodemon -g
-
-Then run as: 
-  * nodemon bin/www
+  * Then run as: 'nodemon bin/www'
   * restart with rs
 
 UPDATE
