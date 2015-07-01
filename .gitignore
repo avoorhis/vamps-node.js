@@ -12,8 +12,17 @@ colony-npm/
 *log.txt
 *.log
 
-!logs/
+# keep empty /logs dir
 logs/*
+!logs/.gitignore
+tmp/*
+!tmp/.gitignore
+user_data/*
+!user_dir/.gitignore
+!user_dir/read.me
+downloads/*
+!downloads/.gitignore
+
 # eclipse
 .jshintrc
 .npmignore
@@ -27,9 +36,7 @@ views/visuals/partials/tax_silva108_simple.html
 
 grep_code.sh
 
-downloads/*
-user_data/*
-tmp/guest*
+
 public/tmp_images/
 public/json/*/
 public/json/*
