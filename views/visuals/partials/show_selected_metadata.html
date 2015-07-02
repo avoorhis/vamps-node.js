@@ -1,0 +1,20 @@
+
+
+Here are your selected metadata:<br>
+<div id='dataset_names_div' class='small_font'>
+    <ul>
+    <% for (var i in pi.metadata){ %>
+        <li>  <%= parseInt(i)+1 %> - <%= pi.metadata[i] %></li>
+    <% } %>
+    </ul>
+</div>
+<table class='button_row'>
+<tr>
+    
+    <td>
+        <!-- The form is in the selected_datasets partial -->
+        <button  class="btn btn-xs btn-primary" onclick="document.getElementById('back_form_id').submit();return false;">Change Metadata</button>
+    </td>
+    
+</tr>
+</table>

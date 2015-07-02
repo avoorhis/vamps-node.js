@@ -878,6 +878,7 @@ function create_pcoa(ts,image_type) {
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/pcoa', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("data-type","html");
       xmlhttp.onreadystatechange = function() {
 
         if (xmlhttp.readyState == 4 ) {
@@ -921,27 +922,7 @@ function create_dbrowser(ts) {
 //
 //
 //
-function get_dbrowser_html() {
-    
-        // var html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
-        // html += "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
-        // html += "<head>\n";
-        // html += "<meta charset=\"utf-8\"/>\n";
-        // html += "<link rel='shortcut icon' href='/images/favicon.ico' />\n";
-        // html += "<script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-        // html += "<script src=\"/javascript/krona-2.3.js\"></script>\n";
-        // html += "</head>\n";
-        // html += "<body>\n";
-        // html += "<img id='hiddenImage' src='/images/hidden.png' style='display:none' />\n";
-        // html += "<noscript>Javascript must be enabled to view this page.</noscript>\n";
-        // html += "<div style='display:none'>\n";
-        // html += "<krona  collapse='false' key='true'>\n";
-        // html += "<attributes magnitude='seqcount'>\n";
-        // html += "  <attribute display='Abundance'>seqcount</attribute>\n";
-        // html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
-        // html += "</attributes>\n";
-      //return html
-}
+
 //
 //  CREATE DIST HEATMAP
 //
