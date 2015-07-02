@@ -587,14 +587,15 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     	        //console.log(pcoa_data);
               console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
               PythonShell.run('make_emperor.py', options2, function (err, pcoa_data) {
+                ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+                ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
                 if (err) {
-            		    res.send('ERROR-2 '+err+" <a href='#' onclick=\"open('file://"+pc_file+"');\">pc file</a>"); // for now we'll send errors to the browser
+            		    
+                    res.send(ok_form+'ERROR-2 '+err+" <a href='#' onclick=\"open('file://"+pc_file+"');\">pc file</a>"); // for now we'll send errors to the browser
             	  }else{
                       console.log(html_path);
                       open('file://'+html_path);
-                      ok_resp  = "<a href='/tmp/"+pc_file_name+"'      target='_blank'>"+pc_file+"</a><br>";
-                      ok_resp += "<a href='/tmp/"+mapping_file+"' target='_blank'>"+mapping_file+"</a><br>"
-                      res.send(ok_resp+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
                 }
 
               });    	      

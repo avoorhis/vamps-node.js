@@ -828,13 +828,17 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 	console.log(file);
 	//// DOWNLOAD //////
 	if(req.query.fxn == 'download' && req.query.template == '1'){
-        var file = path.join(process.env.PWD,req.query.filename);
-        res.download(file); // Set disposition and send it.
-    }else if(req.query.fxn == 'download' ){
+      var file = path.join(process.env.PWD,req.query.filename);
+      res.setHeader('Content-Type', 'text');
+      res.download(file); // Set disposition and send it.
+  }else if(req.query.fxn == 'download' &&  req.query.type=='pcoa'){
+	    var file = path.join(process.env.PWD,'tmp',req.query.filename);
+		  res.setHeader('Content-Type', 'text');
+		  res.download(file); // Set disposition and send it.	
+	}else if(req.query.fxn == 'download'){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
-		res.download(file); // Set disposition and send it.
-	
-	
+		  res.setHeader('Content-Type', 'text');
+		  res.download(file); // Set disposition and send it.	
 	}else if(req.query.fxn == 'delete'){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
 		if(req.query.type == 'datasets'){
