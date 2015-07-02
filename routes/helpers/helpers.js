@@ -288,31 +288,31 @@ module.exports.update_global_variables = function(pid,type){
 			}
 			
 		}
-		console.log('RE-INTIALIZING PROJECT_ID_BY_DID')
-        console.log('RE-INTIALIZING DATASET_NAME_BY_DID')
-        console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID')
-        for(d in dids){
-            			
-			delete PROJECT_ID_BY_DID[dids[d]];
-			delete DATASET_NAME_BY_DID[dids[d]];
-			delete ALL_DCOUNTS_BY_DID[dids[d]];
-            delete DatasetsWithLatLong[dids[d]];
-		}
-		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
-        console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
-        console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
-		console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
-		console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
-        console.log('RE-INTIALIZING DatasetsWithLatLong');
-        console.log('RE-INTIALIZING DATASET_ID_BY_DNAME');
-        for(n in dataset_objs){			
-            delete DATASET_ID_BY_DNAME[dataset_objs[n].dname];
-		}
-		delete PROJECT_INFORMATION_BY_PID[pid];
-		delete DATASET_IDS_BY_PID[pid];
-		delete ALL_PCOUNTS_BY_PID[pid];
-		delete ALL_CLASSIFIERS_BY_PID[pid]
-		delete PROJECT_INFORMATION_BY_PNAME[pname];
+    console.log('RE-INTIALIZING PROJECT_ID_BY_DID')
+    console.log('RE-INTIALIZING DATASET_NAME_BY_DID')
+    console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID')
+    for(d in dids){
+    			
+      delete PROJECT_ID_BY_DID[dids[d]];
+      delete DATASET_NAME_BY_DID[dids[d]];
+      delete ALL_DCOUNTS_BY_DID[dids[d]];
+      delete DatasetsWithLatLong[dids[d]];
+    }
+    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PID');
+    console.log('RE-INTIALIZING DATASET_IDS_BY_PID');
+    console.log('RE-INTIALIZING ALL_PCOUNTS_BY_PID');
+    console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
+    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+    console.log('RE-INTIALIZING DatasetsWithLatLong');
+    console.log('RE-INTIALIZING DATASET_ID_BY_DNAME');
+    for(n in dataset_objs){			
+        delete DATASET_ID_BY_DNAME[dataset_objs[n].dname];
+    }
+    delete PROJECT_INFORMATION_BY_PID[pid];
+    delete DATASET_IDS_BY_PID[pid];
+    delete ALL_PCOUNTS_BY_PID[pid];
+    delete ALL_CLASSIFIERS_BY_PID[pid]
+    delete PROJECT_INFORMATION_BY_PNAME[pname];
 		
 	}else if(type=='add'){
 		
@@ -335,23 +335,23 @@ module.exports.update_project_status = function(res, p){
     });
 }
 module.exports.assignment_finish_request = function(rows1,rows2,status_params) {
-   console.log('query ok1 '+JSON.stringify(rows1));
-    console.log('query ok2 '+JSON.stringify(rows2));			           
-    helpers.run_select_datasets_query(rows1);
-    console.log(' UPDATED ALL_DATASETS');
-    console.log(' UPDATED PROJECT_ID_BY_DID');
-    console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-    console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-    console.log(' UPDATED DATASET_IDS_BY_PID');
-    console.log(' UPDATED DATASET_NAME_BY_DID');
-   console.log(' UPDATED DATASET_ID_BY_DNAME');
-   console.log(' UPDATED AllMetadataNames');
-   console.log(' UPDATED DatasetsWithLatLong');
-   helpers.run_select_sequences_query(rows2);
-    console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-    console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-	console.log('UPDATED ALL_CLASSIFIERS_BY_PID');
-     
-     helpers.update_project_status(res, status_params);
+        console.log('query ok1 '+JSON.stringify(rows1));
+        console.log('query ok2 '+JSON.stringify(rows2));			           
+        helpers.run_select_datasets_query(rows1);
+        console.log(' UPDATED ALL_DATASETS');
+        console.log(' UPDATED PROJECT_ID_BY_DID');
+        console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
+        console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
+        console.log(' UPDATED DATASET_IDS_BY_PID');
+        console.log(' UPDATED DATASET_NAME_BY_DID');
+        console.log(' UPDATED DATASET_ID_BY_DNAME');
+        console.log(' UPDATED AllMetadataNames');
+        console.log(' UPDATED DatasetsWithLatLong');
+        helpers.run_select_sequences_query(rows2);
+        console.log(' UPDATED ALL_DCOUNTS_BY_DID');
+        console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
+        console.log('UPDATED ALL_CLASSIFIERS_BY_PID');
+
+        helpers.update_project_status(res, status_params);
         
 };
