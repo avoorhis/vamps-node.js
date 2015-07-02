@@ -58,7 +58,7 @@ START The SERVER
 ----------------
 
 Start the server:
-  * npm start
+  * run 'npm start' from the base of the vamps-node.js directory
   * If you've installed the schema with data (db_schema_w_test_data.sql), you can log in with the guest
   account (username:'guest'; password:'guest'), otherwise you should register a new account.
 

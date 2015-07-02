@@ -339,11 +339,16 @@ def pcoa(args, dist):
     #dt = np.dtype(float)
     #print type(PCoA_result)
     a = np.array(PCoA_result)[0:,0:5]   # capture only the first three vectors
-    
+    #print a
     json_array = {}
-    json_array["P1"] = a[:,2].tolist()[:-2]  # remove the last two which are not eigen vectors
+    json_array["P1"] = a[:,2].tolist()[:-2]  # [:-2] is to remove the last two which are not eigen vectors
+    
     json_array["P2"] = a[:,3].tolist()[:-2]
-    json_array["P3"] = a[:,4].tolist()[:-2]
+    try:
+        json_array["P3"] = a[:,4].tolist()[:-2]
+    except IndexError:
+        sys.exit('IndexError - try selecting more data or deeper taxonomy')
+        
     json_array["names"] = a[:,1].tolist()[:-2]
     
     #json['v2'] = [x[0] for x in np.array(PCoA_result[:,3])[:-2]]
