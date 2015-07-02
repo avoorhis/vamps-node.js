@@ -11,7 +11,7 @@ var async = require('async');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var zlib = require('zlib');
-var Readable = require('stream').Readable;
+var Readable = require('readable-stream').Readable;
 
 var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
@@ -293,7 +293,7 @@ router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
 	//console.log(biom_matrix)
     var timestamp = +new Date();  // millisecs since the epoch!
     timestamp = req.user.username + '_' + timestamp;
-	var out_file = "downloads/"+timestamp+"_matrix.csv.gz";
+	var out_file = path.join('user_data',NODE_DATABASE,req.user.username,'matrix:'+timestamp+".csv.gz");
     var wstream = fs.createWriteStream(out_file);
 	var gzip = zlib.createGzip();
     var rs = new Readable();
@@ -321,6 +321,7 @@ router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
       .on('finish', function () {  // finished
         console.log('done compressing and writing file');
       });
+      res.redirect(req.get('referer'));
 });
 //
 //
