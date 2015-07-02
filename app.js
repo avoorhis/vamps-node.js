@@ -6,7 +6,7 @@ try{
   });
 }
 catch(err){
-  console.log('Could not load nodetime: '+ err.toString())
+  console.log(err.toString())
 }
 var compression = require('compression');
 var express = require('express');
