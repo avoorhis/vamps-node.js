@@ -2,7 +2,7 @@ var express = require('express');
 
 
 var router = express.Router();
-
+var open = require('open');
 var fs   = require('fs-extra');
 var path  = require('path');
 
@@ -35,9 +35,17 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                             });
   });
  
- 
+  router.get('/tmp/:file',function(req, res){
+    console.log('IN TMP1');
+    var file = req.params.file
+    console.log(path.join(process.env.PWD,'tmp', file));
+
+    open('file://'+path.join(process.env.PWD,'tmp', file));
+    return;
+  });
+
   router.get('/tmp/:dir/:file',function(req, res){
-      console.log('IN TMP');
+      console.log('IN TMP2');
       var dir = req.params.dir
       console.log(req.params);
       // var emperor_index_file = req.params.file;  // index.html
@@ -45,7 +53,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
      //                           user: req.user,
      //                            message:'',
      //                          });
-  })
+  });
 
 
   /* GET Geo-Distribution page. */

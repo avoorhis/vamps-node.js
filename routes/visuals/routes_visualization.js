@@ -82,15 +82,18 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   distance_matrix = {};
   biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
+  console.log('visual_post_items:>>');
+  console.log(visual_post_items);
+  console.log('<<visual_post_items:');
 
 
   // GLOBAL
-  console.log('metadata');
+  console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
   metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //metadata = JSON.parse(metadata);
   console.log(metadata);
-  console.log('metadata');
+  console.log('<<metadata');
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
@@ -98,9 +101,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
-  console.log('visual_post_items:>>');
-  console.log(visual_post_items);
-  console.log('<<visual_post_items:');
+  
   //console.log(biom_matrix);
 
 
@@ -579,24 +580,24 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
         PythonShell.run('distance.py', options1, function (err, pcoa_data) {
           if (err) {
-    		  res.send('ERROR-1 '+err); // for now we'll send errors to the browser
-    	  }else{
-    	      //console.log(pcoa_data)
-    	      //pcoa_data = JSON.parse(pcoa_data)
-    	      //console.log(pcoa_data);
+    		      res.send('ERROR-1 '+err); // for now we'll send errors to the browser
+    	    }else{
+    	        //console.log(pcoa_data)
+    	        //pcoa_data = JSON.parse(pcoa_data)
+    	        //console.log(pcoa_data);
               console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
               PythonShell.run('make_emperor.py', options2, function (err, pcoa_data) {
-                  if (err) {
-            		  res.send('ERROR-2 '+err); // for now we'll send errors to the browser
+                if (err) {
+            		    res.send('ERROR-2 '+err+" <a href='#' onclick=\"open('file://"+pc_file+"');\">pc file</a>"); // for now we'll send errors to the browser
             	  }else{
-                        
                       console.log(html_path);
-                        open('file:///'+html_path);
-                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+                      open('file://'+html_path);
+                      ok_resp  = "<a href='/tmp/"+pc_file_name+"'      target='_blank'>"+pc_file+"</a><br>";
+                      ok_resp += "<a href='/tmp/"+mapping_file+"' target='_blank'>"+mapping_file+"</a><br>"
+                      res.send(ok_resp+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+                }
 
-                  }
-              });
-    	      
+              });    	      
       	  }
 
         });
@@ -605,7 +606,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     
 });
 //
-// P C O A
+// DATA BROWSER 
 //
 router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
