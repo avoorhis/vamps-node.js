@@ -5,9 +5,9 @@
 <div class='subtitle'><%= ds %></div>
 <div class='subtitle'><%= tax %></div>
 <br>
-Limited to 100 Unique Sequences
+
 <a href='#' onclick='window.history.back()'>&lt;&lt;--Back</a>
-<div class="col-md-1">
+<div class="">
 	<form id='download_fasta_id' method='POST' action='/user_data/download_selected_seqs'>
     <!-- This form should run in the background and place the seqs file 
           in a 'downloads' directory where it can be retrieved.
@@ -15,14 +15,14 @@ Limited to 100 Unique Sequences
      -->
     <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
     <input type='hidden' name='download_type' value='partial_project' />
-    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-	<input type='hidden' name='referer' value='/visuals/view_selection' />
+    <input type='hidden' name='datasets' value='<%= JSON.stringify(chosen_id_name_hash) %>' />
+	  <input type='hidden' name='referer' value='/visuals/view_selection' />
 
   	</form>
 </div>
 <div class='overflow_500'>
 <table class='table table-condensed'>
-	<tr><td></td><th>Count</th><th>Distance</th><th>Sequence</th><th>Taxonomy</th></tr>
+	<tr><td></td><th>Count</th><th>Distance</th><th>Sequence (Limited to 100 Unique Sequences)</th><th>Taxonomy</th></tr>
 <% for (r in seqrows) { %>
    <tr>
 	   <td><%= parseInt(r)+1 %></td>

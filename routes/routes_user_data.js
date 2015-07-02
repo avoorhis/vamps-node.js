@@ -10,7 +10,7 @@ var queries = require('./queries');
 var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
 var zlib = require('zlib');
-var Readable = require('stream').Readable;
+var Readable = require('readable-stream').Readable;
 //
 //
 //
@@ -892,11 +892,12 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
 
-var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
-helpers.mkdirSync(user_dir);  // create dir if not exists
+  var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+  helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
+  
   if(req.body.download_type == 'whole_project'){
 	  req.flash('message', 'Fasta being created');
 		var pid = req.body.project_id;
@@ -904,6 +905,7 @@ helpers.mkdirSync(user_dir);  // create dir if not exists
 		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
   	out_file_path = path.join(user_dir,file_name);
   	qSelect += " where project_id = '"+pid+"'";
+  
   }else if(req.body.download_type == 'partial_project'){
 	  req.flash('message', 'Fasta being created');
     var pids = JSON.parse(req.body.datasets).ids;
@@ -970,9 +972,11 @@ helpers.mkdirSync(user_dir);  // create dir if not exists
             };
         helpers.send_mail(info);
         //req.flash('Done')
-				res.redirect(req.get('referer'));
+				
       });
+      
   });
+  res.redirect(req.get('referer'));
 
 });
 
