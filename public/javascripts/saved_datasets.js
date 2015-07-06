@@ -10,19 +10,16 @@ for(i = 0; i < view_array.length; i++){
 function view_datasets_ajax( filename, user, fxn ){
 	
         
-		args  = 'filename='+filename;
+		var args  = 'filename='+filename;
 		args += '&user='+user;
 		args += '&fxn='+fxn;
 		var xmlhttp = new XMLHttpRequest();
-		btn = document.getElementById(filename+'_open_btn_id')
-		value = btn.value
-		//fill = document.getElementById(filename+"_div").innerHTML
-		//alert(value)
-		if(value == 'closed'){
-		//if(fill == ''){
-		    xmlhttp.open("POST", "/visuals/view_saved_datasets", true);
-			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		    xmlhttp.onreadystatechange = function() {
+		//var btn = document.getElementById(filename+'_open_btn_id')
+		//value = btn.value
+		
+    xmlhttp.open("POST", "/visuals/view_saved_datasets", true);
+	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
 
 		    if (xmlhttp.readyState == 4 ) {
 					var data = xmlhttp.responseText;
@@ -39,24 +36,20 @@ function view_datasets_ajax( filename, user, fxn ){
 				
 					html += "<table class='small_font table table-condensed' >";
 				 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';
- 				
-	 			for( var i in obj.ids ){
-	 				var id =  obj.ids[i];
-	 				var dsname = obj.names[i];
-	 				html += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
-	 			}
-	 			html += '</table></div>';
-				document.getElementById(filename+"_div").innerHTML=html;
-				document.getElementById(filename+'_open_btn_id').innerHTML = 'close <span class="caret"></span>'
-				document.getElementById(filename+'_open_btn_id').value='opened'
-		       }
-		    };
-		    xmlhttp.send(args);
-		}else{
-			document.getElementById(filename+"_div").innerHTML='';
-			document.getElementById(filename+'_open_btn_id').innerHTML = 'view / open <span class="caret"></span>'
-			document.getElementById(filename+'_open_btn_id').value='closed'
-		}
+					
+		 			for( var i in obj.ids ){
+		 				var id =  obj.ids[i];
+		 				var dsname = obj.names[i];
+		 				html += '<tr><td>'+(parseInt(i)+parseInt(1)).toString()+'</td><td>'+id+'</td><td>'+dsname+'</td></tr>';
+		 			}
+		 			html += '</table></div>';
+					document.getElementById(filename+"_div").innerHTML=html;
+					document.getElementById(filename+'_open_btn_id').innerHTML = 'togle open <span class="caret"></span>'
+
+		    }
+    };
+    xmlhttp.send(args);
+	
 }
 
 
