@@ -371,7 +371,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   //console.log('<<params');
   console.log('in livesearch project');
   var q = req.params.q.toLowerCase();
-  var hint = '';
+  var hint = 'Projects:<br>';
     
   if(q != ''){
     //hint += 'projects:<br>'
@@ -388,6 +388,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
         hint += "</form>";
       }
     }
+    hint += 'Datasets:<br>';
     //hint += 'datasets:<br>';
     for(n in DATASET_NAME_BY_DID){
       dname = DATASET_NAME_BY_DID[n]
@@ -407,7 +408,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 
 
   }
-  var result = (hint=="") ? ("No Suggestions") : (hint);
+  var result = (hint=="Projects:<br>Datasets:<br>") ? ("No Suggestions") : (hint);
   res.send(result);
 });
 //

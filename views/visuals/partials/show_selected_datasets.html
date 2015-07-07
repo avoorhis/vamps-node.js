@@ -10,16 +10,17 @@ Here are your <%= items.names.length %> selected datasets:<br>
 </div>
 <table class='button_row'>
 <tr>
-    <td>
-    	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
-    		-->
-    	<form action='reorder_datasets' method='POST'>
-    		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Re-order Datasets</button>
-    		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
-    	</form>
+    <% if(referer != 'export_data'){ %>
+        <td>
+        	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
+        		-->
+            <form action='/visuals/reorder_datasets' method='POST'>
+        		<button type="submit" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Re-order Datasets</button>
+        		<input type="hidden" class="" id='' name='referer' value='<%= referer %>'>
+        	</form>
 
-    </td>
-
+        </td>
+    <% } %>
     <td>
     	<button type="button" class="btn btn-xs btn-primary" id='change_datasets_btn'  >Change Datasets</button>
     </td>

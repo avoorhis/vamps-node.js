@@ -329,11 +329,10 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   
-  console.log(dataset_ids);
+  //console.log(dataset_ids);
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-
   for (var i in dataset_ids){
       did   = dataset_ids[i];
       dname = DATASET_NAME_BY_DID[did];

@@ -148,7 +148,7 @@ if (typeof selected_distance_combo !=="undefined") {
 	});
 }
 // MIN Select (Combo)
-min_range_combo = document.getElementById('min_range');
+min_range_combo = document.getElementById('min_range') ;
 if (typeof min_range_combo !=="undefined") {
 	min_range_combo.addEventListener('change', function () {
   	  document.getElementById('output_choices_submit_btn').disabled = false;

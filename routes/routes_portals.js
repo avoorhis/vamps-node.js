@@ -15,8 +15,8 @@ router.get('/portals_index', function(req, res) {
 //
 //
 //
-router.get('/mobe', function(req, res) {
-    res.render('portals/mobe', { 
+router.get('/mobe/mobe', function(req, res) {
+    res.render('portals/mobe/mobe', { 
     		title: 'VAMPS:Microbiology Of the Built Environment Portal',
         user: req.user,
     		message:'',
