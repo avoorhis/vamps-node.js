@@ -27,12 +27,18 @@ function view_datasets_ajax( filename, user, fxn ){
 					dataset_ids = obj.ids;
 					//alert(dataset_ids)
 				
-					var html = "<div class='auto_height200 border1'>"
+					var html = "<div class='auto_height200 border1'><table><tr><td>"
 					html += "<form id='' name='' method='POST' action='unit_selection'>"
-					html += "<button type='submit' class='btn btn-xs btn-primary'>use these in visualizations</button>"
+					html += "<button type='submit' class='btn btn-xs btn-primary'>use these in visualizations</button>";					
 					html += "<input type='hidden' name='retain_data' value='1' >"
 					html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >"
-					html += "</form>"
+					html += "</form></td>"
+
+					html += "<td><form id='' name='' method='POST' action='../user_data/export_selection'>"					
+					html += " <button type='submit' class='btn btn-xs btn-primary'>use these in exports</button>"
+					html += "<input type='hidden' name='retain_data' value='1' >"
+					html += "<input type='hidden' name='dataset_ids' value='"+ JSON.stringify(dataset_ids)+"' >"
+					html += "</form></td></tr></table>"
 				
 					html += "<table class='small_font table table-condensed' >";
 				 	html += '<tr><td></td><th>SampleID</th><th>project--dataset</th></tr>';

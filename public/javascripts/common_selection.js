@@ -1,23 +1,27 @@
 
 
 
-var save_datasets_btn = document.getElementById('save_datasets_btn');
-if (typeof save_datasets_btn !=="undefined") {
+var save_datasets_btn = document.getElementById('save_datasets_btn') || null;
+if (save_datasets_btn !== null) {
   save_datasets_btn.addEventListener('click', function () {
 	  save_datasets_list(ds_local,user_local);
   });
 }
-var reorder_datasets_btn = document.getElementById('reorder_datasets_btn');
-if (typeof reorder_datasets_btn !=="undefined") {
+
+var reorder_datasets_btn = document.getElementById('reorder_datasets_btn') || null;
+if (reorder_datasets_btn !== null) {
+  
   reorder_datasets_btn.addEventListener('click', function () {
 	  //window.location='reorder_datasets';
 	  // form = 
   });
 }
-var change_datasets_btn = document.getElementById('change_datasets_btn');
-if (typeof change_datasets_btn !=="undefined") {
+var change_datasets_btn = document.getElementById('change_datasets_btn') || null;
+if (change_datasets_btn !== null) {
   change_datasets_btn.addEventListener('click', function () {
-	  window.location='visuals_index';
+	  // referer
+    //window.location='visuals_index';
+    window.location=document.referrer;
   });
 }
 
@@ -34,17 +38,17 @@ var save_datasets_list = function(ds_local, user)
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
     args += "&user="+user;
-	//console.log('args '+args);
-	var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'save_datasets', true);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	  //console.log('args '+args);
+	  var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", '/visuals/save_datasets', true);
+	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
 
        if (xmlhttp.readyState == 4 ) {
          var response = xmlhttp.responseText;
 		 //alert(string);
 		 if(response == 'OK'){
-		 	document.getElementById('save_ds_result').innerHTML = "Saved as: <a href='saved_datasets'>"+ filename+ "</a>"
+		 	document.getElementById('save_ds_result').innerHTML = "Saved as: <a href='/visuals/saved_datasets'>"+ filename+ "</a>"
 		 }else{
 		 	document.getElementById('save_ds_result').innerHTML = 'Problem: Not Saved'
 		 }
