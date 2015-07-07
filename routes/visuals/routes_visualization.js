@@ -107,6 +107,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   res.render('visuals/view_selection', {
                                 title     :           'VAMPS: Visuals Select',
+                                referer   : 'unit_selection',
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                 matrix    :           JSON.stringify(biom_matrix),
                                 metadata  :           JSON.stringify(metadata),
@@ -210,11 +211,12 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	  res.render('visuals/unit_selection', {
 	                    title: 'VAMPS: Units Selection',
+                      referer: 'visuals_index',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 	                    constants    : JSON.stringify(req.C),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
-		  				md_req       : JSON.stringify(required_metadata_headers),
-		  				message      : req.flash(),
+		  				        md_req       : JSON.stringify(required_metadata_headers),
+		  				        message      : req.flash(),
 	                    user         : req.user
 	  });  // end render
   }

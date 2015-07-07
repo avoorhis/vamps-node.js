@@ -26,21 +26,11 @@ Or should this page JUST show public projects?
 	    <tr>
 	    <td><%= cnt %></td>
 	    <td><%= pid %></td>
-	    <td>	      
-	      <a title='<%= proj[pid].description %>' href='/projects/<%= pid %>'> <%= proj[pid].project %> </a>
-	    </td>
-	    <td>
-	      		<%= proj[pid].title %>
-	    </td>
-	    <td>
-	      		<%= proj[pid].last %>, <%= proj[pid].first %> (<%= proj[pid].username %>)
-	    </td>
-	    <td>
-	      		<%= proj[pid].email %>
-	    </td>
-	    <td>
-	      		<%= proj[pid].institution %>
-	    </td>
+	    <td><a title='<%= proj[pid].description %>' href='/projects/<%= pid %>'><%= proj[pid].project %></a></td>
+	    <td><%= proj[pid].title %></td>
+	    <td><%= proj[pid].last %>, <%= proj[pid].first %> (<%= proj[pid].username %>)</td>
+	    <td><%= proj[pid].email %></td>
+	    <td><%= proj[pid].institution %></td>
 	    </tr>
 	    <% cnt += 1 %>
 	<% } %>

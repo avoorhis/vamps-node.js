@@ -1,4 +1,4 @@
-  var express = require('express');
+var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
@@ -11,6 +11,8 @@ var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var Readable = require('readable-stream').Readable;
+
+var COMMON  = require('./visuals/routes_common');
 //
 //
 //
@@ -49,6 +51,55 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 							message : req.flash('message'),
                           });
     });
+});
+//
+//  EXPORT SELECTION
+//
+/* GET Import Choices page. */
+router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
+  console.log('in routes_user_data.js /export_selection')
+  console.log('req.body: export_selection-->>');
+  console.log(req.body);
+  console.log('req.body: export_selection');
+  if(req.body.retain_data === '1'){
+    dataset_ids = JSON.parse(req.body.dataset_ids);	
+  }else{
+    dataset_ids = req.body.dataset_ids;
+  }
+  console.log('dataset_ids '+dataset_ids);
+  if (dataset_ids === undefined || dataset_ids.length === 0){
+      console.log('redirecting back -- no data selected');
+   	 req.flash('nodataMessage', 'Select Some Datasets');
+   	 res.redirect('export_data');
+     return;
+  }else{
+   // GLOBAL Variable
+	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+    console.log('chosen_id_name_hash-->');
+	  console.log(chosen_id_name_hash);
+	  console.log(chosen_id_name_hash.ids.length);
+	  console.log('<--chosen_id_name_hash');
+    res.render('user_data/export_selection', {
+          title: 'VAMPS:Import Choices',
+          referer: 'export_data',
+          chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+          message: req.flash('successMessage'),
+          failmessage: req.flash('failMessage'),
+          user: req.user
+        });
+  }
+});
+//
+//  EXPORT DATA
+//
+router.get('/export_data', helpers.isLoggedIn, function(req, res) {
+    res.render('user_data/export_data', { title: 'VAMPS:Import Data',                                
+                rows     : JSON.stringify(ALL_DATASETS),
+                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                constants: JSON.stringify(req.C),
+								message  : req.flash('nodataMessage'),
+                user     : req.user
+          });
 });
 //
 //
@@ -96,19 +147,7 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
           user: req.user
                           });
 });
-//
-//
-//
-router.get('/export_data', helpers.isLoggedIn, function(req, res) {
-    res.render('user_data/export_data', { title: 'VAMPS:Import Data',
-                                
-                                rows     : JSON.stringify(ALL_DATASETS),
-                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants: JSON.stringify(req.C),
-	  							message  : req.flash(''),
-                                user     : req.user
-                          });
-});
+
 //
 //
 //
