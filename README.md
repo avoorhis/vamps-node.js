@@ -62,7 +62,7 @@ Start the server:
   * If you've installed the schema with data (db_schema_w_test_data.sql), you can log in with the guest
   account (username:'guest'; password:'guest'), otherwise you should register a new account.
 
-Optional: Install 'nodemon' to keep from restarting server (after coding changes)
+Optional: Install 'nodemon' to keep from restarting server after changes to the code.
   * sudo npm install nodemon -g
   * Then run as: 'nodemon bin/www'
   * restart with rs
@@ -72,7 +72,6 @@ Optional: Install 'forever' which should re-start the server after a fatal crash
   * Then run as: 'forever bin/www'
 
   * run both 'nodemon' and 'forever': 'forever -c nodemon bin/www'
-
 
 UPDATE
 ---------------
