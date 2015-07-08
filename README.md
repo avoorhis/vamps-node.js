@@ -63,15 +63,15 @@ Start the server:
   account (username:'guest'; password:'guest'), otherwise you should register a new account.
 
 Optional: Install 'nodemon' to keep from restarting server after changes to the code.
-  * sudo npm install nodemon -g
-  * Then run as: 'nodemon bin/www'
-  * restart with rs
+* sudo npm install nodemon -g
+* Then run as: 'nodemon bin/www'
+* restart with rs
   
 Optional: Install 'forever' which should re-start the server after a fatal crash.
-  * sudo npm install forever -g
-  * Then run as: 'forever bin/www'
+* sudo npm install forever -g
+* Then run as: 'forever bin/www'
 
-  * run both 'nodemon' and 'forever': 'forever -c nodemon bin/www'
+* run both 'nodemon' and 'forever': 'forever -c nodemon bin/www'
 
 UPDATE
 ---------------
