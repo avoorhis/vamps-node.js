@@ -231,7 +231,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 				   //console.log('PID last line: '+last_line)				   
 				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));	
                    
-                   connection.db.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
+                   connection.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
                        if(err){ 
                            console.log('ERROR-in status update')
                        }else{
@@ -325,11 +325,11 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
                    
-                   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+                   connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
 					   if (err)  {
 				 		  console.log('1-GAST-Query error: ' + err);				 		  			 		  
 				       } else {
-        				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
         				       if (err)  {
         				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
         				       } else {        
@@ -407,11 +407,11 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
                    
-                   connection.db.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
+                   connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
 					   if (err)  {
 				 		  console.log('1-RDP-Query error: ' + err);				 		  				 		  
 				       } else {						   
-        				   connection.db.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
+        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
         				       if (err)  {
         				 		  	console.log('2-RDP-Query error: ' + err);        				 		  	
         				       } else {        

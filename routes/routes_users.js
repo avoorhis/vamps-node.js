@@ -19,19 +19,19 @@ router.get('/users_index', helpers.isLoggedIn, function(req, res) {
   			 msg = 'ERROR Message '+err;
   			 helpers.render_error_page(req,res,msg);
 		   } else {
-		        res.render('user_admin/users_index', { 
-		                              title: 'users', 
-                                  rows : rows, 
-		                              user: req.user,  message:''  
-				});
+		      res.render('user_admin/users_index', { 
+                  title: 'users', 
+                  rows : rows, 
+                  user: req.user,  message:''  
+				  });
 
 		   }
 	    });
 	}else{
         res.render('denied', { 
-                              title: 'users', user: req.user,
+                title: 'users', user: req.user,
 							  message: req.flash('nopermissionMessage', 'Permission Denied') 
-		});
+		    });
 
           
 	}
@@ -48,10 +48,9 @@ router.get('/login', function(req, res) {
                       title: 'login',
                       message: req.flash('loginMessage'), 
                       user: req.user });
-});
+    });
 
-router.post('/login',
-    
+    router.post('/login',    
     passport.authenticate('local-login', { successRedirect: '/users/profile',
                                    failureRedirect: 'login',
                                    failureFlash: true })

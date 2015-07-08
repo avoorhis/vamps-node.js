@@ -22,7 +22,7 @@ function silvaTaxonomy() {
 
 silvaTaxonomy.prototype.get_all_taxa = function(callback) 
 {
-  connection.db.query(taxa_query, function (err, rows, fields) {
+  connection.query(taxa_query, function (err, rows, fields) {
     callback(err, rows);
   });
 };

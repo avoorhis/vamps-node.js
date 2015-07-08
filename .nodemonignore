@@ -1,8 +1,0 @@
-# Ignore every thing in /tmp
-/tmp/*
-
-# tmp_images
-/public/tmp_images/*
-
-/views/tmp/*
-
