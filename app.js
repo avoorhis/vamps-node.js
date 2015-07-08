@@ -28,8 +28,10 @@ var multer = require('multer');
 //var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
-connection = require('./config/database');
-//connection.connect();
+connection = require('./config/database').pool;
+
+
+
 var routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
 var users     = require('./routes/routes_users');
 var user_data = require('./routes/routes_user_data');
@@ -38,13 +40,13 @@ var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
 var portals   = require('./routes/routes_portals');
-//var ALL_DATASETS = require('./routes/load_all_datasets2')(connection);
+
 var visuals = require('./routes/visuals/routes_visualization');
 var C = require('./public/constants');
 
 var app = express();
 app.set('appName', 'VAMPS');
-require('./config/passport')(passport, connection.db); // pass passport for configuration
+require('./config/passport')(passport, connection); // pass passport for configuration
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -60,7 +62,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(multer({ dest: path.join('user_data',NODE_DATABASE,'tmp') }));  // for multipart uploads: files
+app.use(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp') }));  // for multipart uploads: files
 app.use(cookieParser());
 
 app.use(compression());
@@ -87,19 +89,13 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-// Make our db accessible to our router
-// app.use(function(req, res, next){
-//     if(!connection.db) {return next(new Error('no db connection'));}
-//     req.db = connection.db;
-//     req.C = C;
-//     return next();
-// });
+
 app.use(function(req, res, next){
-	if (connection.db == null) {
+	if (connection == null) {
 	   this.send('We cannot reach the database right now, please try again later.');
 	   return;
 	 }else{
-	    req.db = connection.db;
+	    req.db = connection;
 	    req.C = C;
 	    return next();
 	}

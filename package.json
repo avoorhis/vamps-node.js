@@ -11,18 +11,18 @@
     "test": "mocha"
   },
   "dependencies": {
-    "async": "",
+    "async": "0.9.x",
     "body-parser": "",
     "compression": "",
     "cookie-parser": "",
     "csv-parse": "",
     "d3": "3.4",
-    "debug": "",
     "depd": "",
     "ejs": "",
     "express": "",
     "express-flash": "",
     "express-session": "",
+    "forever": "",
     "fs-extra": "",
     "ini": "",
     "iniparser": "",
@@ -30,6 +30,7 @@
     "morgan": "",
     "multer": "",
     "mysql2": "",
+    "node-json-minify": "^0.1.4-a",
     "node-json2html": "",
     "nodemailer": "",
     "nodemon": "",
@@ -46,7 +47,7 @@
     "ya-csv": ""
   },
   "devDependencies": {
-    "debug": "",
+    "debug": "2.1.0",
     "istanbul": "",
     "mocha": "",
     "passport-stub": "",

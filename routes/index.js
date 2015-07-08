@@ -24,8 +24,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
   
 
-
-
   
   /* GET Saved Data page. */
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
