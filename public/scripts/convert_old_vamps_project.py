@@ -545,6 +545,7 @@ def put_custom_metadata():
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
                 if key in CUST_METADATA_ITEMS[did]:
+                    
                     q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
                 
         q3 = q3[:-1] + ")" 
@@ -617,10 +618,10 @@ def get_metadata(metafile):
             
                 if key in required_metadata_fields:
                     if did in REQ_METADATA_ITEMS:
-                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
                     else:
                         REQ_METADATA_ITEMS[did]= {}
-                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                        REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
                     # #REQ_METADATA_ITEMS['dataset_id'] = []
                     # for j,value in enumerate(TMP_METADATA_ITEMS[key]):
                     #     if j in saved_indexes:
@@ -632,10 +633,10 @@ def get_metadata(metafile):
                 else:
                 
                     if did in CUST_METADATA_ITEMS:
-                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key]
+                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
                     else:
                         CUST_METADATA_ITEMS[did]= {}
-                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key] 
+                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'') 
                 
                 
                 

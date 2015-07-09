@@ -1,4 +1,6 @@
 *.sql
+*.fa
+*.fna
 !db_schema.sql
 !db_config.sql.gz
 !db_schema_w_test_data.sql
@@ -8,6 +10,7 @@ config/db_vamps_node.sql.gz
 config/old/*
 node_modules/
 colony/
+
 colony-npm/
 *log.txt
 *.log
@@ -24,6 +27,8 @@ public/json/*
 !public/json/.gitignore
 public/tmp_images/*
 !public/tmp_images/.gitignore
+public/blast/*
+!public/blast/.gitignore
 
 # eclipse
 .jshintrc

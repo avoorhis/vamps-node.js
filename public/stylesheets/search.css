@@ -36,3 +36,7 @@
 	border:1px solid black;
 	list-style-type:decimal;
 }
+
+#blast_search_area {
+	width:50%;
+}

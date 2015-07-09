@@ -208,7 +208,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 			// script will remove data from mysql and datset taxfile
 			console.log(options.scriptPath+'/node_script_utils.py '+options.args.join(' '));
-            var delete_process = spawn( options.scriptPath+'/node_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+      var delete_process = spawn( options.scriptPath+'/node_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 			var output = '';
 			delete_process.stdout.on('data', function (data) {
 			  //console.log('stdout: ' + data);
