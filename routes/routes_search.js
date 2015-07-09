@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
+var fs   = require('fs-extra');
 var path  = require('path');
 
 /* GET Search page. */
@@ -9,7 +10,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     
     var tmp_metadata_fields = {};
     var metadata_fields = {};
-	var metadata_fields_array = [];
+	  var metadata_fields_array = [];
     for (var did in AllMetadata){
       for (var name in AllMetadata[did]){
           val = AllMetadata[did][name];
@@ -40,13 +41,29 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(metadata_fields)
     metadata_fields_array.sort();
+
+    // check if blast database exists:
+    var blast_nin = path.join('public','blast', NODE_DATABASE, 'ALL_SEQS.nin');
+    try{
+      stats = fs.lstatSync(blast_nin);
+      if (stats.isFile()) {
+        var blast_db_path = path.join('public','blast', NODE_DATABASE, 'ALL_SEQS');;
+      }else{
+        var blast_db_path = false;
+      }
+    }
+    catch (e){
+      console.log(e)
+    }
+    console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
-        metadata_items: JSON.stringify(metadata_fields),
-        message: req.flash('message'),
-        meta_message: req.flash('meta_message'),
-        tax_message: req.flash('tax_message'),
-        mkeys: metadata_fields_array,
-        user: req.user
+        metadata_items:  JSON.stringify(metadata_fields),
+        message:         req.flash('message'),
+        meta_message:    req.flash('meta_message'),
+        tax_message:     req.flash('tax_message'),
+        mkeys:           metadata_fields_array,
+        blast_db_path:   blast_db_path,
+        user:            req.user
     		});
 });
 //
@@ -222,10 +239,11 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
   //console.log(filtered.datasets);
   if(filtered.datasets.length === 0){
   	console.log('redirecting back -- no data found');
-	req.flash('message', 'No Data Found');
-	res.redirect('search_index'); 
+	  req.flash('message', 'No Data Found');
+	  res.redirect('search_index');
+    return; 
   }else{
-          res.render('search/search_result', {   
+          res.render('search/search_result_metadata', {   
                     title    : 'VAMPS: Search Datasets',
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
@@ -431,6 +449,133 @@ router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, 
 	res.send(tax_str);
 	
 });
+//
+//  BLAST
+//
+router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
+    console.log('in blast res');
+    console.log(req.body);
+    if(req.body.query == ''){
+      req.flash('message', 'No Query Sequence Found');
+      res.redirect('search_index'); 
+      return
+    }
+    var blast_db = req.body.blast_db_path;
+    // got query now put it in a file (where?)
+    var timestamp = +new Date();  // millisecs since the epoch!
+    timestamp = req.user.username + '_' + timestamp;
+    var query_file = timestamp+"_blast_query.fa";
+    var query_file_path = path.join('tmp',query_file);
+    
+    // using blastn with -outfmt 13 option produces 2 files
+    var out_file0 = timestamp+"_blast_result.json";
+    var out_file_path0 = path.join('tmp',out_file0);    
+    var out_file1 = timestamp+"_blast_result_1.json";
+    var out_file_path1 = path.join('tmp',out_file1);
+    // then run 'blastn' command 
+    // blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
+    fs.writeFile(query_file_path,req.body.query+"\n",function(err){
+      if(err){
+        req.flash('message', 'ERROR - Could not write query file');
+        res.redirect('search_index'); 
+      
+      }else{
+        var spawn = require('child_process').spawn;
+        var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
+        var blast_options = {
+          scriptPath : req.C.PATH_TO_SCRIPTS,
+          args :       [ '-db', blast_db, '-query', query_file_path, '-outfmt','13','-out',out_file_path0 ],
+        }
+        //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
+        var blast_process = spawn( blast_options.scriptPath+'/blastn', blast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  
+        
+        blast_process.stdout.on('data', function (data) {
+          //console.log('stdout: ' + data);
+          data = data.toString().replace(/^\s+|\s+$/g, '');
+          var lines = data.split('\n');
+          for(var n in lines){        
+            console.log('blastn line '+lines[n]);
+          }
+        });
+        // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
+        blast_process.on('close', function (code) {
+         console.log('blast_process process exited with code ' + code);
+         
+         if(code == 0){                   
+           console.log('BLAST SUCCESS'); 
+           // now read file
+           fs.readFile(out_file_path1,'utf8', function(err, data){
+              if(err){
+                req.flash('message', 'ERROR - Could not read blast outfile');
+                res.redirect('search_index'); 
+              }else{
+                var obj = JSON.parse(data);
+                console.log(out_file_path1);
+                console.log(data);
+                res.render('search/search_result_blast', {   
+                    title    : 'VAMPS: BLAST Result',
+                    data     : data,
+                    show     : 'blast_result',
+                    user     : req.user
+                });  //
+
+              }
+           })        
+                  
+                                       
+         }else{
+            // blastn error
+         }       
+        });   
+
+        
+      }
+
+
+    });
+     
+
+  });
+//
+//
+//
+router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
+  console.log(req.params)
+  var seqid = req.params.id;
+
+  q_tax = "SELECT domain,phylum,klass,`order`,family,genus";
+  q_tax += " from silva_taxonomy_info_per_seq";
+  q_tax += " JOIN silva_taxonomy using (silva_taxonomy_id)";
+  q_tax += " JOIN domain using (domain_id)";
+  q_tax += " JOIN phylum using (phylum_id)";
+  q_tax += " JOIN klass using (klass_id)";
+  q_tax += " JOIN `order` using (order_id)";
+  q_tax += " JOIN family using (family_id)";
+  q_tax += " JOIN genus using (genus_id)";
+  q_tax += " WHERE sequence_id='"+seqid+"'";
+
+  //we want to know the taxonomy AND which projects 
+  q_ds = "SELECT dataset_id from sequence_pdr_info";
+  q_ds += " WHERE sequence_id='"+seqid+"'";
+
+  connection.query(q_ds, function(err, rows, fields){
+    if(err){
+      console.log(err);
+    }else{
+   
+      res.render('search/search_result_blast', {   
+                    title    : 'VAMPS: BLAST Result', 
+                    show     : 'datasets', 
+                    seqid    : seqid,  
+                    rows     : JSON.stringify(rows),               
+                    user     : req.user
+                });  //
+      }
+  });
+
+});
+//
+//
 //
 //  REGULAR FXNS
 //
