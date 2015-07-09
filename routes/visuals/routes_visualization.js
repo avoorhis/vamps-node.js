@@ -970,7 +970,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 
 	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
 	
-	connection.db.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
+	connection.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
 	  
 	      if (err)  {
 	  		  console.log('Query error: ' + err);

@@ -1,0 +1,216 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+<% s = JSON.parse(searches) %>
+<% f = JSON.parse(filtered) %>
+<script>
+  
+</script>
+<div class='title'>Search Result</div>
+<div class='subtitle'>Metadata</div>
+<table border='1' class='table'><tr>
+<td>
+<form id='' name='' method='POST' action='/visuals/unit_selection'>
+		<div class="">
+		   <div class="panel panel-default">
+			   
+			   
+			   <div class="panel-heading">
+              	 <h3 class="panel-title">Search 1 Values
+			      <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
+			     </h3>
+               </div>
+			 
+			 
+			 
+			   <div class="panel-body">
+					<table class='table table-condensed'>
+					<% for(i in s.search1) { %>
+						<tr>
+						<% if(i !== 'ds_plus' && i !== 'datasets') { %>
+							<td><%= i %>:</td><td> <%= s.search1[i] %></td>
+						<% } %>
+						</tr>
+					<% } %>
+					</table>
+			   </div>
+			</div>
+		</div>
+		
+<br>		
+	<% if(s.search1.datasets.length == 0){ %>
+			<b>no data found</b>
+	<% }else{ %>
+		<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+				<div class='search_ds_result_box'>
+				<% for(i in s.search1.ds_plus) { %>
+					<li>
+						<%= parseInt(i)+1 %>) <%= s.search1.ds_plus[i].pname %>--<%= s.search1.ds_plus[i].dname %>
+						<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(value: <%= s.search1.ds_plus[i].value %>)
+					</li>
+				<% } %>
+			
+				</div>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >		
+	<% } %>		
+			
+</form>		
+</td>
+
+
+<td>
+<form id='' name='' method='POST' action='/visuals/unit_selection'>
+		<div class="">
+		   <div class="panel panel-default">
+			   <div class="panel-heading">
+	          	 <h3 class="panel-title">Search 2 Values
+				 <% if('search2' in s) { %>
+				   <button id='dwnld_btn_id2' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
+	             <% } %>
+			 	</h3>
+			   </div>
+			   <div class="panel-body">
+					<% if('search2' in s) { %>
+						<table class='table table-condensed'>
+						<% for(i in s.search2) { %>
+							<tr>
+							<% if(i !== 'ds_plus' && i !== 'datasets') { %>
+								<td><%= i %>:</td><td> <%= s.search2[i] %></td>
+							<% } %>
+							</tr>
+						<% } %>
+						</table>
+					<% }else{ %>
+							<br>No Search
+					<% } %>
+			   </div>
+			</div>
+		</div>
+		<br>		
+	<% if('search2' in s) { %>
+		<% if(s.search2.datasets.length == 0){ %>
+			<b>no data found</b>
+		<% }else{ %>
+			<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+				<div class='search_ds_result_box'>
+				<% for(i in s.search2.ds_plus) { %>
+					<li>
+						<%= parseInt(i)+1 %>) <%= s.search2.ds_plus[i].pname %>--<%= s.search2.ds_plus[i].dname %>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(val: <%= s.search2.ds_plus[i].value %>)
+					</li>
+				<% } %>
+
+				</div>
+			<input type='hidden' name='retain_data' value='1' >
+			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >	
+		<% } %>
+	<% } %>		
+		
+</form>		
+</td>
+
+
+<td>
+<form id='' name='' method='POST' action='/visuals/unit_selection'>
+		<div class="">
+		   <div class="panel panel-default">
+			   <div class="panel-heading">
+	          	 <h3 class="panel-title">Search 3 Values
+				 <% if('search3' in s) { %>
+					<button id='dwnld_btn_id3' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
+	           	 <% } %>
+				 </h3>
+			   </div>
+			   <div class="panel-body">
+					<% if('search3' in s) { %>
+						<table class='table table-condensed'>
+						<% for(i in s.search3) { %>
+							<tr>
+							<% if(i !== 'ds_plus' && i !== 'datasets') { %>
+								<td><%= i %>:</td><td> <%= s.search3[i] %></td>
+							<% } %>
+							</tr>
+						<% } %>
+						</table>
+					<% }else{ %>
+							<br>No Search
+					<% } %>
+			   </div>
+			</div>
+		</div>
+<br>
+	<% if('search3' in s) { %>
+		<% if(s.search3.datasets.length == 0){ %>
+			<b>no data found</b>
+		<% }else{ %>
+			<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+				<div class='search_ds_result_box'>
+				<% for(i in s.search3.ds_plus) { %>
+					<li>
+						<%= parseInt(i)+1 %>) <%= s.search3.ds_plus[i].pname %>--<%= s.search3.ds_plus[i].dname %>
+					<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(val: <%= s.search3.ds_plus[i].value %>)
+					</li>
+				<% } %>			
+				</div>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >			
+		<% } %>
+	<% } %>		
+</form>		
+		
+		
+</td>
+</tr>
+<tr>
+<td>
+	
+		</div>
+	</div>
+</td>
+
+
+<td>
+	
+</td>
+<td>
+
+
+</td>
+</tr>
+</table>
+<table class='table'>
+<tr>
+<td  colspan='3'>
+<form id='' name='' method='POST' action='/visuals/unit_selection'>
+	<button id='dwnld_btn_id' class='btn btn-xs btn-success' name='' >Download Sequences</button>
+	<button type='submit' class='btn btn-xs btn-primary' name='' >Use these datasets in Visualizations</button>
+	
+    <center>
+	<% if(!('search2' in s) && !('search3' in s)) { %>
+		<br><strong><%= f.datasets.length %> dataset(s)</strong>
+	<% }else{ %>	
+		<br><strong>Combined by <%= join_type %> (<%= f.datasets.length %> datasets)</strong>
+
+	<% } %>
+	<% if(f.datasets.length == 0){ %>
+			<b>no data found</b>
+		<% }else{ %>
+			
+				<div class='search_ds_result_box'>
+				<% for(i in f.ds_plus) { %>
+					<li>
+						<%= parseInt(i)+1 %>) <%= f.ds_plus[i].pname %>--<%= f.ds_plus[i].dname %>
+					</li>
+				<% } %>
+			
+				</div>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >
+			
+		<% } %>
+	</center>
+</form>
+</td></tr></table>
+<% include ../add_ins/end.ejs %>
+ </body>
+ </html>

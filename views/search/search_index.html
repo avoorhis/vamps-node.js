@@ -222,10 +222,21 @@
 </div>
 
 <a name="blast"></a>
-<div id='blast_search_div' class='well'><strong>Blast (This search needs to be run on cluster)</strong>
-	<ul>
-			<li>Problematic: Must create and maintain VAMPS Blast Database which is updated with each new project.
-	</ul>
+<div id='blast_search_div' class='well'><strong>Local Blast</strong>
+	<% if(blast_db_path){ %>
+		<form method='POST' action='/search/blast_search_result'>
+		<ul>
+				<div class="">Enter single fasta sequence (with or without definition line)
+				  <br>		  
+				  	<textarea id="blast_search_area" class="" name='query' rows='5' cols="10" ></textarea>
+				  	<br><button class='btn btn-xs btn-primary' type='submit'>BLAST</button>				  	  	
+				</div>
+		</ul>
+		<input type='hidden' name='blast_db_path' value='<%= blast_db_path %>'>
+	  </form>
+  <% }else{ %>
+			No Blast Database Found
+	<% } %>
 </div>
 
 <% include ../add_ins/end.ejs %>
