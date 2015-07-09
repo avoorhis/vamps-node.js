@@ -1,0 +1,53 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+<% if(show == 'blast_result'){ %>
+		<% dt = JSON.parse(data); %>
+
+
+		<div class='title'>BLAST Result</div>
+		<div class='subtitle'></div>
+
+		<%= dt.BlastOutput2.report.program %> (Program: <%= dt.BlastOutput2.report.version %>)
+		<br>Query ID: <%= dt.BlastOutput2.report.results.search.query_id %>
+		<br>Query Title: <%= dt.BlastOutput2.report.results.search.query_title %>
+		<br>Query Length: <%= dt.BlastOutput2.report.results.search.query_len %>
+		<table border='1' class='table'>
+		<thead>
+			<tr>
+				<th>#</th><th>len</th><th>hit seqid</th><th>score</th><th>evalue</th><th>seqs</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for(i in dt.BlastOutput2.report.results.search.hits) { %>
+			<% var hit = dt.BlastOutput2.report.results.search.hits[i] %>
+			<tr>
+		<td><%= hit.num %></td>
+		<td><%= hit.len %></td>
+		<td><a href='/search/seqs/<%= hit.description[0].id %>'><%= hit.description[0].id %></a></td>
+		<td><%= hit.hsps[0].score %></td>
+		<td><%= hit.hsps[0].evalue %></td>
+		<td><pre>
+		query:   <%= hit.hsps[0].qseq %>
+		hit:     <%= hit.hsps[0].hseq %>
+		midline: <%= hit.hsps[0].midline %>
+		</pre>
+
+		</td>
+
+		</tr>
+		<% } %>
+		</tbody>
+		</table>
+<% }else{ %>
+	<% r = JSON.parse(rows); %>
+    <div class='title'>Datasets that include this sequence ID: <%= seqid %></div>
+    <table>
+    	
+    	<% for(i in r){ %>
+    	<tr><td><%= r[i].dataset_id %> </td></tr>
+    	<% } %>
+    </table>
+
+<% }%>
+<% include ../add_ins/end.ejs %>
+ </body>
+ </html>
