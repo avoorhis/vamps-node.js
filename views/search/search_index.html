@@ -27,7 +27,7 @@
 <br><br>
 
 
-<a name="metadata"></a>
+<!-- METADATA SEARCH --><a name="metadata"></a>
 <br><br>
 <div id='metadata_search_div' class='well'>
 	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
@@ -105,7 +105,8 @@
 	<% } %>	
 </div>
 <a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-<a name="taxonomy"></a>
+
+<!-- TAXONOMY SEARCH --><a name="taxonomy"></a>
 <br><br>
 <div id='taxonomy_search_div' class='well'>
 
@@ -144,14 +145,14 @@
 				<div class="dropdown col-md-1"></div>
 
 				<div class="dropdown col-md-2">
-				  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showResult(this.value)"/>
+				  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showTaxResult(this.value)"/>
 				  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-				    <div id="livesearch" class=""></div>
+				    <div id="livesearch_taxonomy" class=""></div>
 				  </ul>		
 				</div>
 					
 				<div class='col-md-7'>or Enter Taxon String: 
-					<input type='text' id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100' onkeyup="showResult(this.value)" />
+					<input type='text' id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100' onkeyup="showTaxResult(this.value)" />
 				</div>					
 		  </div>
 		
@@ -159,7 +160,8 @@
 	
 </div>
 <a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-<a name="names"></a>
+
+<!-- NAMES SEARCH --><a name="names"></a>
 <br><br>
 <div id='names_search_div' class='well'><strong>Names (key words)</strong>
 	<ul>
@@ -171,11 +173,11 @@
 	</ul>		
 </div>
 <a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-<a name="user"></a>
+
+<!-- USER SEARCH --><a name="user"></a>
 <br><br>
 <div id='project_search_div' class='well'>
-	<strong>User Search</strong>
-	
+	<strong>User Search</strong>	
 
 	<div class="row">	
 			<div class="dropdown col-md-1"></div>
@@ -192,7 +194,8 @@
 	</ul>		
 </div>
 <a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-<a name="project"></a>
+
+<!-- PROJECT SEARCH --><a name="project"></a>
 <br><br>
 <div id='project_search_div' class='well'>
 	<strong>Project (or Dataset) Search</strong>
@@ -214,7 +217,8 @@
 	</ul>				
 </div>
 <a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-<a name="blast"></a>
+
+<!-- BLAST SEARCH --><a name="blast"></a>
 <br><br>
 <div id='blast_search_div' class='well'><strong>Local Blast</strong>
 	<% if(blast_db_path){ %>	
