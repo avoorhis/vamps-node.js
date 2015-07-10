@@ -288,11 +288,11 @@ router.get('/gethint/:hint', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH TAX
 //
-router.get('/livesearch/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:q', helpers.isLoggedIn, function(req, res) {
 	//console.log('params>>');
 	//console.log(req.params);
 	//console.log('<<params');
-	console.log('in livesearch');
+	console.log('in livesearch taxonomy');
 	var q = req.params.q.toLowerCase();
 	var hint = '';
 	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
@@ -433,23 +433,69 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.get('/livesearch_result/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
 	console.log(req.params);
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
 	var item = this_item
-	while(item.parent_id != 0){
+	console.log(item)
+  // goes up the tree to get taxon parents:
+  while(item.parent_id != 0){
 		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id]
 		tax_str = item.taxon +';'+tax_str
 		//console.log(item)
 	}
-	console.log(tax_str);
+
+  // Would like to get list of all children for user selection
+  // console.log('children of selection ::')
+  // var item = this_item
+  // //while(item.children_ids != []){
+  // base_taxon = tax_str
+  // tax_list = [];
+  // for(i in item.children_ids){
+  //   console.log('inloop');
+  //   item  = new_taxonomy.taxa_tree_dict_map_by_id[item.children_ids[i]]
+  //   new_tax_str = base_taxon+';'+item.taxon;
+  //   t = tax(new_tax_str, item)
+  //   //if()
+  //   console.log('t')
+  //   console.log(t)
+  //   //tax_str = item.taxon +';'+tax_str
+  //   //console.log(item)
+  
+
+
+  // }
+	
+  
+
+
+  //console.log(base_taxon);
 	console.log('sending tax_str')
 	res.send(tax_str);
 	
 });
+// function tax(tax, item){
+//   console.log('inloopfxn');
+//   new_tax_str = tax
+//   console.log(item)
+//   if(item.children_ids != []){
+//     for(i in item.children_ids){
+//       new_item = new_taxonomy.taxa_tree_dict_map_by_id[item.children_ids[i]]
+//       new_tax_str = new_tax_str+';'+new_item.taxon;
+//       console.log(new_item)
+//       console.log('new tax '+new_tax_str)
+//       tax(new_tax_str, new_item)
+//     }
+//   }
+//   console.log('returning');
+//   return new_tax_str;
+
+  
+
+// }
 //
 //  BLAST
 //
