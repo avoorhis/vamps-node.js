@@ -141,7 +141,7 @@ def get_metadata(args):
     for i,key in enumerate(keys):
         TMP_METADATA_ITEMS[key] = []
         for line in lol[1:]:
-            TMP_METADATA_ITEMS[key].append(line[i])
+            TMP_METADATA_ITEMS[key].append(line[i].replace('"','').replace("'",''))
     saved_indexes = []        
     for ds in CONFIG_ITEMS['datasets']:
         #print  TMP_METADATA_ITEMS['sample_name'].index(ds) , ds 

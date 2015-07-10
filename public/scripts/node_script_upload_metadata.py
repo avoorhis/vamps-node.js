@@ -216,7 +216,7 @@ def get_metadata(indir):
                 if CONFIG_ITEMS['fasta_type']=='multi' and j in saved_indexes:
                     
                     if key not in required_metadata_fields:                        
-                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j].replace('"','').replace("'",''))
                     if CONFIG_ITEMS['fasta_type']=='multi':
                         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
                     else:
@@ -225,7 +225,7 @@ def get_metadata(indir):
                     CUST_METADATA_ITEMS['dataset_id'].append(did)
                 else:
                     if key not in required_metadata_fields:                        
-                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
+                        CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j].replace('"','').replace("'",''))
                     ds = CONFIG_ITEMS['datasets'][0]
                     did = DATASET_ID_BY_NAME[ds]
                     CUST_METADATA_ITEMS['dataset_id'].append(did)
