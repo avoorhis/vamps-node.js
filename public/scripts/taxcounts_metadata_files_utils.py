@@ -309,7 +309,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
                 #cnt = i
                 
                 if f != 'dataset_id':
-                    value = str(row[i])
+                    value = str(row[i].replace('"','').replace("'",''))
                     #print 'XXX',did,i,f,value
 
                     if did in metadata_lookup:				
