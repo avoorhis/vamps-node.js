@@ -289,11 +289,12 @@ function showMetadataHint(str) {
 //
 //  SHOW  RESULTS for Taxonomy Search
 //
-function showResult(str) {
+function showTaxResult(str) {
+  
   if (str.length==0) {
-    document.getElementById("livesearch").innerHTML="";
-    document.getElementById("livesearch").style.border="0px";
-    document.getElementById("livesearch").style.height="0";
+    document.getElementById("livesearch_taxonomy").innerHTML="";
+    document.getElementById("livesearch_taxonomy").style.border="0px";
+    document.getElementById("livesearch_taxonomy").style.height="0";
     document.getElementById("livesearch_result_div").value = ''
     document.getElementById("find_datasets_btn").disabled=true;
     document.getElementById("create_fasta_btn").disabled=true;
@@ -312,14 +313,14 @@ function showResult(str) {
   }
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-      document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
-      document.getElementById("livesearch").style.border="1px solid #A5ACB2";
-      document.getElementById("livesearch").style.height="200px";
-      document.getElementById("livesearch").style.width="500px";
-      document.getElementById("livesearch").style.overflow="auto";
+      document.getElementById("livesearch_taxonomy").innerHTML=xmlhttp.responseText;
+      document.getElementById("livesearch_taxonomy").style.border="1px solid #A5ACB2";
+      document.getElementById("livesearch_taxonomy").style.height="200px";
+      document.getElementById("livesearch_taxonomy").style.width="500px";
+      document.getElementById("livesearch_taxonomy").style.overflow="auto";
     }
   }
-  xmlhttp.open("GET","livesearch/"+str,true);
+  xmlhttp.open("GET","livesearch_taxonomy/"+str,true);
   xmlhttp.send();
 }
 //
@@ -411,6 +412,6 @@ function get_tax_str(taxon,rank){
           document.getElementById("find_datasets_hidden_id").value = response;
         }
     }
-    xmlhttp.open("GET", "livesearch_result/" + rank+'/'+taxon, true);
+    xmlhttp.open("GET", "livesearch_taxonomy/" + rank+'/'+taxon, true);
     xmlhttp.send();
 }
