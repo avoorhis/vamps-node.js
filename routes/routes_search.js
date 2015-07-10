@@ -44,6 +44,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 
     // check if blast database exists:
     var blast_nin = path.join('public','blast', NODE_DATABASE, 'ALL_SEQS.nin');
+    console.log(blast_nin)
     try{
       stats = fs.lstatSync(blast_nin);
       if (stats.isFile()) {
@@ -55,7 +56,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     catch (e){
       console.log(e)
     }
-    console.log(metadata_fields)
+    //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
         metadata_items:  JSON.stringify(metadata_fields),
         message:         req.flash('message'),
@@ -477,8 +478,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     fs.writeFile(query_file_path,req.body.query+"\n",function(err){
       if(err){
         req.flash('message', 'ERROR - Could not write query file');
-        res.redirect('search_index'); 
-      
+        res.redirect('search_index');       
       }else{
         var spawn = require('child_process').spawn;
         var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
@@ -499,8 +499,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         });
         // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
         blast_process.on('close', function (code) {
-         console.log('blast_process process exited with code ' + code);
-         
+         console.log('blast_process process exited with code ' + code);         
          if(code == 0){                   
            console.log('BLAST SUCCESS'); 
            // now read file
@@ -520,20 +519,17 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                 });  //
 
               }
-           })        
-                  
+           })                      
                                        
          }else{
-            // blastn error
+            req.flash('message', 'ERROR - BLAST command exit code: '+code);
+            res.redirect('search_index');
          }       
         });   
-
         
       }
 
-
-    });
-     
+    });     
 
   });
 //
@@ -555,19 +551,41 @@ router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
   q_tax += " WHERE sequence_id='"+seqid+"'";
 
   //we want to know the taxonomy AND which projects 
-  q_ds = "SELECT dataset_id from sequence_pdr_info";
+  q_ds = "SELECT dataset_id, seq_count from sequence_pdr_info";
   q_ds += " WHERE sequence_id='"+seqid+"'";
-
+  console.log(q_ds)
   connection.query(q_ds, function(err, rows, fields){
     if(err){
       console.log(err);
-    }else{
-   
+    }else{   
+      var obj = {};
+
+      for(i in rows){
+        did = rows[i].dataset_id;
+        cnt = rows[i].seq_count;
+        ds  = DATASET_NAME_BY_DID[did];
+        pid = PROJECT_ID_BY_DID[did];
+        pj  = PROJECT_INFORMATION_BY_PID[pid].project;
+        //console.log(did)
+        //console.log(ds)
+        //console.log(pj)
+        if(pj in obj){
+          obj[pj][ds] = cnt;
+        }else{
+          obj[pj] = {};
+          obj[pj][ds] = cnt;    
+
+        }
+        
+      }
+      //console.log(obj);
+      //console.log(JSON.stringify(obj));
+      // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
       res.render('search/search_result_blast', {   
                     title    : 'VAMPS: BLAST Result', 
                     show     : 'datasets', 
                     seqid    : seqid,  
-                    rows     : JSON.stringify(rows),               
+                    obj      : JSON.stringify(obj),              
                     user     : req.user
                 });  //
       }
