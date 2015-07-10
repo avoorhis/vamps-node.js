@@ -13,7 +13,7 @@
 		<table border='1' class='table'>
 		<thead>
 			<tr>
-				<th>#</th><th>len</th><th>hit seqid</th><th>score</th><th>evalue</th><th>seqs</th>
+				<th>#</th><th>hit seqid</th><th>score</th><th>evalue</th><th>seqs</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -21,7 +21,6 @@
 			<% var hit = dt.BlastOutput2.report.results.search.hits[i] %>
 			<tr>
 		<td><%= hit.num %></td>
-		<td><%= hit.len %></td>
 		<td><a href='/search/seqs/<%= hit.description[0].id %>'><%= hit.description[0].id %></a></td>
 		<td><%= hit.hsps[0].score %></td>
 		<td><%= hit.hsps[0].evalue %></td>
@@ -38,16 +37,23 @@
 		</tbody>
 		</table>
 <% }else{ %>
-	<% r = JSON.parse(rows); %>
+	<% r = JSON.parse(obj); %>
     <div class='title'>Datasets that include this sequence ID: <%= seqid %></div>
-    <table>
-    	
-    	<% for(i in r){ %>
-    	<tr><td><%= r[i].dataset_id %> </td></tr>
+    <table class='table sortable'>
+    	<thead><tr><th data-defaultsort='disabled'>#</th><th>Project</th><th>Dataset</th><th data-defaultsort="desc">Seq Count</th></tr></thead>
+    	<tbody>
+    	<% k=1; %>
+    	<% for(pj in r){ %>
+    		<% for(ds in r[pj]){ %>
+    			<tr><td><%= k %></td><td><%= pj %></td><td><%= ds %></td><td><%= r[pj][ds] %></td></tr>
+    			<% k+=1; %>
+    		<% } %>
     	<% } %>
+    </tbody>
     </table>
 
 <% }%>
 <% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
  </body>
  </html>
