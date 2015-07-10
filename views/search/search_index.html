@@ -28,6 +28,7 @@
 
 
 <a name="metadata"></a>
+<br><br>
 <div id='metadata_search_div' class='well'>
 	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
 			<div id='' class='pull-right' >Join searches by: 
@@ -103,7 +104,9 @@
 		<div class="alert_flash_message"><%= meta_message %></div>
 	<% } %>	
 </div>
+<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 <a name="taxonomy"></a>
+<br><br>
 <div id='taxonomy_search_div' class='well'>
 
 		    <strong>Taxonomy</strong>
@@ -155,15 +158,9 @@
 		<br>TODO: After selecting a unique name should get a list of all strings that are more refined to choose from.
 	
 </div>
-
-<a name="sequence"></a>
-<div id='sequence_search_div' class='well'><strong>Sequences (This search needs to be run on cluster)</strong>
-  <ul>
-  	<li>This shouldn't be needed if the blast function works.
-  </ul>
-</div>
-
+<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 <a name="names"></a>
+<br><br>
 <div id='names_search_div' class='well'><strong>Names (key words)</strong>
 	<ul>
 	<li>project name, title, description
@@ -173,8 +170,9 @@
 		<li>TODO: search by partial names in titles and descriptions. Maybe combine this with project search??
 	</ul>		
 </div>
-
+<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 <a name="user"></a>
+<br><br>
 <div id='project_search_div' class='well'>
 	<strong>User Search</strong>
 	
@@ -193,8 +191,9 @@
 		<li>TODO: connect up to project listing (or something else)
 	</ul>		
 </div>
-
+<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 <a name="project"></a>
+<br><br>
 <div id='project_search_div' class='well'>
 	<strong>Project (or Dataset) Search</strong>
 	
@@ -214,8 +213,9 @@
 		<li>TODO: connect up to project profile
 	</ul>				
 </div>
-
+<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 <a name="blast"></a>
+<br><br>
 <div id='blast_search_div' class='well'><strong>Local Blast</strong>
 	<% if(blast_db_path){ %>	
 		<form method='POST' action='/search/blast_search_result'>
