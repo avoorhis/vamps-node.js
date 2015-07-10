@@ -37,7 +37,13 @@ GROUP BY dataset_id, domain_id, phylum_id
 
 
 parser = argparse.ArgumentParser(description="") 
-query = "SELECT sequence_id as id, UNCOMPRESS(sequence_comp) as seq from sequence" 
+query_all = "SELECT sequence_id as id, UNCOMPRESS(sequence_comp) as seq from sequence" 
+query_public = "SELECT sequence_id as id, UNCOMPRESS(sequence_comp) as seq from sequence" 
+query_public += " JOIN sequence_pdr_info using (sequence_id)"
+query_public += " JOIN dataset using (dataset_id)"
+query_public += " JOIN project using (project_id)"
+query_public += " WHERE public='1'"
+
 import datetime
 now = datetime.datetime.now().strftime("%Y%m%d%H%M")
 #print str(now)
@@ -50,12 +56,21 @@ def go(args):
     if args.outfile_prefix:
         outfile = args.outfile_prefix+'_'+str(now)+'.fa'    
     else:
-        outfile = NODE_DATABASE+'_'+str(now)+'_all_seqs.fa'
+        if args.public:
+            outfile = NODE_DATABASE+'_'+str(now)+'_all_public_seqs.fa'
+        else:
+            outfile = NODE_DATABASE+'_'+str(now)+'_all_seqs.fa'
     fp = open(outfile,'w')
     if args.sql:
         q = args.sql
     else:
-        q = query
+        if args.public:
+            q = query_public
+        else:
+            q = query_all
+
+    print q
+    
     try:
         cur.execute(q)
         rows = cur.fetchall()
@@ -86,17 +101,23 @@ def go(args):
 if __name__ == '__main__':
 
     usage = """
-        -sql/--sql  Complete sql query
-        
+        -sql/--sql  Complete sql query [Optional]
+        -p/--public seqs from public projects. [Optional]
         Produce a fasta file 
         uses:
-          makeblastdb -in outfile_201507090811.fa -parse_seqids -dbtype nucl -out ALL_SEQS
+          makeblastdb -in outfile_201507090811.fa -parse_seqids -dbtype nucl -out ALL_SEQS (ALL_PUBLIC_SEQS)
           blast database creation  (outfmt 13 = JSON Blast output):
            >blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     """
     parser.add_argument("-sql","--sql",                   
                 required=False,  action="store",   dest = "sql", default='',
                 help="""Complete Query SQL""") 
+    parser.add_argument("-p","--public",                   
+                required=False,  action="store_true",   dest = "public", default=False,
+                help="""Complete Query SQL""") 
+    parser.add_argument("-r","--region",                   
+                required=False,  action="store",   dest = "region", default='v6',
+                help="""dna_region of S16 or """) 
     parser.add_argument("-o","--outfile_prefix",                   
                 required=False,  action="store",   dest = "outfile_prefix", default='outfile',
                 help="""Prefix -to be appended by datestring""")
