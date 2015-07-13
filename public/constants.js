@@ -107,19 +107,20 @@ config.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "specie
 config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 
 config.VISUAL_THUMBNAILS = { visuals: [
-    {name:'Distance Heatmap (py)',      thumb:'/images/visuals/heatmap.png',		link:'user_viz_data/heatmap',       id:'dheatmap_link_id'      },
+    {name:'Distance Heatmap (py)',      thumb:'/images/visuals/heatmap.png',		link:'user_viz_data/heatmap',        id:'dheatmap_link_id'      },
     {name:'Frequency Heatmap (R-pdf)',  thumb:'/images/visuals/fheatmap.png', 		link:'user_viz_data/frequency_heatmap', id:'fheatmap_link_id'  },
-    {name:'Stackbar Charts (d3-svg)',   thumb:'/images/visuals/barcharts.png',   	link:'user_viz_data/barcharts',     id:'barcharts_link_id'     },
-    {name:'Pie Charts (d3-svg)',        thumb:'/images/visuals/pie_charts.png',  	link:'user_viz_data/piecharts',     id:'piecharts_link_id'     },
-    {name:'Data Browser (Krona)',       thumb:'/images/visuals/krona.png',  		link:'user_viz_data/dbrowser',      id:'dbrowser_link_id'     },
-	{name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',    id:'dendrogram1_link_id'   },
-	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',    id:'dendrogram2_link_id'   },
-    {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',    id:'dendrogram_pdf_link_id'},
-    {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',          id:'pcoa_link_id'         },
-    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',          id:'pcoa_3d_link_id'     },
-    {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',	link:'user_viz_data/counts_table',  id:'counts_table_link_id'  },
-    {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    	link:'user_viz_data/metadata_table',id:'metadata_table_link_id'},
-    {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',    id:'geospatial_link_id'    }
+    {name:'Stackbar Charts (d3-svg)',   thumb:'/images/visuals/barcharts.png',   	link:'user_viz_data/barcharts',      id:'barcharts_link_id'     },
+    {name:'Pie Charts (d3-svg)',        thumb:'/images/visuals/pie_charts.png',  	link:'user_viz_data/piecharts',      id:'piecharts_link_id'     },
+    {name:'Data Browser (Krona)',       thumb:'/images/visuals/krona.png',  		link:'user_viz_data/dbrowser',       id:'dbrowser_link_id'     },
+	{name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id'   },
+	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id'   },
+    {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id'},
+    {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',           id:'pcoa_link_id'         },
+    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',           id:'pcoa_3d_link_id'     },
+    {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',	link:'user_viz_data/counts_table',   id:'counts_table_link_id'  },
+    {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    	link:'user_viz_data/metadata_table', id:'metadata_table_link_id'},
+    {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id'    },
+    {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id'}
    
 ]};
     
