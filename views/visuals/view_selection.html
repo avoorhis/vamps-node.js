@@ -33,32 +33,24 @@
   <div class="alert_flash_message"><%= message %></div>
 <% } %>
 
+<div class='well'>
+  <div class="row">
+    <div  id='show_selected_datasets_div'  class="col-md-4">
+                  <% include partials/show_selected_datasets.html %>
+    </div> <!-- End  show_selected_datasets_div -->
+  
+  
+    <div id='show_selected_metadata_div'  class="col-md-4">
+                   <% include partials/show_selected_metadata.html %>
+    </div> <!-- End  show_selected_metadata_div -->
+ 
+    <div  id='show_select_items_div' class="col-md-4">
+                <% include partials/show_visual_output_choices.html %>
+    </div> <!-- End  show_select_items_div -->  
+  </div>
+</div>
 
-<table class="table table-striped">
-<tbody>
-<tr><td>
 
-	<div id='show_selected_datasets_div' class='div_border table'>
-	                <% include partials/show_selected_datasets.html %>
-	</div> <!-- End  show_selected_datasets_div -->
-
-</td>
-
-<td>
-
-  <div id='show_selected_metadata_div' class='div_border table'>
-                  <% include partials/show_selected_metadata.html %>
-  </div> <!-- End  show_selected_metadata_div -->
-
-</td>
-<td>
-	<div id='show_select_items_div' class='div_border table'>
-	              <% include partials/show_visual_output_choices.html %>
-	</div> <!-- End  show_select_items_div -->		  	
-
-</td></tr>
-</tbody>
-</table>
 
 <table class='button_row'><tr>
 	<% if(mtx.data == '') { %>
