@@ -9,18 +9,16 @@
 <div class='subtitle'>Metadata</div>
 <table border='1' class='table'><tr>
 <td>
-<form id='' name='' method='POST' action='/visuals/unit_selection'>
+
+
 		<div class="">
 		   <div class="panel panel-default">
-			   
 			   
 			   <div class="panel-heading">
               	 <h3 class="panel-title">Search 1 Values
 			      <button id='dwnld_btn_id1' class='btn btn-xs btn-success float_right' name='' >Download Sequences</button>
 			     </h3>
-               </div>
-			 
-			 
+          </div>
 			 
 			   <div class="panel-body">
 					<table class='table table-condensed'>
@@ -39,8 +37,28 @@
 <br>		
 	<% if(s.search1.datasets.length == 0){ %>
 			<b>no data found</b>
-	<% }else{ %>
-		<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+	<% }else{ %>		
+				<div class='pull-right'>
+					<table><tr>
+						<td>
+							<form id='' name='' method='POST' action='/visuals/unit_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >	
+							</form>		
+						</td>
+						<td>
+							<form id='' name='' method='POST' action='../user_data/export_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >	
+							</form>		
+						</td>
+					</tr>
+				  </table>
+			  </div>
+		<h4><small>Datasets:</small></h4>
+
 				<div class='search_ds_result_box'>
 				<% for(i in s.search1.ds_plus) { %>
 					<li>
@@ -50,16 +68,13 @@
 				<% } %>
 			
 				</div>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search1.datasets) %>' >		
+					
 	<% } %>		
 			
-</form>		
 </td>
 
 
 <td>
-<form id='' name='' method='POST' action='/visuals/unit_selection'>
 		<div class="">
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
@@ -91,7 +106,27 @@
 		<% if(s.search2.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
-			<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+				<div class='pull-right'>
+					<table><tr>
+						<td>
+							<form id='' name='' method='POST' action='/visuals/unit_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >	
+							</form>		
+						</td>
+						<td>
+							<form id='' name='' method='POST' action='../user_data/export_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >	
+							</form>		
+						</td>
+					</tr>
+				  </table>
+			  </div>
+
+			<h4><small>Datasets:</small></h4>
 				<div class='search_ds_result_box'>
 				<% for(i in s.search2.ds_plus) { %>
 					<li>
@@ -101,17 +136,13 @@
 				<% } %>
 
 				</div>
-			<input type='hidden' name='retain_data' value='1' >
-			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search2.datasets) %>' >	
+			
 		<% } %>
 	<% } %>		
-		
-</form>		
 </td>
 
 
 <td>
-<form id='' name='' method='POST' action='/visuals/unit_selection'>
 		<div class="">
 		   <div class="panel panel-default">
 			   <div class="panel-heading">
@@ -143,7 +174,29 @@
 		<% if(s.search3.datasets.length == 0){ %>
 			<b>no data found</b>
 		<% }else{ %>
-			<h4><small>Datasets:</small><button type='submit' class='btn btn-xs btn-primary float_right' name='' >Use these datasets in visualizations</button></h4>
+				<div class='pull-right'>
+					<table><tr>
+						<td>
+							<form id='' name='' method='POST' action='/visuals/unit_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >	
+							</form>		
+						</td>
+						<td>
+							<form id='' name='' method='POST' action='../user_data/export_selection'>
+								<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+								<input type='hidden' name='retain_data' value='1' >
+								<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >	
+							</form>		
+						</td>
+					</tr>
+				  </table>
+			  </div>
+
+
+
+			<h4><small>Datasets:</small></h4>
 				<div class='search_ds_result_box'>
 				<% for(i in s.search3.ds_plus) { %>
 					<li>
@@ -152,11 +205,10 @@
 					</li>
 				<% } %>			
 				</div>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(s.search3.datasets) %>' >			
+					
 		<% } %>
 	<% } %>		
-</form>		
+	
 		
 		
 </td>
@@ -181,11 +233,40 @@
 <table class='table'>
 <tr>
 <td  colspan='3'>
-<form id='' name='' method='POST' action='/visuals/unit_selection'>
-	<button id='dwnld_btn_id' class='btn btn-xs btn-success' name='' >Download Sequences</button>
-	<button type='submit' class='btn btn-xs btn-primary' name='' >Use these datasets in Visualizations</button>
-	
-    <center>
+
+<table>
+	<tr>
+		<td>
+			<form id='' name='' method='POST' action='/visuals/unit_selection'>
+				<button type='submit' class='btn btn-xs btn-success' name='' >Download Sequences</button>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
+			</form>		
+		</td>
+		<td>
+			<form id='' name='' method='POST' action='/visuals/unit_selection'>
+				<button type='submit' class='btn btn-xs btn-primary' name='' >use in visualizations</button>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
+			</form>		
+		</td>
+		<td>
+			<form id='' name='' method='POST' action='../user_data/export_selection'>
+				<button type='submit' class='btn btn-xs btn-primary' name='' >use in exports</button>
+				<input type='hidden' name='retain_data' value='1' >
+				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >	
+			</form>		
+		</td>
+		
+	</tr>
+ </table>
+
+
+		
+
+
+
+ <center>
 	<% if(!('search2' in s) && !('search3' in s)) { %>
 		<br><strong><%= f.datasets.length %> dataset(s)</strong>
 	<% }else{ %>	
@@ -204,12 +285,11 @@
 				<% } %>
 			
 				</div>
-				<input type='hidden' name='retain_data' value='1' >
-				<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(f.datasets) %>' >
+				
 			
 		<% } %>
 	</center>
-</form>
+
 </td></tr></table>
 <% include ../add_ins/end.ejs %>
  </body>

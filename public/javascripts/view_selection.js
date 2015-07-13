@@ -635,7 +635,42 @@ if (typeof geospatial_btn !== "undefined") {
       
   });
 }
-
+//
+// ALPHA DIVERSITY
+//
+var adiversity_link = document.getElementById('adiversity_link_id');
+var adiversity_btn = document.getElementById('adiversity_hide_btn');
+var adiversity_div = document.getElementById('adiversity_div');
+var adiversity_download_btn = document.getElementById('adiversity_download_btn');
+var pre_adiversity_div = document.getElementById('pre_adiversity_div');
+if (typeof adiversity_link !=="undefined") {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  adiversity_link.addEventListener('click', function () {
+      
+    if(typeof adiversity_created == "undefined"){
+        create_viz('adiversity', pi_local.ts);
+        adiversity_download_btn.disabled = false;
+      }else{
+        if(adiversity_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(adiversity_div,'hide',adiversity_btn);
+        }
+      } 
+    $(pre_adiversity_div).scrollView();     
+  });
+}
+if (typeof adiversity_btn !== "undefined") {
+  adiversity_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(adiversity_btn.value == 'hide'){        
+        toggle_visual_element(adiversity_div,'show',adiversity_btn);
+      }else{
+        toggle_visual_element(adiversity_div,'hide',adiversity_btn);
+      }
+      
+  });
+}
 //
 //
 //
@@ -698,6 +733,8 @@ function create_viz(visual, ts) {
       create_geospatial(ts);
     }else if(visual === 'dbrowser'){
       create_dbrowser(ts);
+    }else if(visual === 'adiversity'){
+      create_adiversity(ts);
     }else{
 
     }
@@ -1204,7 +1241,19 @@ function create_barcharts_group(ts) {
          create_barcharts('group');
 
 }
+//
+//
+//
+function create_adiversity(ts){
+    //python scripts
+    adiversity_created = true;
+    var info_line = create_header('adiversity', pi_local);
+    document.getElementById('adiversity_title').innerHTML = info_line;
+    document.getElementById('pre_adiversity_div').style.display = 'block';
+     
+         
 
+}
 
 function create_header(viz, pi) {
   
@@ -1238,6 +1287,8 @@ function create_header(viz, pi) {
       txt = 'Metadata Table --> ';
     }else if(viz == 'dbrowser'){
       txt = 'Data Browser --> ';
+    }else if(viz == 'adiversity'){
+      txt = 'Alpha Diversity --> ';
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }

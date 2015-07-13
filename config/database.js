@@ -6,7 +6,7 @@ var fs    = require('fs-extra');
 //var config_file = JSON.parse(fs.readFileSync('./config/db-connection.js', {encoding:'utf8'}));
 var config_file = './config/db-connection.js';
 eval(fs.readFileSync(config_file).toString());
-
+console.log('DATABASE: '+NODE_DATABASE);
 
 var pool      =    mysql.createPool({
     connectionLimit : 100, //important
