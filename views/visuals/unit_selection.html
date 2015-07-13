@@ -14,9 +14,19 @@
   <div class="alert_flash_message"><%= message %></div>
 <% } %> 
 
-<div id='show_selected_datasets_div' class='div_border table'>
-                <% include partials/show_selected_datasets.html %>				
+<div class='well'>
+  <div class="row">
+    <div  id='show_selected_datasets_div'  class="col-md-6">
+                  <% include partials/show_selected_datasets.html %>
+    </div> <!-- End  show_selected_datasets_div -->
+  </div>
 </div>
+
+
+
+
+
+
 <div id='' class='row'>
     <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
 	

@@ -7,30 +7,26 @@
   var user_local  = '<%= user.username %>';
 </script>
   <div class='title'>Export Data</div>
-  <div class='subtitle'>File Formating Selection</div>
+  <div class='subtitle'>File Format Selection</div>
 
 <a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
 <% if(messages.info){ %>
   <div class="alert_flash_message"><%= message %></div>
 <% } %> 
 
+<div class='well'>
+  <div class="row">
+    <div  id='show_selected_datasets_div'  class="col-md-6">
+                  <% include ../visuals/partials/show_selected_datasets.html %>   
+    </div> <!-- End  show_selected_datasets_div -->
+  </div>
+</div>  <!-- /well -->
+
+<button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
+    Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
+</button>
+
 <table class='table'>
-  <tr>
-    <td>
-      <div id='show_selected_datasets_div' class='div_border table'>
-                      <% include ../visuals/partials/show_selected_datasets.html %>				
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div id='' class='row'>
-        <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
-          Get Files<span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
-        </button>
-      </div>
-    </td>
-  </tr>
   <tr>
     <td>
           <table class='table table-striped table-condensed'>

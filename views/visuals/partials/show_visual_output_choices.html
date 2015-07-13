@@ -3,7 +3,7 @@
 <%   var rows      = JSON.parse(constants).NORMALIZATIONCHOICES.choices %>
 <%   var pct_range = JSON.parse(constants).PCT_RANGE  %>
 <%   var items     = JSON.parse(chosen_id_name_hash) %>
-
+Options:<br>
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font table table-striped'>
     <tr>
@@ -57,15 +57,17 @@
 		    <% }  %>
 		   </select>
 
-</td></tr></table>
+</td></tr>
+<tr><td><button type='submit' class="btn btn-xs btn-info" disabled='disabled' id='output_choices_submit_btn' name='' >Update</button>
+</td></tr>
+</table>
 <input type='hidden' name='domains' value='<%= pi.domains %>'>
 <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>
 <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
 <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
 <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
 <input type='hidden' name='update_data' value='1'>
-<hr>
-<button type='submit' class="btn btn-sm btn-info" disabled='disabled' id='output_choices_submit_btn' name='' >Update</button>
-<br>
+
+
 </form>
 
