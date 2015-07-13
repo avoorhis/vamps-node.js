@@ -30,32 +30,35 @@ router.get('/projects_index', function(req, res) {
 router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var dsinfo = []; 
+    var mdata = {}
     var dscounts = {};  
     // PROJECT_INFORMATION_BY_PID is a global variable created on server start in 'load_all_datasets.js'
 	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
-      //console.log(info);
+      
 
       dataset_counts = {};
-      for(n in ALL_DATASETS.projects){
-        
+      for(n in ALL_DATASETS.projects){        
         if(ALL_DATASETS.projects[n].pid == req.params.id){
-          dsinfo = ALL_DATASETS.projects[n].datasets
-
+          dsinfo = ALL_DATASETS.projects[n].datasets;
         }
       }
       for(n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+        mdata[dsinfo[n].dname] = AllMetadata[did]; 
+
       }
-       console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
+      console.log(mdata['EXX136'])
+      //console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
       res.render('projects/profile', { 
                                   title  : 'VAMPS Project',
                                   info: JSON.stringify(info),
                                   dsinfo: dsinfo,
                                   dscounts: JSON.stringify(dscounts),
                                   pid: req.params.id,
+                                  mdata: JSON.stringify(mdata),
                                   pcount: project_count,
       						                message: '',
                                   user   : req.user 
