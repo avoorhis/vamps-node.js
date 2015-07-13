@@ -2,6 +2,7 @@
 <% data = JSON.parse(info) %>
 <% dscounts = JSON.parse(dscounts) %>
 <% project_info  = JSON.parse(info) %>
+<% metadata  = JSON.parse(mdata) %>
 <img src='/images/dna01.jpg' alt="Smiley_face"  height='80' >
 
 <div role="tabpanel" >
@@ -11,6 +12,7 @@
     <li role="presentation" class="active"><a href="#project" aria-controls="project" role="tab" data-toggle="tab">Project</a></li>
 	<li role="presentation" >              <a href="#abstract" aria-controls="abstract" role="tab" data-toggle="tab">Abstract</a></li>
 	<li role="presentation" >              <a href="#datasets" aria-controls="datasets" role="tab" data-toggle="tab">Datasets</a></li>
+	<li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
 	
 	<li role="presentation" class="dropdown" >	    
 		<a  class="dropdown-toggle" data-toggle="dropdown" href="#">Download<span class="caret"></span></a>
@@ -55,27 +57,27 @@
   <div class="tab-content">
   
   	<div role="tabpanel" class="list_style_none tab-pane active" id="project">
-	  <table class="table table-striped">
-	  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
-	  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
-	  <tr><td>Title:</td><td> <%= data.title %></td></tr>
-	  <tr><td>Description:</td><td> <%= data.description %></td></tr>
-	  <% if(data.public) { %> 
-	    <tr><td>Status:</td><td> Public</td></tr>
-	  <% } else { %>
-	    <tr><td>Status:</td><td> Private</td></tr>
-	  <% } %>
-	  <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
-	  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
-	  <tr><td>Institution:</td><td> <%= data.institution %></li>
-	  <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr>
-	  <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
-	  </table>
+		  <table class="table table-striped">
+		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
+		  <tr><td>Project_id:</td><td> <%= pid %></td></tr>
+		  <tr><td>Title:</td><td> <%= data.title %></td></tr>
+		  <tr><td>Description:</td><td> <%= data.description %></td></tr>
+		  <% if(data.public) { %> 
+		    <tr><td>Status:</td><td> Public</td></tr>
+		  <% } else { %>
+		    <tr><td>Status:</td><td> Private</td></tr>
+		  <% } %>
+		  <tr><td>Project Sequence Count:</td><td> <%= pcount %></td></tr>
+		  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
+		  <tr><td>Institution:</td><td> <%= data.institution %></li>
+		  <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr>
+		  <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
+		  </table>
   	</div> <!-- End project div -->
 	
-	<div role="tabpanel" class="tab-pane" id="abstract">
-	    Abstract here
-	</div> <!-- End project div -->
+		<div role="tabpanel" class="tab-pane" id="abstract">
+		    Abstract here
+		</div> <!-- End abstract div -->
 	
   	<div role="tabpanel" class="tab-pane" id="datasets">
 		  <div id='profile_dataset_list' >
@@ -90,6 +92,22 @@
 			  </ol>
 		  </div>
   	</div> <!-- End datasets div -->	
+
+  	<div role="tabpanel" class="tab-pane" id="metadata">
+
+		    <table class='table sortable'>
+		    	<thead><tr><th>dataset</th><th>name</th><th>value</th></tr></thead>
+		    	<tbody>
+		    <% for(n in metadata){ %>   	
+		    	<% for(i in metadata[n]){ %>
+		    		<tr><td><%= n %></td><td><%= i %></td><td><%= metadata[n][i] %></td></tr>
+		    	<% } %>
+		    <% } %>
+		    </tbody>
+		    </table>
+
+
+		</div> <!-- End metadata div -->
 
   </div> <!-- End tab-content div -->
 </div> <!-- End tabpanel -->  

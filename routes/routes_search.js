@@ -436,9 +436,11 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
+  var rank_number = req.C.RANKS.indexOf(selected_rank);
 	console.log(req.params);
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
+
 	var item = this_item
 	console.log(item)
   // goes up the tree to get taxon parents:
