@@ -278,7 +278,8 @@ if __name__ == '__main__':
     """
     warnings = []
     db = MySQLdb.connect( host="localhost", # your host, usually localhost
-          read_default_file="~/.my.cnf"  )
+          read_default_file="~/.my.cnf" # you can use another ini file, for example .my.cnf_node
+           )
     cur = db.cursor()
     cur.execute("SHOW databases")
     dbs = []
