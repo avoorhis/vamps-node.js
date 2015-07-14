@@ -10,7 +10,7 @@
 
 <table class='table sortable'>
 	<thead>
-	<tr><th></th><th>file</th><th>size</th><th>creation time</th><th>links</th></tr>
+	<tr><th></th><th>file</th><th>size</th><th>creation time</th><th></th></tr>
   </thead>
   <tbody>
 	<% for(f in file_info.files){ %>
@@ -36,7 +36,7 @@
 			<tr>
 				<td><%= parseInt(f)+1 %></td>
 				<td>
-					<%= filename %><% sizer %>
+					<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>
 				</td>
 				<td>
 					<%= fileSize %> <%= sizer %>
@@ -45,7 +45,6 @@
 					<%= file_info.mtime[filename] %>
 				</td>
 				<td>	 
-					<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' >download</a> | 
 					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
 				</td>
 			</tr>
