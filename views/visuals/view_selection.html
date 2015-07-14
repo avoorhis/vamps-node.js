@@ -70,14 +70,14 @@
 		    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
 		    <input type='hidden' name='download_type' value='partial_project' />
 		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-			<input type='hidden' name='referer' value='/visuals/view_selection' />
+			  <input type='hidden' name='referer' value='/visuals/view_selection' />
 		  	</form>
 		</td><td>
 		    <form id='download_metadata_id' method='POST' action='/user_data/download_selected_metadata'>
 		      <input type='submit' class="btn btn-xs btn-success" value='Create Metadata File' />
 		      <input type='hidden' name='download_type' value='partial_project' />
 		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-			  <input type='hidden' name='referer' value='/visuals/view_selection' />
+			    <input type='hidden' name='referer' value='/visuals/view_selection' />
 		    </form>			
 		</td>
 	<% } %>
