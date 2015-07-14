@@ -45,7 +45,7 @@ get_select_sequences_query: function(){
 		var qSequenceCounts = "SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
 		qSequenceCounts += " JOIN dataset using(dataset_id)";
-		qSequenceCounts += " GROUP BY project_id, dataset_id";
+		qSequenceCounts += " GROUP BY project_id, dataset_id, classifier_id";
 		return qSequenceCounts;
 	
 },	
