@@ -1015,7 +1015,7 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
       });
       
   });
-  res.redirect(req.get('referer'));
+  res.send(req.body.referer);
 
 });
 
@@ -1115,7 +1115,7 @@ if(req.body.download_type == 'whole_project'){
         helpers.send_mail(info);
         //req.flash('Done')
 				req.flash('message', 'Done');
-				res.redirect(req.get('referer'));
+				res.redirect(req.body.referer);
 		
       });
 
