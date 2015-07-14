@@ -46,8 +46,8 @@ Create a new database in your mysql installation and install one of schemas in i
 ```
 **Before starting the server**
  * Once the database is in place but before you start the server for the first time
-go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
- ** cd public/scripts; python INITIALIZE_ALL_FILES.py
+go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script. 
+   * cd public/scripts; python INITIALIZE_ALL_FILES.py
  
 This script requires that you have a .my.cnf file in your home directory
 (read about .my.cnf files here: https://dev.mysql.com/doc/refman/5.1/en/option-files.html).
