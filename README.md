@@ -7,8 +7,13 @@ INSTALL
 --------------
 
 **Requirements**
- * MySQL (https://www.mysql.com/)
+ * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
  * Node.js (http://nodejs.org/)
+ * Python (https://www.python.org/)
+ 
+ For some additional functionality 
+ * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html)
+ * Emperor (Qiime's module, http://qiime.org/install/index.html)
 
 **Install the source code**
  * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
