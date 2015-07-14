@@ -116,7 +116,28 @@ $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event)
               
 });              
 
-
+// download fasta
+download_fasta_btn = document.getElementById('download_fasta_btn');
+if (typeof download_fasta_btn !== "undefined") {
+  download_fasta_btn.addEventListener('click', function () {
+      //alert(selected_distance_combo)
+      form = document.getElementById('download_fasta_form_id');
+      datasets = form.datasets.value;
+      download_type = form.download_type.value;      
+      download_data('fasta', datasets, download_type);
+  });
+}
+// download metadata
+download_metadata_btn = document.getElementById('download_metadata_btn');
+if (typeof download_metadata_btn !== "undefined") {
+  download_metadata_btn.addEventListener('click', function () {
+      //alert(selected_distance_combo)
+      form = document.getElementById('download_metadata_form_id');
+      datasets = form.datasets.value;
+      download_type = form.download_type.value;      
+      download_data('metadata', datasets, download_type);
+  });
+}
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
 if (typeof norm_counts_radios[0] !=="undefined") {
@@ -138,7 +159,6 @@ if (typeof norm_counts_radios[0] !=="undefined") {
 }
 // Distance Metric Select (Combo)
 selected_distance_combo = document.getElementById('selected_distance');
-
 if (typeof selected_distance_combo !=="undefined") {
 	$('.selectpicker').on('change', function () {
   	  //alert(selected_distance_combo)
@@ -995,7 +1015,7 @@ function create_fheatmap(ts) {
       //alert('im HM')
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
-	  fhm_div.style.display = 'block';
+	    fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('fhm', pi_local);
       document.getElementById('fheatmap_title').innerHTML = info_line;
@@ -1298,3 +1318,26 @@ function create_header(viz, pi) {
   return txt;
 }
 
+function download_data(type, datasets, download_type) {
+    var html = '';
+    var args =  "datasets="+datasets;
+    args += "&download_type="+download_type;
+    
+    var xmlhttp = new XMLHttpRequest(); 
+    if(type == 'metadata'){
+      target = '/user_data/download_selected_metadata';      
+    } else{
+      target = '/user_data/download_selected_seqs'
+    }
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText; 
+         html += "<div class='pull-right'>Your file is being compiled.<br>The filename is: "+filename;
+         html += "<br>When ready your file can be downloaded from the <a href='/user_data/file_retrieval'>file retrieval page.</a></div>"
+         document.getElementById('download_confirm_id').innerHTML = html;
+      }
+    };
+    xmlhttp.send(args);   
+}
