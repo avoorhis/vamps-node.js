@@ -16,14 +16,14 @@ if (reorder_datasets_btn !== null) {
 	  // form = 
   });
 }
-var change_datasets_btn = document.getElementById('change_datasets_btn') || null;
-if (change_datasets_btn !== null) {
-  change_datasets_btn.addEventListener('click', function () {
-	  // referer
-    //window.location='visuals_index';
-    window.location=document.referrer;
-  });
-}
+// var change_datasets_btn = document.getElementById('change_datasets_btn') || null;
+// if (change_datasets_btn !== null) {
+//   change_datasets_btn.addEventListener('click', function () {
+// 	  // referer
+//     //window.location='visuals_index';
+//     window.location=document.referrer;
+//   });
+// }
 
 //
 // SAVE DATASET LIST
