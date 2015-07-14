@@ -66,20 +66,23 @@
 	          The user should get an email when its ready.
 	     -->
         <td>
-			<form id='download_fasta_id' method='POST' action='/user_data/download_selected_seqs'>
-		    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
-		    <input type='hidden' name='download_type' value='partial_project' />
-		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-			  <input type='hidden' name='referer' value='/visuals/view_selection' />
+  			<form id='download_fasta_form_id' method='POST' action=''>
+  		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
+  		    <input type='hidden' name='download_type' value='partial_project' />
+  		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+  			  <input type='hidden' name='referer' value='/visuals/view_selection' />
 		  	</form>
+        
 		</td><td>
-		    <form id='download_metadata_id' method='POST' action='/user_data/download_selected_metadata'>
-		      <input type='submit' class="btn btn-xs btn-success" value='Create Metadata File' />
+		    <form id='download_metadata_form_id' method='POST' action=''>
+          <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
 		      <input type='hidden' name='download_type' value='partial_project' />
 		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
 			    <input type='hidden' name='referer' value='/visuals/view_selection' />
-		    </form>			
+		    </form>	
+        
 		</td>
+    <td><div id='download_confirm_id'></div> </td>
 	<% } %>
 </tr></table>  <!-- button.row -->
  

@@ -19,12 +19,12 @@
 		<ul class="dropdown-menu">
 	      
 		  <li>
-		    <form id='download_project_fasta_form_id' method='POST' action='/user_data/download_selected_seqs'>
+		    <form id='download_project_fasta_form_id' method='POST' action=''>
 		  	  <!-- This form should run in the background and place the seqs file 
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <input type='submit' id='download_project_fasta_form_btn' value='Fasta File' />
+		  	  <button type='button' id='download_project_fasta_form_btn' >Fasta File</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
@@ -34,22 +34,22 @@
 		  </li>
 	      
 		  <li>
-		  	<form id='download_project_metadata_form_id' method='POST' action='/user_data/download_selected_metadata'>
+		  	<form id='download_project_metadata_form_id' method='POST' action=''>
 		  	  <!-- This form should run in the background and place the seqs file 
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <input type='button'  id='download_project_metadata_form_btn' value='Metadata File' />
+		  	  <button type='button'  id='download_project_metadata_form_btn' >Metadata File</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  <input type='hidden' name='referer' value='/projects/project_profile' />
-			  
+			  <input type='hidden' name='referer' value='/projects/project_profile' />			  
 		    </form>		  
 		  </li>
+
 		 </ul>	
 	</li> <!-- End dropdown -->
-	
+	<div id='download_confirm_id'></div>
 	<li><span  class='alert_flash_message' id='download_metadata_response' ></span><span  class='alert_flash_message' id='download_fasta_response' style='' ></span></li>
   </ul>
   
