@@ -87,7 +87,7 @@ def go(args):
         
         id = row[0]
         seq = row[1]
-        fp.write('>lcl|'+str(id)+"\n")
+        fp.write('>'+str(id)+"\n")
         fp.write(seq+"\n")
         print 'id:',id,' --seq:',seq
         
@@ -101,10 +101,12 @@ def go(args):
 if __name__ == '__main__':
 
     usage = """
+      OPTIONS:
         -sql/--sql  Complete sql query [Optional]
         -p/--public seqs from public projects. [Optional]
         Produce a fasta file 
         uses:
+          db2fasta.py  (no command-line parameters) Script asks you for database name.
           makeblastdb -in outfile_201507090811.fa -parse_seqids -dbtype nucl -out ALL_SEQS (ALL_PUBLIC_SEQS)
           blast database creation  (outfmt 13 = JSON Blast output):
            >blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
@@ -119,7 +121,7 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "region", default='v6',
                 help="""dna_region of S16 or """) 
     parser.add_argument("-o","--outfile_prefix",                   
-                required=False,  action="store",   dest = "outfile_prefix", default='outfile',
+                required=False,  action="store",   dest = "outfile_prefix", default='',
                 help="""Prefix -to be appended by datestring""")
                 
     args = parser.parse_args()

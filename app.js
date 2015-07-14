@@ -217,7 +217,7 @@ catch (e) {
   console.log(e);
   AllTaxCounts = {}
 }
-console.log('Loading ALL TAXCOUNTS (AllTaxCounts) from: '+taxcounts_file);
+console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
 var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
 try {
 	AllMetadata        = require(meta_file);
@@ -228,7 +228,7 @@ catch (e) {
 }
 
 
-console.log('Loading ALL METADATA (AllMetadata) from: '+meta_file);
+console.log('Loading METADATA as AllMetadata from: '+meta_file);
 
 //see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {

@@ -20,11 +20,13 @@
 			  
 			  
           </td>
-          <td>
-            
-			<button type="button" class="btn btn-sm btn-warning" name='Next' id="unit_selection"> 
-			  next: Export Format Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
-			</button>
+          <td>            
+      			<button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection"> 
+      			  next: File Format Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+      			</button>
+            <h4>                
+              <span class="label label-default">To save your list of selected datasets go to the next page.</span>  
+            </h4>
           </td>
           </tr>
           <tr>
@@ -35,11 +37,7 @@
           </td>
 		  <td class='td_top'>
 			  
-			  <h4>
-			          
-			          <span class="label label-default">To save your list of selected datasets go to the next page.</span>
-			          
-			        </h4>
+			  
               See the next page for a list of choices:
               <ul>
                 <li>Fasta file download of sequences
@@ -55,8 +53,6 @@
        <input type='hidden' name='Next' value='Next: Export Selection' id="export_selection" >
     </form>
    
-
-
 
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/user_data.js"></script>
