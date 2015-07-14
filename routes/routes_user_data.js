@@ -918,7 +918,7 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 //
 router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   var db = req.db;
-  console.log('req.body-->>');
+  console.log('seqs req.body-->>');
   console.log(req.body);
   console.log('<<--req.body');
   console.log('in DOWNLOAD SELECTED SEQS');
@@ -938,7 +938,7 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   var out_file_path;
   
   if(req.body.download_type == 'whole_project'){
-	  req.flash('message', 'Fasta being created');
+	  
 		var pid = req.body.project_id;
 		var project = req.body.project;
 		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
@@ -946,7 +946,7 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
   	qSelect += " where project_id = '"+pid+"'";
   
   }else if(req.body.download_type == 'partial_project'){
-	  req.flash('message', 'Fasta being created');
+	  
     var pids = JSON.parse(req.body.datasets).ids;
 		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
     out_file_path = path.join(user_dir,file_name);
@@ -1003,19 +1003,21 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
       .pipe(wstream)
       .on('finish', function () {  // finished
         console.log('done compressing and writing file');
+        console.log(JSON.stringify(req.user))
         var info = {
-              to:'avoorhis@mbl.edu',
-              from:"vamps@mbl.edu",
-              subject:"fasta file is ready",
-              text:"Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              to : req.user.email,
+              from : "vamps@mbl.edu",
+              subject : "fasta file is ready",
+              text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
             };
         helpers.send_mail(info);
-        //req.flash('Done')
+        
 				
       });
       
   });
-  res.send(req.body.referer);
+  
+  res.send(file_name);
 
 });
 
@@ -1024,6 +1026,7 @@ router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
 //
 router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res) {
   var db = req.db;
+  console.log('meta req.body-->>');
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
 
@@ -1106,20 +1109,21 @@ if(req.body.download_type == 'whole_project'){
       .pipe(wstream)
       .on('finish', function () {  // finished
         console.log('done compressing and writing file');
+        //console.log(JSON.stringify(req.user))
         var info = {
-              to:'avoorhis@mbl.edu',
-              from:"vamps@mbl.edu",
-              subject:"metadata is ready",
-              text:"Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              to : req.user.email,
+              from : "vamps@mbl.edu",
+              subject : "metadata is ready",
+              text : "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
         };
         helpers.send_mail(info);
         //req.flash('Done')
-				req.flash('message', 'Done');
-				res.redirect(req.body.referer);
+				
+				
 		
       });
 
-  //console.log(datasets);
+  	res.send(file_name);
 });
 
 

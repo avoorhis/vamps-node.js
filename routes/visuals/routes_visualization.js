@@ -589,7 +589,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     	        //pcoa_data = JSON.parse(pcoa_data)
     	        //console.log(pcoa_data);
               console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
-              PythonShell.run('make_emperor.py', options2, function (err, pcoa_data) {
+              PythonShell.run('/make_emperor.py', options2, function (err, pcoa_data) {
                 ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
                 ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
                 if (err) {
