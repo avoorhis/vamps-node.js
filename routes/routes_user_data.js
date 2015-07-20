@@ -11,7 +11,6 @@ var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var Readable = require('readable-stream').Readable;
-
 var COMMON  = require('./visuals/routes_common');
 //
 //
@@ -458,7 +457,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
     var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
    
 	project_info = {};
-	modify_times = [];
+	pnames = [];
     fs.readdir(user_projects_base_dir, function(err, items){
 		if(err){		  
 			msg = 'ERROR Message '+err;
@@ -466,59 +465,58 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 		  
 		}else{
 		  for (var d in items){
-	        var pts = items[d].split(':');
-	        if(pts[0] === 'project'){
-				
-				var project_name = pts[1];
-				var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
-				
-  			  if(stat_dir.isDirectory()){
-  				  // stat.mtime.getTime() is for sorting to list in oreder
-  				  
-  				  // need to read config file
-  				  // check status?? dir strcture: analisis/gast/<ds>
-  				  var config_file = path.join(user_projects_base_dir,items[d],'config.ini');
+        var pts = items[d].split(':');
+        if(pts[0] === 'project'){
+			
+					var project_name = pts[1];
+					var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
+			
+			  	if(stat_dir.isDirectory()){
+				  	// stat.mtime.getTime() is for sorting to list in oreder
 				  
-				  try{
-					  var stat_config = fs.statSync(config_file);
-	  				 // console.log('1 ',config_file)
-			 		 var config = iniparser.parseSync(config_file)
-			      
-			      	
-	  				  project_info[stat_dir.mtime.getTime()] = {}
-	  				  modify_times.push(stat_dir.mtime.getTime());
-					 // console.log('2 ',config_file)
-						if(project_name in PROJECT_INFORMATION_BY_PNAME){
-							project_info[stat_dir.mtime.getTime()].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
-							project_info[stat_dir.mtime.getTime()].status = 'Taxonomic Data Available';
-							project_info[stat_dir.mtime.getTime()].tax = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
-						}else{
-						  	project_info[stat_dir.mtime.getTime()].pid = 0;
-						  	project_info[stat_dir.mtime.getTime()].status = 'No Taxonomic Assignments Yet';
-						  	project_info[stat_dir.mtime.getTime()].tax = 0;
-						}
-  				  	  project_info[stat_dir.mtime.getTime()].config = config;
-  				  	  project_info[stat_dir.mtime.getTime()].directory = items[d];
-  				  	  project_info[stat_dir.mtime.getTime()].mtime = stat_dir.mtime;
-					  
-				  }
-				  catch (err) {
-				  	console.log('nofile ',err)
-				  }
-  			  	 
-  			  }
-				
-	        }
-	      }
+				  	// need to read config file
+				  	// check status?? dir strcture: analisis/gast/<ds>
+				  	var config_file = path.join(user_projects_base_dir,items[d],'config.ini');
+			  
+			  		try{
+				  		var stat_config = fs.statSync(config_file);
+  				 		// console.log('1 ',config_file)
+		 		 			var config = iniparser.parseSync(config_file)
+		      
+		      	
+  				  	project_info[project_name] = {};
+  				  	pnames.push(project_name);
+				 			// console.log('2 ',config_file)
+							if(project_name in PROJECT_INFORMATION_BY_PNAME){
+								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
+								project_info[project_name].status = 'Taxonomic Data Available';
+								project_info[project_name].tax = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
+							}else{
+					  		project_info[project_name].pid = 0;
+					  		project_info[project_name].status = 'No Taxonomic Assignments Yet';
+					  		project_info[project_name].tax = 'none';
+							}
+				  	  project_info[project_name].config = config;
+				  	  project_info[project_name].directory = items[d];
+				  	  project_info[project_name].mtime = stat_dir.mtime;
+				  
+			  		}
+			  		catch (err) {
+			  			console.log('nofile ',err)
+			  		}
+			  	 
+			  	}
+			
+        }
+	    }
 	  
-		  modify_times.sort().reverse();
-		  
+		  pnames.sort();
+		  console.log(pnames);
 		  //console.log(JSON.stringify(project_info));
 		  res.render('user_data/your_projects',
-		    { title: 'User Projects',
-		     
+		    { title: 'User Projects',		     
 		      pinfo: JSON.stringify(project_info),
-		      times: modify_times,
+		      pnames: pnames,
 		  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
 		  	  failmessage : req.flash('failMessage'),
 		  	  successmessage : req.flash('successMessage'),
@@ -533,7 +531,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 //   GET -- EDIT_PROJECT: When first enter the page.
 //
 router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
-	console.log('in edit project');
+	console.log('in edit project:GET');
 	var project_name = req.params.project;
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
@@ -556,7 +554,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 		project: project_name,
 		pinfo: JSON.stringify(project_info),
 		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-		message:'',
+		message : req.flash('message'),
 	    user: 	req.user
 	  });
 });
@@ -564,14 +562,22 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 //   POST -- EDIT_PROJECT:  for accepting changes and re-showing the page
 //
 router.post('/edit_project', helpers.isLoggedIn, function(req,res){
-	console.log('in edit project');
+	console.log('in edit project:POST');
 	console.log(req.body);
+	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
+		if(req.body.new_project_name in PROJECT_INFORMATION_BY_PNAME){
+			console.log('ERROR');
+			req.flash('message', 'That project name is taken -- choose another.');
+			res.redirect('/user_data/edit_project/'+req.body.old_project_name);
+			return;
+		}
+	}
 	var project_info = {};
 	var project_name = req.body.old_project_name;
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name)
 	var config_file = path.join(project_dir,'config.ini');
-    var timestamp = +new Date();  // millisecs since the epoch!
+   var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
   	  	if (err){
@@ -581,6 +587,8 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
   	  	}
 	}) // copies fi
 	//console.log(config_file);
+
+
 	project_info.config = iniparser.parseSync(config_file);
 	//console.log('config:');
 	//console.log(JSON.stringify(project_info.config));
@@ -711,32 +719,34 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 						console.log(err);
 						res.send(err);
 					}else{
-			  			console.log(project_name)
+			  		console.log(project_name)
 						console.log(JSON.stringify(project_info))
 						update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
-						res.render('user_data/edit_project',
-			  		  	  { title: 'Edit Project',   
-			  		  		project: project_name,
-			  		  		pinfo: JSON.stringify(project_info),
-			  		  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-			  		  		message:'Project Updated',
-			  		  	    user: 	req.user
-			  		  	  });
+						res.redirect('/user_data/your_projects');
+						// res.render('user_data/edit_project',
+			  	// 	  	  { title: 'Edit Project',   
+			  	// 	  		project: project_name,
+			  	// 	  		pinfo: JSON.stringify(project_info),
+			  	// 	  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+			  	// 	  		message:'Project Updated',
+			  	// 	  	    user: 	req.user
+			  	// 	  	  });
 					}
 					
 				})
 			}else{
-			  	console.log(project_name)
+			  console.log(project_name)
 				console.log(JSON.stringify(project_info))
 				update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
-				res.render('user_data/edit_project',
-			  	  { title: 'Edit Project',   
-			  		project: project_name,
-			  		pinfo: JSON.stringify(project_info),
-			  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-			  		message:'Project Updated',
-			  	    user: 	req.user
-			  	  });
+				res.redirect('/user_data/your_projects');
+				// res.render('user_data/edit_project',
+			 //  	  { title: 'Edit Project',   
+			 //  		project: project_name,
+			 //  		pinfo: JSON.stringify(project_info),
+			 //  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+			 //  		message:'Project Updated',
+			 //  	    user: 	req.user
+			 //  	  });
 			}
 			
         }
