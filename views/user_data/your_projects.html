@@ -1,6 +1,6 @@
 <% include ../add_ins/begin-no_menu.ejs %>
 
-<% var creation_times = modify_times %>
+<% var pnames = pnames %>
 <% var project_info = JSON.parse(pinfo) %>
 <% var env = JSON.parse(env_sources) %>
 
@@ -16,50 +16,49 @@
 <br><strong>Your Projects:</strong> (most recent at the top)
 <br>
 <ol>
-<% if(creation_times.length === 0) { %>
+<% if(pnames.length === 0) { %>
 	<p>No Projects</p>
 <% } else { %>
 
-	<% for(t in creation_times){ %>
-		<% var project = project_info[times[t]].config.GENERAL.project %>
-		<% var number_of_datasets = project_info[times[t]].config.GENERAL.number_of_datasets %>
-		<% var total_number_of_sequences = project_info[times[t]].config.GENERAL.project_sequence_count %>
-		<% var public = project_info[times[t]].config.GENERAL.public %>
-		<% var env_source_id = project_info[times[t]].config.GENERAL.env_source_id %>
+	<% for(t in pnames){ %>
+		<% var project = project_info[pnames[t]].config.GENERAL.project %>
+		<% var number_of_datasets = project_info[pnames[t]].config.GENERAL.number_of_datasets %>
+		<% var total_number_of_sequences = project_info[pnames[t]].config.GENERAL.project_sequence_count %>
+		<% var public = project_info[pnames[t]].config.GENERAL.public %>
+		<% var env_source_id = project_info[pnames[t]].config.GENERAL.env_source_id %>
 		<% var env_source = env[env_source_id] %>
 		
-		<% var datasets = project_info[times[t]].config.DATASETS %>
-		<% var status = project_info[times[t]].status %>
-		<% var tax = project_info[times[t]].tax %>
+		<% var datasets = project_info[pnames[t]].config.DATASETS %>
+		<% var status = project_info[pnames[t]].status %>
+		<% var tax = project_info[pnames[t]].tax %>
 	
 		<div class='well'>			
 
     		<table class='table table-condensed'>
     			<tr>	
-    				<td>Project name: <%= project %>  <small>( <%= number_of_datasets %> datasets )</small> </td>
+    				<td>Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> </td>
     				<td></td>
     				
 					<td>Status:
-						<%if(project_info[times[t]].pid == 0){ %>
-							<span class="label label-info"><%= status %></span>
+						<%if(project_info[pnames[t]].pid == 0){ %>
+							<span class="label label-warning"><strong><%= status %></strong></span>
 						<% }else{ %>
-							<span class="label label-primary"><%= status %></span>
+							<span class="label label-success"><strong><%= status %></strong></span>
 						<% } %>
 					</td>				
     				
 					<td>
-						<% if(project_info[times[t]].pid == 0) { %>
+						<% if(project_info[pnames[t]].pid == 0) { %>
 							<a href="edit_project/<%= project %>" class="pull-right">edit</a>
-						<% }else{ %>
-							
+						<% }else{ %>							
 							(edit disabled)
 						<% } %>
 					</td>
     			</tr><tr>
-    				<td>Total Number of Sequences: <%= total_number_of_sequences %></td>
-    				<td>Public: <%= public %></td>
-    				<td>Environmental Source: <%= env_source %></td>
-    				<td>Taxonomy: <%= tax %></td>				
+    				<td>Total Number of Sequences: <strong><%= total_number_of_sequences %></strong></td>
+    				<td>Public: <strong><%= public %></strong></td>
+    				<td>Environmental Source: <strong><%= env_source %></strong></td>
+    				<td>Taxonomy: <strong><%= tax %></strong></td>				
     			</tr>
     		</table>			
 						
