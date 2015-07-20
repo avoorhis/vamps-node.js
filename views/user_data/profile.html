@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 <% var project_info = JSON.parse(pinfo) %>
 <div class='row'>
   <div class='title fa fa-anchor'><%= project %> (Project Profile)</div>
@@ -12,7 +12,7 @@
 	<div class='col-md-1'></div>
 	<div class='col-md-8'>
 
-	<br><a href='#' onclick="javascript:window.history.back();">&lt;&lt;--back</a>
+	<br><a href='/user_data/your_projects' >&lt;&lt;--back</a>
 	<div class='well'>
 		
 		<table class='table'>
@@ -30,5 +30,8 @@
   </div>
 </div>
   
-  <script type="text/javascript" src="/javascripts/project.js"></script>
+  
 <% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/project.js"></script>
+</body>
+</html>

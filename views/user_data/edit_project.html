@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin-no_menu.ejs %>
 
 
 <% var project_info = JSON.parse(pinfo) %>
@@ -22,9 +22,9 @@
 	<% } %>
 	<a href='/user_data/your_projects'>&lt;&lt;--back</a>
 	<table class='table table-condensed'>
-		<tr><td></td><th>Current values</th><th>Enter New Values</th></tr>
-		<tr><td>Project Name (max length 50 chars):</td><td><%= project %></td><td><input type='text' name='new_project_name' maxlength="50" size='50'></td></tr>
-		<tr><td>ENV Source:</td><td><%= env_source %></td>
+		<tr><td></td><th>Values</th></tr>
+		<tr><td>Project Name (max length 50 chars):</td><td><input type='text' name='new_project_name' maxlength="50" size='50' value='<%= project %>'></td></tr>
+		<tr><td>ENV Source:</td>
 		<td>
 	        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="100">
 	        <% for(id in env_hash) { %>	        
@@ -37,7 +37,8 @@
 	        </select>
 		</td></tr>
 		
-		<tr><td>Public:</td><td><%= project_info.config.GENERAL.public %></td><td>
+		<tr><td>Public:</td>
+			<td>
 			<% if(project_info.config.GENERAL.public == 'True') { %>
 				      <input type='radio' checked='checked' name='new_privacy' value='True' > public
 				&nbsp;<input type='radio'                   name='new_privacy' value='False'> private
@@ -46,11 +47,11 @@
 				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='False'> private
 			<% } %>
 		</td></tr>
-		<tr><td>Title (max length 100 chars):</td><td><%= project_info.config.GENERAL.project_title %></td>
-			<td><input type='text' name='new_project_title' maxlength="100" size='50'></td>
+		<tr><td>Title (max length 100 chars):</td>
+			<td><input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.config.GENERAL.project_title %>'></td>
 		</tr>
-		<tr><td>Description (max length 255 chars):</td><td><%= project_info.config.GENERAL.project_description %></td>
-			<td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'></textarea></td>
+		<tr><td>Description (max length 255 chars):</td>
+			<td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.config.GENERAL.project_description %></textarea></td>
 		</tr>
 	</table>
 	<br>
@@ -58,11 +59,11 @@
 	
 	<h4><center>Datasets</center></h4>
 	<table class='table table-striped'>
-		<tr><td></td><th>Current Names</th><th>Enter New Name</th><th>Enter New Description</th></tr>
+		<tr><td></td><th>Names</th><th>Enter New Description</th></tr>
 	<% ds_counter = 1 %>
 	<% for(ds in project_info.config.DATASETS) { %>
-		<tr><td><%= ds_counter %></td><td><%= ds %></td>
-			<td><input type='text' name='new_dataset_names[]' maxlength="50" size='50' ></td>
+		<tr><td><%= ds_counter %></td>
+			<td><input type='text' name='new_dataset_names[]' maxlength="50" size='50' value='<%= ds %>'></td>
 			<td><textarea name='new_dataset_description' maxlength="255" rows='1' cols='50' ></textarea></td>
 		</tr>
 		<% ds_counter += 1 %>
