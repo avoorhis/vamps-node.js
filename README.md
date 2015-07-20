@@ -7,8 +7,13 @@ INSTALL
 --------------
 
 **Requirements**
- * MySQL (https://www.mysql.com/)
+ * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
  * Node.js (http://nodejs.org/)
+ * Python (https://www.python.org/)
+ 
+ For some additional functionality 
+ * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html)
+ * Emperor (Qiime's module, http://qiime.org/install/index.html)
 
 **Install the source code**
  * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
@@ -52,7 +57,7 @@ go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
    cd public/scripts; python INITIALIZE_ALL_FILES.py
    ```
   
-This script requires that you have a .my.cnf file in your home directory
+   This script requires that you have a .my.cnf file in your home directory
 (read about .my.cnf files here: https://dev.mysql.com/doc/refman/5.1/en/option-files.html).
 The script will prompt you for a database - just enter the one you created above.
 It may take awhile especially if the database is large, but it is required
