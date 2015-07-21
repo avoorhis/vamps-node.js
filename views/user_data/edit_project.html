@@ -12,13 +12,19 @@
 <% } %>
 <% var env_source_id = project_info.config.GENERAL.env_source_id %>
 <% var env_source = env_hash[env_source_id] %>
+
 <br>
 
 <form name='edit_project_form' method='POST' action='/user_data/edit_project'>
 	<% if(project_info.pid == 0){ %>
 		<button class='pull-right btn btn-sm btn-primary' type='submit'>Save Changes</button>
 	<% }else{ %>
-		<span class='pull-right'>Cannot Edit because project already has taxonomic assignments. <button class=' btn btn-sm btn-primary' disabled type='submit'>Save Changes</button></span>
+		<button class='pull-right btn btn-sm btn-primary' type='submit'>Save Changes</button>
+<!--
+		<span class='pull-right'>Cannot Edit because project already has taxonomic assignments. 
+			<button class=' btn btn-sm btn-primary' disabled type='submit'>Save Changes</button>
+		</span>
+-->
 	<% } %>
 	<a href='/user_data/your_projects'>&lt;&lt;--back</a>
 	<table class='table table-condensed'>
@@ -39,19 +45,19 @@
 		
 		<tr><td>Public:</td>
 			<td>
-			<% if(project_info.config.GENERAL.public == 'True') { %>
-				      <input type='radio' checked='checked' name='new_privacy' value='True' > public
-				&nbsp;<input type='radio'                   name='new_privacy' value='False'> private
+			<% if(project_info.public == 1) { %>
+				      <input type='radio' checked='checked' name='new_privacy' value='1' > public
+				&nbsp;<input type='radio'                   name='new_privacy' value='0'> private
 			<% }else{ %>
-				      <input type='radio'                   name='new_privacy' value='True' > public
-				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='False'> private
+				      <input type='radio'                   name='new_privacy' value='1' > public
+				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='0'> private
 			<% } %>
 		</td></tr>
 		<tr><td>Title (max length 100 chars):</td>
-			<td><input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.config.GENERAL.project_title %>'></td>
+			<td><input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.title %>'></td>
 		</tr>
 		<tr><td>Description (max length 255 chars):</td>
-			<td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.config.GENERAL.project_description %></textarea></td>
+			<td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.pdesc %></textarea></td>
 		</tr>
 	</table>
 	<br>
@@ -61,10 +67,12 @@
 	<table class='table table-striped'>
 		<tr><td></td><th>Names</th><th>Enter New Description</th></tr>
 	<% ds_counter = 1 %>
-	<% for(ds in project_info.config.DATASETS) { %>
+	<% for(d in project_info.dsets) { %>
 		<tr><td><%= ds_counter %></td>
-			<td><input type='text' name='new_dataset_names[]' maxlength="50" size='50' value='<%= ds %>'></td>
-			<td><textarea name='new_dataset_description' maxlength="255" rows='1' cols='50' ></textarea></td>
+			<td><input type='text' name='new_dataset_names[]' maxlength="50" size='50' value='<%= project_info.dsets[d].name %>'>
+					<input type='hidden' name='dataset_ids[]' maxlength="50" size='50' value='<%= project_info.dsets[d].did %>'>
+			</td>
+			<td><textarea name='new_dataset_descriptions[]' maxlength="255" rows='1' cols='50' ><%= project_info.dsets[d].ddesc %></textarea></td>
 		</tr>
 		<% ds_counter += 1 %>
 	<% } %>

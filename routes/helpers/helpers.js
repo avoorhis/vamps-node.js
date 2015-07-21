@@ -176,7 +176,7 @@ module.exports.run_select_datasets_query = function(rows){
       titles[project] = rows[i].title;
       
       DATASET_NAME_BY_DID[did] = dataset
-      DATASET_ID_BY_DNAME[dataset] = did
+      
 	  
       if (project === undefined){ continue; }
       if (project in datasetsByProject){
@@ -222,8 +222,7 @@ module.exports.run_select_datasets_query = function(rows){
           				}
           			}else{
           				DatasetsWithLatLong[did]={}
-        				//console.log(did)
-                        //console.log(PROJECT_ID_BY_DID[did])
+        				
         				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
           				if(mdname == 'latitude'){				
@@ -304,10 +303,7 @@ module.exports.update_global_variables = function(pid,type){
     console.log('RE-INTIALIZING ALL_CLASSIFIERS_BY_PID');
     console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
     console.log('RE-INTIALIZING DatasetsWithLatLong');
-    console.log('RE-INTIALIZING DATASET_ID_BY_DNAME');
-    for(n in dataset_objs){			
-        delete DATASET_ID_BY_DNAME[dataset_objs[n].dname];
-    }
+    
     delete PROJECT_INFORMATION_BY_PID[pid];
     delete DATASET_IDS_BY_PID[pid];
     delete ALL_PCOUNTS_BY_PID[pid];
@@ -323,7 +319,7 @@ module.exports.update_global_variables = function(pid,type){
 
 module.exports.update_project_status = function(res, p){
     console.log('in helpers update project status')
-    connection.db.query(queries.user_project_status(p.type, p.user, p.proj, p.status, p.msg ), function(err, rows, fields){
+    connection.query(queries.user_project_status(p.type, p.user, p.proj, p.status, p.msg ), function(err, rows, fields){
         if(err){ 
             console.log('ERROR-in status update')
         }else{
@@ -344,7 +340,6 @@ module.exports.assignment_finish_request = function(rows1,rows2,status_params) {
         console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
         console.log(' UPDATED DATASET_IDS_BY_PID');
         console.log(' UPDATED DATASET_NAME_BY_DID');
-        console.log(' UPDATED DATASET_ID_BY_DNAME');
         console.log(' UPDATED AllMetadataNames');
         console.log(' UPDATED DatasetsWithLatLong');
         helpers.run_select_sequences_query(rows2);
@@ -354,4 +349,29 @@ module.exports.assignment_finish_request = function(rows1,rows2,status_params) {
 
         helpers.update_project_status(res, status_params);
         
+};
+
+module.exports.mysql_real_escape_string = function (str) {
+    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+        switch (char) {
+            case "\0":
+                return "\\0";
+            case "\x08":
+                return "\\b";
+            case "\x09":
+                return "\\t";
+            case "\x1a":
+                return "\\z";
+            case "\n":
+                return "\\n";
+            case "\r":
+                return "\\r";
+            case "\"":
+            case "'":
+            case "\\":
+            case "%":
+                return "\\"+char; // prepends a backslash to backslash, percent,
+                                  // and double/single quotes
+        }
+    });
 };
