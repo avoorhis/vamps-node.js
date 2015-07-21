@@ -13,7 +13,7 @@
 	<div class="alert_flash_message"><%= successmessage %></div>
 <% } %>
 <div class='left_justify'>
-<br><strong>Your Projects:</strong> (most recent at the top)
+<br><strong>Your Projects:</strong>
 <br>
 <ol>
 <% if(pnames.length === 0) { %>
@@ -29,7 +29,7 @@
 		<% var env_source = env[env_source_id] %>
 		
 		<% var datasets = project_info[pnames[t]].config.DATASETS %>
-		<% var status = project_info[pnames[t]].status %>
+		<% var tax_status = project_info[pnames[t]].tax_status %>
 		<% var tax = project_info[pnames[t]].tax %>
 	
 		<div class='well'>			
@@ -41,9 +41,9 @@
     				
 					<td>Status:
 						<%if(project_info[pnames[t]].pid == 0){ %>
-							<span class="label label-warning"><strong><%= status %></strong></span>
+							<span class="label label-warning"><strong><%= tax_status %></strong></span>
 						<% }else{ %>
-							<span class="label label-success"><strong><%= status %></strong></span>
+							<span class="label label-success"><strong><%= tax_status %></strong></span>
 						<% } %>
 					</td>				
     				
@@ -51,7 +51,7 @@
 						<% if(project_info[pnames[t]].pid == 0) { %>
 							<a href="edit_project/<%= project %>" class="pull-right">edit</a>
 						<% }else{ %>							
-							(edit disabled)
+							<a href="edit_project/<%= project %>" class="pull-right">edit</a>
 						<% } %>
 					</td>
     			</tr><tr>

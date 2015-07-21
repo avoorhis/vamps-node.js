@@ -14,7 +14,6 @@ module.exports.get_datasets = function(callback){
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       ALL_DATASETS                = {};  // GLOBAL
       DATASET_NAME_BY_DID         = {};  // GLOBAL
-      DATASET_ID_BY_DNAME         = {};
       PROJECT_ID_BY_DID           = {};
       PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
       PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
@@ -48,7 +47,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
       console.log(' INITIALIZING DATASET_IDS_BY_PID');
       console.log(' INITIALIZING DATASET_NAME_BY_DID');
-      console.log(' INITIALIZING DATASET_ID_BY_DNAME');
+     
       
       console.log(' INITIALIZING AllMetadataNames');
       console.log(' INITIALIZING DatasetsWithLatLong');
@@ -104,7 +103,7 @@ module.exports.get_datasets = function(callback){
         helpers.run_select_sequences_query(rows);		
         
       }
-      //console.log(JSON.stringify(ALL_CLASSIFIERS_BY_CID))
+      
       console.log(' INITIALIZING ALL_DCOUNTS_BY_DID');
       console.log(' INITIALIZING ALL_PCOUNTS_BY_PID');
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');

@@ -240,7 +240,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  console.log(ALL_DATASETS);
+  console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {}
   
@@ -249,7 +249,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 rows     : JSON.stringify(ALL_DATASETS),
                                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants: JSON.stringify(req.C),
-	  							message  : req.flash('nodataMessage'),
+	  							              message  : req.flash('nodataMessage'),
                                 user     : req.user
                             });
 });
@@ -363,25 +363,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
   		  res.send(err);
   	  }else{
 	      distance_matrix = JSON.parse(mtx);
-	      //console.log('dmtx');
-		  //console.log(chosen_id_name_hash);
-	      //console.log(distance_matrix);
-	      var m = JSON.stringify(mtx);
-		  var ids = {}
-		  for(i in chosen_id_name_hash.names){
-		  	
-		  }
-		  for(pjds in distance_matrix){
-		  	console.log(pjds)
-			  var ds = pjds.split('--')[1]
-			  var did = DATASET_ID_BY_DNAME[ds];
-			  ids[pjds] = did 
-		  }
-		  //console.log(ids)
+	     
 	      res.render('visuals/partials/load_distance',{
-	                                        dm        : distance_matrix,
-			  								hash   	  : JSON.stringify(chosen_id_name_hash),			  							
-	                                        constants : JSON.stringify(req.C),
+	                    dm        : distance_matrix,
+			  							hash   	  : JSON.stringify(chosen_id_name_hash),			  							
+	                    constants : JSON.stringify(req.C),
 	                                      });
 	  }
     });
