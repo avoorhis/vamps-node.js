@@ -223,10 +223,10 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			});
 		 
 			delete_process.on('close', function (code) {
-			   console.log('delete_process process exited with code ' + code);
-			   var ary = output.split("\n");
-			   var last_line = ary[ary.length - 1];
-			   if(code == 0){				   
+			    console.log('delete_process process exited with code ' + code);
+			    var ary = output.split("\n");
+			    var last_line = ary[ary.length - 1];
+			    if(code == 0){				   
 				   //console.log('PID last line: '+last_line)				   
 				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));	
                    
@@ -238,24 +238,24 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
                         }
                     });
                            					   
-			   }else{
+			    }else{
 			   	  // python script error
-			   }		   
+			    }		   
 		    });		
     		// called imediately
     		if(delete_kind == 'all'){    			
-    			var msg = "You have deleted '"+project+"'"	    
+    			var msg = "Deletion in progress: '"+project+"'"	    
     		}else if(delete_kind == 'tax'){
-    			var msg = "You have deleted the taxonomy from '"+project+"'"		    
+    			var msg = "Deletion in progress: taxonomy from '"+project+"'"		    
     		}else if(delete_kind == 'meta'){
-    			var msg = "You have deleted the metadata from '"+project+"'"	    
+    			var msg = "Deletion in progress: metadata from '"+project+"'"	    
     		}else{
     			req.flash('message', 'ERROR nothing deleted');
-    	      	res.redirect("/user_data/your_projects");
+    	    res.redirect("/user_data/your_projects");
     		}
 
     		req.flash('successMessage', msg);
-          	res.redirect("/user_data/your_projects");	
+        res.redirect("/user_data/your_projects");	
             //res.redirect(req.get('referer'));
 		
 	
@@ -489,11 +489,11 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
-								project_info[project_name].status = 'Taxonomic Data Available';
+								project_info[project_name].tax_status = 'Taxonomic Data Available';
 								project_info[project_name].tax = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
 							}else{
 					  		project_info[project_name].pid = 0;
-					  		project_info[project_name].status = 'No Taxonomic Assignments Yet';
+					  		project_info[project_name].tax_status = 'No Taxonomic Assignments Yet';
 					  		project_info[project_name].tax = 'none';
 							}
 				  	  project_info[project_name].config = config;
@@ -539,23 +539,61 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 	var project_info = {};
   	//var stat_config = fs.statSync(config_file);
  	project_info.config = iniparser.parseSync(config_file);
+
 	if(project_name in PROJECT_INFORMATION_BY_PNAME){
+
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = 'Taxonomic Data Available';
-		project_info.tax = 'GAST'; 
+		project_info.tax = 'GAST';
+		project_info.title = PROJECT_INFORMATION_BY_PNAME[project_name].title;
+		project_info.pdesc = PROJECT_INFORMATION_BY_PNAME[project_name].description;
+		project_info.public = PROJECT_INFORMATION_BY_PNAME[project_name].public;
+		
+		console.log('datasets with dids')
+		//project_info.dids = DATASET_IDS_BY_PID[project_info.pid]
+		console.log(PROJECT_INFORMATION_BY_PID[project_info.pid]);
+		console.log(DATASET_IDS_BY_PID[project_info.pid]);
+		project_info.dsets = [];
+		for(var i = 0; i < ALL_DATASETS.projects.length; i++) {
+			if(ALL_DATASETS.projects[i].pid == project_info.pid){
+				for(var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
+					var did = ALL_DATASETS.projects[i].datasets[d].did;
+					var ds  = ALL_DATASETS.projects[i].datasets[d].dname;
+					var ddesc = ALL_DATASETS.projects[i].datasets[d].ddesc;
+					console.log('datasets with dids2 '+' - '+did+' - '+ds+' - '+ddesc)
+					project_info.dsets.push({ "did":did, "name":ds, "ddesc":ddesc });
+				}
+			}
+		}
+			
+
 	}else{
 		project_info.pid =0;
 		project_info.status = 'No Taxonomic Assignments Yet';
 		project_info.tax = 0; 
+		project_info.dsets = [];
+		project_info.title = project_info.config.GENERAL.project_title
+		project_info.pdesc = project_info.config.GENERAL.project_description;
+		if(project_info.config.GENERAL.public == 'True'){
+			project_info.public = 1;
+		}else{
+			project_info.public = 0;
+		}
+		
+		for(var ds in project_info.config.DATASETS) {
+			project_info.dsets.push({ "did":'', "name":ds, "ddesc":'' });
+		}
+
 	}
-	
-	res.render('user_data/edit_project',
-	  { title: 'Edit Project',   
-		project: project_name,
-		pinfo: JSON.stringify(project_info),
-		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-		message : req.flash('message'),
-	    user: 	req.user
+	console.log(project_info.config.DATASETS);
+	console.log(project_info.config.DATASETS.keys);
+	res.render('user_data/edit_project', { 
+				title       : 'Edit Project',   
+				project     : project_name,
+				pinfo       : JSON.stringify(project_info),
+				env_sources : JSON.stringify(req.C.ENV_SOURCE),
+				message     : req.flash('message'),
+	    	user        : req.user
 	  });
 });
 //
@@ -564,6 +602,8 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	console.log('in edit project:POST');
 	console.log(req.body);
+	
+	
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		if(req.body.new_project_name in PROJECT_INFORMATION_BY_PNAME){
 			console.log('ERROR');
@@ -572,18 +612,106 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			return;
 		}
 	}
+
+
+	// UPDATE DB if TAX ASSIGNMENTS PRESENT
+	if(req.body.project_pid != 0){
+		//sql call to projects, datasets
+		var p_sql = "UPDATE project set project='"+req.body.new_project_name+"',\n";
+		p_sql += " title='"+helpers.mysql_real_escape_string(req.body.new_project_title)+"',\n";
+		p_sql += " project_description='"+helpers.mysql_real_escape_string(req.body.new_project_description)+"',\n";
+		p_sql += " public='"+req.body.new_privacy+"'\n";
+		p_sql += " WHERE project_id='"+req.body.project_pid+"' "
+		console.log(p_sql);
+    connection.query(p_sql, function(err, rows, fields){
+       if(err){ 
+          console.log('ERROR-in project update: '+err)
+       }else{
+        	console.log('OK- project info updated: '+req.body.project_pid)
+       }
+    });
+    
+    // TODO  needed updates to data objects:  
+    //1- PROJECT_INFORMATION_BY_PNAME
+    console.log('PROJECT_INFORMATION_BY_PNAME')
+    //console.log(PROJECT_INFORMATION_BY_PNAME);
+    var tmp = PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
+    delete PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
+    PROJECT_INFORMATION_BY_PNAME[req.body.new_project_name] = tmp;
+    //console.log(PROJECT_INFORMATION_BY_PNAME);
+    
+    //2- PROJECT_INFORMATION_BY_PID
+    console.log('PROJECT_INFORMATION_BY_PID')
+console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].project         = req.body.new_project_name;
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_source_name = req.C.ENV_SOURCE[req.body.new_env_source_id];
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].title           = req.body.new_project_title;
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].description     = req.body.new_project_description;
+    PROJECT_INFORMATION_BY_PID[req.body.project_pid].public          = req.body.new_privacy;
+console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
+
+    for(d in req.body.new_dataset_names){
+    	
+    	var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"',\n";
+			d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"',\n";
+			d_sql += " dataset_description='"+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+"'\n";
+			d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' "
+			d_sql += " AND project_id='"+req.body.project_pid+"' "
+			console.log(d_sql);
+			connection.query(d_sql, function(err, rows, fields){
+        if(err){ 
+          console.log('ERROR - in dataset update: '+err);
+        }else{
+        	console.log('OK - dataset info updated: '+req.body.dataset_ids[d]);
+        }
+      });
+      //3- DATASET_NAME_BY_DID
+    	console.log('DATASET_NAME_BY_DID')
+    	console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+			DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
+			console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+    }
+
+    
+    
+
+    
+    //4- ALL_DATASETS  
+    console.log('ALL_DATASETS')  
+    console.log(ALL_DATASETS.projects[0]);
+    for(var i = 0; i < ALL_DATASETS.projects.length; i++) {
+			if(ALL_DATASETS.projects[i].pid == req.body.project_pid) {
+				ALL_DATASETS.projects[i].name = req.body.new_project_name;
+				ALL_DATASETS.projects[i].title = req.body.new_project_title;
+				
+
+				for(var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
+					var did = ALL_DATASETS.projects[i].datasets[d].did;
+					var idx = req.body.dataset_ids.indexOf(did.toString());
+					ALL_DATASETS.projects[i].datasets[d].dname = req.body.new_dataset_names[idx];
+					ALL_DATASETS.projects[i].datasets[d].ddesc = req.body.new_dataset_descriptions[idx];
+
+				}
+			}
+		}
+    
+	}		
+
+	
+
+
 	var project_info = {};
 	var project_name = req.body.old_project_name;
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name)
+	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name);
 	var config_file = path.join(project_dir,'config.ini');
    var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
   	  	if (err){
-  	  		console.log(err)
+  	  		console.log(err);
   	  	}else{
-  	  		console.log("copy success!")
+  	  		console.log("copy success!");
   	  	}
 	}) // copies fi
 	//console.log(config_file);
@@ -693,7 +821,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		// change the three places on the file system as above but also:
 		// the project_name,title,description and public in NODE_DATABASE.project
 		// and the dataset_name,description and env_id in NODE_DATABASE.dataset
-		// Also need to update PROJECT_INFORMATION_BY_PNAME and DATASET_ID_BY_DNAME
+		// Also need to update PROJECT_INFORMATION_BY_PNAME
 	}
 	
  	
@@ -722,15 +850,9 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			  		console.log(project_name)
 						console.log(JSON.stringify(project_info))
 						update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
+						req.flash('successMessage', 'Updated project: '+project_name);
 						res.redirect('/user_data/your_projects');
-						// res.render('user_data/edit_project',
-			  	// 	  	  { title: 'Edit Project',   
-			  	// 	  		project: project_name,
-			  	// 	  		pinfo: JSON.stringify(project_info),
-			  	// 	  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-			  	// 	  		message:'Project Updated',
-			  	// 	  	    user: 	req.user
-			  	// 	  	  });
+						
 					}
 					
 				})
@@ -738,15 +860,9 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			  console.log(project_name)
 				console.log(JSON.stringify(project_info))
 				update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
+				req.flash('successMessage', 'Updated project: '+project_name);
 				res.redirect('/user_data/your_projects');
-				// res.render('user_data/edit_project',
-			 //  	  { title: 'Edit Project',   
-			 //  		project: project_name,
-			 //  		pinfo: JSON.stringify(project_info),
-			 //  		env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-			 //  		message:'Project Updated',
-			 //  	    user: 	req.user
-			 //  	  });
+				
 			}
 			
         }
@@ -765,7 +881,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 					console.log(new_name_path)
 					fs.move(old_name_path, new_name_path, function(err){
 						if(err){
-							console.log('ERROR Moving dataset name '+err.toString())
+							console.log('WARNING failed to move dataset name '+err.toString())
 						}else{
 							console.log('moving '+old_name+' to '+new_name);
 						}
@@ -784,23 +900,27 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   var project = req.body.project;
   var username = req.user.username;
   console.log('req.body upload_data');
-    console.log(req.body);
+  console.log(req.body);
   console.log(req.files);
-    console.log('req.body upload_data');
-    console.log(project);
-    console.log(PROJECT_INFORMATION_BY_PNAME);
+  console.log('req.body upload_data');
+  console.log(project);
+  console.log(PROJECT_INFORMATION_BY_PNAME);
   if(project == '' || req.body.project == undefined){
-	req.flash('failMessage', 'A project name is required.');
-	res.redirect("/user_data/import_data");
+		req.flash('failMessage', 'A project name is required.');
+		res.redirect("/user_data/import_data");
+		return;
   }else if(project in PROJECT_INFORMATION_BY_PNAME){
-	req.flash('failMessage', 'That project name is already taken.');
-	res.redirect("/user_data/import_data");
+		req.flash('failMessage', 'That project name is already taken.');
+		res.redirect("/user_data/import_data");
+		return;
   }else if(req.files.fasta==undefined || req.files.fasta.size==0){
   	req.flash('failMessage', 'A fasta file is required.');
-	res.redirect("/user_data/import_data");
+		res.redirect("/user_data/import_data");
+		return;
   }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
   	req.flash('failMessage', 'A metadata csv file is required.');
-	res.redirect("/user_data/import_data");
+		res.redirect("/user_data/import_data");
+		return;
   }else{
 	var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
       console.log(data_repository);
@@ -812,13 +932,15 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 	    if(req.body.dataset == '' || req.body.dataset == undefined){
 		  	req.flash('failMessage', 'A dataset name is required.');
 		  	res.redirect("/user_data/import_data");
+		  	return;
 		}
 		options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
   	}else if(req.body.type == 'multi') {
-		options.args = options.args.concat(['-t', 'multi' ]); 
+			options.args = options.args.concat(['-t', 'multi' ]); 
   	}else{
-		req.flash('failMessage', 'No file type Info found  '+err);
-		res.redirect("/user_data/import_data");
+			req.flash('failMessage', 'No file type Info found  '+err);
+			res.redirect("/user_data/import_data");
+			return;
   	}
 	var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
 	var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
@@ -834,9 +956,9 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 		    'status':'LOADED',
 		    'msg':'Project is loaded --without tax assignments',
 		    'render':{  title   : 'VAMPS: Import Success',                                
-					    message : req.flash('successMessage'),
-		                display: "Import_Success",
-			            user: req.user                        
+					          message : req.flash('successMessage'),
+		                display : "Import_Success",
+			              user    : req.user                        
 			        }                  
 		}
 		helpers.update_project_status(res, status_params);
@@ -845,17 +967,20 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
     	if (err) {
 			req.flash('failMessage', '1-File move failure  '+err);
 			res.redirect("/user_data/import_data");
+			return;
 		}
 	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
 	    	if (err) {
 				req.flash('failMessage', '2-File move failure '+err);
 				res.redirect("/user_data/import_data");
+				return;
 			}
 		    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
 		    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
 		      if (err) {
 				  req.flash('failMessage', 'Script Failure '+err);
 				  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+				  return;
 			  }
 			  console.log('script output: '+output);
 			  LoadDataFinishRequest();

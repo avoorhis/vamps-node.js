@@ -9,7 +9,7 @@
       <% pname = all_pr_dat[i].name %>
       <% title = all_pr_dat[i].title %>
       <% datasets = all_pr_dat[i].datasets %>
-      <% if(info[pid].permissions  === 0) { var status='public';  %>
+      <% if(info[pid].public  === 1 || info[pid].public  === '1') { var status='public';  %>
       <% } else { var status = 'private'; } %>
       <% var tt_pj_id  = 'project-|-'+pname+'-|-'+title+'-|-'+status; %>
       
