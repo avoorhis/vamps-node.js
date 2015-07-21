@@ -46,7 +46,8 @@ Create a new database in your mysql installation and install one of schemas in i
     host     : 'localhost',
     user     : 'mysql-username',
     password : 'mysql-password',
-    database :  NODE_DATABASE
+    database :  NODE_DATABASE,
+    socketPath: '/private/var/mysql/mysql.sock'
   };
 ```
 **Before starting the server**

@@ -16,7 +16,7 @@ var pool      =    mysql.createPool({
     database : NODE_DATABASE,
     debug    :  false
 });
-//console.log(pool);
+
 exports.pool = pool;
 // function handle_database(req,res) {
    
