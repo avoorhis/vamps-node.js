@@ -107,7 +107,7 @@ def write_seqfiles(args):
                     if 'orig_bc' in defline and 'new_bc' in defline:
                         #if there are orig_bc and new_bc in defline then assume mobe/qiime file
                         #and break up like this:
-                        print 'found mobe defline'
+                        #print 'found mobe defline'
                         tmp = defline.replace(' ','|').split('|')
                         ds = tmp[0].split('_')[0]
                         #id = tmp[1]

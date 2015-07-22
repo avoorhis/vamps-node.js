@@ -25,36 +25,13 @@ from time import sleep
 import logging
 
 import ConfigParser
+import datetime
+today     = str(datetime.date.today())
+import subprocess
+
+
 sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
-LOG_FILENAME = '/Users/avoorhis/programming/vamps-node.js/logs/assign_tax.log'
-print LOG_FILENAME
-    
-    
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
-logging.debug(sys.path)
 
-
-
-
-#try:
-
-import node_script_database_loader as load_data
-logging.warning('LOGGING found database_loader script')
-
-#except:
-# logging.info("database_loader is not avalable")
-
-#try:
-
-import node_script_upload_metadata as load_metadata
-logging.warning('found node_script_upload_metadata script')
-
-#except:
-#    logging.info("node_script_upload_metadata is not avalable")   
-
-#try:
-import node_script_create_json_dataset_files as dataset_files_creator
-logging.warning('found add_taxcounts script')
 #except:
 #    logging.info("add_taxcounts is not avalable")    
 
@@ -65,9 +42,7 @@ logging.warning('found add_taxcounts script')
 #    logging.info('found node_script_metadata_lookup script')
 #except:
 #    logging.info("node_script_metadata_lookup is not avalable")    
-import datetime
-today     = str(datetime.date.today())
-import subprocess
+
 
 
 
@@ -129,7 +104,34 @@ if __name__ == '__main__':
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
     #os.chdir(args.basedir)
     
-                       
+    LOG_FILENAME = '/Users/avoorhis/programming/vamps-node.js/logs/assign_tax.log'
+    LOG_FILENAME = os.path.join(args.basedir,'assign_tax.log')
+    print LOG_FILENAME
+        
+        
+    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
+    logging.debug(sys.path)
+
+
+    #try:
+
+    import node_script_database_loader as load_data
+    logging.warning('LOGGING found database_loader script')
+
+    #except:
+    # logging.info("database_loader is not avalable")
+
+    #try:
+
+    import node_script_upload_metadata as load_metadata
+    logging.warning('found node_script_upload_metadata script')
+
+    #except:
+    #    logging.info("node_script_upload_metadata is not avalable")   
+
+    #try:
+    import node_script_create_json_dataset_files as dataset_files_creator
+    logging.warning('found add_taxcounts script')                      
     
     
    
