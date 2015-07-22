@@ -1,6 +1,7 @@
 *.sql
 *.fa
 *.fna
+*.pyc
 !db_schema.sql
 !db_config.sql.gz
 !db_schema_w_test_data.sql
