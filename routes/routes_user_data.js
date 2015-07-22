@@ -172,17 +172,18 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 	var project = req.params.project;
 	console.log('in delete_project1: '+project+' - '+delete_kind);
 	//console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
+	
 	if(project in PROJECT_INFORMATION_BY_PNAME){
 		var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
-	    helpers.update_global_variables(pid,'del');
+	  helpers.update_global_variables(pid,'del');
 	}else{
 		// project not in db?
 		console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME')
-        var pid = 0;
+    var pid = 0;
 		
 	}
         
-        console.log('in delete_project2: '+project+' - '+pid);
+    console.log('in delete_project2: '+project+' - '+pid);
 		var options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 	      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--user',req.user.username,'--project',project,'-pdir',process.env.PWD ],
@@ -190,8 +191,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 		if(delete_kind == 'all'){
 			// must delete pid data from mysql ()
 			// and all datasets files
-			options.args = options.args.concat(['--action', 'delete_whole_project']);
-		    
+			options.args = options.args.concat(['--action', 'delete_whole_project']);		    
 		}else if(delete_kind == 'tax' && pid != 0){
 			options.args = options.args.concat(['--action', 'delete_tax_only' ]);
 		    
@@ -200,7 +200,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 		    
 		}else{
 			req.flash('message', 'ERROR nothing deleted');
-	      	res.redirect("/user_data/your_projects");
+	    res.redirect("/user_data/your_projects");
+	    return;
 		}
 			console.log(options.args.join(' '))
 			var spawn = require('child_process').spawn;
@@ -227,16 +228,14 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			    var ary = output.split("\n");
 			    var last_line = ary[ary.length - 1];
 			    if(code == 0){				   
-				   //console.log('PID last line: '+last_line)				   
-				   console.log('ALL_DATASETS1: '+JSON.stringify(ALL_DATASETS));	
-                   
-                   connection.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
-                       if(err){ 
-                           console.log('ERROR-in status update')
-                       }else{
-                        console.log('OK-deleted  status update')
-                        }
-                    });
+				   //console.log('PID last line: '+last_line)	                   
+             connection.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
+                 if(err){ 
+                     console.log('ERROR-in status update')
+                 }else{
+                  console.log('OK-deleted  status update')
+                  }
+              });
                            					   
 			    }else{
 			   	  // python script error
@@ -252,17 +251,30 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
     		}else{
     			req.flash('message', 'ERROR nothing deleted');
     	    res.redirect("/user_data/your_projects");
+    	    return;
     		}
-
-    		req.flash('successMessage', msg);
-        res.redirect("/user_data/your_projects");	
-            //res.redirect(req.get('referer'));
-		
-	
-    console.log('req.body: dele-->>');
-    console.log(req.user.username);
-    console.log('req.body: del');
-		   
+    		if(delete_kind == 'all'){					
+    				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
+						var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+						var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project:'+project);							
+						fs.move(data_dir, deleted_data_dir, function(err){
+							if(err){
+								console.log(err);
+								res.send(err);
+							}else{
+								console.log('moved project_dir to DELETED_project_dir');
+								req.flash('successMessage', msg);
+      					res.redirect("/user_data/your_projects");	
+      					return;
+							}
+							
+						})
+		    
+				}else{
+					req.flash('successMessage', msg);
+        	res.redirect("/user_data/your_projects");	
+				}
+    				   
 	
 });
 //
@@ -272,14 +284,24 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 		var project = req.params.project;
 		var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 		var new_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project+'_dupe');
-
+		try{
+			stats = fs.lstatSync(new_data_dir);
+			if (stats.isDirectory()) {
+	      console.log('dir exists - returning');
+	      req.flash('failMessage', "Error: Could not duplicate: '"+project+"' to '"+project+"_dupe'. Does it already exist?");
+	    	res.redirect("/user_data/your_projects");
+	    	return;
+	    }
+	  }catch(err){
+	  	console.log('dir doesnt exist -good- continuing on');
+	  }
+		
 		fs.copy(data_dir, new_data_dir, function (err) {
   		if (err) {
-  			console.log('duplicate copy fail!');
-  			req.flash('failMessage', "Error Could not duplicate: "+err);
-    		res.redirect("/user_data/your_projects");
+  			console.log(err);
   		}else{
   			// need to change config file of new project to include new name:
+  			console.log('duplicate copy success!');
   			var config_file = path.join(new_data_dir,'config.ini');
   			var project_info = {};
   			project_info.config = iniparser.parseSync(config_file);
@@ -292,15 +314,7 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 				for(ds in project_info.config.DATASETS){
 					config_info.datasets.push({ "dsname":ds, "count":project_info.config.DATASETS[ds], "oldname":ds });
 				}
-				
-				//console.log('config_info')
-				//console.log(config_info)
-
 				update_config(res,req, config_file, config_info, false, 'Duplicated '+project+' to: '+config_info.project);
-
-  			//console.log('copy success!');
-  			//req.flash('successMessage', "Project "+project+" has been duplicated as : '"+project+"_dupe'");
-    		//res.redirect("/user_data/your_projects");
     	}
 		}) // copies directory, even if it has subdirectories or files
 		
@@ -501,7 +515,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   
-    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
    
 	project_info = {};
 	pnames = [];
@@ -532,7 +546,9 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 		      
 		      	
   				  	project_info[project_name] = {};
+  				  	
   				  	pnames.push(project_name);
+
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
@@ -720,9 +736,7 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
     }
 
     
-    
-
-    
+  
     //4- ALL_DATASETS  
     console.log('ALL_DATASETS')  
     console.log(ALL_DATASETS.projects[0]);
@@ -743,8 +757,6 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 		}
     
 	}		
-
-	
 
 
 	var project_info = {};
@@ -776,32 +788,22 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 	// So just (1)alter the config.ini and the (2)directory name where it is located in user_data/NODE_DATABASE/<user>/project:*
 	// Also the dataset (3)directories need to be updated.
 	
-	//new_config_txt = "[GENERAL]\n";
 	config_info = {}
 	
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		console.log('updating project name');
 		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,'_')
-		//new_config_txt += "project="+new_project_name+"\n";
 		config_info.project = new_project_name;
 		project_info.config.GENERAL.project=new_project_name;
 		new_base_dir = path.join(user_projects_base_dir,'project\:'+new_project_name);
 		new_config_file = path.join(new_base_dir,'config.ini');
 		new_fasta_file = path.join(new_base_dir,'fasta.fa');
-		//new_config_txt += "baseoutputdir="+new_base_dir+"\n";
-		//new_config_txt += "configPath="+new_config_file+"\n";
-		//new_config_txt += "fasta_file="+new_fasta_file+"\n";
 		config_info.baseoutputdir = new_base_dir;
 		config_info.configPath = new_config_file;
 		config_info.fasta_file = new_fasta_file;
 		project_name = new_project_name;
 		
-	}else{
-		//console.log('NOT updating project name');
-		//new_config_txt += "project="+project_name+"\n";
-		//new_config_txt += "baseoutputdir="+project_info.config.GENERAL.baseoutputdir+"\n";
-		//new_config_txt += "configPath="+project_info.config.GENERAL.configPath+"\n";
-		//new_config_txt += "fasta_file="+project_info.config.GENERAL.fasta_file+"\n";		
+	}else{	
 		config_info.project = project_name;
 		config_info.baseoutputdir = project_info.config.GENERAL.baseoutputdir;
 		config_info.configPath = project_info.config.GENERAL.configPath;
@@ -810,47 +812,31 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 	
 	if(req.body.new_project_title){
 		console.log('updating project title');
-		//new_config_txt += "project_title="+req.body.new_project_title+"\n";
+		
 		config_info.project_title = req.body.new_project_title;
 		project_info.config.GENERAL.project_title = req.body.new_project_title
 	}else{
-		//console.log('NOT updating project title');
-		//new_config_txt += "project_title="+project_info.config.GENERAL.project_title+"\n";
 		config_info.project_title = project_info.config.GENERAL.project_title;
-		
 	}
 	if(req.body.new_project_description){
 		console.log('updating project description');
-		//new_config_txt += "project_description="+req.body.new_project_description+"\n";
 		config_info.project_description = req.body.new_project_description;
 		project_info.config.GENERAL.project_description = req.body.new_project_description
 	}else{
-		//console.log('NOT updating project description');
-		//new_config_txt += "project_description="+project_info.config.GENERAL.project_description+"\n";
 		config_info.project_description = project_info.config.GENERAL.project_description;
 	}
-	//new_config_txt += "platform="+project_info.config.GENERAL.platform+"\n";
-	//new_config_txt += "owner="+project_info.config.GENERAL.owner+"\n";
-	//new_config_txt += "config_file_type="+project_info.config.GENERAL.config_file_type+"\n";
+	
 	config_info.platform = project_info.config.GENERAL.platform
 	config_info.owner = project_info.config.GENERAL.owner
 	config_info.config_file_type = project_info.config.GENERAL.config_file_type
 	if(req.body.new_privacy != project_info.config.GENERAL.public){
 		console.log('updating privacy');
-		//new_config_txt += "public="+req.body.new_privacy+"\n";
 		config_info.public = req.body.new_privacy
 		project_info.config.GENERAL.public =req.body.new_privacy
 	}else{
-		//console.log('NOT updating privacy');
-		//new_config_txt += "public="+project_info.config.GENERAL.public+"\n";
 		config_info.public = project_info.config.GENERAL.public
 	}
-	//new_config_txt += "fasta_type="+project_info.config.GENERAL.fasta_type+"\n";
-	//new_config_txt += "dna_region="+project_info.config.GENERAL.dna_region+"\n";
-	//new_config_txt += "project_sequence_count="+project_info.config.GENERAL.project_sequence_count+"\n";
-	//new_config_txt += "domain="+project_info.config.GENERAL.domain+"\n";
-	//new_config_txt += "number_of_datasets="+project_info.config.GENERAL.number_of_datasets+"\n";
-	//new_config_txt += "sequence_counts="+project_info.config.GENERAL.sequence_counts+"\n";
+	
 	config_info.fasta_type = project_info.config.GENERAL.fasta_type
 	config_info.dna_region = project_info.config.GENERAL.dna_region
 	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count
@@ -860,17 +846,13 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 	
 	if(req.body.new_env_source_id != project_info.config.GENERAL.env_source_id){
 		console.log('updating env id');
-		//new_config_txt += "env_source_id="+req.body.new_env_source_id+"\n";
 		config_info.env_source_id = req.body.new_env_source_id
 		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
 	}else{
-		//console.log('NOT updating env id');
-		//new_config_txt += "env_source_id="+project_info.config.GENERAL.env_source_id+"\n";
 		config_info.env_source_id = project_info.config.GENERAL.env_source_id
 	}
-	//new_config_txt += "has_tax="+project_info.config.GENERAL.has_tax+"\n\n";
+
 	config_info.has_tax = project_info.config.GENERAL.has_tax
-	//new_config_txt += "[DATASETS]\n";
 
 	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
 	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
@@ -902,39 +884,7 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 		project_info.status = 'No Taxonomic Assignments Yet';
 		project_info.tax = 0; 
 	}
-	// fs.writeFile(config_file, new_config_txt,function(err){
- //        if(err){
-	// 				console.log(err);
-	// 				res.send(err);
- //        }else{
- //           console.log('write new config file success')
-	// 			  	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
-	// 					// now change the directory name if the project_name is being updated
-	// 						fs.move(project_dir, new_base_dir, function(err){
-	// 							if(err){
-	// 								console.log(err);
-	// 								res.send(err);
-	// 							}else{
-	// 					  		console.log(project_name)
-	// 								console.log(JSON.stringify(project_info))
-	// 								update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
-	// 								req.flash('successMessage', 'Updated project: '+project_name);
-	// 								res.redirect('/user_data/your_projects');
-									
-	// 							}
-								
-	// 						})
-	// 				}else{
-	// 				  console.log(project_name)
-	// 					console.log(JSON.stringify(project_info))
-	// 					update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
-	// 					req.flash('successMessage', 'Updated project: '+project_name);
-	// 					res.redirect('/user_data/your_projects');
-						
-	// 				}
-			
- //        }
- //    })
+
 
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir
