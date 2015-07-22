@@ -56,7 +56,13 @@
 					</td>
     			</tr><tr>
     				<td>Total Number of Sequences: <strong><%= total_number_of_sequences %></strong></td>
-    				<td>Public: <strong><%= public %></strong></td>
+    				<td>Public: 
+    					<% if(public == 0 || public == '0' ){ %>
+    						<strong>NO</strong>
+    					<% }else{ %>
+    						<strong>YES</strong>
+    					<% } %>
+    				</td>
     				<td>Environmental Source: <strong><%= env_source %></strong></td>
     				<td>Taxonomy: <strong><%= tax %></strong></td>				
     			</tr>
@@ -70,16 +76,16 @@
     		  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
     		    <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li>
 	    	
-    			<% if(tax == '0'){ %>
+    			<% if(tax == 'none'){ %>
     				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/gast">Assign Taxonomy -GAST</a></li>
     				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/rdp">Assign Taxonomy -RDP</a></li>
     			<% }else{ %>
-    				<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
+    					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
         			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
         			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>	
     			<% } %>
-				<li role="presentation"><a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %>	">Duplicate this Project</a></li>	
-    	    	<li role="presentation" class="divider"></li>
+					<li role="presentation"><a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %>	">Duplicate this Project</a></li>	
+    	    <li role="presentation" class="divider"></li>
     			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
 			
     	  	  </ul>

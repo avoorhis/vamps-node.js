@@ -265,6 +265,49 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 		   
 	
 });
+//
+// DUPLICATE_PROJECT
+//
+router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res){
+		var project = req.params.project;
+		var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		var new_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project+'_dupe');
+
+		fs.copy(data_dir, new_data_dir, function (err) {
+  		if (err) {
+  			console.log('duplicate copy fail!');
+  			req.flash('failMessage', "Error Could not duplicate: "+err);
+    		res.redirect("/user_data/your_projects");
+  		}else{
+  			// need to change config file of new project to include new name:
+  			var config_file = path.join(new_data_dir,'config.ini');
+  			var project_info = {};
+  			project_info.config = iniparser.parseSync(config_file);
+				var config_info = project_info.config.GENERAL
+				config_info.project = project+'_dupe';
+				config_info.baseoutputdir = new_data_dir;
+				config_info.configPath = path.join(new_data_dir,'config.ini');
+				config_info.fasta_file = path.join(new_data_dir,'fasta.fa');
+				config_info.datasets = [];
+				for(ds in project_info.config.DATASETS){
+					config_info.datasets.push({ "dsname":ds, "count":project_info.config.DATASETS[ds], "oldname":ds });
+				}
+				
+				//console.log('config_info')
+				//console.log(config_info)
+
+				update_config(res,req, config_file, config_info, false, 'Duplicated '+project+' to: '+config_info.project);
+
+  			//console.log('copy success!');
+  			//req.flash('successMessage', "Project "+project+" has been duplicated as : '"+project+"_dupe'");
+    		//res.redirect("/user_data/your_projects");
+    	}
+		}) // copies directory, even if it has subdirectories or files
+		
+});
+//
+// START_ASSIGNMENT
+//
 router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(req,res){
     
 	
@@ -324,24 +367,26 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
                    
-                   connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
-					   if (err)  {
-				 		  console.log('1-GAST-Query error: ' + err);				 		  			 		  
-				       } else {
-        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
-        				       if (err)  {
+            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+					    if (err)  {
+				 		  	console.log('1-GAST-Query error: ' + err);				 		  			 		  
+				      } else {
+        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+        				   		if (err)  {
         				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
-        				       } else {        
-                        		   	status_params = {'type':'update',
+        				    	} else {        
+                      	status_params = {'type':'update',
                                         'user':req.user.username,
                                         'proj':project,
                                         'status':'GAST-SUCCESS',
-								   'msg':'GAST -Tax assignments' } 
-									helpers.assignment_finish_request(rows1,rows2,status_params)		 				   
-        				       }
+								   											'msg':'GAST -Tax assignments' } 
+								   	
+												helpers.assignment_finish_request(res,rows1,rows2,status_params);
+												ALL_CLASSIFIERS_BY_PID[pid] = 'GAST'	 				   
+        				    	}
 				       
-        				   });
-					   } // end else
+        				   	});
+					   	} // end else
 				       
 				   });		   
                    
@@ -406,7 +451,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
                    
-                   connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
+           connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
 					   if (err)  {
 				 		  console.log('1-RDP-Query error: ' + err);				 		  				 		  
 				       } else {						   
@@ -419,7 +464,9 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 		                                           'proj':project,
 		                                           'status':'RDP-SUCCESS',
 								   					'msg':'RDP -Tax assignments'  } 
-									helpers.assignment_finish_request(rows1,rows2,status_params)	       		 				   
+								   					
+												helpers.assignment_finish_request(res,rows1,rows2,status_params);
+												ALL_CLASSIFIERS_BY_PID[pid] = 'RDP'       		 				   
         				       }
 				       
         				   });                           
@@ -705,7 +752,7 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name);
 	var config_file = path.join(project_dir,'config.ini');
-   var timestamp = +new Date();  // millisecs since the epoch!
+  var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
   	  	if (err){
@@ -718,6 +765,9 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
 
 	project_info.config = iniparser.parseSync(config_file);
+
+	
+
 	//console.log('config:');
 	//console.log(JSON.stringify(project_info.config));
 	// HAS NO ASSIGNMENTS: NEED CHANGE FILES ONLY	
@@ -726,95 +776,113 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 	// So just (1)alter the config.ini and the (2)directory name where it is located in user_data/NODE_DATABASE/<user>/project:*
 	// Also the dataset (3)directories need to be updated.
 	
-	new_config_txt = "[GENERAL]\n";
+	//new_config_txt = "[GENERAL]\n";
+	config_info = {}
 	
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		console.log('updating project name');
-		var new_project_name = req.body.new_project_name.replace(/[\s+,.;:]/g,'_')
-		new_config_txt += "project="+new_project_name+"\n";
+		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,'_')
+		//new_config_txt += "project="+new_project_name+"\n";
+		config_info.project = new_project_name;
 		project_info.config.GENERAL.project=new_project_name;
 		new_base_dir = path.join(user_projects_base_dir,'project\:'+new_project_name);
 		new_config_file = path.join(new_base_dir,'config.ini');
 		new_fasta_file = path.join(new_base_dir,'fasta.fa');
-		new_config_txt += "baseoutputdir="+new_base_dir+"\n";
-		new_config_txt += "configPath="+new_config_file+"\n";
-		new_config_txt += "fasta_file="+new_fasta_file+"\n";
+		//new_config_txt += "baseoutputdir="+new_base_dir+"\n";
+		//new_config_txt += "configPath="+new_config_file+"\n";
+		//new_config_txt += "fasta_file="+new_fasta_file+"\n";
+		config_info.baseoutputdir = new_base_dir;
+		config_info.configPath = new_config_file;
+		config_info.fasta_file = new_fasta_file;
 		project_name = new_project_name;
 		
 	}else{
 		//console.log('NOT updating project name');
-		new_config_txt += "project="+project_name+"\n";
-		new_config_txt += "baseoutputdir="+project_info.config.GENERAL.baseoutputdir+"\n";
-		new_config_txt += "configPath="+project_info.config.GENERAL.configPath+"\n";
-		new_config_txt += "fasta_file="+project_info.config.GENERAL.fasta_file+"\n";		
+		//new_config_txt += "project="+project_name+"\n";
+		//new_config_txt += "baseoutputdir="+project_info.config.GENERAL.baseoutputdir+"\n";
+		//new_config_txt += "configPath="+project_info.config.GENERAL.configPath+"\n";
+		//new_config_txt += "fasta_file="+project_info.config.GENERAL.fasta_file+"\n";		
+		config_info.project = project_name;
+		config_info.baseoutputdir = project_info.config.GENERAL.baseoutputdir;
+		config_info.configPath = project_info.config.GENERAL.configPath;
+		config_info.fasta_file = project_info.config.GENERAL.fasta_file;
 	}
 	
 	if(req.body.new_project_title){
 		console.log('updating project title');
-		new_config_txt += "project_title="+req.body.new_project_title+"\n";
+		//new_config_txt += "project_title="+req.body.new_project_title+"\n";
+		config_info.project_title = req.body.new_project_title;
 		project_info.config.GENERAL.project_title = req.body.new_project_title
 	}else{
 		//console.log('NOT updating project title');
-		new_config_txt += "project_title="+project_info.config.GENERAL.project_title+"\n";
+		//new_config_txt += "project_title="+project_info.config.GENERAL.project_title+"\n";
+		config_info.project_title = project_info.config.GENERAL.project_title;
 		
 	}
 	if(req.body.new_project_description){
 		console.log('updating project description');
-		new_config_txt += "project_description="+req.body.new_project_description+"\n";
+		//new_config_txt += "project_description="+req.body.new_project_description+"\n";
+		config_info.project_description = req.body.new_project_description;
 		project_info.config.GENERAL.project_description = req.body.new_project_description
 	}else{
 		//console.log('NOT updating project description');
-		new_config_txt += "project_description="+project_info.config.GENERAL.project_description+"\n";
-		
+		//new_config_txt += "project_description="+project_info.config.GENERAL.project_description+"\n";
+		config_info.project_description = project_info.config.GENERAL.project_description;
 	}
-	new_config_txt += "platform="+project_info.config.GENERAL.platform+"\n";
-	new_config_txt += "owner="+project_info.config.GENERAL.owner+"\n";
-	new_config_txt += "config_file_type="+project_info.config.GENERAL.config_file_type+"\n";
+	//new_config_txt += "platform="+project_info.config.GENERAL.platform+"\n";
+	//new_config_txt += "owner="+project_info.config.GENERAL.owner+"\n";
+	//new_config_txt += "config_file_type="+project_info.config.GENERAL.config_file_type+"\n";
+	config_info.platform = project_info.config.GENERAL.platform
+	config_info.owner = project_info.config.GENERAL.owner
+	config_info.config_file_type = project_info.config.GENERAL.config_file_type
 	if(req.body.new_privacy != project_info.config.GENERAL.public){
 		console.log('updating privacy');
-		new_config_txt += "public="+req.body.new_privacy+"\n";
+		//new_config_txt += "public="+req.body.new_privacy+"\n";
+		config_info.public = req.body.new_privacy
 		project_info.config.GENERAL.public =req.body.new_privacy
 	}else{
 		//console.log('NOT updating privacy');
-		new_config_txt += "public="+project_info.config.GENERAL.public+"\n";
-		
+		//new_config_txt += "public="+project_info.config.GENERAL.public+"\n";
+		config_info.public = project_info.config.GENERAL.public
 	}
-	new_config_txt += "fasta_type="+project_info.config.GENERAL.fasta_type+"\n";
-	new_config_txt += "dna_region="+project_info.config.GENERAL.dna_region+"\n";
-	new_config_txt += "project_sequence_count="+project_info.config.GENERAL.project_sequence_count+"\n";
-	new_config_txt += "domain="+project_info.config.GENERAL.domain+"\n";
-	new_config_txt += "number_of_datasets="+project_info.config.GENERAL.number_of_datasets+"\n";
-	new_config_txt += "sequence_counts="+project_info.config.GENERAL.sequence_counts+"\n";
+	//new_config_txt += "fasta_type="+project_info.config.GENERAL.fasta_type+"\n";
+	//new_config_txt += "dna_region="+project_info.config.GENERAL.dna_region+"\n";
+	//new_config_txt += "project_sequence_count="+project_info.config.GENERAL.project_sequence_count+"\n";
+	//new_config_txt += "domain="+project_info.config.GENERAL.domain+"\n";
+	//new_config_txt += "number_of_datasets="+project_info.config.GENERAL.number_of_datasets+"\n";
+	//new_config_txt += "sequence_counts="+project_info.config.GENERAL.sequence_counts+"\n";
+	config_info.fasta_type = project_info.config.GENERAL.fasta_type
+	config_info.dna_region = project_info.config.GENERAL.dna_region
+	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count
+	config_info.domain = project_info.config.GENERAL.domain
+	config_info.number_of_datasets = project_info.config.GENERAL.number_of_datasets
+	config_info.sequence_counts = project_info.config.GENERAL.sequence_counts
 	
 	if(req.body.new_env_source_id != project_info.config.GENERAL.env_source_id){
 		console.log('updating env id');
-		new_config_txt += "env_source_id="+req.body.new_env_source_id+"\n";
+		//new_config_txt += "env_source_id="+req.body.new_env_source_id+"\n";
+		config_info.env_source_id = req.body.new_env_source_id
 		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
 	}else{
 		//console.log('NOT updating env id');
-		new_config_txt += "env_source_id="+project_info.config.GENERAL.env_source_id+"\n";
+		//new_config_txt += "env_source_id="+project_info.config.GENERAL.env_source_id+"\n";
+		config_info.env_source_id = project_info.config.GENERAL.env_source_id
 	}
-	new_config_txt += "has_tax="+project_info.config.GENERAL.has_tax+"\n\n";
-	new_config_txt += "[DATASETS]\n";
+	//new_config_txt += "has_tax="+project_info.config.GENERAL.has_tax+"\n\n";
+	config_info.has_tax = project_info.config.GENERAL.has_tax
+	//new_config_txt += "[DATASETS]\n";
+
 	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
 	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
 	console.log(old_dataset_array);
 	project_info.config.DATASETS={}
-	for(n in req.body.new_dataset_names){
-		
-		if(req.body.new_dataset_names[n]){
-			new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,.;:]/g,'_')
-			console.log('updating ds from '+old_dataset_array[n]+' to '+new_dataset_name);
-			new_config_txt += new_dataset_name+"="+counts_array[n]+"\n";
-			project_info.config.DATASETS[new_dataset_name] = counts_array[n];
-		}else{
-			//console.log('NOT updating ds  '+old_dataset_array[n]);
-			new_config_txt += old_dataset_array[n]+"="+counts_array[n]+"\n";
-			project_info.config.DATASETS[old_dataset_array[n]] = counts_array[n];
-		}
+	config_info.datasets = []
+	for(n in req.body.dataset_ids){
+		new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,;:]/g,'_')
+		config_info.datasets.push({"oldname":old_dataset_array[n],"dsname":new_dataset_name,"did":req.body.dataset_ids[n],"count":counts_array[n]})
 	}
 	
-	console.log(new_config_txt)
+	console.log(config_info.datasets);
 	if(req.body.project_pid > 0){
 		// TODO: HAS ASSIGNMENTS: NEED CHANGE DB & FILES
 		// If the project has assignments:
@@ -834,62 +902,47 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 		project_info.status = 'No Taxonomic Assignments Yet';
 		project_info.tax = 0; 
 	}
-	fs.writeFile(config_file, new_config_txt,function(err){
-        if(err){
-			console.log(err);
-			res.send(err);
-        }else{
-            console.log('write new config file success')
-		  	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
-				// now change the directory name if the project_name is being updated
-				fs.move(project_dir, new_base_dir, function(err){
-					if(err){
-						console.log(err);
-						res.send(err);
-					}else{
-			  		console.log(project_name)
-						console.log(JSON.stringify(project_info))
-						update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
-						req.flash('successMessage', 'Updated project: '+project_name);
-						res.redirect('/user_data/your_projects');
+	// fs.writeFile(config_file, new_config_txt,function(err){
+ //        if(err){
+	// 				console.log(err);
+	// 				res.send(err);
+ //        }else{
+ //           console.log('write new config file success')
+	// 			  	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
+	// 					// now change the directory name if the project_name is being updated
+	// 						fs.move(project_dir, new_base_dir, function(err){
+	// 							if(err){
+	// 								console.log(err);
+	// 								res.send(err);
+	// 							}else{
+	// 					  		console.log(project_name)
+	// 								console.log(JSON.stringify(project_info))
+	// 								update_dataset_names(req.body.new_dataset_names, old_dataset_array, new_base_dir)
+	// 								req.flash('successMessage', 'Updated project: '+project_name);
+	// 								res.redirect('/user_data/your_projects');
+									
+	// 							}
+								
+	// 						})
+	// 				}else{
+	// 				  console.log(project_name)
+	// 					console.log(JSON.stringify(project_info))
+	// 					update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
+	// 					req.flash('successMessage', 'Updated project: '+project_name);
+	// 					res.redirect('/user_data/your_projects');
 						
-					}
-					
-				})
-			}else{
-			  console.log(project_name)
-				console.log(JSON.stringify(project_info))
-				update_dataset_names(req.body.new_dataset_names, old_dataset_array, project_dir)
-				req.flash('successMessage', 'Updated project: '+project_name);
-				res.redirect('/user_data/your_projects');
-				
-			}
+	// 				}
 			
-        }
-    })
-	
-	function update_dataset_names(ds_names, old_array, dir){
-		for(n in ds_names){
-			if(ds_names[n]){
-				if(ds_names[n]){
-					
-					old_name = old_array[n];
-					old_name_path = path.join(dir,'analysis',old_name);
-					new_name = ds_names[n].replace(/[\s+,.;:]/g,'_');
-					new_name_path =path.join(dir,'analysis',new_name);
-					console.log(old_name_path)
-					console.log(new_name_path)
-					fs.move(old_name_path, new_name_path, function(err){
-						if(err){
-							console.log('WARNING failed to move dataset name '+err.toString())
-						}else{
-							console.log('moving '+old_name+' to '+new_name);
-						}
-					})
-				}
-			}
-		}
+ //        }
+ //    })
+
+	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
+		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir
+		update_config(res,req, config_file, config_info, true, 'Updated project: '+config_info.project);
+	}else{
+		update_config(res,req, config_file, config_info,  false, 'Updated project: '+config_info.project);
 	}
+	
 	
 });
 //
@@ -1261,6 +1314,90 @@ if(req.body.download_type == 'whole_project'){
   	res.send(file_name);
 });
 
+function update_config(res,req, config_file, config_info, has_new_pname, msg){
+	console.log(config_info)
+	var new_config_txt = "[GENERAL]\n";
+	new_config_txt += "project="+config_info.project+"\n";
+	new_config_txt += "baseoutputdir="+config_info.baseoutputdir+"\n";
+	new_config_txt += "configPath="+config_info.configPath+"\n";
+	new_config_txt += "fasta_file="+config_info.fasta_file+"\n";		
+	new_config_txt += "project_title="+config_info.project_title+"\n";
+	new_config_txt += "project_description="+config_info.project_description+"\n";
+	new_config_txt += "platform="+config_info.platform+"\n";
+	new_config_txt += "owner="+config_info.owner+"\n";
+	new_config_txt += "config_file_type="+config_info.config_file_type+"\n";
+	new_config_txt += "public="+config_info.public+"\n";
+	new_config_txt += "fasta_type="+config_info.fasta_type+"\n";
+	new_config_txt += "dna_region="+config_info.dna_region+"\n";
+	new_config_txt += "project_sequence_count="+config_info.project_sequence_count+"\n";
+	new_config_txt += "domain="+config_info.domain+"\n";
+	new_config_txt += "number_of_datasets="+config_info.number_of_datasets+"\n";
+	new_config_txt += "sequence_counts="+config_info.sequence_counts+"\n";
+	new_config_txt += "env_source_id="+config_info.env_source_id+"\n";
+	new_config_txt += "has_tax="+config_info.has_tax+"\n\n";
+	new_config_txt += "[DATASETS]\n";
+	
+	for(n in config_info.datasets){		
+			new_config_txt += config_info.datasets[n].dsname+"="+config_info.datasets[n].count+"\n";		
+	}
+	
+	console.log(new_config_txt)
+	
+	fs.writeFile(config_file, new_config_txt, function(err){
+        if(err){
+					console.log(err);
+					res.send(err);
+        }else{
+           	console.log('write new config file success')
+				  	if(has_new_pname){
+						// now change the directory name if the project_name is being updated
+							old_base_dir = config_info.old_base_name
+							new_base_name = config_info.baseoutputdir
+							fs.move(old_base_dir, new_base_dir, function(err){
+								if(err){
+									console.log(err);
+									res.send(err);
+								}else{
+						  		
+									update_dataset_names(config_info)
+									req.flash('successMessage', msg);
+									res.redirect('/user_data/your_projects');
+									
+								}
+								
+							})
+					}else{
+					  
+						update_dataset_names(config_info)
+						req.flash('successMessage', msg);
+						res.redirect('/user_data/your_projects');
+						
+					}
+			
+        }
+    })
+	
+
+}
+function update_dataset_names(config_info){
+		
+		for(n in config_info.datasets){			
+				
+					old_name_path = path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].oldname);
+					new_name_path =path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].dsname);
+					console.log(old_name_path)
+					console.log(new_name_path)
+					fs.move(old_name_path, new_name_path, function(err){
+						if(err){
+							console.log('WARNING failed to move dataset name '+err.toString())
+						}else{
+							console.log('moving '+config_info.datasets[n].oldname+' to '+config_info.datasets[n].dsname);
+						}
+					})
+		
+			
+		}
+}
 
 
 module.exports = router;
