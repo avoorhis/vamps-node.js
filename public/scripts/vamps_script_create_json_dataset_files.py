@@ -104,6 +104,7 @@ queries = [{"rank":"domain","query":domain_query},
 
 
 
+
 #
 #
 #
@@ -113,6 +114,7 @@ def go_add(args):
     logging.info('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
     print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
     
+
 
     NODE_DATABASE = args.NODE_DATABASE
     pid = args.pid
@@ -275,6 +277,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
             field_collection.append(field)
     	
 
+
     
     print 'did_list',did_list
     print 'field_collection',field_collection
@@ -314,6 +317,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     
 def read_original_taxcounts(args):
     
+
     file_path = os.path.join(args.process_dir,'public','json',args.NODE_DATABASE+'--taxcounts.json')
     if os.path.exists(file_path):
         with open(file_path) as data_file:    
@@ -402,10 +406,10 @@ if __name__ == '__main__':
    
            
 
+
     
     go_add(args)
     
 
-   
         
 

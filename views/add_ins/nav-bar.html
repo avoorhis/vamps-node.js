@@ -24,6 +24,7 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="/">VAMPS Home</a></li>
 
+
 			      <li><a href="/help/overview">Overview</a></li>
 			      <li><a href="/visuals/visuals_index">Visualizations</a></li>
 			      <li><a href="/user_data/your_data">Your Data</a></li>
@@ -37,12 +38,14 @@
               
 
 
+
               <ul class="dropdown-menu" role="menu">
                 <% if (user === undefined) { %>
                   <li><a href="/users/signup">Register</a></li>
                 <% }else{ %>
                   <li><a href="/users/profile">Account</a></li>
                 <% } %>
+
 
                 <li class="divider"></li>
                                 
@@ -53,6 +56,7 @@
                 <li><a href='/user_data/import_choices'>Import Data</a></li>
 				        <li><a href='/user_data/export_data'>Export Data</a></li>
                 <li class="divider"></li>
+
 
                 <li class="dropdown-header">Help</li>
                 <li><a href="/help/overview">Overview</a></li>

@@ -25,6 +25,7 @@ import subprocess
 
 ############################################################
 
+
 def run_rdp(infile, outfile, process_dir, ref_db='default'):
 	
 	
@@ -37,6 +38,7 @@ def run_rdp(infile, outfile, process_dir, ref_db='default'):
     ref_db = 'rdp_'+ref_db        
     PATH_2_DB  = os.path.join(process_dir,"public","databases",ref_db)  # soft link to rdp_classifier
 
+
     #java -Xmx2400m -jar /xraid/bioware/linuxOpteron/rdp_classifier/rdp_classifier-1.0.jar $1 $2  /xraid/bioware/linuxOpteron/rdp_classifier/train/rRNAClassifier.properties
     #$PATH_2_JAVA -Xmx2400m -jar /usr/local/www/vampsdev/docs/apps/rdp_classifier-1.0.jar $1 $2  /usr/local/www/vampsdev/docs/apps/train3/rRNAClassifier.properties
     #$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier-1.0.jar $1 $2 $PATH_2_HERE/train_may08/rRNAClassifier.properties
@@ -46,8 +48,10 @@ def run_rdp(infile, outfile, process_dir, ref_db='default'):
 
     # the classifier must be kept with its directory structure
 
+
     rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+PATH_2_RDP+"/dist/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/train/rRNAClassifier.properties -f fixrank"
     logging.debug('RDPCMD: '+rdp_cmd)
+
 
     subprocess.call(rdp_cmd, shell=True)
 
@@ -68,7 +72,9 @@ if __name__ == '__main__':
             -c/--config    REQUIRED path to config file.
                         
 
+
                       
+
 
        
 
@@ -84,6 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outfile',         
     			required=True,   action="store",  dest = "outfile",            
                 help = 'node database')                                           
+
 
     parser.add_argument('-ref_db', '--reference_db',
      			required=False,   action="store",  dest = "ref_db",
@@ -101,6 +108,7 @@ if __name__ == '__main__':
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
     #os.chdir(args.baseoutputdir)
     run_rdp(args.infile, args.outfile, args.process_dir, args.ref_db)
+
 
     
 	

@@ -349,12 +349,14 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATED ALL_CLASSIFIERS_BY_PID');
 
 
+
         this.update_project_status(res, status_params);
         
 };
 module.exports.reverse = function (str) {
   return str.split("").reverse().join("");
 };
+
 
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {

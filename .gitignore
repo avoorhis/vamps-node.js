@@ -1,8 +1,12 @@
 *.sql
 *.fa
 *.fna
+<<<<<<< HEAD
 *.fasta
 public/scripts/*.pyc
+=======
+*.pyc
+>>>>>>> 88b85abd67562b6410586e424c5fc474cafc8ea8
 !db_schema.sql
 !db_config.sql.gz
 !db_schema_w_test_data.sql
@@ -32,9 +36,12 @@ public/tmp_images/*
 public/blast/*
 !public/blast/.gitignore
 
+<<<<<<< HEAD
 # ignore public/databases directory
 public/databases/*
 
+=======
+>>>>>>> 88b85abd67562b6410586e424c5fc474cafc8ea8
 # eclipse
 .jshintrc
 .npmignore
