@@ -13,18 +13,26 @@ import MySQLdb
 import json
 
 
+db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                         read_default_file="~/.my.cnf"  ) 
+cur = db.cursor()
 
 
 
-
-
+def start(NODE_DATABASE, process_dir):
+    cur.execute("USE "+NODE_DATABASE)
+    data = go_required_metadata() 
+    data = go_custom_metadata(data)
+    out_file = os.path.join(process_dir,'public','json',"metadata--"+NODE_DATABASE+".json")
+    write_file(data, out_file)
+    
 def go_required_metadata():
 	"""
 		metadata_lookup_per_dsid[dsid][metadataName] = value			
 
 	"""
-	required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"];
-
+    required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+	
 	req_query = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 	#print req_query
 	
@@ -51,48 +59,48 @@ def go_required_metadata():
 	
 def go_custom_metadata(metadata_lookup):
 	
-	cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
-	pid_collection = {}
-	cur.execute(cust_pquery)
-	cust_metadata_lookup = {}
-	for row in cur.fetchall():
-				
-		pid = str(row[0])
-		field = row[1]
-		table = 'custom_metadata_'+ pid
-		if pid in pid_collection:
-			pid_collection[pid].append(field)
-		else:
-			pid_collection[pid] = [field]
-	print
-	for pid in pid_collection:
-		table = 'custom_metadata_'+ pid
-		fields = ['dataset_id']+pid_collection[pid]
-		cust_dquery = "SELECT " + ','.join(fields) + " from " + table
-		print cust_dquery
-		cur.execute(cust_dquery)
-		
-		print
-		for row in cur.fetchall():
-			did = row[0]
-			n = 1
-			for field in pid_collection[pid]:
+    cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
+    pid_collection = {}
+    cur.execute(cust_pquery)
+    cust_metadata_lookup = {}
+    for row in cur.fetchall():
+			
+    	pid = str(row[0])
+    	field = row[1]
+    	table = 'custom_metadata_'+ pid
+    	if pid in pid_collection:
+    		pid_collection[pid].append(field)
+    	else:
+    		pid_collection[pid] = [field]
+    print
+    for pid in pid_collection:
+    	table = 'custom_metadata_'+ pid
+    	fields = ['dataset_id']+pid_collection[pid]
+    	cust_dquery = "SELECT " + ','.join(fields) + " from " + table
+    	print cust_dquery
+    	cur.execute(cust_dquery)
+	
+    	print
+    	for row in cur.fetchall():
+    		did = row[0]
+    		n = 1
+    		for field in pid_collection[pid]:
 
-				print did,n,field,row[n]
-				name = field
-				value = str(row[n])
-				
+    			print did,n,field,row[n]
+    			name = field
+    			value = str(row[n])
+			
 
-				if did in metadata_lookup:				
-				 	metadata_lookup[did][name] = value
-				else:
-					metadata_lookup[did] = {}
-					metadata_lookup[did][name] = value
-				n += 1
-
+    			if did in metadata_lookup:				
+    			 	metadata_lookup[did][name] = value
+    			else:
+    				metadata_lookup[did] = {}
+    				metadata_lookup[did][name] = value
+    			n += 1
+    return metadata_lookup
 	
 	
-
+def write_file(metadata_lookup, out_file):
 	json_str = json.dumps(metadata_lookup)		
 	print(json_str)
 	f = open(out_file,'w')
@@ -108,12 +116,12 @@ def go_custom_metadata(metadata_lookup):
 if __name__ == '__main__':
 
     usage = """
-		
+		This script will re-create the metadata lookup file in /public/json/
+        named <NODE_DATABASE>--metadata.json
+        The file is required for new vamps to return
     """
 	
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf"  )
-    cur = db.cursor()
+   
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
     db_str = ''
