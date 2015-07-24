@@ -260,7 +260,7 @@ module.exports.run_select_sequences_query = function(rows){
              ALL_PCOUNTS_BY_PID[pid] = parseInt(count);
           }
         }
-    
+
 }
 module.exports.run_ranks_query = function(rank,rows){
         for (var i=0; i < rows.length; i++) {
@@ -351,7 +351,9 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         this.update_project_status(res, status_params);
         
 };
-
+module.exports.reverse = function (str) {
+  return str.split("").reverse().join("");
+};
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
         switch (char) {

@@ -22,7 +22,16 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             user: req.user });
   });
 
-  
+  router.get('/admin', function(req, res) {
+   
+   console.log('in amin')
+   res.render('user_admin/admin', {
+              title     :'admin',
+              message   : req.flash('message'), 
+              user      : req.user // get the user out of session and pass to template
+            }); 
+
+  });
 
   
   /* GET Saved Data page. */

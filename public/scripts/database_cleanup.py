@@ -86,13 +86,16 @@ def clean(args):
     
     q = "DELETE from sequence_pdr_info"
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+    print q
     cur.execute(q)
     
     q = 'DELETE from dataset'
     q += " WHERE dataset_id in ('"+ "','".join(dids) +"')"
+    print q
     cur.execute(q)
     
     q = "DELETE from project WHERE project_id = '"+str(pid)+"'"
+    print q
     cur.execute(q)
     
         

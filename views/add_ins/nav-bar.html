@@ -23,13 +23,18 @@
 			 </p>
           <ul class="nav navbar-nav">
             <li class="active"><a href="/">VAMPS Home</a></li>
-			<li><a href="/help/overview">Overview</a></li>
-			<li><a href="/visuals/visuals_index">Visualizations</a></li>
-			<li><a href="/user_data/your_data">Your Data</a></li>
+			      <li><a href="/help/overview">Overview</a></li>
+			      <li><a href="/visuals/visuals_index">Visualizations</a></li>
+			      <li><a href="/user_data/your_data">Your Data</a></li>
             <li><a href="/search/search_index">Search</a></li>
             <li><a href="/help/contact">Contact Us</a></li>
+          <% if (user !== undefined && user.security_level === 1) { %>
+              <li><a href="/admin">Admin</a></li>
+          <% } %>  
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
+              
+
               <ul class="dropdown-menu" role="menu">
                 <% if (user === undefined) { %>
                   <li><a href="/users/signup">Register</a></li>

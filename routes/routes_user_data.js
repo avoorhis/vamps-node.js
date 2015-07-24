@@ -207,8 +207,8 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			var spawn = require('child_process').spawn;
 			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 			// script will remove data from mysql and datset taxfile
-			console.log(options.scriptPath+'/node_script_utils.py '+options.args.join(' '));
-      var delete_process = spawn( options.scriptPath+'/node_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+			console.log(options.scriptPath+'/vamps_script_utils.py '+options.args.join(' '));
+      var delete_process = spawn( options.scriptPath+'/vamps_script_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 			var output = '';
 			delete_process.stdout.on('data', function (data) {
 			  //console.log('stdout: ' + data);
@@ -322,13 +322,13 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 //
 // START_ASSIGNMENT
 //
-router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(req,res){
+router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  function(req,res){
     
 	
 	console.log(req.params.project);
 	var project = req.params.project;
-	var method = req.params.method;
-	console.log('start: '+project+' - '+method);
+	var classifier = req.params.classifier;
+	console.log('start: '+project+' - '+classifier);
 	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 	
@@ -337,18 +337,21 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
 	
 	var config_file = path.join(data_dir,'config.ini');
-  	
-	if(method == 'gast'){
+  tmp = classifier.split('_')
+  var method = tmp[0];
+  var ref_db = tmp[1];
+
+	if(method == 'GAST' || method == 'gast'){
 		
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE ],
+	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db ],
 	    };
-	    console.log(gast_options.scriptPath+'/node_script_assign_taxonomy.py '+gast_options.args.join(' '));
+	    console.log('CMD> '+gast_options.scriptPath+'/vamps_script_assign_taxonomy.py '+gast_options.args.join(' '));
 		
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var gast_process = spawn( gast_options.scriptPath+'/node_script_assign_taxonomy.py', gast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+		var gast_process = spawn( gast_options.scriptPath+'/vamps_script_assign_taxonomy.py', gast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 
 		var output = ''
 		// communicating with an external python process
@@ -396,7 +399,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 								   											'msg':'GAST -Tax assignments' } 
 								   	
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-												ALL_CLASSIFIERS_BY_PID[pid] = 'GAST'	 				   
+												ALL_CLASSIFIERS_BY_PID[pid] = classifier				   
         				    	}
 				       
         				   	});
@@ -422,17 +425,19 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
       	res.redirect("/user_data/your_projects");
 		
 
-	}else if(method == 'rdp'){
+	}else if(method == 'RDP' || method == 'rdp'){
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE ],
+	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db ],
 	    };
-	    console.log(rdp_options.scriptPath+'/node_script_assign_taxonomy.py '+rdp_options.args.join(' '));
+	  
+	  
+	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py '+rdp_options.args.join(' '));
 		
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var rdp_process = spawn( rdp_options.scriptPath+'/node_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		
 		var output = ''
 		// communicating with an external python process
@@ -480,7 +485,7 @@ router.get('/start_assignment/:project/:method', helpers.isLoggedIn,  function(r
 								   					'msg':'RDP -Tax assignments'  } 
 								   					
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-												ALL_CLASSIFIERS_BY_PID[pid] = 'RDP'       		 				   
+												ALL_CLASSIFIERS_BY_PID[pid] = classifier       		 				   
         				       }
 				       
         				   });                           
@@ -574,7 +579,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	    }
 	  
 		  pnames.sort();
-		  console.log(pnames);
+		  //console.log(pnames);
 		  //console.log(JSON.stringify(project_info));
 		  res.render('user_data/your_projects',
 		    { title: 'User Projects',		     
@@ -598,7 +603,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 	var project_name = req.params.project;
 	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
-	console.log(config_file);
+	//console.log(config_file);
 	var project_info = {};
   	//var stat_config = fs.statSync(config_file);
  	project_info.config = iniparser.parseSync(config_file);
@@ -612,10 +617,10 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 		project_info.pdesc = PROJECT_INFORMATION_BY_PNAME[project_name].description;
 		project_info.public = PROJECT_INFORMATION_BY_PNAME[project_name].public;
 		
-		console.log('datasets with dids')
+		//console.log('datasets with dids')
 		//project_info.dids = DATASET_IDS_BY_PID[project_info.pid]
-		console.log(PROJECT_INFORMATION_BY_PID[project_info.pid]);
-		console.log(DATASET_IDS_BY_PID[project_info.pid]);
+		//console.log(PROJECT_INFORMATION_BY_PID[project_info.pid]);
+		//console.log(DATASET_IDS_BY_PID[project_info.pid]);
 		project_info.dsets = [];
 		for(var i = 0; i < ALL_DATASETS.projects.length; i++) {
 			if(ALL_DATASETS.projects[i].pid == project_info.pid){
@@ -623,7 +628,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 					var did = ALL_DATASETS.projects[i].datasets[d].did;
 					var ds  = ALL_DATASETS.projects[i].datasets[d].dname;
 					var ddesc = ALL_DATASETS.projects[i].datasets[d].ddesc;
-					console.log('datasets with dids2 '+' - '+did+' - '+ds+' - '+ddesc)
+					//console.log('datasets with dids2 '+' - '+did+' - '+ds+' - '+ddesc)
 					project_info.dsets.push({ "did":did, "name":ds, "ddesc":ddesc });
 				}
 			}
@@ -648,8 +653,8 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 		}
 
 	}
-	console.log(project_info.config.DATASETS);
-	console.log(project_info.config.DATASETS.keys);
+	//console.log(project_info.config.DATASETS);
+	//console.log(project_info.config.DATASETS.keys);
 	res.render('user_data/edit_project', { 
 				title       : 'Edit Project',   
 				project     : project_name,
@@ -682,6 +687,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		//sql call to projects, datasets
 		var p_sql = "UPDATE project set project='"+req.body.new_project_name+"',\n";
 		p_sql += " title='"+helpers.mysql_real_escape_string(req.body.new_project_title)+"',\n";
+		p_sql += " rev_project_name='"+helpers.reverse(req.body.new_project_name)+"',\n";
 		p_sql += " project_description='"+helpers.mysql_real_escape_string(req.body.new_project_description)+"',\n";
 		p_sql += " public='"+req.body.new_privacy+"'\n";
 		p_sql += " WHERE project_id='"+req.body.project_pid+"' "
@@ -696,7 +702,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     
     // TODO  needed updates to data objects:  
     //1- PROJECT_INFORMATION_BY_PNAME
-    console.log('PROJECT_INFORMATION_BY_PNAME')
+    //console.log('PROJECT_INFORMATION_BY_PNAME')
     //console.log(PROJECT_INFORMATION_BY_PNAME);
     var tmp = PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
     delete PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
@@ -704,14 +710,14 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     //console.log(PROJECT_INFORMATION_BY_PNAME);
     
     //2- PROJECT_INFORMATION_BY_PID
-    console.log('PROJECT_INFORMATION_BY_PID')
-console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
+    //console.log('PROJECT_INFORMATION_BY_PID')
+		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].project         = req.body.new_project_name;
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_source_name = req.C.ENV_SOURCE[req.body.new_env_source_id];
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].title           = req.body.new_project_title;
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].description     = req.body.new_project_description;
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].public          = req.body.new_privacy;
-console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
+		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
     for(d in req.body.new_dataset_names){
     	
@@ -729,17 +735,17 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
         }
       });
       //3- DATASET_NAME_BY_DID
-    	console.log('DATASET_NAME_BY_DID')
-    	console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+    	//console.log('DATASET_NAME_BY_DID')
+    	//console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
 			DATASET_NAME_BY_DID[req.body.dataset_ids[d]] = req.body.new_dataset_names[d];
-			console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
+			//console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
     }
 
     
   
     //4- ALL_DATASETS  
-    console.log('ALL_DATASETS')  
-    console.log(ALL_DATASETS.projects[0]);
+    //console.log('ALL_DATASETS')  
+    //console.log(ALL_DATASETS.projects[0]);
     for(var i = 0; i < ALL_DATASETS.projects.length; i++) {
 			if(ALL_DATASETS.projects[i].pid == req.body.project_pid) {
 				ALL_DATASETS.projects[i].name = req.body.new_project_name;
@@ -864,7 +870,7 @@ console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 		config_info.datasets.push({"oldname":old_dataset_array[n],"dsname":new_dataset_name,"did":req.body.dataset_ids[n],"count":counts_array[n]})
 	}
 	
-	console.log(config_info.datasets);
+	//console.log(config_info.datasets);
 	if(req.body.project_pid > 0){
 		// TODO: HAS ASSIGNMENTS: NEED CHANGE DB & FILES
 		// If the project has assignments:
@@ -978,8 +984,8 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 				res.redirect("/user_data/import_data");
 				return;
 			}
-		    console.log(options.scriptPath+'/load_trimmed_data.py '+options.args.join(' '));
-		    PythonShell.run('load_trimmed_data.py', options, function (err, output) {
+		    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
+		    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
 		      if (err) {
 				  req.flash('failMessage', 'Script Failure '+err);
 				  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
@@ -1271,8 +1277,8 @@ function update_config(res,req, config_file, config_info, has_new_pname, msg){
 	new_config_txt += "baseoutputdir="+config_info.baseoutputdir+"\n";
 	new_config_txt += "configPath="+config_info.configPath+"\n";
 	new_config_txt += "fasta_file="+config_info.fasta_file+"\n";		
-	new_config_txt += "project_title="+config_info.project_title+"\n";
-	new_config_txt += "project_description="+config_info.project_description+"\n";
+	new_config_txt += "project_title="+helpers.mysql_real_escape_string(config_info.project_title)+"\n";
+	new_config_txt += "project_description="+helpers.mysql_real_escape_string(config_info.project_description)+"\n";
 	new_config_txt += "platform="+config_info.platform+"\n";
 	new_config_txt += "owner="+config_info.owner+"\n";
 	new_config_txt += "config_file_type="+config_info.config_file_type+"\n";
