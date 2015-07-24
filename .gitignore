@@ -1,7 +1,8 @@
 *.sql
 *.fa
 *.fna
-/public/scripts/*.pyc
+*.fasta
+public/scripts/*.pyc
 !db_schema.sql
 !db_config.sql.gz
 !db_schema_w_test_data.sql
@@ -30,6 +31,9 @@ public/tmp_images/*
 !public/tmp_images/.gitignore
 public/blast/*
 !public/blast/.gitignore
+
+# ignore public/databases directory
+public/databases/*
 
 # eclipse
 .jshintrc
