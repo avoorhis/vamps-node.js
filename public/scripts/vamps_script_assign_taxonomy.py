@@ -30,6 +30,7 @@ today     = str(datetime.date.today())
 import subprocess
 
 
+
 sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
 
 
@@ -97,6 +98,7 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
                 help = '')
     args = parser.parse_args() 
+
     
     
     LOG_FILENAME = os.path.join(args.basedir,'assign_tax.log')
@@ -105,6 +107,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
     logging.debug(sys.path)
           
+
     logging.warning("log: "+LOG_FILENAME)
     #steps ='gast'
     #steps ='vampsupload'
@@ -120,6 +123,7 @@ if __name__ == '__main__':
 
     # 1-1-1-1-1-1
     if args.classifier == 'gast':
+
         
         import vamps_script_gast_run as gast
         logging.info("starting GAST")
@@ -129,6 +133,7 @@ if __name__ == '__main__':
     elif args.classifier == 'rdp':
         
         import vamps_script_rdp_run as rdp
+
         logging.info("starting RDP")
         print "starting RDP"
         rdp.start_rdp(args)
@@ -139,6 +144,7 @@ if __name__ == '__main__':
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
 	# has sequences_file and now will load to db:
+
     import vamps_script_database_loader as load_data
     logging.info('running vamps_script_database_loader.py')
     print(args.NODE_DATABASE+' - '+ args.basedir)
@@ -157,20 +163,24 @@ if __name__ == '__main__':
     import vamps_script_upload_metadata as load_metadata
     logging.info('running vamps_script_upload_metadata.py')
     print("starting metadata")
+
     load_metadata.start(args)
     logging.info("finishing metadata")
 
     
     # 4-4-4-4-4-4
     # creates taxcount/metadata file
+
     import vamps_script_create_json_dataset_files as dataset_files_creator
     logging.info('running vamps_script_create_json_dataset_files.py')   
     print("starting taxcounts")
+
     dataset_files_creator.go_add(args)
     logging.info("finishing taxcounts")
     
     
     # 5-5-5-5-5-5
+
     logging.info("DONE")
     print "DONE"
     # this must be the last print:
