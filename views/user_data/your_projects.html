@@ -39,6 +39,7 @@
     				<td>Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> </td>
     				<td></td>
     				
+
 					
 					<% if(project_info[pnames[t]].pid == 0){ %> 
                         <td>Status: <span class="label label-warning"><strong><%= tax_status %></strong></span>                          
@@ -55,6 +56,7 @@
                             Taxonomy Assigned By: <strong><%= tax %></strong>
                         </td>   
 				   <% } %>
+
     			</tr><tr>
     				<td>Total Number of Sequences: <strong><%= total_number_of_sequences %></strong></td>
     				<td>Public: 
@@ -64,6 +66,7 @@
     						<strong>YES</strong>
     					<% } %>
     				</td>
+
     				
                     <td>Environmental Source: <strong><%= env_source %></strong></td>
     				
@@ -74,6 +77,7 @@
                             <a href="edit_project/<%= project %>" class="pull-right">edit</a>
                         <% } %>
                     </td>				
+
     			</tr>
     		</table>			
 						
@@ -86,10 +90,12 @@
     		    <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li>
 	    	
     			<% if(tax == 'none'){ %>
+
     				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/GAST_SILVA109">Assign Taxonomy - GAST</a></li>
     				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_default">Assign Taxonomy - RDP (default)</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_gg">Assign Taxonomy - RDP (GreenGenes)</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_its">Assign Taxonomy - RDP (UNITE-ITS)</a></li>
+
     			<% }else{ %>
     					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
         			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>

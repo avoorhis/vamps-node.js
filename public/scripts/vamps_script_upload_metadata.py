@@ -140,9 +140,11 @@ def put_custom_metadata():
         q2 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
         for key in cust_keys_array:
             if key != 'dataset_id':
+
                 val = str(CUST_METADATA_ITEMS[key][i])[:1000]   # limit at 1000 chars
                 q2 += "'"+val+"',"
         q2 = q2[:-1] + ")"    # remove trailing comma
+
         logging.info(q2)
         cur.execute(q2)
     

@@ -22,6 +22,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             user: req.user });
   });
 
+
   router.get('/admin', function(req, res) {
    
    console.log('in amin')
@@ -32,6 +33,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             }); 
 
   });
+
 
   
   /* GET Saved Data page. */

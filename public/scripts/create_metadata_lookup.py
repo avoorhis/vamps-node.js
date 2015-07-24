@@ -121,7 +121,7 @@ if __name__ == '__main__':
         The file is required for new vamps to return
     """
 	
-   
+
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
     db_str = ''
