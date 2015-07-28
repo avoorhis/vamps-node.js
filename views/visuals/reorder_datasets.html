@@ -1,5 +1,6 @@
 <% var items = JSON.parse(chosen_id_name_hash) %>
 <% var distrows = JSON.parse(constants).DISTANCECHOICES.choices; %>
+
 <% include ../add_ins/begin-no_menu.ejs %>
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/mktree.css">-->
 <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css"> -->
@@ -24,21 +25,20 @@ Here are your <%= items.names.length %> selected datasets:<br>
 		
       </td>
 	  <td>
-        <div id='reorder_div'>
-	       
+        <div id='reorder_div'>	       
 		   
-		    <table id='drag_table' class='table table-condensed ' >
+		      <table id='drag_table' class='table table-condensed ' >
 	          <% for (var i in items.names){ %>
 	            <tr class='tooltip_row'>
 	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
 	              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
-					<input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
+					      <input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
 	                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
 	              </td>
+	              <td><a href=''>^</a></td>
 	            </tr>
 	          <% } %> 
-	        </table>
-			
+	        </table>			
 			
         </div>
 
@@ -73,7 +73,8 @@ Here are your <%= items.names.length %> selected datasets:<br>
 			<td class=''>
 				Select distance metric<br>to cluster by:<br>
 
-                        <select id='' name='selected_heatmap_distance' class='small_font' >
+                        <select id='' name='selected_metric' class='small_font' onchange='cluster_order(this.value,"<%= ts %>")'>
+                        <option value='0'>Select</option>
                         <% for(d in distrows ) { %>
                           <option value='<%= distrows[d].id %>'><%= distrows[d].show %></option>
                         <% } %>

@@ -259,12 +259,13 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     
-	var referer = req.body.referer;
+    var ts = visual_post_items.ts || null;
     res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
                                 constants    : JSON.stringify(req.C),
-								referer: referer,
+								                referer: req.body.referer,
+                                ts : ts,
                                 user: req.user
                             });
   //console.log(chosen_id_name_hash)
@@ -1117,8 +1118,9 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 //  R E S E T
 //
-router.post('/reset', helpers.isLoggedIn,  function(req, res) {
-	var html = '';
+router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
+	console.log('in reset_ds_order')
+  var html = '';
     html += "<table id='drag_table' class='table table-condensed' >"
     for (var i in chosen_id_name_hash.names){
          html += "<tr class='tooltip_row'>";
@@ -1134,14 +1136,14 @@ router.post('/reset', helpers.isLoggedIn,  function(req, res) {
 //
 // A L P H A B E T I Z E
 //
-router.post('/alphabetize', helpers.isLoggedIn,  function(req, res) {
-	
+router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
+	console.log('in alphabetize_ds_order')
 	var html = '';
-    html += "<table id='drag_table' class='table table-condensed' >"
+  html += "<table id='drag_table' class='table table-condensed' >"
 	var names = chosen_id_name_hash.names.slice()  // slice make an independant copy of the array
 	var ids = chosen_id_name_hash.ids.slice()      // rather than copy reference
 	
-    names.sort()
+  names.sort()
 	for (var i in names){
 		id = ids[chosen_id_name_hash.names.indexOf(names[i])]
 		 html += "<tr class='tooltip_row'>";
@@ -1154,7 +1156,52 @@ router.post('/alphabetize', helpers.isLoggedIn,  function(req, res) {
     html += "</table>";	
 	res.send(html)
 });
+//
+//  C L U S T E R  D A T A S E T  O R D E R
+//
+router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
+    console.log('in cluster_ds_order')
+    var html = '';
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    console.log(req.body)
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--site_base', process.env.PWD, '--prefix', ts],
+    };
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    PythonShell.run('distance.py', options, function (err, list) {
+      if (err) {
+        res.send(err);
+      }else{
+        dataset_ids = JSON.parse(list);
+        potential_chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);  
+        
+        
+        html = '';
+        console.log('potential_chosen_id_name_hash');        
+        console.log(potential_chosen_id_name_hash)
 
+        html += "<table id='drag_table' class='table table-condensed' >"
+        for (var i in potential_chosen_id_name_hash.names){
+         html += "<tr class='tooltip_row'>";
+         html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+          html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+         html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
+         html += "</td><td><a href=''>^</a></td>";
+         html += "</tr>";
+        }  
+        html += "</table>"; 
+        res.send(html)
+      }
+    });
+
+
+
+    
+});
 module.exports = router;
 
 /**
