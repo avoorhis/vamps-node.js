@@ -10,7 +10,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 </div>
 <table class='button_row'>
 <tr>
-    <% if(referer != 'export_data'){ %>
+    <% if(referer != 'export_data' && referer != 'unit_selection'){ %>
         <td>
         	<!-- <button type="button" class="btn btn-xs btn-primary" id='reorder_datasets_btn' >Reorder Datasets</button>
         		-->

@@ -505,8 +505,8 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
     console.log('in blast res');
     console.log(req.body);
     if(req.body.query == ''){
-      req.flash('message', 'No Query Sequence Found');
-      res.redirect('search_index'); 
+      //req.flash('message', 'No Query Sequence Found');
+      res.redirect('search_index#blast'); 
       return
     }
     var blast_db = req.body.blast_db_path;

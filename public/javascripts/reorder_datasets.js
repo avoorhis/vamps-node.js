@@ -22,7 +22,7 @@ function _alphabetize()
     
     reorder_div = document.getElementById('reorder_div');
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'alphabetize', true);
+    xmlhttp.open("POST", 'alphabetize_ds_order', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
 
@@ -42,8 +42,33 @@ function reset_order()
     
     reorder_div = document.getElementById('reorder_div'); 
     var xmlhttp = new XMLHttpRequest();  
-    xmlhttp.open("POST", 'reset', true);
+    xmlhttp.open("POST", 'reset_ds_order', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+
+      if (xmlhttp.readyState == 4 ) {
+         var htmlstring = xmlhttp.responseText;
+         //alert(htmlstring)
+         reorder_div.innerHTML = htmlstring;
+      }
+    };
+    xmlhttp.send(args);
+}
+
+function cluster_order(metric, ts)
+{
+  //alert(ts)
+  //alert(metric)
+  if(metric==0){
+    return
+  }
+    var args =  "metric="+metric;
+    args += "&ts="+ts;
+    //alert(args)
+    reorder_div = document.getElementById('reorder_div'); 
+    var xmlhttp = new XMLHttpRequest();  
+    xmlhttp.open("POST", 'cluster_ds_order', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
 
       if (xmlhttp.readyState == 4 ) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """ 
-	distance.py
+    distance.py
 
 
 """
@@ -18,124 +18,129 @@ import numpy as np
 import argparse
 import json
 import csv
+from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 
 from cogent.maths import distance_transform as dt
 
 
 def calculate_distance(args):
-	
-	if args.file_format == 'json': 
-		try:
-			json_data = open('./tmp/'+args.in_file)
-		except IOError:
-			json_data = open(args.in_file)
-		except:
-			print "NO FILE FOUND ERROR"
-			sys.exit()
-		
-		data = json.load(json_data)
-		json_data.close()						
-	else: # csv file
-		with open('./tmp/'+args.in_file, 'rb') as csvfile:
-			csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
-			for row in csv_data:
-				pass
-	
-	datasets = []
-	for i in data['columns']:
-		#print i['id']
-		datasets.append(i['name'])
-	
-	z = np.array(data['data'])
-	dmatrix = np.transpose(z)
-	#print dmatrix
-	# find zero sum rows (datasets) after transpose
-	bad_rows = np.nonzero(dmatrix.sum(axis=1) == 0)
-	#print bad_rows
-	# now remove them
-	dmatrix = np.delete(dmatrix, bad_rows, axis=0)
-	# delete datasets too:
-	edited_dataset_list=[]
-	for row,line in enumerate(data['columns']):
-		if row not in bad_rows[0]:
-			edited_dataset_list.append(line['name'])
+    
+    if args.file_format == 'json': 
+        try:
+            json_data = open('./tmp/'+args.in_file)
+        except IOError:
+            json_data = open(args.in_file)
+        except:
+            print "NO FILE FOUND ERROR"
+            sys.exit()
+        
+        data = json.load(json_data)
+        json_data.close()                       
+    else: # csv file
+        with open('./tmp/'+args.in_file, 'rb') as csvfile:
+            csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
+            for row in csv_data:
+                pass
+    
+    datasets = []
+    
+    for i in data['columns']:
+        #print i['id']
+        datasets.append(i['name'])
 
-	#print edited_dataset_list
-	
-	if args.metric == 'bray_curtis':
-		dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
-		dist = distance.squareform( dtvar )
-		#dist = distance.pdist(dmatrix, 'braycurtis')
-	
-	elif args.metric == 'morisita_horn':
-		#print dmatrix
-		dtvar = dt.dist_morisita_horn(dmatrix, strict=False)
-		#print '2'
-		dist = distance.squareform( dtvar )
+    
+    z = np.array(data['data'])
+    dmatrix = np.transpose(z)
+    #print dmatrix
+    # find zero sum rows (datasets) after transpose
+    bad_rows = np.nonzero(dmatrix.sum(axis=1) == 0)
+    #print bad_rows
+    # now remove them
+    dmatrix = np.delete(dmatrix, bad_rows, axis=0)
+    # delete datasets too:
+    edited_dataset_list=[]
+    edited_did_hash = {}
+    for row,line in enumerate(data['columns']):
+        if row not in bad_rows[0]:
+            edited_dataset_list.append(line['name'])
+            edited_did_hash[line['name']] = line['did']
 
-		#sys.exit()
-	elif args.metric == 'canberra':
-		
-		dtvar = dt.dist_canberra(dmatrix, strict=False)
-		dist = distance.squareform( dtvar )
-		#print 'canberra'
-		#dist = distance.pdist(dmatrix, 'canberra')
-	
-	elif args.metric == 'jaccard':
-		#dist = dt.binary_dist_jaccard(dm)	
-		dist = distance.pdist(dmatrix, 'jaccard')
-	 
-	elif args.metric == 'kulczynski':
+    #print edited_dataset_list
+    
+    if args.metric == 'bray_curtis':
+        dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
+        dist = distance.squareform( dtvar )
+        #dist = distance.pdist(dmatrix, 'braycurtis')
+    
+    elif args.metric == 'morisita_horn':
+        #print dmatrix
+        dtvar = dt.dist_morisita_horn(dmatrix, strict=False)
+        #print '2'
+        dist = distance.squareform( dtvar )
 
-		dtvar = dt.dist_kulczynski(dmatrix, strict=False)
-		dist = distance.squareform( dtvar )	
-		# note different spelling
-		#dist = distance.pdist(dmatrix, 'kulsinski')
-		
-	else:  # default
-		dist = distance.pdist(dmatrix, 'braycurtis')
+        #sys.exit()
+    elif args.metric == 'canberra':
+        
+        dtvar = dt.dist_canberra(dmatrix, strict=False)
+        dist = distance.squareform( dtvar )
+        #print 'canberra'
+        #dist = distance.pdist(dmatrix, 'canberra')
+    
+    elif args.metric == 'jaccard':
+        #dist = dt.binary_dist_jaccard(dm)  
+        dist = distance.pdist(dmatrix, 'jaccard')
+     
+    elif args.metric == 'kulczynski':
 
-	#print data['columns']
-	
-	dm1 = distance.squareform(dist)
-	# dist in in condensed form
-	# dm1 is in long form
-	#print dm1
-	#print dist
-	
+        dtvar = dt.dist_kulczynski(dmatrix, strict=False)
+        dist = distance.squareform( dtvar ) 
+        # note different spelling
+        #dist = distance.pdist(dmatrix, 'kulsinski')
+        
+    else:  # default
+        dist = distance.pdist(dmatrix, 'braycurtis')
 
-	dm2 = {}
-	dm3 = {}
+    #print data['columns']
+    #print dist
+    dm1 = distance.squareform(dist)
+    # dist in in condensed form
+    # dm1 is in long form
+    #print dm1
+    #print dist
+    
 
-	out_file = os.path.join(args.site_base,'tmp',args.prefix+'_distance.csv')
-	
-	out_fp = open(out_file,'w')
-	
-	file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
+    dm2 = {}
+    dm3 = {}
 
-	out_fp.write(file_header_line)
+    out_file = os.path.join(args.site_base,'tmp',args.prefix+'_distance.csv')
+    
+    out_fp = open(out_file,'w')
+    
+    file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
+
+    out_fp.write(file_header_line)
 
 
-	#print dm1
-	for row,name in enumerate(edited_dataset_list):
-			#name = line['name']
-			dm2[name] = {}	
-			file_data_line = name+','	
-			for col,d in enumerate(dm1[row]):
-				#print data['columns'][col]['id']
-				file_data_line += str(dm1[row][col])+','
-				dm2[name][data['columns'][col]['name']]  = dm1[row][col]
-				dm3[(name, data['columns'][col]['name'])]  = dm1[row][col]
-			file_data_line = file_data_line[:-1]+'\n'
-			out_fp.write(file_data_line)
+    
+    for row,name in enumerate(edited_dataset_list):
+            #name = line['name']
+            dm2[name] = {}  
+            file_data_line = name+','   
+            for col,d in enumerate(dm1[row]):
+                #print data['columns'][col]['id']
+                file_data_line += str(dm1[row][col])+','
+                dm2[name][data['columns'][col]['name']]  = dm1[row][col]
+                dm3[(name, data['columns'][col]['name'])]  = dm1[row][col]
+            file_data_line = file_data_line[:-1]+'\n'
+            out_fp.write(file_data_line)
 
-	
-	out_fp.close()
-	
-	#print dm1
- 	
-	return (dm1, dist, dm2, dm3, edited_dataset_list)
+    
+    out_fp.close()
+    
+    #print dm1
+    #print edited_dataset_list
+    return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
 # dm1: [[]]
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
@@ -194,95 +199,120 @@ def dendrogram_pdf(args, dm, leafLabels):
         plt.subplots_adjust(bottom=0.25)
         #leafLabels = [ '\n'.join(l.split('--')) for l in leafLabels ]
 
-        print datasets
+        
         linkage_matrix = linkage(dm,  method="average" )
         dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
         #image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
         image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.pdf')
 
-
         plt.savefig(image_file)
 
 def dendrogram_svg(args, dm):
-		#print json.dumps(dm)
-		newick = construct_newick(args, dm)
-		return newick
+    #print json.dumps(dm)
+    mycluster = construct_cluster(args, dm)
+    newick = mycluster.getNewick(with_distances=True) 
+    return newick
+
+def cluster_datasets(args, dm, did_hash):
+    new_ds_order =[]
+    new_did_order =[]
+
+    mycluster = construct_cluster(args, dm)
+    #t = Tree()
+    #t.populate(15)
+    
+    ascii = mycluster.asciiArt()
+
+    #ascii_file = args.prefix+'_ascii_tree.txt'
+    #ascii_file_path = os.path.join(args.site_base,'tmp',ascii_file)
+    #fp = open(ascii_file_path,'w')
+    #fp.write(ascii)
+    #fp.close()
+    
+    for line in ascii.split():
+        if line == '|' or line[:5] == '\edge' or line[:5] == '/edge' or line[:5] == '-root':
+            continue
+        ds = line[2:]
+        did = did_hash[ds]
+        new_ds_order.append(ds)
+        new_did_order.append(did)
+        #print new_did_order
+    return new_did_order
+    #print mycluster.asciiArt()
+        
 
 def write_csv_file(args):
-		file_name = 'distance.csv'
+        file_name = 'distance.csv'
 
 #
 #
 #
-def construct_newick(args, dm):
-		from cogent.cluster.UPGMA import upgma
+def construct_cluster(args, dm):
+        from cogent.cluster.UPGMA import upgma
+        mycluster = upgma(dm)
+        return mycluster
+        
+        
 
-		mycluster = upgma(dm)
-		newick = mycluster.getNewick(with_distances=True)	
-		#print mycluster.asciiArt()
-		return newick
-		
-		
-
-		# from scipy.cluster.hierarchy import linkage, to_tree
-		# condensed_dm = distance.squareform( dm )
-		# print condensed_dm
-		# linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
-		# newick = to_tree(linkage_matrix)		
-		
+        # from scipy.cluster.hierarchy import linkage, to_tree
+        # condensed_dm = distance.squareform( dm )
+        # print condensed_dm
+        # linkage_matrix = linkage(condensed_dm,  method="average", metric=args.metric)
+        # newick = to_tree(linkage_matrix)      
+        
 #
 #
 #
 def construct_pcoa(dist_matrix):
-	pass
+    pass
 #
 #
 #
 def plot_tree( P, pos=None ):
-		import matplotlib.pylab as plt
-		icoord = scipy.array( P['icoord'] )
-		dcoord = scipy.array( P['dcoord'] )
-		color_list = scipy.array( P['color_list'] )
-		xmin, xmax = icoord.min(), icoord.max()
-		ymin, ymax = dcoord.min(), dcoord.max()
-		if pos:
-		    icoord = icoord[pos]
-		    dcoord = dcoord[pos]
-		    color_list = color_list[pos]
-		for xs, ys, color in zip(icoord, dcoord, color_list):
-		    plt.plot(xs, ys,  color)
-		plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
-		plt.ylim( ymin, ymax + 0.1*abs(ymax) )
-		plt.show()
+        import matplotlib.pylab as plt
+        icoord = scipy.array( P['icoord'] )
+        dcoord = scipy.array( P['dcoord'] )
+        color_list = scipy.array( P['color_list'] )
+        xmin, xmax = icoord.min(), icoord.max()
+        ymin, ymax = dcoord.min(), dcoord.max()
+        if pos:
+            icoord = icoord[pos]
+            dcoord = dcoord[pos]
+            color_list = color_list[pos]
+        for xs, ys, color in zip(icoord, dcoord, color_list):
+            plt.plot(xs, ys,  color)
+        plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
+        plt.ylim( ymin, ymax + 0.1*abs(ymax) )
+        plt.show()
 #
 #
 #
 def get_json(node):
-	# Read ETE tag for duplication or speciation events
-	from ete2 import Tree
-	import random
-	if not hasattr(node, 'evoltype'):
-		dup = random.sample(['N','Y'], 1)[0]
-	elif node.evoltype == "S":
-		dup = "N"
-	elif node.evoltype == "D":
-		dup = "Y"
-	 
-	node.name = node.name.replace("'", '')
-	json = { "name": node.name,
-			"display_label": node.name,
-			"duplication": dup,
-			"branch_length": str(node.dist),
-			"common_name": node.name,
-			"seq_length": 0,
-			"type": "node" if node.children else "leaf",
-			"uniprot_name": "Unknown",
-			}
-	if node.children:
-		json["children"] = []
-		for ch in node.children:
-			json["children"].append(get_json(ch))
-	return json
+    # Read ETE tag for duplication or speciation events
+    from ete2 import Tree
+    import random
+    if not hasattr(node, 'evoltype'):
+        dup = random.sample(['N','Y'], 1)[0]
+    elif node.evoltype == "S":
+        dup = "N"
+    elif node.evoltype == "D":
+        dup = "Y"
+     
+    node.name = node.name.replace("'", '')
+    json = { "name": node.name,
+            "display_label": node.name,
+            "duplication": dup,
+            "branch_length": str(node.dist),
+            "common_name": node.name,
+            "seq_length": 0,
+            "type": "node" if node.children else "leaf",
+            "uniprot_name": "Unknown",
+            }
+    if node.children:
+        json["children"] = []
+        for ch in node.children:
+            json["children"].append(get_json(ch))
+    return json
 
 #
 #
@@ -367,7 +397,7 @@ def pcoa_pdf(args, data):
         import matplotlib
         matplotlib.use('PDF')   # pdf
         import pylab
-        from pylab import rcParams		
+        from pylab import rcParams      
         import matplotlib.pyplot as plt
 
 
@@ -375,7 +405,7 @@ def pcoa_pdf(args, data):
         try:
             with open('./'+args.prefix+'_metadata.txt', 'rb') as csvfile:
                 metadata_raw = csv.DictReader(csvfile, delimiter="\t")
-				# each row is a dataset
+                # each row is a dataset
                 for row in metadata_raw:
                     ds = row['DATASET'].strip("'")
                     metadata[ds] = row
@@ -390,8 +420,8 @@ def pcoa_pdf(args, data):
                     
                     metadata[ds] = row
         except:
-        	print "NO FILE FOUND ERROR"
-        	sys.exit()
+            print "NO FILE FOUND ERROR"
+            sys.exit()
 
 
 
@@ -403,7 +433,7 @@ def pcoa_pdf(args, data):
         #colors = {}
         ds_vals = {}
         new_ds_order = []
-        for ds in ds_order:			
+        for ds in ds_order:         
             if ds in metadata:
                 new_ds_order.append(ds)
                 for md_name in metadata[ds]:
@@ -420,7 +450,7 @@ def pcoa_pdf(args, data):
         ds_count = len(ds_order)
         meta_names_list = sorted(meta_dict.keys()) # sort the list by alpha
         #print meta_names_list
-        meta_names_count = len(meta_dict) 		
+        meta_names_count = len(meta_dict)       
 
         rcParams['figure.figsize'] = 10, meta_names_count*2
 
@@ -430,7 +460,7 @@ def pcoa_pdf(args, data):
         for i,mname in enumerate(meta_names_list):
             ds_vals2[mname] = {}
             num_of_colors_needed = len(meta_dict[mname])
-            for i,val in enumerate(meta_dict[mname]):				
+            for i,val in enumerate(meta_dict[mname]):               
                 if(num_of_colors_needed <= len(color_choices)):
                     ds_vals2[mname][val] = color_choices[i]
 
@@ -447,12 +477,12 @@ def pcoa_pdf(args, data):
                         col.append('b')  # all blue
                     else:
                         val = metadata[ds][mname]
-                        col.append(ds_vals2[mname][val])	
+                        col.append(ds_vals2[mname][val])    
                 #print mname,col
-                ax[i,1].set_title(mname)			
+                ax[i,1].set_title(mname)            
                 ax[i,0].scatter(data['P1'], data['P2'], c=col) # this color array has to be as long as the # of datasets and in the same order
                 ax[i,1].scatter(data['P1'], data['P3'], c=col)
-                ax[i,2].scatter(data['P2'], data['P3'], c=col)		
+                ax[i,2].scatter(data['P2'], data['P3'], c=col)      
             ax[0,0].set_title('P1-P2')
             ax[0,2].set_title('P2-P3')
 
@@ -466,13 +496,13 @@ def pcoa_pdf(args, data):
 if __name__ == '__main__':
 
     usage = """
-    --in   		json_file
-    --metric	distance metric to calculate ['horn', ]
+    --in        json_file
+    --metric    distance metric to calculate ['horn', ]
     """
     parser = argparse.ArgumentParser(description="Calculates distance from input JSON file", usage=usage)
 
     parser.add_argument('-in','--in',          required=True,  action="store",  dest='in_file',   help = '')
-    parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')	
+    parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')   
     parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis') 
     parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap') 
     parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
@@ -480,9 +510,13 @@ if __name__ == '__main__':
     #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
     args = parser.parse_args()
-	
+    
 
-    ( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
+    ( dm1, short_dm1, dm2, dm3, datasets, did_hash ) = calculate_distance(args) 
+    
+    if args.function == 'cluster_datasets':
+        did_list = cluster_datasets(args, dm3, did_hash)
+        print json.dumps(did_list)
 
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
@@ -495,24 +529,29 @@ if __name__ == '__main__':
 
     if args.function == 'dendrogram-svg':
         newick = dendrogram_svg(args, dm3)
+        # print newick
+        # from ete2 import Tree
+        # unrooted_tree = Tree( newick )
+        # print unrooted_tree
         # IMPORTANT print for SVG
         print json.dumps(newick)
 
     if args.function == 'dendrogram-pdf':
         #print distances
         dendrogram_pdf(args, dm1, datasets)
+
     if args.function == 'pcoa_3d':
         pcoa_data = pcoa(args, dm3)
         
     if args.function == 'pcoa':
         # if not args.metadata:
-        # 	print "ERROR: In PCoA and no metadata recieved"
-        # 	sys.exit()
-				
+        #   print "ERROR: In PCoA and no metadata recieved"
+        #   sys.exit()
+                
         pcoa_data = pcoa(args, dm3)
         #print json.dumps(pcoa_data)
 
-        #metadata = json.loads( args.metadata.strip("'") )	 
+        #metadata = json.loads( args.metadata.strip("'") )   
         pcoa_pdf(args, pcoa_data)
         #print pcoa_data
 
