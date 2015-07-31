@@ -563,9 +563,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         var options2 = {
-          //scriptPath : req.C.PATH_TO_QIIME_BIN,
-            scriptPath : 'public/scripts',
-          args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+            scriptPath : req.C.PATH_TO_QIIME_BIN,
+            args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
         };
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
         PythonShell.run('distance.py', options1, function (err, pcoa_data) {
@@ -575,20 +574,50 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     	        //console.log(pcoa_data)
     	        //pcoa_data = JSON.parse(pcoa_data)
     	        //console.log(pcoa_data);
-              console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
-              PythonShell.run('/make_emperor.py', options2, function (err, pcoa_data) {
-                ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
-                if (err) {
-            		    
-                    res.send(ok_form+'ERROR-2 '+err+" <a href='#' onclick=\"open('file://"+pc_file+"');\">pc file</a>"); // for now we'll send errors to the browser
-            	  }else{
+              //console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+              var spawn = require('child_process').spawn;
+              var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+              // script will remove data from mysql and datset taxfile
+              console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+              var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+
+              emperor_process.on('close', function (code) {
+                  console.log('emperor_process process exited with code ' + code);
+                  if(code == 0){           
+                   //console.log('PID last line: '+last_line)                    
+                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
                       console.log(html_path);
                       open('file://'+html_path);
-                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
-                }
+                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");                                 
+                  }else{
+                    // python script error
+                    console.log('python script error');
+                  }      
+              });   
 
-              });    	      
+
+              // PythonShell.run(options2.scriptPath+'make_emperor.py', options2, function (err, pcoa_data) {
+              //   ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+              //   ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
+              //   if (err) {            		    
+              //       res.send('ERROR-2 '+err); // for now we'll send errors to the browser
+            	 //  }else{
+              //         console.log(html_path);
+              //         open('file://'+html_path);
+              //         res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
+              //   }
+
+              // });
+
+
+
+
+
+
+
+
+
       	  }
 
         });

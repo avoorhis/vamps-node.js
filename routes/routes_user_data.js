@@ -238,40 +238,40 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			    }else{
 			   	  // python script error
 			    }		   
-		    });		
-    		// called imediately
-    		if(delete_kind == 'all'){    			
-    			var msg = "Deletion in progress: '"+project+"'"	    
-    		}else if(delete_kind == 'tax'){
-    			var msg = "Deletion in progress: taxonomy from '"+project+"'"		    
-    		}else if(delete_kind == 'meta'){
-    			var msg = "Deletion in progress: metadata from '"+project+"'"	    
-    		}else{
-    			req.flash('message', 'ERROR nothing deleted');
-    	    res.redirect("/user_data/your_projects");
-    	    return;
-    		}
-    		if(delete_kind == 'all'){					
-    				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
-						var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-						var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project:'+project);							
-						fs.move(data_dir, deleted_data_dir, function(err){
-							if(err){
-								console.log(err);
-								res.send(err);
-							}else{
-								console.log('moved project_dir to DELETED_project_dir');
-								req.flash('successMessage', msg);
-      					res.redirect("/user_data/your_projects");	
-      					return;
-							}
-							
-						})
-		    
-				}else{
-					req.flash('successMessage', msg);
-        	res.redirect("/user_data/your_projects");	
-				}
+	    });		
+  		// called imediately
+  		if(delete_kind == 'all'){    			
+  			var msg = "Deletion in progress: '"+project+"'"	    
+  		}else if(delete_kind == 'tax'){
+  			var msg = "Deletion in progress: taxonomy from '"+project+"'"		    
+  		}else if(delete_kind == 'meta'){
+  			var msg = "Deletion in progress: metadata from '"+project+"'"	    
+  		}else{
+  			req.flash('message', 'ERROR nothing deleted');
+  	    res.redirect("/user_data/your_projects");
+  	    return;
+  		}
+  		if(delete_kind == 'all'){					
+  				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
+					var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project:'+project);							
+					fs.move(data_dir, deleted_data_dir, function(err){
+						if(err){
+							console.log(err);
+							res.send(err);
+						}else{
+							console.log('moved project_dir to DELETED_project_dir');
+							req.flash('successMessage', msg);
+    					res.redirect("/user_data/your_projects");	
+    					return;
+						}
+						
+					})
+	    
+			}else{
+				req.flash('successMessage', msg);
+      	res.redirect("/user_data/your_projects");	
+			}
     				   
 	
 });
@@ -965,7 +965,7 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   	req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files.metadata==undefined || req.files.metadata.size==0 || req.files.metadata.mimetype !== 'text/csv'){
+  }else if(req.files.metadata==undefined || req.files.metadata.size==0){
   	req.flash('failMessage', 'A metadata csv file is required.');
 		res.redirect("/user_data/import_data");
 		return;

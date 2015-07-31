@@ -279,22 +279,19 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-    
-                                                    
+                                       
     parser.add_argument("-dir","--indir",                   
                 required=False,  action="store",   dest = "indir", default='./',
                 help="""Directory to output ini and dir structure""")  
     
-         
     parser.add_argument("-i", "--infile",          
                 required=False,  action='store', dest = "infile",  default='',
                 help="Project name") 
     
-                
-        
     parser.add_argument("-comb", "--combine",          
                 required=False,  action='store_true', dest = "combine",  default=False,
-                help="combine 2 MoBE metadata files")             
+                help="combine 2 MoBE metadata files")  
+
     parser.add_argument("-other", "--other_file",          
                 required=False,  action='store', dest = "other_file",  default=False,
                 help="")                           

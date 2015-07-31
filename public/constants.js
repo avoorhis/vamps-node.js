@@ -126,8 +126,10 @@ config.VISUAL_THUMBNAILS = { visuals: [
     
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
 config.PATH_TO_RDP = '/Users/avoorhis/programming/rdp_classifier/dist/';
+config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
+
 config.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
-//config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
+config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
 config.PATH_TO_EXTERNAL_SCRIPTS = '/Users/avoorhis/programming/python_pipeline/';
 
 module.exports = config;

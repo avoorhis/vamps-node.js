@@ -46,18 +46,40 @@
                         <td>Status: <span class="label label-warning"><strong><%= tax_status %></strong></span>                          
 						 
                         </td>   
-                        <td>
-                           
-                        </td>
+                        
 					<% }else{ %>
 						<td>Status: <span class="label label-success"><strong><%= tax_status %></strong></span>
                             <small>(id:<%= project_info[pnames[t]].pid %>)</small>
+                            <br>Taxonomy Assigned By: <strong><%= tax %></strong>
 				        </td>   
-                        <td>
-                            Taxonomy Assigned By: <strong><%= tax %></strong>
-                        </td>   
+                        
 				   <% } %>
-
+                        <td>
+                            <div class="dropdown pull-right">
+                              <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                Options
+                                <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">Edit Project Information</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
+                                <li role="presentation" class="divider"></li>                               
+                                <% if(tax == 'none'){ %>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/GAST_SILVA108">Assign Taxonomy - GAST (Silva108)</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_default">Assign Taxonomy - RDP (default)</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_gg">Assign Taxonomy - RDP (GreenGenes)</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_its">Assign Taxonomy - RDP (UNITE-ITS)</a></li>
+                                <% }else{ %>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>    
+                                <% } %>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %> ">Duplicate this Project</a></li>   
+                                    <li role="presentation" class="divider"></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>                       
+                              </ul>
+                            </div>
+                        </td>   
 
     			</tr><tr>
     				<td>Total Number of Sequences: <strong><%= total_number_of_sequences %></strong></td>
@@ -68,51 +90,16 @@
     						<strong>YES</strong>
     					<% } %>
     				</td>
-
-
-    				
-                    <td>Environmental Source: <strong><%= env_source %></strong></td>
-    				
                     <td>
-                        <% if(project_info[pnames[t]].pid == 0) { %>
-                            <a href="edit_project/<%= project %>" class="pull-right">edit</a>
-                        <% }else{ %>                            
-                            <a href="edit_project/<%= project %>" class="pull-right">edit</a>
-                        <% } %>
-                    </td>				
-
-
+                        Environmental Source: <strong><%= env_source %></strong>
+                    </td>    				
+                    <td>                        
+                                              
+                    </td>
     			</tr>
     		</table>			
 						
-    		<div class="dropdown">
-    		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-    		    Selection
-    		    <span class="caret"></span>
-    		  </button>
-    		  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-    		    <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li>
-	    	
-    			<% if(tax == 'none'){ %>
-
-
-    				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/GAST_SILVA109">Assign Taxonomy - GAST</a></li>
-    				<li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_default">Assign Taxonomy - RDP (default)</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_gg">Assign Taxonomy - RDP (GreenGenes)</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="start_assignment/<%= project %>/RDP_its">Assign Taxonomy - RDP (UNITE-ITS)</a></li>
-
-
-    			<% }else{ %>
-    					<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Cluster</a></li>
-        			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/tax">Delete Taxonomy Only</a></li>
-        			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/meta">Delete Metadata Only</a></li>	
-    			<% } %>
-					<li role="presentation"><a role="menuitem" tabindex="-1" href="duplicate_project/<%= project %>	">Duplicate this Project</a></li>	
-    	    <li role="presentation" class="divider"></li>
-    			<li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>
-			
-    	  	  </ul>
-    		</div>
+    	
 
 		</div>  <!-- end well -->
 	

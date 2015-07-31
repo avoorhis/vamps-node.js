@@ -357,11 +357,10 @@ if __name__ == '__main__':
                 required=False,  action='store', dest = "infile",  default='',
                 help="Project name") 
     
-                
-        
     parser.add_argument("-comb", "--combine",          
                 required=False,  action='store_true', dest = "combine",  default=False,
-                help="combine 2 MoBE metadata files")             
+                help="combine 2 MoBE metadata files") 
+                            
     parser.add_argument("-other", "--other_file",          
                 required=False,  action='store', dest = "other_file",  default=False,
                 help="")                           

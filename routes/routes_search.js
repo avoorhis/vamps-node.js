@@ -531,7 +531,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         var spawn = require('child_process').spawn;
         var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
         var blast_options = {
-          scriptPath : req.C.PATH_TO_SCRIPTS,
+          scriptPath : req.C.PATH_TO_BLAST,
           args :       [ '-db', blast_db, '-query', query_file_path, '-outfmt','13','-out',out_file_path0 ],
         }
         //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0
