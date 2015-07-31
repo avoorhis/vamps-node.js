@@ -46,8 +46,8 @@ def start_rdp(args):
     """
     
     
-    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -ref_db '+args.ref_db)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -ref_db '+args.ref_db)
+    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
+    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
     logging.debug(args)
     datasets = {}
     info_load_infile = args.config
@@ -101,7 +101,7 @@ def start_rdp(args):
          print 'uniques file',unique_file
          print 'rdp_out file',rdp_out_file
          print 'ref db', args.ref_db
-         rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.ref_db )
+         rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db )
     
 
             
@@ -135,6 +135,9 @@ if __name__ == '__main__':
                 help = '') 
     parser.add_argument("-ref_db", "--reference_db",    
                 required=True,  action="store",   dest = "ref_db", 
+                help = '') 
+    parser.add_argument("-script_dir", "--script_dir",    
+                required=True,  action="store",   dest = "rdp_script_dir", 
                 help = '') 
     parser.add_argument("-pdir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',

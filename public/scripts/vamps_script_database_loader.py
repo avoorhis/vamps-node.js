@@ -98,8 +98,8 @@ accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown'
 def start(args):
     
     
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
 
     NODE_DATABASE = args.NODE_DATABASE
 
@@ -146,7 +146,7 @@ def start(args):
         push_taxonomy(args)
     
         logging.info("starting sequences")
-        push_sequences()
+        push_sequences(args)
     
         logging.info("projects")
         push_project()
@@ -161,7 +161,8 @@ def start(args):
         #print SEQ_COLLECTOR
         #pp.pprint(CONFIG_ITEMS)
         logging.info("Finished "+os.path.basename(__file__))
-    
+        
+        print CONFIG_ITEMS['project_id']
         return CONFIG_ITEMS['project_id']
     
 def check_user():
@@ -228,15 +229,15 @@ def push_project():
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
-    print q
+    #print q
     logging.info(q)
-    print cur.lastrowid
+    #print cur.lastrowid
     try:
         cur.execute(q)
         CONFIG_ITEMS['project_id'] = cur.lastrowid
         logging.info("PID="+str(CONFIG_ITEMS['project_id']))
         mysql_conn.commit()
-        print cur.lastrowid
+        #print cur.lastrowid
     except:
         #print('ERROR: MySQL Integrity ERROR -- duplicate project name: '+proj)
         #sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset: '+proj)
@@ -254,7 +255,7 @@ def push_dataset():
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
         q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
         logging.info(q4)
-        print q4
+        #print q4
         try:
             cur.execute(q4)
             did = cur.lastrowid
@@ -269,22 +270,26 @@ def push_dataset():
 
 
 def push_pdr_seqs(args):
+    #print
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             did = DATASET_ID_BY_NAME[ds]
             seqid = SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
-            q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count,classifier_id)"
+            q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
             if args.classifier == 'gast':
                 q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
             elif args.classifier == 'rdp':
                 q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','1')"
+            #print q
+            #print
             logging.info(q)
             cur.execute(q)
-    mysql_conn.commit()
+            mysql_conn.commit()
     
-def push_sequences():
+def push_sequences(args):
     # sequences
+    #print
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('"+seq+"'))"
@@ -299,16 +304,23 @@ def push_sequences():
                 mysql_conn.commit() 
                 row = cur.fetchone()
                 seqid=row[0]
+            #print 'seqid',seqid
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
             silva_tax_id = str(SEQ_COLLECTOR[ds][seq]['silva_tax_id'])
-            distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
+            
             #logging.info( ds,seq, silva_tax_id)
             rank_id = str(SEQ_COLLECTOR[ds][seq]['rank_id'])
             logging.info( rank_id)
             q = "INSERT ignore into silva_taxonomy_info_per_seq"
-            q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
-            q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
+            if args.classifier == 'gast':
+                distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
+                q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
+                q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
+            else:
+                q += " (sequence_id,silva_taxonomy_id,refssu_id,rank_id)"
+                q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','0','"+rank_id+"')"
             logging.info(q)
+            #print q
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
@@ -316,7 +328,8 @@ def push_sequences():
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+seqid+"'"
                 q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
-                q3 += " and gast_distance = '"+distance+"'"
+                if args.classifier == 'gast':
+                    q3 += " and gast_distance = '"+distance+"'"
                 q3 += " and rank_id = '"+rank_id+"'"
                 #print 'DUP silva_tax_seq'
                 cur.execute(q3)
@@ -333,7 +346,36 @@ def push_sequences():
     mysql_conn.commit()
     #print SEQ_COLLECTOR    
 
-        
+#
+#
+#
+def push_taxonomy(args):
+    indir = args.basedir
+    classifier = args.classifier
+    #gast_dir = os.path.join(indir,'analysis/gast') 
+    analysis_dir = os.path.join(indir,'analysis') 
+    #print  general_config_items
+    
+    
+    
+    for dir in os.listdir(analysis_dir): 
+        ds = dir
+        SEQ_COLLECTOR[ds] = {}
+        if classifier == 'gast':
+            tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
+            if os.path.exists(tax_file):
+                run_gast_tax_file(args, ds, tax_file)
+        elif classifier == 'rdp':
+            tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
+            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
+            #seqs_file = os.path.join(analysis_dir, dir, 'seqfile.fa')
+            if os.path.exists(tax_file):
+                run_rdp_tax_file(args, ds, tax_file, unique_file)
+        else:
+            sys.exit('No classifier found')
+ 
+    logging.info( 'SUMMED_TAX_COLLECTOR')
+    logging.info( SUMMED_TAX_COLLECTOR)        
 #
 #
 #                               
@@ -369,9 +411,11 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
     
     f = fastalib.SequenceSource(seq_file)
     tmp_seqs = {}
-    
+    #print tax_file
+    #print seq_file
     while f.next():
         id = f.id.split('|')[0]
+        #print 'id1',id
         tmp_seqs[id]= f.seq
     f.close()
         
@@ -386,15 +430,18 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             tmp = items[0].split('|')
             seq_id = tmp[0]
             seq_count = tmp[1].split(':')[1]
+            #seq_count =1
             tax_line = items[2:]
-            print tax_line
+            #print 'id',seq_id
+            #print 'cnt',seq_count
+            #print tax_line
             for i in range(0,len(tax_line),3):
                   #print i,tax_line[i]
                   tax_name = tax_line[i].strip('"').strip("'")
                   rank = tax_line[i+1]
                   boot = float(tax_line[i+2])*100
                   #print boot,minboot
-                  if i==0 and tax_name.lower() in accepted_domains and boot >minboot:
+                  if i==0 and tax_name.lower() in accepted_domains and boot > minboot:
                       tax_items.append(tax_name)
                   elif boot > minboot:
                       tax_items.append(tax_name)
@@ -403,21 +450,28 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             rank = ranks[len(tax_items)-1]
             
             seq= tmp_seqs[seq_id]
-            distance = 1
-            refhvr_ids = ''
+            #print seq
+            #print tax_items
+            distance = None
+            
             if tax_items != []:                
-                finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items)
+                finish_tax(ds,'',rank,distance,seq,seq_count,tax_items)
             
             
-def finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items):
+def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
     #tax_collector = {} 
+    #print
+    #print tax_items
+    #print seq_count
+    #print seq
+    
     tax_string = ';'.join(tax_items)       
     if ds not in SUMMED_TAX_COLLECTOR:
         SUMMED_TAX_COLLECTOR[ds]={}
-    print seq, seq_count, tax_string
+    #print seq, seq_count, tax_string
     SEQ_COLLECTOR[ds][seq] = {'dataset':ds,
                           'taxonomy':tax_string,
-                          'refhvr_ids':'',
+                          'refhvr_ids':refhvr_ids,
                           'rank':rank,
                           'seq_count':seq_count,
                           'distance':distance
@@ -509,6 +563,7 @@ def finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items):
         q4 += " VALUES("+','.join(ids_by_rank)+",CURRENT_TIMESTAMP())"
         #
         logging.info(q4)
+        #print q4
         cur.execute(q4)
         mysql_conn.commit() 
         silva_tax_id = cur.lastrowid
@@ -518,15 +573,17 @@ def finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items):
             for i in range(0,len(silva)):
                 vals += ' '+silva[i]+"="+ids_by_rank[i]+' and'
             q5 = q5 + vals[0:-3] + ')'
+            #print q5
             logging.info(q5)
             cur.execute(q5)
             mysql_conn.commit() 
             row = cur.fetchone()
             silva_tax_id=row[0]
+            #print 'silva_tax_id',silva_tax_id
         
         SILVA_IDS_BY_TAX[tax_string] = silva_tax_id
         SEQ_COLLECTOR[ds][seq]['silva_tax_id'] = silva_tax_id
-        mysql_conn.commit()
+        
                 
                 
                 
@@ -536,32 +593,7 @@ def finish_tax(ds,refhvr_ids,rank,distance,seq,seq_count,tax_items):
             
             
             
-def push_taxonomy(args):
-    indir = args.basedir
-    classifier = args.classifier
-    #gast_dir = os.path.join(indir,'analysis/gast') 
-    analysis_dir = os.path.join(indir,'analysis') 
-    #print  general_config_items
-    
-    
-    
-    for dir in os.listdir(analysis_dir): 
-        ds = dir
-        SEQ_COLLECTOR[ds] = {}
-        if classifier == 'gast':
-            tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
-            if os.path.exists(tax_file):
-                run_gast_tax_file(args, ds, tax_file)
-        elif classifier == 'rdp':
-            tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
-            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
-            if os.path.exists(tax_file):
-                run_rdp_tax_file(args, ds, tax_file, unique_file)
-        else:
-            sys.exit('No classifier found')
- 
-    logging.info( 'SUMMED_TAX_COLLECTOR')
-    logging.info( SUMMED_TAX_COLLECTOR)
+
              
 def get_config_data(indir):
     # convert a vamps user upload config file: use INFO-TAX.config

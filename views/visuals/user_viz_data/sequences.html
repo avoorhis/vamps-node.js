@@ -27,8 +27,12 @@
    <tr>
 	   <td><%= parseInt(r)+1 %></td>
 	   <td><%= seqrows[r].seq_count %></td>
-	   <td><%= seqrows[r].gast_distance %></td>
-	   <td><%= seqrows[r].seq %></td>
+	   <% if(seqrows[r].classifier =='GAST') { %>
+      <td><%= seqrows[r].gast_distance %></td>
+	   <% }else{ %>
+      <td>none</t>
+     <% } %>
+     <td><%= seqrows[r].seq %></td>
 	   
 	   <td><%= seqrows[r].tax %></td>
    </tr>

@@ -317,20 +317,49 @@ module.exports.update_global_variables = function(pid,type){
 		// ERROR
 	}
 }
-
-module.exports.update_project_status = function(res, p){
-    console.log('in helpers update project status')
-    connection.query(queries.user_project_status(p.type, p.user, p.proj, p.status, p.msg ), function(err, rows, fields){
-        if(err){ 
-            console.log('ERROR-in status update')
-        }else{
-            if(p.render){
-                res.render('success',p.render);
+module.exports.get_status = function(user, project){
+    var statQuery='';
+    statQuery += "SELECT status,message from user_project_status";  
+    statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
+    console.log(statQuery)
+        connection.query(statQuery , function(err, rows, fields){
+              if(err) { console.log('ERROR-in status query: '+err); 
+            }else{
+              return rows;
             } 
-	      
-        }
+                           
     });
 }
+module.exports.update_status = function(type, user, project, status, msg){
+  console.log('in update_status')
+  if(type == 'delete'){
+        var statQuery =''
+        statQuery += "DELETE from user_project_status";  
+        statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
+        console.log(statQuery)
+        connection.query(statQuery , function(err, rows, fields){
+              if(err) { console.log('ERROR-in status update: '+err); }               
+        });
+  }else{
+        var statQuery =''
+        statQuery += "INSERT into user_project_status (user,project,status,message)";  
+        statQuery += " VALUES ('"+user+"','"+project+"','"+status+"','"+msg+"')";
+        console.log(statQuery)
+        connection.query(statQuery , function(err, rows, fields){
+              if(err) { 
+                  var statQuery =''
+                  statQuery += "UPDATE user_project_status set status='"+status+"', message='"+msg+"'";  
+                  statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
+                  console.log(statQuery)
+                  connection.query(statQuery , function(err, rows, fields){
+                    if(err) { console.log('ERROR-in status update: '+err); } 
+                  }); 
+              }               
+        });
+  }        
+  
+}
+
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
         console.log('query ok1 '+JSON.stringify(rows1));
         console.log('query ok2 '+JSON.stringify(rows2));			           
@@ -347,10 +376,19 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log(' UPDATED ALL_DCOUNTS_BY_DID');
         console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
         console.log(' UPDATED ALL_CLASSIFIERS_BY_PID');
+        // re-run re-create new_taxonomy (see app.js)
+        var silvaTaxonomy = require('../../models/silva_taxonomy');
+        var all_silva_taxonomy = new silvaTaxonomy();
+        var CustomTaxa  = require('./custom_taxa_class');
+        all_silva_taxonomy.get_all_taxa(function(err, results) {
+          if (err)
+            throw err; // or return an error message, or something
+          else
+            new_taxonomy = new CustomTaxa(results);
+            new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+        });
+        console.log(' UPDATED new_taxonomy');
 
-
-
-        this.update_project_status(res, status_params);
         
 };
 module.exports.reverse = function (str) {

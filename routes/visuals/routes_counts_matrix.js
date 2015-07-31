@@ -66,6 +66,7 @@ module.exports = {
 			var unit_name_lookup_per_dataset = {};
 			var unit_name_counts = {};
 		
+
 			// TESTING
 			// data from DB or JSON_file or HTF5
 			//var read_choices = ['DB','JSON','HTF5'];
@@ -131,6 +132,7 @@ module.exports = {
 							// 	return biom_matrix;
 							//
 							// })
+
 							for(var x in TAXCOUNTS[did]){
 
 								if((x.match(/_/g) || []).length == rank_no){
@@ -142,7 +144,12 @@ module.exports = {
 										var db_id = ids[y];
 										var this_rank = C.RANKS[y-1];
 										var db_id_n_rank = db_id+'_'+this_rank;
-										var tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+										//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
+										var tax_node = {};
+										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
+											tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+									  }
+										//console.log('tax_node3 '+JSON.stringify(tax_node))
 										tax_long_name += tax_node.taxon+';';
                                         //console.log('tax_node3 '+JSON.stringify(tax_node))
 									}
@@ -184,7 +191,7 @@ module.exports = {
 
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
-			console.log('POSTx');
+			console.log('POSTx - from routes_common_matrix.js');
 			console.log(post_items);
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );

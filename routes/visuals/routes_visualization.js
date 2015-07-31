@@ -971,6 +971,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 				//var seqcomp = buffer.toString('base64');
 				rows[s].seq = rows[s].seq.toString('utf8')
 				rows[s].tax = ''
+
 				for(i in req.C.RANKS){
 					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
 					//console.log(id_n_rank);
@@ -990,7 +991,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 		            title: 'Sequences',
 		            ds : ds_name,
 		            tax : tax,
-				    rows : JSON.stringify(rows),
+				        rows : JSON.stringify(rows),
 		            user: req.user
 		          });
 	      }

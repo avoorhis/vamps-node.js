@@ -111,7 +111,7 @@ def start(NODE_DATABASE, args):
     
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
-    logging.debug("Finished database_importer.py")
+
     return CONFIG_ITEMS['project_id']
     
     
@@ -238,17 +238,21 @@ def push_sequences():
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
-            if seqid == 0:
+            logging.debug('1: '+str(silva_tax_seq_id))
+            if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
-                q3 += " where sequence_id = '"+seqid+"'"
+                q3 += " where sequence_id = '"+str(seqid)+"'"
                 q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
                 q3 += " and gast_distance = '"+distance+"'"
+                q3 += " and refssu_id = '0'"
                 q3 += " and rank_id = '"+rank_id+"'"
-                #print 'DUP silva_tax_seq'
+                logging.debug('DUP silva_tax_seq')
+                logging.debug(q3)
                 cur.execute(q3)
                 mysql_conn.commit() 
                 row = cur.fetchone()
                 silva_tax_seq_id=row[0]
+                logging.debug('0: '+str(silva_tax_seq_id))
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
             q4 += " VALUES('"+str(seqid)+"','"+str(silva_tax_seq_id)+"')"
@@ -740,6 +744,8 @@ if __name__ == '__main__':
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
         print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'"
+        logging.debug("Finished database_importer.py")
+        logging.debug("Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'")
     else:
         print myusage 
         

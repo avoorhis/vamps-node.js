@@ -94,7 +94,9 @@ if __name__ == '__main__':
     parser.add_argument("-ddir", "--data_dir",    
     			required=True,  action="store",   dest = "basedir", 
                 help = '')         
-    
+    parser.add_argument("-script_dir", "--script_dir",    
+                required=False,  action="store",   dest = "rdp_script_dir", 
+                help = '') 
     parser.add_argument("-pdir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
                 help = '')
@@ -157,12 +159,12 @@ if __name__ == '__main__':
     logging.info('running vamps_script_database_loader.py')
     print(args.NODE_DATABASE+' - '+ args.basedir)
     print("starting db upload")
-    try:
-        args.pid = int(load_data.start(args))
-    except:
-        logging.info('PID IS NOT INT: '+str(args.pid)+ ' -EXITING')
-        print 'PID IS NOT INT: '+str(args.pid)+ ' -EXITING'
-        sys.exit(-2)
+    #try:
+    args.pid = int(load_data.start(args))
+    # except:
+    #     logging.info('PID IS NOT INT: '+str(args.pid)+ ' -EXITING')
+    #     print 'PID IS NOT INT: '+str(args.pid)+ ' -EXITING'
+    #     sys.exit(-2)
     logging.info('GOT NEW PID: '+str(args.pid))
     print 'GOT NEW PID: '+str(args.pid)
 

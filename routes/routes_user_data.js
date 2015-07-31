@@ -234,14 +234,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			    var last_line = ary[ary.length - 1];
 			    if(code == 0){				   
 				   //console.log('PID last line: '+last_line)	                   
-             connection.query(queries.user_project_status('delete', req.user.username, project, '', ''), function(err, rows, fields){
-                 if(err){ 
-                     console.log('ERROR-in status update')
-                 }else{
-                  console.log('OK-deleted  status update')
-                  }
-              });
-                           					   
+              helpers.update_status('delete',req.user.username,project,'delete','delete');                            					   
 			    }else{
 			   	  // python script error
 			    }		   
@@ -355,7 +348,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
   var ref_db = tmp[1];
 
 	if(method == 'GAST' || method == 'gast'){
-		
+		helpers.update_status('update',req.user.username,project,'OK-GAST','Starting GAST'); 
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
@@ -420,7 +413,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 								   											'msg':'GAST -Tax assignments' } 
 								   	
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-
+												helpers.update_status('update',req.user.username,project,'OK-GAST','Finished GAST'); 
 
 												ALL_CLASSIFIERS_BY_PID[pid] = classifier				   
 
@@ -453,10 +446,11 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 
 
 	}else if(method == 'RDP' || method == 'rdp'){
+		helpers.update_status('update',req.user.username,project,'OK-RDP','Starting RDP'); 
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db ],
+	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db,'-script_dir', req.C.PATH_TO_RDP ],
 	    };
 	  
 	  
@@ -504,22 +498,23 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 				 		  console.log('1-RDP-Query error: ' + err);				 		  				 		  
 				       } else {						   
         				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
-        				       if (err)  {
-        				 		  	console.log('2-RDP-Query error: ' + err);        				 		  	
-        				       } else {        
-		                           status_params = {'type':'update',
-		                                           'user':req.user.username,
-		                                           'proj':project,
-		                                           'status':'RDP-SUCCESS',
-								   					'msg':'RDP -Tax assignments'  } 
-								   					
-												helpers.assignment_finish_request(res,rows1,rows2,status_params);
+        				      if (err)  {
+        				 		  		console.log('2-RDP-Query error: ' + err);        				 		  	
+        				      } else {        
+													status_params = {'type':'update',
+													               'user':req.user.username,
+													               'proj':project,
+													               'status':'RDP-SUCCESS',
+													'msg':'RDP -Tax assignments'  } 
+
+													helpers.assignment_finish_request(res,rows1,rows2,status_params);
+													helpers.update_status('update',req.user.username,project,'OK-RDP','Finished RDP'); 
+
+													ALL_CLASSIFIERS_BY_PID[pid] = classifier  
 
 
-												ALL_CLASSIFIERS_BY_PID[pid] = classifier       		 				   
-
-
-        				       }
+													
+											}
 				       
         				   });                           
                            
@@ -587,6 +582,9 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   				  	
   				  	pnames.push(project_name);
 
+  				  	//new_status = helpers.get_status(req.user.username,project_name);
+  				  	//console.log(new_status); // Async only -- doesn't work
+
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
@@ -612,11 +610,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	    }
 	  
 		  pnames.sort();
-
-
 		  //console.log(pnames);
-
-
 		  //console.log(JSON.stringify(project_info));
 		  res.render('user_data/your_projects',
 		    { title: 'User Projects',		     
@@ -948,8 +942,8 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 //
 
 router.post('/upload_data', helpers.isLoggedIn, function(req,res){
-    
-
+   
+	
   var project = req.body.project;
   var username = req.user.username;
   console.log('req.body upload_data');
@@ -958,6 +952,7 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   console.log('req.body upload_data');
   console.log(project);
   console.log(PROJECT_INFORMATION_BY_PNAME);
+  
   if(project == '' || req.body.project == undefined){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
@@ -977,7 +972,7 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   }else{
 	var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
       console.log(data_repository);
-	
+	helpers.update_status('new',username,project,'OK','Upload Started'); 
 	var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
         			args :       [ '-dir', data_repository, '-o', username, '-p', project]
     			};
@@ -1000,31 +995,29 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 	//console.log(original_fastafile);
 	//console.log(original_metafile);
  	// move files to user_data/<username>/ and rename
-  	var LoadDataFinishRequest = function() {
-		// START STATUS //
-		req.flash('successMessage', "Upload in Progress: '"+ project+"'");
-		status_params = {'type':'new',
-		    'user':req.user.username,
-		    'proj':project,
-		    'status':'LOADED',
-		    'msg':'Project is loaded --without tax assignments',
-		    'render':{  title   : 'VAMPS: Import Success',                                
-					          message : req.flash('successMessage'),
-		                display : "Import_Success",
-			              user    : req.user                        
-			        }                  
-		}
-		helpers.update_project_status(res, status_params);
+	var LoadDataFinishRequest = function() {
+			// START STATUS //
+			req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+			
+			// type, user, project, status, msg
+			helpers.update_status('update',username,project,'LOADED','Project is loaded --without tax assignments');
+			res.render('success', {  title   : 'VAMPS: Import Success',                                
+						          message : req.flash('successMessage'),
+			                display : "Import_Success",
+				              user    : req.user                        
+				        });
 	}
 	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
     	if (err) {
-			req.flash('failMessage', '1-File move failure  '+err);
-			res.redirect("/user_data/import_data");
-			return;
-		}
+				req.flash('failMessage', '1-File move failure  '+err);
+				helpers.update_status('update',username,project,'FAIL-1','1-File move failure');
+				res.redirect("/user_data/import_data");
+				return;
+			}
 	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
 	    	if (err) {
 				req.flash('failMessage', '2-File move failure '+err);
+				helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
 				res.redirect("/user_data/import_data");
 				return;
 			}
@@ -1032,15 +1025,15 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 
 		    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 		    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
-
-
 		      if (err) {
-				  req.flash('failMessage', 'Script Failure '+err);
-				  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
-				  return;
-			  }
-			  console.log('script output: '+output);
-			  LoadDataFinishRequest();
+					  req.flash('failMessage', 'Script Failure '+err);
+					  helpers.update_status('update',username,project,'Script Failure');
+					  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+					  return;
+				  }
+				  console.log('script output: '+output);
+				  LoadDataFinishRequest();
+				  
 		    });
 	  	}); // END move 2
 	}); // END move 1

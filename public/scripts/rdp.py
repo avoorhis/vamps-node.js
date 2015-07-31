@@ -26,16 +26,17 @@ import subprocess
 ############################################################
 
 
-def run_rdp(infile, outfile, process_dir, ref_db='default'):
+def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db='default'):
 	
 	
-    logging.debug('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db)
-    print('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db)
+    logging.debug('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db+' -script_dir '+rdp_script_dir)
+    print('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db+' -script_dir '+rdp_script_dir)
     #PATH_2_JAVA="/bioware/jre/bin/java";
     PATH_2_JAVA = "/usr/bin/java"
     #PATH_2_RDP = "/Users/avoorhis/programming/rdp_classifier"  # soft link to rdp_classifier
-    PATH_2_RDP = os.path.join(process_dir,"public","classifiers","rdp")  # soft link to rdp_classifier
+    #PATH_2_RDP = os.path.join(script_dir,"public","classifiers","rdp")  # soft link to rdp_classifier
     ref_db = 'rdp_'+ref_db        
+    
     PATH_2_DB  = os.path.join(process_dir,"public","databases",ref_db)  # soft link to rdp_classifier
 
 
@@ -49,7 +50,7 @@ def run_rdp(infile, outfile, process_dir, ref_db='default'):
     # the classifier must be kept with its directory structure
 
 
-    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+PATH_2_RDP+"/dist/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/train/rRNAClassifier.properties -f fixrank"
+    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/train/rRNAClassifier.properties -f fixrank"
     logging.debug('RDPCMD: '+rdp_cmd)
 
 
@@ -95,6 +96,9 @@ if __name__ == '__main__':
     parser.add_argument('-ref_db', '--reference_db',
      			required=False,   action="store",  dest = "ref_db",
                  help = 'gast or rdp')
+    parser.add_argument('-script_dir', '--script_dir',
+                required=True,   action="store",  dest = "rdp_script_dir",
+                 help = 'gast or rdp')
     # parser.add_argument("-ddir", "--data_dir",
     # 			required=True,  action="store",   dest = "baseoutputdir",
     #             help = '')
@@ -107,7 +111,7 @@ if __name__ == '__main__':
 
     #os.chdir(os.path.expanduser('~/programming/vamps-node.js'))
     #os.chdir(args.baseoutputdir)
-    run_rdp(args.infile, args.outfile, args.process_dir, args.ref_db)
+    run_rdp(args.infile, args.outfile, args.process_dir,  args.rdp_script_dir, args.ref_db)
 
 
     
