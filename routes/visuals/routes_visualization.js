@@ -1227,14 +1227,20 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         console.log(potential_chosen_id_name_hash)
 
         html += "<table id='drag_table' class='table table-condensed' >"
+        html += "<thead></thead>";
+        html += "  <tbody>";
         for (var i in potential_chosen_id_name_hash.names){
-         html += "<tr class='tooltip_row'>";
-         html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-          html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-         html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
-         html += "</td><td><a href=''>^</a></td>";
-         html += "</tr>";
-        }  
+            html += "<tr class='tooltip_row'>";
+            html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+            html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+            html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
+            html += "</td>";
+            html += "   <td>";
+            html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+            html += "   </td>";
+            html += "</tr>";
+        } 
+        html += "</tbody>";
         html += "</table>"; 
         res.send(html)
       }
