@@ -678,10 +678,11 @@ if __name__ == '__main__':
         Example project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files like this:
         >>METADATA: 
-        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
         
         >>SEQS: 
-        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_AGW_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
         
         NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
               

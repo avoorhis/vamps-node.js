@@ -13,7 +13,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 
 <div id='' class=''>
 <form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/<%= referer %>'>
-    <table class='table'>
+    <table class='table' >
       <tr><td>Original order</td><td><span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span></td></tr>
       <tr><td class='td_top'>
         
@@ -25,21 +25,24 @@ Here are your <%= items.names.length %> selected datasets:<br>
 		
       </td>
 	  <td>
-        <div id='reorder_div'>	       
-		   
-		      <table id='drag_table' class='table table-condensed ' >
+        <div id='reorder_div' >	  
+		      <table id='drag_table' class='table table-condensed' >
+		      	<thead></thead>
+		      	<tbody>
 	          <% for (var i in items.names){ %>
-	            <tr class='tooltip_row'>
-	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'> 
-	              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
-					      <input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
-	                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
+	            <tr class='tooltip_row' >
+	              <td class='dragHandle' id='<%= items.ids[i]+'--'+items.names[i] %>'>   
+			              <!--  <input type='hidden' name='ds_order[]' value="<%= items.ids[i]+'--'+items.names[i] %>" > -->
+							      <input type='hidden' name='ds_order[]' value="<%= items.ids[i] %>" > 
+			                <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)
 	              </td>
-	              <td><a href=''>^</a></td>
+	              <td>
+	              		<a href='#' onclick='move_to_the_top(<%= parseInt(i)+1 %>,"<%= items.ids[i]+'--'+items.names[i] %>")'>^</a>
+	              </td>
 	            </tr>
 	          <% } %> 
-	        </table>			
-			
+	        	</tbody>
+	        </table>				
         </div>
 
     </td>

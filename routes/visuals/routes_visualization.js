@@ -1151,16 +1151,22 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
 router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
 	console.log('in reset_ds_order')
   var html = '';
-    html += "<table id='drag_table' class='table table-condensed' >"
-    for (var i in chosen_id_name_hash.names){
+  html += "<table id='drag_table' class='table table-condensed' >"
+  html += "<thead></thead>";
+  html += "  <tbody>";
+  for (var i in chosen_id_name_hash.names){
          html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+chosen_id_name_hash.ids[i]+"--"+chosen_id_name_hash.names[i]+"'> ";
-		 html += "<input type='hidden' name='ds_order[]' value='"+chosen_id_name_hash.ids[i]+"'>";
+		     html += "<input type='hidden' name='ds_order[]' value='"+chosen_id_name_hash.ids[i]+"'>";
          html += (parseInt(i)+1).toString()+" - "+chosen_id_name_hash.names[i] + " (id:"+ chosen_id_name_hash.ids[i]+")"
          html += "</td>";
+         html += "   <td>";
+         html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+chosen_id_name_hash.ids[i]+"--"+chosen_id_name_hash.names[i]+"\")'>^</a>";
+         html += "   </td>";
          html += "</tr>";
-     }  
-    html += "</table>";	
+  } 
+  html += "</tbody>";   
+  html += "</table>";	
 	res.send(html)
 });
 //
@@ -1170,20 +1176,26 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 	console.log('in alphabetize_ds_order')
 	var html = '';
   html += "<table id='drag_table' class='table table-condensed' >"
-	var names = chosen_id_name_hash.names.slice()  // slice make an independant copy of the array
+  html += "<thead></thead>";
+  html += "  <tbody>";
+  var names = chosen_id_name_hash.names.slice()  // slice make an independant copy of the array
 	var ids = chosen_id_name_hash.ids.slice()      // rather than copy reference
 	
   names.sort()
 	for (var i in names){
-		id = ids[chosen_id_name_hash.names.indexOf(names[i])]
-		 html += "<tr class='tooltip_row'>";
+		     id = ids[chosen_id_name_hash.names.indexOf(names[i])]
+		     html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+ id +"--"+names[i]+"'> ";
-		 html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
+		     html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
          html += (parseInt(i)+1).toString()+" - "+names[i] + " (id:"+ id +")"
          html += "</td>";
+         html += "   <td>";
+         html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+id +"--"+names[i]+"\")'>^</a>";
+         html += "   </td>";
          html += "</tr>";
-     }  
-    html += "</table>";	
+  }  
+  html += "</tbody>";  
+  html += "</table>";	
 	res.send(html)
 });
 //
