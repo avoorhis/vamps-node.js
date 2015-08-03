@@ -46,11 +46,11 @@
 		<tr><td>Public:</td>
 			<td>
 			<% if(project_info.public == 1) { %>
-				      <input type='radio' checked='checked' name='new_privacy' value='1' > public
-				&nbsp;<input type='radio'                   name='new_privacy' value='0'> private
+				      <input type='radio' checked='checked' name='new_privacy' value='True' > public
+				&nbsp;<input type='radio'                   name='new_privacy' value='False'> private
 			<% }else{ %>
-				      <input type='radio'                   name='new_privacy' value='1' > public
-				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='0'> private
+				      <input type='radio'                   name='new_privacy' value='True' > public
+				&nbsp;<input type='radio' checked='checked' name='new_privacy' value='False'> private
 			<% } %>
 		</td></tr>
 		<tr><td>Title (max length 100 chars):</td>

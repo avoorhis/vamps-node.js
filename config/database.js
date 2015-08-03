@@ -1,6 +1,7 @@
 
 var mysql = require('mysql2');
 var fs    = require('fs-extra');
+var path  = require('path');
 //JSON.minify = JSON.minify || require("node-json-minify");
 
 //var config_file = JSON.parse(fs.readFileSync('./config/db-connection.js', {encoding:'utf8'}));
@@ -18,6 +19,11 @@ var pool      =    mysql.createPool({
 	  debug    :  false
 });
 
+var projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE);
+fs.ensureDir(projects_base_dir, function (err) {
+  			console.log(err) // => null
+  			// dir has now been created, including the directory it is to be placed in
+})
 
 // console.log(pool);
 exports.pool = pool;

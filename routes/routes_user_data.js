@@ -554,8 +554,12 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 	pnames = [];
     fs.readdir(user_projects_base_dir, function(err, items){
 		if(err){		  
-			msg = 'ERROR Message '+err;
-			helpers.render_error_page(req,res,msg);
+			
+			fs.ensureDir(user_projects_base_dir, function (err) {
+  			console.log(err) // => null
+  			// dir has now been created, including the directory it is to be placed in
+			})
+			
 		  
 		}else{
 		  for (var d in items){
@@ -612,23 +616,24 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 		  pnames.sort();
 		  //console.log(pnames);
 		  //console.log(JSON.stringify(project_info));
-		  res.render('user_data/your_projects',
-		    { title: 'User Projects',		     
-		      pinfo: JSON.stringify(project_info),
-		      pnames: pnames,
-		  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
-		  	  failmessage : req.flash('failMessage'),
-		  	  successmessage : req.flash('successMessage'),
-		      user: 	req.user
-		    });
+		  
 		}  // readdir/err
 	
+			res.render('user_data/your_projects',
+			    { title: 'User Projects',		     
+			      pinfo: JSON.stringify(project_info),
+			      pnames: pnames,
+			  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
+			  	  failmessage : req.flash('failMessage'),
+			  	  successmessage : req.flash('successMessage'),
+			      user: 	req.user
+		    });
+
     });  // readdir
    
 });
 //
 //   GET -- EDIT_PROJECT: When first enter the page.
-
 //
 router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 	console.log('in edit project:GET');
@@ -642,8 +647,8 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
   	//var stat_config = fs.statSync(config_file);
  	project_info.config = iniparser.parseSync(config_file);
 
-	if(project_name in PROJECT_INFORMATION_BY_PNAME){
-
+	if(project_name in PROJECT_INFORMATION_BY_PNAME){   // these projects have tax assignments
+		console.log(PROJECT_INFORMATION_BY_PNAME[project_name])
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = 'Taxonomic Data Available';
 		project_info.tax = 'GAST';
@@ -678,7 +683,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 		project_info.dsets = [];
 		project_info.title = project_info.config.GENERAL.project_title
 		project_info.pdesc = project_info.config.GENERAL.project_description;
-		if(project_info.config.GENERAL.public == 'True'){
+		if(project_info.config.GENERAL.public == 'True' || project_info.config.GENERAL.public == 1){
 			project_info.public = 1;
 		}else{
 			project_info.public = 0;
@@ -726,7 +731,11 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		p_sql += " title='"+helpers.mysql_real_escape_string(req.body.new_project_title)+"',\n";
 		p_sql += " rev_project_name='"+helpers.reverse(req.body.new_project_name)+"',\n";
 		p_sql += " project_description='"+helpers.mysql_real_escape_string(req.body.new_project_description)+"',\n";
-		p_sql += " public='"+req.body.new_privacy+"'\n";
+		if(req.body.new_privacy == 'False'){
+			p_sql += " public='0'\n";
+		}else{
+			p_sql += " public='1'\n";
+		}		
 		p_sql += " WHERE project_id='"+req.body.project_pid+"' "
 		console.log(p_sql);
     connection.query(p_sql, function(err, rows, fields){
@@ -753,7 +762,12 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_source_name = req.C.ENV_SOURCE[req.body.new_env_source_id];
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].title           = req.body.new_project_title;
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].description     = req.body.new_project_description;
-    PROJECT_INFORMATION_BY_PID[req.body.project_pid].public          = req.body.new_privacy;
+    if(req.body.new_privacy == 'False'){
+    	PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 0;
+    }else{
+    	PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 1;
+    }
+          
 		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
     for(d in req.body.new_dataset_names){
