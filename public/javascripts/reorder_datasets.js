@@ -6,13 +6,16 @@ if (typeof reset_order_btn !=="undefined") {
 }
 alphabetize = document.getElementById('alphabetize');
 if (typeof alphabetize !=="undefined") {
-	alphabetize.addEventListener('click', function() {
-  	  
+	alphabetize.addEventListener('click', function() { 
 	  _alphabetize();
-		
 	});
 }
-
+reverse = document.getElementById('reverse');
+if (typeof reverse !=="undefined") {
+  reverse.addEventListener('click', function() {
+    reverse_order();
+  });
+}
 //
 //
 //
@@ -35,6 +38,40 @@ function _alphabetize()
     };
     xmlhttp.send(args);
 	
+}
+//
+//
+//
+function reverse_order()
+{
+    var args =  "reverse=1";
+    
+    reorder_div = document.getElementById('reorder_div');
+    table = document.getElementById('drag_table'); 
+    var originalRows = table.tBodies[0].rows; 
+    dids = []
+    for(var i=0; i<=originalRows.length-1; i++) {
+    //alert(originalRows[i].cells[0].id)
+    
+      var items = originalRows[i].cells[0].id.split('--')
+      dids.push(items[0])
+    }
+    args += "&ids="+JSON.stringify(dids)
+    //alert(args)
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", 'reverse_ds_order', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+
+      if (xmlhttp.readyState == 4 ) {
+         var htmlstring = xmlhttp.responseText;
+         //alert(htmlstring)
+         reorder_div.innerHTML = htmlstring;
+         document.getElementById('ascii_tree_div').innerHTML = '';
+      }
+    };
+    xmlhttp.send(args);
+  
 }
 function reset_order()
 {
@@ -77,13 +114,9 @@ function cluster_order(metric, ts)
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         parts = htmlstring.split('/////');
+         parts = htmlstring.split('/////');  
          reorder_div.innerHTML = parts[0];
          document.getElementById('ascii_tree_div').innerHTML = parts[1]
-         // var file = '../tmp/'+ts+'_'+metric+'_tree.txt';
-         //  jQuery.get(file, function(data) {
-         //    alert(data);
-         //  });
       }
     };
     xmlhttp.send(args);

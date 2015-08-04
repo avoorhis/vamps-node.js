@@ -1199,6 +1199,35 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 	res.send(html)
 });
 //
+// R E V E R S E  O R D E R
+//
+router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
+  console.log('in reverse_ds_order')
+  var ids = JSON.parse(req.body.ids);
+  var html = '';
+  html += "<table id='drag_table' class='table table-condensed' >"
+  html += "<thead></thead>";
+  html += "  <tbody>";
+  var names = chosen_id_name_hash.names.slice()  // slice make an independant copy of the array
+  ids.reverse()
+  //console.log(ids)
+  for (var i in ids){
+         name = names[chosen_id_name_hash.ids.indexOf(ids[i])]
+         html += "<tr class='tooltip_row'>";
+         html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
+         html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
+         html += (parseInt(i)+1).toString()+" - "+name + " (id:"+ ids[i] +")"
+         html += "</td>";
+         html += "   <td>";
+         html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
+         html += "   </td>";
+         html += "</tr>";
+  }  
+  html += "</tbody>";  
+  html += "</table>"; 
+  res.send(html)
+});
+//
 //  C L U S T E R  D A T A S E T  O R D E R
 //
 router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
@@ -1223,20 +1252,15 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         
         ascii_file = ts+'_'+metric+'_tree.txt';
         ascii_file_path = path.join(process.env.PWD,'tmp',ascii_file);
-        //ascii_file_path2 = "public/tmp_images/"+ts+'_dendrogram.pdf';
-        //ascii_tree_div = document.getElementById('ascii_tree_div'); 
-        fs.readFile(ascii_file_path, 'utf8', function (err,data) {
+        fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
           if (err) {
             return console.log(err);
           }
-          console.log(data);
-          //ascii_tree_div.innerHTML = data;
-        
-
-        
+            //console.log(data);
+          
             html = '';
-            console.log('potential_chosen_id_name_hash');        
-            console.log(potential_chosen_id_name_hash)
+            //console.log('potential_chosen_id_name_hash');        
+            //console.log(potential_chosen_id_name_hash)
 
             html += "<table id='drag_table' class='table table-condensed' >"
             html += "<thead></thead>";
@@ -1254,16 +1278,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
             } 
             html += "</tbody>";
             html += "</table>"; 
-            //html += "<embed src='"+ascii_file_path2+"' width='200'  type='application/pdf'>";
-            html += '/////<pre style="font-size:10px"><small>'+data+'</small></pre>';
-
-              // var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-              // html += "<div id='pdf'>";
-              // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='200px' />";
-              // html += " <p>ERROR in loading pdf file</p>";
-              // html += "</object></div>";
-
-
+            html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
 
             res.send(html)
         });
