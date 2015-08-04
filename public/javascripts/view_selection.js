@@ -886,7 +886,7 @@ function create_dendrogram(ts, image_type, script) {
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
-	  args += "&script="+script;
+	    args += "&script="+script;
       
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/dendrogram', true);

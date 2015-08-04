@@ -411,11 +411,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     //console.log('req.body dnd');
     var ts = req.body.ts;
     var metric = req.body.metric;
-	var script = req.body.script; // python, phylogram or phylonator
+	  var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 	
-	var biom_file_name = ts+'_count_matrix.biom';
+	  var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
 
 
@@ -1221,28 +1221,52 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
         dataset_ids = JSON.parse(list);
         potential_chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);  
         
+        ascii_file = ts+'_'+metric+'_tree.txt';
+        ascii_file_path = path.join(process.env.PWD,'tmp',ascii_file);
+        //ascii_file_path2 = "public/tmp_images/"+ts+'_dendrogram.pdf';
+        //ascii_tree_div = document.getElementById('ascii_tree_div'); 
+        fs.readFile(ascii_file_path, 'utf8', function (err,data) {
+          if (err) {
+            return console.log(err);
+          }
+          console.log(data);
+          //ascii_tree_div.innerHTML = data;
         
-        html = '';
-        console.log('potential_chosen_id_name_hash');        
-        console.log(potential_chosen_id_name_hash)
 
-        html += "<table id='drag_table' class='table table-condensed' >"
-        html += "<thead></thead>";
-        html += "  <tbody>";
-        for (var i in potential_chosen_id_name_hash.names){
-            html += "<tr class='tooltip_row'>";
-            html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-            html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-            html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
-            html += "</td>";
-            html += "   <td>";
-            html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-            html += "   </td>";
-            html += "</tr>";
-        } 
-        html += "</tbody>";
-        html += "</table>"; 
-        res.send(html)
+        
+            html = '';
+            console.log('potential_chosen_id_name_hash');        
+            console.log(potential_chosen_id_name_hash)
+
+            html += "<table id='drag_table' class='table table-condensed' >"
+            html += "<thead></thead>";
+            html += "  <tbody>";
+            for (var i in potential_chosen_id_name_hash.names){
+                html += "<tr class='tooltip_row'>";
+                html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+                html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+                html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
+                html += "</td>";
+                html += "   <td>";
+                html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+                html += "   </td>";
+                html += "</tr>";
+            } 
+            html += "</tbody>";
+            html += "</table>"; 
+            //html += "<embed src='"+ascii_file_path2+"' width='200'  type='application/pdf'>";
+            html += '/////<pre style="font-size:10px"><small>'+data+'</small></pre>';
+
+              // var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+              // html += "<div id='pdf'>";
+              // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='200px' />";
+              // html += " <p>ERROR in loading pdf file</p>";
+              // html += "</object></div>";
+
+
+
+            res.send(html)
+        });
       }
     });
 

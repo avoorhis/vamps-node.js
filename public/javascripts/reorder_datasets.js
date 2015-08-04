@@ -30,6 +30,7 @@ function _alphabetize()
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
          reorder_div.innerHTML = htmlstring;
+         document.getElementById('ascii_tree_div').innerHTML = '';
       }
     };
     xmlhttp.send(args);
@@ -50,6 +51,7 @@ function reset_order()
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
          reorder_div.innerHTML = htmlstring;
+         document.getElementById('ascii_tree_div').innerHTML = '';
       }
     };
     xmlhttp.send(args);
@@ -59,7 +61,8 @@ function cluster_order(metric, ts)
 {
   //alert(ts)
   //alert(metric)
-  if(metric==0){
+  if(metric==0 || metric == 'Select'){
+    document.getElementById('ascii_tree_div').innerHTML = '';
     return
   }
     var args =  "metric="+metric;
@@ -74,7 +77,13 @@ function cluster_order(metric, ts)
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         reorder_div.innerHTML = htmlstring;
+         parts = htmlstring.split('/////');
+         reorder_div.innerHTML = parts[0];
+         document.getElementById('ascii_tree_div').innerHTML = parts[1]
+         // var file = '../tmp/'+ts+'_'+metric+'_tree.txt';
+         //  jQuery.get(file, function(data) {
+         //    alert(data);
+         //  });
       }
     };
     xmlhttp.send(args);

@@ -223,11 +223,11 @@ def cluster_datasets(args, dm, did_hash):
     
     ascii = mycluster.asciiArt()
 
-    #ascii_file = args.prefix+'_ascii_tree.txt'
-    #ascii_file_path = os.path.join(args.site_base,'tmp',ascii_file)
-    #fp = open(ascii_file_path,'w')
-    #fp.write(ascii)
-    #fp.close()
+    ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
+    ascii_file_path = os.path.join(args.site_base,'tmp',ascii_file)
+    fp = open(ascii_file_path,'w')
+    fp.write(ascii)
+    fp.close()
     
     for line in ascii.split():
         if line == '|' or line[:5] == '\edge' or line[:5] == '/edge' or line[:5] == '-root':
@@ -517,6 +517,7 @@ if __name__ == '__main__':
     if args.function == 'cluster_datasets':
         did_list = cluster_datasets(args, dm3, did_hash)
         print json.dumps(did_list)
+        
 
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
