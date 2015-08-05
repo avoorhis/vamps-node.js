@@ -206,6 +206,8 @@ def write_all_taxcounts_file(args,counts_lookup):
     f.close()
       
 def write_json_files(prefix, metadata_lookup, counts_lookup):
+    print "In write_json_files"
+    print counts_lookup
     #json_str = json.dumps(counts_lookup)    
     # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
     # f = open(outfile,'w')
@@ -218,7 +220,7 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
 #         print mystr
 #         f.write('{"'+str(did)+'":'+mystr+"}\n")
 #         f.close()
-     for did in counts_lookup:
+    for did in counts_lookup:
          file_path = os.path.join(prefix,str(did)+'.json')
          logging.info('file_path: '+file_path)
          f = open(file_path,'w') 

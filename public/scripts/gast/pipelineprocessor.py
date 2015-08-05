@@ -33,7 +33,7 @@ from time import sleep, time, gmtime, strftime
 # from pipeline.chimera import Chimera
 from gast import Gast
 # from pipeline.vamps import Vamps
-from new_vamps import NewVamps
+from vamps import Vamps
 # #from pipeline.pipelinelogging import logging
 # from pipeline.trim_run import TrimRun
 # from pipeline.get_ini import readCSV
@@ -412,139 +412,7 @@ def illumina_files(runobj):
     elapsed = (time.time() - start)
     print "illumina_files time = %s" % str(elapsed)
         
-def env454run_info_upload(runobj):
 
-    my_read_csv = dbUpload(runobj)
-    start = time.time()
-    my_read_csv.put_run_info()
-    elapsed = (time.time() - start)
-    print "put_run_info time = %s" % str(elapsed)
-    
-# def env454upload(runobj):  
-#     """
-#     Run: pipeline dbUpload testing -c test/data/JJH_KCK_EQP_Bv6v4.ini -s env454upload -l debug
-#     For now upload only Illumina data to env454 from files, assuming that all run info is already on env454 (run, run_key, dataset, project, run_info_ill tables) 
-#     TODO: 
-#         2) Upload env454 data into raw, trim, gast etc tables from files
-#     """
-    
-#     whole_start = time.time()
-
-# #    my_read_csv = readCSV(run)
-# #    my_read_csv.read_csv()
-    
-#     my_env454upload = dbUpload(runobj)
-#     filenames   = my_env454upload.get_fasta_file_names()
-#     if not filenames:
-#         logging.debug("\nThere is something wrong with fasta files or their names, please check pathes, contents and suffixes in %s." % my_env454upload.fasta_dir)
-        
-#     seq_in_file = 0
-#     total_seq   = 0
-#     for filename in filenames:
-#         try:
-#             logging.debug("\n----------------\nfilename = %s" % filename)
-#             fasta_file_path = filename
-# #             TODO: one filter for basename for v4v5 and v6
-#             filename_base   = "-".join(filename.split("/")[-1].split("-")[:-1])
-#             if (filename.find(C.filtered_suffix) > 0):
-# #                For v4v5 illumia
-#                 filename_base   = "_".join(filename.split("/")[-1].split("_")[:3])                
-#             run_info_ill_id = my_env454upload.get_run_info_ill_id(filename_base)
-#             gast_dict       = my_env454upload.get_gasta_result(filename)
-#             read_fasta      = u.ReadFasta(fasta_file_path)
-# #             sequences       = read_fasta.sequences
-#             sequences       = [seq.upper() for seq in read_fasta.sequences] #here we make uppercase for VAMPS compartibility
-
-#             if not (len(sequences)):
-#                 continue            
-#             read_fasta.close()
-#             fasta           = u.SequenceSource(fasta_file_path, lazy_init = False) 
-
-#             insert_seq_time      = 0   
-#             get_seq_id_dict_time = 0
-#             insert_pdr_info_time = 0
-#             insert_taxonomy_time = 0
-#             insert_sequence_uniq_info_ill_time = 0
-            
-#             start = time.time()
-
-#             my_env454upload.insert_seq(sequences)
-#             elapsed = (time.time() - start)
-#             insert_seq_time = elapsed
-#             logging.debug("seq_in_file = %s" % seq_in_file)
-#             logging.debug("insert_seq() took %s time to finish" % insert_seq_time)
-# #            print "insert_seq() took ", elapsed, " time to finish"
-#             start = time.time()
-#             my_env454upload.get_seq_id_dict(sequences)
-#             elapsed = (time.time() - start)
-#             get_seq_id_dict_time = elapsed
-#             logging.debug("get_seq_id_dict() took %s time to finish" % get_seq_id_dict_time)
-            
-#             while fasta.next():
-# #                sequence_ill_id = my_env454upload.get_sequence_id(fasta.seq)
-#                 start = time.time()
-# #                print "Inserting pdr info"
-# #                for attr in dir(fasta):
-# #                  print "obj.%s = %s" % (attr, getattr(fasta, attr))
-
-#                 my_env454upload.insert_pdr_info(fasta, run_info_ill_id)
-#                 elapsed = (time.time() - start)
-#                 insert_pdr_info_time += elapsed
-# #                print "insert_pdr_info() took ", elapsed, " time to finish"                
-
-#                 start = time.time()
-# #                print "Inserting taxonomy"
-#                 my_env454upload.insert_taxonomy(fasta, gast_dict)
-
-#                 elapsed = (time.time() - start)
-#                 insert_taxonomy_time += elapsed
-
-# #                print "tax_id = ", tax_id ,"; insert_taxonomy() took ", elapsed, " time to finish"                
-# #                print "tax_id = ", tax_id            
-
-#                 start = time.time()
-# #                print "Inserting sequence_uniq_info_ill"
-#                 my_env454upload.insert_sequence_uniq_info_ill(fasta, gast_dict)
-#                 elapsed = (time.time() - start)
-#                 insert_sequence_uniq_info_ill_time += elapsed
-
-#             seq_in_file = fasta.total_seq
-#             my_env454upload.put_seq_statistics_in_file(filename, fasta.total_seq)
-#             total_seq += seq_in_file
-#             logging.debug("insert_pdr_info() took %s time to finish" % insert_pdr_info_time)
-#             logging.debug("insert_taxonomy_time.time() took %s time to finish" % insert_taxonomy_time)
-#             logging.debug("insert_sequence_uniq_info_ill() took %s time to finish" % insert_sequence_uniq_info_ill_time)
-
-#         except:                       # catch everything
-#             print "\r[pipelineprocessor] Unexpected:"         # handle unexpected exceptions
-#             print sys.exc_info()[0]     # info about curr exception (type,value,traceback)
-#             raise                       # re-throw caught exception   
-# #    print "total_seq = %s" % total_seq
-#     my_env454upload.check_seq_upload()
-#     logging.debug("total_seq = %s" % total_seq)
-#     whole_elapsed = (time.time() - whole_start)
-#     print "The whole_upload took %s s" % whole_elapsed
-    
-#     # for vamps 'new_lane_keys' will be prefix 
-#     # of the uniques and names file
-#     # that was just created in vamps_gast.py
-# #    if(runobj.vamps_user_upload):
-# #        lane_keys = [runobj.user+runobj.runcode]        
-# #    else:
-# #        lane_keys = convert_unicode_dictionary_to_str(json.loads(open(runobj.trim_status_file_name,"r").read()))["new_lane_keys"]
-    
-# #    print "PPP anchors = %s, base_output_dir = %s, base_python_dir = %s, chimera_status_file_h = %s, chimera_status_file_name = %s,\n\
-# #     force_runkey = %s, gast_input_source = %s, initializeFromDictionary = %s, input_dir = %s, input_file_info = %s, maximumLength = %s,\n\
-# #      minAvgQual = %s, minimumLength = %s, output_dir = %s, platform = %s, primer_suites = %s, require_distal = %s, run_date = %s, \n\
-# #      run_key_lane_dict = %s, run_keys = %s, samples = %s, sff_files = %s, trim_status_file_h = %s, trim_status_file_name = %s, vamps_user_upload = %s\n" % (runobj.anchors, runobj.base_output_dir, runobj.base_python_dir, runobj.chimera_status_file_h, runobj.chimera_status_file_name, runobj.force_runkey, runobj.gast_input_source, runobj.initializeFromDictionary, runobj.input_dir, runobj.input_file_info, runobj.maximumLength, runobj.minAvgQual, runobj.minimumLength, runobj.output_dir, runobj.platform, runobj.primer_suites, runobj.require_distal, runobj.run_date, runobj.run_key_lane_dict, runobj.run_keys, runobj.samples, runobj.sff_files, runobj.trim_status_file_h, runobj.trim_status_file_name, runobj.vamps_user_upload)
-# #   dir(run) = ['__doc__', '__init__', '__module__', 'anchors', 'base_output_dir', 'base_python_dir', 'chimera_status_file_h', 
-# #'chimera_status_file_name', 'force_runkey', 'gast_input_source', 'initializeFromDictionary', 'input_dir', 'input_file_info', 'maximumLength', 
-# #'minAvgQual', 'minimumLength', 'output_dir', 'platform', 'primer_suites', 'require_distal', 'run_date', 'run_key_lane_dict', 'run_keys', 'samples', 
-# #'sff_files', 'trim_status_file_h', 'trim_status_file_name', 'vamps_user_upload']
-
-# #    logging.debug("PPP runobj.rundate = ")
-# #    logging.debug(runobj.rundate)
-# #    my_env454upload.select_run(lane_keys)
 
 
 def gast(runobj):  
@@ -621,10 +489,10 @@ def cluster(runobj):
     """
     pass
     
-def new_vamps(runobj): 
-    logging.info( 'Running new vamps' )
+def vamps(runobj): 
+    logging.info( 'Running vamps' )
     idx_keys = get_keys(runobj)
-    myvamps = NewVamps(runobj, idx_keys)
+    myvamps = Vamps(runobj, idx_keys)
     # Create files
     myvamps.create_vamps_files()  
     

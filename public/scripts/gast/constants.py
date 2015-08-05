@@ -79,7 +79,7 @@ TRIM_STEP               = "trim"
 CHIMERA_STEP            = "chimera"
 GAST_STEP               = "gast"
 VAMPSUPLOAD             = "vampsupload"
-NEWVAMPS				= "new_vamps"
+VAMPS				   = "vamps"
 CLUSTER_STEP            = "cluster"
 DELETE_RUN              = "delete"
 ENV454UPLOAD            = "env454upload"
@@ -91,7 +91,7 @@ ILLUMINA_FILES_DEM_STEP = 'illumina_files_demultiplex_only'
 ILLUMINA_CHIMERA_ONLY_STEP = 'illumina_chimera_only'
 ILLUMINA_CHIMERA_AFTER_CLUSTER = 'illumina_chimera_after_cluster'
 
-existing_steps = [VALIDATE_STEP, TRIM_STEP, CHIMERA_STEP, GAST_STEP, CLUSTER_STEP, ILLUMINA_CHIMERA_ONLY_STEP, ILLUMINA_CHIMERA_AFTER_CLUSTER, ILLUMINA_FILES_DEM_STEP, ILLUMINA_FILES_STEP, ENV454RUN_INFO_UPLOAD, ENV454UPLOAD, VAMPSUPLOAD, NEWVAMPS, STATUS_STEP, CLEAN_STEP]
+existing_steps = [VALIDATE_STEP, TRIM_STEP, CHIMERA_STEP, GAST_STEP, CLUSTER_STEP, ILLUMINA_CHIMERA_ONLY_STEP, ILLUMINA_CHIMERA_AFTER_CLUSTER, ILLUMINA_FILES_DEM_STEP, ILLUMINA_FILES_STEP, ENV454RUN_INFO_UPLOAD, ENV454UPLOAD, VAMPSUPLOAD, VAMPS, STATUS_STEP, CLEAN_STEP]
 
 ########### RUN CONFIG #############################################################################
 input_file_formats = ['sff', 'fasta', 'fasta-mbl', 'fastq', 'fastq-illumina', 'fastq-sanger']

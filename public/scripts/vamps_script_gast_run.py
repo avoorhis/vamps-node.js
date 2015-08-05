@@ -79,7 +79,7 @@ def start_gast(args):
     runcode         = 'NONE'
     site            = 'new_vamps'
     load_db         = True
-    steps           = 'gast,new_vamps'
+    steps           = 'gast,vamps'
     fasta_file_from_cl  = '' #args.fasta_file
     use_cluster     = False
     mobedac         = False # True or False
@@ -116,10 +116,10 @@ def start_gast(args):
     
     analysis_dir = os.path.join(args.basedir,'analysis') 
     if not os.path.exists(analysis_dir):  
-        os.makedirs(directory)
+        os.makedirs(analysis_dir)
     #global_gast_dir = dirs.check_dir(dirs.gast_dir) 
     
-    logging.debug( analysis_dir)
+    logging.debug(analysis_dir)
    
     
     
@@ -141,7 +141,7 @@ def start_gast(args):
                             'env_source_id':		general_config_items['env_source_id'],
                             'classifier':           'GAST',
                             'user':                 general_config_items['owner'],
-                            'site':                 'new_vamps', 
+                            'site':                 'vamps', 
                             'process_dir':          args.process_dir,
                             'load_vamps_database':  load_db,
                             'use_full_length':      True,

@@ -11,7 +11,7 @@ from IlluminaUtils.lib import fastalib
 
   
             
-class NewVamps:
+class Vamps:
     """Uploads data to the NEW VAMPS database"""
     Name = "VAMPS"
     def __init__(self, run_object = None, idx_keys=None):
