@@ -26,18 +26,10 @@ from time import sleep
 import ConfigParser
 import subprocess
      
-#try:
-import rdp
-#logging.info('found node_script_fasta2tax script')
-#except:
-#    logging.info("node_script_fasta2tax is not avalable")
 
 
 import datetime
 datetime     = str(datetime.date.today())
-#py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
-
- 
     
 
 def start_rdp(args):
@@ -45,7 +37,9 @@ def start_rdp(args):
       Doc string
     """
     
-    
+    sys.path.append(os.path.join(args.process_dir,'public','scripts'))
+
+    import rdp.rdp as rdp
     logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
     print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
     logging.debug(args)

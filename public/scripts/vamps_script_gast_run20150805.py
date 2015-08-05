@@ -25,18 +25,18 @@ import logging
 from time import sleep
 import ConfigParser
 
-# try:
-#     import database_importer as uploader
-# except:
-#     logging.info( "database_importer is not avalable")
-# try:
-#     import run_gast as gast
-# except:
-#     logging.info( "run_gast is not avalable")
-# try:
-#     import run_rdp as rdp
-# except:
-#     logging.info( "run_rdp is not avalable")
+try:
+    import database_importer as uploader
+except:
+    logging.info( "database_importer is not avalable")
+try:
+    import run_gast as gast
+except:
+    logging.info( "run_gast is not avalable")
+try:
+    import run_rdp as rdp
+except:
+    logging.info( "run_rdp is not avalable")
 import datetime
 datetime     = str(datetime.date.today())
 import subprocess
@@ -55,25 +55,20 @@ import subprocess
 # --use_cluster 
 # --full_length
 
-#use_local_pipeline = False
-#py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
-#logging.debug( py_pipeline_path)
-#sys.path.append(py_pipeline_path)
-
-#from pipeline.run import Run
-#from pipelineprocessor import process
-#from pipeline.db_upload import MyConnection
-#from pipeline.utils import Dirs, PipelneUtils       
+use_local_pipeline = False
+py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
+logging.debug( py_pipeline_path)
+sys.path.append(py_pipeline_path)
+from pipeline.run import Run
+from pipelineprocessor import process
+from pipeline.db_upload import MyConnection
+from pipeline.utils import Dirs, PipelneUtils       
     
 
 def start_gast(args):
     """
       Doc string
     """
-    sys.path.append(os.path.join(args.process_dir,'public','scripts'))
-
-    from gast.run import Run
-    from gast.pipelineprocessor import process
     
     platform        = 'new_vamps'
     runcode         = 'NONE'
@@ -142,7 +137,6 @@ def start_gast(args):
                             'classifier':           'GAST',
                             'user':                 general_config_items['owner'],
                             'site':                 'new_vamps', 
-                            'process_dir':          args.process_dir,
                             'load_vamps_database':  load_db,
                             'use_full_length':      True,
                             'input_files':          None,
@@ -156,7 +150,7 @@ def start_gast(args):
     #
     #
     run = Run(myRunDict, general_config_items['baseoutputdir'])
-    sys.exit()
+    #sys.exit()
     #
     #
     #
@@ -174,7 +168,7 @@ def start_gast(args):
     
     #run.basedir = file_base
     #fastaunique_cmd = '/bioware/seqinfo/bin/fastaunique'
-    #fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
+    fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
 
         
     ds_list = []

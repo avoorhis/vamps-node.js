@@ -1170,7 +1170,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
 	res.send(html)
 });
 //
-// A L P H A B E T I Z E
+// A L P H A - B E T I Z E
 //
 router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 	console.log('in alphabetize_ds_order')

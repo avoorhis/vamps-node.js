@@ -44,18 +44,22 @@ router.get('/users_index', helpers.isLoggedIn, function(req, res) {
 // =====================================
 // show the login form
 router.get('/login', function(req, res) {
+    
+    //var url = req.session.returnTo || 'user_admin/login'
+    
     res.render('user_admin/login', { 
                       title: 'login',
                       message: req.flash('loginMessage'), 
                       user: req.user });
-    });
+});
 
-    router.post('/login',    
-    passport.authenticate('local-login', { successRedirect: '/users/profile',
+router.post('/login',  passport.authenticate('local-login', { successRedirect: '/users/profile',
                                    failureRedirect: 'login',
                                    failureFlash: true })
 );
-
+//router.post('/login', passport.authenticate('local-login'), function(req, res) {
+//    res.redirect(request.session.returnTo || '/');
+//});
 // =====================================
 // SIGNUP ==============================
 // =====================================
@@ -120,9 +124,6 @@ router.get('/:id', function(req, res) {
 
         }
       });
-
-
-   
 
 });
 

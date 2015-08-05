@@ -5,19 +5,27 @@ var fs = require('fs');
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var queries = require('../queries');
+var util = require('util');
 
 module.exports = {
 
   // route middleware to make sure a user is logged in
   isLoggedIn: function (req, res, next) {
 
+      
+      
       // if user is authenticated in the session, carry on
+      
       if (req.isAuthenticated()) {
         console.log("Hurray! isLoggedIn.req.isAuthenticated");
         return next();
       }
       // if they aren't redirect them to the home page
       console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
+      // save the url in the session 
+      req.session.returnTo = req.path;
+      //console.log('URL Requested: '+JSON.stringify(req));
+      //console.log(util.inspect(req, {showHidden: false, depth: null}));
       req.flash('loginMessage', 'Please login or register before continuing.');
       res.redirect('/users/login');
   }
