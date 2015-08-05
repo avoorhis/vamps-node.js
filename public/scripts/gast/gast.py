@@ -9,8 +9,8 @@ import re
 import json  
 from types import *
 import logging
-py_pipeline_bin = os.path.expanduser('~/programming/vamps-node.js/public/scripts/gast/')
-py_pipeline_databases = os.path.expanduser('~/programming/vamps-node.js/public/databases/gast_silva108/')
+#py_pipeline_bin = os.path.expanduser('~/programming/vamps-node.js/public/scripts/gast/')
+#py_pipeline_databases = os.path.expanduser('~/programming/vamps-node.js/public/databases/gast_silva108/')
 
 from utils import Dirs, PipelneUtils
 
@@ -27,7 +27,7 @@ class Gast:
         self.runobj = run_object       
         self.test   = True
         self.utils  = PipelneUtils()
-        
+        self.py_pipeline_bin = os.path.join(self.runobj.process_dir, 'public','scripts','gast')
        
         self.use_cluster = self.runobj.use_cluster
         
@@ -35,7 +35,8 @@ class Gast:
         #if self.runobj.new_vamps_upload or self.runobj.new_vamps_upload:        
         self.idx_keys  = [self.runobj.user+self.runobj.run]
         #self.refdb_dir = C.vamps_ref_database_dir
-        self.refdb_dir = py_pipeline_databases
+        self.refdb_dir = os.path.join(self.runobj.process_dir, 'public','databases','gast_silva108')
+        logging.info('database dir: '+self.refdb_dir)
         self.iterator  = self.runobj.datasets
         site = self.runobj.site
 
@@ -89,7 +90,7 @@ class Gast:
         #   Submit the script
         #   /usr/local/sge/bin/lx24-amd64/qsub $qsub_priority $script_filename
         
-        calcnodes = py_pipeline_bin+'calcnodes'
+        calcnodes = self.py_pipeline_bin+'/calcnodes'
         if self.utils.is_local():
             calcnodes = C.calcnodes_cmd_local
         
@@ -729,7 +730,7 @@ class Gast:
           
     def get_fastasampler_cmd(self, unique_file, fastasamp_filename, start, end):
         
-        fastasampler = py_pipeline_bin+'fastasampler'
+        fastasampler = self.py_pipeline_bin+'/fastasampler'
         fastasampler_cmd = fastasampler
         fastasampler_cmd += ' -n '+ str(start)+','+ str(end)
         fastasampler_cmd += ' ' + unique_file
@@ -737,7 +738,7 @@ class Gast:
         return fastasampler_cmd
         
     def get_vsearch_cmd(self, fastasamp_filename, refdb, usearch_filename ):
-        vsearch_cmd = py_pipeline_bin+'vsearch'
+        vsearch_cmd = self.py_pipeline_bin+'/vsearch'
         vsearch_cmd += ' -usearch_global ' + fastasamp_filename
         vsearch_cmd += ' -gapopen 6I/1E'
         vsearch_cmd += ' -uc_allhits'
@@ -773,7 +774,7 @@ class Gast:
         grep_cmd += " sort -k1,1b -k2,2gr |"
         # append to clustergast file:
         # split_defline adds frequency to gastv6 file (last field)
-        tophit_cmd = py_pipeline_bin+"clustergast_tophit"
+        tophit_cmd = self.py_pipeline_bin+"/clustergast_tophit"
         grep_cmd += " "+tophit_cmd + " -split_defline_frequency "+use_full_length+" >> " + clustergast_filename
     
         return grep_cmd  

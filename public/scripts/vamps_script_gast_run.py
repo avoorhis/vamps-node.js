@@ -156,7 +156,7 @@ def start_gast(args):
     #
     #
     run = Run(myRunDict, general_config_items['baseoutputdir'])
-    sys.exit()
+    #sys.exit()
     #
     #
     #

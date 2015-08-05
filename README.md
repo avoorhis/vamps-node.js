@@ -9,11 +9,12 @@ INSTALL
 **Requirements**
  * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
  * Node.js (http://nodejs.org/)
- * Python (https://www.python.org/)
+ * Python (https://www.python.org/) 
  
  For some additional functionality 
- * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html)
- * Emperor (Qiime's module, http://qiime.org/install/index.html)
+ * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html) (Used for frequency heatmaps)
+ * Emperor (Qiime's module, http://qiime.org/install/index.html) (Used for 3D PCoA visualizations)
+ * Perl (https://www.perl.org/)  (used in GAST Taxonomic assignments)
 
 **Install the source code**
  * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
@@ -28,9 +29,9 @@ Which will create the directory 'vamps-node.js'.
  * There are two mysql database schemas included in the vamps-node.js installation.
 One has some data included that you can use in visualizations:
 db_schema.sql and db_schema_w_test_data.sql (they may be compressed files)
-Create a new database in your mysql installation and install one of schemas in it.
- * Create a file in the /config directory named 'db-connection.js' with the contents as shown below.
- * Fill in the correct values for the database name and mysql user and password.
+Create a new database in your mysql installation and install one of the schemas in it.
+ * Create a new file in the vamps-node.js/config directory named 'db-connection.js' with the contents as shown below.
+ * In the new file fill in the correct values for the database name and mysql user and password.
 
 **Sample config/db-connection.js**
 ```
@@ -62,7 +63,7 @@ go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
 (read about .my.cnf files here: https://dev.mysql.com/doc/refman/5.1/en/option-files.html).
 The script will prompt you for a database - just enter the one you created above.
 It may take awhile especially if the database is large, but it is required
-to create the helper files in the /public/json directory.
+to create the helper files that reside in the /public/json directory.
 
 
 START the SERVER

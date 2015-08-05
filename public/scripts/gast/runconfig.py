@@ -184,6 +184,7 @@ class RunConfig:
             self.dna_region     = general_config['dna_region']
             self.domain         = general_config['domain']
             self.env_source_id  = general_config['env_source_id']
+            self.process_dir   = general_config['process_dir']
             
             self.site               = general_config['site']
             self.load_vamps_database = general_config['load_vamps_database']
