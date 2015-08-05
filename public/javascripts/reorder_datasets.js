@@ -34,6 +34,7 @@ function _alphabetize()
          //alert(htmlstring)
          reorder_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
+         document.getElementById('selected_metric').value = 0;
       }
     };
     xmlhttp.send(args);
@@ -68,6 +69,7 @@ function reverse_order()
          //alert(htmlstring)
          reorder_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
+         document.getElementById('selected_metric').value = 0;
       }
     };
     xmlhttp.send(args);
@@ -89,6 +91,7 @@ function reset_order()
          //alert(htmlstring)
          reorder_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
+         document.getElementById('selected_metric').value = 0;
       }
     };
     xmlhttp.send(args);
@@ -134,7 +137,7 @@ function move_to_the_top(counter,string_id)
   // add the first new row:
   html += "<tr class='tooltip_row' >";
   html += "  <td class='dragHandle' id='"+string_id+"'>";
-  html += "    <input type='hidden' name='ds_order[]' value='"+items[0]+"' >  1 - "+items[1]+"--"+items[2]+" (id:"+items[0]+")";
+  html += "    <input type='hidden' name='ds_order[]' value='"+items[0]+"' >  1 (id:"+items[0]+") - "+items[1]+"--"+items[2];
   html += "  </td>";
   html += "  <td>";
   html += "     <a href='#' onclick=\"move_to_the_top('"+string_id+"')\">^</a>";
@@ -155,7 +158,7 @@ function move_to_the_top(counter,string_id)
       html += "<tr class='tooltip_row' >";
       html += "   <td class='dragHandle' id='"+originalRows[i].cells[0].id+"'> ";                  
       html += "       <input type='hidden' name='ds_order[]' value='"+items[0]+"' > ";
-      html += "          "+cnt+" - "+items[1]+"--"+items[2]+" (id:"+items[0]+")";
+      html += "          "+cnt+" (id:"+items[0]+") - "+items[1]+"--"+items[2];
       html += "   </td>";
       html += "   <td>";
       html += "       <a href='#' onclick='move_to_the_top("+cnt+",\""+originalRows[i].cells[0].id+"\")'>^</a>";
@@ -167,6 +170,8 @@ function move_to_the_top(counter,string_id)
   html += "</table>";
 
   reorder_div.innerHTML = html;
+  document.getElementById('ascii_tree_div').innerHTML = '';
+  document.getElementById('selected_metric').value = 0;
 
 
 }

@@ -1158,7 +1158,7 @@ router.post('/reset_ds_order', helpers.isLoggedIn,  function(req, res) {
          html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+chosen_id_name_hash.ids[i]+"--"+chosen_id_name_hash.names[i]+"'> ";
 		     html += "<input type='hidden' name='ds_order[]' value='"+chosen_id_name_hash.ids[i]+"'>";
-         html += (parseInt(i)+1).toString()+" - "+chosen_id_name_hash.names[i] + " (id:"+ chosen_id_name_hash.ids[i]+")"
+         html += (parseInt(i)+1).toString()+" (id:"+ chosen_id_name_hash.ids[i]+") - "+chosen_id_name_hash.names[i];
          html += "</td>";
          html += "   <td>";
          html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+chosen_id_name_hash.ids[i]+"--"+chosen_id_name_hash.names[i]+"\")'>^</a>";
@@ -1187,7 +1187,7 @@ router.post('/alphabetize_ds_order', helpers.isLoggedIn,  function(req, res) {
 		     html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+ id +"--"+names[i]+"'> ";
 		     html += "<input type='hidden' name='ds_order[]' value='"+ id +"'>";
-         html += (parseInt(i)+1).toString()+" - "+names[i] + " (id:"+ id +")"
+         html += (parseInt(i)+1).toString()+" (id:"+ id +") - "+names[i];
          html += "</td>";
          html += "   <td>";
          html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+id +"--"+names[i]+"\")'>^</a>";
@@ -1216,7 +1216,7 @@ router.post('/reverse_ds_order', helpers.isLoggedIn,  function(req, res) {
          html += "<tr class='tooltip_row'>";
          html += "<td class='dragHandle' id='"+ ids[i] +"--"+name+"'> ";
          html += "<input type='hidden' name='ds_order[]' value='"+ ids[i] +"'>";
-         html += (parseInt(i)+1).toString()+" - "+name + " (id:"+ ids[i] +")"
+         html += (parseInt(i)+1).toString()+" (id:"+ ids[i] +") - "+name;
          html += "</td>";
          html += "   <td>";
          html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+ids[i] +"--"+name+"\")'>^</a>";
@@ -1269,7 +1269,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
                 html += "<tr class='tooltip_row'>";
                 html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
                 html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-                html += (parseInt(i)+1).toString()+" - "+potential_chosen_id_name_hash.names[i] + " (id:"+ potential_chosen_id_name_hash.ids[i]+")"
+                html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
                 html += "</td>";
                 html += "   <td>";
                 html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";

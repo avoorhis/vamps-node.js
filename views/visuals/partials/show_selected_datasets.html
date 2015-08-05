@@ -1,10 +1,10 @@
 
 
-Here are your <%= items.names.length %> selected datasets:<br>
+Here is the order of your <%= items.names.length %> selected datasets:<br>
 <div id='dataset_names_div' class='small_font'>
     <ul>
     <% for (var i in items.names){ %>
-        <li>  <%= parseInt(i)+1 %> - <%= items.names[i] %> (id:<%= items.ids[i] %>)</li>
+        <li>  <%= parseInt(i)+1 %> (id:<%= items.ids[i] %>) - <%= items.names[i] %></li>
     <% } %>
     </ul>
 </div>
