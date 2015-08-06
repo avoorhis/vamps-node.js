@@ -23,7 +23,7 @@ function _alphabetize()
 {
     var args =  "aplhabetize=1";
     
-    reorder_div = document.getElementById('reorder_div');
+    reorder_ds_div = document.getElementById('reorder_ds_div');
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", 'alphabetize_ds_order', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -32,7 +32,7 @@ function _alphabetize()
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         reorder_div.innerHTML = htmlstring;
+         reorder_ds_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
          document.getElementById('selected_metric').value = 0;
       }
@@ -47,7 +47,7 @@ function reverse_order()
 {
     var args =  "reverse=1";
     
-    reorder_div = document.getElementById('reorder_div');
+    reorder_ds_div = document.getElementById('reorder_ds_div');
     table = document.getElementById('drag_table'); 
     var originalRows = table.tBodies[0].rows; 
     dids = []
@@ -67,7 +67,7 @@ function reverse_order()
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         reorder_div.innerHTML = htmlstring;
+         reorder_ds_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
          document.getElementById('selected_metric').value = 0;
       }
@@ -80,7 +80,7 @@ function reset_order()
     
     var args =  "reorder=1";
     
-    reorder_div = document.getElementById('reorder_div'); 
+    reorder_ds_div = document.getElementById('reorder_ds_div'); 
     var xmlhttp = new XMLHttpRequest();  
     xmlhttp.open("POST", 'reset_ds_order', true);
     //xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -89,7 +89,7 @@ function reset_order()
       if (xmlhttp.readyState == 4 ) {
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
-         reorder_div.innerHTML = htmlstring;
+         reorder_ds_div.innerHTML = htmlstring;
          document.getElementById('ascii_tree_div').innerHTML = '';
          document.getElementById('selected_metric').value = 0;
       }
@@ -108,7 +108,7 @@ function cluster_order(metric, ts)
     var args =  "metric="+metric;
     args += "&ts="+ts;
     //alert(args)
-    reorder_div = document.getElementById('reorder_div'); 
+    reorder_ds_div = document.getElementById('reorder_ds_div'); 
     var xmlhttp = new XMLHttpRequest();  
     xmlhttp.open("POST", 'cluster_ds_order', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -118,7 +118,7 @@ function cluster_order(metric, ts)
          var htmlstring = xmlhttp.responseText;
          //alert(htmlstring)
          parts = htmlstring.split('/////');  
-         reorder_div.innerHTML = parts[0];
+         reorder_ds_div.innerHTML = parts[0];
          document.getElementById('ascii_tree_div').innerHTML = parts[1]
       }
     };
@@ -143,7 +143,7 @@ function move_to_the_top(counter,string_id)
   html += "     <a href='#' onclick=\"move_to_the_top('"+string_id+"')\">^</a>";
   html += "  </td>";
   html += "</tr>";
-  reorder_div = document.getElementById('reorder_div'); 
+  reorder_ds_div = document.getElementById('reorder_ds_div'); 
   table = document.getElementById('drag_table'); 
   var originalRows = table.tBodies[0].rows;     
   for(var i=0; i<=originalRows.length-1; i++) {
@@ -169,7 +169,7 @@ function move_to_the_top(counter,string_id)
   html += "  </tbody>";
   html += "</table>";
 
-  reorder_div.innerHTML = html;
+  reorder_ds_div.innerHTML = html;
   document.getElementById('ascii_tree_div').innerHTML = '';
   document.getElementById('selected_metric').value = 0;
 

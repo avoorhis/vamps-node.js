@@ -25,7 +25,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 		
       </td>
 	  <td>
-        <div id='reorder_div' >	  
+        <div id='reorder_ds_div' >	  
 		      <table id='drag_table' class='table table-condensed' >
 		      	<thead></thead>
 		      	<tbody>
@@ -63,7 +63,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
           
           <tr>
 			<td class=''>
-				Drag rows to re-order
+				Drag rows to re-order<br>or use up arrow (^) to move dataset to the top.
 			</td>
 		  </tr>
         
@@ -107,7 +107,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 
 <% include ../add_ins/end.ejs %>
  <script src="/javascripts/jquery.tablednd.js"></script>
- <script src="/javascripts/drag_rows_reorder_ds.js"></script>
+ <script src="/javascripts/drag_rows.js"></script>
  <script type="text/javascript" src="/javascripts/global.js"></script>
  <script type="text/javascript" src="/javascripts/reorder_datasets.js"></script>
  

@@ -1,5 +1,4 @@
- // jquery script for moving table rows AND columns
- $("#reorder_div").on("click", "#drag_table", function () {     
+$("#dheatmap_div").on("click", "#drag_table", function () {     
      
     $("#drag_table").tableDnD({
     
@@ -67,26 +66,7 @@
              //alert(new_sample_order)
              // trim off trailing comma
              new_sample_order = new_sample_order.replace(/\,$/,'');
-             //update_session('new_sample_order',new_sample_order,'yes');
-              //alert(original_sample_order)
-             //if(original_sample_order == new_sample_order)
-             //{
-                // we haven't drug any rows so we must have just clicked
-                //refresh();
-             //}
-             
-/*
-            var debugStr .= "<br>Row dropped was "+ row.cells[0].id +"-"+row.id
-             +"<br>from row= "+ fromRowIndex
-             +  "<br>to row= "+ toRowIndex
-             +   ". <br>New order:<br> "; 
-             for (var i=0; i<rows.length; i++) {
-                debugStr += i+'-'+rows[i].cells[0].id;
-                //alert(rows[i].id+'-'+ rows[i+1].id)                
-             } 
-             //////////// end debug /////////////
-                       
-  */          
+            
              $("#dragInfoArea").html(debugStr);
              
              
@@ -94,6 +74,74 @@
             
              
         }  // end of onDrop
+       
+  });  
+   
+});
+
+ // jquery script for moving table rows AND columns
+ $("#reorder_ds_div").on("click", "#drag_table", function () {     
+     
+    $("#drag_table").tableDnD({
+    
+       onDragClass: "myDragClass",
+       onDragStart: function(table, row){        
+          
+          var originalRows = table.tBodies[0].rows;     
+          for(var i=0; i<=originalRows.length-1; i++) {
+                  
+                  originalRows[i].style.background = '#FFF8DC';
+                  //alert(orig_bgcolor)
+                  if (originalRows[i].cells[0].id == row.cells[0].id){
+                     fromRowIndex=i;
+
+                     
+                     //alert(row.cells[3].id)
+                     //original_sample_order += originalRows[i].cells[0].id + ',';
+                  }
+          } 
+          originalRows[fromRowIndex].style.background='tan'
+               //alert(original_sample_order)
+          //$("#dragInfoArea").html("Moving row " + row.cells[0].id
+          //                  + " (index: " + fromRowIndex + ")" );   
+
+      
+       },
+
+       onDrop: function(table, row) {
+            var rows = table.tBodies[0].rows;
+
+            
+            // this gets the new sample order for saving state between distance_metric changes
+            new_sample_order = '';
+            for (var i=0; i<=rows.length-1; i++) {
+              if (row.cells[0].id == rows[i].cells[0].id){
+                 toRowIndex=i;
+                 //alert(row.cells[3].id)
+              }
+            }
+            //alert(toRowIndex.toString()+orig_bgcolor)
+            rows[toRowIndex].style.background = '#FFF8DC'
+            for (var i=0; i<rows.length; i++) {
+                
+                new_sample_order += rows[i].cells[1].id + ',';
+                //alert(i)
+                //alert(rows[i].cells[0].id) 
+                
+             } 
+             //alert(new_sample_order)
+             
+             // trim off trailing comma
+             new_sample_order = new_sample_order.replace(/\,$/,'');
+             new_sample_order = new_sample_order.replace(/^,/,'');
+             
+             //update_session('sampleOrder',new_sample_order,'yes');
+             //update_session('new_sample_order',new_sample_order,'yes');
+             //update_session('sampleOrder',"",'yes');
+             //opener.document.getElementById('gradient_sampleOrder').innerHTML = new_sample_order;       
+             
+        },  // end of onDrop
+       
        
   });  
    
