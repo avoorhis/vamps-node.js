@@ -437,7 +437,7 @@ def get_config_data(args):
 def start_metadata(args):
     
     #get_config_data(indir)
-    get_metadata(args.metadata_file)
+    get_metadata(args)
     put_required_metadata()
     put_custom_metadata()
     #print CONFIG_ITEMS
@@ -558,11 +558,13 @@ def put_custom_metadata():
     
     mysql_conn.commit()
     
-def get_metadata(metafile):
+def get_metadata(args):
     
-    
-    logging.debug('csv '+str(metafile))
-    lines = list(csv.reader(open(metafile, 'rb'), delimiter=','))
+    logging.debug('csv '+str(args.metadata_file))
+    if args.delim == 'comma':
+        lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
+    else:
+        lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
     # try:
 #         csv_infile =   os.path.join(indir,'meta_clean.csv')
 #         print csv_infile
@@ -593,9 +595,57 @@ def get_metadata(metafile):
             else:
                 TMP_METADATA_ITEMS[dset] = {}
                 TMP_METADATA_ITEMS[dset][key] = parameterValue
+
+
+
+    
+    # logging.debug('csv '+str(args.metadata_file))
+    # if args.delim == 'comma':
+    #     lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
+    # else:
+    #     lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
+  
+    # TMP_METADATA_ITEMS = {}
+    
+    # headers = lines[0]
+    # print headers
+    # col_count = len(headers)
+    # if "sample_name" in headers:
+    #     dataset_index = headers.index("sample_name")
+    # elif "dataset" in headers:
+    #     dataset_index = headers.index("dataset")
+    # elif "#SampleID" in headers:
+    #     dataset_index = headers.index("#SampleID")
+    # else:
+    #     print "couldn't find 'sample_name' or 'dataset' or '#SampleID' -- Exiting"
+    #     sys.exit()
+    
+    # for i in range(1,len(lines)):
+    # #for line in lines:
+    #     print lines[i]
+    #     if(len(lines[i]) != col_count):
+    #         print "Line ",i,"doesn't have the correct count - Exiting"
+    #         sys.exit()
+    #     dset = lines[i][dataset_index]
+    #     for n,val in enumerate(lines[i]):
+    #         key = headers[n].replace(' ','_').replace('/','_').replace('+','').replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
+
+    #         if key == 'lat':
+    #             key='latitude'
+    #         if key == 'lon' or key == 'long':
+    #             key='longitude'
             
-    #print TMP_METADATA_ITEMS
-           
+    #         print dset,key,val
+    #         #pj = line[5]
+    #         if dset in TMP_METADATA_ITEMS:
+    #             TMP_METADATA_ITEMS[dset][key] = val
+    #         else:
+    #             TMP_METADATA_ITEMS[dset] = {}
+    #             TMP_METADATA_ITEMS[dset][key] = val
+            
+    # print TMP_METADATA_ITEMS
+    # print 'done' 
+         
     # for i,key in enumerate(keys):
     #     TMP_METADATA_ITEMS[key] = []
     #     for line in lol[1:]:
@@ -673,16 +723,23 @@ if __name__ == '__main__':
         
         -public/--public                    DEFAULT == '1'  true
         -env_source_id/--env_source_id      DEFAULT == '100' unknown
-        -owner/--owner                      REQUIRED
+        -owner/--owner                      REQUIRED  (must be already in users table)
         
         Example project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files like this:
-        >>METADATA: 
-        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        >>METADATA:
+            SPECIFIC for VAMPS headers in this format:
+            dataset parameterName   parameterValue  units   miens_units project units_id    structured_comment_name method  other   notes   ts  entry_date  parameter_id    project_dataset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+            if vamps project has no metadata, create a file with the above headers only.
+            TAB delimited because QIIME/QIITA data comes TAB delimited 
+            TAB delimited and wrapped in double quotes:
+            This metadatafile is NOT the same as from qiita
+            mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g"
         
-        >>SEQS: 
-        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
-        mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+        >>SEQS:
+            COMMA delimited and wrapped in double quotes 
+            mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+            mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
         
         NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
               
@@ -697,20 +754,22 @@ if __name__ == '__main__':
     #            help="""ProjectID""") 
     parser.add_argument("-s","--seqs_file",                   
                 required=True,  action="store",   dest = "seqs_file", default='',
-                help="""ProjectID""") 
+                help="""file path""") 
     parser.add_argument("-m","--metadata_file",                   
                 required=True,  action="store",   dest = "metadata_file", default='',
-                help="""ProjectID""") 
+                help="""file path""") 
     parser.add_argument("-public","--public",                   
                  required=False,  action="store",   dest = "public", default='1',
-                 help="""ProjectID""")
+                 help="""0 (private) or 1 (public)""")
     parser.add_argument("-env_source_id","--env_source_id",                   
                 required=False,  action="store",   dest = "env_source_id", default='100',
-                help="""ProjectID""")
+                help="""EnvID from list""")
     parser.add_argument("-owner","--owner",                   
                 required=True,  action="store",   dest = "owner", 
-                help="""ProjectID""")
-    
+                help="""VAMPS user name""")
+    parser.add_argument("-delim","--delimiter",                   
+                required=False,  action="store",   dest = "delim", default='tab',
+                help="""METADATA: comma or tab""")
                 
     args = parser.parse_args()
     
@@ -745,8 +804,10 @@ if __name__ == '__main__':
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
         print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'"
+        print "And re-start the server"
         logging.debug("Finished database_importer.py")
         logging.debug("Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'")
+        logging.debug("And re-start the server")
     else:
         print myusage 
         

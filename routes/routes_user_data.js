@@ -984,74 +984,77 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 		res.redirect("/user_data/import_data");
 		return;
   }else{
-	var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-      console.log(data_repository);
-	helpers.update_status('new',username,project,'OK','Upload Started'); 
-	var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
-    			};
-	if(req.body.type == 'single'){
-	    if(req.body.dataset == '' || req.body.dataset == undefined){
-		  	req.flash('failMessage', 'A dataset name is required.');
-		  	res.redirect("/user_data/import_data");
-		  	return;
-		}
-		options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
-  	}else if(req.body.type == 'multi') {
-			options.args = options.args.concat(['-t', 'multi' ]); 
-  	}else{
-			req.flash('failMessage', 'No file type Info found  '+err);
-			res.redirect("/user_data/import_data");
-			return;
-  	}
-	var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
-	var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
-	//console.log(original_fastafile);
-	//console.log(original_metafile);
- 	// move files to user_data/<username>/ and rename
-	var LoadDataFinishRequest = function() {
-			// START STATUS //
-			req.flash('successMessage', "Upload in Progress: '"+ project+"'");
-			
-			// type, user, project, status, msg
-			helpers.update_status('update',username,project,'LOADED','Project is loaded --without tax assignments');
-			res.render('success', {  title   : 'VAMPS: Import Success',                                
-						          message : req.flash('successMessage'),
-			                display : "Import_Success",
-				              user    : req.user                        
-				        });
-	}
-	fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
-    	if (err) {
-				req.flash('failMessage', '1-File move failure  '+err);
-				helpers.update_status('update',username,project,'FAIL-1','1-File move failure');
-				res.redirect("/user_data/import_data");
-				return;
+			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		      console.log(data_repository);
+			helpers.update_status('new',username,project,'OK','Upload Started'); 
+			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
+		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
+		    			};
+			if(req.body.type == 'single'){
+			    if(req.body.dataset == '' || req.body.dataset == undefined){
+				  	req.flash('failMessage', 'A dataset name is required.');
+				  	res.redirect("/user_data/import_data");
+				  	return;
+					}
+					options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
+		  }else if(req.body.type == 'multi') {
+					options.args = options.args.concat(['-t', 'multi' ]); 
+		  }else{
+					req.flash('failMessage', 'No file type Info found  '+err);
+					res.redirect("/user_data/import_data");
+					return;
+		  }
+			var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
+			var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
+			//console.log(original_fastafile);
+			//console.log(original_metafile);
+		 	// move files to user_data/<username>/ and rename
+			var LoadDataFinishRequest = function() {
+					// START STATUS //
+					req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+					
+					// type, user, project, status, msg
+					
+					res.render('success', {  title   : 'VAMPS: Import Success',                                
+								          message : req.flash('successMessage'),
+					                display : "Import_Success",
+						              user    : req.user                        
+						        });
 			}
-	  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
-	    	if (err) {
-				req.flash('failMessage', '2-File move failure '+err);
-				helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
-				res.redirect("/user_data/import_data");
-				return;
-			}
+			fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
+		    	if (err) {
+						req.flash('failMessage', '1-File move failure  '+err);
+						helpers.update_status('update',username,project,'FAIL-1','1-File move failure');
+						res.redirect("/user_data/import_data");
+						return;
+					}
+			  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
+			    	if (err) {
+							req.flash('failMessage', '2-File move failure '+err);
+							helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
+							res.redirect("/user_data/import_data");
+							return;
+						}
 
 
-		    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
-		    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
-		      if (err) {
-					  req.flash('failMessage', 'Script Failure '+err);
-					  helpers.update_status('update',username,project,'Script Failure');
-					  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
-					  return;
-				  }
-				  console.log('script output: '+output);
-				  LoadDataFinishRequest();
-				  
-		    });
-	  	}); // END move 2
-	}); // END move 1
+				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
+				    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
+				      if (err) {
+							  req.flash('failMessage', 'Script Failure '+err);
+							  helpers.update_status('update',username,project,'Script Failure');
+							  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+							  return;
+						  }
+						  helpers.update_status('update',username,project,'LOADED','Project is loaded --without tax assignments');
+						  console.log('Finished loading '+project);
+						  
+						  
+				    });
+			  	}); // END move 2
+			}); // END move 1
+
   } 
+  LoadDataFinishRequest();
 	
 });
 //

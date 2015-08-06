@@ -369,7 +369,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 	                    dm        : distance_matrix,
 			  							hash   	  : JSON.stringify(chosen_id_name_hash),			  							
 	                    constants : JSON.stringify(req.C),
-	                                      });
+	               });
 	  }
     });
 
