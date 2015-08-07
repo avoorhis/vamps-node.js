@@ -54,7 +54,7 @@
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
     </div>
-	<input type='hidden' name='type' value='single'>
+	<input type='hidden' name='type' value='<%= import_type %>'>
   </form>
 <% } else if(import_type == 'multi_fasta') { %>
 <!-- ======================================================================================================== -->		
@@ -86,7 +86,7 @@
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
     </div>
-	<input type='hidden' name='type' value='multi'>
+	<input type='hidden' name='type' value='<%= import_type %>'>
   </form>
 <!-- ======================================================================================================== -->		
 <% } else if(import_type == 'metadata') { %>
@@ -115,7 +115,7 @@
           <button type="submit" class="btn btn-default">Submit</button>
         </div>
     </div>
-	<input type='hidden' name='type' value='metadata' />
+	<input type='hidden' name='type' value='<%= import_type %>' />
   </form>
 <!-- ======================================================================================================== -->	
 <% } else if(import_type == 'new_data') { %>
@@ -150,7 +150,32 @@
           <button type="submit" class="btn btn-default">Submit</button>
         </div>
     </div>
-	<input type='hidden' name='type' value='metadata' />
+	<input type='hidden' name='type' value='<%= import_type %>' />
+  </form>
+<% } else if(import_type == 'tax_by_seq') { %>
+ 
+  <form class="form-horizontal" role="form" method='POST' action='upload_data_tax_by_seq' enctype="multipart/form-data">
+    <h4>Import TaxBySeq File Form: <small>(All fields are required)</small></h4>
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="project">Project Name:</label>
+        <div class="col-sm-3">
+            <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
+        </div><small>(<a href='#'>required name format</a>)</small>
+    </div>
+  <div class="form-group">
+      <label class="control-label col-sm-2" for="fasta">TaxBySeq File:</label>
+      <div class="col-sm-3 btn">
+        <input type="file" name='tax_by_seq' class="" id="tax_by_seq" >
+      </div><small>(<a href='#'>required file format</a>)</small>
+    </div>
+    
+    
+    <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+    <input type='hidden' name='type' value='<%= import_type %>'>
   </form>
 <% } else { %>
     <br>Stuff to do here

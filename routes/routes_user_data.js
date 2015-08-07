@@ -127,7 +127,7 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 	    failmessage: req.flash('failMessage'),
         import_type: import_type,
           user: req.user
-                          });
+    });
 });
 //
 //
@@ -965,7 +965,7 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   console.log(req.files);
   console.log('req.body upload_data');
   console.log(project);
-  console.log(PROJECT_INFORMATION_BY_PNAME);
+  //console.log(PROJECT_INFORMATION_BY_PNAME);
   
   if(project == '' || req.body.project == undefined){
 		req.flash('failMessage', 'A project name is required.');
@@ -990,17 +990,17 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
 		    			};
-			if(req.body.type == 'single'){
+			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset == '' || req.body.dataset == undefined){
 				  	req.flash('failMessage', 'A dataset name is required.');
 				  	res.redirect("/user_data/import_data");
 				  	return;
 					}
 					options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
-		  }else if(req.body.type == 'multi') {
+		  }else if(req.body.type == 'multi_fasta') {
 					options.args = options.args.concat(['-t', 'multi' ]); 
 		  }else{
-					req.flash('failMessage', 'No file type Info found  '+err);
+					req.flash('failMessage', 'No file type info found');
 					res.redirect("/user_data/import_data");
 					return;
 		  }
@@ -1056,6 +1056,167 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
   } 
   LoadDataFinishRequest();
 	
+});
+//
+//
+//
+router.post('/upload_data_tax_by_seq', helpers.isLoggedIn, function(req,res){
+
+
+	var project = req.body.project;
+  var username = req.user.username;
+  console.log('req.body upload_data_tax_by_seq');
+  console.log(req.body);
+  console.log(req.files);
+  console.log('req.body upload_data_tax_by_seq');
+  console.log(project);
+  //console.log(PROJECT_INFORMATION_BY_PNAME);
+  
+  if(project == '' || req.body.project == undefined){
+		req.flash('failMessage', 'A project name is required.');
+		res.redirect("/user_data/import_data");
+		return;
+  }else if(project in PROJECT_INFORMATION_BY_PNAME){
+		req.flash('failMessage', 'That project name is already taken.');
+		res.redirect("/user_data/import_data");
+		return;
+  }else if(req.files.tax_by_seq==undefined || req.files.tax_by_seq.size==0){
+  	req.flash('failMessage', 'A tax_by_seq file is required.');
+		res.redirect("/user_data/import_data");
+		return;
+  }else{
+			var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		  console.log(data_dir);
+			helpers.update_status('new',username,project,'OK','Upload Started'); 
+			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
+		        			args :       [ '-dir', data_dir, '-o', username, '-p', project, '-pdir',process.env.PWD,'-db', NODE_DATABASE, ]
+		    			};
+			if(req.body.type == 'tax_by_seq'){			    
+					options.args = options.args.concat(['-t', 'tax_by_seq']); 
+		  }else{
+					req.flash('failMessage', 'No file type info found:  '+err);
+					res.redirect("/user_data/import_data");
+					return;
+		  }
+			var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.tax_by_seq.name);
+			
+			//console.log(original_fastafile);
+			//console.log(original_metafile);
+		 	// move files to user_data/<username>/ and rename
+			var LoadDataFinishRequest = function() {
+					// START STATUS //
+					req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+					
+					// type, user, project, status, msg
+					
+					res.render('success', {  title   : 'VAMPS: Import Success',                                
+								          message : req.flash('successMessage'),
+					                display : "Import_Success",
+						              user    : req.user                        
+						        });
+			}
+			
+	  	fs.move(original_tax_by_seq,  path.join(data_dir,'tax_by_seq.txt'), function (err) {
+	    	if (err) {
+					req.flash('failMessage', '2-File move failure '+err);
+					helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
+					res.redirect("/user_data/import_data");
+					return;
+				}
+
+
+		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
+		    var spawn = require('child_process').spawn;
+				var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+				var output = ''
+				// communicating with an external python process
+				// all the print statements in the py script are printed to stdout
+				// so you can grab the projectID here at the end of the process.
+				// use looging in the script to log to a file.
+				tax_by_seq_process.stdout.on('data', function (data) {
+					  //console.log('stdout: ' + data);
+					  data = data.toString().replace(/^\s+|\s+$/g, '');
+					  output += data;
+					  var lines = data.split('\n')
+					  for(var n in lines){
+					  	//console.log('line: ' + lines[n]);
+							if(lines[n].substring(0,4) == 'PID='){
+								console.log('pid line '+lines[n]);
+							}
+					  }
+				});
+				tax_by_seq_process.on('close', function (code) {
+				   console.log('gast_process process exited with code ' + code);
+				   var ary = output.split("\n");
+				   var last_line = ary[ary.length - 1];
+				   if(code == 0){
+					   console.log('GAST Success');
+					   //console.log('PID last line: '+last_line)
+					   var ll = last_line.split('=');
+					   var pid = ll[1];
+					   console.log('NEW PID=: '+pid);
+					   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+					   if(helpers.isInt(pid)){
+		                   
+		            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+							    if (err)  {
+						 		  	console.log('1-GAST-Query error: ' + err);				 		  			 		  
+						      } else {
+		        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+		        				   		if (err)  {
+		        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
+		        				    	} else {        
+		                      	status_params = {'type':'update',
+		                                        'user':req.user.username,
+		                                        'proj':project,
+		                                        'status':'GAST-SUCCESS',
+										   											'msg':'GAST -Tax assignments' } 
+										   	
+														helpers.assignment_finish_request(res,rows1,rows2,status_params);
+														helpers.update_status('update',req.user.username,project,'OK-GAST','Finished GAST'); 
+
+														ALL_CLASSIFIERS_BY_PID[pid] = 'unknown'				   
+
+
+		        				    	}
+						       
+		        				   	});
+							   	} // end else
+						       
+						   });		   
+		                   
+			           }else{ // end if int
+		                   console.log('ERROR pid is not an integer: '+pid.toString());
+					   }
+				   }else{
+				   		// ERROR
+					   console.log('ERROR last line: '+last_line);
+			   	  		//req.flash('message', 'Script Error');
+			         	//res.redirect("/user_data/your_projects");
+				   }
+				});  // end gast_process ON Close
+
+
+		    // PythonShell.run('vamps_load_tax_by_seq.py', options, function (err, output) {
+		    //   if (err) {
+					 //  req.flash('failMessage', 'Script Failure '+err);
+					 //  helpers.update_status('update',username,project,'Script Failure');
+					 //  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+					 //  return;
+				  // }
+				  // helpers.update_status('update',username,project,'LOADED','Project is loaded --with tax assignments');
+				  // console.log('Finished loading '+project);
+				  
+				  
+		    // });
+			  
+			}); // END move 1
+
+  } 
+  LoadDataFinishRequest();
+
+
 });
 //
 //

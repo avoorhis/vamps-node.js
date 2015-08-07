@@ -196,7 +196,7 @@ def create_env_source():
     mysql_conn.commit()
 
 def create_classifier():
-    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST')"
+    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST'),(3,'unknown')"
     cur.execute(q)
     mysql_conn.commit()
     
@@ -281,6 +281,8 @@ def push_pdr_seqs(args):
                 q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
             elif args.classifier == 'rdp':
                 q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','1')"
+            else:
+                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','3')"   # 3 is 'unknown'
             #print q
             #print
             logging.info(q)
@@ -361,7 +363,12 @@ def push_taxonomy(args):
     for dir in os.listdir(analysis_dir): 
         ds = dir
         SEQ_COLLECTOR[ds] = {}
-        if classifier == 'gast':
+        if args.input_type == 'tax_by_seq':
+            tax_file = os.path.join(analysis_dir, dir,'sequences_n_taxonomy.txt')
+            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
+            if os.path.exists(tax_file):
+                run_tax_by_seq_file(args, ds, tax_file)
+        elif classifier == 'gast':
             tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
             if os.path.exists(tax_file):
                 run_gast_tax_file(args, ds, tax_file)
@@ -375,7 +382,31 @@ def push_taxonomy(args):
             sys.exit('No classifier found')
  
     logging.info( 'SUMMED_TAX_COLLECTOR')
-    logging.info( SUMMED_TAX_COLLECTOR)        
+    logging.info( SUMMED_TAX_COLLECTOR )        
+#
+# 
+#                               
+def run_tax_by_seq_file(args,ds,tax_file):
+    #tax_collector = {}
+    tax_items = []
+    with open(tax_file,'r') as fh:
+        for line in fh:
+            
+            items = line.strip().split("\t")
+            #TGGATTTGACATCCCG  Bacteria;Proteobacteria;Deltaproteobacteria    genus   1   0.01500 v6_CH494
+            seq = items[0]           
+            tax_string = items[1]
+            rank = items[2]
+            seq_count = items[3]
+            distance = items[4]
+            refhvr_ids = items[5]           
+            
+            if rank == 'class': rank = 'klass'
+            if rank == 'orderx': rank = 'order'            
+            
+            tax_items = tax_string.split(';')
+            if tax_items != []:
+                finish_tax(ds, refhvr_ids, rank, distance, seq, seq_count, tax_items)
 #
 #
 #                               
@@ -661,9 +692,11 @@ if __name__ == '__main__':
     parser.add_argument('-ref_db', '--reference_db',         
                 required=False,   action="store",  dest = "ref_db", default = "default",           
                 help = 'node database')                                           
-    
+    parser.add_argument("-in_type", "--in_type",    
+                required=False,  action="store",   dest = "input_type", default='unknown',
+                help = '')
     parser.add_argument('-class', '--classifier',         
-                required=True,   action="store",  dest = "classifier",              
+                required=False,   action="store",  dest = "classifier",  default='unknown',            
                 help = 'gast or rdp')  
     
     parser.add_argument("-ddir", "--data_dir",    

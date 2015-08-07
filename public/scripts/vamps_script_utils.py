@@ -47,23 +47,26 @@ cur = db.cursor()
 def get_data(args):
     cur.execute("USE "+args.NODE_DATABASE)
     
-    q = "select dataset_id,project_id,project from dataset JOIN project USING(project_id) where project_id='"+args.pid+"'"
+    q = "select dataset_id,dataset,project_id,project from dataset JOIN project USING(project_id) where project_id='"+args.pid+"'"
     
     print q
     cur.execute(q)
     db.commit()
     dids = []
+    dsets = []
     proj = ''
     if not cur.rowcount:
         print "No project found -- Continuing on"
     for row in cur.fetchall():
         did = str(row[0])
-        proj = row[2]
+        ds = row[1]
+        dsets.append(ds)
+        proj = row[3]
         dids.append(did)
-        pid = row[1]
+        pid = row[2]
         
         
-    return (proj,dids)
+    return (proj,dids,dsets)
     
         
             
@@ -109,7 +112,7 @@ def delete_metadata_only(args,proj,dids):
     print q
     cur.execute(q)
     
-def delete_tax_only(args,proj,dids):    
+def delete_tax_only(args,proj,dids,dsets):    
     
     for did in dids:
         
@@ -148,6 +151,17 @@ def delete_tax_only(args,proj,dids):
     
         
     db.commit()
+    for ds in dsets:
+        gast_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'gast')
+        try:
+            shutil.rmtree(gast_dir)
+        except:
+            print gast_dir, 'not removed'
+        rdp_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'rdp')
+        try:
+            shutil.rmtree(rdp_dir)
+        except:
+            print rdp_dir, 'not removed'
     
     
 def delete_metadata_and_tax(args,proj,dids):   
@@ -197,12 +211,12 @@ if __name__ == '__main__':
                 help=" ")                    
     args = parser.parse_args()    
     
-    (proj,dids) = get_data(args)  
+    (proj,dids,dsets) = get_data(args)  
     if args.action == 'delete_whole_project':
         delete_whole_project(args,proj,dids)
         
     elif args.action == 'delete_tax_only' and args.pid != 0:
-        delete_tax_only(args,proj,dids)
+        delete_tax_only(args,proj,dids,dsets)
               
     elif args.action == 'delete_metadata_only' and args.pid != 0:
         delete_metadata_only(args,proj,dids)
