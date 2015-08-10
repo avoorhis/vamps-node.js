@@ -296,23 +296,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
     
-    # parser.add_argument("-fa", "--fastafile",
-    #             required=True,  action='store', dest = "fastafile",  default='',
-    #             help="")
-    # parser.add_argument("-md", "--metafile",
-    #             required=True,  action='store', dest = "metafile",  default='',
-    #             help="")   
+   
     parser.add_argument("-dir","--outdir",                   
     			required=True,  action="store",   dest = "outdir", 
     			help="""Directory to output ini and dir structure""")  
-    
-   
-    # parser.add_argument("-o", "--owner",
-    #             required=True,  action="store",   dest = "owner", default='guest',
-    #             help="vamps user name/owner")
-    # parser.add_argument("-p", "--project",
-    #             required=True,  action='store', dest = "project",  default='',
-    #             help="Project name")
     
     
     parser.add_argument("-d", "--dataset",        

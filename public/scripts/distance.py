@@ -5,9 +5,7 @@
 
 
 """
-#!/usr/bin/python
 
-# ./pcoa.py --mtx node_matrix.mtx --meta node_metadata.txt
 
 import sys,os
 import scipy
@@ -18,7 +16,7 @@ import numpy as np
 import argparse
 import json
 import csv
-from ete2 import Tree
+#from ete2 import Tree
 #print >> sys.stderr, sys.argv[1:]
 
 from cogent.maths import distance_transform as dt
@@ -78,8 +76,8 @@ def calculate_distance(args):
         dtvar = dt.dist_morisita_horn(dmatrix, strict=False)
         #print '2'
         dist = distance.squareform( dtvar )
-
         #sys.exit()
+
     elif args.metric == 'canberra':
         
         dtvar = dt.dist_canberra(dmatrix, strict=False)
@@ -92,7 +90,6 @@ def calculate_distance(args):
         dist = distance.pdist(dmatrix, 'jaccard')
      
     elif args.metric == 'kulczynski':
-
         dtvar = dt.dist_kulczynski(dmatrix, strict=False)
         dist = distance.squareform( dtvar ) 
         # note different spelling

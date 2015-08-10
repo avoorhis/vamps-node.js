@@ -114,12 +114,12 @@ function login_auth_user(req, username, password, done, db){
             db.query(q,function(err,rows){
                 if (err){ console.log(err); }
             });
-            return done(null, rows[0], req.flash('loginMessage', 'Success!')); 
+            return done(null, rows[0]); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
-        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+        return done(null, false, req.flash('loginMessage', 'Wrong password -- try again.'));
         // all is well, return successful user
 
     });

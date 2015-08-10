@@ -10,6 +10,8 @@ var queries = require('./queries');
 var iniparser = require('iniparser');
 var PythonShell = require('python-shell');
 var zlib = require('zlib');
+var multer = require('multer');
+var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}))
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 //
@@ -203,7 +205,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			req.flash('message', 'ERROR nothing deleted');
 	    res.redirect("/user_data/your_projects");
 	    return;
-		}
+		}upload_data_tax_by_seq
 			console.log(options.args.join(' '))
 			var spawn = require('child_process').spawn;
 			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
@@ -955,15 +957,15 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 //
 //
 
-router.post('/upload_data', helpers.isLoggedIn, function(req,res){
+router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function(req,res){
    
-	
+	//req.upload.single('multiInputFileNames');
   var project = req.body.project;
   var username = req.user.username;
-  console.log('req.body upload_data');
+  console.log('1-req.body upload_data');
   console.log(req.body);
   console.log(req.files);
-  console.log('req.body upload_data');
+  console.log('2-req.body upload_data');
   console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   
@@ -975,11 +977,11 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 		req.flash('failMessage', 'That project name is already taken.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files.fasta==undefined || req.files.fasta.size==0){
+  }else if(req.files[0].filename==undefined || req.files[0].size==0){
   	req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files.metadata==undefined || req.files.metadata.size==0){
+  }else if(req.files[1].filename==undefined || req.files[1].size==0){
   	req.flash('failMessage', 'A metadata csv file is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1004,8 +1006,8 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.fasta.name);
-			var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.metadata.name);
+			var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
+			var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1060,19 +1062,22 @@ router.post('/upload_data', helpers.isLoggedIn, function(req,res){
 //
 //
 //
-router.post('/upload_data_tax_by_seq', helpers.isLoggedIn, function(req,res){
+router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req,res){
 
-
-	var project = req.body.project;
+	
+	var project = req.body.project || '';
+	var use_original_names = req.body.use_original_names || 'off'
   var username = req.user.username;
-  console.log('req.body upload_data_tax_by_seq');
+  console.log('1req.body upload_data_tax_by_seq');
   console.log(req.body);
-  console.log(req.files);
-  console.log('req.body upload_data_tax_by_seq');
-  console.log(project);
+  console.log(req.file);  // single
+  console.log('project: '+project);
+  console.log('use_original_names: '+use_original_names);
+  console.log('2req.body upload_data_tax_by_seq');
+  //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   
-  if(project == '' || req.body.project == undefined){
+  if((project == '' || req.body.project == undefined) && req.body.use_original_names != 'on'){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1080,7 +1085,7 @@ router.post('/upload_data_tax_by_seq', helpers.isLoggedIn, function(req,res){
 		req.flash('failMessage', 'That project name is already taken.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files.tax_by_seq==undefined || req.files.tax_by_seq.size==0){
+  }else if(req.file.filename==undefined || req.file.size==0){
   	req.flash('failMessage', 'A tax_by_seq file is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1089,16 +1094,18 @@ router.post('/upload_data_tax_by_seq', helpers.isLoggedIn, function(req,res){
 		  console.log(data_dir);
 			helpers.update_status('new',username,project,'OK','Upload Started'); 
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args :       [ '-dir', data_dir, '-o', username, '-p', project, '-pdir',process.env.PWD,'-db', NODE_DATABASE, ]
+		        			args :       [ '-dir', data_dir, '-o', username,  '-pdir',process.env.PWD,'-t', 'tax_by_seq','-db', NODE_DATABASE, ]
 		    			};
-			if(req.body.type == 'tax_by_seq'){			    
-					options.args = options.args.concat(['-t', 'tax_by_seq']); 
+			if(use_original_names == 'on'){			    
+					options.args = options.args.concat(['-orig_names']); 
+		  }else if(use_original_names == 'off'){			    
+					options.args = options.args.concat(['-p', project]); 
 		  }else{
-					req.flash('failMessage', 'No file type info found:  '+err);
+					req.flash('failMessage', 'No file type info found:  ');
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.files.tax_by_seq.name);
+			var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.file.filename);
 			
 			//console.log(original_fastafile);
 			//console.log(original_metafile);

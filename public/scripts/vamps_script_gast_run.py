@@ -170,11 +170,6 @@ def start_gast(args):
     run.runcode = runcode
     
     run.samples = {}
-    
-    
-    #run.basedir = file_base
-    #fastaunique_cmd = '/bioware/seqinfo/bin/fastaunique'
-    #fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
 
         
     ds_list = []

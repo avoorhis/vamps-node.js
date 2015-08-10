@@ -56,7 +56,7 @@ def write_seqfiles(args,collector):
     stats = {}
     analysis_dir = os.path.join(basedir,'analysis')
     #gast_dir = os.path.join(basedir,'analysis/gast')
-    #main_file = os.path.join(basedir,'seqfile.fa')
+    main_file = os.path.join(basedir,'seqfile.fa')
     main_fp = open(main_file,'w')
     seq_count = 0
     dataset_counts = {}
@@ -115,6 +115,10 @@ def parse_file(args):
 
                 for header in header_items:
                     if header not in std_headers:
+                        if args.orig_names:
+                            print 'using orig names'
+                        else:
+                            print 'not using orig names'
                         ds = header.replace('--','__')
                         pjds.append(ds)
                         collector[ds] = []
@@ -181,6 +185,7 @@ def write_config(args,stats):
 def unique_seqs(args,stats):
     fastaunique_cmd = os.path.join(args.process_dir,'public','scripts','fastaunique')
     print args
+    
     for dataset in stats["datasets"]:
         print dataset
         ds_dir = os.path.join(args.basedir, 'analysis',dataset)
@@ -263,7 +268,7 @@ if __name__ == '__main__':
     			required=True,  action='store', dest = "owner",  default=False, 
     			help="")
     parser.add_argument("-p", "--project",        
-    			required=True,  action='store', dest = "project",  default=False, 
+    			required=False,  action='store', dest = "project",  default='', 
     			help="")
     parser.add_argument("-pdir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
@@ -271,7 +276,9 @@ if __name__ == '__main__':
     parser.add_argument('-db', '--NODE_DATABASE',         
                 required=True,   action="store",  dest = "NODE_DATABASE",            
                 help = 'node database') 
-
+    parser.add_argument('-orig_names', '--orig_names',         
+                required=False,   action="store_true",  dest = "orig_names",            
+                help = 'node database') 
 
     args = parser.parse_args() 
     args.ref_db = 'none'   
@@ -285,6 +292,8 @@ if __name__ == '__main__':
     
     create_dirs(args)   
     collector = parse_file(args) 
+
+    #sys.exit()
     stats = write_seqfiles(args,collector)
     print stats
     unique_seqs(args,stats)

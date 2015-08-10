@@ -68,7 +68,7 @@ def start_rdp(args):
     
     #global_gast_dir = os.path.join(args.basedir,'analysis','gast')
     analysis_dir = os.path.join(args.basedir,'analysis')
-    #fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
+    
     total_uniques = 0
     for dataset_item in config.items('DATASETS'):
          dataset = dataset_item[0]
@@ -82,14 +82,7 @@ def start_rdp(args):
          if not os.path.exists(rdp_dir):
              os.makedirs(rdp_dir)
          rdp_out_file = os.path.join(rdp_dir, 'rdp_out.txt') # to be created
-         #fastaunique_call = fastaunique_cmd +" "+fasta_file+" -o "+unique_file+" -n "+names_file
-         #print 'fastaunique_call',fastaunique_call
-         #fastaunique_call = [fastaunique_cmd,fasta_file,"-o "+unique_file,"-n "+names_file,"-f"]
-         #print fastaunique_call
-         #ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
-         #print 'ds_unique_seq_count',ds_unique_seq_count
          
-         #total_uniques += int(ds_unique_seq_count)
          logging.info("starting RDP")
          print 'running rdp on',dataset
          print 'uniques file',unique_file

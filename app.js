@@ -24,7 +24,7 @@ var passport = require('passport');
 var favicon = require('serve-favicon');
 var fs = require('fs-extra');
 var zlib = require('zlib');
-var multer = require('multer');
+//var multer = require('multer');
 //var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
@@ -62,7 +62,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
-app.use(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp') }));  // for multipart uploads: files
+
+//var upload = multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')});
+//upload.single('singleInputFileName')
+//app.use(upload.single('singleInputFileName'));  // for multipart uploads: files
+//app.use(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')})); // for multipart uploads: files
 app.use(cookieParser());
 
 app.use(compression());
@@ -73,6 +77,7 @@ app.use(compression());
 app.use(express.static(path.join(__dirname, 'public'), {maxAge: '24h' }));
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
+
 app.use('public/javascripts', express.static(path.join(__dirname, 'public', 'javascripts')));
 app.use('public/stylesheets', express.static(path.join(__dirname, 'public', 'stylesheets')));
 
@@ -97,6 +102,7 @@ app.use(function(req, res, next){
 	 }else{
 	    req.db = connection;
 	    req.C = C;
+      
 	    return next();
 	}
 });
