@@ -159,6 +159,7 @@ if __name__ == '__main__':
     logging.info('running vamps_script_database_loader.py')
     print(args.NODE_DATABASE+' - '+ args.basedir)
     print("starting db upload")
+    
     #try:
     args.pid = int(load_data.start(args))
     # except:

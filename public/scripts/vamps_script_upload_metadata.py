@@ -55,12 +55,16 @@ cur = db.cursor()
 def start(args):
     NODE_DATABASE = args.NODE_DATABASE
     indir = args.basedir
-    cur.execute("USE "+NODE_DATABASE)
-    get_config_data(indir)
-    get_metadata(indir)
-    put_required_metadata()
-    put_custom_metadata()
-    #print CONFIG_ITEMS
+    csv_infile =   os.path.join(indir,'meta_clean.csv')
+    if os.path.isfile(csv_infile):
+        cur.execute("USE "+NODE_DATABASE)    
+        get_config_data(indir)    
+        get_metadata(indir,csv_infile)
+        put_required_metadata()
+        put_custom_metadata()
+    else:
+        print "Could not find csv_file:",csv_infile
+        #print CONFIG_ITEMS
     print REQ_METADATA_ITEMS
     print
     print CUST_METADATA_ITEMS
@@ -152,9 +156,9 @@ def put_custom_metadata():
     
     db.commit()
     
-def get_metadata(indir):
+def get_metadata(indir,csv_infile):
     
-    csv_infile =   os.path.join(indir,'meta_clean.csv')
+    
     print 'csv',csv_infile
     logging.info('csv '+csv_infile)
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))

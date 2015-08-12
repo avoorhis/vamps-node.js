@@ -1121,7 +1121,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 								          message : req.flash('successMessage'),
 					                display : "Import_Success",
 						              user    : req.user                        
-						        });
+						  });
 			}
 			
 	  	

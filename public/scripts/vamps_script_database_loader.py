@@ -221,12 +221,12 @@ def recreate_ranks():
     global cur
     for i,rank in enumerate(ranks):
         
-        q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
+        q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
         logging.info(q)
         cur.execute(q)
         rank_id = cur.lastrowid
         if rank_id==0:
-            q = "SELECT rank_id from rank where rank='"+rank+"'"
+            q = "SELECT rank_id from rank where rank='%s'" % (rank)
             logging.info(q)
             cur.execute(q)
             row = cur.fetchone()
@@ -243,7 +243,7 @@ def push_project():
     title = "Title"
     proj = CONFIG_ITEMS['project']
     rev = CONFIG_ITEMS['project'][::-1]
-    fund = "xx"
+    fund = "Unknown"
     id = CONFIG_ITEMS['owner_id']
     pub = 0 if CONFIG_ITEMS['public'] else 1
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
@@ -310,16 +310,16 @@ def push_pdr_seqs(args):
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
             q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
             if args.classifier == 'gast':
-                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','2')"
+                q += " VALUES ('%s','%s','%s','2')"
             elif args.classifier == 'rdp':
-                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','1')"
+                q += " VALUES ('%s','%s','%s','1')"
             else:
-                q += " VALUES ('"+str(did)+"','"+str(seqid)+"','"+str(count)+"','3')"   # 3 is 'unknown'
+                q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
             #print q
             #print
             logging.info(q)
             try:
-                cur.execute(q)
+                cur.execute(q % (str(did),str(seqid),str(count)))
             except:
                 logging.error(q)
                 print "ERROR Exiting: "+ds +"; Query: "+q
@@ -336,13 +336,13 @@ def push_sequences(args):
     global cur
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
-            q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('"+seq+"'))"
+            q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('%s'))" % (seq)
             logging.info(q)
             cur.execute(q)
             mysql_conn.commit()
             seqid = cur.lastrowid
             if seqid == 0:
-                q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('"+seq+"')"
+                q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('%s')" % (seq)
                 logging.info('DUP SEQ FOUND')
                 cur.execute(q2)
                 mysql_conn.commit() 
@@ -359,10 +359,10 @@ def push_sequences(args):
             if args.classifier == 'gast':
                 distance = str(SEQ_COLLECTOR[ds][seq]['distance'])
                 q += " (sequence_id,silva_taxonomy_id,gast_distance,refssu_id,rank_id)"
-                q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','"+distance+"','0','"+rank_id+"')"
+                q += " VALUES ('%s','%s','%s','0','%s')" % (str(seqid), silva_tax_id, distance, rank_id)
             else:
                 q += " (sequence_id,silva_taxonomy_id,refssu_id,rank_id)"
-                q += " VALUES ('"+str(seqid)+"','"+silva_tax_id+"','0','"+rank_id+"')"
+                q += " VALUES ('%s','%s','0','%s')" % (str(seqid), silva_tax_id, rank_id)
             logging.info(q)
             #print q
             cur.execute(q)
@@ -382,7 +382,7 @@ def push_sequences(args):
                 silva_tax_seq_id=row[0]
         
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
-            q4 += " VALUES('"+str(seqid)+"','"+str(silva_tax_seq_id)+"')"
+            q4 += " VALUES('%s','%s')" % (str(seqid), str(silva_tax_seq_id))
             logging.info(q4)
             cur.execute(q4)
             mysql_conn.commit()
@@ -409,7 +409,7 @@ def push_taxonomy(args):
     for dir in os.listdir(analysis_dir): 
         ds = dir
         SEQ_COLLECTOR[ds] = {}
-        if args.input_type == 'tax_by_seq':
+        if 'input_type' in args and args.input_type == 'tax_by_seq':
             tax_file = os.path.join(analysis_dir, dir,'sequences_n_taxonomy.txt')
             unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
