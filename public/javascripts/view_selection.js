@@ -57,7 +57,7 @@ var tip = {
 };
 
 
-$("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
+$("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
       $link = $(this);
@@ -86,6 +86,53 @@ $("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event)
         }
         html += "</tr><table>";
 
+        showTip = setTimeout(function() {
+     
+          $link.data('tipActive', true);
+          
+          tip.position(event);
+     //alert(event.pageX)
+          $liveTip
+          .html('<div>' + html  + '</div>')
+          .fadeOut(0)
+          .fadeIn(200);
+     
+        }, tip.delay);
+      }
+     
+      if (event.type == 'mouseout') {
+        link.id = tip.id || link.id;
+        if ($link.data('tipActive')) {
+          $link.removeData('tipActive');
+          $liveTip.hide();
+        } else {
+          clearTimeout(showTip);
+        }
+      }
+     
+      if (event.type == 'mousemove' && $link.data('tipActive')) {
+        tip.position(event);
+      }
+              
+});              
+
+$("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function (event) {
+      var link = this,
+      html = '';
+      $link = $(this);
+     
+      if (event.type == 'mouseover') {
+        tip.id = link.id;
+        //alert(tip.id)
+        link.id = '';
+        id_items = tip.id.split('-|-');
+        html = "<table>";
+        for(var i=0;i<=id_items.length-1;i++){
+          html += "<tr><td>"+id_items[i]+"</td></tr>";       
+        }
+        html += "<table>";
+
+        
         showTip = setTimeout(function() {
      
           $link.data('tipActive', true);
@@ -792,7 +839,7 @@ function create_counts_table() {
 		  
           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
           var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[da].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          html += "<td id='"+id+"' class='tooltipx right_justify'>"+String(cnt)+'</td>';
+          html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+String(cnt)+'</td>';
           
         }
         html += "</tr>";
@@ -1235,7 +1282,7 @@ function create_piecharts(ts) {
             return id; // ip of each rectangle should be datasetname-|-unitname-|-count
            
         })
-        .attr("class","tooltipx")
+        .attr("class","tooltip_viz")
         .style("fill", function(d, i) {
             return string_to_color_code(unit_list[i]);;
         });

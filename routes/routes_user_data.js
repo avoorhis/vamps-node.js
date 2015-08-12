@@ -237,7 +237,9 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			    var last_line = ary[ary.length - 1];
 			    if(code == 0){				   
 				   //console.log('PID last line: '+last_line)	                   
-              helpers.update_status('delete',req.user.username,project,'delete','delete');                            					   
+              status_params = {'type':'delete', 'user':req.user.username,
+                                'project':project, 'status':'delete',	'msg':'delete' } 
+              helpers.update_status(status_params );                            					   
 			    }else{
 			   	  // python script error
 			    }		   
@@ -351,7 +353,9 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
   var ref_db = tmp[1];
 
 	if(method == 'GAST' || method == 'gast'){
-		helpers.update_status('update',req.user.username,project,'OK-GAST','Starting GAST'); 
+		status_params = {'type':'update', 'user':req.user.username,
+                                'project':project, 'status':'OK-GAST',	'msg':'Starting GAST' } 
+		helpers.update_status(status_params); 
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
@@ -409,14 +413,11 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
         				   		if (err)  {
         				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
         				    	} else {        
-                      	status_params = {'type':'update',
-                                        'user':req.user.username,
-                                        'proj':project,
-                                        'status':'GAST-SUCCESS',
-								   											'msg':'GAST -Tax assignments' } 
+                      	status_params = {'type':'update',  'user':req.user.username,
+                                        'proj':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' } 
 								   	
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-												helpers.update_status('update',req.user.username,project,'OK-GAST','Finished GAST'); 
+												helpers.update_status(status_params); 
 
 												ALL_CLASSIFIERS_BY_PID[pid] = classifier				   
 
@@ -449,7 +450,9 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 
 
 	}else if(method == 'RDP' || method == 'rdp'){
-		helpers.update_status('update',req.user.username,project,'OK-RDP','Starting RDP'); 
+		status_params = {'type':'update', 'user':req.user.username,
+                     'proj':project,     'status':'OK-RDP',	'msg':'Starting RDP' } 
+		helpers.update_status(status_params); 
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
@@ -504,14 +507,11 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
         				      if (err)  {
         				 		  		console.log('2-RDP-Query error: ' + err);        				 		  	
         				      } else {        
-													status_params = {'type':'update',
-													               'user':req.user.username,
-													               'proj':project,
-													               'status':'RDP-SUCCESS',
-													'msg':'RDP -Tax assignments'  } 
+													status_params = {'type':'update', 'user':req.user.username,
+													               'proj':project, 'status':'OK-RDP',	'msg':'Finished RDP'  } 
 
 													helpers.assignment_finish_request(res,rows1,rows2,status_params);
-													helpers.update_status('update',req.user.username,project,'OK-RDP','Finished RDP'); 
+													helpers.update_status(status_params); 
 
 													ALL_CLASSIFIERS_BY_PID[pid] = classifier  
 
@@ -989,7 +989,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   }else{
 			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 		      console.log(data_repository);
-			helpers.update_status('new',username,project,'OK','Upload Started'); 
+			status_params = {'type':'new', 'user':req.user.username,
+											'proj':project, 'status':'OK',	'msg':'Upload Started'  } 
+			helpers.update_status(status_params); 
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
 		    			};
@@ -1027,14 +1029,18 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
 		    	if (err) {
 						req.flash('failMessage', '1-File move failure  '+err);
-						helpers.update_status('update',username,project,'FAIL-1','1-File move failure');
+						status_params = {'type':'update', 'user':req.user.username,
+											'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+						helpers.update_status(status_params);
 						res.redirect("/user_data/import_data");
 						return;
 					}
 			  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
 			    	if (err) {
 							req.flash('failMessage', '2-File move failure '+err);
-							helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
+							status_params = {'type':'update', 'user':req.user.username,
+											'proj':project, 'status':'FAIL-2',	'msg':'2-File move failure'  } 
+							helpers.update_status(status_params);
 							res.redirect("/user_data/import_data");
 							return;
 						}
@@ -1044,11 +1050,15 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
 				      if (err) {
 							  req.flash('failMessage', 'Script Failure '+err);
-							  helpers.update_status('update',username,project,'Script Failure');
+							  status_params = {'type':'update', 'user':req.user.username,
+											'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
+							  helpers.update_status(status_params);
 							  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
 							  return;
 						  }
-						  helpers.update_status('update',username,project,'LOADED','Project is loaded --without tax assignments');
+						  status_params = {'type':'update', 'user':req.user.username,
+											'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
+						  helpers.update_status(status_params);
 						  console.log('Finished loading '+project);
 						  
 						  
@@ -1092,7 +1102,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 		return;
   }else{
 			
-			//helpers.update_status('new',username,project,'OK','Upload Started'); 
+			
 			var file_path = path.join(process.env.PWD,req.file.path);
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-file', file_path, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
@@ -1113,7 +1123,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 		 	// move files to user_data/<username>/ and rename
 			var LoadDataFinishRequest = function() {
 					// START STATUS //
-					req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+					req.flash('successMessage', "Upload in Progress: 'TaxBySeq File'");
 					
 					// type, user, project, status, msg
 					
@@ -1173,14 +1183,11 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 			        				   		if (err)  {
 			        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  	
 			        				    	} else {        
-			                      	status_params = {'type':'update',
-			                                        'user':req.user.username,
-			                                        'proj':project,
-			                                        'status':'TAXBYSEQ-SUCCESS',
-											   											'msg':'TAXBYSEQ -Tax assignments' } 
+			                      	status_params = {'type':'update', 'user':req.user.username,
+			                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' } 
 											   	
 															helpers.assignment_finish_request(res,rows1,rows2,status_params);
-															helpers.update_status('update',req.user.username,project,'OK-TAXBYSEQ','Finished TAXBYSEQ'); 
+															helpers.update_status(status_params); 
 															ALL_CLASSIFIERS_BY_PID[pid] = 'unknown'				   
 
 

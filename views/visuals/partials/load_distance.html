@@ -41,7 +41,7 @@
 		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname].toFixed(5); %>
 		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
-	                    <td id='<%= id %>' class='heat_map_td tooltipx' bgcolor='#<%= colors[svalue] %>'></td>
+	                    <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>'></td>
 		    <%        } %>		        
 		  <%      } %>
 		  <% n++ %>

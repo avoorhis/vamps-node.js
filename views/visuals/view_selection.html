@@ -93,8 +93,13 @@
           <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
           <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
           <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
+          <%    var ttip = cnsts.VISUAL_THUMBNAILS.visuals[n].tip                                  %>
           <%    var cols = 5 %>
-          <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' || name.substring(0,10) === 'Dendrogram' || name.substring(0,17) === 'Frequency Heatmap' || name.substring(0,13) === 'PCoA Analyses' )) { %>
+          <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' 
+                    || name.substring(0,10) === 'Dendrogram' 
+                    || name.substring(0,17) === 'Frequency Heatmap' 
+                    || name.substring(0,17) === 'Frequency Heatmap'
+                    || name.substring(0,4)  === 'PCoA' ))           { %>
                     <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
           <%    } else { %>
           <%        if(disable_thumbs) {                                                              %>
@@ -102,12 +107,12 @@
                         <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
                       </td>
           <%        }else{                                                                            %>
-                  <td class='td_top'>
-               <!--     <a href='<%= link %>?ts=<%= pi.ts %>' target='<%= pi.ts %>_<%= name %>' >  -->
-                    <center><a href='#' id='<%= link_id %>'  ><%= name %><br>
-               <!-- <input type='button' id='<%= link_id %>' value='pushme'> -->
+                  <td class='td_top tooltip_viz_help' id='<%= ttip %>'>               
+                    
+                    <center><a href='#'  id='<%= link_id %>'  ><%= name %><br>              
                       <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
-                    </a></center>  
+                    </a></center> 
+                    
                  </td>
           <%        }                                                                                 %>              
           <%    }                                                                                     %>

@@ -5,8 +5,10 @@
 <% no_of_cols = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
 
-<hr><strong>Required Fields:</strong> ( <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> )
-<table class='tiny_font'><tr>
+<hr><strong>Common Fields:</strong> [ <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> ]
+
+
+<table class='small_font'><tr>
     <% for (i in req_meta_fields) { %>
        <% if(req_meta_fields[i] in req_meta_found) { %>		   
 		   <% if(req_meta_fields[i] == 'latitude' || req_meta_fields[i] == 'longitude')  { %>
@@ -25,11 +27,13 @@
     <% } %>
 	
    
-</tr></table>
+</tr>
+</table>
 
-<hr><strong>Custom Fields for these Datasets:</strong> ( <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> )
+<hr><strong>Custom Fields for these Datasets:</strong> [ <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> ]
 <% no_of_cols = 2 %>
-<table class='tiny_font'><tr>
+<table class='small_font'>
+  <tr>
     <% i = 0 %>
     <% for (md_name in cust_meta_found) { %>       
        
@@ -40,7 +44,8 @@
        <% } %> 
        <% i += 1 %>           
     <% } %>
-</tr></table>
+</tr>
+</table>
 <hr>
 
 

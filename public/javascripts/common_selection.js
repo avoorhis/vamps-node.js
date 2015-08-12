@@ -169,7 +169,7 @@ function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
 	                var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct;
 	                return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
 	              })
-				  .attr("class","tooltipx");
+				  .attr("class","tooltip_viz");
 }
 function create_svg_object(svg,props, did_by_names, data, ts) {
       
@@ -235,7 +235,7 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
             //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
 
-          .attr("class","tooltipx")
+          .attr("class","tooltip_viz")
           .style("fill",   function(d,i) { return string_to_color_code(d.name); });
 
 

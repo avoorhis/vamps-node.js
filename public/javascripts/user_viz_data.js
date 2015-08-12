@@ -38,7 +38,7 @@ var tip = {
     });
   }
 };
-$("body").delegate(".tooltipx", "mouseover mouseout mousemove", function (event) {
+$("body").delegate(".tooltip_user", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
       $link = $(this);

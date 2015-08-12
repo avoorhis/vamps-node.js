@@ -22,7 +22,7 @@
           <input type='checkbox' class='project_toggle' id='<%= pname %>--pj-id'
            name='project_names[]' value='<%= pname %>'/>
           <a href='/projects/<%= pid %>'>
-            <span id='<%= tt_pj_id %>' class='tooltipx'>
+            <span id='<%= tt_pj_id %>' class='tooltip_pjds_list'>
       <% if(status == 'public') { %>      
               <%= pname %>
             </span>
@@ -48,7 +48,7 @@
               <li>
                 <label id='<%= pd %>' class='dataset-select'  >
                    <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= did %>'/>
-                   <span id='<%= tt_ds_id %>' class='tooltipx'><%= dname %></span>
+                   <span id='<%= tt_ds_id %>' class='tooltip_pjds_list'><%= dname %></span>
                 </label>
               </li>
             <% } %>
