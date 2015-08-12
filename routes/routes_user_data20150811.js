@@ -173,7 +173,6 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 	
 	var delete_kind = req.params.kind;
 	var project = req.params.project;
-	var timestamp = +new Date();  // millisecs since the epoch!
 	console.log('in delete_project1: '+project+' - '+delete_kind);
 	//console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
 	
@@ -206,7 +205,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			req.flash('message', 'ERROR nothing deleted');
 	    res.redirect("/user_data/your_projects");
 	    return;
-		}
+		}upload_data_tax_by_seq
 			console.log(options.args.join(' '))
 			var spawn = require('child_process').spawn;
 			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
@@ -257,7 +256,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
   		if(delete_kind == 'all'){					
   				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
 					var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project'+timestamp+':'+project);							
+					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project:'+project);							
 					fs.move(data_dir, deleted_data_dir, function(err){
 						if(err){
 							console.log(err);
@@ -1091,11 +1090,19 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 		res.redirect("/user_data/import_data");
 		return;
   }else{
+			// if(use_original_names=='on'){
+			// 	// must get project names from file before project_dir is created
+
+			// }else{
+			// 	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+			// }
+
+
 			
-			//helpers.update_status('new',username,project,'OK','Upload Started'); 
-			var file_path = path.join(process.env.PWD,req.file.path);
+		  console.log(data_dir);
+			helpers.update_status('new',username,project,'OK','Upload Started'); 
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args :       [ '-file', file_path, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
+		        			args :       [ '-dir', data_dir, '-o', username,  '-pdir',process.env.PWD,'-t', 'tax_by_seq','-db', NODE_DATABASE, ]
 		    			};
 			if(use_original_names == 'on'){			    
 					options.args = options.args.concat(['-orig_names']); 
@@ -1106,7 +1113,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			//var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.file.filename);
+			var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.file.filename);
 			
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
@@ -1124,12 +1131,18 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 						        });
 			}
 			
-	  	
-				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
+	  	fs.move(original_tax_by_seq,  path.join(data_dir,'tax_by_seq.txt'), function (err) {
+	    	if (err) {
+					req.flash('failMessage', '2-File move failure '+err);
+					helpers.update_status('update',username,project,'FAIL-1','2-File move failure');
+					res.redirect("/user_data/import_data");
+					return;
+				}
+				console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
-				var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+				var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 				var output = ''
 				// communicating with an external python process
@@ -1149,63 +1162,60 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 					  }
 				});
 				tax_by_seq_process.on('close', function (code) {
-				   console.log('tax_by_seq_process process exited with code ' + code);
+				   console.log('gast_process process exited with code ' + code);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
 				   if(code == 0){
-					   console.log('TAXBYSEQ Success');
+					   console.log('GAST Success');
 					   //console.log('PID last line: '+last_line)
 					   var ll = last_line.split('=');
-					   // possible multiple pids
-					   pid_list = ll[1].split('-')
-					   for(var i in pid_list){
-						   //var pid = ll[1];
-						   var pid = pid_list[i];
-						   console.log('NEW PID=: '+pid);
-						   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-						   if(helpers.isInt(pid)){
-			                   
-			            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
-								    if (err)  {
-							 		  	console.log('1-TAXBYSEQ-Query error: ' + err);				 		  			 		  
-							      } else {
-			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
-			        				   		if (err)  {
-			        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  	
-			        				    	} else {        
-			                      	status_params = {'type':'update',
-			                                        'user':req.user.username,
-			                                        'proj':project,
-			                                        'status':'TAXBYSEQ-SUCCESS',
-											   											'msg':'TAXBYSEQ -Tax assignments' } 
-											   	
-															helpers.assignment_finish_request(res,rows1,rows2,status_params);
-															helpers.update_status('update',req.user.username,project,'OK-TAXBYSEQ','Finished TAXBYSEQ'); 
-															ALL_CLASSIFIERS_BY_PID[pid] = 'unknown'				   
+					   var pid = ll[1];
+					   console.log('NEW PID=: '+pid);
+					   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+					   if(helpers.isInt(pid)){
+		                   
+		            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+							    if (err)  {
+						 		  	console.log('1-GAST-Query error: ' + err);				 		  			 		  
+						      } else {
+		        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+		        				   		if (err)  {
+		        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
+		        				    	} else {        
+		                      	status_params = {'type':'update',
+		                                        'user':req.user.username,
+		                                        'proj':project,
+		                                        'status':'GAST-SUCCESS',
+										   											'msg':'GAST -Tax assignments' } 
+										   	
+														helpers.assignment_finish_request(res,rows1,rows2,status_params);
+														helpers.update_status('update',req.user.username,project,'OK-GAST','Finished GAST'); 
+
+														ALL_CLASSIFIERS_BY_PID[pid] = 'unknown'				   
 
 
-			        				    	}
-							       
-			        				   	});
-								   	} // end else
-							       
-							   });		   
-			                   
-				           }else{ // end if int
-			                   console.log('ERROR pid is not an integer: '+pid.toString());
-						   }
-						 } // end for pid in pid_list
+		        				    	}
+						       
+		        				   	});
+							   	} // end else
+						       
+						   });		   
+		                   
+			           }else{ // end if int
+		                   console.log('ERROR pid is not an integer: '+pid.toString());
+					   }
 				   }else{
 				   		// ERROR
-				   		console.log(output);
-					    console.log('ERROR last line: '+code);
-			   	  	// NO REDIRECT here
-			   	  	//req.flash('message', 'Script Error'+last_line);
-			        //res.redirect("/user_data/your_projects");
+					   console.log('ERROR last line: '+last_line);
+			   	  		//req.flash('message', 'Script Error');
+			         	//res.redirect("/user_data/your_projects");
 				   }
-				});  // end gast_process ON Close  
+				});  // end gast_process ON Close
+
+
+		   
 			  
-			
+			}); // END move 1
 
   } 
   LoadDataFinishRequest();

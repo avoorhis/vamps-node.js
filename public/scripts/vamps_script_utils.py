@@ -66,12 +66,12 @@ def get_data(args):
         pid = row[2]
         
         
-    return (proj,dids,dsets)
+    return (proj, dids, dsets)
     
         
             
             
-def delete_whole_project(args,proj,dids):
+def delete_whole_project(args,proj,dids,dsets):
     print 'cleaning'
     
     for did in dids:
@@ -94,7 +94,7 @@ def delete_whole_project(args,proj,dids):
     #         print 'Project dir not found: '+os.path.join('user_data',args.NODE_DATABASE,args.user,'project:'+proj)
     if args.pid != 0:
         delete_metadata_only(args,proj,dids)
-        delete_tax_only(args,proj,dids)
+        delete_tax_only(args,proj,dids,dsets)
     
 def delete_metadata_only(args,proj,dids):
     q = "DELETE from required_metadata_info"
@@ -156,17 +156,17 @@ def delete_tax_only(args,proj,dids,dsets):
         try:
             shutil.rmtree(gast_dir)
         except:
-            print gast_dir, 'not removed'
+            print gast_dir, 'not found or removed'
         rdp_dir = os.path.join(args.process_dir,'user_data', args.NODE_DATABASE, args.user,'project:'+proj,'analysis',ds,'rdp')
         try:
             shutil.rmtree(rdp_dir)
         except:
-            print rdp_dir, 'not removed'
+            print rdp_dir, 'not found or removed'
     
     
-def delete_metadata_and_tax(args,proj,dids):   
+def delete_metadata_and_tax(args,proj,dids,dsets):   
      delete_metadata_only(args,proj,dids)
-     delete_tax_only(args,proj,dids)
+     delete_tax_only(args,proj,dids,dsets)
 
 if __name__ == '__main__':
     import argparse
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     
     (proj,dids,dsets) = get_data(args)  
     if args.action == 'delete_whole_project':
-        delete_whole_project(args,proj,dids)
+        delete_whole_project(args,proj,dids,dsets)
         
     elif args.action == 'delete_tax_only' and args.pid != 0:
         delete_tax_only(args,proj,dids,dsets)
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         delete_metadata_only(args,proj,dids)
         
     elif args.action == 'delete_metadata_and_tax' and args.pid != 0:
-        delete_metadata_and_tax(args,proj,dids)
+        delete_metadata_and_tax(args,proj,dids,dsets)
         
     print "DONE"
     print "PID="+str(args.pid)

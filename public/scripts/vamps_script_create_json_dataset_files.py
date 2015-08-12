@@ -113,7 +113,7 @@ def go_add(args):
     
     logging.info('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
     print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
-    
+    print args
 
 
     NODE_DATABASE = args.NODE_DATABASE
@@ -207,7 +207,7 @@ def write_all_taxcounts_file(args,counts_lookup):
       
 def write_json_files(prefix, metadata_lookup, counts_lookup):
     print "In write_json_files"
-    print counts_lookup
+    #print counts_lookup
     #json_str = json.dumps(counts_lookup)    
     # print('Re-Writing JSON file (REMEMBER to move new file to ../json/)')
     # f = open(outfile,'w')
@@ -346,14 +346,23 @@ def read_original_metadata(args):
 #     return counts_lookup
     
 def get_dataset_ids(pid):
-    q = "SELECT dataset_id from dataset where project_id='"+str(pid)+"'"  
+    print str(db)
+    print str(cur)
+    cur.execute('SELECT DATABASE()')
+    dbase= cur.fetchone()
+    print 'dbase',dbase[0]
+    
+    q = "SELECT dataset_id from dataset where project_id='%s'"  % (pid) 
     print q
     cur.execute(q)
+    db.commit()
     dids = []
     numrows = cur.rowcount
     if numrows == 0:
-        sys.exit('No data found for pid '+str(pid))
+         sys.exit('No data found for pid '+str(pid))
+    
     for row in cur.fetchall():
+        print 'DS ROW',row
         dids.append(str(row[0]))
     
     return dids

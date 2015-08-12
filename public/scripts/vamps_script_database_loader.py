@@ -73,15 +73,7 @@ CREATE TABLE `summed_counts` (
 
 """
 # Global:
-#NODE_DATABASE = "vamps_js_dev_av"
-#NODE_DATABASE = "vamps_js_development"
-CONFIG_ITEMS = {}
-SEQ_COLLECTOR = {}
-DATASET_ID_BY_NAME = {}
-SILVA_IDS_BY_TAX = {}
-RANK_COLLECTOR={}
-TAX_ID_BY_RANKID_N_TAX = {}
-SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
+ # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
 silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
 accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
@@ -96,11 +88,23 @@ accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown'
 
 
 def start(args):
-    
-    
+    global CONFIG_ITEMS
+    global SEQ_COLLECTOR
+    global DATASET_ID_BY_NAME
+    global SILVA_IDS_BY_TAX
+    global RANK_COLLECTOR
+    global TAX_ID_BY_RANKID_N_TAX
+    global SUMMED_TAX_COLLECTOR
+    CONFIG_ITEMS = {}
+    SEQ_COLLECTOR = {}
+    DATASET_ID_BY_NAME = {}
+    SILVA_IDS_BY_TAX = {}
+    RANK_COLLECTOR={}
+    TAX_ID_BY_RANKID_N_TAX = {}
+    SUMMED_TAX_COLLECTOR = {} 
     logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
     print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
-
+    print args
     NODE_DATABASE = args.NODE_DATABASE
 
     
@@ -170,6 +174,9 @@ def check_user():
     check_user()
       the owner/user (from config file) must be present in 'user' table for script to continue
     """
+    global CONFIG_ITEMS
+    global mysql_conn
+    global cur
     q = "select user_id from user where username='"+CONFIG_ITEMS['owner']+"'"
     cur.execute(q)
     numrows = int(cur.rowcount)
@@ -183,24 +190,35 @@ def check_project():
     check_project()
       the owner/user (from config file) must be present in 'user' table for script to continue
     """
+    global CONFIG_ITEMS
+    global mysql_conn
+    global cur
     proj = CONFIG_ITEMS['project']
-    q = "SELECT project from project WHERE project='"+proj+"'"
+    q = "SELECT project from project WHERE project='%s'" % (proj)
     cur.execute(q)
     if cur.rowcount > 0:
         return ('ERROR','Duplicate project name1 '+q)
     return ('OK','')
            
 def create_env_source():
+    global mysql_conn
+    global cur
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
     cur.execute(q)
     mysql_conn.commit()
 
 def create_classifier():
+    global mysql_conn
+    global cur
     q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST'),(3,'unknown')"
     cur.execute(q)
     mysql_conn.commit()
     
 def recreate_ranks():
+    
+    global RANK_COLLECTOR
+    global mysql_conn
+    global cur
     for i,rank in enumerate(ranks):
         
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
@@ -218,6 +236,9 @@ def recreate_ranks():
     mysql_conn.commit()
 
 def push_project():
+    global CONFIG_ITEMS
+    global mysql_conn
+    global cur
     desc = "Project Description"
     title = "Title"
     proj = CONFIG_ITEMS['project']
@@ -246,6 +267,10 @@ def push_project():
     return 0
         
 def push_dataset():
+    global CONFIG_ITEMS    
+    global DATASET_ID_BY_NAME
+    global mysql_conn
+    global cur
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s')"
@@ -255,15 +280,17 @@ def push_dataset():
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
         q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
         logging.info(q4)
-        #print q4
-        try:
-            cur.execute(q4)
-            did = cur.lastrowid
-            DATASET_ID_BY_NAME[ds]=did
-        except:
-            print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
-            sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
-    mysql_conn.commit()
+        print q4
+        #try:
+        cur.execute(q4)
+        did = cur.lastrowid
+        print 'new did',did
+        DATASET_ID_BY_NAME[ds]=did
+        mysql_conn.commit()
+        #except:
+        #    print('ERROR: MySQL Integrity ERROR -- duplicate dataset')
+        #    sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
+    
     
 
     
@@ -271,6 +298,11 @@ def push_dataset():
 
 def push_pdr_seqs(args):
     #print
+    
+    global SEQ_COLLECTOR
+    global DATASET_ID_BY_NAME
+    global mysql_conn
+    global cur
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             did = DATASET_ID_BY_NAME[ds]
@@ -286,12 +318,22 @@ def push_pdr_seqs(args):
             #print q
             #print
             logging.info(q)
-            cur.execute(q)
+            try:
+                cur.execute(q)
+            except:
+                logging.error(q)
+                print "ERROR Exiting: "+ds +"; Query: "+q
+                print DATASET_ID_BY_NAME
+                sys.exit()
             mysql_conn.commit()
     
 def push_sequences(args):
     # sequences
     #print
+    
+    global SEQ_COLLECTOR
+    global mysql_conn
+    global cur
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('"+seq+"'))"
@@ -352,6 +394,10 @@ def push_sequences(args):
 #
 #
 def push_taxonomy(args):
+    
+    global SUMMED_TAX_COLLECTOR
+    global mysql_conn
+    global cur
     indir = args.basedir
     classifier = args.classifier
     #gast_dir = os.path.join(indir,'analysis/gast') 
@@ -388,6 +434,8 @@ def push_taxonomy(args):
 #                               
 def run_tax_by_seq_file(args,ds,tax_file):
     #tax_collector = {}
+    
+
     tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
@@ -491,11 +539,15 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             
 def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
     #tax_collector = {} 
-    #print
-    #print tax_items
-    #print seq_count
-    #print seq
-    
+    global CONFIG_ITEMS
+    global SEQ_COLLECTOR
+    global DATASET_ID_BY_NAME
+    global SILVA_IDS_BY_TAX
+    global RANK_COLLECTOR
+    global TAX_ID_BY_RANKID_N_TAX
+    global SUMMED_TAX_COLLECTOR
+    global mysql_conn
+    global cur
     tax_string = ';'.join(tax_items)       
     if ds not in SUMMED_TAX_COLLECTOR:
         SUMMED_TAX_COLLECTOR[ds]={}
@@ -630,6 +682,8 @@ def get_config_data(indir):
     # convert a vamps user upload config file: use INFO-TAX.config
     # change vamps_user to owner <and use one that is already in db >
     # owner_id and project_id gathered automatically 
+    global CONFIG_ITEMS
+    
     config = ConfigParser.ConfigParser()
     config.optionxform=str
     

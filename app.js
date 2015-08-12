@@ -1,13 +1,13 @@
 // anna's
-try{
-  require('nodetime').profile({
-    accountKey: '13bf15a356e62b822df4395f183fe0a83af757f4', 
-    appName: 'Node.js VAMPS Application'
-  });
-}
-catch(err){
-  console.log(err.toString())
-}
+// try{
+//   require('nodetime').profile({
+//     accountKey: '13bf15a356e62b822df4395f183fe0a83af757f4', 
+//     appName: 'Node.js VAMPS Application'
+//   });
+// }
+// catch(err){
+//   console.log(err.toString())
+// }
 var compression = require('compression');
 var express = require('express');
 //var expose = require('express-expose');
