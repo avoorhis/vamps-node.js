@@ -22,6 +22,7 @@
 		    <a href="#databases" 				class="list-group-item list-group-item-warning">Reference Databases</a>
 		    <a href="#submissions" 			class="list-group-item list-group-item-warning">Sample Submission Process</a>
 		    <a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation</a>
+		    <a href="#formats" 			    class="list-group-item list-group-item-warning">Format Definitions</a>
 		    <a href="#definitions" 			class="list-group-item list-group-item-warning">Definitions</a>
 		    <a href="#" class="list-group-item list-group-item-warning">Link</a>
 		  </div>
@@ -100,7 +101,16 @@ or
           	The Description field must also be present and must be the last field. There is a handy 'validate_mapping_file.py' script available
           	in qiime to assist you with this file.
           </p>
-          <a name='legacy_vamps_import'></a>   
+          <a name='legacy_vamps_import'></a>
+          <p class='standard'><strong>TaxBySeq File</strong></p> 
+          <p>This is a file that has to be downloaded from the old VAMPS (legacy) program on its <a href='https://vamps.mbl.edu/exporter/export_data.php'>export_data page</a>.
+          On that page you can choose your data by whole project or mix together datasets from different projects. Select the 'TaxBySeq File' option and make sure 
+          you are selecting raw counts (Not Normalized). When the data is ready you can download the compressed file at the<a href='https://vamps.mbl.edu/exporter/downloads.php'> 
+          data retrieval page</a>. To get the data into New VAMPS the TaxBySeq file should be on your harddrive and not compressed. From the New VAMPS page 'import_choices' 
+          choose the TaxBySeq radio button. Now you can choose to upload all the data under a new single project name of your choice or to keep the original VAMPS
+          names (the data will separate into multiple projects if selected that way origially).
+          </p> 
+
           <p class='standard'><strong>How to convert data from the old vamps </strong> <small>(for administrators)</small></p>
           <p> If you have access to the old (legacy) vamps or vampsdev database you can run these two mysql commands to create separate sequence and metadata
           	files for import into the new vamps database. Alter the commands below to include the desired project name and if the project is a user uploaded
@@ -280,7 +290,27 @@ or
         
         </div>        
       </div>
+<!-- FORMAT DEFINITIONS -->        <a name='formats'></a>
+      <hr>
+      <div class="row">
+        <div class="col-md-12">
+        	
+          <h4><center>File and Name Formats</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+          <p>
 
+						<p class='standard'><strong>Project Name</strong></p> 
+						No spaces allowed!
+
+						<p class='standard'><strong>Dataset Name</strong></p> 
+						No spaces allowed!
+
+						<p class='standard'><strong>FASTA File</strong></p> 
+						<p class='standard'><strong>Metadata File</strong></p> 
+						<p class='standard'><strong>TaxBySeq File</strong></p> 
+						
+          </p>          
+        </div>        
+      </div>
 <!-- DEFINITIONS -->        <a name='definitions'></a>
       <hr>
       <div class="row">

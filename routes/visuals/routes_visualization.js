@@ -673,9 +673,9 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     
     for(d in sumator['domain']){
         
-        // #### DOMAIN ####
-        //var dnode_name =  dname
-        html += "<node name='"+d+"'>\n";
+      // #### DOMAIN ####
+      //var dnode_name =  dname
+      html += "<node name='"+d+"'>\n";
 	    html += " <seqcount>";
 	    for(c_domain in sumator['domain'][d]['knt']){
 	        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
@@ -684,9 +684,8 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
         html += " <rank><val>domain</val></rank>\n";
         
         // #### PHYLUM ####
-        for(p in sumator['domain'][d]['phylum']){        
-            //var pnode_name =  getLastPart(pname)
-            html += " <node name='"+p+"'>\n";
+        for(p in sumator['domain'][d]['phylum']){              
+          html += " <node name='"+p+"'>\n";
     	    html += "  <seqcount>";
     	    for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
     	        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
@@ -695,8 +694,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
             html += "  <rank><val>phylum</val></rank>\n";
 ///            
             // #### KLASS ####
-            for(k in sumator['domain'][d]['phylum'][p]['klass']){
-                //var knode_name =  getLastPart(kname)
+            for(k in sumator['domain'][d]['phylum'][p]['klass']){                
                 html += "  <node name='"+k+"'>\n";
                 html += "   <seqcount>";
                 for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
@@ -706,8 +704,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
                 html += "   <rank><val>klass</val></rank>\n";
 
                 // #### ORDER ####
-                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
-                    //var onode_name =  getLastPart(oname)
+                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){                    
                     html += "   <node name='"+o+"'>\n";
                     html += "    <seqcount>";
                     for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
@@ -717,8 +714,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
                     html += "    <rank><val>order</val></rank>\n";
 
                     // #### FAMILY ####
-                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
-                        //var fnode_name =  getLastPart(fname)
+                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){                        
                         html += "    <node name='"+f+"'>\n";
                         html += "     <seqcount>";
                         for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
@@ -728,8 +724,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
                         html += "     <rank><val>family</val></rank>\n";
 
                         // #### GENUS ####
-                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
-                            //var gnode_name =  getLastPart(gname)
+                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){                           
                             html += "     <node name='"+g+"'>\n";
                             html += "      <seqcount>";
                             for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
@@ -739,25 +734,48 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
                             html += "      <rank><val>genus</val></rank>\n";
 
                             // #### SPECIES ####
+                            for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){                            
+                                html += "     <node name='"+s+"'>\n";
+                                html += "      <seqcount>";
+                                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
+                                }
+                                html += "</seqcount>\n";
+                                html += "      <rank><val>species</val></rank>\n";
+                                
+                                // #### STRAIN ####
+                                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){                            
+                                      html += "     <node name='"+st+"'>\n";
+                                      html += "      <seqcount>";
+                                      for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                                          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
+                                      }
+                                      html += "</seqcount>\n";
+                                      html += "      <rank><val>strain</val></rank>\n";
+ ///// DONE //////
+                                      html += "     </node>\n";
+                                }  // end strain
 
-        ///// TODO TODO //////
+                                html += "     </node>\n";
+                            }  // end species
+       
 
                             html += "     </node>\n";
-                        }
+                        }  // end genus
                         html += "    </node>\n";
-                    }
+                    }  // end family
                     html += "   </node>\n";
-                }
+                }  // end order
                 html += "  </node>\n";
-            }
+            }  // end klass
             html += " </node>\n";
-        }       
+        }  // end phylum
         html += "</node>\n";
-    }    
+    }    // end domain
     html += "  </node>\n";
     html += "  </krona>\n";
     html += " </div></body></html>\n";
-    // write html to a file and open it like Emperor
+    // write html to a file and open it 
     
     
     var file_name = ts+'_krona.html';
@@ -876,7 +894,7 @@ function get_sumator(req){
            }
            if(rank=='genus'){
                g = tax_items[t]
-               for(i in chosen_id_name_hash.ids){
+               for(i in chosen_id_name_hash.ids){                   
                    if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
                            sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
@@ -891,7 +909,45 @@ function get_sumator(req){
                    }
                }
            }
-         }
+
+           if(rank=='species'){
+               s = tax_items[t]
+               for(i in chosen_id_name_hash.ids){                   
+                   if(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
+
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+           if(rank=='strain'){
+               st = tax_items[t]
+               for(i in chosen_id_name_hash.ids){                   
+                   if(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
+                       if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                       }else{
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                       }
+                   }else{
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
+                       //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                   }
+               }
+           }
+
+
+        }
     }
     return sumator;
 }
