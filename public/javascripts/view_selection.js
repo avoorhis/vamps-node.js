@@ -125,10 +125,24 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
         tip.id = link.id;
         //alert(tip.id)
         link.id = '';
+        if(tip.id==''){
+          return;  // no need to show if nothing there
+        }
         id_items = tip.id.split('-|-');
+        
+        // html = "Requirements:<br>";
+        // html += '<ul>';        
+        // for(var i=0;i<=id_items.length-1;i++){
+        //    //html += "<tr><td>"+id_items[i]+"</td></tr>"; 
+        //    html += "<li>"+id_items[i]+"</li>"      
+        // }
+        // html += '</ul>';
+
+
         html = "<table>";
+        html += "<tr><td>Requirements:</td></tr>";
         for(var i=0;i<=id_items.length-1;i++){
-          html += "<tr><td>"+id_items[i]+"</td></tr>";       
+          html += "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;"+id_items[i]+"</td></tr>";       
         }
         html += "<table>";
 
@@ -1090,10 +1104,9 @@ function create_geospatial(ts) {
       //alert('in GEO')
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
-	  geo_div.style.display = 'block';
-	  geo_div.style.height = '900px';
-      //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      
+	    geo_div.style.display = 'block';
+	    geo_div.style.height = '900px';
+            
       var info_line = create_header('geo', pi_local);
       
       document.getElementById('geospatial_title').innerHTML = info_line;
@@ -1158,13 +1171,18 @@ function create_geospatial(ts) {
         setMarkers(map, loc_data, infowindow);
       }  
 }
-
+//
+//
+//
 function bindInfoWindow(marker, map, infowindow, html) { 
   google.maps.event.addListener(marker, 'click', function() { 
     infowindow.setContent(html); 
     infowindow.open(map, marker); 
   }); 
 } 
+//
+//
+//
 function setMarkers(map, loc_data, infowindow) {
   for (var i = 0; i < loc_data.length; i++) {
     // create a marker

@@ -64,7 +64,9 @@ go into the public/scripts directory and run the INITIALIZE_ALL_FILES.py script.
 The script will prompt you for a database - just enter the one you created above.
 It may take awhile especially if the database is large, but it is required
 to create the helper files that reside in the /public/json directory.
-
+ * For the visualizations to work correctly you also need to fill in the correct paths
+to various programs on your computer. Have a look at the bottom of the constants.py file
+in the /public directory and change the paths to match your system. 
 
 START the SERVER
 ----------------

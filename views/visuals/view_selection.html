@@ -96,10 +96,10 @@
           <%    var ttip = cnsts.VISUAL_THUMBNAILS.visuals[n].tip                                  %>
           <%    var cols = 5 %>
           <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' 
-                    || name.substring(0,10) === 'Dendrogram' 
-                    || name.substring(0,17) === 'Frequency Heatmap' 
-                    || name.substring(0,17) === 'Frequency Heatmap'
-                    || name.substring(0,4)  === 'PCoA' ))           { %>
+                                        || name.substring(0,10) === 'Dendrogram' 
+                                        || name.substring(0,17) === 'Frequency Heatmap' 
+                                        || name.substring(0,17) === 'Frequency Heatmap'
+                                        || name.substring(0,4)  === 'PCoA' ))           { %>
                     <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
           <%    } else { %>
           <%        if(disable_thumbs) {                                                              %>

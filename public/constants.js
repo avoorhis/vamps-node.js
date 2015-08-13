@@ -1,6 +1,30 @@
 var config = {};
 var path = require("path");
-//console.log( JSON.stringify(datasets_by_project_all) );
+
+
+
+
+//// PATHS *** Change these to match your system ***  ////
+//
+// if you want to use rdp to assign taxonomy to your uploaded data
+// install rdp (http://sourceforge.net/projects/rdp-classifier/files/rdp-classifier/) 
+// on your system and provide the path to classifier.jar file here.
+// You will also need java on your system to run this.
+config.PATH_TO_RDP = '/Users/avoorhis/programming/rdp_classifier/dist/';
+//
+// http://www.ncbi.nlm.nih.gov/books/NBK279671/
+config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
+//
+// http://qiime.org/
+config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
+//// END OF USER CONFIGURATION ////
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+//// DO NOT CHANGE ANYTHING BELOW HERE ////
+////
+////
+config.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
 config.ENV_SOURCE = { 
         10: "air",
          20: "extreme habitat",
@@ -108,43 +132,37 @@ config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10
 
 config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Distance Heatmap (py)',      thumb:'/images/visuals/heatmap.png',		link:'user_viz_data/heatmap',        id:'dheatmap_link_id', 
-        tip:'REQUIERMENTS-|-Python'     },
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'},
     {name:'Frequency Heatmap (R-pdf)',  thumb:'/images/visuals/fheatmap.png', 		link:'user_viz_data/frequency_heatmap', id:'fheatmap_link_id', 
-        tip:'REQUIERMENTS-|-R'  },
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'},
     {name:'Stackbar Charts (d3-svg)',   thumb:'/images/visuals/barcharts.png',   	link:'user_viz_data/barcharts',      id:'barcharts_link_id', 
-        tip:'REQUIERMENTS-|-'    },
+        tip:''    },
     {name:'Pie Charts (d3-svg)',        thumb:'/images/visuals/pie_charts.png',  	link:'user_viz_data/piecharts',      id:'piecharts_link_id', 
-        tip:'REQUIERMENTS-|-'    },
+        tip:''    },
     {name:'Data Browser (Krona)',       thumb:'/images/visuals/krona.png',  		link:'user_viz_data/dbrowser',       id:'dbrowser_link_id', 
-        tip:'REQUIERMENTS-|-'     },
+        tip:''     },
 	{name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id', 
-        tip:'REQUIERMENTS-|-'   },
+        tip:''   },
 	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
-        tip:'REQUIERMENTS-|-R'   },
+        tip:''   },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id', 
-        tip:'REQUIERMENTS-|-Python'},
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
     {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',           id:'pcoa_link_id', 
-        tip:'REQUIERMENTS-|-R-|-Library:'        },
+        tip:'R (https://www.r-project.org/)-|-jsonlite (R-package)'        },
     {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',           id:'pcoa_3d_link_id', 
-        tip:'REQUIERMENTS-|-Python-|-QIIME'     },
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)' },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',	link:'user_viz_data/counts_table',   id:'counts_table_link_id', 
-        tip:'REQUIERMENTS-|-'  },
+        tip:''  },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    	link:'user_viz_data/metadata_table', id:'metadata_table_link_id', 
-        tip:'REQUIERMENTS-|-'},
+        tip:''},
     {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
-        tip:'REQUIERMENTS-|-'    },
+        tip:''    },
     {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id', 
-        tip:'REQUIERMENTS-|-Python'}
+        tip:''}
    
 ]};
     
 config.REQ_METADATA_FIELDS = ["altitude", "assigned_from_geo", "collection_date", "common_name", "country", "depth", "description", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public", "taxon_id"];
-config.PATH_TO_RDP = '/Users/avoorhis/programming/rdp_classifier/dist/';
-config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
-
-config.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
-config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
-config.PATH_TO_EXTERNAL_SCRIPTS = '/Users/avoorhis/programming/python_pipeline/';
 
 module.exports = config;
 

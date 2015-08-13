@@ -522,7 +522,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         
         var options = {
           scriptPath : 'public/scripts',
-          args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa', '--site_base', process.env.PWD, '--prefix', ts],
+          args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
         PythonShell.run('distance.py', options, function (err, pcoa_data) {
@@ -589,7 +589,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                       ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
                       console.log(html_path);
                       open('file://'+html_path);
-                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");                                 
+                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
                   }else{
                     // python script error
                     console.log('python script error');
@@ -904,19 +904,19 @@ function get_sumator(req){
 //
 //  G E O S P A T I A L
 //
-router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
-  var myurl = url.parse(req.url, true);
+// router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
+//   var myurl = url.parse(req.url, true);
 
-  var ts    = myurl.query.ts;
-  var html  = COMMON.start_visuals_html('geospatial');
+//   var ts    = myurl.query.ts;
+//   var html  = COMMON.start_visuals_html('geospatial');
 
-  res.render('visuals/user_viz_data/geospatial', {
-            title: 'VAMPS Geospatial Data',
-            timestamp: ts || 'default_timestamp',
-            html : html+"<h2>Not Coded Yet</h2>",
-            user: req.user
-      });
-});
+//   res.render('visuals/user_viz_data/geospatial', {
+//             title: 'VAMPS Geospatial Data',
+//             timestamp: ts || 'default_timestamp',
+//             html : html+"<h2>Not Coded Yet</h2>",
+//             user: req.user
+//       });
+// });
 
 //
 // B A R - C H A R T  -- S I N G L E

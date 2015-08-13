@@ -269,6 +269,8 @@
   position: absolute;
   background-color: #cfc;
   border: 2px solid #c9c;
+  font-size:11px;
+  padding:2px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;

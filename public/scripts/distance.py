@@ -265,51 +265,51 @@ def construct_pcoa(dist_matrix):
 #
 #
 #
-def plot_tree( P, pos=None ):
-        import matplotlib.pylab as plt
-        icoord = scipy.array( P['icoord'] )
-        dcoord = scipy.array( P['dcoord'] )
-        color_list = scipy.array( P['color_list'] )
-        xmin, xmax = icoord.min(), icoord.max()
-        ymin, ymax = dcoord.min(), dcoord.max()
-        if pos:
-            icoord = icoord[pos]
-            dcoord = dcoord[pos]
-            color_list = color_list[pos]
-        for xs, ys, color in zip(icoord, dcoord, color_list):
-            plt.plot(xs, ys,  color)
-        plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
-        plt.ylim( ymin, ymax + 0.1*abs(ymax) )
-        plt.show()
+# def plot_tree( P, pos=None ):
+#         import matplotlib.pylab as plt
+#         icoord = scipy.array( P['icoord'] )
+#         dcoord = scipy.array( P['dcoord'] )
+#         color_list = scipy.array( P['color_list'] )
+#         xmin, xmax = icoord.min(), icoord.max()
+#         ymin, ymax = dcoord.min(), dcoord.max()
+#         if pos:
+#             icoord = icoord[pos]
+#             dcoord = dcoord[pos]
+#             color_list = color_list[pos]
+#         for xs, ys, color in zip(icoord, dcoord, color_list):
+#             plt.plot(xs, ys,  color)
+#         plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
+#         plt.ylim( ymin, ymax + 0.1*abs(ymax) )
+#         plt.show()
+# #
 #
 #
-#
-def get_json(node):
-    # Read ETE tag for duplication or speciation events
-    from ete2 import Tree
-    import random
-    if not hasattr(node, 'evoltype'):
-        dup = random.sample(['N','Y'], 1)[0]
-    elif node.evoltype == "S":
-        dup = "N"
-    elif node.evoltype == "D":
-        dup = "Y"
+# def get_json(node):
+#     # Read ETE tag for duplication or speciation events
+#     from ete2 import Tree
+#     import random
+#     if not hasattr(node, 'evoltype'):
+#         dup = random.sample(['N','Y'], 1)[0]
+#     elif node.evoltype == "S":
+#         dup = "N"
+#     elif node.evoltype == "D":
+#         dup = "Y"
      
-    node.name = node.name.replace("'", '')
-    json = { "name": node.name,
-            "display_label": node.name,
-            "duplication": dup,
-            "branch_length": str(node.dist),
-            "common_name": node.name,
-            "seq_length": 0,
-            "type": "node" if node.children else "leaf",
-            "uniprot_name": "Unknown",
-            }
-    if node.children:
-        json["children"] = []
-        for ch in node.children:
-            json["children"].append(get_json(ch))
-    return json
+#     node.name = node.name.replace("'", '')
+#     json = { "name": node.name,
+#             "display_label": node.name,
+#             "duplication": dup,
+#             "branch_length": str(node.dist),
+#             "common_name": node.name,
+#             "seq_length": 0,
+#             "type": "node" if node.children else "leaf",
+#             "uniprot_name": "Unknown",
+#             }
+#     if node.children:
+#         json["children"] = []
+#         for ch in node.children:
+#             json["children"].append(get_json(ch))
+#     return json
 
 #
 #
@@ -541,7 +541,7 @@ if __name__ == '__main__':
     if args.function == 'pcoa_3d':
         pcoa_data = pcoa(args, dm3)
         
-    if args.function == 'pcoa':
+    if args.function == 'pcoa_2d':
         # if not args.metadata:
         #   print "ERROR: In PCoA and no metadata recieved"
         #   sys.exit()
