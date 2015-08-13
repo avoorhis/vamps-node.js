@@ -1335,7 +1335,8 @@ function create_adiversity(ts){
     var info_line = create_header('adiversity', pi_local);
     document.getElementById('adiversity_title').innerHTML = info_line;
     document.getElementById('pre_adiversity_div').style.display = 'block';
-     
+    document.getElementById('adiversity_div').style.display = 'block';
+    document.getElementById('adiversity_div').innerHTML = 'TODO';
          
 
 }

@@ -40,6 +40,7 @@ var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
 var portals   = require('./routes/routes_portals');
+var metadata   = require('./routes/routes_metadata');
 
 var visuals = require('./routes/visuals/routes_visualization');
 var C = require('./public/constants');
@@ -132,7 +133,7 @@ app.use('/visuals', visuals);
 app.use('/search', search);
 app.use('/user_data', user_data);
 app.use('/portals', portals);
-
+app.use('/metadata', metadata);
 
 // for non-routing pages such as heatmap, counts and bar_charts
 app.get('/*', function(req, res, next){

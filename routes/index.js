@@ -68,14 +68,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
                             });
   });
 
-  /* GET metadata page. */
-  router.get('/metadata', function(req, res) {
-      res.render('metadata', { title: 'VAMPS:Metadata',
-                             user: req.user,
-	  message:'',
-                            });
-  });
-
+  
   
   
  
