@@ -167,13 +167,13 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
     console.log('validate_format')
     console.log(JSON.stringify(req.url))
     var myurl = url.parse(req.url, true);
-    
-    var import_type    = myurl.query.import_type;
+    console.log(myurl.query)
+    var file_type    = myurl.query.file_type;
     res.render('user_data/validate_format', { 
 	    title: 'VAMPS:Import Data',
   		message: req.flash('successMessage'),
 	    failmessage: req.flash('failMessage'),
-        import_type: import_type,
+        file_type: file_type,
           user: req.user
                           });
 });
@@ -1003,18 +1003,18 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   
   var timestamp = +new Date();  // millisecs since the epoch!
   var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-  var new_metafile = path.join(data_repository,'metadata_'+timestamp+'.csv');
-  fs.move(original_metafile, new_metafile, function (err) {
-		    	if (err) {
-						req.flash('failMessage', '1-File move failure  '+err);
-						status_params = {'type':'update', 'user':req.user.username,
-											'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
-						helpers.update_status(status_params);
-						res.redirect("/user_data/import_data");
-						return;
-					}
+  //var new_metafile = path.join(data_repository,'metadata_'+timestamp+'.csv');
+  // fs.move(original_metafile, new_metafile, function (err) {
+		//     	if (err) {
+		// 				req.flash('failMessage', '1-File move failure  '+err);
+		// 				status_params = {'type':'update', 'user':req.user.username,
+		// 									'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+		// 				helpers.update_status(status_params);
+		// 				res.redirect("/user_data/import_data");
+		// 				return;
+		// 			}
 					var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args : [ '-i', new_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
+		        			args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
 		    			};
 					if(has_tax){
 						options.args = options.args.concat(['--has_tax']);
@@ -1067,7 +1067,10 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 								   	} // end else
 							       
 							   	});
-								}  // end if(has_tax)					   
+								}else{  // end if(has_tax)	
+									req.flash('successMessage', 'Metadata Upload in Progress');
+			       			res.redirect("/user_data/import_choices");
+								}				   
 					   
 				   }else{
 				   		// ERROR
@@ -1080,7 +1083,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 				   }
 				});  // end upload_metadata_process ON Close  
 
-	});
+//	});
 		
 	
 

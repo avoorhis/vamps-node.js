@@ -21,22 +21,28 @@
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
     
 	<h4>Import Simple (single dataset) Form: <small>(All fields are required)</small></h4>
+  <div class="form-group">
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href='validate_format' >Validate Fasta File</a> | <a href='validate_format' >Validate Metadata File</a>
+        </div> 
+  </div>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="project">Project Name:</label>
+      <label class="control-label col-sm-3" for="project">Project Name:</label>
 	  <div class="col-sm-3">
         <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
       </div>
-	  <small>(<a href='#' target='_blank'>required name format</a>)</small>
+	  <a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="meta">Dataset Name:</label>
+      <label class="control-label col-sm-3" for="meta">Dataset Name:</label>
       <div class="col-sm-3">          
         <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter Dataset Name">
       </div>
-	  <small>(<a href='#'>required name format</a>)</small>
+	  <a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
+      <label class="control-label col-sm-3" for="fasta">Fasta File:</label>
       <div class="col-sm-3 btn">
 
 
@@ -44,17 +50,17 @@
 
 
       </div>
-	  <small>(<a href='#'  target='_blank'>required file format</a>)</small>
+	  <a href='#' target='_blank' title='format'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="meta">Metadata File:</label>
+      <label class="control-label col-sm-3" for="meta">Metadata File:</label>
       <div class="col-sm-3 btn"> 
 
 
         <input type="file" name='upload_files' class="" id="meta">
 
 
-      </div><small>(<a href='#' target='_blank'>required file format</a>)</small> 
+      </div><a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
       <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of required metadata</a>)</small>
     </div>
     <div class="form-group">        
@@ -70,23 +76,29 @@
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
 	<h4>Import Multi-Dataset Form: <small>(All fields are required)</small></h4>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="project">Project Name:</label>
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href='validate_format' >Validate Fasta File</a> | <a href='validate_format' >Validate Metadata File</a>
+        </div> 
+  </div>
+  <div class="form-group">
+      <label class="control-label col-sm-3" for="project">Project Name:</label>
       
 	  <div class="col-sm-3">
         <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
-      </div><small>(<a href='/help/faq#formats' target='_blank'>required name format</a>)</small>
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
+      <label class="control-label col-sm-3" for="fasta">Fasta File:</label>
       <div class="col-sm-3 btn">
         <input type="file" name='upload_files' class="" id="fasta" >
-      </div><small>(<a href='/help/faq#formats' target='_blank'>required file format</a>)</small>
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="meta">Metadata File:</label>
+      <label class="control-label col-sm-3" for="meta">Metadata File:</label>
       <div class="col-sm-3 btn">          
         <input type="file" name='upload_files' class="" id="meta" >
-      </div><small>(<a href='/help/faq#formats' target='_blank'>required file format</a>)</small> 
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
       <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of required metadata</a>)</small>
     </div>
     <div class="form-group">        
@@ -102,8 +114,14 @@
   <form class="form-horizontal" role="form" method='POST' action='upload_metadata' enctype="multipart/form-data">
   	<h4>Add Metadata to a Project: <small>(All fields are required)</small></h4>
   	<div class="form-group">
-        <label class="control-label col-sm-2" for="project">Project Name:</label>      
-        <div class="col-sm-3">
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href='validate_format' >Validate Metadata File</a>   
+        </div> 
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-3" for="project">Project Name:</label>      
+        <div class="col-sm-2 btn">
           <select name='project_name' class=''>
 			       <option>select project name</option>
              <% for(i in my_projects) { %>
@@ -112,17 +130,29 @@
 		      </select>   
 	    </div>
   	</div>
+    
     <div class="form-group">
-        <label class="control-label col-sm-2" for="meta">CSV File Format:</label>
-        <div class="col-sm-3 btn"> 
-          <input type='radio' selected name='metadata_file_format' value='vamps'> VAMPS Style<small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>sample template</a>)</small>
-          <input type='radio' name='metadata_file_format' value='qiime'> QIIME Style<br><small>(<a href='/help/faq#formats' target='_blank'>required file formats</a>)</small>
+        <label class="control-label col-sm-3" for="meta">CSV File Format:</label>
+        <div class="col-sm-4 btn"> 
+          <input type='radio' name='metadata_file_format' value='vamps'> VAMPS Style
+          <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template</a>)</small>
+          <input type='radio' checked='checked' name='metadata_file_format' value='qiime'> QIIME Style Mapping File
+          <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
         </div>
         
     </div>
     <div class="form-group">
-        <label class="control-label col-sm-2" for="meta">Metadata File:</label>
-        <div class="col-sm-3 btn">          
+        <label class="control-label col-sm-3" for="meta">Replace or Add To<br>Existing Metadata:</label>
+        <div class="col-sm-2 btn"> 
+          <input type='radio' disabled='disabled' name='add_to_or_replace' value='add'> Add To  
+          - OR -        
+          <input type='radio' checked='checked' name='add_to_or_replace' value='replace'> Replace<br>
+        </div>
+        
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-3" for="meta">Metadata File:</label>
+        <div class="col-sm-2 btn">          
           <input type="file" name='upload_file' class="" id="meta" >
         </div>
     </div>
@@ -141,7 +171,13 @@
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
   	<h4>TODO: Import New Datasets to Project: <small>(All fields are required)</small></h4>
   	<div class="form-group">
-        <label class="control-label col-sm-2" for="project">Project Name:</label>      
+        <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
+        <div class="col-sm-2 btn">
+          <a href='validate_format' >Validate Fasta File</a> | <a href='validate_format' >Validate Metadata File</a>
+        </div> 
+  </div>
+    <div class="form-group">
+        <label class="control-label col-sm-3" for="project">Project Name:</label>      
         <div class="col-sm-3">
           <select class=''>
 			<option>select project name</option>
@@ -149,16 +185,16 @@
 	    </div>
   	</div>
 	<div class="form-group">
-      <label class="control-label col-sm-2" for="fasta">Fasta File:</label>
+      <label class="control-label col-sm-3" for="fasta">Fasta File:</label>
       <div class="col-sm-3 btn">
         <input type="file" name='upload_files' class="" id="fasta" >
-      </div><small>(<a href='/help/faq#formats' target='_blank'>required file format</a>)</small>
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
-        <label class="control-label col-sm-2" for="meta">Metadata File:</label>
+        <label class="control-label col-sm-3" for="meta">Metadata File:</label>
         <div class="col-sm-3 btn">          
           <input type="file" name='upload_files' class="" id="meta" >
-        </div><small>(<a href='/help/faq#formats' target='_blank'>required file format</a>)</small>
+        </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
         <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of required metadata</a>)</small>
     </div>
 	
@@ -175,27 +211,27 @@
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data_tax_by_seq' enctype="multipart/form-data">
     <h4>Import TaxBySeq File Form: <small>(All fields are required)</small></h4>
-    <hr>
-    
+    <br>   
     
     <div class="form-group">
-        <label class="control-label col-sm-2" for="project">Project Name:</label>
+        <label class="control-label col-sm-3" for="project">Project Name:</label>
         <div class="col-sm-3">
             <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name for Entire Set">
-        </div><small>(<a href='/help/faq#formats' target='_blank'>required name format</a>)</small>
+        </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
-    <label class="control-label col-sm-1" for="project"></label>OR
-    <div class="form-group">        
-        <div class="col-sm-offset-2 col-sm-10">
+    
+    <div class="form-group">  
+        <label class="control-label col-sm-3" for="">OR</label>     
+        <div class="col-sm-5">
             <input type="checkbox" name='use_original_names' class="" id="use_original_names" placeholder="Use Original Names"> Use original VAMPS project and dataset names from the file
         </div>
     </div>
     <hr>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="fasta">TaxBySeq File:</label>
+      <label class="control-label col-sm-3" for="fasta">TaxBySeq File:</label>
       <div class="col-sm-3 btn">
         <input type="file" name='upload_file' class="" id="tax_by_seq" >
-      </div><small>(<a href='/help/faq#formats' target='_blank'>required file format</a>)</small>
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     
     

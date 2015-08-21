@@ -16,93 +16,93 @@
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='simple_fasta' > Simple (single dataset) Fasta file
+				<input type='hidden' name='import_type' value='simple_fasta' >&nbsp;Simple (single dataset) Fasta File
             </form>	
             </td>
             <td>
                 Upload files (metadata and fasta) for a single project with a single dataset.
             </td>
             <td>
-                <small>required files: fasta, metadata</small> <small>(<a href='/help/faq#import_data' target='_blank'>see file formats</a>)</small>
+                <small>required files: fasta, metadata</small> <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
             </td>
         </tr>
         <tr>
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='multi_fasta'> Multi-Dataset Fasta file
+				<input type='hidden' name='import_type' value='multi_fasta'>&nbsp;Multi-Dataset Fasta File
             </form>
             </td>
             <td>
                 Upload files for a single project with multiple datasets.
             </td>
             <td>
-                <small>required files: fasta, metadata</small> <small>(<a href='/help/faq#import_data' target='_blank'>see file formats</a>)</small>
+                <small>required files: fasta, metadata</small> <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
             </td>
         </tr> 
         <tr>
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-                <input type='hidden' name='import_type' value='tax_by_seq'> VAMPS(legacy) TaxBySeq file
+                <input type='hidden' name='import_type' value='tax_by_seq'>&nbsp;VAMPS(legacy) TaxBySeq File
             </form>
             </td>
             <td>
                 Upload TaxBySeq file from legacy VAMPS download.
             </td>
             <td>
-                <small>required files: TaxBySeq.txt</small> <small>(<a href='/help/faq#legacy_vamps_import' target='_blank'>see file formats</a>)</small>
+                <small>required files: TaxBySeq.txt</small> <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
             </td>
         </tr> 
         <tr>
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='metadata'> Add Metadata to a Project
+				<input type='hidden' name='import_type' value='metadata'>&nbsp;Add Metadata to a Project
             </form>
             </td>
             <td>Add metadata to your established project. 
             </td><td>
-                <small>required files: metadata</small> <small>(<a href='/help/faq#' target='_blank'>see metadata file format</a>)</small>
+                <small>required files: metadata</small> <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
             </td>
         </tr>
         <tr>
             <td>
             <form id='' class='' method='GET' action='import_data'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='import_type' value='new_data'> Add Datasets to a Project -TODO
+				<input type='hidden' name='import_type' value='new_data'>&nbsp;Add Datasets to a Project -TODO
             </form>
             </td>
             <td>Add aditional datasets to your established project. 
             </td>
             <td>
-                <small>required files: fasta, metadata</small> <small>(<a href='/help/faq#' target='_blank'>see fasta file formats</a>)</small>
+                <small>required files: fasta, metadata</small> <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
             </td>
         </tr>
         <tr>
             <td>
             <form id='' class='' method='GET' action='validate_format'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='file_type' value='metadata'> Check Metadata File -TODO
+				<input type='hidden' name='file_type' value='metadata'>&nbsp;Validate a Metadata File -TODO
             </form>
             </td>
-            <td>Validate a metadata csv file. 
+            <td>
             </td>
             <td>
-                <small>required files: metadata</small> <small>(<a href='/help/faq#' target='_blank'>see metadata file format</a>)</small>
+              
             </td>
         </tr>
         <tr>
             <td>
             <form id='' class='' method='GET' action='validate_format'>
                 <input type='radio' onclick='this.form.submit();this.checked=false;'>
-				<input type='hidden' name='file_type' value='fasta' > Check Sequence File -TODO
+				<input type='hidden' name='file_type' value='fasta' >&nbsp;Validate a Fasta File -TODO
             </form>
             </td>
-            <td>Validate a fasta file. 
+            <td>
             </td>
             <td>
-                <small>required files: fasta</small> <small>(<a href='/help/faq#' target='_blank'>see fasta file format</a>)</small>
+                
             </td>
         </tr>
     </tbody>

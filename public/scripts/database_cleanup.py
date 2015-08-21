@@ -252,6 +252,6 @@ if __name__ == '__main__':
             print myusage
             sys.exit('Needs either project name (-p) or project ID (-pid) -- Exiting (OR -all to empty the database)')
         clean(args)
-            
+    print 'Now, restart the server!'        
     
         
