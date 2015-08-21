@@ -161,8 +161,8 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
-
-/* GET Import Data page. */
+//
+/* GET Validate page. */
 router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
     console.log('validate_format')
     console.log(JSON.stringify(req.url))
@@ -177,7 +177,78 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
           user: req.user
                           });
 });
+//
+//
+//
+router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req, res) {
+    console.log('POST validate_file')
+    //console.log(JSON.stringify(req.url))
+    //var myurl = url.parse(req.url, true);
+    console.log(req.body)
+    console.log(req.file);
+    var file_type    = req.body.file_type;
+    var file_style   = req.body.file_style;
+    console.log('file_type '+ file_type)
+    console.log('file_style '+ file_style);
+    var file_path = path.join(process.env.PWD,req.file.path)
+    console.log('file_path '+ file_path);
 
+		var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
+		        			args : [ '-i', file_path, '-ft',file_type,'-s', file_style,'-pdir',process.env.PWD,]
+		    			};
+					
+		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
+		var spawn = require('child_process').spawn;
+		var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+		var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+		var output = ''
+		validate_process.stdout.on('data', function (data) {
+		  //console.log('stdout: ' + data);
+		  data = data.toString().replace(/^\s+|\s+$/g, '');
+		  output += data;
+
+		 
+		});
+		validate_process.on('close', function (code) {
+				console.log('validate_process exited with code ' + code);
+				var ary = output.split("\n");
+				var last_line = ary[ary.length - 1];
+				if(code == 0){
+					console.log('OK '+code)
+					req.flash('successMessage', 'Validates');
+					res.render('user_data/validate_format', { 
+					    title: 'VAMPS:Import Data',
+				  		message: req.flash('successMessage'),
+					    failmessage: '',
+				        file_type: file_type,
+				          user: req.user
+                          });
+
+				}else{
+					console.log('ERROR '+code)
+					req.flash('failMessage', 'Failed Validation');
+					res.render('user_data/validate_format', { 
+					    title: 'VAMPS:Import Data',
+				  		message: '',
+					    failmessage: req.flash('failMessage'),
+				        file_type: file_type,
+				          user: req.user
+                          });
+				}
+
+	  });
+
+
+
+
+    // res.render('user_data/validate_format', { 
+	   //  title: 'VAMPS:Import Data',
+  		// message: req.flash('successMessage'),
+	   //  failmessage: req.flash('failMessage'),
+    //     file_type: file_type,
+    //       user: req.user
+    //                       });
+});
 //
 //
 //

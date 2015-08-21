@@ -12,7 +12,7 @@
 	
 	<% if(file_type == 'metadata') { %>
     
-  <form class="form-horizontal" role="form" method='POST' action='upload_metadata' enctype="multipart/form-data">
+  <form class="form-horizontal" role="form" method='POST' action='validate_file' enctype="multipart/form-data">
   	<h4>Validate a Metadata File: </h4>
   	
     
@@ -20,9 +20,9 @@
     <div class="form-group">
         <label class="control-label col-sm-3" for="meta">File Format that you want to validate:</label>
         <div class="col-sm-4 btn"> 
-          <input type='radio' name='metadata_file_format' value='vamps'> VAMPS Style
+          <input type='radio' name='file_style' value='vamps'> VAMPS Style
           <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template</a>)</small>
-          <input type='radio' checked='checked' name='metadata_file_format' value='qiime'> QIIME Style Mapping File
+          <input type='radio' checked='checked' name='file_style' value='qiime'> QIIME Style Mapping File
           <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
         </div>
         
@@ -41,12 +41,12 @@
           <button type="submit" class="btn btn-default">Submit</button>
         </div>
     </div>
-	<input type='hidden' name='type' value='<%= file_type %>' />
+	<input type='hidden' name='file_type' value='<%= file_type %>' />
   </form>
 <% } else if(file_type == 'fasta') { %>
 <!-- ======================================================================================================== -->		
  
-  <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
+  <form class="form-horizontal" role="form" method='POST' action='validate_file' enctype="multipart/form-data">
 	<h4>Validate a Fasta File: </h4>
 	
   <div class="form-group">
@@ -70,7 +70,7 @@
         <button type="submit" class="btn btn-default">Submit</button>
       </div>
     </div>
-	<input type='hidden' name='type' value='<%= file_type %>'>
+	<input type='hidden' name='file_type' value='<%= file_type %>'>
   </form>
 <!-- ======================================================================================================== -->		
 <% } %>
