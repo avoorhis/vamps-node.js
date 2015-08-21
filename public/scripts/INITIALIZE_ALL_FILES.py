@@ -223,7 +223,7 @@ def go_metadata():
     	table = 'custom_metadata_'+ pid
     	fields = ['dataset_id']+pid_collection[pid]
 
-        cust_dquery = "SELECT " + ','.join(fields) + " from " + table
+        cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
     	print 'running other cust',cust_dquery
         logging.debug('running other cust: ' +cust_dquery)
     	#try:
@@ -285,10 +285,13 @@ if __name__ == '__main__':
     dbs = []
     db_str = ''
     print myusage
-    for i, row in enumerate(cur.fetchall()):
-        dbs.append(row[0])
-        db_str += str(i)+'-'+row[0]+';  '
-        print str(i)+' - '+row[0]+';  '
+    i = 0
+    for row in cur.fetchall():
+        if row[0] != 'mysql' and row[0] != 'information_schema':
+            dbs.append(row[0])
+            db_str += str(i)+'-'+row[0]+';  '
+            print str(i)+' - '+row[0]+';  '
+            i += 1
     #print db_str
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):

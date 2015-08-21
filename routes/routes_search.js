@@ -658,7 +658,7 @@ router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
       // search only if did allowed by permissions
       var pid = PROJECT_ID_BY_DID[did];
       if(user.security_level === 1 || PROJECT_INFORMATION_BY_PID[pid].permissions  === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions === user.user_id ){
-        console.log('IN METADATA');
+        //console.log('IN METADATA');
         for (var mdname in metadata[did]){
           if(mdname === search['metadata-item']){
           

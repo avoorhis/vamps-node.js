@@ -299,16 +299,15 @@ if __name__ == '__main__':
    
     parser.add_argument("-dir","--outdir",                   
     			required=True,  action="store",   dest = "outdir", 
-    			help="""Directory to output ini and dir structure""")  
-    
+    			help="""Directory to output ini and dir structure""")     
     
     parser.add_argument("-d", "--dataset",        
     			required=False,  action='store', dest = "dataset",  default='',
-    			help="Dataset Name") 
-                                                 
+    			help="Dataset Name")                                                  
     parser.add_argument("-t", "--upload_type",
     			required=True,  action='store', dest = "upload_type",  default='multi',
                 choices=['multi','single'], help="multi or single dataset")
+
     parser.add_argument("-co", "--config_only", 
     			required=False,  action='store_true', dest = "config_only",  default=False, 
     			help="")
@@ -339,8 +338,8 @@ if __name__ == '__main__':
     if args.upload_type == 'single' and not args.dataset:
         sys.exit('Requires dataset for single mode')
     fafile = os.path.join(args.outdir,'fasta.fa')
-    mdfile = os.path.join(args.outdir,'meta.csv') 
-    mdfile_clean = os.path.join(args.outdir,'meta_clean.csv')
+    mdfile = os.path.join(args.outdir,'meta_original.csv') 
+    mdfile_clean = os.path.join(args.outdir,'metadata_clean.csv')
     
     
     create_dirs(args)    

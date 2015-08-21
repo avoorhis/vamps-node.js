@@ -13,21 +13,27 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
  
- 
- Search Options:
- 
+<table>
+<tr>
+ 	<td>Search Options:&nbsp;</td>
+	<td>
+		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by name)</small></a>
+		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by value)</small></a>
+	</td>
+</tr>
+<tr>
+	<td></td>
+	<td>
+		<a href="#taxonomy" role="button" class="btn btn-default btn-xs">Taxonomy</a>
+		<a href="#names" role="button" class="btn btn-default btn-xs">Names (key words)</a>
+		<a href="#user" role="button" class="btn btn-default btn-xs">Users</a>
+		<a href="#project" role="button" class="btn btn-default btn-xs">Project/Dataset</a>
+		<a href="#blast" role="button" class="btn btn-default btn-xs">Blast</a>
+	</td>
+</tr>
+</table>
 
-	<a href="#metadata" role="button" class="btn btn-default btn-sm">Metadata</a>
-	<a href="#taxonomy" role="button" class="btn btn-default btn-sm">Taxonomy</a>
-	<a href="#names" role="button" class="btn btn-default btn-sm">Names (key words)</a>
-	<a href="#user" role="button" class="btn btn-default btn-sm">Users</a>
-	<a href="#project" role="button" class="btn btn-default btn-sm">Projects</a>
-	<a href="#blast" role="button" class="btn btn-default btn-sm">Blast</a>
-
-<br><br>
-
-
-<!-- METADATA SEARCH --><a name="metadata"></a>
+<!-- METADATA SEARCH by Name --><a name="metadata"></a>
 <br><br>
 <div id='metadata_search_div' class='well'>
 	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
@@ -37,7 +43,7 @@
 					<input type='radio' name='join_type' value='addition' /> Addition
 			</div>
 		<br>
-		<strong>Metadata -- Search all datasets</strong> (limited by permissions)
+		<strong>Metadata -- Search by Name</strong> (limited by permissions)
 		<br>
 		Select Field(s) to Search:<br>
 		<ol>	
@@ -198,7 +204,7 @@
 <!-- PROJECT SEARCH --><a name="project"></a>
 <br><br>
 <div id='project_search_div' class='well'>
-	<strong>Project (dataset) Search</strong>
+	<strong>Project/Dataset Search</strong>
 	
 	
 	</ul>		

@@ -121,15 +121,43 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
     console.log('import_data')
     console.log(JSON.stringify(req.url))
     var myurl = url.parse(req.url, true);
-    
+    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+    var my_projects = [];
     var import_type    = myurl.query.import_type;
-    res.render('user_data/import_data', { 
-	    title: 'VAMPS:Import Data',
-  		message: req.flash('successMessage'),
-	    failmessage: req.flash('failMessage'),
-        import_type: import_type,
-          user: req.user
-    });
+
+		fs.readdir(user_projects_base_dir, function(err, items){
+				if(err){		  
+					
+					fs.ensureDir(user_projects_base_dir, function (err) {
+		  			console.log(err) // => null
+		  			// dir has now been created, including the directory it is to be placed in
+					})
+					
+				  
+				}else{
+				  for (var d in items){
+		        var pts = items[d].split(':');
+		        if(pts[0] === 'project'){
+					
+							var project_name = pts[1];
+							my_projects.push(project_name);
+
+						}
+					}
+
+					res.render('user_data/import_data', { 
+				    title: 'VAMPS:Import Data',
+			  		message: req.flash('successMessage'),
+				    failmessage: req.flash('failMessage'),
+			        import_type: import_type,
+			        my_projects:my_projects,
+			          user: req.user
+			    });
+
+				} // end else
+			});
+
+			    
 });
 //
 //
@@ -956,11 +984,112 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	
 });
 //
+//  UPLOAD  METADATA
 //
+router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req,res){
+	var project = req.body.project_name;
+	var file_format = req.body.metadata_file_format;
+	var original_metafile = path.join(process.env.PWD,req.file.path);
+	var username = req.user.username;
+	console.log('1-req.body upload_metadata');
+  console.log(req.body);
+  console.log(req.file);
+  console.log('2-req.body upload_metadata');
+  var has_tax = false
+  if(project in PROJECT_INFORMATION_BY_PNAME){
+  	has_tax = true
+  	
+  }
+  
+  var timestamp = +new Date();  // millisecs since the epoch!
+  var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+  var new_metafile = path.join(data_repository,'metadata_'+timestamp+'.csv');
+  fs.move(original_metafile, new_metafile, function (err) {
+		    	if (err) {
+						req.flash('failMessage', '1-File move failure  '+err);
+						status_params = {'type':'update', 'user':req.user.username,
+											'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+						helpers.update_status(status_params);
+						res.redirect("/user_data/import_data");
+						return;
+					}
+					var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
+		        			args : [ '-i', new_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
+		    			};
+					if(has_tax){
+						options.args = options.args.concat(['--has_tax']);
+					}
+					console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
+					var spawn = require('child_process').spawn;
+					var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+					var output = ''
+					upload_metadata_process.stdout.on('data', function (data) {
+					  console.log('stdout: ' + data);
+					  data = data.toString().replace(/^\s+|\s+$/g, '');
+					  output += data;
 
+					  // var lines = data.split('\n')
+					  // for(var n in lines){
+					  // 	//console.log('line: ' + lines[n]);
+							// if(lines[n].substring(0,4) == 'PID='){
+							// 	console.log('pid line '+lines[n]);
+							// }
+					  // }
+					});
+					upload_metadata_process.on('close', function (code) {
+				   console.log('upload_metadata_process exited with code ' + code);
+				   var ary = output.split("\n");
+				   var last_line = ary[ary.length - 1];
+				   if(code == 0){
+					   		console.log('Upload METADATA Success');
+					   		//console.log('PID last line: '+last_line)
+					   		//var ll = last_line.split('=');
+					   		// possible multiple pids
+					    	if(has_tax){
+					   			console.log(PROJECT_INFORMATION_BY_PNAME[project])
+					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+									connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+								    if (err)  {
+							 		  	console.log('1-Upload METADATA-Query error: ' + err);				 		  			 		  
+							      } else {
+			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+			        				   		if (err)  {
+			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		  	
+			        				    	} else {        
+			                      												   	
+															helpers.update_metadata_from_file();
+															req.flash('successMessage', 'Metadata Upload in Progress');
+			       									res.redirect("/user_data/import_choices");
+			        				    	}
+							       
+			        				   	});
+								   	} // end else
+							       
+							   	});
+								}  // end if(has_tax)					   
+					   
+				   }else{
+				   		// ERROR
+				   		//console.log(last_line);
+					    console.log('ERROR last line: '+last_line);
+
+			   	  	// NO REDIRECT here
+			   	  	req.flash('failMessage', 'Script Error: '+last_line);
+			        res.redirect("/user_data/import_choices");
+				   }
+				});  // end upload_metadata_process ON Close  
+
+	});
+		
+	
+
+});
+//
+//  UPLOAD DATA
+//
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function(req,res){
    
-	//req.upload.single('multiInputFileNames');
   var project = req.body.project;
   var username = req.user.username;
   console.log('1-req.body upload_data');
@@ -988,7 +1117,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		return;
   }else{
 			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-		      console.log(data_repository);
+		   console.log(data_repository);
 			status_params = {'type':'new', 'user':req.user.username,
 											'proj':project, 'status':'OK',	'msg':'Upload Started'  } 
 			helpers.update_status(status_params); 
@@ -1035,7 +1164,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						res.redirect("/user_data/import_data");
 						return;
 					}
-			  	fs.move(original_metafile,  path.join(data_repository,'meta.csv'), function (err) {
+			  	fs.move(original_metafile,  path.join(data_repository,'meta_original.csv'), function (err) {
 			    	if (err) {
 							req.flash('failMessage', '2-File move failure '+err);
 							status_params = {'type':'update', 'user':req.user.username,
@@ -1210,7 +1339,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 			   	  	//req.flash('message', 'Script Error'+last_line);
 			        //res.redirect("/user_data/your_projects");
 				   }
-				});  // end gast_process ON Close  
+				});  // end tax_by_seq_process ON Close  
 			  
 			
 

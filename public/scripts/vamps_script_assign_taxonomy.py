@@ -108,7 +108,7 @@ if __name__ == '__main__':
     LOG_FILENAME = os.path.join(args.basedir,'assign_tax.log')
     print LOG_FILENAME
                 
-    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
+    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG, filemode="w")    
     logging.debug(sys.path)
           
 
@@ -174,21 +174,15 @@ if __name__ == '__main__':
     import vamps_script_upload_metadata as load_metadata
     logging.info('running vamps_script_upload_metadata.py')
     print("starting metadata")
-
-
     load_metadata.start(args)
     logging.info("finishing metadata")
 
     
     # 4-4-4-4-4-4
     # creates taxcount/metadata file
-
-
     import vamps_script_create_json_dataset_files as dataset_files_creator
     logging.info('running vamps_script_create_json_dataset_files.py')   
     print("starting taxcounts")
-
-
     dataset_files_creator.go_add(args)
     logging.info("finishing taxcounts")
     

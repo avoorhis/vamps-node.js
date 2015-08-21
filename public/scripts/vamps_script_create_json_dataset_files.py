@@ -284,7 +284,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     print 'did_list',did_list
     print 'field_collection',field_collection
 
-    cust_dquery = "SELECT " + ','.join(field_collection) + " from " + table
+    cust_dquery = "SELECT `" + '`,`'.join(field_collection) + "` from " + table
     print cust_dquery
     try:
         cur.execute(cust_dquery)

@@ -6,6 +6,7 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 var queries = require('../queries');
 var util = require('util');
+var path  = require('path');
 
 module.exports = {
 
@@ -139,59 +140,60 @@ module.exports.send_mail = function(mail_info) {
 //
 //
 module.exports.run_select_datasets_query = function(rows){
-      var pids         = {};
-      var titles       = {};
-	   var datasetsByProject = {};
-	   for (var i=0; i < rows.length; i++) {
-      var project = rows[i].project;
-      var did = rows[i].did;
-      var dataset = rows[i].dataset;
-      var dataset_description = rows[i].dataset_description;
-      var pid = rows[i].pid;
-      var public = rows[i].public;
-      var user_id = rows[i].owner_user_id;
-      
-      PROJECT_ID_BY_DID[did]=pid;
+    var pids         = {};
+    var titles       = {};
+	  var datasetsByProject = {};
+    for (var i=0; i < rows.length; i++) {
+          var project = rows[i].project;
+          var did = rows[i].did;
+          var dataset = rows[i].dataset;
+          var dataset_description = rows[i].dataset_description;
+          var pid = rows[i].pid;
+          var public = rows[i].public;
+          var user_id = rows[i].owner_user_id;
+          
+          PROJECT_ID_BY_DID[did]=pid;
 
-      PROJECT_INFORMATION_BY_PID[pid] = {
-        "last" :			rows[i].last_name,
-        "first" :			rows[i].first_name,
-        "username" :		rows[i].username,
-        "email" :			rows[i].email,
-        "env_source_name" :	rows[i].env_source_name,
-        "institution" :		rows[i].institution,
-        "project" :			project,
-		    "pid" :			    pid,
-        "title" :			rows[i].title,
-        "description" :		rows[i].project_description,
-        "public" :          rows[i].public,
-		  
-      }
-      if(public){
-        PROJECT_INFORMATION_BY_PID[pid].permissions = 0;
-      }else{
-        PROJECT_INFORMATION_BY_PID[pid].permissions = user_id;
-      }
-	    PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
-	  
-      if(pid in DATASET_IDS_BY_PID){
-        DATASET_IDS_BY_PID[pid].push(did);
-      }else{
-        DATASET_IDS_BY_PID[pid]=[];
-        DATASET_IDS_BY_PID[pid].push(did);
-      }
-      pids[project] = pid;
-      titles[project] = rows[i].title;
-      
-      DATASET_NAME_BY_DID[did] = dataset
-      
-	  
-      if (project === undefined){ continue; }
-      if (project in datasetsByProject){
-          datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
-      } else {
-          datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
-      }
+          PROJECT_INFORMATION_BY_PID[pid] = {
+            "last" :			rows[i].last_name,
+            "first" :			rows[i].first_name,
+            "username" :		rows[i].username,
+            "email" :			rows[i].email,
+            "env_source_name" :	rows[i].env_source_name,
+            "institution" :		rows[i].institution,
+            "project" :			project,
+    		    "pid" :			    pid,
+            "title" :			rows[i].title,
+            "description" :		rows[i].project_description,
+            "public" :          rows[i].public,
+    		  
+          }
+          if(public){
+            PROJECT_INFORMATION_BY_PID[pid].permissions = 0;
+          }else{
+            PROJECT_INFORMATION_BY_PID[pid].permissions = user_id;
+          }
+    	    PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+    	  
+          if(pid in DATASET_IDS_BY_PID){
+            DATASET_IDS_BY_PID[pid].push(did);
+          }else{
+            DATASET_IDS_BY_PID[pid]=[];
+            DATASET_IDS_BY_PID[pid].push(did);
+          }
+          pids[project] = pid;
+          titles[project] = rows[i].title;
+          
+          DATASET_NAME_BY_DID[did] = dataset
+          
+    	  
+          if (project === undefined){ continue; }
+          if (project in datasetsByProject){
+              datasetsByProject[project].push({ did:did, dname:dataset, ddesc: dataset_description});
+          } else {
+              datasetsByProject[project] =   [{ did:did, dname:dataset, ddesc: dataset_description }];
+          }
+
     }
 
     // todo: console.log(datasetsByProject.length); datasetsByProject - not an array
@@ -210,7 +212,7 @@ module.exports.run_select_datasets_query = function(rows){
       ALL_DATASETS.projects.push(tmp);
     }
 	
-
+    console.log('Cleaning Metadata')
     var clean_metadata = {}
     for(did in AllMetadata){
           if(did in DATASET_NAME_BY_DID){
@@ -350,13 +352,13 @@ module.exports.update_status = function(status_params){
         });
   }else{
         var statQuery =''
-        if(pid in status_params && project in status_params){        
+        if('pid' in status_params && 'project' in status_params){        
           statQuery += "INSERT into user_project_status (user,project,project_id,status,message)";          
           statQuery += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-        }else if(pid in status_params){
+        }else if('pid' in status_params){
           statQuery += "INSERT into user_project_status (user,project_id,status,message)";          
           statQuery += " VALUES ('"+status_params.user+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-        }else if(project in status_params){
+        }else if('project' in status_params){
           statQuery += "INSERT into user_project_status (user,project,status,message)";          
           statQuery += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
         }else{
@@ -366,13 +368,13 @@ module.exports.update_status = function(status_params){
         connection.query(statQuery , function(err, rows, fields){
               if(err) { 
                 var statQuery =''
-                if(pid in status_params && project in status_params){  
+                if('pid' in status_params && 'project' in status_params){  
                     statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
                     statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' and project_id='"+status_params.pid+"'";
-                }else if(pid in status_params){
+                }else if('pid' in status_params){
                     statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
                     statQuery += " WHERE user='"+status_params.user+"' and project_id='"+status_params.pid+"'";
-                }else if(project in status_params){  
+                }else if('project' in status_params){  
                     statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
                     statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"'";
                 }else{
@@ -389,8 +391,8 @@ module.exports.update_status = function(status_params){
 }
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
-        console.log('query ok1 '+JSON.stringify(rows1));
-        console.log('query ok2 '+JSON.stringify(rows2));			           
+        console.log('query ok1 '+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
+        console.log('query ok2 '+JSON.stringify(rows2));	// queries.get_select_sequences_queryPID	           
         this.run_select_datasets_query(rows1);
         console.log(' UPDATED ALL_DATASETS');
         console.log(' UPDATED PROJECT_ID_BY_DID');
@@ -423,7 +425,16 @@ module.exports.reverse = function (str) {
   return str.split("").reverse().join("");
 };
 
-
+module.exports.update_metadata_from_file = function (){
+    var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
+    try {
+      AllMetadata        = require(meta_file);
+    }
+    catch (e) {
+      console.log(e);
+      AllMetadata = {}
+    }
+}
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
         switch (char) {

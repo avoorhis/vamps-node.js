@@ -176,8 +176,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  }
 	  console.log(JSON.stringify(METADATA))
 	  //console.log(JSON.stringify(TAXCOUNTS))
-	  console.log('Pulling TAXCOUNTS and METADATA ONLY for datasets selected (from files)');
+	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
+    console.log('METADATA= '+JSON.stringify(METADATA));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable

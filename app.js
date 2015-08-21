@@ -233,7 +233,7 @@ catch (e) {
   console.log(e);
   AllMetadata = {}
 }
-
+//console.log(AllMetadata)
 
 console.log('Loading METADATA as AllMetadata from: '+meta_file);
 

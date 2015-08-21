@@ -48,14 +48,19 @@ required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date",
 #'408170','human gut metagenome','American Gut Project Stool sample')
 #test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
 
-db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                         read_default_file="~/.my.cnf"  ) 
-cur = db.cursor()
+
 
 def start(args):
+    global mysql_conn, cur
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
     NODE_DATABASE = args.NODE_DATABASE
+    mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
+                db = NODE_DATABASE,
+                read_default_file="~/.my.cnf"  )
+    cur = mysql_conn.cursor()
     indir = args.basedir
-    csv_infile =   os.path.join(indir,'meta_clean.csv')
+    csv_infile =   os.path.join(indir,'metadata_clean.csv')
     if os.path.isfile(csv_infile):
         cur.execute("USE "+NODE_DATABASE)    
         get_config_data(indir)    
@@ -70,26 +75,30 @@ def start(args):
     print CUST_METADATA_ITEMS
     
 def put_required_metadata():
-    
-    q = "INSERT into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
+    global mysql_conn, cur
+    q = "INSERT IGNORE into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
     q = q+" VALUES("
     
     for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
         vals = "'"+str(did)+"',"
         
         for item in required_metadata_fields:
-            vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
+            if item in REQ_METADATA_ITEMS:
+                vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
+            else:
+                vals += "'',"
         q2 = q + vals[:-1] + ")"  
         print q2
         logging.info(q2)
         cur.execute(q2)
-    db.commit()
+    mysql_conn.commit()
             
             
 def put_custom_metadata():
     """
       create new table
     """
+    global mysql_conn, cur
     print 'starting put_custom_metadata'
     # TABLE-1 === custom_metadata_fields
     print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
@@ -139,7 +148,7 @@ def put_custom_metadata():
         q2 = "INSERT IGNORE into "+custom_table+" (project_id,dataset_id,"
         for key in cust_keys_array:
             if key != 'dataset_id':
-                q2 += key+","
+                q2 += "`"+key+"`,"
         q2 = q2[:-1]+ ")"
         q2 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
         for key in cust_keys_array:
@@ -150,11 +159,11 @@ def put_custom_metadata():
                 q2 += "'"+val+"',"
         q2 = q2[:-1] + ")"    # remove trailing comma
 
-
+        print q2
         logging.info(q2)
         cur.execute(q2)
     
-    db.commit()
+    mysql_conn.commit()
     
 def get_metadata(indir,csv_infile):
     
@@ -162,17 +171,7 @@ def get_metadata(indir,csv_infile):
     print 'csv',csv_infile
     logging.info('csv '+csv_infile)
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-    # try:
-#         csv_infile =   os.path.join(indir,'meta_clean.csv')
-#         print csv_infile
-#         lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-#     except:
-#
-#         csv_infile =   os.path.join(indir,'meta.csv')
-#         print csv_infile
-#         lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-#     else:
-#         sys.exit("FAILED TO READ METAFILE")
+   
     TMP_METADATA_ITEMS = {}
     
     #print lol
@@ -250,6 +249,7 @@ def get_metadata(indir,csv_infile):
         CUST_METADATA_ITEMS['dataset_id'] = []
             
 def get_config_data(indir):
+    global mysql_conn, cur
     config_infile =   os.path.join(indir,'config.ini') 
     print config_infile
     logging.info(config_infile)
@@ -278,7 +278,7 @@ def get_config_data(indir):
     for row in cur.fetchall():        
         DATASET_ID_BY_NAME[row[0]] = row[1]
         
-    db.commit()
+    mysql_conn.commit()
     
 
     
@@ -350,51 +350,36 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-    
-                                                    
-    parser.add_argument("-dir","--indir",                   
-                required=False,  action="store",   dest = "indir", default='./',
-                help="""Directory to output ini and dir structure""")  
-    
          
-    parser.add_argument("-i", "--infile",          
-                required=False,  action='store', dest = "infile",  default='',
-                help="Project name") 
     
+    parser.add_argument('-db', '--NODE_DATABASE',         
+                required=True,   action="store",  dest = "NODE_DATABASE",            
+                help = 'node database') 
+
     parser.add_argument("-comb", "--combine",          
                 required=False,  action='store_true', dest = "combine",  default=False,
                 help="combine 2 MoBE metadata files") 
                             
     parser.add_argument("-other", "--other_file",          
                 required=False,  action='store', dest = "other_file",  default=False,
-                help="")                           
+                help="")
+    parser.add_argument("-ddir", "--data_dir",    
+                required=True,  action="store",   dest = "basedir", 
+                help = '')         
+    
+    parser.add_argument("-pdir", "--process_dir",    
+                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                help = '')                           
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
     
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf"  )
-    cur = db.cursor()
-    cur.execute("SHOW databases like 'vamps%'")
-    dbs = []
-    db_str = ''
-    for i, row in enumerate(cur.fetchall()):
-        dbs.append(row[0])
-        db_str += str(i)+'-'+row[0]+';  '
-    print db_str
-    db_no = input("\nchoose database number: ")
-    if int(db_no) < len(dbs):
-        NODE_DATABASE = dbs[db_no]
-    else:
-        sys.exit("unrecognized number -- Exiting")
-        
-    print
-    cur.execute("USE "+NODE_DATABASE)
+    
     
     if args.combine:
         combine(args)
     else:
-        if args.indir and args.infile:
+        if args.basedir and args.process_dir:
             start(args)
         else:
             print myusage
