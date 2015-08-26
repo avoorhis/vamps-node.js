@@ -172,8 +172,10 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
     res.render('user_data/validate_format', { 
 	    title: 'VAMPS:Import Data',
   		message: req.flash('successMessage'),
-	    failmessage: req.flash('failMessage'),
         file_type: file_type,
+        file_style:'',
+        result:'',
+        original_fname:'',
           user: req.user
                           });
 });
@@ -211,26 +213,41 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 		});
 		validate_process.on('close', function (code) {
 				console.log('validate_process exited with code ' + code);
-				var ary = output.split("\n");
-				var last_line = ary[ary.length - 1];
+				console.log(output)
+				
+				var ary = output.substring(2,output.length-2).split("', '");
+				var result = ary.shift()				
+				console.log(ary)
+				//var last_line = ary[ary.length - 1];
 				if(code == 0){
-					console.log('OK '+code)
-					req.flash('successMessage', 'Validates');
+					//console.log('OK '+code)
+					console.log(typeof ary)
+					
+					if(result == 'OK'){
+						req.flash('message', 'Validates');
+					}else{
+						req.flash('message', 'Failed Validation');
+					}
 					res.render('user_data/validate_format', { 
-					    title: 'VAMPS:Import Data',
-				  		message: req.flash('successMessage'),
-					    failmessage: '',
-				        file_type: file_type,
-				          user: req.user
-                          });
+					     title: 'VAMPS:Import Data',
+				  		 message: req.flash('message'),
+					     
+				       file_type: file_type,
+				       //result:    JSON.stringify(ary),
+				       file_style: file_style,
+				       result_ary:    ary,
+				       original_fname: req.file.originalname,
+				       result : result,
+				       user: req.user
+             });
 
 				}else{
 					console.log('ERROR '+code)
-					req.flash('failMessage', 'Failed Validation');
+					req.flash('message', 'Failed Validation');
 					res.render('user_data/validate_format', { 
 					    title: 'VAMPS:Import Data',
-				  		message: '',
-					    failmessage: req.flash('failMessage'),
+				  		message: req.flash('message'),
+					    
 				        file_type: file_type,
 				          user: req.user
                           });

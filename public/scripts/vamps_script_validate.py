@@ -20,10 +20,12 @@ import shutil
 import types
 import time
 import random
+import re
 import logging
 import csv
 from time import sleep
 import ConfigParser
+from IlluminaUtils.lib import fastalib
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 
 import datetime
@@ -37,404 +39,282 @@ import MySQLdb
 # Global:
 #NODE_DATABASE = "vamps_js_dev_av"
 #NODE_DATABASE = "vamps_js_development"
-CONFIG_ITEMS = {}
-CONFIG_ITEMS["datasets"] = []
-DATASET_ID_BY_NAME = {}
-REQ_METADATA_ITEMS = {}
-CUST_METADATA_ITEMS = {}
+# CONFIG_ITEMS = {}
+# CONFIG_ITEMS["datasets"] = []
+# DATASET_ID_BY_NAME = {}
+# REQ_METADATA_ITEMS = {}
+# CUST_METADATA_ITEMS = {}
 
-required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+#required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
 
 #test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
 #'408170','human gut metagenome','American Gut Project Stool sample')
 #test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
+##############
+# fail with the following:
+dataset_pattern = '\s|--|>|<|;|@|!|#|\$|%|\^|&|\*|\(|\)|\|/?|,|~|`|\"|\'|[|]|{|}|\\|\|'
+sequence_pattern = re.compile('[^AGTC]', re.IGNORECASE)
+id_pattern = re.compile('[^0-9A-Z_.:-]', re.IGNORECASE)  #  Illumina-seqid:  HWI-M00888:59:000000000-A62ET:1:1101:9364:6850 1:N:0:GACCGTAAACTC
 
 
 
-def start(args):
-    global cur,mysql_conn
-    NODE_DATABASE = args.NODE_DATABASE
-    mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          db = NODE_DATABASE,
-                          read_default_file="~/.my.cnf"  )
-    cur = mysql_conn.cursor()
-    csv_infile =   args.metadata_file
-    if os.path.isfile(csv_infile):
-        cur.execute("USE "+NODE_DATABASE)    
-        #get_config_data(indir) 
-        if args.has_tax:
-            get_dataset_ids(args)
-        else:
-            get_config_data(args)
-        #sys.exit()
-        print 'CONFIG_ITEMS',CONFIG_ITEMS
-        TMP_METADATA_ITEMS = get_metadata(csv_infile);
-        #sys.exit()
-        if args.has_tax:
-            put_required_metadata()
-            put_custom_metadata()
-        write_metafile(args,TMP_METADATA_ITEMS)
-    else:
-        print "Could not find csv_file:",csv_infile
-        #print CONFIG_ITEMS
-    print REQ_METADATA_ITEMS
-    print
-    print CUST_METADATA_ITEMS
-
-def get_config_data(args):
-     
-    config_infile =   os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project:'+args.project,'config.ini') 
-    print config_infile
-    if os.path.isfile(config_infile):
-        logging.info(config_infile)
-        config = ConfigParser.ConfigParser()
-        config.optionxform=str
-        config.read(config_infile)    
-        for name, value in  config.items('GENERAL'):
-            #print '  %s = %s' % (name, value)  
-            CONFIG_ITEMS[name] = value
-        CONFIG_ITEMS['datasets'] = []
-        for dsname, count in  config.items('DATASETS'):        
-            CONFIG_ITEMS['datasets'].append(dsname) 
-    else:
-        print "Could not find config file:",config_infile
-        sys.exit(-201)
-
-def get_dataset_ids(args):
-    global cur,mysql_conn
-    q = "SELECT project_id FROM project"
-    q += " WHERE project = '"+args.project+"'" 
-    logging.info(q)
-    print q
-    cur.execute(q)
-    result_count = cur.rowcount
-    if result_count:
-        row = cur.fetchone()     
-        CONFIG_ITEMS['project_id'] = row[0]
-            
-        q = "SELECT dataset,dataset_id from dataset"
-        q += " WHERE project_id = '"+str(CONFIG_ITEMS['project_id'])+"'"
-        logging.info(q)
-        print q
-        cur.execute(q)     
-        for row in cur.fetchall():        
-            DATASET_ID_BY_NAME[row[0]] = row[1] 
-            CONFIG_ITEMS['datasets'].append(row[0])            
-        mysql_conn.commit()  
-    else:
-        print "No Project Found - Exiting"
-        sys.exit(-203)
-
-
-def put_required_metadata():
-    global cur,mysql_conn
-    q = "INSERT ignore into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
-    q = q+" VALUES("
-    
-    for i,ds in enumerate(CONFIG_ITEMS['datasets']):
-    #for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
-        did = DATASET_ID_BY_NAME[ds]
-        vals = "'"+str(did)+"',"
-        
-        for item in required_metadata_fields:
-            if item in REQ_METADATA_ITEMS:
-                vals += "'"+str(REQ_METADATA_ITEMS[item][i])+"',"
-            else:
-                vals += "'Unknown',"
-        q2 = q + vals[:-1] + ")"  
-        print q2
-        logging.info(q2)
-        cur.execute(q2)
-    mysql_conn.commit()
-            
-            
-def put_custom_metadata():
-    """
-      create new table
-    """
-    global cur,mysql_conn
-    print 'starting put_custom_metadata'
-    # TABLE-1 === custom_metadata_fields
-    print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
-    print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
-    for key in CUST_METADATA_ITEMS:
-        logging.debug(key)
-        q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,field_type,example)"
-        q2 += " VALUES("
-        q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-        q2 += "'"+key+"',"
-        q2 += "'varchar(128)',"
-        q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
-        logging.info(q2)
-        cur.execute(q2)
-    
-    # TABLE-2 === custom_metadata_<pid>
-    cust_keys_array = CUST_METADATA_ITEMS.keys()
-    custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
-    q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
-    q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
-    q += " `project_id` int(11) unsigned NOT NULL,\n"
-    q += " `dataset_id` int(11) unsigned NOT NULL,\n"
-    for key in cust_keys_array:
-        if key != 'dataset_id':
-            # 2015-07-23 Changed the field type to text to accomidate longer metadata
-            # limit to 1000 chars below (line 143)
-            #q += " `"+key+"` varchar(128) NOT NULL,\n" 
-            q += " `"+key+"` text NOT NULL,\n"
-    q += " PRIMARY KEY (`"+custom_table+"_id` ),\n" 
-    unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
-    
-    # ONLY 16 key items allowed:    
- #   for i,key in enumerate(cust_keys_array):
- #       if i < 14 and key != 'dataset_id':
-  #          unique_key += " `"+key+"`,"
- #   q += unique_key[:-1]+"),\n"
-    q += " KEY `project_id` (`project_id`),\n"
-    q += " KEY `dataset_id` (`dataset_id`),\n"
-    q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
-    q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
-    q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    logging.info(q)
-    cur.execute(q)
-    for i,ds in enumerate(CONFIG_ITEMS['datasets']):
-        did = DATASET_ID_BY_NAME[ds]
-    #for i,did in enumerate(CUST_METADATA_ITEMS['dataset_id']):
-    
-        q2 = "INSERT IGNORE into "+custom_table+" (project_id,dataset_id,"
-        for key in cust_keys_array:
-            if key != 'dataset_id':
-                q2 += key+","
-        q2 = q2[:-1]+ ")"
-        q2 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
-        for key in cust_keys_array:
-            if key != 'dataset_id':
-                val = str(CUST_METADATA_ITEMS[key][i])[:1000]   # limit at 1000 chars
-                q2 += "'"+val+"',"
-        q2 = q2[:-1] + ")"    # remove trailing comma
-
-
-        logging.info(q2)
-        cur.execute(q2)
-    
-    mysql_conn.commit()
-    
-def get_metadata(csv_infile):
-    
-    global cur,mysql_conn,dataset_header_name
-    print 'csv',csv_infile
-    logging.info('csv '+csv_infile)
-    lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-    found_dsets_dict={}
-    TMP_METADATA_ITEMS = {}
-    print 'datasets',CONFIG_ITEMS['datasets']
-    if args.file_type=='qiime':  
-        #print lol
-        keys = lol[0]
-        for i,key in enumerate(keys):
-            if key:
-                TMP_METADATA_ITEMS[key] = []
-                #for line in lol[1:]:            
-                    #TMP_METADATA_ITEMS[key].append(line[i])
-          
-                    
-        
-            
-        try:
-            #saved_indexes.append(TMP_METADATA_ITEMS['#SampleID'].index(ds))
-            ds_col = TMP_METADATA_ITEMS['#SampleID']
-            ds_index = keys.index('#SampleID')
-            dataset_header_name = '#SampleID'
-            print 'found "#SampleID" at index',ds_index
-        except:
-             try:
-                 #saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
-                 ds_col = TMP_METADATA_ITEMS['sample_name']
-                 ds_index = keys.index('sample_name')
-                 dataset_header_name = 'sample_name'
-                 print 'found "sample_name" at index',ds_index
-             except:
-                try:
-                    #saved_indexes.append(TMP_METADATA_ITEMS['dataset_name'].index(ds))
-                    ds_col = TMP_METADATA_ITEMS['dataset_name']
-                    ds_index = keys.index('dataset_name')
-                    dataset_header_name = 'dataset_name'
-                    print 'found "dataset_name" at index',ds_index
-                except:
-                    print 'ERROR: Could not find "#SampleID", "sample_name" or "dataset_name" in matadata file'
-                    sys.exit(-205)
-    
-        for line in lol[1:]:
-            found_dsets_dict[line[ds_index]] = 1
-            for ds in CONFIG_ITEMS['datasets']:
-                if ds == line[ds_index]:                    
-                    for i,key in enumerate(keys):
-                        if key:
-                            TMP_METADATA_ITEMS[key].append(line[i])
-                            #print line
-
-        found = False 
-        found_dsets_list = list(found_dsets_dict.keys())       
-        for ds in found_dsets_list:
-            if ds in CONFIG_ITEMS['datasets']:
-                found = True
-        if not found:
-            print 'No datasets from csv file are found in project!'
-            sys.exit(-207)
-
-
-
-
-    else:  # vamps style csv
-        #['D1', 'EnvO_feature', 'marine sponge reef', 'Alphanumeric', 'Alphanumeric', 'ICM_SPO_Bv6', '1', 'envo_feature', '', '3', 'IEO2.txt  2010-03-31 PRN -- EnvO DATA FROM Pier Buttigi MPI Bremen miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2013-10-29 13:26:58', '', '0', 'ICM_SPO_Bv6--SPO_0002_2008_01_31']
-        #['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
-        headers = lol[0]
-        print 'Headers',headers
-        dataset_header_name = 'Dataset'
-        found_dsets_dict={}
-        for line in lol[1:]:
-            found_dsets_dict[line[0]] = 1
-        found_dsets_list = list(found_dsets_dict.keys())
-        # check that at least one dataset from csv file is in database
-        found = False
-        
-        for ds in found_dsets_list:
-            if ds in CONFIG_ITEMS['datasets']:
-                found = True
-        if not found:
-            sys.exit('No datasets from csv file are found in project!')
-
-        for line in lol[1:]:
-            #print line
-            ds = line[0]
-            key = line[7]   # structured_comment_name
-            if key == 'envo_material': key = 'env_matter'
-            if key == 'envo_biome': key = 'env_biome'
-            if key == 'envo_feature': key = 'env_feature'
-            if key == 'lat': key = 'latitude'
-            if key == 'lon': key = 'longitude'
-            parameter_value = line[2]
-            if ds in CONFIG_ITEMS['datasets']:
-                
-                if key in TMP_METADATA_ITEMS:
-                    TMP_METADATA_ITEMS[key].append(parameter_value)
-                else:
-                    TMP_METADATA_ITEMS[key]=[]
-                    TMP_METADATA_ITEMS[key].append(parameter_value)
-    
-
-
-    for key in TMP_METADATA_ITEMS:
-    
-        if key in required_metadata_fields:
-            REQ_METADATA_ITEMS[key] = []
-            #REQ_METADATA_ITEMS['dataset_id'] = []
-            for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                
-                if key in required_metadata_fields:
-                    REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-        else:
-            CUST_METADATA_ITEMS[key] = []
-            #CUST_METADATA_ITEMS['dataset_id'] = []
-            
-            for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                
-                if key not in required_metadata_fields:                        
-                    CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j].replace('"','').replace("'",''))
-                ds = CONFIG_ITEMS['datasets'][0]
-                if args.has_tax:
-                    did = DATASET_ID_BY_NAME[ds]
-                #CUST_METADATA_ITEMS['dataset_id'].append(str(did))
-
-
-    
-
-    print
-    #print   'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
-    print
-    #print   'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
-    return TMP_METADATA_ITEMS            
-
-def print_temp_metadata(TMP_METADATA_ITEMS):
-    for m in TMP_METADATA_ITEMS:
-        print m, TMP_METADATA_ITEMS[m]         
-
-def write_metafile(args,TMP_METADATA_ITEMS):
-    
-    #print 'TMP_METADATA_ITEMS'
-    #print TMP_METADATA_ITEMS
-    #sys.exit()
-    global dataset_header_name
-    print dataset_header_name
-
-    # this will overwrite the original metadata_clean.csv file
-    mdfile_path = os.path.join(args.process_dir, 'user_data', args.NODE_DATABASE, args.owner, 'project:'+args.project, 'metadata_clean.csv')
-    
-    
-    #req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
-    #req_for_multi = ['sample_name','dataset']
-    fd = open(mdfile_path, 'w')
-    fd.write("#SampleID\t")
-    fd.write("\t".join([str(x) for x in TMP_METADATA_ITEMS.keys()])+"\n")
-    #for i,ds in enumerate(CONFIG_ITEMS['datasets']):
-    for i in range(len(CONFIG_ITEMS['datasets'])):
-        fd.write(TMP_METADATA_ITEMS[dataset_header_name][i])
-        for item in TMP_METADATA_ITEMS:        
-            fd.write("\t"+TMP_METADATA_ITEMS[item][i])
-        fd.write("\n")
-
-        
-
-    fd.close()
      
 def start_fasta_single(infile):
-    print infile
+    """
+    Check defline format
+    >seqid|otherstuff
+    Check sequences for ATGC only
+    """
+    errors = ['ERROR']
+    notes = ['OK']
+    f = fastalib.SequenceSource(infile)
+    count = 1
+    while f.next():
+        line_no = count*2
+        id = f.id.split()[0].split('|')[0]  # <space> and bar '|' are the ONLY two dividers
+        #print id
+        seq = f.seq
+        #print seq
+        if re.search(id_pattern, id):
+            errors.append('ERROR: SeqID ('+id+') contains bad character(s) about line '+str(line_no))    
+        if re.search(sequence_pattern, seq):
+            errors.append('ERROR: Sequence (id='+id+') contains bad character(s) on about line '+str(line_no))    
 
-    return 'ok'
+        count +=1
+
+
+    if len(errors) > 1:
+        return errors
+    else:
+        return notes+['OK -- File Validates']
     
 def start_fasta_multi(infile):
-    print infile
+    """
+    Check defline format
+    >dsname|seqid|otherstuff
+    Check sequences for ATGC only
+    """
+    errors = ['ERROR']
+    notes = ['OK']
+    f = fastalib.SequenceSource(infile)
+    datasets_hash = {}
+    all_seq_count = 0
+    id_has_seq_count = False
+    count_style_flip = 0
+    while f.next():
+        defline = f.id.split()
+        if len(defline) > 1:
+            #dataset_items = defline[0]      
+            ds_items =   defline[0].split('_')  
+            #print len(ds_items),ds_items[-1]
+            if len(ds_items) > 1:
+                try:    # ie: 10056.000009544_123294 
+                    this_seq_count = int(ds_items[-1])
+                    dataset = '_'.join(ds_items[:-1])   # join in case there were multiple '_' instances
+                    if id_has_seq_count == False:
+                        count_style_flip += 1
+                    id_has_seq_count = True
+                except:   # ie: 10056.000009544 
+                    this_seq_count = 1
+                    dataset = defline[0]
+                    if id_has_seq_count == True:
+                        count_style_flip += 1
+                    id_has_seq_count = False
+            else:
+                this_seq_count = 1
+                dataset = defline[0]
+                
 
-    return 'ok'
+
+            #print dataset
+            datasets_hash[dataset]=1            
+            id      = defline[1]  # <space> and bar '|' are the ONLY two dividers
+            seq = f.seq
+             
+        else:
+            errors.append('ERROR: This file has the wrong format') 
+            break
+        all_seq_count += 1
+    #print 'flip',count_style_flip
+    if count_style_flip >1:
+        errors.append('ERROR: id style varied from "no count" to "count" too many times') 
+    #print all_seq_count
+    #print len(datasets_hash)
+    if all_seq_count == len(datasets_hash):
+        errors.append('ERROR: Looks like the number of datasets equals the number of sequences -- that cant be right. Maybe this is a single-dataset style fasta file?')    
+    else:
+        notes.append('Good: dataset count is: '+str(len(datasets_hash)))
+        notes.append('Good: sequence count is: '+str(all_seq_count))
+
+
+    if len(errors) > 1:
+        return errors
+    else:
+        return notes+['OK -- File Validates']
+
 def start_metadata_vamps(infile):
-    print infile
+    """
+    VAMPS Style Metadata file
+    No provisions for comments
+    -- Done: Check if can open/read file
+    -- Done: Error if less than 3 headers (indicating non tab-delimited)
+    -- Done: Required headers: dataset, parameterValue and structured_comment_name
+    -- Done: Check that each row has same number of columns as header row
+    -- Done: Error if dataset field is empty
+    -- Done: Warn if parameterValue is empty
+    -- Done: Error if structured_comment_name value is empty
+    -- Done: Check dataset names format check
 
-    return 'ok'
-def start_metadata_qiime(infile):
-    global cur,mysql_conn
-    print 'csv',infile
+    """
+    errors = ['ERROR']
+    notes = ['OK']
+    
+    dataset_index                 = -1
+    parameterValue_index          = -1
+    structured_comment_name_index = -1
+    #print 'csv',infile
     logging.info('csv '+infile)
-    lol = list(csv.reader(open(infile, 'rb'), delimiter='\t'))
+    try:
+        lol = list(csv.reader(open(infile, 'rb'), delimiter='\t'))
+    except:
+        errors.append("ERROR: System: Could not open csv file")
+    keys = lol[0]
+    keys_length = len(keys)
+
+    if keys_length < 3:
+        errors.append("ERROR: Less than three columns found. Please review file formats.")
+    try:        
+        dataset_index = keys.index('dataset')        
+        notes.append('Good: found "dataset" column')
+    except:
+        errors.append('ERROR: Could not find "dataset" column')
+    try:                 
+         parameterValue_index = keys.index('parameterValue')         
+         notes.append('Good: found "parameterValue" column')
+    except:
+        errors.append('ERROR: Could not find "parameterValue" column')
+    try:              
+        structured_comment_name_index = keys.index('structured_comment_name')        
+        notes.append('Good: found "structured_comment_name" column')
+    except:
+        errors.append('ERROR: Could not find "structured_comment_name" column')
+    #print parameterValue_index
+    for i,line in enumerate(lol[1:]):
+        row = str(i+2)
+
+        if len(line) != keys_length:
+            errors.append("ERROR: Row '"+row+"' column count doesn\'t match the column count for the header row: "+str(keys_length))
+        if dataset_index in line and line[dataset_index] == '':
+            errors.append('ERROR: dataset field is empty on line '+row)
+        if parameterValue_index in line and line[parameterValue_index] == '':
+            notes.append('Warning: parameterValue is empty on line '+row)
+        if structured_comment_name_index in line and line[structured_comment_name_index] == '':
+            errors.append('ERROR: structured_comment_name is empty on line '+row)
+        if dataset_index in line:
+            dataset = line[dataset_index]
+            if re.search(dataset_pattern, dataset):
+                errors.append('ERROR: dataset name ('+dataset+') format fails')
+
+    if len(errors) > 1:
+        return errors
+    else:
+        return notes+['OK -- File Validates']
+
+def start_metadata_qiime(infile):
+    """
+        -- Done: Check for empty key (header) name
+        -- Done: Check if can open/read file
+        -- Done: must be tab delimited file: keys.length == 1
+        -- Done: must have same number of columns in every row and match keys count
+        -- Done: must find either #SampleID, sample_name or dataset_name
+        -- Done: no empty dataset_names
+        -- Done: dataset_names format check
+        -- Done: Should be unique dataset names
+        -- Done: warn for empty parameter value
+    """
+    
+    errors = ['ERROR']
+    notes = ['OK']
+    ds_index = -1
+    #print 'csv',infile
+    logging.info('csv '+infile)
+    try:
+        lol = list(csv.reader(open(infile, 'rb'), delimiter='\t'))
+    except:
+        errors.append("ERROR: System: Could not open csv file")
+    
     # errors:
     # count of headers is different in line
     # there is no   
     keys = lol[0]
-    print keys
+    if '' in keys:
+        errors.append("ERROR: Empty header name found")
+        print keys
+    keys_length = len(keys)
+    notes.append('Info: Found '+str(keys_length)+' columns')
+    if keys_length == 1:
+        errors.append("ERROR: Only one column found which may be correct, but could indicate that something other than tabs were used as delimiters")
+    
+    #print keys,keys_length
+
     
     try:
         #saved_indexes.append(TMP_METADATA_ITEMS['#SampleID'].index(ds))
         
         ds_index = keys.index('#SampleID')
         dataset_header_name = '#SampleID'
-        print 'found "#SampleID" at index',ds_index
+        notes.append('Good: found "#SampleID" at column '+str(ds_index+1))
     except:
          try:
              #saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
              
              ds_index = keys.index('sample_name')
              dataset_header_name = 'sample_name'
-             print 'found "sample_name" at index',ds_index
+             notes.append('Good: found "sample_name" at column '+str(ds_index+1))
          except:
             try:              
                 ds_index = keys.index('dataset_name')
                 dataset_header_name = 'dataset_name'
-                print 'found "dataset_name" at index',ds_index
+                notes.append('Good: found "dataset_name" at column '+str(ds_index+1))
             except:
-                return 'ERROR: Could not find "#SampleID", "sample_name" or "dataset_name" in matadata file'
-                sys.exit(-225)
+                errors.append('ERROR: Could not find "#SampleID", "sample_name" or "dataset_name" in the header (first) row')
+    #print ds_index,   dataset_header_name         
+    ds_lookup = {}
+    line_count = len(lol[1:])
+    for i,line in enumerate(lol[1:]):
+        row = str(i+2)
 
-    for line in lol[1:]:
-        print line
-    return 'ok'
+        if len(line) != keys_length:
+            errors.append("ERROR: Row '"+row+"' column count doesn\'t match the column count for the header row: "+str(keys_length))
+        if len(line) > ds_index:
+            dataset = line[ds_index]
+            #print ds_index,dataset
+            if dataset == '':
+                errors.append('ERROR: dataset field is empty on line '+row)
+            if re.search(dataset_pattern, dataset):
+                errors.append('ERROR: dataset name ('+dataset+') format fails')
+            
+            for k in line:
+                if k == '':
+                    notes.append('Warning: empty value found on line '+row)
+
+            ds_lookup[dataset] = 1
+    num_datasets = len(ds_lookup)
+
+    #print num_datasets,len(ds_lookup)
+    #print ds_lookup
+
+    if num_datasets > line_count:
+        errors.append('ERROR: there are more dataset_names than lines')
+    elif num_datasets < line_count:
+        errors.append('ERROR: Duplicate dataset names found')
+    
+
+    if len(errors) > 1:
+        return errors
+    else:
+        return notes+['OK -- File Validates']
+
 
     
 if __name__ == '__main__':
