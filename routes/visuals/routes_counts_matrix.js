@@ -155,8 +155,20 @@ module.exports = {
 									}
 									tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
 									//console.log('long tax_name '+tax_long_name+' - '+cnt.toString());
-									unit_name_lookup[tax_long_name] = 1;
-									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+									console.log('IN NO NAs1')
+									console.log(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length))
+									if(post_items.include_nas == 'no' ){
+										
+										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
+											console.log('ADDING '+tax_long_name)
+											unit_name_lookup[tax_long_name] = 1;
+											unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+										}
+										
+									}else{
+										unit_name_lookup[tax_long_name] = 1;
+										unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+									}
 								}
 
 							}

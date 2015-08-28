@@ -342,8 +342,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
-
+    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     //console.log('mtx1')
 
   //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
@@ -555,8 +554,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         var pc_file = path.join(process.env.PWD,'tmp', pc_file_name);
         
         var dir_name = ts+'_pcoa_3d';
-        var dir_path = path.join(process.env.PWD,'tmp', dir_name);
-        
+        var dir_path = path.join(process.env.PWD,'tmp', dir_name);        
         var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
         //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
         var options1 = {
@@ -793,6 +791,68 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     })
     
 });
+//
+//
+//
+router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
+    console.log('in alpha div')
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+
+    //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
+    //var exec = require('child_process').exec;
+    //var PythonShell = require('python-shell');
+    var html = '';
+    var title = 'VAMPS';
+
+    //var distmtx_file_name = ts+'_distance.csv';
+    //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
+    };
+
+    var spawn = require('child_process').spawn;
+    var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+    // script will remove data from mysql and datset taxfile
+    console.log(options.scriptPath+'/alpha_diversity.py '+options.args.join(' '));
+    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    output = '';
+    alphadiv_process.stdout.on('data', function (data) {
+        
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        //data = data.toString().trim()
+        
+          output += data;
+        
+        //var lines = data.split('\n')
+        // for(var n in lines){
+        //   //console.log('line: ' + lines[n]);
+        // if(lines[n].substring(0,4) == 'PID='){
+        //   console.log('pid line '+lines[n]);
+        // }
+        // }
+      });
+    alphadiv_process.on('close', function (code) {
+        console.log('alphadiv_process process exited with code ' + code);
+        if(code == 0){           
+         //console.log('PID last line: '+last_line)                    
+            console.log('stdout: ' + output);
+            res.send(output);                                 
+        }else{
+          // python script error
+          console.log('python script error');
+        }      
+    });   
+
+
+});
+//
+//
+//
 function get_sumator(req){
     
     var sumator = {};

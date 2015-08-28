@@ -693,8 +693,8 @@ if (geospatial_link !== null) {
   geospatial_link.addEventListener('click', function () {
       
 	  if(typeof geospatial_created == "undefined"){
-          create_viz('geospatial', pi_local.ts);
-		  geospatial_download_btn.disabled = false;
+        create_viz('geospatial', pi_local.ts);
+		    geospatial_download_btn.disabled = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
          // toggle_visual_element(geospatial_div,'show',geospatial_btn);
@@ -882,17 +882,17 @@ function create_counts_table() {
 //
 function create_metadata_table() {
      
-      metadata_table_created = true;
-      var info_line = create_header('mtable', pi_local);
-      var metadata_div = document.getElementById('metadata_local_table_div');
+    metadata_table_created = true;
+    var info_line = create_header('mtable', pi_local);
+    var metadata_div = document.getElementById('metadata_local_table_div');
 	  metadata_div.style.display = 'block';
-      document.getElementById('pre_metadata_table_div').style.display = 'block';
-      var html = '';
+    document.getElementById('pre_metadata_table_div').style.display = 'block';
+    var html = '';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
 	  html += "<table border='1' id='metadata_table' class='table table-condensed' >";
-      html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
+    html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";
       
-      for (var ds in md_local) {
+    for (var ds in md_local) {
 
           for (var k in md_local[ds]) {
             html += "<tr>";
@@ -902,11 +902,11 @@ function create_metadata_table() {
             html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
             html += "</tr>";
           }        
-      }
-      html += "</tbody></table>";
+    }
+    html += "</tbody></table>";
 
       //alert(md_local[0].env_matter)
-      metadata_div.innerHTML = html;
+    metadata_div.innerHTML = html;
 }
 
 //
@@ -1336,7 +1336,53 @@ function create_adiversity(ts){
     document.getElementById('adiversity_title').innerHTML = info_line;
     document.getElementById('pre_adiversity_div').style.display = 'block';
     document.getElementById('adiversity_div').style.display = 'block';
-    document.getElementById('adiversity_div').innerHTML = 'TODO';
+    document.getElementById('adiversity_div').innerHTML = 'Working....';
+
+        adiversity_created = true;
+      var adiversity_div = document.getElementById('adiversity_div');
+    adiversity_div.style.display = 'block';
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      var info_line = create_header('adiversity', pi_local);
+      document.getElementById('adiversity_title').innerHTML = info_line;
+      
+      var html = '';
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&ts="+ts;
+      document.getElementById('pre_adiversity_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/alpha_diversity', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+           var retstring = xmlhttp.responseText;           
+           var lines = retstring.split('\n');
+           //alert(lines[0])
+           var headers = lines.shift();
+           //var line2 = lines.pop();
+           //alert(headers)
+           html = "<table class='table'>";
+           html += '<tr>';
+           //alert(line2)
+           var header_items = headers.split('\t')
+           for(i in header_items){
+             html += '<td>'+header_items[i]+'</td>';
+           }
+           html +=  '</tr>';
+           for(i in lines){
+              html +=  '<tr>';
+              items = lines[i].split('\t');
+              for(j in items){
+                html += '<td>'+items[j]+'</td>';
+              }
+              html +=  '</tr>';
+           }
+           html += '</table>';
+
+           adiversity_div.innerHTML = html;
+        }
+      };
+      xmlhttp.send(args);      
          
 
 }

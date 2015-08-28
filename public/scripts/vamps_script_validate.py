@@ -54,8 +54,12 @@ import MySQLdb
 # fail with the following:
 dataset_pattern = '\s|--|>|<|;|@|!|#|\$|%|\^|&|\*|\(|\)|\|/?|,|~|`|\"|\'|[|]|{|}|\\|\|'
 sequence_pattern = re.compile('[^AGTC]', re.IGNORECASE)
-id_pattern = re.compile('[^0-9A-Z_.:-]', re.IGNORECASE)  #  Illumina-seqid:  HWI-M00888:59:000000000-A62ET:1:1101:9364:6850 1:N:0:GACCGTAAACTC
-
+#
+#  Illumina-seqid sample:  HWI-M00888:59:000000000-A62ET:1:1101:9364:6850 1:N:0:GACCGTAAACTC
+#                           @M10_68:1:1:28680:29475#0/1
+id_pattern = re.compile('[^0-9A-Z_.:-#@]', re.IGNORECASE)  
+errors = ['ERROR']
+notes = ['OK']
 
 
      
@@ -65,13 +69,12 @@ def start_fasta_single(infile):
     >seqid|otherstuff
     Check sequences for ATGC only
     """
-    errors = ['ERROR']
-    notes = ['OK']
+    
     f = fastalib.SequenceSource(infile)
     count = 1
     while f.next():
         line_no = count*2
-        id = f.id.split()[0].split('|')[0]  # <space> and bar '|' are the ONLY two dividers
+        id = f.id.split()[0].split('|')[0]  # <space> and bar '|' are the ONLY two dividers allowed
         #print id
         seq = f.seq
         #print seq
@@ -94,8 +97,7 @@ def start_fasta_multi(infile):
     >dsname|seqid|otherstuff
     Check sequences for ATGC only
     """
-    errors = ['ERROR']
-    notes = ['OK']
+    
     f = fastalib.SequenceSource(infile)
     datasets_hash = {}
     all_seq_count = 0
@@ -166,8 +168,7 @@ def start_metadata_vamps(infile):
     -- Done: Check dataset names format check
 
     """
-    errors = ['ERROR']
-    notes = ['OK']
+    
     
     dataset_index                 = -1
     parameterValue_index          = -1
@@ -233,8 +234,7 @@ def start_metadata_qiime(infile):
         -- Done: warn for empty parameter value
     """
     
-    errors = ['ERROR']
-    notes = ['OK']
+    
     ds_index = -1
     #print 'csv',infile
     logging.info('csv '+infile)
