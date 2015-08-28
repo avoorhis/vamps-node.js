@@ -292,47 +292,48 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 });
 //
 // Download Counts Matrix
-router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
-	//console.log('in download_counts_matrix')
-	//console.log(biom_matrix)
-    var timestamp = +new Date();  // millisecs since the epoch!
-    timestamp = req.user.username + '_' + timestamp;
-	var out_file = path.join('user_data',NODE_DATABASE,req.user.username,'matrix:'+timestamp+".csv.gz");
-    var wstream = fs.createWriteStream(out_file);
-	var gzip = zlib.createGzip();
-    var rs = new Readable();
+//
+// router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
+// 	//console.log('in download_counts_matrix')
+// 	//console.log(biom_matrix)
+//   var timestamp = +new Date();  // millisecs since the epoch!
+//   timestamp = req.user.username + '_' + timestamp;
+//   var out_file = path.join('user_data',NODE_DATABASE,req.user.username,'matrix:'+timestamp+".csv.gz");
+//   var wstream = fs.createWriteStream(out_file);
+//   var gzip = zlib.createGzip();
+//   var rs = new Readable();
 	
-	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
-	for (var y in biom_matrix.columns){
-		header_txt += ','+biom_matrix.columns[y].name;
-	}
-	header_txt += '\n\r';
-	rs.push(header_txt);
-	for (var i in biom_matrix.rows){
-		row_txt = '';
-		row_txt += biom_matrix.rows[i].name;
-		for (var k in biom_matrix.data[i]){
-			row_txt += ','+biom_matrix.data[i][k];
-		}
-		row_txt += '\n\r';
-		rs.push(row_txt);
-	}
-	rs.push('\n\r');
-	rs.push(null);
-  	rs
-	  .pipe(gzip)
-      .pipe(wstream)
-      .on('finish', function () {  // finished
-        console.log('done compressing and writing file');
-      });
-      res.redirect(req.get('referer'));
-});
+// 	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
+// 	for (var y in biom_matrix.columns){
+// 		header_txt += ','+biom_matrix.columns[y].name;
+// 	}
+// 	header_txt += '\n\r';
+// 	rs.push(header_txt);
+// 	for (var i in biom_matrix.rows){
+// 		row_txt = '';
+// 		row_txt += biom_matrix.rows[i].name;
+// 		for (var k in biom_matrix.data[i]){
+// 			row_txt += ','+biom_matrix.data[i][k];
+// 		}
+// 		row_txt += '\n\r';
+// 		rs.push(row_txt);
+// 	}
+// 	rs.push('\n\r');
+// 	rs.push(null);
+//   	rs
+// 	  .pipe(gzip)
+//       .pipe(wstream)
+//       .on('finish', function () {  // finished
+//         console.log('done compressing and writing file');
+//       });
+//       //res.redirect('/visuals/view_selection');
+//       //res.send()
+
+
+// });
 //
 //
-
-
-
-
+//
 router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //console.log('found routes_test_heatmap')
     //console.log('req.body hm');

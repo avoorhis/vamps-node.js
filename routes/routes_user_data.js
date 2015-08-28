@@ -38,7 +38,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
         var pts = files[f].split(':');
-        if(pts[0] === 'metadata' || pts[0] === 'fasta'){
+        if(pts[0] === 'metadata' || pts[0] === 'fasta' || pts[0] === 'matrix'){
           file_info.files.push(files[f]);
           stat = fs.statSync(export_dir+'/'+files[f]);
           file_info.mtime[files[f]] = stat.mtime;  // modify time
@@ -1632,7 +1632,7 @@ if(req.body.download_type == 'whole_project'){
   dids = JSON.parse(req.body.datasets).ids;
   file_name = 'metadata:'+timestamp+'.csv.gz';
   out_file_path = path.join(user_dir, file_name);
-  }
+}
   console.log('dids');
   console.log(dids);
 
@@ -1708,7 +1708,69 @@ if(req.body.download_type == 'whole_project'){
 
   	res.send(file_name);
 });
+//
+// DOWNLOAD MATRIX
+//
+router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) {
+  	var db = req.db;
+  	console.log('matrix req.body-->>');
+  	console.log(req.body);
+  	//var timestamp = +new Date();  // millisecs since the epoch!
+		for (var i in biom_matrix.rows){
+ 			row_txt = '';
+ 			row_txt += biom_matrix.rows[i].name;
+ 			console.log(row_txt)
+ 		}
 
+		var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+		helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+		helpers.mkdirSync(user_dir);  // create dir if not exists
+		
+		
+		dids = JSON.parse(req.body.datasets).ids;
+		var timestamp = req.body.ts;
+		var file_name = 'matrix:'+timestamp+'.csv';
+		//out_file_path = path.join(user_dir, file_name);
+	
+
+		var out_file = path.join('user_data',NODE_DATABASE,req.user.username,file_name);
+		var wstream = fs.createWriteStream(out_file);
+		var gzip = zlib.createGzip();
+		var rs = new Readable();
+
+		header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
+		for (var y in biom_matrix.columns){
+		header_txt += ','+biom_matrix.columns[y].name;
+		}
+		header_txt += '\n\r';
+		rs.push(header_txt);
+		for (var i in biom_matrix.rows){
+			row_txt = '';
+			row_txt += biom_matrix.rows[i].name;
+			for (var k in biom_matrix.data[i]){
+				row_txt += ','+biom_matrix.data[i][k];
+			}
+			row_txt += '\n\r';
+			rs.push(row_txt);
+		}
+		rs.push('\n\r');
+		rs.push(null);
+		rs
+		//.pipe(gzip)
+		.pipe(wstream)
+		.on('finish', function () {  // finished
+		  console.log('done compressing and writing file');
+		});
+
+
+		console.log('dids');
+		console.log(dids);
+		res.send(file_name);
+		
+});
+//
+//
+//
 function update_config(res,req, config_file, config_info, has_new_pname, msg){
 	console.log(config_info)
 	var new_config_txt = "[GENERAL]\n";

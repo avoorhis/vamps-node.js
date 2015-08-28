@@ -184,8 +184,9 @@ if (typeof download_fasta_btn !== "undefined") {
       //alert(selected_distance_combo)
       form = document.getElementById('download_fasta_form_id');
       datasets = form.datasets.value;
-      download_type = form.download_type.value;      
-      download_data('fasta', datasets, download_type);
+      download_type = form.download_type.value; 
+      ts =  '';       
+      download_data('fasta', datasets, download_type, ts);
   });
 }
 // download metadata
@@ -195,10 +196,44 @@ if (typeof download_metadata_btn !== "undefined") {
       //alert(selected_distance_combo)
       form = document.getElementById('download_metadata_form_id');
       datasets = form.datasets.value;
-      download_type = form.download_type.value;      
-      download_data('metadata', datasets, download_type);
+      download_type = form.download_type.value;  
+      ts =  '';      
+      download_data('metadata', datasets, download_type, ts);
   });
 }
+// download matrix
+// download_matrix_btn = document.getElementById('download_matrix_btn');
+// download_matrix_btn.addEventListener('click', function () {
+//     var f = document.createElement("form");
+//     f.setAttribute('method',"POST");
+//     f.setAttribute('action',"/visuals/download_counts_matrix");
+    
+//     var s = document.createElement("input"); //input element, text
+//     s.setAttribute('type',"submit");
+//     s.setAttribute('value',"Submit");
+//     f.appendChild(s);
+
+//     var s = document.createElement("input"); //input element, text
+//     s.setAttribute('type',"hidden");
+//     s.setAttribute('value','view_selection');
+//     f.appendChild(s);
+    
+//     document.getElementsByTagName('body')[0].appendChild(f);
+//     f.submit();
+//   });
+
+download_matrix_btn = document.getElementById('download_matrix_btn');
+if (typeof download_matrix_btn !== "undefined") {
+  download_matrix_btn.addEventListener('click', function () {
+      //alert(selected_distance_combo)
+      form = document.getElementById('download_matrix_form_id');
+      datasets = form.datasets.value;
+      download_type = form.download_type.value;       
+      ts =  form.ts.value;    
+      download_data('matrix', datasets, download_type, ts);
+  });
+}
+
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
 if (typeof norm_counts_radios[0] !=="undefined") {
@@ -216,6 +251,20 @@ if (typeof norm_counts_radios[0] !=="undefined") {
 	  document.getElementById('output_choices_submit_btn').disabled = false;
 	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
 	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+// include_nas radio-buttons
+var include_nas_radios = document.getElementsByName('include_nas');
+if (typeof include_nas_radios[0] !=="undefined") {
+  include_nas_radios[0].addEventListener('click', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+  include_nas_radios[1].addEventListener('click', function () {
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 // Distance Metric Select (Combo)
@@ -283,17 +332,27 @@ if (typeof tax_counts_btn !=="undefined") {
 if (typeof counts_table_download_btn !=="undefined") {
   
   counts_table_download_btn.addEventListener('click', function () {
-	  var f = document.createElement("form");
-	  f.setAttribute('method',"POST");
-	  f.setAttribute('action',"download_counts_matrix");
 	  
-	  var s = document.createElement("input"); //input element, text
-	  s.setAttribute('type',"submit");
-	  s.setAttribute('value',"Submit");
+   //alert(ds_local.ids)
+   download_data('matrix', JSON.stringify(ds_local), 'partial_project', pi_local.ts)
+
+
+   //  var f = document.createElement("form");
+	  // f.setAttribute('method',"POST");
+	  // f.setAttribute('action',"/visuals/download_counts_matrix");
 	  
-	  f.appendChild(s);
-	  document.getElementsByTagName('body')[0].appendChild(f);
-	  f.submit();
+   //  var s = document.createElement("input"); //input element, text
+   //  s.setAttribute('type',"hidden");
+   //  s.setAttribute('value',ts_local);   
+   //  f.appendChild(s);
+
+	  // var s = document.createElement("input"); //input element, text
+	  // s.setAttribute('type',"submit");
+	  // s.setAttribute('value',"Submit");	  
+	  // f.appendChild(s);
+
+	  // document.getElementsByTagName('body')[0].appendChild(f);
+	  // f.submit();
   });
 }
 //
@@ -1430,7 +1489,7 @@ function create_header(viz, pi) {
   return txt;
 }
 
-function download_data(type, datasets, download_type) {
+function download_data(type, datasets, download_type, ts) {
     var html = '';
     var args =  "datasets="+datasets;
     args += "&download_type="+download_type;
@@ -1438,8 +1497,14 @@ function download_data(type, datasets, download_type) {
     var xmlhttp = new XMLHttpRequest(); 
     if(type == 'metadata'){
       target = '/user_data/download_selected_metadata';      
-    } else{
+    } else if(type == 'fasta'){
       target = '/user_data/download_selected_seqs'
+    }else if(type == 'matrix'){
+//alert(ts)
+      args += '&ts='+ts;
+      target = '/user_data/download_selected_matrix'
+    }else{
+
     }
     xmlhttp.open("POST", target, true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
