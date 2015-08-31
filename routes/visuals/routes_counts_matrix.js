@@ -140,6 +140,7 @@ module.exports = {
 									var ids = x.split('_');   // x === _5_55184_61061_62018_62239_63445
 									cnt = TAXCOUNTS[did][x];
 									var tax_long_name = '';
+									var domain = '';
 									for(var y=1;y<ids.length;y++){  // must start at 1 because leading '_':  _2_55184
 										var db_id = ids[y];
 										var this_rank = C.RANKS[y-1];
@@ -149,26 +150,41 @@ module.exports = {
 										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
 											tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
 									  }
+									  if(this_rank == 'domain'){
+											domain = tax_node.taxon;
+										}
 										//console.log('tax_node3 '+JSON.stringify(tax_node))
 										tax_long_name += tax_node.taxon+';';
                                         //console.log('tax_node3 '+JSON.stringify(tax_node))
 									}
+									
 									tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
 									//console.log('long tax_name '+tax_long_name+' - '+cnt.toString());
 									//console.log('IN NO NAs1')
 									//console.log(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length))
+									//console.log('domain '+domain)
+									//console.log(post_items.domains)
+									// SCREEN INCLUDE_NAS
 									if(post_items.include_nas == 'no' ){
 										
 										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
 											//console.log('ADDING '+tax_long_name)
-											unit_name_lookup[tax_long_name] = 1;
-											unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+											// SCREEN DOMAINS
+											if(post_items.domains.indexOf(domain) != -1){
+												unit_name_lookup[tax_long_name] = 1;
+												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+											}
 										}
 										
 									}else{
-										unit_name_lookup[tax_long_name] = 1;
-										unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+										// SCREEN DOMAINS
+										if(post_items.domains.indexOf(domain) != -1){
+												unit_name_lookup[tax_long_name] = 1;
+												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+										}
 									}
+
+
 								}
 
 							}

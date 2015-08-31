@@ -158,7 +158,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
     {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
         tip:''    },
     {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id', 
-        tip:''}
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'}
    
 ]};
     

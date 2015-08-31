@@ -3,7 +3,7 @@
 <%   var rows      = JSON.parse(constants).NORMALIZATIONCHOICES.choices %>
 <%   var pct_range = JSON.parse(constants).PCT_RANGE  %>
 <%   var items     = JSON.parse(chosen_id_name_hash) %>
-Options:<br>
+Screening/Options:<br>
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font table table-striped'>
     <tr>
@@ -63,15 +63,12 @@ Options:<br>
     <tr>
         <td>Include NAs:   (taxonomy not available)  
         <%    if(pi.include_nas.toString() === 'yes') { %>
-            <input type='radio' checked='checked' name='include_nas' value='yes'   \> Include NAs         
-            <input type='radio' name='include_nas' value='no'    \> Exclude NAs
+            <input type='radio' checked='checked' id='' name='include_nas' value='yes'   \> Include NAs         
+            <input type='radio'                   id='' name='include_nas' value='no'    \> Exclude NAs
         <% }else{ %>
-            <input type='radio' name='include_nas' value='yes'   \> Include NAs         
-            <input type='radio' checked='checked'name='include_nas' value='no'    \> Exclude NAs
-        <% } %>
-           
-            </select>
-            
+            <input type='radio'                   id='' name='include_nas' value='yes'   \> Include NAs         
+            <input type='radio' checked='checked' id='' name='include_nas' value='no'    \> Exclude NAs
+        <% } %>            
         </td>
     </tr>
 

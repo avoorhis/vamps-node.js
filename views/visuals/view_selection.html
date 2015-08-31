@@ -23,12 +23,30 @@
 <div class='subtitle'>Display Choices</div>
 <!-- Need a form here for the back button to retain state -->
 <!-- TODO add state for tax selection and metadata selection -->
+<table class='button_row'>
+<tr><td>  
 <form id='back_form_id' name='' method='POST' action='unit_selection'>
 			<a href='' onclick="document.getElementById('back_form_id').submit();return false;">&lt;&lt;--back</a>
 			<input type='hidden' name='retain_data' value='1' >
 			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
-</form>	
-
+</form>
+</td><td>
+<form class='pull-right' id='reload_form_id' name='' method='POST' action='view_selection'>
+  <button class='btn btn-xs btn-primary' type='submit'>Reload Page</button>
+  <input type='hidden' name='domains' value='<%= pi.domains %>'>
+  <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+  <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
+  <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
+  <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>
+  <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
+  <input type='hidden' name='selected_distance' value='<%= pi.selected_distance %>'>
+  <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
+  <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
+  <input type='hidden' name='retain_data' value='1' >
+  <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+</form>
+</t></tr>
+</table>
 <% if(message){ %>
   <div class="alert_flash_message"><%= message %></div>
 <% } %>
@@ -91,7 +109,7 @@
         </form> 
         
     </td>
-    <td><div id='download_confirm_id'></div><%= pi.ts %> </td>
+    <td><div id='download_confirm_id'></div></td>
 	<% } %>
 </tr></table>  <!-- button.row -->
  

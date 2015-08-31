@@ -64,9 +64,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   
   if(req.body.resorted === '1'){
-  	req.flash('message','The dataset order has been updated.')
-	dataset_ids = req.body.ds_order;
-	chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
+  	 req.flash('message','The dataset order has been updated.')
+	   dataset_ids = req.body.ds_order;
+	   chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);

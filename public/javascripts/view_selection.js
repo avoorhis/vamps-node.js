@@ -178,6 +178,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
 });              
 
 // download fasta
+if (document.getElementById('download_fasta_btn') !== null) {
 download_fasta_btn = document.getElementById('download_fasta_btn');
 if (typeof download_fasta_btn !== "undefined") {
   download_fasta_btn.addEventListener('click', function () {
@@ -189,7 +190,9 @@ if (typeof download_fasta_btn !== "undefined") {
       download_data('fasta', datasets, download_type, ts);
   });
 }
+}
 // download metadata
+if (document.getElementById('download_metadata_btn') !== null) {
 download_metadata_btn = document.getElementById('download_metadata_btn');
 if (typeof download_metadata_btn !== "undefined") {
   download_metadata_btn.addEventListener('click', function () {
@@ -201,31 +204,14 @@ if (typeof download_metadata_btn !== "undefined") {
       download_data('metadata', datasets, download_type, ts);
   });
 }
-// download matrix
-// download_matrix_btn = document.getElementById('download_matrix_btn');
-// download_matrix_btn.addEventListener('click', function () {
-//     var f = document.createElement("form");
-//     f.setAttribute('method',"POST");
-//     f.setAttribute('action',"/visuals/download_counts_matrix");
-    
-//     var s = document.createElement("input"); //input element, text
-//     s.setAttribute('type',"submit");
-//     s.setAttribute('value',"Submit");
-//     f.appendChild(s);
+}
 
-//     var s = document.createElement("input"); //input element, text
-//     s.setAttribute('type',"hidden");
-//     s.setAttribute('value','view_selection');
-//     f.appendChild(s);
-    
-//     document.getElementsByTagName('body')[0].appendChild(f);
-//     f.submit();
-//   });
+if (document.getElementById('download_matrix_btn') !== null) {
 
 download_matrix_btn = document.getElementById('download_matrix_btn');
 if (typeof download_matrix_btn !== "undefined") {
   download_matrix_btn.addEventListener('click', function () {
-      //alert(selected_distance_combo)
+      
       form = document.getElementById('download_matrix_form_id');
       datasets = form.datasets.value;
       download_type = form.download_type.value;       
@@ -233,35 +219,49 @@ if (typeof download_matrix_btn !== "undefined") {
       download_data('matrix', datasets, download_type, ts);
   });
 }
+}
 
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
-if (typeof norm_counts_radios[0] !=="undefined") {
-  norm_counts_radios[0].addEventListener('click', function () {
-	  document.getElementById('output_choices_submit_btn').disabled = false;
-	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
-  });
+if (typeof norm_counts_radios[1] !=="undefined") {
   norm_counts_radios[1].addEventListener('click', function () {
-	  document.getElementById('output_choices_submit_btn').disabled = false;
-	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
-  });
-  norm_counts_radios[2].addEventListener('click', function () {
+    val = norm_counts_radios[1].value
+    //alert('1 '+val)
 	  document.getElementById('output_choices_submit_btn').disabled = false;
 	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
 	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
-// include_nas radio-buttons
-var include_nas_radios = document.getElementsByName('include_nas');
-if (typeof include_nas_radios[0] !=="undefined") {
-  include_nas_radios[0].addEventListener('click', function () {
+if (typeof norm_counts_radios[2] !=="undefined") {
+  norm_counts_radios[2].addEventListener('click', function () {
+    val = norm_counts_radios[2].value
+    //alert('2 '+val)
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+if (typeof norm_counts_radios[3] !=="undefined") {
+  norm_counts_radios[3].addEventListener('click', function () {
+    //alert('3')
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
+}
+// include_nas radio-buttons
+var include_nas_radios = document.getElementsByName('include_nas');
+if (typeof include_nas_radios[1] !=="undefined") {
   include_nas_radios[1].addEventListener('click', function () {
+    //alert('1')
+    document.getElementById('output_choices_submit_btn').disabled = false;
+    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+  });
+}
+if (typeof include_nas_radios[2] !=="undefined") {
+  include_nas_radios[2].addEventListener('click', function () {
+    //alert('2')
     document.getElementById('output_choices_submit_btn').disabled = false;
     document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
     document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
@@ -898,27 +898,28 @@ function create_counts_table() {
 
       //html += "<table border='1' class='single_border small_font counts_table' >";
 	  html += "<table border='1' class='table table-condensed' >";
-      html += "<tr><td></td>";
+      html += "<tr><td></td><td></td>";
       for (var n in mtx_local.columns) {
         html += "<td class=''>"+mtx_local.columns[n].name +"</td>";
       }
       html += "</tr>";
       
       for (var i in mtx_local.rows){
-        html += "<tr class='chart_row'>";
+        count = parseInt(i)+1;
+        html += "<tr class='chart_row'><td>"+count.toString()+"</td>";
         html += "<td class='left_justify'>"+mtx_local.rows[i].name +"</td>";
         for (var da in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][da];
 		  
           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
           var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[da].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
-          html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+String(cnt)+'</td>';
+          html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+cnt.toString()+'</td>';
           
         }
         html += "</tr>";
       }
       // TOTALS
-      html += "<tr>";
+      html += "<tr><td></td>";
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (var m in mtx_local.column_totals){
         var total;
