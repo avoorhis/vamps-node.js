@@ -5,9 +5,35 @@
 <% no_of_cols = 3 %>
 <span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
 
-<hr><strong>Common Fields:</strong> [ <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> ]
+
+  <hr><strong>Common Fields:</strong> 
+<% if(Object.keys(req_meta_found).length === 0 ){ %>
+ <br>None Found
+<% }else{ %>
+  [ <input type='checkbox' id='toggle_meta_r_btn' name='taxa_ckbx_toggle'  value='all' \><span class='tiny_font'> Toggle</span> ]
+  <table class='small_font'>
+    <tr>
+      <% i = 0 %>
+      <% for (md_name in req_meta_found) { %>       
+         <% if(md_name == 'latitude' || md_name == 'longitude')  { %>
+          <td><input type='checkbox' checked class='required_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'> <%= md_name %></td>
+         <% } else { %>
+            <td><input type='checkbox' class='required_meta_ckbx' name='selected_metadata[]' value='<%= md_name %>'> <%= md_name %></td>
+         <% } %>
+
+         <% if(i % no_of_cols === no_of_cols-1) { %>                
+            </tr><tr>
+         <% } %> 
+         <% i += 1 %>           
+      <% } %>
+  </tr>
+  </table>
+<% } %>
 
 
+<!-- 
+  This deleted portion uses required metadata fields to ALWAYS show checkboxes
+  But I've found that we currently don't always have the data to back it up
 <table class='small_font'><tr>
     <% for (i in req_meta_fields) { %>
        <% if(req_meta_fields[i] in req_meta_found) { %>		   
@@ -20,18 +46,21 @@
 		<% }else{ %>
 			<td><input type='checkbox' disabled title='Not Found' class='required_meta_ckbx' name='selected_metadata[]' value='<%= req_meta_fields[i] %>'> <%= req_meta_fields[i] %></td>
 		<% } %>   
-       
        <% if(i % no_of_cols === no_of_cols-1) { %>
      			</tr><tr>
        <% } %>
-    <% } %>
-	
-   
+    <% } %>   
 </tr>
-</table>
+</table> 
+-->
 
-<hr><strong>Custom Fields for these Datasets:</strong> [ <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> ]
 <% no_of_cols = 2 %>
+<hr><strong>Custom Fields for these Datasets:</strong> 
+<% if(Object.keys(cust_meta_found).length === 0 ){ %>
+ <br>None Found
+<% }else{ %>
+[ <input type='checkbox' id='toggle_meta_c_btn' name='meta_ckbx_toggle' value='all' \><span class='tiny_font'> Toggle</span> ]
+
 <table class='small_font'>
   <tr>
     <% i = 0 %>
@@ -46,6 +75,7 @@
     <% } %>
 </tr>
 </table>
+<% } %>
 <hr>
 
 

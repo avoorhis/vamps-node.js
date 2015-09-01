@@ -14,6 +14,7 @@ config.PATH_TO_RDP = '/Users/avoorhis/programming/rdp_classifier/dist/';
 //
 // http://www.ncbi.nlm.nih.gov/books/NBK279671/
 config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
+config.blast_db      = 'ALL_SEQS';
 //
 // http://qiime.org/
 config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';

@@ -29,6 +29,13 @@ module.exports = {
       //console.log(util.inspect(req, {showHidden: false, depth: null}));
       req.flash('loginMessage', 'Please login or register before continuing.');
       res.redirect('/users/login');
+      return;
+      // res.render('user_admin/login', {
+      //                 title: 'VAMPS: Login',                      
+      //                 message      : req.flash(),
+      //                 user         : req.user
+      // });  // end render
+
   }
   
   

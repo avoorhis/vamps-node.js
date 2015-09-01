@@ -106,10 +106,13 @@ if __name__ == '__main__':
         -p/--public seqs from public projects. [Optional]
         Produce a fasta file 
         uses:
-          db2fasta.py  (no command-line parameters) Script asks you for database name.
-          makeblastdb -in outfile_201507090811.fa -parse_seqids -dbtype nucl -out ALL_SEQS (ALL_PUBLIC_SEQS)
-          blast database creation  (outfmt 13 = JSON Blast output):
-           >blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
+          Make fasta file of all seqs to be included in blast db:
+                />db2fasta.py  (no command-line parameters) Script asks you for database name.
+          Create blast db from fasta file:
+                />makeblastdb -in outfile_201507090811.fa -parse_seqids -dbtype nucl -out ALL_SEQS (ALL_PUBLIC_SEQS)
+          
+          Blast database creation example (-outfmt 13 = JSON Blast output):
+                />blastn -db <dbname> -query <query_file> -outfmt 13 -out <outfile_name>
     """
     parser.add_argument("-sql","--sql",                   
                 required=False,  action="store",   dest = "sql", default='',
@@ -118,7 +121,7 @@ if __name__ == '__main__':
                 required=False,  action="store_true",   dest = "public", default=False,
                 help="""Complete Query SQL""") 
     parser.add_argument("-r","--region",                   
-                required=False,  action="store",   dest = "region", default='v6',
+                required=False,  action="store",   dest = "region", default='all',
                 help="""dna_region of S16 or """) 
     parser.add_argument("-o","--outfile_prefix",                   
                 required=False,  action="store",   dest = "outfile_prefix", default='',

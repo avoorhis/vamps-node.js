@@ -1015,26 +1015,12 @@ function get_sumator(req){
 }
 
 
-// function getLastPart(str) {
-//     var i = str.split(';');
-//     return i[i.length-1];
-// }
-//
-//  G E O S P A T I A L
-//
-// router.get('/user_viz_data/geospatial', helpers.isLoggedIn, function(req, res) {
-//   var myurl = url.parse(req.url, true);
 
-//   var ts    = myurl.query.ts;
-//   var html  = COMMON.start_visuals_html('geospatial');
 
-//   res.render('visuals/user_viz_data/geospatial', {
-//             title: 'VAMPS Geospatial Data',
-//             timestamp: ts || 'default_timestamp',
-//             html : html+"<h2>Not Coded Yet</h2>",
-//             user: req.user
-//       });
-// });
+//
+//  G E O S P A T I A L (see view_selection.js)
+//
+
 
 //
 // B A R - C H A R T  -- S I N G L E

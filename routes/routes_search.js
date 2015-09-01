@@ -41,14 +41,14 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(metadata_fields)
     metadata_fields_array.sort();
-
+    var blast_db = req.C.blast_db;
     // check if blast database exists:
-    var blast_nin = path.join('public','blast', NODE_DATABASE, 'ALL_SEQS.nin');
+    var blast_nin = path.join('public','blast', NODE_DATABASE, blast_db+'.nin');
     console.log(blast_nin)
     try{
       stats = fs.lstatSync(blast_nin);
       if (stats.isFile()) {
-        var blast_db_path = path.join('public','blast', NODE_DATABASE, 'ALL_SEQS');;
+        var blast_db_path = path.join('public','blast', NODE_DATABASE, blast_db);;
       }else{
         var blast_db_path = false;
       }
@@ -639,6 +639,18 @@ router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
       }
   });
 
+});
+
+router.get('/make_a_blast_db', helpers.isLoggedIn, function(req, res) {
+  var txt = "<br><br>"
+  txt += "<li>Install local ncbi-blast from: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download<br>"
+  txt += "<li>Make a fasta file of all seqs to be included in blast db using the db2fasta.py script in the public/scripts directory<br>"
+  txt += "The 'makeblastdb' command is part of the ncbi-blast suite of commands<br>"
+  txt += "Run the 'makeblastdb' command as shown:<br>"
+  txt += "/>makeblastdb -in new_fasta.fa -parse_seqids -dbtype nucl -out ALL_SEQS<br><br>"
+  txt += "<li>Then move the newly created files into the directory /public/blast/&lt;NODE_DATABASE_NAME&gt;<br>"
+  txt += "<li>The name of the new blast database should match the name in the public/constants.js file."
+  res.send(txt)
 });
 //
 //
