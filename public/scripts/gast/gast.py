@@ -34,8 +34,8 @@ class Gast:
         
         #if self.runobj.new_vamps_upload or self.runobj.new_vamps_upload:        
         self.idx_keys  = [self.runobj.user+self.runobj.run]
-        #self.refdb_dir = C.vamps_ref_database_dir
-        self.refdb_dir = os.path.join(self.runobj.process_dir, 'public','databases','gast_silva108')
+        
+        self.refdb_dir = os.path.join(self.runobj.process_dir, 'public','databases',self.runobj.ref_db_dir)
         logging.info('database dir: '+self.refdb_dir)
         self.iterator  = self.runobj.datasets
         site = self.runobj.site
@@ -685,42 +685,42 @@ class Gast:
         # try this first:
         
         
-        refdb = os.path.join(self.refdb_dir, 'refssu.fa')
-        taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-
-        self.db_type='db'
-        if C.use_full_length or dna_region == 'unknown' or dna_region not in C.refdbs:
+        refdb = os.path.join(self.refdb_dir, 'refseqs.fa.gz')
+        taxdb = os.path.join(self.refdb_dir, 'taxonomy.tax')
+        
+        # self.db_type='db'
+        # if C.use_full_length or dna_region == 'unknown' or dna_region not in C.refdbs:
             
-            refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-            taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-            self.db_type='db'
-        else:
+        #     refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
+        #     taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
+        #     self.db_type='db'
+        # else:
             
-            if dna_region in C.refdbs:
-                if os.path.exists(os.path.join(self.refdb_dir, C.refdbs[dna_region])):
-                    refdb = os.path.join(self.refdb_dir, C.refdbs[dna_region])
-                    taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
-                    self.db_type='db'
-                else:
-                    logging.info( 'could not find refdb '+os.path.join(self.refdb_dir, C.refdbs[dna_region])+".fa - Using full length")
-                    refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-                    taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-                    self.db_type='db'
-            elif os.path.exists(os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa')):
-                refdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa.gz')
-                taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
-                self.db_type='db'
+        #     if dna_region in C.refdbs:
+        #         if os.path.exists(os.path.join(self.refdb_dir, C.refdbs[dna_region])):
+        #             refdb = os.path.join(self.refdb_dir, C.refdbs[dna_region])
+        #             taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
+        #             self.db_type='db'
+        #         else:
+        #             logging.info( 'could not find refdb '+os.path.join(self.refdb_dir, C.refdbs[dna_region])+".fa - Using full length")
+        #             refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
+        #             taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
+        #             self.db_type='db'
+        #     elif os.path.exists(os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa')):
+        #         refdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa.gz')
+        #         taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
+        #         self.db_type='db'
             
-            elif os.path.exists(os.path.join(self.refdb_dir, 'refssu.fa.gz')):
+        #     elif os.path.exists(os.path.join(self.refdb_dir, 'refssu.fa.gz')):
             
-                refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-                taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-                self.db_type='db'
-            else:
-                refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-                taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-                self.db_type='db'
-                logging.error("Could not find reference database in "+self.refdb_dir+" - Using full length")
+        #         refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
+        #         taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
+        #         self.db_type='db'
+        #     else:
+        #         refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
+        #         taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
+        #         self.db_type='db'
+        #         logging.error("Could not find reference database in "+self.refdb_dir+" - Using full length")
                 
             
                 

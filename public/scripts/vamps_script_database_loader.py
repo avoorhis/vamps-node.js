@@ -102,8 +102,8 @@ def start(args):
     RANK_COLLECTOR={}
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db)
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db_dir)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db_dir)
     print args
     NODE_DATABASE = args.NODE_DATABASE
 

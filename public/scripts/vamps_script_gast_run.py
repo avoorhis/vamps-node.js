@@ -143,6 +143,7 @@ def start_gast(args):
                             'user':                 general_config_items['owner'],
                             'site':                 'vamps', 
                             'process_dir':          args.process_dir,
+                            'ref_db_dir':           args.ref_db_dir,
                             'load_vamps_database':  load_db,
                             'use_full_length':      True,
                             'input_files':          None,

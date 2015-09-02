@@ -353,47 +353,59 @@ module.exports.update_status = function(status_params){
         var statQuery =''
         statQuery += "DELETE from user_project_status";  
         statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' ";
-        console.log(statQuery)
+        console.log('query: '+statQuery)
         connection.query(statQuery , function(err, rows, fields){
-              if(err) { console.log('ERROR-in status update: '+err); }               
+              if(err) { console.log('ERROR1-in status update: '+err); }               
         });
-  }else{
-        var statQuery =''
-        if('pid' in status_params && 'project' in status_params){        
-          statQuery += "INSERT into user_project_status (user,project,project_id,status,message)";          
-          statQuery += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-        }else if('pid' in status_params){
-          statQuery += "INSERT into user_project_status (user,project_id,status,message)";          
-          statQuery += " VALUES ('"+status_params.user+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-        }else if('project' in status_params){
-          statQuery += "INSERT into user_project_status (user,project,status,message)";          
-          statQuery += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
-        }else{
-          // ERROR
-        }
-        console.log(statQuery)
-        connection.query(statQuery , function(err, rows, fields){
-              if(err) { 
-                var statQuery =''
-                if('pid' in status_params && 'project' in status_params){  
-                    statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
-                    statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' and project_id='"+status_params.pid+"'";
-                }else if('pid' in status_params){
-                    statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
-                    statQuery += " WHERE user='"+status_params.user+"' and project_id='"+status_params.pid+"'";
-                }else if('project' in status_params){  
-                    statQuery += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
-                    statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"'";
-                }else{
-                  //ERROR
-                }
-                  console.log(statQuery)
-                  connection.query(statQuery , function(err, rows, fields){
-                    if(err) { console.log('ERROR-in status update: '+err); } 
-                  }); 
-              }               
-        });
-  }        
+  }else if(status_params.type == 'update'){
+        
+              var statQuery2 =''
+              if('pid' in status_params && 'project' in status_params){  
+                  statQuery2 += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
+                  statQuery2 += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' and project_id='"+status_params.pid+"'";
+              }else if('pid' in status_params){
+                  statQuery2 += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
+                  statQuery2 += " WHERE user='"+status_params.user+"' and project_id='"+status_params.pid+"'";
+              }else if('project' in status_params){  
+                  statQuery2 += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
+                  statQuery2 += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"'";
+              }else{
+                //ERROR
+              }
+              console.log('query2: '+statQuery2)
+              connection.query(statQuery2 , function(err, rows, fields){
+                    if(err) { 
+                      console.log('ERROR2-in status update: '+err); 
+                    }else{
+                      console.log('status update2'); 
+                    } 
+              }); 
+                        
+        
+  } else {
+      var statQuery1 =''
+      if('pid' in status_params && 'project' in status_params){        
+        statQuery1 += "INSERT IGNORE into user_project_status (user,project,project_id,status,message)";          
+        statQuery1 += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+      }else if('pid' in status_params){
+        statQuery1 += "INSERT IGNORE into user_project_status (user,project_id,status,message)";          
+        statQuery1 += " VALUES ('"+status_params.user+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+      }else if('project' in status_params){
+        statQuery1 += "INSERT IGNORE into user_project_status (user,project,status,message)";          
+        statQuery1 += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
+      }else{
+        // ERROR
+      }
+      console.log('query1: '+statQuery1);
+
+      connection.query(statQuery1 , function(err, rows, fields){
+            if(err) { 
+              console.log('ERROR1-in status update: '+err); 
+            }else{
+              console.log('status update1'); 
+            }
+      });
+  }       
   
 }
 

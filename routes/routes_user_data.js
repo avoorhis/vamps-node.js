@@ -8,7 +8,7 @@ var url  = require('url');
 var ini = require('ini');
 var queries = require('./queries');
 var iniparser = require('iniparser');
-var PythonShell = require('python-shell');
+//var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
 var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}))
@@ -443,7 +443,7 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 //
 
 
-router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  function(req,res){
+router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
 
 
     
@@ -453,7 +453,8 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 
 
 	var classifier = req.params.classifier;
-	console.log('start: '+project+' - '+classifier);
+	var ref_db_dir = classifier+'_'+req.params.ref_db;
+	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
 
 
 	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
@@ -464,11 +465,9 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
 	
 	var config_file = path.join(data_dir,'config.ini');
-  tmp = classifier.split('_')
-  var method = tmp[0];
-  var ref_db = tmp[1];
+  
 
-	if(method == 'GAST' || method == 'gast'){
+	if(classifier == 'GAST' || classifier == 'gast'){
 		status_params = {'type':'update', 'user':req.user.username,
                                 'project':project, 'status':'OK-GAST',	'msg':'Starting GAST' } 
 		helpers.update_status(status_params); 
@@ -476,7 +475,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
 
-	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db ],
+	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir ],
 
 
 	    };
@@ -530,7 +529,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
         				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
         				    	} else {        
                       	status_params = {'type':'update',  'user':req.user.username,
-                                        'proj':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' } 
+                                        'project':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' } 
 								   	
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
 												helpers.update_status(status_params); 
@@ -567,7 +566,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
 
 	}else if(method == 'RDP' || method == 'rdp'){
 		status_params = {'type':'update', 'user':req.user.username,
-                     'proj':project,     'status':'OK-RDP',	'msg':'Starting RDP' } 
+                     'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' } 
 		helpers.update_status(status_params); 
 		
 		var rdp_options = {
@@ -624,7 +623,7 @@ router.get('/start_assignment/:project/:classifier', helpers.isLoggedIn,  functi
         				 		  		console.log('2-RDP-Query error: ' + err);        				 		  	
         				      } else {        
 													status_params = {'type':'update', 'user':req.user.username,
-													               'proj':project, 'status':'OK-RDP',	'msg':'Finished RDP'  } 
+													               'project':project, 'status':'OK-RDP',	'msg':'Finished RDP'  } 
 
 													helpers.assignment_finish_request(res,rows1,rows2,status_params);
 													helpers.update_status(status_params); 
@@ -1096,7 +1095,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 		//     	if (err) {
 		// 				req.flash('failMessage', '1-File move failure  '+err);
 		// 				status_params = {'type':'update', 'user':req.user.username,
-		// 									'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+		// 									'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
 		// 				helpers.update_status(status_params);
 		// 				res.redirect("/user_data/import_data");
 		// 				return;
@@ -1210,7 +1209,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 		   console.log(data_repository);
 			status_params = {'type':'new', 'user':req.user.username,
-											'proj':project, 'status':'OK',	'msg':'Upload Started'  } 
+											'project':project, 'status':'OK',	'msg':'Upload Started'  } 
 			helpers.update_status(status_params); 
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
@@ -1250,7 +1249,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		    	if (err) {
 						req.flash('failMessage', '1-File move failure  '+err);
 						status_params = {'type':'update', 'user':req.user.username,
-											'proj':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+											'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
 						helpers.update_status(status_params);
 						res.redirect("/user_data/import_data");
 						return;
@@ -1259,7 +1258,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			    	if (err) {
 							req.flash('failMessage', '2-File move failure '+err);
 							status_params = {'type':'update', 'user':req.user.username,
-											'proj':project, 'status':'FAIL-2',	'msg':'2-File move failure'  } 
+											'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  } 
 							helpers.update_status(status_params);
 							res.redirect("/user_data/import_data");
 							return;
@@ -1267,22 +1266,59 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
-				    PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
-				      if (err) {
-							  req.flash('failMessage', 'Script Failure '+err);
-							  status_params = {'type':'update', 'user':req.user.username,
-											'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
-							  helpers.update_status(status_params);
-							  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
-							  return;
-						  }
-						  status_params = {'type':'update', 'user':req.user.username,
-											'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
-						  helpers.update_status(status_params);
-						  console.log('Finished loading '+project);
+				    
+				    var spawn = require('child_process').spawn;
+						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
+						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+						var output = ''
+								
+						load_trim_process.stdout.on('data', function (data) {
+						  //console.log('stdout: ' + data);
+						  data = data.toString().replace(/^\s+|\s+$/g, '');
+						  output += data;
+						  var lines = data.split('\n');
+						});
+						load_trim_process.on('close', function (code) {
+						   console.log('load_trim_process process exited with code ' + code);
+						   var ary = output.split("\n");
+						   var last_line = ary[ary.length - 1];
+						   if(code == 0){
+							   	console.log('Load Success');
+							   	status_params = {'type':'update', 'user':req.user.username,
+								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
+						   		helpers.update_status(status_params);
+						   		console.log('Finished loading '+project);
+							 }else{
+								 	req.flash('failMessage', 'Script Failure '+err);
+								  status_params = {'type':'update', 'user':req.user.username,
+												'project':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
+								  helpers.update_status(status_params);
+								  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+								  return;
+							 }
+						});
+
+
+				    // PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
+				    //   if (err) {
+							 //  req.flash('failMessage', 'Script Failure '+err);
+							 //  status_params = {'type':'update', 'user':req.user.username,
+								// 			'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
+							 //  helpers.update_status(status_params);
+							 //  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+							 //  return;
+						  // }
+						  // status_params = {'type':'update', 'user':req.user.username,
+								// 			'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
+						  // helpers.update_status(status_params);
+						  // console.log('Finished loading '+project);
 						  
 						  
-				    });
+				    // });
+
+
+
+
 			  	}); // END move 2
 			}); // END move 1
 

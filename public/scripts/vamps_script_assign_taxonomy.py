@@ -83,9 +83,9 @@ if __name__ == '__main__':
     			required=True,   action="store",  dest = "NODE_DATABASE",            
                 help = 'node database') 
     
-    parser.add_argument('-ref_db', '--reference_db',         
-                required=False,   action="store",  dest = "ref_db", default = "default",           
-                help = 'node database')                                           
+    parser.add_argument('-ref_db_dir', '--reference_db_dir',         
+                required=True,   action="store",  dest = "ref_db_dir", default = "default",           
+                help = 'ref database dir')                                           
     
     parser.add_argument('-class', '--classifier',         
     			required=True,   action="store",  dest = "classifier",              
@@ -100,6 +100,9 @@ if __name__ == '__main__':
     parser.add_argument("-pdir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
                 help = '')
+
+    
+
     args = parser.parse_args() 
 
 
