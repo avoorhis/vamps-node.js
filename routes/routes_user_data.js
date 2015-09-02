@@ -564,14 +564,14 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 
 
-	}else if(method == 'RDP' || method == 'rdp'){
+	}else if(classifier == 'RDP' || classifier == 'rdp'){
 		status_params = {'type':'update', 'user':req.user.username,
                      'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' } 
 		helpers.update_status(status_params); 
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db', ref_db,'-script_dir', req.C.PATH_TO_RDP ],
+	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
 	    };
 	  
 	  

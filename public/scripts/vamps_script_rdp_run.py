@@ -40,8 +40,8 @@ def start_rdp(args):
     sys.path.append(os.path.join(args.process_dir,'public','scripts'))
 
     import rdp.rdp as rdp
-    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db)
+    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db_dir)
+    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db_dir)
     logging.debug(args)
     datasets = {}
     info_load_infile = args.config
@@ -87,8 +87,8 @@ def start_rdp(args):
          print 'running rdp on',dataset
          print 'uniques file',unique_file
          print 'rdp_out file',rdp_out_file
-         print 'ref db', args.ref_db
-         rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db )
+         print 'ref db dir', args.ref_db_dir
+         rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db_dir )
     
 
             

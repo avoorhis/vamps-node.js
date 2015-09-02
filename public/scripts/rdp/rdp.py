@@ -26,18 +26,18 @@ import subprocess
 ############################################################
 
 
-def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db='default'):
+def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='RDP_2.10.1'):
 	
 	
-    logging.debug('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db+' -script_dir '+rdp_script_dir)
-    print('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db+' -script_dir '+rdp_script_dir)
+    logging.debug('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db_dir+' -script_dir '+rdp_script_dir)
+    print('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db_dir+' -script_dir '+rdp_script_dir)
     #PATH_2_JAVA="/bioware/jre/bin/java";
     PATH_2_JAVA = "/usr/bin/java"
     #PATH_2_RDP = "/Users/avoorhis/programming/rdp_classifier"  # soft link to rdp_classifier
     #PATH_2_RDP = os.path.join(script_dir,"public","classifiers","rdp")  # soft link to rdp_classifier
-    ref_db = 'rdp_'+ref_db        
+          
     
-    PATH_2_DB  = os.path.join(process_dir,"public","databases",ref_db)  # soft link to rdp_classifier
+    PATH_2_DB  = os.path.join(process_dir,"public","databases",ref_db_dir)  # soft link to rdp_classifier
 
 
     #java -Xmx2400m -jar /xraid/bioware/linuxOpteron/rdp_classifier/rdp_classifier-1.0.jar $1 $2  /xraid/bioware/linuxOpteron/rdp_classifier/train/rRNAClassifier.properties
