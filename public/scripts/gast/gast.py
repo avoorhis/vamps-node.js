@@ -35,7 +35,7 @@ class Gast:
         #if self.runobj.new_vamps_upload or self.runobj.new_vamps_upload:        
         self.idx_keys  = [self.runobj.user+self.runobj.run]
         
-        self.refdb_dir = os.path.join(self.runobj.process_dir, 'public','databases',self.runobj.ref_db_dir)
+        self.refdb_dir = os.path.join(self.runobj.process_dir, 'public','databases', self.runobj.classifier, self.runobj.ref_db_dir)
         logging.info('database dir: '+self.refdb_dir)
         self.iterator  = self.runobj.datasets
         site = self.runobj.site

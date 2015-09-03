@@ -74,6 +74,9 @@ CREATE TABLE `summed_counts` (
 """
 # Global:
  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
+classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
+                "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
+                'unknown':{'unknown':9}}
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
 silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
 accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
@@ -102,8 +105,8 @@ def start(args):
     RANK_COLLECTOR={}
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db_dir)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db '+args.ref_db_dir)
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
     print args
     NODE_DATABASE = args.NODE_DATABASE
 
@@ -210,7 +213,13 @@ def create_env_source():
 def create_classifier():
     global mysql_conn
     global cur
-    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST'),(3,'unknown')"
+    q = "INSERT IGNORE INTO classifier VALUES" # (1,'GAST','ITS1'),(2,'GAST','SILVA108_FULL_LENGTH'),(3,'GAST','GG_FEB2011'),(4,'GAST','GG_MAY2013'),"
+    for classifier in classifiers:
+        for db in classifiers[classifier]:
+            id = str(classifiers[classifier][db])
+            q += "('"+id+"','"+classifier+"','"+db+"'),"
+    q = q[:-1]
+    #print q
     cur.execute(q)
     mysql_conn.commit()
     
@@ -298,7 +307,8 @@ def push_dataset():
 
 def push_pdr_seqs(args):
     #print
-    
+    gast_dbs = ['','','']
+
     global SEQ_COLLECTOR
     global DATASET_ID_BY_NAME
     global mysql_conn
@@ -309,17 +319,21 @@ def push_pdr_seqs(args):
             seqid = SEQ_COLLECTOR[ds][seq]['sequence_id']
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
             q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
-            if args.classifier == 'gast':
-                q += " VALUES ('%s','%s','%s','2')"
-            elif args.classifier == 'rdp':
-                q += " VALUES ('%s','%s','%s','1')"
-            else:
-                q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
+            #if args.classifier.upper() == 'GAST':
+            id = classifiers[args.classifier.upper()][args.ref_db_dir]
+            q += " VALUES ('%s','%s','%s','%s')"   
+
+
+            #     q += " VALUES ('%s','%s','%s','2')"
+            # elif args.classifier.upper() == 'RDP':
+            #     q += " VALUES ('%s','%s','%s','1')"
+            # else:
+            #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
             #print q
             #print
             logging.info(q)
             try:
-                cur.execute(q % (str(did),str(seqid),str(count)))
+                cur.execute(q % (str(did),str(seqid),str(count),str(id)))
             except:
                 logging.error(q)
                 print "ERROR Exiting: "+ds +"; Query: "+q
@@ -414,11 +428,11 @@ def push_taxonomy(args):
             unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
                 run_tax_by_seq_file(args, ds, tax_file)
-        elif classifier == 'gast':
+        elif classifier.upper() == 'GAST':
             tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
             if os.path.exists(tax_file):
                 run_gast_tax_file(args, ds, tax_file)
-        elif classifier == 'rdp':
+        elif classifier.upper() == 'RDP':
             tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
             unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
             #seqs_file = os.path.join(analysis_dir, dir, 'seqfile.fa')
@@ -743,15 +757,15 @@ if __name__ == '__main__':
                 required=True,   action="store",  dest = "NODE_DATABASE",            
                 help = 'node database') 
     
-    parser.add_argument('-ref_db', '--reference_db',         
-                required=False,   action="store",  dest = "ref_db", default = "default",           
+    parser.add_argument('-ref_db_dir', '--reference_db',         
+                required=False,   action="store",  dest = "ref_db_dir", default = "default",           
                 help = 'node database')                                           
     parser.add_argument("-in_type", "--in_type",    
                 required=False,  action="store",   dest = "input_type", default='unknown',
                 help = '')
     parser.add_argument('-class', '--classifier',         
                 required=False,   action="store",  dest = "classifier",  default='unknown',            
-                help = 'gast or rdp')  
+                help = 'GAST or RDP')  
     
     parser.add_argument("-ddir", "--data_dir",    
                 required=True,  action="store",   dest = "basedir", 

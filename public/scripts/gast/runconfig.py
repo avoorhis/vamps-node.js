@@ -186,6 +186,7 @@ class RunConfig:
             self.env_source_id  = general_config['env_source_id']
             self.process_dir    = general_config['process_dir']
             self.ref_db_dir     = general_config['ref_db_dir']
+            self.classifier     = general_config['classifier']
 
             self.site               = general_config['site']
             self.load_vamps_database = general_config['load_vamps_database']
@@ -222,10 +223,7 @@ class RunConfig:
                 self.use_full_length= general_config['use_full_length']
             except:
                 self.use_full_length= False
-            try:
-                self.classifier     = general_config['classifier']
-            except:
-                self.classifier= 'unknown'
+            
         else:
             if self.platform == 'illumina':
                 self.compressed     = general_config['compressed']                 

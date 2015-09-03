@@ -26,7 +26,7 @@ import subprocess
 ############################################################
 
 
-def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='RDP_2.10.1'):
+def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
 	
 	
     logging.debug('CMD:> '+process_dir+'/public/scripts/'+os.path.basename(__file__)+' -i '+infile+' -o '+outfile+' --process_dir '+process_dir+' -ref_db '+ref_db_dir+' -script_dir '+rdp_script_dir)
@@ -37,7 +37,7 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='RDP_2.10.1
     #PATH_2_RDP = os.path.join(script_dir,"public","classifiers","rdp")  # soft link to rdp_classifier
           
     
-    PATH_2_DB  = os.path.join(process_dir,"public","databases",ref_db_dir)  # soft link to rdp_classifier
+    PATH_2_DB  = os.path.join(process_dir,"public","databases","RDP",ref_db_dir)  # soft link to rdp_classifier
 
 
     #java -Xmx2400m -jar /xraid/bioware/linuxOpteron/rdp_classifier/rdp_classifier-1.0.jar $1 $2  /xraid/bioware/linuxOpteron/rdp_classifier/train/rRNAClassifier.properties
@@ -50,7 +50,7 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='RDP_2.10.1
     # the classifier must be kept with its directory structure
 
 
-    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/train/rRNAClassifier.properties -f fixrank"
+    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
     logging.debug('RDPCMD: '+rdp_cmd)
 
 

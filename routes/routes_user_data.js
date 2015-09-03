@@ -453,7 +453,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 
 	var classifier = req.params.classifier;
-	var ref_db_dir = classifier+'_'+req.params.ref_db;
+	var ref_db_dir = req.params.ref_db;
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
 
 
@@ -475,7 +475,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
 
-	      args :       [ '--classifier','gast', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir ],
+	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir ],
 
 
 	    };
@@ -534,7 +534,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
 												helpers.update_status(status_params); 
 
-												ALL_CLASSIFIERS_BY_PID[pid] = classifier				   
+												ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;			   
 
 
         				    	}
@@ -571,7 +571,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier','rdp', '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
+	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
 	    };
 	  
 	  
@@ -628,9 +628,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 													helpers.assignment_finish_request(res,rows1,rows2,status_params);
 													helpers.update_status(status_params); 
 
-													ALL_CLASSIFIERS_BY_PID[pid] = classifier  
-
-
+													ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;  
 													
 											}
 				       
@@ -706,16 +704,16 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 
   				  	//new_status = helpers.get_status(req.user.username,project_name);
   				  	//console.log(new_status); // Async only -- doesn't work
-
+console.log(ALL_CLASSIFIERS_BY_PID)
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 								project_info[project_name].tax_status = 'Taxonomic Data Available';
-								project_info[project_name].tax = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
+								project_info[project_name].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
 							}else{
 					  		project_info[project_name].pid = 0;
 					  		project_info[project_name].tax_status = 'No Taxonomic Assignments Yet';
-					  		project_info[project_name].tax = 'none';
+					  		project_info[project_name].classified_by = 'none';
 							}
 				  	  project_info[project_name].config = config;
 				  	  project_info[project_name].directory = items[d];

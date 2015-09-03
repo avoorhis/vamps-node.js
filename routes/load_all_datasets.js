@@ -47,8 +47,6 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
       console.log(' INITIALIZING DATASET_IDS_BY_PID');
       console.log(' INITIALIZING DATASET_NAME_BY_DID');
-     
-      
       console.log(' INITIALIZING AllMetadataNames');
       console.log(' INITIALIZING DatasetsWithLatLong');
 
@@ -84,7 +82,7 @@ module.exports.get_datasets = function(callback){
       } else {
         ALL_CLASSIFIERS_BY_CID      = {};
         for (var i=0; i < rows.length; i++) {
-      	 ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier;	
+      	  ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier+'_'+rows[i].database;	
         }
       }
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');      

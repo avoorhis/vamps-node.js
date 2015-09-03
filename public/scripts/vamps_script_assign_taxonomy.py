@@ -130,7 +130,7 @@ if __name__ == '__main__':
 #           -db vamps_js_dev_av
 
     # 1-1-1-1-1-1
-    if args.classifier == 'gast':
+    if args.classifier.upper() == 'GAST' :
 
 
         
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         print "starting GAST"
         gast.start_gast(args)
 
-    elif args.classifier == 'rdp':
+    elif args.classifier.upper() == 'RDP':
         
         import vamps_script_rdp_run as rdp
 

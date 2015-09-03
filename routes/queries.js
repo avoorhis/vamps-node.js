@@ -27,7 +27,7 @@ get_select_datasets_queryPID: function(pid){
 	
 },
 get_select_classifier_query: function(){
-		var qSelectClassifiers = "SELECT classifier_id as cid, classifier";
+		var qSelectClassifiers = "SELECT classifier_id as cid, classifier, `database`";
 		qSelectClassifiers += " FROM classifier";
 		//console.log(qSelectClassifiers);
     return qSelectClassifiers;
