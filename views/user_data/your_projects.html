@@ -37,19 +37,23 @@
 
     		<table class='table table-condensed'>
     			<tr>	
-    				<td>Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> </td>
-    				<td></td>
-    				
-
-					
-					<% if(project_info[pnames[t]].pid == 0){ %> 
-                        <td>Status: <span class="label label-warning"><strong><%= tax_status %></strong></span>                          
-						 
-                        </td>   
+    				<% if(project_info[pnames[t]].pid == 0){ %> 
+                        <td>
+                            Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
+                        </td>
+    				    <td></td>                        
+                        <td>
+                            Status: <span class="label label-warning"><strong><%= tax_status %></strong></span>
+                        </td>     
                         
 					<% }else{ %>
-						<td>Status: <span class="label label-success"><strong><%= tax_status %></strong></span>
-                            <small>(id:<%= project_info[pnames[t]].pid %>)</small>
+                        <td>
+                            Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
+                            <br><small>(id: <%= project_info[pnames[t]].pid %>)</small>
+                        </td>
+                        <td></td>   
+						<td>
+                            Status: <span class="label label-success"><strong><%= tax_status %></strong></span>                            
                             <br>Taxonomy Assigned By: <strong><%= classified_by %></strong>
 				        </td>   
                         
@@ -93,7 +97,7 @@
                         </td>   
 
     			</tr><tr>
-    				<td>Total Number of Sequences: <strong><%= total_number_of_sequences %></strong></td>
+    				<td>Raw Sequence Count: <strong><%= total_number_of_sequences %></strong></td>
     				<td>Public: 
     					<% if(public == 'False'  ){ %>
     						<strong>NO</strong>

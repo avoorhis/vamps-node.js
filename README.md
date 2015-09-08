@@ -28,7 +28,8 @@ Which will create the directory 'vamps-node.js'.
 **Install MYSQL database schema**
  * There are two mysql database schemas included in the vamps-node.js installation.
 One has some data included that you can use in visualizations:
-db_schema.sql and db_schema_w_test_data.sql (they may be compressed files)
+  db_schema.sql (update 9-4-2015)
+  db_schema_w_test_data.sql (they may be compressed files)
 Create a new database in your mysql installation and install one of the schemas in it.
  * Create a new file in the vamps-node.js/config directory named 'db-connection.js' with the contents as shown below.
  * In the new file fill in the correct values for the database name and mysql user and password.
