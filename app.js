@@ -39,10 +39,12 @@ var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
+
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
-
+console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
+console.log('test2')
 var C = require('./public/constants');
 
 var app = express();
@@ -233,7 +235,7 @@ catch (e) {
   console.log(e);
   AllMetadata = {}
 }
-//console.log(AllMetadata)
+
 
 console.log('Loading METADATA as AllMetadata from: '+meta_file);
 

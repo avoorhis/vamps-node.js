@@ -27,9 +27,13 @@ var MTX     = require('./routes_counts_matrix');
 //var PCHARTS = require('./routes_pie_charts');
 //var CTABLE  = require('./routes_counts_table');
 var PythonShell = require('python-shell');
+
 var app = express();
-var d3 = require("d3");
+console.log('viz-test1')
+//var d3 = require("d3");
+console.log('viz-test2')
 var xmldom = require('xmldom');
+
 // // init_node var node_class =
 // var CustomTaxa  = require('./custom_taxa_class');
 
@@ -365,13 +369,13 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
   		  res.send(err);
   	  }else{
 	      distance_matrix = JSON.parse(mtx);
-	     
-	      res.render('visuals/partials/load_distance',{
-	                    dm        : distance_matrix,
-			  							hash   	  : JSON.stringify(chosen_id_name_hash),			  							
-	                    constants : JSON.stringify(req.C),
-	               });
-	  }
+	      
+	      // res.render('visuals/partials/load_distance',{
+	      //               dm        : distance_matrix,
+			  		// 					hash   	  : JSON.stringify(chosen_id_name_hash),			  							
+	      //               constants : JSON.stringify(req.C),
+	      //          });
+	    }
     });
 
 });
@@ -404,16 +408,20 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
 
 });
-router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+//
+//
+//
+router.post('/dendrogramx', helpers.isLoggedIn, function(req, res) {
     console.log('found routes_dendrogram');
 
-    //console.log('req.body dnd');
-    //console.log(req.body);
-    //console.log('req.body dnd');
+    console.log('req.body dnd');
+    console.log(req.body);
+    console.log('req.body dnd');
     var ts = req.body.ts;
     var metric = req.body.metric;
 	  var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
+    console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 	
 	  var biom_file_name = ts+'_count_matrix.biom';
@@ -433,12 +441,182 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       scriptPath : 'public/scripts',
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
     };
+
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+    PythonShell.run('distance.py', options, function (err, data) {
+      if (err) {
+        res.send(err);
+      }else{
+        if(image_type == 'svg'){
+          newick = JSON.parse(data);
+          console.log('newick '+newick);
+          res.render('visuals/partials/load_dendrogram',{
+                      newick    : JSON.stringify(newick),
+                      script    : script,   // phylogram or phylonator
+                      hash      : JSON.stringify(chosen_id_name_hash),                      
+                      constants : JSON.stringify(req.C),
+                 });
+
+        }else{  // 'pdf'
+          var viz_width = 1200;
+          var viz_height = (visual_post_items.no_of_datasets*12)+100;
+          var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+          html = "<div id='pdf'>";
+          html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+          html += " <p>ERROR in loading pdf file</p>";
+          html += "</object></div>";
+          res.send(html);
+          return;
+        }
+        
+       
+      
+      }
+    });
+});
+router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+    console.log('found routes_dendrogram');
+
+    //console.log('req.body dnd');
+    //console.log(req.body);
+    //console.log('req.body dnd');
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var script = req.body.script; // python, phylogram or phylonator
+    var image_type = req.body.image_type;  // png(python script) or svg
+    // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
+  
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
+
+    var exec = require('child_process').exec;
+    //var PythonShell = require('python-shell');
+    var html = '';
+    var title = 'VAMPS';
+
+    var distmtx_file_name = ts+'_distance.csv';
+    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
+    };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
 
     PythonShell.run('distance.py', options, function (err, output) {
       if (err) {
-		  res.send(err);  // for now we'll send errors to the browser
-	  }else{
+      res.send(err);  // for now we'll send errors to the browser
+    }else{
+        function buildNewickNodes(node, callback) {
+          newickNodes.push(node);
+          if (node.branchset) {
+            for (var i=0; i < node.branchset.length; i++) {
+              buildNewickNodes(node.branchset[i]);
+            }
+          }
+        }
+      var viz_width = 1200;
+      var viz_height = (visual_post_items.no_of_datasets*12)+100;
+        //var m = JSON.stringify(mtx)
+        var html;
+        if(image_type == 'svg'){
+          //console.log(JSON.parse(output))
+          try {
+            var d3 = require("d3");
+            var xmldom = require('xmldom');
+            var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
+            var div_width = 1200;
+            newick = JSON.parse(output);
+            //console.log('Newick ',newick)
+            var json  = Newick.parse(newick);
+            //console.log(JSON.stringify(json,null,4))
+            var newickNodes = [];
+
+            buildNewickNodes(json);
+          
+  //          if(script == 'phylogram'){
+              var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
+              var tree_data = d3.phylogram.build('body', json, {
+                width: viz_width-400,   // minus 400 is for padding on right to view dataset names
+                height: viz_height
+              });
+            // }else if(script == 'phylonator'){
+            //   var Phylonator = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
+            //   var tree_data = d3.phylonator.build('body', json, {
+            //     width: viz_width-400,    // minus 400 is for padding on right to view dataset names
+            //     height: viz_height,
+            //     skipBranchLengthScaling: true
+            //   });
+            // }
+
+            //console.log('Newick2 ')
+            
+            //console.log('Newick3 ')
+            var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+            //console.log('Newick4 ')
+            html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
+
+            d3.select('svg').remove();
+          }
+          catch(err) {
+            html = 'Not Working Yet'
+          }
+          //console.log(html);
+
+        }else{
+          var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+          html = "<div id='pdf'>";
+          html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+          html += " <p>ERROR in loading pdf file</p>";
+          html += "</object></div>";
+        }
+        //html = viz_height
+          res.send(html);
+      }
+
+    });
+
+});
+//
+//
+//
+router.post('/dendrogram3', helpers.isLoggedIn, function(req, res) {
+    console.log('found routes_dendrogram');
+
+    console.log('req.body dnd');
+    console.log(req.body);
+    console.log('req.body dnd');
+    var ts = req.body.ts;
+    var metric = req.body.metric;
+    var script = req.body.script; // python, phylogram or phylonator
+    var image_type = req.body.image_type;  // png(python script) or svg
+    console.log('image_type '+image_type);
+    // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
+  
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
+
+
+    var exec = require('child_process').exec;
+    //var PythonShell = require('python-shell');
+    var html = '';
+    var title = 'VAMPS';
+
+    var distmtx_file_name = ts+'_distance.csv';
+    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    
+
+    var options = {
+      scriptPath : 'public/scripts',
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
+    };
+
+    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+
+    PythonShell.run('distance.py', options, function (err, output) {
+      if (err) {
+		    res.send(err);  // for now we'll send errors to the browser
+	    }else{
 	      function buildNewickNodes(node, callback) {
 	        newickNodes.push(node);
 	        if (node.branchset) {
@@ -447,49 +625,61 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 	          }
 	        }
 	      }
-		  var viz_width = 1200;
-		  var viz_height = (visual_post_items.no_of_datasets*12)+100;
+		    var viz_width = 1200;
+		    var viz_height = (visual_post_items.no_of_datasets*12)+100;
 	      //var m = JSON.stringify(mtx)
 	      var html;
 	      if(image_type == 'svg'){
-	        //console.log(JSON.parse(output))
-  			var d3 = require("d3");
-  			var xmldom = require('xmldom');
-  			var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
-			var div_width = 1200;
-  			newick = JSON.parse(output);
-  			//console.log('Newick ',newick)
-  			var json  = Newick.parse(newick);
-  			//console.log(JSON.stringify(json,null,4))
-  			var newickNodes = [];
+  	      console.log(JSON.parse(output));
+          //console.log('here in phylogram0')
+    			var d3 = require("d3");
+          //console.log('here in phylogram1')
+    			var xmldom = require('xmldom');
+          var jsdom = require('jsdom');
+          //console.log('here in phylogram2')
+    			var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
+  			  var div_width = 1200;
+    			newick = JSON.parse(output);
+    			//console.log('Newick ',newick)
+    			var json  = Newick.parse(newick);
+    			//console.log(JSON.stringify(json,null,4))
+    			var newickNodes = [];
 
-  			buildNewickNodes(json);
-			
-			if(script == 'phylogram'){
-				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-				var tree_data = d3.phylogram.build('body', json, {
-				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-				  height: viz_height
-				});
-			}else if(script == 'phylonator'){
-				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
-				var tree_data = d3.phylonator.build('body', json, {
-				  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
-				  height: viz_height,
-				  skipBranchLengthScaling: true
-				});
-			}
+    			buildNewickNodes(json);
+  			
+//    			if(script == 'phylogram'){
+    				//console.log('here in phylogram3')
+            var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
+            document = jsdom.jsdom()
+            var body = d3.select(document.body);
+    				console.log('here in phylogram4')
+            //viz={width:viz_width-400,height:viz_height}
+            var tree_data = d3.phylogram.build('body', json, {
+    				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
+    				  height: viz_height
+              
+    				});
+            console.log('here in phylogram5')
+    			// }else if(script == 'phylonator'){
+    			// 	var Phylonator = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
+    			// 	var tree_data = d3.phylonator.build('body', json, {
+    			// 	  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
+    			// 	  height: viz_height,
+    			// 	  skipBranchLengthScaling: true
+    			// 	});
+    			// }
 
-			//console.log('Newick2 ')
-			
-			//console.log('Newick3 ')
-			var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-			//console.log('Newick4 ')
-			html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
+  			  //console.log('Newick2 ')
+  			
+  			  //console.log('Newick3 ')
+  			  var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+          //var svgXML = jsdom.env(tree_data.vis[0][0]);
+  			  //console.log('Newick4 ')
+  			  html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
 
-			d3.select('svg').remove();
+  			  d3.select('svg').remove();
 
-			//console.log(html);
+  			  //console.log(html);
 
 	      }else{
 	        var image = '/tmp_images/'+ts+'_dendrogram.pdf';

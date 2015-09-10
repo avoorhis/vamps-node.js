@@ -240,7 +240,7 @@
 	<button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram1_div'        class='display_none well '>Working....</div>
+  <div id='dendrogram1_div'        class=' well '>Working....</div>
   
   <!-- Dendrogram 2 phylonator -->
   <br>
@@ -252,7 +252,7 @@
 	<button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram2_div'        class='display_none well '>Working....</div>
+  <div id='dendrogram2_div'        class=' well '>Working....</div>
   
   <!-- Dendrogram pdf-->
   <br>
@@ -342,12 +342,44 @@
  <script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>
  <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
  <script type="text/javascript" src="/javascripts/d3pie.min.js" charset="utf-8"></script>
+ <!--
+ <script type="text/javascript" src="/javascripts/d3.phylogram.js" charset="utf-8"></script>
+ <script type="text/javascript" src="/javascripts/d3.phylonator.js" charset="utf-8"></script>
+-->
  <script type="text/javascript" src="/javascripts/newick.js" charset="utf-8"></script>
  <script type="text/javascript" src="/javascripts/drag_rows.js"></script>
  <script type="text/javascript" src="/javascripts/global.js"></script>
  <script type="text/javascript" src="/javascripts/common_selection.js"></script>
  <script type="text/javascript" src="/javascripts/view_selection.js"></script>
  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+ <script>
+//   function load_dendrogram(newick) {
+//         alert('xx')
+//   //      newick = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
+//          var newick = JSON.parse(newick);
+//          var newickNodes = []
+//          function buildNewickNodes(node, callback) {
+//            newickNodes.push(node)
+//            if (node.branchset) {
+//              for (var i=0; i < node.branchset.length; i++) {
+//                buildNewickNodes(node.branchset[i])
+//              }
+//            }
+//          }
+//          buildNewickNodes(newick)
+        
+//          //d3.phylogram.buildRadial('#radialtree', newick, {
+//          //  width: 400,
+//          //  skipLabels: true
+//          //})
+//         document.getElementById('dendrogram1_div').innerHTML = 'newick'
+//         // d3.phylogram.build('#dendrogram1_div', newick, {
+//         //   width: 300,
+//         //   height: 400
+//         // });
+// }
+   
+</script>
 </body>
 </html>
 

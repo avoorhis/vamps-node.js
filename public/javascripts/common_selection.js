@@ -61,7 +61,6 @@ var save_datasets_list = function(ds_local, user)
 //
 // PIES and BARS
 //
-
 function create_barcharts(imagetype) {
 
         var ts = pi_local.ts;
@@ -81,8 +80,8 @@ function create_barcharts(imagetype) {
         for (var p in mtx_local.columns){
           tmp={};
           tmp.datasetName = mtx_local.columns[p].name;
-		  did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
-		  //tmp.did = mtx_local.columns[p].did;
+		      did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
+		      //tmp.did = mtx_local.columns[p].did;
           for (var t in mtx_local.rows){
             tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
           }
@@ -136,6 +135,9 @@ function create_barcharts(imagetype) {
         }else{
         	create_svg_object(svg,props, did_by_names, data, ts);
         }
+}
+function create_dendrogram_svg_object(svg, props, did_by_names, data, ts) {
+
 }
 //
 //

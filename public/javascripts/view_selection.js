@@ -1270,8 +1270,8 @@ function create_piecharts(ts) {
     piecharts_created = true;
     
     var info_line = create_header('pies', pi_local);
-	 var piecharts_div = document.getElementById('piecharts_div');
-	   piecharts_div.style.display = 'block';
+	  var piecharts_div = document.getElementById('piecharts_div');
+	  piecharts_div.style.display = 'block';
     document.getElementById('piecharts_title').innerHTML = info_line;
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
