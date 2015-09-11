@@ -1057,54 +1057,58 @@ function create_dendrogram(ts, image_type, script) {
       xmlhttp.onreadystatechange = function() {
 
         if (xmlhttp.readyState == 4 ) {
-          var newick = xmlhttp.responseText;
+          var htmlstring = xmlhttp.responseText;
+          if(image_type == 'pdf'){
+              html = "<div id='' >"+htmlstring+"</div>";
+              dend_div.innerHTML = html;
+          }else{
 
-          // build dendrg here
 
-          //var newick = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.//00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((//Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
-          var newick = Newick.parse(newick);
-          //var newick = JSON.parse(newick);
-          var newickNodes = []
-          function buildNewickNodes(node, callback) {
-            newickNodes.push(node)
-            if (node.branchset) {
-              for (var i=0; i < node.branchset.length; i++) {
-                buildNewickNodes(node.branchset[i])
+              //var newick = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.//00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((//Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
+              var newick = Newick.parse(htmlstring);
+              //var newick = JSON.parse(newick);
+              var newickNodes = []
+              function buildNewickNodes(node, callback) {
+                newickNodes.push(node)
+                if (node.branchset) {
+                  for (var i=0; i < node.branchset.length; i++) {
+                    buildNewickNodes(node.branchset[i])
+                  }
+                }
               }
-            }
-          }
-          buildNewickNodes(newick)
-          var w = 800;
-          var h = 900;
-          if(ds_local.ids.length > 50){
-            h = 1200;
-          }
-          if(script == 'phylogram'){
-              document.getElementById('dendrogram1_div').innerHTML = '';
-              d3.phylogram.build('#dendrogram1_div', newick, {
-                width: w,
-                height: h
-              });
-          }else if(script == 'phylonator'){
-              document.getElementById('dendrogram2_div').innerHTML = '';
-              d3.phylonator.build('#dendrogram2_div', newick, {
-                width: w,
-                height: h,
-                skipBranchLengthScaling: true
-              });
-          }else if(script == 'radial') {
-              document.getElementById('dendrogram3_div').innerHTML = '';
-              d3.phylogram.buildRadial('#dendrogram3_div', newick, {
-                width: w,
-                height: h
-              });
-          }
+              buildNewickNodes(newick)
+              var w = 800;
+              var h = 900;
+              if(ds_local.ids.length > 50){
+                h = 1200;
+              }
+              if(script == 'phylogram'){
+                  document.getElementById('dendrogram1_div').innerHTML = '';
+                  d3.phylogram.build('#dendrogram1_div', newick, {
+                    width: w,
+                    height: h
+                  });
+              }else if(script == 'phylonator'){
+                  document.getElementById('dendrogram2_div').innerHTML = '';
+                  d3.phylonator.build('#dendrogram2_div', newick, {
+                    width: w,
+                    height: h,
+                    skipBranchLengthScaling: true
+                  });
+              }else if(script == 'radial') {
+                  document.getElementById('dendrogram3_div').innerHTML = '';
+                  d3.phylogram.buildRadial('#dendrogram3_div', newick, {
+                    width: w,
+                    height: h
+                  });
+              }
+
+          } // end else
           
 
+        }  // end if xmlhttp.readyState
 
-           //html = "<div id='' >"+htmlstring+"</div>";
-          //dend_div.innerHTML = html;
-        }
+
       };
       xmlhttp.send(args);
  

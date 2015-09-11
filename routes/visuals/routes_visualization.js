@@ -462,6 +462,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
           var viz_width = 1200;
           var viz_height = (visual_post_items.no_of_datasets*12)+100;
           var image = '/tmp_images/'+ts+'_dendrogram.pdf';
+          console.log(image)
           html = "<div id='pdf'>";
           html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
           html += " <p>ERROR in loading pdf file</p>";
