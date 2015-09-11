@@ -636,6 +636,40 @@ if (typeof dendrogram2_btn !== "undefined") {
   });
 }
 //
+// DENDROGRAM3  D3 Radial
+//
+var dendrogram3_link = document.getElementById('dendrogram3_link_id') || null;
+var dendrogram3_btn = document.getElementById('dendrogram3_hide_btn');
+var dendrogram3_div = document.getElementById('dendrogram3_div');
+var dendrogram3_download_btn = document.getElementById('dendrogram3_download_btn');
+var pre_dendrogram3_div = document.getElementById('pre_dendrogram3_div');
+if (dendrogram3_link !== null) {
+  dendrogram3_link.addEventListener('click', function () {
+      
+    if(typeof dendrogram3_created == "undefined"){
+        create_viz('dendrogram3', pi_local.ts);
+    dendrogram3_download_btn.disabled = false;
+      }else{
+        if(dendrogram3_btn.value == 'hide'){        
+          //toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
+        }else{
+          toggle_visual_element(dendrogram3_div,'hide',dendrogram3_btn);
+        }
+      }
+    $(pre_dendrogram3_div).scrollView();
+  });
+}
+if (typeof dendrogram3_btn !== "undefined") {
+  dendrogram3_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(dendrogram3_btn.value == 'hide'){        
+        toggle_visual_element(dendrogram3_div,'show',dendrogram3_btn);
+      }else{
+        toggle_visual_element(dendrogram3_div,'hide',dendrogram3_btn);
+      }      
+  });
+}
+//
 // DENDROGRAM PDF
 //
 var dendrogram_pdf_link = document.getElementById('dendrogram_pdf_link_id') || null;
@@ -861,6 +895,8 @@ function create_viz(visual, ts) {
       create_dendrogram(ts,'svg','phylogram');
     }else if(visual === 'dendrogram2'){
       create_dendrogram(ts,'svg','phylonator');
+    }else if(visual === 'dendrogram3'){
+      create_dendrogram(ts,'svg','radial');
     }else if(visual === 'dendrogram_pdf'){
       create_dendrogram(ts,'pdf','python');
     }else if(visual === 'pcoa'){
@@ -996,6 +1032,12 @@ function create_dendrogram(ts, image_type, script) {
         document.getElementById('pre_dendrogram2_div').style.display = 'block';
   	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram2_title').innerHTML = info_line;
+      }else if(script == 'radial'){  // svg
+        //dendrogram3_created = true;
+        var dend_div = document.getElementById('dendrogram3_div');
+        document.getElementById('pre_dendrogram3_div').style.display = 'block';
+        dend_div.style.display = 'block';
+        document.getElementById('dendrogram3_title').innerHTML = info_line;
       }
       
       
@@ -1010,14 +1052,58 @@ function create_dendrogram(ts, image_type, script) {
 	    args += "&script="+script;
       
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/dendrogram', true);
+      xmlhttp.open("POST", '/visuals/dendrogram', true);  // gets newick
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange = function() {
 
         if (xmlhttp.readyState == 4 ) {
-           var htmlstring = xmlhttp.responseText;
-           html = "<div id='' >"+htmlstring+"</div>";
-           dend_div.innerHTML = html;
+          var newick = xmlhttp.responseText;
+
+          // build dendrg here
+
+          //var newick = Newick.parse("(((Crotalus_oreganus_oreganus_cytochrome_b:0.00800,Crotalus_horridus_cytochrome_b:0.05866):0.04732,(Thamnophis_elegans_terrestris_cytochrome_b:0.//00366,Thamnophis_atratus_cytochrome_b:0.00172):0.06255):0.00555,(Pituophis_catenifer_vertebralis_cytochrome_b:0.00552,Lampropeltis_getula_cytochrome_b:0.02035):0.05762,((//Diadophis_punctatus_cytochrome_b:0.06486,Contia_tenuis_cytochrome_b:0.05342):0.01037,Hypsiglena_torquata_cytochrome_b:0.05346):0.00779);")
+          var newick = Newick.parse(newick);
+          //var newick = JSON.parse(newick);
+          var newickNodes = []
+          function buildNewickNodes(node, callback) {
+            newickNodes.push(node)
+            if (node.branchset) {
+              for (var i=0; i < node.branchset.length; i++) {
+                buildNewickNodes(node.branchset[i])
+              }
+            }
+          }
+          buildNewickNodes(newick)
+          var w = 800;
+          var h = 900;
+          if(ds_local.ids.length > 50){
+            h = 1200;
+          }
+          if(script == 'phylogram'){
+              document.getElementById('dendrogram1_div').innerHTML = '';
+              d3.phylogram.build('#dendrogram1_div', newick, {
+                width: w,
+                height: h
+              });
+          }else if(script == 'phylonator'){
+              document.getElementById('dendrogram2_div').innerHTML = '';
+              d3.phylonator.build('#dendrogram2_div', newick, {
+                width: w,
+                height: h,
+                skipBranchLengthScaling: true
+              });
+          }else if(script == 'radial') {
+              document.getElementById('dendrogram3_div').innerHTML = '';
+              d3.phylogram.buildRadial('#dendrogram3_div', newick, {
+                width: w,
+                height: h
+              });
+          }
+          
+
+
+           //html = "<div id='' >"+htmlstring+"</div>";
+          //dend_div.innerHTML = html;
         }
       };
       xmlhttp.send(args);

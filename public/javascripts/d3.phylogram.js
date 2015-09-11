@@ -70,7 +70,7 @@
   d3.phylogram.radialRightAngleDiagonal()
     d3.phylogram.rightAngleDiagonal for radial layouts.
 */
-var d3 = require("d3");
+//var d3 = require("d3");
 if (!d3) { throw "d3 wasn't included!"};
 (function() {
   d3.phylogram = {}

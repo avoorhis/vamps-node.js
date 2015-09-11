@@ -21,6 +21,7 @@ router.get('/your_data',  function(req,res){
   console.log('in your data');
     res.render('user_data/your_data', {        
       title: 'VAMPS:Data Administration',
+      message: req.flash('message'),
       user: req.user
        });
 });
@@ -107,12 +108,17 @@ router.get('/export_data', helpers.isLoggedIn, function(req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
    console.log('import_choices')
-    res.render('user_data/import_choices', {
+   if(req.user.username == 'guest'){
+   		req.flash('message', "The 'guest' user is not permitted to import data");
+   		res.redirect('/user_data/your_data')
+   }else{
+    	res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           message: req.flash('successMessage'),
           failmessage: req.flash('failMessage'),
           user: req.user
           });
+  }
 });
 //
 //

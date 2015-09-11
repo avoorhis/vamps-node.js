@@ -275,25 +275,28 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                             });
   //console.log(chosen_id_name_hash)
 });
-router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
+//
+//
+//
+// router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 
-    fxn = req.body.fxn;
-	//console.log('XX'+JSON.stringify(req.body));
-	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
-	console.log(file_path);
-	var dataset_ids = [];
-	fs.readFile(file_path, 'utf8',function(err,data) {
-		if (err) {
-			msg = 'ERROR Message '+err;
-  			helpers.render_error_page(req,res,msg);
+//     fxn = req.body.fxn;
+// 	//console.log('XX'+JSON.stringify(req.body));
+// 	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
+// 	console.log(file_path);
+// 	var dataset_ids = [];
+// 	fs.readFile(file_path, 'utf8',function(err,data) {
+// 		if (err) {
+// 			msg = 'ERROR Message '+err;
+//   			helpers.render_error_page(req,res,msg);
 		
-		}else{		
-			res.send(data);
-		}
+// 		}else{		
+// 			res.send(data);
+// 		}
 			
-	});
+// 	});
 	
-});
+// });
 //
 // Download Counts Matrix
 //
@@ -411,9 +414,11 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-router.post('/dendrogramx', helpers.isLoggedIn, function(req, res) {
-    console.log('found routes_dendrogram');
-
+router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+    console.log('found routes_dendrogram-x');
+    ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
+    ///// It passes the newick string back to view_selection.js
+    ///// and tries to construct the svg there before showing it.
     console.log('req.body dnd');
     console.log(req.body);
     console.log('req.body dnd');
@@ -449,13 +454,9 @@ router.post('/dendrogramx', helpers.isLoggedIn, function(req, res) {
       }else{
         if(image_type == 'svg'){
           newick = JSON.parse(data);
-          console.log('newick '+newick);
-          res.render('visuals/partials/load_dendrogram',{
-                      newick    : JSON.stringify(newick),
-                      script    : script,   // phylogram or phylonator
-                      hash      : JSON.stringify(chosen_id_name_hash),                      
-                      constants : JSON.stringify(req.C),
-                 });
+          
+          res.send(newick);
+          return;
 
         }else{  // 'pdf'
           var viz_width = 1200;
@@ -474,9 +475,13 @@ router.post('/dendrogramx', helpers.isLoggedIn, function(req, res) {
       }
     });
 });
-router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
-    console.log('found routes_dendrogram');
-
+//
+//  DENDROGRAM
+//
+router.post('/dendrogram-y', helpers.isLoggedIn, function(req, res) {
+    console.log('found routes_dendrogram-y');
+    ///// This version of dendrogram is for constructing it on the SERVER: Currently:NOT WORKING
+    ///// before injecting the svg into the div on the client
     //console.log('req.body dnd');
     //console.log(req.body);
     //console.log('req.body dnd');
@@ -521,9 +526,11 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         var html;
         if(image_type == 'svg'){
           //console.log(JSON.parse(output))
-          try {
+          //try {
             var d3 = require("d3");
             var xmldom = require('xmldom');
+            var jsdom = require('jsdom');
+            htmlStub = '<div id="dataviz-container"></div><script src="/javascripts/d3.min.js"><script src="/javascripts/d3.phylogram.js"></script>'
             var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
             var div_width = 1200;
             newick = JSON.parse(output);
@@ -531,15 +538,29 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
             var json  = Newick.parse(newick);
             //console.log(JSON.stringify(json,null,4))
             var newickNodes = [];
-
+            console.log('Newick2')
             buildNewickNodes(json);
-          
-  //          if(script == 'phylogram'){
-              var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-              var tree_data = d3.phylogram.build('body', json, {
-                width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-                height: viz_height
-              });
+            jsdom.env({ features : { QuerySelector : true }, html : htmlStub
+              , done : function(errors, window) {
+              // process the html document, like if we were at client side
+              // code to generate the dataviz and process the resulting html file to be added here
+                  //var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
+                  var tree_data = d3.phylogram.build('body', json, {
+                      width: viz_width-400,   // minus 400 is for padding on right to view dataset names
+                      height: viz_height
+                  });
+                  var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+                  //console.log('Newick4 ')
+                  html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
+                  res.send(html);
+              }
+            })
+            //if(script == 'phylogram'){
+              // var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
+              // var tree_data = d3.phylogram.build('body', json, {
+              //   width: viz_width-400,   // minus 400 is for padding on right to view dataset names
+              //   height: viz_height
+              // });
             // }else if(script == 'phylonator'){
             //   var Phylonator = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
             //   var tree_data = d3.phylonator.build('body', json, {
@@ -552,15 +573,15 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
             //console.log('Newick2 ')
             
             //console.log('Newick3 ')
-            var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
+            //var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
             //console.log('Newick4 ')
-            html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
+            //html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
 
-            d3.select('svg').remove();
-          }
-          catch(err) {
-            html = 'Not Working Yet'
-          }
+            //d3.select('svg').remove();
+          //}
+          //catch(err) {
+          //  html = 'Not Working Yet'
+          //}
           //console.log(html);
 
         }else{
@@ -569,9 +590,10 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
           html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
           html += " <p>ERROR in loading pdf file</p>";
           html += "</object></div>";
+          res.send(html);
         }
         //html = viz_height
-          res.send(html);
+          
       }
 
     });
@@ -1378,9 +1400,9 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
-    console.log('req.body: save_datasets-->>');
-    console.log(req.body);
-    console.log('req.body: save_datasets');
+  console.log('req.body: save_datasets-->>');
+  console.log(req.body);
+  console.log('req.body: save_datasets');
 	
 	var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,req.body.filename);
 	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
@@ -1389,6 +1411,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 	helpers.write_to_file(filename_path,req.body.datasets);
 		
 	res.send('OK');
+  
 	
 });
 //
@@ -1396,47 +1419,51 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
-    //console.log('req.body: show_saved_datasets-->>');
-    //console.log(req.body);
-    //console.log('req.body: show_saved_datasets');
-    var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-   
-	file_info = {};
-	modify_times = [];
-	helpers.mkdirSync(saved_datasets_dir);
-    fs.readdir(saved_datasets_dir, function(err, files){
-		if(err){
-  			
-				msg = 'ERROR Message '+err;
-				helpers.render_error_page(req,res,msg);
-			
-			
-		}else{
-		  for (var f in files){
-	        var pts = files[f].split(':');
-	        if(pts[0] === 'datasets'){
-	          //file_info.files.push(files[f]);
-	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-			  file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
-			  modify_times.push(stat.mtime.getTime());
-			  
-	        }
-	      }	  
-		  modify_times.sort().reverse();
-		  console.log(JSON.stringify(file_info));
-		} 
-		  
-		res.render('visuals/saved_datasets',
-		    { title: 'saved_datasets',
-		     
-		      finfo: JSON.stringify(file_info),
-		      times: modify_times,
-		  	  message: req.flash('message'),
-		      user: 	req.user
-		});
-			//}
+    if(req.user.username == 'guest'){
+      req.flash('message', "The 'guest' user has no saved datasets");
+      res.redirect('/user_data/your_data');
+    }else{
+      //console.log('req.body: show_saved_datasets-->>');
+      //console.log(req.body);
+      //console.log('req.body: show_saved_datasets');
+      var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+
+      file_info = {};
+      modify_times = [];
+      helpers.mkdirSync(saved_datasets_dir);
+      fs.readdir(saved_datasets_dir, function(err, files){
+          if(err){
+      			
+    				msg = 'ERROR Message '+err;
+    				helpers.render_error_page(req,res,msg);
+    			
+    			
+    		  }else{
+      		  for (var f in files){
+      	        var pts = files[f].split(':');
+      	        if(pts[0] === 'datasets'){
+      	          //file_info.files.push(files[f]);
+      	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
+      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+      			       modify_times.push(stat.mtime.getTime());
+      			  
+      	        }
+      	    }	  
+      		  modify_times.sort().reverse();
+      		  console.log(JSON.stringify(file_info));
+      		} 
+    		  
+      		res.render('visuals/saved_datasets',
+      		    { title: 'saved_datasets',
+      		     
+      		      finfo: JSON.stringify(file_info),
+      		      times: modify_times,
+      		  	  message: req.flash('message'),
+      		      user: 	req.user
+      		}); 		
 	
-    });
+      });
+    }
 	
 });
 //

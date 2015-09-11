@@ -146,6 +146,8 @@ config.VISUAL_THUMBNAILS = { visuals: [
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
 	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
+    {name:'Dendrogram (d3-radial)',  thumb:'/images/visuals/dendrogram.png',     link:'user_viz_data/dendrogram',     id:'dendrogram3_link_id', 
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
     {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',           id:'pcoa_link_id', 

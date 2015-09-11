@@ -30,10 +30,13 @@ if (reorder_datasets_btn !== null) {
 //
 var save_datasets_list = function(ds_local, user)
 {
-	
+	  if(user=='guest'){
+      document.getElementById('save_ds_result').innerHTML = "The 'guest' user is not permitted to save datasets.";
+      return;
+    }
     var timestamp = +new Date();  // millisecs since the epoch!
     
-	var filename = 'datasets:' + timestamp + '.json';
+	  var filename = 'datasets:' + timestamp + '.json';
     
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
