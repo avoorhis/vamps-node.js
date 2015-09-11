@@ -29,10 +29,8 @@ var MTX     = require('./routes_counts_matrix');
 var PythonShell = require('python-shell');
 
 var app = express();
-console.log('viz-test1')
-//var d3 = require("d3");
-console.log('viz-test2')
-var xmldom = require('xmldom');
+
+//var xmldom = require('xmldom');
 
 // // init_node var node_class =
 // var CustomTaxa  = require('./custom_taxa_class');
@@ -92,12 +90,12 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
 
   // GLOBAL
-  console.log('metadata>>');
+  //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
   metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //metadata = JSON.parse(metadata);
-  console.log(metadata);
-  console.log('<<metadata');
+  //console.log(metadata);
+  //console.log('<<metadata');
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
@@ -178,11 +176,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 		  TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
 		  METADATA[dataset_ids[i]]  = jsonfile['metadata'];
 	  }
-	  console.log(JSON.stringify(METADATA))
+	  //console.log(JSON.stringify(METADATA))
 	  //console.log(JSON.stringify(TAXCOUNTS))
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
-    console.log('METADATA= '+JSON.stringify(METADATA));
+    //console.log('METADATA= '+JSON.stringify(METADATA));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
@@ -245,7 +243,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {}
   
@@ -278,66 +276,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-// router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
 
-//     fxn = req.body.fxn;
-// 	//console.log('XX'+JSON.stringify(req.body));
-// 	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
-// 	console.log(file_path);
-// 	var dataset_ids = [];
-// 	fs.readFile(file_path, 'utf8',function(err,data) {
-// 		if (err) {
-// 			msg = 'ERROR Message '+err;
-//   			helpers.render_error_page(req,res,msg);
-		
-// 		}else{		
-// 			res.send(data);
-// 		}
-			
-// 	});
-	
-// });
-//
-// Download Counts Matrix
-//
-// router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
-// 	//console.log('in download_counts_matrix')
-// 	//console.log(biom_matrix)
-//   var timestamp = +new Date();  // millisecs since the epoch!
-//   timestamp = req.user.username + '_' + timestamp;
-//   var out_file = path.join('user_data',NODE_DATABASE,req.user.username,'matrix:'+timestamp+".csv.gz");
-//   var wstream = fs.createWriteStream(out_file);
-//   var gzip = zlib.createGzip();
-//   var rs = new Readable();
-	
-// 	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
-// 	for (var y in biom_matrix.columns){
-// 		header_txt += ','+biom_matrix.columns[y].name;
-// 	}
-// 	header_txt += '\n\r';
-// 	rs.push(header_txt);
-// 	for (var i in biom_matrix.rows){
-// 		row_txt = '';
-// 		row_txt += biom_matrix.rows[i].name;
-// 		for (var k in biom_matrix.data[i]){
-// 			row_txt += ','+biom_matrix.data[i][k];
-// 		}
-// 		row_txt += '\n\r';
-// 		rs.push(row_txt);
-// 	}
-// 	rs.push('\n\r');
-// 	rs.push(null);
-//   	rs
-// 	  .pipe(gzip)
-//       .pipe(wstream)
-//       .on('finish', function () {  // finished
-//         console.log('done compressing and writing file');
-//       });
-//       //res.redirect('/visuals/view_selection');
-//       //res.send()
-
-
-// });
 //
 //
 //
@@ -426,7 +365,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var metric = req.body.metric;
 	  var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
-    console.log('image_type '+image_type);
+    //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
 	
 	  var biom_file_name = ts+'_count_matrix.biom';
@@ -462,7 +401,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
           var viz_width = 1200;
           var viz_height = (visual_post_items.no_of_datasets*12)+100;
           var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-          console.log(image)
+          //console.log(image)
           html = "<div id='pdf'>";
           html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
           html += " <p>ERROR in loading pdf file</p>";
@@ -476,248 +415,8 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       }
     });
 });
-//
-//  DENDROGRAM
-//
-router.post('/dendrogram-y', helpers.isLoggedIn, function(req, res) {
-    console.log('found routes_dendrogram-y');
-    ///// This version of dendrogram is for constructing it on the SERVER: Currently:NOT WORKING
-    ///// before injecting the svg into the div on the client
-    //console.log('req.body dnd');
-    //console.log(req.body);
-    //console.log('req.body dnd');
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var script = req.body.script; // python, phylogram or phylonator
-    var image_type = req.body.image_type;  // png(python script) or svg
-    // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
-  
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
-
-    var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
-    var html = '';
-    var title = 'VAMPS';
-
-    var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-    
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
-    };
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-
-    PythonShell.run('distance.py', options, function (err, output) {
-      if (err) {
-      res.send(err);  // for now we'll send errors to the browser
-    }else{
-        function buildNewickNodes(node, callback) {
-          newickNodes.push(node);
-          if (node.branchset) {
-            for (var i=0; i < node.branchset.length; i++) {
-              buildNewickNodes(node.branchset[i]);
-            }
-          }
-        }
-      var viz_width = 1200;
-      var viz_height = (visual_post_items.no_of_datasets*12)+100;
-        //var m = JSON.stringify(mtx)
-        var html;
-        if(image_type == 'svg'){
-          //console.log(JSON.parse(output))
-          //try {
-            var d3 = require("d3");
-            var xmldom = require('xmldom');
-            var jsdom = require('jsdom');
-            htmlStub = '<div id="dataviz-container"></div><script src="/javascripts/d3.min.js"><script src="/javascripts/d3.phylogram.js"></script>'
-            var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
-            var div_width = 1200;
-            newick = JSON.parse(output);
-            //console.log('Newick ',newick)
-            var json  = Newick.parse(newick);
-            //console.log(JSON.stringify(json,null,4))
-            var newickNodes = [];
-            console.log('Newick2')
-            buildNewickNodes(json);
-            jsdom.env({ features : { QuerySelector : true }, html : htmlStub
-              , done : function(errors, window) {
-              // process the html document, like if we were at client side
-              // code to generate the dataviz and process the resulting html file to be added here
-                  //var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-                  var tree_data = d3.phylogram.build('body', json, {
-                      width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-                      height: viz_height
-                  });
-                  var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-                  //console.log('Newick4 ')
-                  html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
-                  res.send(html);
-              }
-            })
-            //if(script == 'phylogram'){
-              // var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-              // var tree_data = d3.phylogram.build('body', json, {
-              //   width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-              //   height: viz_height
-              // });
-            // }else if(script == 'phylonator'){
-            //   var Phylonator = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
-            //   var tree_data = d3.phylonator.build('body', json, {
-            //     width: viz_width-400,    // minus 400 is for padding on right to view dataset names
-            //     height: viz_height,
-            //     skipBranchLengthScaling: true
-            //   });
-            // }
-
-            //console.log('Newick2 ')
-            
-            //console.log('Newick3 ')
-            //var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-            //console.log('Newick4 ')
-            //html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
-
-            //d3.select('svg').remove();
-          //}
-          //catch(err) {
-          //  html = 'Not Working Yet'
-          //}
-          //console.log(html);
-
-        }else{
-          var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-          html = "<div id='pdf'>";
-          html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-          html += " <p>ERROR in loading pdf file</p>";
-          html += "</object></div>";
-          res.send(html);
-        }
-        //html = viz_height
-          
-      }
-
-    });
-
-});
-//
-//
-//
-router.post('/dendrogram3', helpers.isLoggedIn, function(req, res) {
-    console.log('found routes_dendrogram');
-
-    console.log('req.body dnd');
-    console.log(req.body);
-    console.log('req.body dnd');
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var script = req.body.script; // python, phylogram or phylonator
-    var image_type = req.body.image_type;  // png(python script) or svg
-    console.log('image_type '+image_type);
-    // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
-  
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
 
 
-    var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
-    var html = '';
-    var title = 'VAMPS';
-
-    var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-    
-
-    var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
-    };
-
-    console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-
-    PythonShell.run('distance.py', options, function (err, output) {
-      if (err) {
-		    res.send(err);  // for now we'll send errors to the browser
-	    }else{
-	      function buildNewickNodes(node, callback) {
-	        newickNodes.push(node);
-	        if (node.branchset) {
-	          for (var i=0; i < node.branchset.length; i++) {
-	            buildNewickNodes(node.branchset[i]);
-	          }
-	        }
-	      }
-		    var viz_width = 1200;
-		    var viz_height = (visual_post_items.no_of_datasets*12)+100;
-	      //var m = JSON.stringify(mtx)
-	      var html;
-	      if(image_type == 'svg'){
-  	      console.log(JSON.parse(output));
-          //console.log('here in phylogram0')
-    			var d3 = require("d3");
-          //console.log('here in phylogram1')
-    			var xmldom = require('xmldom');
-          var jsdom = require('jsdom');
-          //console.log('here in phylogram2')
-    			var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
-  			  var div_width = 1200;
-    			newick = JSON.parse(output);
-    			//console.log('Newick ',newick)
-    			var json  = Newick.parse(newick);
-    			//console.log(JSON.stringify(json,null,4))
-    			var newickNodes = [];
-
-    			buildNewickNodes(json);
-  			
-//    			if(script == 'phylogram'){
-    				//console.log('here in phylogram3')
-            var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-            document = jsdom.jsdom()
-            var body = d3.select(document.body);
-    				console.log('here in phylogram4')
-            //viz={width:viz_width-400,height:viz_height}
-            var tree_data = d3.phylogram.build('body', json, {
-    				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-    				  height: viz_height
-              
-    				});
-            console.log('here in phylogram5')
-    			// }else if(script == 'phylonator'){
-    			// 	var Phylonator = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
-    			// 	var tree_data = d3.phylonator.build('body', json, {
-    			// 	  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
-    			// 	  height: viz_height,
-    			// 	  skipBranchLengthScaling: true
-    			// 	});
-    			// }
-
-  			  //console.log('Newick2 ')
-  			
-  			  //console.log('Newick3 ')
-  			  var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-          //var svgXML = jsdom.env(tree_data.vis[0][0]);
-  			  //console.log('Newick4 ')
-  			  html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
-
-  			  d3.select('svg').remove();
-
-  			  //console.log(html);
-
-	      }else{
-	        var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-	        html = "<div id='pdf'>";
-	        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-	        html += " <p>ERROR in loading pdf file</p>";
-	        html += "</object></div>";
-	      }
-	      //html = viz_height
-          res.send(html);
-  	  }
-
-    });
-
-});
 //
 // P C O A
 //
@@ -800,7 +499,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                    //console.log('PID last line: '+last_line)                    
                       ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
                       ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
-                      console.log(html_path);
+                      //console.log(html_path);
                       open('file://'+html_path);
                       res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
                   }else{
@@ -808,28 +507,6 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                     console.log('python script error');
                   }      
               });   
-
-
-              // PythonShell.run(options2.scriptPath+'make_emperor.py', options2, function (err, pcoa_data) {
-              //   ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-              //   ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
-              //   if (err) {            		    
-              //       res.send('ERROR-2 '+err); // for now we'll send errors to the browser
-            	 //  }else{
-              //         console.log(html_path);
-              //         open('file://'+html_path);
-              //         res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
-              //   }
-
-              // });
-
-
-
-
-
-
-
-
 
       	  }
 
@@ -993,7 +670,7 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     
     var file_name = ts+'_krona.html';
     var html_path = path.join(process.env.PWD,'tmp', file_name);
-    console.log(html_path);
+    //console.log(html_path);
     fs.writeFile(html_path,html,function(err){
         if(err){
             res.send(err)
@@ -1040,21 +717,15 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         //data = data.toString().trim()
         
-          output += data;
+        output += data;
         
-        //var lines = data.split('\n')
-        // for(var n in lines){
-        //   //console.log('line: ' + lines[n]);
-        // if(lines[n].substring(0,4) == 'PID='){
-        //   console.log('pid line '+lines[n]);
-        // }
-        // }
+     
       });
     alphadiv_process.on('close', function (code) {
         console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){           
          //console.log('PID last line: '+last_line)                    
-            console.log('stdout: ' + output);
+            //console.log('stdout: ' + output);
             res.send(output);                                 
         }else{
           // python script error
@@ -1078,7 +749,7 @@ function get_sumator(req){
         tax_string = biom_matrix.rows[r].name;
         tax_items = tax_string.split(';');
         key = tax_items[0];
-        console.log(tax_items);
+        //console.log(tax_items);
         for(t in tax_items){
            var taxa = tax_items[t];
            var rank = req.C.RANKS[t];
@@ -1278,7 +949,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 		new_matrix.data.push([biom_matrix.data[n][d]])
 		new_matrix.total += biom_matrix.data[n][d]
 	}
-	console.log(JSON.stringify(new_matrix))
+	//console.log(JSON.stringify(new_matrix))
 	
 	res.render('visuals/user_viz_data/bar_single', {
           title: 'Dataset Taxonomic Data',
@@ -1451,7 +1122,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
       	        }
       	    }	  
       		  modify_times.sort().reverse();
-      		  console.log(JSON.stringify(file_info));
+      		  //console.log(JSON.stringify(file_info));
       		} 
     		  
       		res.render('visuals/saved_datasets',
