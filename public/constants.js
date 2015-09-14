@@ -17,7 +17,8 @@ config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
 config.blast_db      = 'ALL_SEQS';
 //
 // http://qiime.org/
-config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
+//config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
+config.PATH_TO_QIIME_BIN = '/usr/local/bin/';
 //// END OF USER CONFIGURATION ////
 
 ///////////////////////////////////////////
