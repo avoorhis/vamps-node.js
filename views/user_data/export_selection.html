@@ -10,9 +10,7 @@
   <div class='subtitle'>File Format Selection</div>
 
 <a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
-<% if(messages.info){ %>
-  <div class="alert_flash_message"><%= message %></div>
-<% } %> 
+
 
 <div class='well'>
   <div class="row">
@@ -21,43 +19,63 @@
     </div> <!-- End  show_selected_datasets_div -->
   </div>
 </div>  <!-- /well -->
-
-<button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
+<form method='POST' name='export_data_form' action='/user_data/export_confirm'>
+<button type='submit' class='btn pull-right btn-sm btn-warning' id="" >
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
 </button>
-
+<% if(messages){ %>
+  <div class="alert_flash_message"><%- message %></div>
+<% } %> 
 <table class='table'>
   <tr>
     <td>
           <table class='table table-striped table-condensed'>
             <tbody>
-              <tr><td>
-                <button class='btn btn-link'>Get Sequences (Fasta File)</button></td><td>Unique sequences with frequency count in defline.
-              </td></tr>    
-              <tr><td>
-                <button class='btn btn-link'>Get TaxByTax File</button></td><td>Reads having the same taxonomic assignment are grouped<br>(coarsest grouping).
-              </td></tr>        
-              <tr><td>
-                <button class='btn btn-link'>Get TaxByRef File</button></td><td>Reads with the best match to the same reference are grouped<br>(medium grouping).
-              </td></tr>        
-              <tr><td>
-                <button class='btn btn-link'>Get TaxBySeq File</button></td><td>Reads having the exact same sequence are grouped<br>(finest grouping).
-              </td></tr>        
-              <tr><td>
-                <button class='btn btn-link'>Get Metadata (CSV File)</button></td><td>Tab-separated mapping file.
-              </td></tr>        
-              <tr><td>
-                <button class='btn btn-link'>Filter Datasets using Taxonomy</button></td><td>
-              </td></tr>        
-              <tr><td>
-                <button class='btn btn-link'>Filter Datasets using Metadata</button></td><td>
-              </td></tr>
+              <tr>
+                <td>                
+                 <input type="checkbox" name='fasta' value="1"> Get Sequences (Fasta File)                
+                </td>
+                <td>Unique sequences with frequency count in defline.</td>
+              </tr>    
+              <tr>
+                <td>
+                <input type="checkbox" name='taxbytax' value="1"> Get TaxByTax File
+                </td><td>Reads having the same taxonomic assignment are grouped (coarsest grouping).</td>
+              </tr>        
+              <tr>
+                <td>
+                <input type="checkbox" name='taxbyref' value="1"> Get TaxByRef File</button></td>
+                <td>Reads with the best match to the same reference are grouped (medium grouping).</td>
+              </tr>        
+              <tr>
+                <td>
+                <input type="checkbox" name='taxbyseq' value="1"> Get TaxBySeq File</button></td>
+                <td>Reads having the exact same sequence are grouped (finest grouping).
+                </td>
+              </tr>        
+              <tr>
+                <td>
+                <input type="checkbox" name='metadata' value="1"> Get Metadata (CSV File)</button></td>
+                <td>Tab-separated metadata (mapping) file.              </td>
+              </tr>        
+              <tr>
+                <td>
+                <button class='btn btn-link'>Filter Datasets using Taxonomy</button></td>
+                <td>                </td>
+              </tr>        
+              <tr>
+                <td>
+                <button class='btn btn-link'>Filter Datasets using Metadata</button></td>
+                <td>              </td>
+              </tr>
             </tbody>
           </table>
     </td>
   </tr>
 </table>
+<input type='hidden' name='dids' value='<%- items.ids %>'>
 
+</form>
 
   
  <% include ../add_ins/end.ejs %>

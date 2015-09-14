@@ -14,8 +14,9 @@ var multer = require('multer');
 var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}))
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
+
 //
-//
+// YOUR DATA
 //
 router.get('/your_data',  function(req,res){
   console.log('in your data');
@@ -26,6 +27,9 @@ router.get('/your_data',  function(req,res){
        });
 });
 
+//
+// FILE RETRIEVAL
+//
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 
@@ -54,6 +58,53 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
                           });
     });
 });
+
+//
+//  EXPORT CONFIRM
+//
+router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
+		console.log('req.body: export_confirm-->>');
+		console.log(req.body);
+		console.log('req.body: <<--export_confirm');
+		if(req.body.fasta === undefined 
+				&& req.body.taxbyseq === undefined  
+				&& req.body.taxbyref === undefined  
+				&& req.body.taxbytax === undefined 
+				&& req.body.metadata === undefined ){
+				req.flash('failMessage', 'Select one or more file formats');
+				res.render('user_data/export_selection', {
+		      title: 'VAMPS: Export Choices',
+		      referer: 'export_data',
+		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+		      message: 'Select one or more file formats',
+		      user: req.user
+		    });
+		    return;
+		}
+		var dids = req.body.dids;
+		var requested_files = [];
+
+		if(req.body.fasta){
+
+		}
+		for(fmt in req.body){
+			if(fmt != 'dids'){
+				requested_files.push(fmt);
+			}
+		}
+		console.log(requested_files);
+		create_fasta_file(req,dids);
+
+		res.render('user_data/export_selection', {
+		      title: 'VAMPS: Export Choices',
+		      referer: 'export_data',
+		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+		      message: "Your files are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
+		      user: req.user
+		});
+	  
+
+});
 //
 //  EXPORT SELECTION
 //
@@ -62,7 +113,7 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
   console.log('in routes_user_data.js /export_selection')
   console.log('req.body: export_selection-->>');
   console.log(req.body);
-  console.log('req.body: export_selection');
+  console.log('req.body: <<--export_selection');
   if(req.body.retain_data === '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);	
   }else{
@@ -82,7 +133,7 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
 	  console.log(chosen_id_name_hash.ids.length);
 	  console.log('<--chosen_id_name_hash');
     res.render('user_data/export_selection', {
-          title: 'VAMPS:Import Choices',
+          title: 'VAMPS: Export Choices',
           referer: 'export_data',
           chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
           message: req.flash('successMessage'),
@@ -104,6 +155,7 @@ router.get('/export_data', helpers.isLoggedIn, function(req, res) {
           });
 });
 //
+// IMPORT_CHOICES
 //
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
@@ -121,6 +173,7 @@ router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
   }
 });
 //
+// IMPORT DATA
 //
 /* GET Import Data page. */
 router.get('/import_data', helpers.isLoggedIn, function(req, res) {
@@ -166,7 +219,7 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 			    
 });
 //
-//
+// VALIDATE FORMAT
 //
 /* GET Validate page. */
 router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
@@ -186,7 +239,7 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
                           });
 });
 //
-//
+//  VALIDATE FILE
 //
 router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req, res) {
     console.log('POST validate_file')
@@ -262,18 +315,9 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 	  });
 
 
-
-
-    // res.render('user_data/validate_format', { 
-	   //  title: 'VAMPS:Import Data',
-  		// message: req.flash('successMessage'),
-	   //  failmessage: req.flash('failMessage'),
-    //     file_type: file_type,
-    //       user: req.user
-    //                       });
 });
 //
-//
+// USER PROJECT INFO:ID
 //
 router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
     console.log(req.params.id);
@@ -289,7 +333,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
          });
 });
 //
-//
+//  DELETE PROJECT:PROJECT:KIND
 //
 router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,res){
 	
@@ -444,11 +488,10 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 		}) // copies directory, even if it has subdirectories or files
 		
 });
+
 //
 // START_ASSIGNMENT
 //
-
-
 router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
 
 
@@ -666,7 +709,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	
 });
 //
-//
+// YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
   
@@ -1176,9 +1219,8 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 
 //	});
 		
-	
-
 });
+
 //
 //  UPLOAD DATA
 //
@@ -1330,8 +1372,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   LoadDataFinishRequest();
 	
 });
+
 //
-//
+// UPLOAD DATA TAX-BY-SEQ
 //
 router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req,res){
 
@@ -1479,8 +1522,9 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 
 
 });
+
 //
-//
+//  FILE UTILS
 //
 router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 
@@ -1502,6 +1546,7 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
 		  res.setHeader('Content-Type', 'text');
 		  res.download(file); // Set disposition and send it.	
+	///// DELETE /////
 	}else if(req.query.fxn == 'delete'){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
 		if(req.query.type == 'datasets'){
@@ -1526,21 +1571,12 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 	
 	}
 
-
-
-////  FINALLY REDIRECT /////
-// if(req.query.type == 'datasets'){
-// 	res.redirect("/visuals/show_saved_datasets");
-// }else if (req.query.type == 'metadata' || req.query.type == 'fasta'){
-// 	res.redirect("/file_retrieval");
-// }else{
-// 	res.redirect("/");
-// }
 });
+
 //
 // DOWNLOAD SEQUENCES
 //
-router.post('/download_selected_seqs',helpers.isLoggedIn, function(req, res) {
+router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   var db = req.db;
   console.log('seqs req.body-->>');
   console.log(req.body);
@@ -1748,6 +1784,7 @@ if(req.body.download_type == 'whole_project'){
 
   	res.send(file_name);
 });
+
 //
 // DOWNLOAD MATRIX
 //
@@ -1809,7 +1846,7 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		
 });
 //
-//
+// <<<< FUNCTIONS >>>>
 //
 function update_config(res,req, config_file, config_info, has_new_pname, msg){
 	console.log(config_info)
@@ -1898,6 +1935,72 @@ function update_dataset_names(config_info){
 		
 			
 		}
+}
+function create_fasta_file(req, pids){
+		var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
+		//var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
+		qSelect += " JOIN sequence using (sequence_id)\n";
+		qSelect += " JOIN dataset using (dataset_id)\n";
+		qSelect += " JOIN project using (project_id)\n";
+		var seq, seqid, seq_count, pjds;
+		var timestamp = +new Date();  // millisecs since the epoch!
+
+		var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+		helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+		helpers.mkdirSync(user_dir);  // create dir if not exists
+		var file_name;
+		var out_file_path;
+
+		//var pids = JSON.parse(req.body.datasets).ids;
+		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
+		out_file_path = path.join(user_dir,file_name);
+		qSelect += " where dataset_id in ("+pids+")";
+		
+		var gzip = zlib.createGzip();
+		console.log(qSelect);
+
+		var wstream = fs.createWriteStream(out_file_path);
+		var rs = new Readable();
+		var collection = db.query(qSelect, function (err, rows, fields){
+		  if (err) {
+		      throw err;
+		  } else {
+		    for (var i in rows){
+		      seq = rows[i].seq.toString();
+		      //var buffer = new Buffer(rows[i].seq, 'base64');
+		      //console.log(seq);
+		      seq_id = rows[i].sequence_id.toString();
+		      seq_count = rows[i].seq_count.toString();
+		      //project = rows[i].project;
+		      pjds = rows[i].project+'--'+rows[i].dataset;
+		      entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
+		      //console.log(entry);
+		      rs.push(entry);
+		    }
+
+		    rs.push(null);
+		  }
+		  rs
+		    .pipe(gzip)
+		    .pipe(wstream)
+		    .on('finish', function () {  // finished
+		      console.log('done compressing and writing file');
+		      console.log(JSON.stringify(req.user))
+		      var info = {
+		            to : req.user.email,
+		            from : "vamps@mbl.edu",
+		            subject : "fasta file is ready",
+		            text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+		          };
+		      helpers.send_mail(info);
+		      
+					
+		    });
+		    
+		});
+
+		res.send(file_name);
+ 
 }
 
 

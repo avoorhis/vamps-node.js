@@ -144,7 +144,7 @@ config.VISUAL_THUMBNAILS = { visuals: [
         tip:''     },
 	{name:'Dendrogram (d3-phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
-	{name:'Dendrogram (d3-pylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
+	{name:'Dendrogram (d3-phylonator)',  thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
     {name:'Dendrogram (d3-radial)',  thumb:'/images/visuals/radial.png',     link:'user_viz_data/dendrogram',     id:'dendrogram3_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },

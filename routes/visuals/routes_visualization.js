@@ -276,7 +276,26 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 //
 //
 //
-
+router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
+  // this fxn is required for viewing list of saved datasets
+  // when 'toggle open button is activated'
+    fxn = req.body.fxn;
+  //console.log('XX'+JSON.stringify(req.body));
+  var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
+  console.log(file_path);
+  var dataset_ids = [];
+  fs.readFile(file_path, 'utf8',function(err,data) {
+    if (err) {
+      msg = 'ERROR Message '+err;
+        helpers.render_error_page(req,res,msg);
+    
+    }else{    
+      res.send(data);
+    }
+      
+  });
+  
+});
 //
 //
 //
@@ -312,11 +331,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
   	  }else{
 	      distance_matrix = JSON.parse(mtx);
 	      
-	      // res.render('visuals/partials/load_distance',{
-	      //               dm        : distance_matrix,
-			  		// 					hash   	  : JSON.stringify(chosen_id_name_hash),			  							
-	      //               constants : JSON.stringify(req.C),
-	      //          });
+	       res.render('visuals/partials/load_distance',{
+	                    dm        : distance_matrix,
+			  		 					hash   	  : JSON.stringify(chosen_id_name_hash),			  							
+	                    constants : JSON.stringify(req.C),
+	                });
 	    }
     });
 
