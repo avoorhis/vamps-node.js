@@ -338,7 +338,7 @@ if __name__ == '__main__':
                 required=True,   action="store",  dest = "tax_by_seq_file",            
                 help = '')
     args = parser.parse_args() 
-    args.ref_db = 'none'   
+    args.ref_db_dir = 'none'   
     args.classifier = 'unknown' 
     args.input_type = 'tax_by_seq' 
     args.datetime     = str(datetime.date.today())    
@@ -369,7 +369,6 @@ if __name__ == '__main__':
         print "STARTING DB Load - Project: "+pj
         args.basedir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE, args.owner,'project:'+pj)
 
-        
         logging.info('running vamps_script_database_loader.py')
         args.pid = int(load_data.start(args))
         
