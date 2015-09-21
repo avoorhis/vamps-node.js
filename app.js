@@ -45,8 +45,8 @@ var metadata   = require('./routes/routes_metadata');
 console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 console.log('test2')
-var C = require('./public/constants');
-
+var constants = require('./public/constants');
+var config = require('./config/config');
 var app = express();
 app.set('appName', 'VAMPS');
 require('./config/passport')(passport, connection); // pass passport for configuration
@@ -77,7 +77,8 @@ app.use(compression());
  * maxAge used to cache the content, # msec
  * to "uncache" some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
-app.use(express.static(path.join(__dirname, 'public'), {maxAge: '24h' }));
+app.use(express.static( 'public', {maxAge: '24h' }));
+app.use(express.static('tmp', {maxAge: '24h' }));
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
 
@@ -104,8 +105,8 @@ app.use(function(req, res, next){
 	   return;
 	 }else{
 	    req.db = connection;
-	    req.C = C;
-      
+	    req.C = constants;
+        req.config = config;
 	    return next();
 	}
 });

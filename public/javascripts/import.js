@@ -10,8 +10,10 @@ if (use_original_names !== null) {
       var project = document.getElementById('project');
       if(project.disabled == true){
         project.disabled=false;
+        project.value = '';
       }else{
         project.disabled=true;
+        project.value = 'Disabled';
       }      
 	 });
 }

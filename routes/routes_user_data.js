@@ -1376,15 +1376,16 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 //
 // UPLOAD DATA TAX-BY-SEQ
 //
-router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req,res){
+router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('upload_files', 12)], function(req,res){
 
-	
+	console.log('upload_data_tax_by_seq');
 	var project = req.body.project || '';
 	var use_original_names = req.body.use_original_names || 'off'
   var username = req.user.username;
+  var use_file_taxonomy = req.body.use_tax_from_file;
   console.log('1req.body upload_data_tax_by_seq');
   console.log(req.body);
-  console.log(req.file);  // single
+  console.log(req.files);  // array
   console.log('project: '+project);
   console.log('use_original_names: '+use_original_names);
   console.log('2req.body upload_data_tax_by_seq');
@@ -1399,17 +1400,38 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 		req.flash('failMessage', 'That project name is already taken.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.file.filename==undefined || req.file.size==0){
+  }else if(req.files[0].filename==undefined || req.files[0].size==0){
   	req.flash('failMessage', 'A tax_by_seq file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else{
 			
+			console.log('working')
+			//var file_path = path.join(process.env.PWD,req.file.path);
+			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
+			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
+			var original_taxbyseqfile = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[0].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
+			console.log(original_taxbyseqfile)
+			var original_metafile  = '';
+			try{
+				original_metafile  = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
+			}
+			catch(err){
+				console.log(err)
+			}
 			
-			var file_path = path.join(process.env.PWD,req.file.path);
+			console.log(original_metafile);
+			
+			
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args :       [ '-file', file_path, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
+		        			args :       [ '-file', original_taxbyseqfile, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
 		    			};
+			if(original_metafile){
+				options.args = options.args.concat(['-md_file',original_metafile]); 
+			}
+			if(req.body.use_tax_from_file === 1){
+				options.args = options.args.concat(['-use_tax']); 
+			}
 			if(use_original_names == 'on'){			    
 					options.args = options.args.concat(['-orig_names']); 
 		  }else if(use_original_names == 'off'){			    
@@ -1441,6 +1463,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.single('uplo
 				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
+		    return;
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
