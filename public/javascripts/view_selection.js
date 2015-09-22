@@ -430,38 +430,38 @@ if (typeof piecharts_btn !=="undefined") {
 //
 // KRONA Chart (Data Browser)
 //
-var dbrowser_link = document.getElementById('dbrowser_link_id') || null;
-var dbrowser_btn = document.getElementById('dbrowser_hide_btn');
-var dbrowser_div = document.getElementById('dbrowser_div');
-var dbrowser_download_btn = document.getElementById('dbrowser_download_btn');
-var pre_dbrowser_div = document.getElementById('pre_dbrowser_div');
-if (dbrowser_link !== null) {
-  dbrowser_link.addEventListener('click', function () {
+// var dbrowser_link = document.getElementById('dbrowser_link_id') || null;
+// var dbrowser_btn = document.getElementById('dbrowser_hide_btn');
+// var dbrowser_div = document.getElementById('dbrowser_div');
+// var dbrowser_download_btn = document.getElementById('dbrowser_download_btn');
+// var pre_dbrowser_div = document.getElementById('pre_dbrowser_div');
+// if (dbrowser_link !== null) {
+//   dbrowser_link.addEventListener('click', function () {
       
-	  if(typeof dbrowser_created == "undefined"){
-        create_viz('dbrowser', pi_local.ts);
-		dbrowser_download_btn.disabled = false;
-      }else{
-        if(dbrowser_btn.value == 'hide'){
-          //toggle_visual_element(piecharts_div,'show',dbrowser_btn);
-        }else{
-          toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
-        }
-      }
-      $(pre_dbrowser_div).scrollView();
-  });
-}
-if (typeof dbrowser_btn !=="undefined") {
-  dbrowser_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(dbrowser_btn.value == 'hide'){
-        toggle_visual_element(dbrowser_div,'show',dbrowser_btn);
-      }else{
-        toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
-      }
+// 	  if(typeof dbrowser_created == "undefined"){
+//         create_viz('dbrowser', pi_local.ts);
+// 		dbrowser_download_btn.disabled = false;
+//       }else{
+//         if(dbrowser_btn.value == 'hide'){
+//           //toggle_visual_element(piecharts_div,'show',dbrowser_btn);
+//         }else{
+//           toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
+//         }
+//       }
+//       $(pre_dbrowser_div).scrollView();
+//   });
+// }
+// if (typeof dbrowser_btn !=="undefined") {
+//   dbrowser_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(dbrowser_btn.value == 'hide'){
+//         toggle_visual_element(dbrowser_div,'show',dbrowser_btn);
+//       }else{
+//         toggle_visual_element(dbrowser_div,'hide',dbrowser_btn);
+//       }
       
-  });
-}
+//   });
+// }
 //
 // BARCHARTS
 //

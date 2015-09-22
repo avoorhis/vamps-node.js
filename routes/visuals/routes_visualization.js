@@ -408,7 +408,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     console.log('req.body dnd');
     var ts = req.body.ts;
     var metric = req.body.metric;
-  var script = req.body.script; // python, phylogram or phylonator
+    var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     //console.log('image_type '+image_type);
@@ -482,7 +482,9 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
  
 });
 
-
+//
+// P C O A
+//
 router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     console.log('in PCoA');
     //console.log(metadata);
@@ -494,9 +496,6 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     var spawn = require('child_process').spawn;
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
-    
-    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-    
     
     
     //var exec = require('child_process').exec;
@@ -514,15 +513,6 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
     
-    
-        //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
-        //var output = '';
-      pcoa_process.stdout.on('data', function (data) {
-        //console.log('stdout: ' + data);
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString();
-        //output += data;
-      });
         
         pcoa_process.on('close', function (code) {
             //console.log('pcoa_process process exited with code ' + code+' -- '+output);
@@ -548,7 +538,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         
     }else if(image_type == '3d'){
         
-               var mapping_file_name = ts+'_metadata.txt';
+        var mapping_file_name = ts+'_metadata.txt';
         var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
         var pc_file_name = ts+'.pc';
         var pc_file = path.join(pwd,'tmp', pc_file_name);
@@ -609,125 +599,29 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     }
     
 });
-//
-// P C O A
-//
-router.post('/pcoa2', helpers.isLoggedIn, function(req, res) {
-    console.log('in PCoA');
-    //console.log(metadata);
-    var ts = req.body.ts;
-    var metric = req.body.metric;
-    var image_type = req.body.image_type;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    
-    
-    var exec = require('child_process').exec;
-    if(image_type == '2d'){
-        
-        var options = {
-          scriptPath : 'public/scripts',
-          args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
-        };
-        console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        PythonShell.run('distance.py', options, function (err, pcoa_data) {
-          if (err) {
-    		  res.send('ERROR '+err); // for now we'll send errors to the browser
-    	  }else{
-    	      //console.log(pcoa_data)
-    	      //pcoa_data = JSON.parse(pcoa_data)
-    	      //console.log(pcoa_data);
 
-    	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
-    	      var html = "<div id='pdf'>";
-    	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-    	      html += " <p>ERROR in loading pdf file</p>";
-    	      html += "</object></div>";
-    	      //console.log(html);
-              
-    	      res.send(html);
-      	}
 
-        });       
-        
-        
-    }else if(image_type == '3d'){
-        
-        var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
-        var pc_file_name = ts+'.pc';
-        var pc_file = path.join(process.env.PWD,'tmp', pc_file_name);
-        
-        var dir_name = ts+'_pcoa_3d';
-        var dir_path = path.join(process.env.PWD,'tmp', dir_name);        
-        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
-        var options1 = {
-          scriptPath : 'public/scripts',
-          args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
-        };
-        var options2 = {
-            scriptPath : req.C.PATH_TO_QIIME_BIN,
-            args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-        };
-        console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
-        PythonShell.run('distance.py', options1, function (err, pcoa_data) {
-          if (err) {
-    		      res.send('ERROR-1 '+err); // for now we'll send errors to the browser
-    	    }else{
-    	        //console.log(pcoa_data)
-    	        //pcoa_data = JSON.parse(pcoa_data)
-    	        //console.log(pcoa_data);
-              //console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-              var spawn = require('child_process').spawn;
-              var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
-              // script will remove data from mysql and datset taxfile
-              console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-              var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
-              emperor_process.on('close', function (code) {
-                  console.log('emperor_process process exited with code ' + code);
-                  if(code == 0){           
-                   //console.log('PID last line: '+last_line)                    
-                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
-                      //console.log(html_path);
-                      open('file://'+html_path);
-                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
-                  }else{
-                    // python script error
-                    console.log('python script error');
-                  }      
-              });   
-
-      	  }
-
-        });
-        
-    }
-    
-});
 //
 // DATA BROWSER 
 //
-router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
+router.post('/dbrowserX', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     console.log('in dbrowser');
     //console.log(JSON.stringify(biom_matrix,null,2));
-    
+    var html='';
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
     //console.log('column_totals '+biom_matrix.column_totals);
     //console.log('max_total_count '+max_total_count.toString());
-    var html = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
+    html += "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
     html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
     html += "<head>\n";
     html += " <meta charset=\"utf-8\"/>\n";
-    html += " <link rel='shortcut icon' href='../public/images/favicon.ico' />\n";
+    html += " <link rel='shortcut icon' href='/images/krona/favicon.ico' />\n";
     html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-    html += " <script src=\"../public/javascripts/krona-2.0.js\"></script>\n";
+    html += " <script src=\"/javascripts/krona-2.0.js\"></script>\n";
     html += "</head>\n";
     html += "<body>\n";
-    html += " <img id='hiddenImage' src='../public/images/hidden.png' style='display:none' />\n";
+    html += " <img id='hiddenImage' src='/images/krona/hidden.png' style='display:none' />\n";
     html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
     html += " <div style='display:none'>\n";
     html += "  <krona  collapse='false' key='true'>\n";
@@ -856,22 +750,242 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
     }    // end domain
     html += "  </node>\n";
     html += "  </krona>\n";
-    html += " </div></body></html>\n";
+    html += " </div>";
+    html += " </body></html>\n";
     // write html to a file and open it 
     
     
+  
+
     var file_name = ts+'_krona.html';
     var html_path = path.join(process.env.PWD,'tmp', file_name);
-    //console.log(html_path);
+
+    // //console.log(html_path);
     fs.writeFile(html_path,html,function(err){
         if(err){
             res.send(err)
         }else{
+            // console.log('opening file: '+file_name)
+            // //res.sendFile(file_name, {root:'tmp',target:'_blank'});
+            // var options = {
+            //   root: path.join(process.env.PWD,'tmp'),
+            //   dotfiles: 'deny',
+            //   headers: {
+            //       'x-timestamp': Date.now(),
+            //       'x-sent': true
+            //   }
+            // };
+            // res.sendFile(file_name, options, function (err) {
+            //     if (err) {
+            //       console.log(err);
+            //       res.status(err.status).end();
+            //     }
+            //     else {
+            //       console.log('Sent:', file_name);
+            //     }
+            //   });
+
             console.log('opening file:///'+html_path)
-            open('file:///'+html_path);
-            res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
+            //res.send()
+            res.sendFile('tmp/'+file_name, {root:process.env.PWD})
+            //open('file:///'+html_path);
+            //res.sendFile('/tmp/'+file_name)
+            //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
         }
     })
+    
+});
+
+router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
+    var ts = visual_post_items.ts;
+    console.log('in dbrowser');
+    //console.log(JSON.stringify(biom_matrix,null,2));
+    var html='';
+    var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
+    //console.log('column_totals '+biom_matrix.column_totals);
+    //console.log('max_total_count '+max_total_count.toString());
+
+    html += "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
+    html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
+    html += "<head>\n";
+    html += "  <meta charset=\"utf-8\"/>\n";
+    html += "  <link rel='shortcut icon' href='/images/krona/favicon.ico' />\n";
+    html += "  <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
+    html += "  <script src=\"/javascripts/krona-2.0.js\"></script>\n";
+    html += "</head>\n";
+    html += "<body>\n";
+    html += " <img id='hiddenImage' src='/images/krona/hidden.png' style='display:none' />\n";
+    html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
+    html += " <div style='display:none'>\n";
+    html += "  <krona  collapse='false' key='true'>\n";
+    html += "  <attributes magnitude='seqcount'>\n";
+    html += "  <attribute display='Abundance'>seqcount</attribute>\n";
+    html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
+    html += "  </attributes>\n";
+    html += "  <color attribute='seqcount' valueStart='0' valueEnd='"+max_total_count.toString()+"' hueStart='120' hueEnd='240'></color>\n";
+    html += "  <datasets>\n";
+    for(i in chosen_id_name_hash.names){
+        html += "    <dataset>"+chosen_id_name_hash.names[i]+"</dataset>\n";
+    }
+    html += "  </datasets>\n";
+    html += "  <node id='dataset_name' name='root'>\n";
+    html += "   <seqcount>";
+    for(i in chosen_id_name_hash.names){
+        html += "<val>"+biom_matrix.column_totals[i].toString()+"</val>";
+    }
+    html += "</seqcount>\n";
+   
+    // sum counts
+    sumator = get_sumator(req)
+ 
+    //console.log(JSON.stringify(sumator))
+    
+    for(d in sumator['domain']){
+        
+      // #### DOMAIN ####
+      //var dnode_name =  dname
+      html += "<node name='"+d+"'>\n";
+      html += " <seqcount>";
+      for(c_domain in sumator['domain'][d]['knt']){
+          html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+      }
+        html += "</seqcount>\n";
+        html += " <rank><val>domain</val></rank>\n";
+        
+        // #### PHYLUM ####
+        for(p in sumator['domain'][d]['phylum']){              
+          html += " <node name='"+p+"'>\n";
+          html += "  <seqcount>";
+          for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+              html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+          }
+            html += "</seqcount>\n";
+            html += "  <rank><val>phylum</val></rank>\n";
+///            
+            // #### KLASS ####
+            for(k in sumator['domain'][d]['phylum'][p]['klass']){                
+                html += "  <node name='"+k+"'>\n";
+                html += "   <seqcount>";
+                for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
+                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
+                }
+                html += "</seqcount>\n";
+                html += "   <rank><val>klass</val></rank>\n";
+
+                // #### ORDER ####
+                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){                    
+                    html += "   <node name='"+o+"'>\n";
+                    html += "    <seqcount>";
+                    for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
+                        html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
+                    }
+                    html += "</seqcount>\n";
+                    html += "    <rank><val>order</val></rank>\n";
+
+                    // #### FAMILY ####
+                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){                        
+                        html += "    <node name='"+f+"'>\n";
+                        html += "     <seqcount>";
+                        for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
+                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
+                        }
+                        html += "</seqcount>\n";
+                        html += "     <rank><val>family</val></rank>\n";
+
+                        // #### GENUS ####
+                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){                           
+                            html += "     <node name='"+g+"'>\n";
+                            html += "      <seqcount>";
+                            for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
+                                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
+                            }
+                            html += "</seqcount>\n";
+                            html += "      <rank><val>genus</val></rank>\n";
+
+                            // #### SPECIES ####
+                            for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){                            
+                                html += "     <node name='"+s+"'>\n";
+                                html += "      <seqcount>";
+                                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
+                                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
+                                }
+                                html += "</seqcount>\n";
+                                html += "      <rank><val>species</val></rank>\n";
+                                
+                                // #### STRAIN ####
+                                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){                            
+                                      html += "     <node name='"+st+"'>\n";
+                                      html += "      <seqcount>";
+                                      for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
+                                          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
+                                      }
+                                      html += "</seqcount>\n";
+                                      html += "      <rank><val>strain</val></rank>\n";
+ ///// DONE //////
+                                      html += "     </node>\n";
+                                }  // end strain
+
+                                html += "     </node>\n";
+                            }  // end species
+       
+
+                            html += "     </node>\n";
+                        }  // end genus
+                        html += "    </node>\n";
+                    }  // end family
+                    html += "   </node>\n";
+                }  // end order
+                html += "  </node>\n";
+            }  // end klass
+            html += " </node>\n";
+        }  // end phylum
+        html += "</node>\n";
+    }    // end domain
+    html += "  </node>\n";
+    html += "  </krona>\n";
+    html += " </div>";
+    html += " </body></html>\n";
+    
+    // write html to a file and open it 
+    
+    console.log("render visuals/dbrowser")
+    var file_name = ts+'_krona.html';
+    var html_path = path.join(process.env.PWD,'tmp', file_name);
+
+    // //console.log(html_path);
+    fs.writeFile(html_path,html,function(err){
+        if(err){
+            res.send(err)
+        }else{
+            // console.log('opening file: '+file_name)
+            // //res.sendFile(file_name, {root:'tmp',target:'_blank'});
+            // var options = {
+            //   root: path.join(process.env.PWD,'tmp'),
+            //   dotfiles: 'deny',
+            //   headers: {
+            //       'x-timestamp': Date.now(),
+            //       'x-sent': true
+            //   }
+            // };
+            // res.sendFile(file_name, options, function (err) {
+            //     if (err) {
+            //       console.log(err);
+            //       res.status(err.status).end();
+            //     }
+            //     else {
+            //       console.log('Sent:', file_name);
+            //     }
+            //   });
+
+            console.log('opening file:///'+html_path)
+            //res.send()
+
+            //open('file:///'+html_path);
+            res.sendFile('tmp/'+file_name, {root:process.env.PWD})
+            //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
+        }
+    })
+
     
 });
 //

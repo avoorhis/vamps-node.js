@@ -116,31 +116,38 @@
 <table border='1' class='table'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
-          <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb                                  %>
-          <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name                                    %>
-          <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link                                    %>
-          <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id                                   %>
-          <%    var ttip = cnsts.VISUAL_THUMBNAILS.visuals[n].tip                                  %>
-          <%    var cols = 5 %>
+          <%    var thumb = cnsts.VISUAL_THUMBNAILS.visuals[n].thumb;                                  %>
+          <%    var name = cnsts.VISUAL_THUMBNAILS.visuals[n].name;                                    %>
+          <%    var link = cnsts.VISUAL_THUMBNAILS.visuals[n].link;                                    %>
+          <%    var link_id = cnsts.VISUAL_THUMBNAILS.visuals[n].id;                                  %>
+          <%    var link = '#';                                                                       %>
+          <%    var target='';                                                                        %>
+          <%    var ttip = cnsts.VISUAL_THUMBNAILS.visuals[n].tip;                                    %>
+          <%    var cols = 5                                                                          %>
           <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' 
                                         || name.substring(0,10) === 'Dendrogram' 
-                                        || name.substring(0,17) === 'Frequency Heatmap' 
                                         || name.substring(0,17) === 'Frequency Heatmap'
                                         || name.substring(0,4)  === 'PCoA' ))           { %>
                     <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
-          <%    } else { %>
+          <%    } else {                                                                              %>
           <%        if(disable_thumbs) {                                                              %>
                       <td class='td_top'><%= name %><br>
                         <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
                       </td>
           <%        }else{                                                                            %>
-                  <td class='td_top tooltip_viz_help' id='<%= ttip %>'>               
+          <% if(link_id == 'dbrowser_link_id'){ %> 
+              <% link = 'dbrowser' %>
+              <% target= '_blank' %>
+          <% } %>                                                               
+                      <td class='td_top tooltip_viz_help' id='<%= ttip %>'>     
                     
-                    <center><a href='#'  id='<%= link_id %>'  ><%= name %><br>              
-                      <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
-                    </a></center> 
-                    
-                 </td>
+                      <center>                        
+                        <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  ><%= name %><br>              
+                         <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                       </a>
+                      </center>                     
+                      </td>
+
           <%        }                                                                                 %>              
           <%    }                                                                                     %>
             
@@ -292,7 +299,7 @@
   <div id='pcoa_div'                    class='display_none well'>Working....</div> 
 
   <!-- PCoA 3D Emperor -->
-  <br>
+   <br>
   <nav id='pre_pcoa_3d_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 		  <span id='pcoa_3d_title' class="navbar-brand table_title" >PCoA 3D</span> 
@@ -316,7 +323,7 @@
   <div id='map-canvas'      class='display_none well'>Working....</div> 
   
   <!-- KRONA (Data Browser) -->
- <br>
+<!-- <br>
  <nav id='pre_dbrowser_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 		  <span id='dbrowser_title' class="navbar-brand table_title" >Data Browser</span> 
@@ -326,7 +333,7 @@
 	<button type='button' disabled='disabled' id='dbrowser_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
  <div id='dbrowser_div'      class='display_none well'>Working....</div>
-  
+    -->
   <!-- ALPHA DIVERSITY -->
  <br>
  <nav id='pre_adiversity_div' class="navbar navbar-inverse viz_hidden_div display_none">
