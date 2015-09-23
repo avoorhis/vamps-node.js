@@ -370,7 +370,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 //
 //   F R E Q U E N C Y  H E A T M A P
 //
-router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
+router.post('/frequency_heatmap2', helpers.isLoggedIn, function(req, res) {
 
   console.log('in Freq HP');
   var ts = req.body.ts;
@@ -393,6 +393,72 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
 
+
+});
+router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
+
+  console.log('in Freq HM');
+  var ts = req.body.ts;
+  var metric = req.body.metric;
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
+  var pwd = process.env.PWD || req.config.PROCESS_DIR;
+  var exec = require('child_process').exec;
+  //var PythonShell = require('python-shell');
+  var html = '';
+  var title = 'VAMPS';
+
+  var distmtx_file_name = ts+'_distance.csv';
+  var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
+  
+
+  var fheatmap_script_file = path.resolve(pwd, 'public','scripts','fheatmap.R');
+
+  shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
+
+  //COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
+  var options = {
+     scriptPath : 'public/scripts',
+       args :       [  biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts],
+  };
+  // RScript --no-restore --no-save /usr/local/www/vampsdev/projects/vamps-node.js/public/scripts/fheatmap.R 
+  //    /usr/local/www/vampsdev/projects/vamps-node.js/tmp/avoorhis_1443031027846_count_matrix.biom morisita_horn phylum avoorhis_1443031027846    
+  var spawn = require('child_process').spawn;
+  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  
+  
+  console.log(options.scriptPath+'/fheatmap.R '+options.args.join(' '));
+  var fheatmap_process = spawn( options.scriptPath+'/fheatmap.R', options.args, {
+          env:{'PATH':req.config.PYTHON_PATH},
+          detached: true, 
+          stdio: [ 'ignore', null, log ]
+      });  // stdin, stdout, stderr
+  
+  
+
+   
+  fheatmap_process.on('close', function (code) {
+        console.log('fheatmap_process process exited with code ' + code);
+        //distance_matrix = JSON.parse(output);
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS       
+          
+            var image = '/tmp_images/'+ts+'_heatmap.pdf';
+            var html = "<div id='pdf'>";
+            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+            html += " <p>ERROR in loading pdf file</p>";
+            html += "</object></div>";
+            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
+            console.log(html);
+            res.send(html);  
+                                        
+        }else{
+          console.log('output')
+          console.log(output);
+          res.send(err);
+        }      
+  });   
+  
 
 });
 //
@@ -687,198 +753,6 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 //
 // DATA BROWSER 
 //
-router.post('/dbrowserX', helpers.isLoggedIn, function(req, res) {
-    var ts = req.body.ts;
-    console.log('in dbrowser');
-    //console.log(JSON.stringify(biom_matrix,null,2));
-    var html='';
-    var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-    //console.log('column_totals '+biom_matrix.column_totals);
-    //console.log('max_total_count '+max_total_count.toString());
-    html += "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
-    html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
-    html += "<head>\n";
-    html += " <meta charset=\"utf-8\"/>\n";
-    html += " <link rel='shortcut icon' href='/images/krona/favicon.ico' />\n";
-    html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-    html += " <script src=\"/javascripts/krona-2.0.js\"></script>\n";
-    html += "</head>\n";
-    html += "<body>\n";
-    html += " <img id='hiddenImage' src='/images/krona/hidden.png' style='display:none' />\n";
-    html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
-    html += " <div style='display:none'>\n";
-    html += "  <krona  collapse='false' key='true'>\n";
-    html += "  <attributes magnitude='seqcount'>\n";
-    html += "  <attribute display='Abundance'>seqcount</attribute>\n";
-    html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
-    html += "  </attributes>\n";
-    html += "  <color attribute='seqcount' valueStart='0' valueEnd='"+max_total_count.toString()+"' hueStart='120' hueEnd='240'></color>\n";
-    html += "  <datasets>\n";
-    for(i in chosen_id_name_hash.names){
-        html += "    <dataset>"+chosen_id_name_hash.names[i]+"</dataset>\n";
-    }
-    html += "  </datasets>\n";
-    html += "  <node id='dataset_name' name='root'>\n";
-	html += "   <seqcount>";
-    for(i in chosen_id_name_hash.names){
-        html += "<val>"+biom_matrix.column_totals[i].toString()+"</val>";
-    }
-    html += "</seqcount>\n";
-   
-    // sum counts
-    sumator = get_sumator(req)
- 
-    //console.log(JSON.stringify(sumator))
-    
-    for(d in sumator['domain']){
-        
-      // #### DOMAIN ####
-      //var dnode_name =  dname
-      html += "<node name='"+d+"'>\n";
-	    html += " <seqcount>";
-	    for(c_domain in sumator['domain'][d]['knt']){
-	        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-	    }
-        html += "</seqcount>\n";
-        html += " <rank><val>domain</val></rank>\n";
-        
-        // #### PHYLUM ####
-        for(p in sumator['domain'][d]['phylum']){              
-          html += " <node name='"+p+"'>\n";
-    	    html += "  <seqcount>";
-    	    for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-    	        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
-    	    }
-            html += "</seqcount>\n";
-            html += "  <rank><val>phylum</val></rank>\n";
-///            
-            // #### KLASS ####
-            for(k in sumator['domain'][d]['phylum'][p]['klass']){                
-                html += "  <node name='"+k+"'>\n";
-                html += "   <seqcount>";
-                for(c_klass in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][c_klass].toString()+"</val>";
-                }
-                html += "</seqcount>\n";
-                html += "   <rank><val>klass</val></rank>\n";
-
-                // #### ORDER ####
-                for(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){                    
-                    html += "   <node name='"+o+"'>\n";
-                    html += "    <seqcount>";
-                    for(c_order in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-                        html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][c_order].toString()+"</val>";
-                    }
-                    html += "</seqcount>\n";
-                    html += "    <rank><val>order</val></rank>\n";
-
-                    // #### FAMILY ####
-                    for(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){                        
-                        html += "    <node name='"+f+"'>\n";
-                        html += "     <seqcount>";
-                        for(c_family in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-                            html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][c_family].toString()+"</val>";
-                        }
-                        html += "</seqcount>\n";
-                        html += "     <rank><val>family</val></rank>\n";
-
-                        // #### GENUS ####
-                        for(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){                           
-                            html += "     <node name='"+g+"'>\n";
-                            html += "      <seqcount>";
-                            for(c_genus in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                                html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][c_genus].toString()+"</val>";
-                            }
-                            html += "</seqcount>\n";
-                            html += "      <rank><val>genus</val></rank>\n";
-
-                            // #### SPECIES ####
-                            for(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){                            
-                                html += "     <node name='"+s+"'>\n";
-                                html += "      <seqcount>";
-                                for(c_species in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                                    html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][c_species].toString()+"</val>";
-                                }
-                                html += "</seqcount>\n";
-                                html += "      <rank><val>species</val></rank>\n";
-                                
-                                // #### STRAIN ####
-                                for(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){                            
-                                      html += "     <node name='"+st+"'>\n";
-                                      html += "      <seqcount>";
-                                      for(c_strain in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                                          html += "<val>"+sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][c_strain].toString()+"</val>";
-                                      }
-                                      html += "</seqcount>\n";
-                                      html += "      <rank><val>strain</val></rank>\n";
- ///// DONE //////
-                                      html += "     </node>\n";
-                                }  // end strain
-
-                                html += "     </node>\n";
-                            }  // end species
-       
-
-                            html += "     </node>\n";
-                        }  // end genus
-                        html += "    </node>\n";
-                    }  // end family
-                    html += "   </node>\n";
-                }  // end order
-                html += "  </node>\n";
-            }  // end klass
-            html += " </node>\n";
-        }  // end phylum
-        html += "</node>\n";
-    }    // end domain
-    html += "  </node>\n";
-    html += "  </krona>\n";
-    html += " </div>";
-    html += " </body></html>\n";
-    // write html to a file and open it 
-    
-    
-  
-
-    var file_name = ts+'_krona.html';
-    var html_path = path.join(process.env.PWD,'tmp', file_name);
-
-    // //console.log(html_path);
-    fs.writeFile(html_path,html,function(err){
-        if(err){
-            res.send(err)
-        }else{
-            // console.log('opening file: '+file_name)
-            // //res.sendFile(file_name, {root:'tmp',target:'_blank'});
-            // var options = {
-            //   root: path.join(process.env.PWD,'tmp'),
-            //   dotfiles: 'deny',
-            //   headers: {
-            //       'x-timestamp': Date.now(),
-            //       'x-sent': true
-            //   }
-            // };
-            // res.sendFile(file_name, options, function (err) {
-            //     if (err) {
-            //       console.log(err);
-            //       res.status(err.status).end();
-            //     }
-            //     else {
-            //       console.log('Sent:', file_name);
-            //     }
-            //   });
-
-            console.log('opening file:///'+html_path)
-            //res.send()
-            res.sendFile('tmp/'+file_name, {root:process.env.PWD})
-            //open('file:///'+html_path);
-            //res.sendFile('/tmp/'+file_name)
-            //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
-        }
-    })
-    
-});
-
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = visual_post_items.ts;
     console.log('in dbrowser');
@@ -1002,36 +876,19 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     // write html to a file and open it 
     
     console.log("render visuals/dbrowser")
-    var file_name = ts+'_krona.html';
-    var html_path = path.join(process.env.PWD,'tmp', file_name);
+    //var file_name = ts+'_krona.html';
+    //var html_path = path.join(process.env.PWD,'tmp', file_name);
 
     res.render('visuals/dbrowser', {        
-      title: 'VAMPS:Data Administration',
-      message: req.flash('message'),
-      user: req.user,
-      html:html,
-      max_total_count:max_total_count,
-      matrix    :           JSON.stringify(biom_matrix),
-      chosen_id_name_hash : JSON.stringify(chosen_id_name_hash)            
+      title: 'VAMPS:Taxonomy Browser (Krona)',
+      message:             req.flash('message'),
+      user:                req.user,
+      html:                html,
+      max_total_count:     max_total_count,
+      matrix:              JSON.stringify(biom_matrix),
+      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash)            
 
-       });
-
-    //console.log(html_path);
-    // fs.writeFile(html_path,html,function(err){
-    //     if(err){
-    //         res.send(err)
-    //     }else{
-           
-
-    //         console.log('opening file:///'+html_path)
-    //         //res.send()
-
-    //         open('file:///'+html_path);
-
-    //         res.sendFile('tmp/'+file_name, {root:process.env.PWD})
-    //         //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
-    //     }
-    // })
+    });
 
     
 });
@@ -1063,7 +920,11 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'/alpha_diversity.py '+options.args.join(' '));
-    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
+                env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+                detached: true, 
+                stdio: [ 'ignore', null, log ]
+            });  // stdin, stdout, stderr
     output = '';
     alphadiv_process.stdout.on('data', function (data) {
         
