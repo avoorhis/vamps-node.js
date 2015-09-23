@@ -741,38 +741,38 @@ if (typeof pcoa_btn !== "undefined") {
 //
 // PCOA  3D
 //
-var pcoa_3d_link = document.getElementById('pcoa_3d_link_id') || null;
-var pcoa_3d_btn = document.getElementById('pcoa_3d_hide_btn');
-var pcoa_3d_div = document.getElementById('pcoa_3d_div');
-var pcoa_3d_download_btn = document.getElementById('pcoa_3d_download_btn');
-var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
-if (pcoa_3d_link !== null) {
-  pcoa_3d_link.addEventListener('click', function () {
+// var pcoa_3d_link = document.getElementById('pcoa_3d_link_id') || null;
+// var pcoa_3d_btn = document.getElementById('pcoa_3d_hide_btn');
+// var pcoa_3d_div = document.getElementById('pcoa_3d_div');
+// var pcoa_3d_download_btn = document.getElementById('pcoa_3d_download_btn');
+// var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
+// if (pcoa_3d_link !== null) {
+//   pcoa_3d_link.addEventListener('click', function () {
       
-	  if(typeof pcoa_3d_created == "undefined"){
-        create_viz('pcoa_3d', pi_local.ts);
-		pcoa_3d_download_btn.disabled = false;
-      }else{
-        if(pcoa_3d_btn.value == 'hide'){        
-          //toggle_visual_element(pcoa_div,'show',pcoa_btn);
-        }else{
-          toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
-        }
-      } 
-	  $(pre_pcoa_3d_div).scrollView();     
-  });
-}
-if (typeof pcoa_3d_btn !== "undefined") {
-  pcoa_3d_btn.addEventListener('click', function () {
-      //alert('here in tt')
-      if(pcoa_3d_btn.value == 'hide'){        
-        toggle_visual_element(pcoa_3d_div,'show',pcoa_3d_btn);
-      }else{
-        toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
-      }
+// 	  if(typeof pcoa_3d_created == "undefined"){
+//         create_viz('pcoa_3d', pi_local.ts);
+// 		pcoa_3d_download_btn.disabled = false;
+//       }else{
+//         if(pcoa_3d_btn.value == 'hide'){        
+//           //toggle_visual_element(pcoa_div,'show',pcoa_btn);
+//         }else{
+//           toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
+//         }
+//       } 
+// 	  $(pre_pcoa_3d_div).scrollView();     
+//   });
+// }
+// if (typeof pcoa_3d_btn !== "undefined") {
+//   pcoa_3d_btn.addEventListener('click', function () {
+//       //alert('here in tt')
+//       if(pcoa_3d_btn.value == 'hide'){        
+//         toggle_visual_element(pcoa_3d_div,'show',pcoa_3d_btn);
+//       }else{
+//         toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
+//       }
       
-  });
-}
+//   });
+// }
 //
 // GEOSPATIAL
 //

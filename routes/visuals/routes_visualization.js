@@ -506,7 +506,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+        
         var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
             detached: true, 
@@ -580,8 +580,15 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                       ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
                       ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
                       //console.log(html_path);
-                      open('file://'+html_path);
+                      
+                      //console.log('opening file:///'+html_path)
+                      //res.send()
+                      //res.sendFile('tmp/'+file_name, {root:process.env.PWD})
+
+                      //open('file://'+html_path);
                       res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
+                  
+
                   }else{
                     // python script error
                     console.log('python script error');
@@ -599,7 +606,83 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     }
     
 });
+router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+    var ts = visual_post_items.ts;    
+    var metric = visual_post_items.metric;
+    
+    
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var spawn = require('child_process').spawn;
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
 
+    var mapping_file_name = ts+'_metadata.txt';
+        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
+        var pc_file_name = ts+'.pc';
+        var pc_file = path.join(pwd,'tmp', pc_file_name);
+        
+        var dir_name = ts+'_pcoa_3d';
+        var dir_path = path.join(pwd,'tmp', dir_name);        
+        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+        var options1 = {
+          scriptPath : 'public/scripts',
+          args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+        };
+        var options2 = {
+            scriptPath : req.config.PATH_TO_QIIME_BIN,
+            args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+        };
+        console.log('outdir: '+dir_path);
+        console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+        
+        var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            detached: true, 
+            stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr    
+       
+        
+        pcoa_process.on('close', function (code1) {
+            console.log('pcoa_process1 process exited with code ' + code1);
+            
+            if(code1 === 0){    // SUCCESS       
+                console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+                var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+
+                emperor_process.on('close', function (code2) {
+                  console.log('emperor_process process exited with code ' + code2);
+                  
+                  if(code2 == 0){           
+                   //console.log('PID last line: '+last_line)                    
+                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
+                      //console.log(html_path);
+                      
+                      
+                      console.log('opening file:///'+html_path)
+                      //res.send()
+                      res.sendFile('tmp/'+dir_name+'/index.html', {root:process.env.PWD})
+
+                      //open('file://'+html_path);
+                      //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
+                  
+
+                  }else{
+                    // python script error
+                    console.log('python script error');
+                  }      
+                });                      
+            }else{
+                console.log('output')
+                console.log(output)
+                
+            }      
+        });   
+        
+
+});
 
 //
 // DATA BROWSER 
@@ -805,35 +888,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     //console.log('column_totals '+biom_matrix.column_totals);
     //console.log('max_total_count '+max_total_count.toString());
 
-    html += "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
-    html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
-    html += "<head>\n";
-    html += "  <meta charset=\"utf-8\"/>\n";
-    html += "  <link rel='shortcut icon' href='/images/krona/favicon.ico' />\n";
-    html += "  <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-    html += "  <script src=\"/javascripts/krona-2.0.js\"></script>\n";
-    html += "</head>\n";
-    html += "<body>\n";
-    html += " <img id='hiddenImage' src='/images/krona/hidden.png' style='display:none' />\n";
-    html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
-    html += " <div style='display:none'>\n";
-    html += "  <krona  collapse='false' key='true'>\n";
-    html += "  <attributes magnitude='seqcount'>\n";
-    html += "  <attribute display='Abundance'>seqcount</attribute>\n";
-    html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
-    html += "  </attributes>\n";
-    html += "  <color attribute='seqcount' valueStart='0' valueEnd='"+max_total_count.toString()+"' hueStart='120' hueEnd='240'></color>\n";
-    html += "  <datasets>\n";
-    for(i in chosen_id_name_hash.names){
-        html += "    <dataset>"+chosen_id_name_hash.names[i]+"</dataset>\n";
-    }
-    html += "  </datasets>\n";
-    html += "  <node id='dataset_name' name='root'>\n";
-    html += "   <seqcount>";
-    for(i in chosen_id_name_hash.names){
-        html += "<val>"+biom_matrix.column_totals[i].toString()+"</val>";
-    }
-    html += "</seqcount>\n";
+    
    
     // sum counts
     sumator = get_sumator(req)
@@ -942,9 +997,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
         html += "</node>\n";
     }    // end domain
     html += "  </node>\n";
-    html += "  </krona>\n";
-    html += " </div>";
-    html += " </body></html>\n";
+    
     
     // write html to a file and open it 
     
@@ -952,39 +1005,33 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var file_name = ts+'_krona.html';
     var html_path = path.join(process.env.PWD,'tmp', file_name);
 
-    // //console.log(html_path);
-    fs.writeFile(html_path,html,function(err){
-        if(err){
-            res.send(err)
-        }else{
-            // console.log('opening file: '+file_name)
-            // //res.sendFile(file_name, {root:'tmp',target:'_blank'});
-            // var options = {
-            //   root: path.join(process.env.PWD,'tmp'),
-            //   dotfiles: 'deny',
-            //   headers: {
-            //       'x-timestamp': Date.now(),
-            //       'x-sent': true
-            //   }
-            // };
-            // res.sendFile(file_name, options, function (err) {
-            //     if (err) {
-            //       console.log(err);
-            //       res.status(err.status).end();
-            //     }
-            //     else {
-            //       console.log('Sent:', file_name);
-            //     }
-            //   });
+    res.render('visuals/dbrowser', {        
+      title: 'VAMPS:Data Administration',
+      message: req.flash('message'),
+      user: req.user,
+      html:html,
+      max_total_count:max_total_count,
+      matrix    :           JSON.stringify(biom_matrix),
+      chosen_id_name_hash : JSON.stringify(chosen_id_name_hash)            
 
-            console.log('opening file:///'+html_path)
-            //res.send()
+       });
 
-            //open('file:///'+html_path);
-            res.sendFile('tmp/'+file_name, {root:process.env.PWD})
-            //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
-        }
-    })
+    //console.log(html_path);
+    // fs.writeFile(html_path,html,function(err){
+    //     if(err){
+    //         res.send(err)
+    //     }else{
+           
+
+    //         console.log('opening file:///'+html_path)
+    //         //res.send()
+
+    //         open('file:///'+html_path);
+
+    //         res.sendFile('tmp/'+file_name, {root:process.env.PWD})
+    //         //res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
+    //     }
+    // })
 
     
 });

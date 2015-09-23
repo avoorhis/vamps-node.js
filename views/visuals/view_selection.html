@@ -137,6 +137,9 @@
           <%        }else{                                                                            %>
           <% if(link_id == 'dbrowser_link_id'){ %> 
               <% link = 'dbrowser' %>
+              <% target = '_blank' %>
+          <% }else if(link_id == 'pcoa_3d_link_id'){ %>
+              <% link = 'pcoa_3d' %>
               <% target= '_blank' %>
           <% } %>                                                               
                       <td class='td_top tooltip_viz_help' id='<%= ttip %>'>     
@@ -299,7 +302,7 @@
   <div id='pcoa_div'                    class='display_none well'>Working....</div> 
 
   <!-- PCoA 3D Emperor -->
-   <br>
+  <!--  <br>
   <nav id='pre_pcoa_3d_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 		  <span id='pcoa_3d_title' class="navbar-brand table_title" >PCoA 3D</span> 
@@ -309,7 +312,7 @@
 	<button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
   <div id='pcoa_3d_div'                 class='display_none well'>Working....</div> 
-  
+   -->
   <!-- GEOSPATIAL -->
   <br>
   <nav id='pre_geospatial_div' class="navbar navbar-inverse viz_hidden_div display_none">
