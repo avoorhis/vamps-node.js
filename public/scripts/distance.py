@@ -199,8 +199,7 @@ def dendrogram_pdf(args, dm, leafLabels):
         
         linkage_matrix = linkage(dm,  method="average" )
         dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
-        #image_file = '/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/'+args.prefix+'.png'
-        image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_dendrogram.pdf')
+        image_file = os.path.join(args.site_base,'tmp',args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
 
@@ -483,7 +482,7 @@ def pcoa_pdf(args, data):
             ax[0,0].set_title('P1-P2')
             ax[0,2].set_title('P2-P3')
 
-            image_file = os.path.join(args.site_base,'public/tmp_images',args.prefix+'_pcoa.pdf')
+            image_file = os.path.join(args.site_base,'tmp',args.prefix+'_pcoa.pdf')
             pylab.savefig(image_file, bbox_inches='tight')
         else:
             print 'no metadata'

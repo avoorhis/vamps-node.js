@@ -370,31 +370,6 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
 //
 //   F R E Q U E N C Y  H E A T M A P
 //
-router.post('/frequency_heatmap2', helpers.isLoggedIn, function(req, res) {
-
-  console.log('in Freq HP');
-  var ts = req.body.ts;
-  var metric = req.body.metric;
-  var biom_file_name = ts+'_count_matrix.biom';
-  var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
-
-  var exec = require('child_process').exec;
-  //var PythonShell = require('python-shell');
-  var html = '';
-  var title = 'VAMPS';
-
-  var distmtx_file_name = ts+'_distance.csv';
-  var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-  
-
-  var fheatmap_script_file = path.resolve(process.env.PWD, 'public','scripts','fheatmap.R');
-
-  shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
-
-  COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
-
-
-});
 router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   console.log('in Freq HM');
@@ -443,7 +418,8 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           
-            var image = '/tmp_images/'+ts+'_heatmap.pdf';
+            //var image = '/tmp_images/'+ts+'_heatmap.pdf';
+            var image = '/'+ts+'_heatmap.pdf';
             var html = "<div id='pdf'>";
             html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
             html += " <p>ERROR in loading pdf file</p>";
@@ -480,8 +456,8 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
   
-  var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(pwd,'tmp',biom_file_name);
 
 
     var exec = require('child_process').exec;
@@ -490,12 +466,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
     
 
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
     };
     var spawn = require('child_process').spawn;
   var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
@@ -528,7 +504,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
           }else{  // 'pdf'
                     var viz_width = 1200;
                     var viz_height = (visual_post_items.no_of_datasets*12)+100;
-                    var image = path.join('tmp',ts+'_dendrogram.pdf');
+                    var image = '/'+ts+'_dendrogram.pdf';
                     //console.log(image)
                     html = "<div id='pdf'>";
                     html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
@@ -585,9 +561,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             //distance_matrix = JSON.parse(output);
             //var last_line = ary[ary.length - 1];
             if(code === 0){   // SUCCESS       
-              var image = path.join('/tmp',ts+'_pcoa.pdf');
-              //var image = ts+'_pcoa.pdf';
-              var image = '/tmp_images/'+ts+'_pcoa.pdf';
+              var image = path.join('/',ts+'_pcoa.pdf');              
               var html = "<div id='pdf'>";
               html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
               html += " <p>ERROR in loading pdf file</p>";

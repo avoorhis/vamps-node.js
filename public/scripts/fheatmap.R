@@ -8,7 +8,8 @@ method <- args[2]   # distance
 depth <- args[3]
 prefix <- args[4]
 #pdf_file = paste("/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/",prefix,"_heatmap.pdf",sep='')
-pdf_file = paste("public/tmp_images/",prefix,"_heatmap.pdf",sep='')
+#pdf_file = paste("public/tmp_images/",prefix,"_heatmap.pdf",sep='')
+pdf_file = paste("tmp/",prefix,"_heatmap.pdf",sep='')
 
 # /groups/vampsweb/vamps/seqinfobin/bin/Rscript --no-save --slave --no-restore 
 # fheatmap.R /usr/local/www/vamps/docs/tmp/avoorhis_1784983_normalized.mtx avoorhis_1784983 Phylum horn yes
