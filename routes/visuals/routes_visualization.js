@@ -429,9 +429,8 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
             res.send(html);  
                                         
         }else{
-          console.log('output')
-          console.log(output);
-          res.send(err);
+          console.log('ERROR');
+          res.send('Frequency Heatmap R Error');
         }      
   });   
   
@@ -569,9 +568,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
               //console.log(html);                 
               res.send(html);                                    
             }else{
-                console.log('output')
-                console.log(output)
-                res.send('ERROR '+err); // for now we'll send errors to the browser
+                console.log('ERROR');
+                res.send('PCoA Python Error');
             }      
         });   
         
@@ -635,8 +633,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                   }      
                 });                      
             }else{
-                console.log('output')
-                console.log(output)
+                console.log('ERROR');
+                res.send('PCoA 3D Error');
                 
             }      
         });   
@@ -711,12 +709,12 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                   }else{
                     // python script error
-                    console.log('python script error');
+                    console.log('make_emperor script error');
                   }      
                 });                      
             }else{
-                console.log('output')
-                console.log(output)
+                console.log('ERROR');
+                res.send('Python Script Error');
                 
             }      
         });   
@@ -881,19 +879,19 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
-
+    console.log(biom_file)
     //var distmtx_file_name = ts+'_distance.csv';
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-
+   
     var options = {
-      scriptPath : 'public/scripts',
+      scriptPath : 'public/scripts/',
       args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
     };
 
     var spawn = require('child_process').spawn;
     var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
     // script will remove data from mysql and datset taxfile
-    console.log(options.scriptPath+'/alpha_diversity.py '+options.args.join(' '));
+    console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
                 env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
                 detached: true, 
@@ -904,13 +902,13 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
         
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         //data = data.toString().trim()
-        
+        console.log(data)
         output += data;
         
      
       });
     alphadiv_process.on('close', function (code) {
-        console.log('alphadiv_process process exited with code ' + code);
+        console.log('alphadiv_process process exited with code ' + code+' -- '+output);
         if(code == 0){           
          //console.log('PID last line: '+last_line)                    
             //console.log('stdout: ' + output);
@@ -934,7 +932,7 @@ function get_sumator(req){
     var dname = chosen_id_name_hash.names[i];
     
     for(r in biom_matrix.rows){
-        tax_string = biom_matrix.rows[r].name;
+        tax_string = biom_matrix.rows[r].id;
         tax_items = tax_string.split(';');
         key = tax_items[0];
         //console.log(tax_items);
@@ -1101,53 +1099,60 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
-    var did = myurl.query.did;
-	var pid = PROJECT_ID_BY_DID[did]
-	//PROJECT_INFORMATION_BY_PID[pid].project
-	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    //var id = myurl.query.id;
+    //var pid = PROJECT_ID_BY_DID[did]
+    //PROJECT_INFORMATION_BY_PID[pid].project
+    //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    var ds_name = myurl.query.id;
+    var ds_items = ds_name.split('--');
+
     //var html  = COMMON.start_visuals_html('piechart');
-	var html  = 'My HTML';
+    var html  = 'My HTML';
 
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
-    
+
     var new_matrix={}
-	new_matrix.rows = biom_matrix.rows;
-	new_matrix.columns =[];
-	new_matrix.dataset = ds_name;
-	new_matrix.did = did;
-	new_matrix.data = []
-	new_matrix.total = 0
-	new_matrix.shape = [biom_matrix.shape[0],1]
-	var idx = -1;
+    new_matrix.rows = biom_matrix.rows;
+    new_matrix.columns =[];
+    new_matrix.dataset = ds_name;
+    new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(ds_name)];
+    //console.log('did ');
+    //console.log(new_matrix.did );
+    //console.log(ds_name );
+    //console.log(new_matrix.did ); 
+    new_matrix.data = []
+    new_matrix.total = 0
+    new_matrix.shape = [biom_matrix.shape[0],1]
+    var idx = -1;
+
+    for(d in biom_matrix.columns){
+      if(biom_matrix.columns[d].id == ds_name){
+      	//console.log('found idx '+biom_matrix.columns[d].name)
+      	idx = d;
+      	new_matrix.columns.push(biom_matrix.columns[d]);
+      	//new_matrix.columns.push({"name":ds_name,"did":did});
+      	break;
+      }
+    }
+
+
+    for(n in biom_matrix.data){
+      //new_matrix.rows.push(biom_matrix.rows[n].name)
+      //new_matrix.data.push(biom_matrix.data[n][d])
+      new_matrix.data.push([biom_matrix.data[n][d]])
+      new_matrix.total += biom_matrix.data[n][d]
+    }
+    console.log(JSON.stringify(new_matrix))
 	
-	for(d in biom_matrix.columns){
-		if(biom_matrix.columns[d].did == did){
-			//console.log('found idx '+biom_matrix.columns[d].name)
-			idx = d;
-			new_matrix.columns.push(biom_matrix.columns[d]);
-			//new_matrix.columns.push({"name":ds_name,"did":did});
-			break;
-		}
-	}
-	
-	
-	for(n in biom_matrix.data){
-		//new_matrix.rows.push(biom_matrix.rows[n].name)
-		//new_matrix.data.push(biom_matrix.data[n][d])
-		new_matrix.data.push([biom_matrix.data[n][d]])
-		new_matrix.total += biom_matrix.data[n][d]
-	}
-	//console.log(JSON.stringify(new_matrix))
-	
-	res.render('visuals/user_viz_data/bar_single', {
-          title: 'Dataset Taxonomic Data',
-          ts: ts || 'default_timestamp',
-		  matrix    :           JSON.stringify(new_matrix),
-		  post_items:           JSON.stringify(visual_post_items),
-		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-          html: html,
-          user: req.user
-        });
+  	res.render('visuals/user_viz_data/bar_single', {
+        title: 'Dataset Taxonomic Data',
+        ts: ts || 'default_timestamp',
+  		  matrix    :           JSON.stringify(new_matrix),
+  		  post_items:           JSON.stringify(visual_post_items),
+  		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+        html: html,
+        user: req.user
+    });
 
 });
 

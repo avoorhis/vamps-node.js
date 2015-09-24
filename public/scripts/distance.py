@@ -45,7 +45,7 @@ def calculate_distance(args):
     
     for i in data['columns']:
         #print i['id']
-        datasets.append(i['name'])
+        datasets.append(i['id'])
 
     
     z = np.array(data['data'])
@@ -58,11 +58,12 @@ def calculate_distance(args):
     dmatrix = np.delete(dmatrix, bad_rows, axis=0)
     # delete datasets too:
     edited_dataset_list=[]
-    edited_did_hash = {}
+    #edited_did_hash = {}
     for row,line in enumerate(data['columns']):
         if row not in bad_rows[0]:
-            edited_dataset_list.append(line['name'])
-            edited_did_hash[line['name']] = line['did']
+            edited_dataset_list.append(line['id'])
+            
+            #edited_did_hash[line['id']] = line['did']
 
     #print edited_dataset_list
     
@@ -114,7 +115,7 @@ def calculate_distance(args):
     
     out_fp = open(out_file,'w')
     
-    file_header_line = ','.join([x['name'] for x in data['columns']]) + '\n'
+    file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
 
     out_fp.write(file_header_line)
 
@@ -127,8 +128,8 @@ def calculate_distance(args):
             for col,d in enumerate(dm1[row]):
                 #print data['columns'][col]['id']
                 file_data_line += str(dm1[row][col])+','
-                dm2[name][data['columns'][col]['name']]  = dm1[row][col]
-                dm3[(name, data['columns'][col]['name'])]  = dm1[row][col]
+                dm2[name][data['columns'][col]['id']]  = dm1[row][col]
+                dm3[(name, data['columns'][col]['id'])]  = dm1[row][col]
             file_data_line = file_data_line[:-1]+'\n'
             out_fp.write(file_data_line)
 
@@ -137,7 +138,8 @@ def calculate_distance(args):
     
     #print dm1
     #print edited_dataset_list
-    return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
+    #return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
+    return (dm1, dist, dm2, dm3, edited_dataset_list)
 # dm1: [[]]
 #[
 #[  0.00000000e+00   9.86159727e-03   8.90286439e-05   7.11500728e-03
@@ -209,7 +211,7 @@ def dendrogram_svg(args, dm):
     newick = mycluster.getNewick(with_distances=True) 
     return newick
 
-def cluster_datasets(args, dm, did_hash):
+def cluster_datasets(args, dm):
     new_ds_order =[]
     new_did_order =[]
 
@@ -229,11 +231,11 @@ def cluster_datasets(args, dm, did_hash):
         if line == '|' or line[:5] == '\edge' or line[:5] == '/edge' or line[:5] == '-root':
             continue
         ds = line[2:]
-        did = did_hash[ds]
+        #did = did_hash[ds]
         new_ds_order.append(ds)
-        new_did_order.append(did)
+        #new_did_order.append(did)
         #print new_did_order
-    return new_did_order
+    return new_ds_order
     #print mycluster.asciiArt()
         
 
@@ -508,11 +510,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
 
-    ( dm1, short_dm1, dm2, dm3, datasets, did_hash ) = calculate_distance(args) 
+    ( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
     
     if args.function == 'cluster_datasets':
-        did_list = cluster_datasets(args, dm3, did_hash)
-        print json.dumps(did_list)
+        #did_list = cluster_datasets(args, dm3, did_hash)
+        new_ds_list = cluster_datasets(args, dm3)
+        print json.dumps(new_ds_list)
         
 
     if args.function == 'fheatmap':

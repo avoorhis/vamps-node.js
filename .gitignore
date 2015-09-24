@@ -9,7 +9,7 @@ public/scripts/*.pyc
 !db_schema_w_test_data.sql
 !db_schema_w_test_data.sql.gz
 config/db-connection*
-config/config*
+config/config.js
 config/db_vamps_node.sql.gz
 config/old/*
 node_modules/

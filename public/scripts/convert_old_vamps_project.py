@@ -735,11 +735,13 @@ if __name__ == '__main__':
             TAB delimited and wrapped in double quotes:
             This metadatafile is NOT the same as from qiita
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+            > metadata.csv
         
         >>SEQS:
             COMMA delimited and wrapped in double quotes 
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+            > sequences.csv
         
         NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
               

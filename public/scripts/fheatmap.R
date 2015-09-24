@@ -22,8 +22,8 @@ require(vegan,quietly=TRUE);
 
 myjson<-fromJSON(biom_file)
 data_matrix<-myjson$data
-rownames(data_matrix)<-myjson$rows$name
-colnames(data_matrix)<-myjson$columns$name
+rownames(data_matrix)<-myjson$rows$id
+colnames(data_matrix)<-myjson$columns$id
 print(colnames(data_matrix))
 x<-data_matrix
 

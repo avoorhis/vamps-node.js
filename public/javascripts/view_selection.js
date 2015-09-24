@@ -936,19 +936,19 @@ function create_counts_table() {
 	  html += "<table border='1' class='table table-condensed' >";
       html += "<tr><td></td><td></td>";
       for (var n in mtx_local.columns) {
-        html += "<td class=''>"+mtx_local.columns[n].name +"</td>";
+        html += "<td class=''>"+mtx_local.columns[n].id +"</td>";
       }
       html += "</tr>";
       
       for (var i in mtx_local.rows){
         count = parseInt(i)+1;
         html += "<tr class='chart_row'><td>"+count.toString()+"</td>";
-        html += "<td class='left_justify'>"+mtx_local.rows[i].name +"</td>";
+        html += "<td class='left_justify'>"+mtx_local.rows[i].id +"</td>";
         for (var da in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][da];
 		  
           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
-          var id  = 'frequencies-|-'+mtx_local.rows[i].name+'-|-'+mtx_local.columns[da].name+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          var id  = 'frequencies-|-'+mtx_local.rows[i].id+'-|-'+mtx_local.columns[da].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
           html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+cnt.toString()+'</td>';
           
         }
@@ -1367,7 +1367,7 @@ function create_piecharts(ts) {
     //d3.select('svg').remove();
     var unit_list = [];
     for (var o in mtx_local.rows){
-        unit_list.push(mtx_local.rows[o].name);
+        unit_list.push(mtx_local.rows[o].id);
     }
     //var colors = get_colors(unit_list);
     
@@ -1375,23 +1375,23 @@ function create_piecharts(ts) {
 	var tmp={};
 	var tmp_names={};
     for (var d in mtx_local.columns){
-      tmp[mtx_local.columns[d].did]=[]; // data
-      tmp_names[mtx_local.columns[d].did]=mtx_local.columns[d].name; // datasets
+      tmp[mtx_local.columns[d].id]=[]; // data
+      //tmp_names[mtx_local.columns[d].id]=mtx_local.columns[d].id; // datasets
     }
     for (var x in mtx_local.data){
       for (var y in mtx_local.columns){
-        tmp[mtx_local.columns[y].did].push(mtx_local.data[x][y]);
+        tmp[mtx_local.columns[y].id].push(mtx_local.data[x][y]);
       }
     }
     var myjson_obj={};
     myjson_obj.names=[];
     myjson_obj.values=[];
-    myjson_obj.dids=[];
+    //myjson_obj.dids=[];
     for (var z in tmp) {
         
-        myjson_obj.names.push(tmp_names[z]);
+        myjson_obj.names.push(z);
         myjson_obj.values.push(tmp[z]);
-        myjson_obj.dids.push(z);
+        //myjson_obj.dids.push(z);
     }
 	//alert(myjson_obj.names);
     
@@ -1422,7 +1422,8 @@ function create_piecharts(ts) {
         })
         
 		.append("a")
-        .attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
+        //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
+        .attr("xlink:xlink:href", function(d, i) { return 'bar_single?id='+myjson_obj.names[i]+'&ts='+ts;} )
 		.attr("target", '_blank' );
 	pies.append("text")
         .attr("dx", -(r+m))
@@ -1430,7 +1431,7 @@ function create_piecharts(ts) {
         .attr("text-anchor", "center")
         .attr("font-size","9px")
         .text(function(d, i) {
-			return mtx_local.columns[i].name;
+			return mtx_local.columns[i].id;
         });
     pies.selectAll("path")
         .data(pie.sort(null))
@@ -1486,11 +1487,11 @@ function create_adiversity(ts){
     document.getElementById('adiversity_title').innerHTML = info_line;
     document.getElementById('pre_adiversity_div').style.display = 'block';
     document.getElementById('adiversity_div').style.display = 'block';
-    document.getElementById('adiversity_div').innerHTML = 'Working....';
+    document.getElementById('adiversity_div').innerHTML = '....';
 
-        adiversity_created = true;
+      adiversity_created = true;
       var adiversity_div = document.getElementById('adiversity_div');
-    adiversity_div.style.display = 'block';
+      adiversity_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('adiversity', pi_local);
       document.getElementById('adiversity_title').innerHTML = info_line;
