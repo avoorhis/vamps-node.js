@@ -669,7 +669,8 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
           args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         var options2 = {
-            scriptPath : req.config.PATH_TO_QIIME_BIN,
+            //scriptPath : req.config.PATH_TO_QIIME_BIN,
+            scriptPath : 'public/scripts',
             args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
         };
         console.log('outdir: '+dir_path);
@@ -686,8 +687,8 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
             console.log('pcoa_process1 process exited with code ' + code1);
             
             if(code1 === 0){    // SUCCESS       
-                console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-                var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+                console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
+                var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
