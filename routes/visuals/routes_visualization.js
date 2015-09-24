@@ -688,7 +688,17 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
             
             if(code1 === 0){    // SUCCESS       
                 console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
-                var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+                var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
+                        env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+                        detached: true, 
+                        stdio: [ 'ignore', null, log ]
+                    });  // stdin, stdout, stderr
+
+        //         var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+        //     env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+        //     detached: true, 
+        //     stdio: [ 'ignore', null, log ]
+        // });  // stdin, stdout, stderr    
 
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
