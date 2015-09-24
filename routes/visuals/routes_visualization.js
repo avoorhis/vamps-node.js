@@ -645,18 +645,19 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     
 });
 router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+    console.log(visual_post_items)
     var ts = visual_post_items.ts;    
-    var metric = visual_post_items.metric;
+    var metric = visual_post_items.selected_distance;
     
-    
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(pwd,'tmp', biom_file_name);
+    
     var spawn = require('child_process').spawn;
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
 
     var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
+        var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
         var pc_file_name = ts+'.pc';
         var pc_file = path.join(pwd,'tmp', pc_file_name);
         
@@ -689,30 +690,24 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
             if(code1 === 0){    // SUCCESS       
                 console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
                 var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
-                        env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+                        //env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
                         detached: true, 
                         stdio: [ 'ignore', null, log ]
                     });  // stdin, stdout, stderr
-
-        //         var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-        //     env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
-        //     detached: true, 
-        //     stdio: [ 'ignore', null, log ]
-        // });  // stdin, stdout, stderr    
 
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
                   
                   if(code2 == 0){           
                    //console.log('PID last line: '+last_line)                    
-                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
+                      //ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+                      //ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
                       //console.log(html_path);
                       
                       
                       console.log('opening file:///'+html_path)
                       //res.send()
-                      res.sendFile('tmp/'+dir_name+'/index.html', {root:process.env.PWD})
+                      res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd})
 
                       //open('file://'+html_path);
                       //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 

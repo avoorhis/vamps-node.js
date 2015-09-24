@@ -21,7 +21,7 @@ config.PATH_TO_QIIME_BIN = '/usr/local/bin/';
 // paths to run python 
 //config.PYTHON_PATH = '/groups/vampsweb/vampsdev/seqinfobin:/opt/sge/bin/lx-amd64:/groups/vampsweb/vampsdev/seqinfobin/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/emperor/bin:/bioware/jre/bin:/usr/local/sge/bin/lx24-amd64:/sbin:/usr/sbin:/bin:/usr/bin:/bioware/mysql-5.5.13-linux2.6-x86_64/bin:/bioware/mpich2/bin/';
 //config.PYTHON_LD_PATH = '/groups/vampsweb/vampsdev/seqinfobin/lib/:/usr/local/mysql-5.5.32-linux2.6-x86_64/lib/:/bioware/lapack-3.3.0/lib/:/bioware/GotoBLAS2/lib/'
-config.PYTHON_PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin';
+config.PYTHON_PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin';
 config.PYTHON_LD_PATH = ''
 
 
