@@ -328,7 +328,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
@@ -398,7 +398,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   
   console.log(options.scriptPath+'/fheatmap.R '+options.args.join(' '));
   var fheatmap_process = spawn( options.scriptPath+'/fheatmap.R', options.args, {
-          env:{'PATH':req.config.PYTHON_PATH},
+          env:{'PATH':req.config.PATH},
           detached: true, 
           stdio: [ 'ignore', null, log ]
       });  // stdin, stdout, stderr
@@ -467,7 +467,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
   var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
     });  // stdin, stdout, stderr
@@ -540,7 +540,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
         
         var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
@@ -588,7 +588,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
         
         var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr    
@@ -669,7 +669,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
         
         var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr    
@@ -681,10 +681,16 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
             if(code1 === 0){    // SUCCESS       
                 console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
                 var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
-                        //env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+                        env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
                         detached: true, 
                         stdio: [ 'ignore', null, log ]
                     });  // stdin, stdout, stderr
+
+                
+                emperor_process.stdout.on('data', function (data) {
+                        console.log('stdout: ' + data);
+                       
+                    });
 
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
@@ -889,7 +895,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-                env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+                env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
                 detached: true, 
                 stdio: [ 'ignore', null, log ]
             });  // stdin, stdout, stderr
@@ -1432,7 +1438,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     
     var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
