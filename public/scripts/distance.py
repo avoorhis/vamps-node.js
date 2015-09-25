@@ -246,6 +246,7 @@ def write_csv_file(args):
 #
 #
 def construct_cluster(args, dm):
+        
         from cogent.cluster.UPGMA import upgma
         mycluster = upgma(dm)
         return mycluster

@@ -3,36 +3,7 @@ var fs = require('fs');
 var COMMON  = require('./routes_common');
 
 
-// module.exports = {
 
-
-// 		write_metadata_file: function(chosen_id_name_hash, post_items) {
-// 			//console.log('in metadata')
-// 			var metadata_names = post_items.metadata;
-// 			//var txt = "project_dataset\tproject\tdataset\n";
-// 			var txt = "project_dataset\tproject\tdataset\ttest_color_grouping\n";
-// 			//var meta_file = '../../tmp/'+post_items.ts+'_metadata.txt';
-// 			var metadata = [];
-
-// 			for(i in chosen_id_name_hash.names) {
-// 				var ds = chosen_id_name_hash.names[i];
-// 				var tmp = ds.split('--');
-// 				if(i % 2 === 0){
-// 					var c = test_metadata[0]
-// 				}else{
-// 					var c = test_metadata[1]
-// 				}
-// 				//txt += ds + "\t" + tmp[0] + "\t" + tmp[1] +"\t"+c+ "\n";  // just put project and dataset in here for now				
-// 				metadata.push({'test_color_group':c,'project_dataset':ds,'project':tmp[0],'dataset':tmp[1]});
-
-// 			}
-// 			//console.log('Writing metadata file');
- 			
-//  			//COMMON.write_file( meta_file, txt );
-//  			return metadata
-// 		}
-
-// }
 
 module.exports = {
 
@@ -89,6 +60,9 @@ module.exports = {
 			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},
+		//
+		//
+		//
 		write_mapping_file: function(chosen_id_name_hash, post_items) {
 			//console.log('in metadata')
 			var metadata_names = post_items.metadata;
@@ -124,10 +98,10 @@ module.exports = {
 					}
 				}
 				
-				console.log(txt2.length)
-				if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
+				//console.log('txt2.length '+txt2.length.toString())
+				//if(txt2.length > pjds.length+2){  // the +2 is to account for tabs in the txt2
 					txt += txt2 + "\t"+tmp[0]+ "\t"+pjds+"\n";
-				}
+				//}
 				metadata2[pjds].project = tmp[0];
 				metadata2[pjds].dataset = tmp[1];
 				
@@ -141,6 +115,9 @@ module.exports = {
 			COMMON.write_file(metadata_filename, txt);
 			return metadata2;
 		},
+		//
+		//
+		//
 		create_metadata_table: function(chosen_id_name_hash, visual_post_items) {
 				var html = "<table border='1' id='metadata_table' class='single_border center_table'>";
 				html += "<thead><tr><th>Dataset (sortable)</th><th>Name (sortable)</th><th>Value (sortable)</th></tr></thead><tbody>";

@@ -269,34 +269,7 @@ module.exports = {
     return "#" + '000000'.substring(0, 6 - color.length) + color;
   },
   
- //
-//
-//
-// run_pyscript_cmd: function (req, res, ts, biom_file, visual_name, metric) {
-//     var exec = require('child_process').exec;
-//     var PythonShell = require('python-shell');
-//     var html = this.start_visuals_html(visual_name);
-//
-//     var title = 'VAMPS';
-//
-//     var distmtx_file_name = ts+'_distance.csv';
-//     var distmtx_file = path.join(__dirname, '../../tmp/'+distmtx_file_name);
-//     var options = {
-//       scriptPath : 'public/scripts',
-//       args :       [ '-in', biom_file, '-metric', metric, '-fxn', visual_name, '-out',  distmtx_file],
-//     };
-//     console.log('options:', options);
-//     PythonShell.run('distance.py', options, function (err, mtx) {
-//         if(err) {
-//         	return 'ERROR: '+err;
-//         }else{
-//       	    console.log(JSON.parse(mtx));
-//       		return mtx;
-//   		}
-//
-//
-//     });
-// },
+
 //
 //
 //
@@ -329,11 +302,11 @@ run_script_cmd: function (req,res, ts, command, visual_name) {
 //
 create_chosen_id_name_hash: function(dataset_ids) {
   
-  //console.log(dataset_ids);
+  console.log(chosen_id_name_hash );
   var chosen_id_name_hash    = {};
   chosen_id_name_hash.ids    = [];
   chosen_id_name_hash.names  = [];
-  for (var i in dataset_ids){
+  for (var i in dataset_ids){      
       did   = dataset_ids[i];
       dname = DATASET_NAME_BY_DID[did];
       pid   = PROJECT_ID_BY_DID[did];
@@ -344,6 +317,26 @@ create_chosen_id_name_hash: function(dataset_ids) {
   }
   
   return chosen_id_name_hash;
+},
+create_new_chosen_id_name_hash: function(dataset_list) {
+  
+  console.log(chosen_id_name_hash );
+  var potential_chosen_id_name_hash    = {};
+  potential_chosen_id_name_hash.ids    = [];
+  potential_chosen_id_name_hash.names  = [];
+  for (var i in dataset_list){
+      //items = dataset_list[i].split('--');
+      did= chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(dataset_list[i])]
+      //did   = dataset_list[i];
+      dname = DATASET_NAME_BY_DID[did];
+      pid   = PROJECT_ID_BY_DID[did];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+      //dataset_ids.push(did+'--'+pname+'--'+dname);
+      potential_chosen_id_name_hash.ids.push(did);
+      potential_chosen_id_name_hash.names.push(pname+'--'+dname);
+  }
+  
+  return potential_chosen_id_name_hash;
 },
 //
 //

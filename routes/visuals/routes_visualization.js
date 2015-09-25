@@ -16,9 +16,8 @@ var Readable = require('readable-stream').Readable;
 var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
 
-
 var COMMON  = require('./routes_common');
-var META    = require('./routes_metadata');
+var META    = require('./routes_visuals_metadata');
 //var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
 //var HMAP    = require('./routes_distance_heatmap');
@@ -26,7 +25,7 @@ var MTX     = require('./routes_counts_matrix');
 //var BCHARTS = require('./routes_bar_charts');
 //var PCHARTS = require('./routes_pie_charts');
 //var CTABLE  = require('./routes_counts_table');
-var PythonShell = require('python-shell');
+//var PythonShell = require('python-shell');
 
 var app = express();
 
@@ -311,10 +310,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     var biom_file = path.join(pwd,'tmp', biom_file_name);
     //console.log('mtx1')
-
-  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
-    //var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
+   
     var html = '';
     var title = 'VAMPS';
 
@@ -327,7 +323,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
      };
         
     var spawn = require('child_process').spawn;
-  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
@@ -378,8 +374,6 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
   var pwd = process.env.PWD || req.config.PROCESS_DIR;
-  var exec = require('child_process').exec;
-  //var PythonShell = require('python-shell');
   var html = '';
   var title = 'VAMPS';
 
@@ -458,9 +452,6 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(pwd,'tmp',biom_file_name);
 
-
-    var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
 
@@ -539,7 +530,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
     
-    //var exec = require('child_process').exec;
+    
     if(image_type == '2d'){
         
         var options = {
@@ -715,7 +706,8 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                   }else{
                     // python script error
-                    console.log('make_emperor script error');
+                    console.log('make_emperor script error:' + code2);
+                    res.send('SCRIPT error')
                   }      
                 });                      
             }else{
@@ -880,9 +872,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
 
-    //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
-    //var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
+    
     var html = '';
     var title = 'VAMPS';
     console.log(biom_file)
@@ -1429,25 +1419,49 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
     console.log(req.body)
     var options = {
       scriptPath : 'public/scripts',
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--site_base', process.env.PWD, '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    PythonShell.run('distance.py', options, function (err, list) {
-      if (err) {
-        res.send(err);
-      }else{
-        dataset_ids = JSON.parse(list);
-        potential_chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);  
+    var spawn = require('child_process').spawn;
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    
+    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    
+    var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.config.PYTHON_PATH,'LD_LIBRARY_PATH':req.config.PYTHON_LD_PATH},
+            detached: true, 
+            stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr
+    
+    
+    //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
+    var output = '';
+    cluster_process.stdout.on('data', function (data) {
+      // console.log('stdout: ' + data);
+      // //data = data.toString().replace(/^\s+|\s+$/g, '');
+      // data = data.toString();
+       output += data;
+    });
+       
+    cluster_process.on('close', function (code) {
+      console.log('heatmap_process process exited with code ' + code);
+      
+      //var last_line = ary[ary.length - 1];
+      if(code === 0){   // SUCCESS       
         
+        dataset_list = JSON.parse(output);
+console.log(output);
+        potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
         ascii_file = ts+'_'+metric+'_tree.txt';
-        ascii_file_path = path.join(process.env.PWD,'tmp',ascii_file);
+        ascii_file_path = path.join(pwd,'tmp',ascii_file);
         fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
           if (err) {
             return console.log(err);
-          }
+          }else{
             //console.log(data);
           
             html = '';
@@ -1473,10 +1487,17 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
             html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
 
             res.send(html)
+          }
         });
-      }
-    });
 
+
+
+      }else{
+        //console.log('output')
+        //console.log(output);
+        //res.send(err);
+      }      
+    });   
 
 
     
