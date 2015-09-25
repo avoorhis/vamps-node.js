@@ -330,35 +330,41 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
-            stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe' // stdin, stdout, stderr
+        });  
     
     
-    //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
-    var output = '';
-  heatmap_process.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-    //data = data.toString().replace(/^\s+|\s+$/g, '');
-    data = data.toString();
-    output += data;
-  });
-     
-  heatmap_process.on('close', function (code) {
-    console.log('heatmap_process process exited with code ' + code+' -- '+output);
-    distance_matrix = JSON.parse(output);
-    //var last_line = ary[ary.length - 1];
-    if(code === 0){   // SUCCESS       
-      res.render('visuals/partials/load_distance',{
-                      dm        : distance_matrix,
-              hash      : JSON.stringify(chosen_id_name_hash),                      
-                      constants : JSON.stringify(req.C),
-          });                                        
+    var stdout = '';
+    heatmap_process.stdout.on('data', function (data) {
+        console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
+    });
+    var stderr = '';
+    heatmap_process.stderr.on('data', function (data) {
+        console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+         
+    heatmap_process.on('close', function (code) {
+        console.log('heatmap_process process exited with code ' + code);
+        distance_matrix = JSON.parse(stdout);
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS       
+          res.render('visuals/partials/load_distance',{
+                  dm        : distance_matrix,
+                  hash      : JSON.stringify(chosen_id_name_hash),                      
+                  constants : JSON.stringify(req.C),
+              });                                        
     }else{
-      console.log('output')
-      console.log(output);
-      res.send(err);
-    }      
-  });   
+          console.log('output: '+stderr);
+          res.send(stderr);
+        }      
+    });   
 
 });
 
@@ -464,29 +470,37 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
     };
     var spawn = require('child_process').spawn;
-  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
-            stdio: [ 'ignore', null, log ]
-    });  // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });  
     
-    var output = '';
+    var stdout = '';
     dendrogram_process.stdout.on('data', function (data) {
         console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
-        output += data;
+        stdout += data;
+    });
+    var stderr = '';
+    dendrogram_process.stderr.on('data', function (data) {
+        console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
     });
     
     dendrogram_process.on('close', function (code) {
-        console.log('dendrogram_process process exited with code ' + code+' -- '+output);
+        console.log('dendrogram_process process exited with code ' + code);
       
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           if(image_type == 'svg'){
-                    newick = JSON.parse(output);
+                    newick = JSON.parse(stdout);
             
                     res.send(newick);
                     return;
@@ -504,8 +518,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     return;
           }                                     
         }else{
-          console.log('output')
-          console.log(output)
+          console.log('stderr: '+stderr)
         }      
     });   
     
@@ -567,68 +580,68 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         
     }else if(image_type == '3d'){
         
-        var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
-        var pc_file_name = ts+'.pc';
-        var pc_file = path.join(pwd,'tmp', pc_file_name);
+        // var mapping_file_name = ts+'_metadata.txt';
+        // var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
+        // var pc_file_name = ts+'.pc';
+        // var pc_file = path.join(pwd,'tmp', pc_file_name);
         
-        var dir_name = ts+'_pcoa_3d';
-        var dir_path = path.join(pwd,'tmp', dir_name);        
-        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
-        var options1 = {
-          scriptPath : 'public/scripts',
-          args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
-        };
-        var options2 = {
-            scriptPath : req.config.PATH_TO_QIIME_BIN,
-            args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-        };
-        console.log('outdir: '+dir_path);
-        console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+        // var dir_name = ts+'_pcoa_3d';
+        // var dir_path = path.join(pwd,'tmp', dir_name);        
+        // var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+        // //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+        // var options1 = {
+        //   scriptPath : 'public/scripts',
+        //   args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+        // };
+        // var options2 = {
+        //     scriptPath : req.config.PATH_TO_QIIME_BIN,
+        //     args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+        // };
+        // console.log('outdir: '+dir_path);
+        // console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
         
-        var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
-            detached: true, 
-            stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr    
+        // var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+        //     env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+        //     detached: true, 
+        //     stdio: [ 'ignore', null, log ]
+        // });  // stdin, stdout, stderr    
        
         
-        pcoa_process.on('close', function (code1) {
-            console.log('pcoa_process1 process exited with code ' + code1);
+        // pcoa_process.on('close', function (code1) {
+        //     console.log('pcoa_process1 process exited with code ' + code1);
             
-            if(code1 === 0){    // SUCCESS       
-                console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-                var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+        //     if(code1 === 0){    // SUCCESS       
+        //         console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
+        //         var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 
-                emperor_process.on('close', function (code2) {
-                  console.log('emperor_process process exited with code ' + code2);
+        //         emperor_process.on('close', function (code2) {
+        //           console.log('emperor_process process exited with code ' + code2);
                   
-                  if(code2 == 0){           
-                   //console.log('PID last line: '+last_line)                    
-                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
-                      //console.log(html_path);
+        //           if(code2 == 0){           
+        //            //console.log('PID last line: '+last_line)                    
+        //               ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
+        //               ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
+        //               //console.log(html_path);
                       
-                      //console.log('opening file:///'+html_path)
-                      //res.send()
-                      //res.sendFile('tmp/'+file_name, {root:process.env.PWD})
+        //               //console.log('opening file:///'+html_path)
+        //               //res.send()
+        //               //res.sendFile('tmp/'+file_name, {root:process.env.PWD})
 
-                      //open('file://'+html_path);
-                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
+        //               //open('file://'+html_path);
+        //               res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
                   
 
-                  }else{
-                    // python script error
-                    console.log('python script error');
-                  }      
-                });                      
-            }else{
-                console.log('ERROR');
-                res.send('PCoA 3D Error');
+        //           }else{
+        //             // python script error
+        //             console.log('python script error');
+        //           }      
+        //         });                      
+        //     }else{
+        //         console.log('ERROR');
+        //         res.send('PCoA 3D Error');
                 
-            }      
-        });   
+        //     }      
+        // });   
         
         
         
@@ -671,10 +684,16 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
             env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
-            stdio: [ 'ignore', null, log ]
+            stdio:['pipe', 'pipe', 'pipe']
+            //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr    
        
-        
+        pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
+        err_out1=''
+        pcoa_process.stderr.on('data', function (data) {
+                console.log('1stderr: ' + data);
+                err_out1 += data;               
+        });
         pcoa_process.on('close', function (code1) {
             console.log('pcoa_process1 process exited with code ' + code1);
             
@@ -683,15 +702,16 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                 var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
                         env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
                         detached: true, 
-                        stdio: [ 'ignore', null, log ]
-                    });  // stdin, stdout, stderr
-
+                        stdio:'pipe' // stdin, stdout, stderr
+                        //stdio: [ 'ignore', null, log ]
+                    });  
                 
-                emperor_process.stdout.on('data', function (data) {
-                        console.log('stdout: ' + data);
-                       
-                    });
-
+                emperor_process.stdout.on('data', function (data) { console.log('2stdout: ' + data);  });
+                err_out2=''
+                emperor_process.stderr.on('data', function (data) {
+                        console.log('2stderr: ' + data);
+                        err_out2 += data;                       
+                });
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
                   
@@ -712,13 +732,13 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                   }else{
                     // python script error
-                    console.log('make_emperor script error:' + code2);
-                    res.send('SCRIPT error')
+                    //console.log('make_emperor script error:' + errdata2);
+                    res.send('make_emperor SCRIPT error '+err_out2)
                   }      
                 });                      
             }else{
-                console.log('ERROR');
-                res.send('Python Script Error');
+                //console.log('ERROR');
+                res.send('Python Script Error: '+err_out1);
                 
             }      
         });   
@@ -897,27 +917,35 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
                 env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
                 detached: true, 
-                stdio: [ 'ignore', null, log ]
-            });  // stdin, stdout, stderr
-    output = '';
+                //stdio: [ 'ignore', null, log ]
+                stdio: 'pipe'  // stdin, stdout, stderr
+            }); 
+    
+    stdout = '';
     alphadiv_process.stdout.on('data', function (data) {
         
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         //data = data.toString().trim()
         console.log(data)
-        output += data;
-        
+        stdout += data;    
      
-      });
+    });
+    stderr = '';
+    alphadiv_process.stderr.on('data', function (data) {
+        
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        //data = data.toString().trim()
+        console.log(data)
+        stderr += data;    
+     
+    });
     alphadiv_process.on('close', function (code) {
-        console.log('alphadiv_process process exited with code ' + code+' -- '+output);
+        console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){           
-         //console.log('PID last line: '+last_line)                    
-            //console.log('stdout: ' + output);
-            res.send(output);                                 
+            res.send(stdout);                                 
         }else{
-          // python script error
-          console.log('python script error');
+          console.log('python script error: '+stderr);
+          res.send(stderr); 
         }      
     });   
 
@@ -1105,8 +1133,8 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //var pid = PROJECT_ID_BY_DID[did]
     //PROJECT_INFORMATION_BY_PID[pid].project
     //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
-    var ds_name = myurl.query.id;
-    var ds_items = ds_name.split('--');
+    var pjds = myurl.query.id;
+    var ds_items = pjds.split('--');
 
     //var html  = COMMON.start_visuals_html('piechart');
     var html  = 'My HTML';
@@ -1116,8 +1144,8 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var new_matrix={}
     new_matrix.rows = biom_matrix.rows;
     new_matrix.columns =[];
-    new_matrix.dataset = ds_name;
-    new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(ds_name)];
+    new_matrix.dataset = pjds;
+    new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
     //console.log('did ');
     //console.log(new_matrix.did );
     //console.log(ds_name );
@@ -1128,7 +1156,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var idx = -1;
 
     for(d in biom_matrix.columns){
-      if(biom_matrix.columns[d].id == ds_name){
+      if(biom_matrix.columns[d].id == pjds){
       	//console.log('found idx '+biom_matrix.columns[d].name)
       	idx = d;
       	new_matrix.columns.push(biom_matrix.columns[d]);
@@ -1161,10 +1189,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
-	var did = myurl.query.did;
-	var pid = PROJECT_ID_BY_DID[did]
+	var pjds = myurl.query.id;
+  did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+	//var pid = PROJECT_ID_BY_DID[did]
 	//PROJECT_INFORMATION_BY_PID[pid].project
-	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+	//var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
 	//console.log('in sequences '+tax)
 
 	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
@@ -1174,38 +1203,35 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	      if (err)  {
 	  		  console.log('Query error: ' + err);
 	  		  console.log(err.stack);
-	  		  process.exit(1);
+	  		  res.send(err)
 	      } else {
-		  	//console.log(rows)
-			//console.log(JSON.stringify(rows))
-			  for(s in rows){
-			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
-				//var seqcomp = buffer.toString('base64');
-				rows[s].seq = rows[s].seq.toString('utf8')
-				rows[s].tax = ''
+		  	
+    			  for(s in rows){
+    			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
+      				//var seqcomp = buffer.toString('base64');
+      				rows[s].seq = rows[s].seq.toString('utf8')
+      				rows[s].tax = ''
 
-				for(i in req.C.RANKS){
-					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
-					//console.log(id_n_rank);
-					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
-					if(taxname.substr(-3) != '_NA'){
-						rows[s].tax += taxname+';'
-					}
-				} 
-				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
-				//rows[s].tax = domain+';'+phylum+';'+klass;
-// 				  console.log(seqcomp);
- 				  //seq = zlib.Inflate(seqcomp.toString('utf8'))
-				  //console.log(JSON.stringify(seq))
-			  }
+      				for(i in req.C.RANKS){
+      					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
+      					//console.log(id_n_rank);
+      					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
+      					if(taxname.substr(-3) != '_NA'){
+      						rows[s].tax += taxname+';'
+      					}
+      				} 
+      				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
 			
-			res.render('visuals/user_viz_data/sequences', {
-		            title: 'Sequences',
-		            ds : ds_name,
-		            tax : tax,
-				        rows : JSON.stringify(rows),
-		            user: req.user
-		          });
+    			  }
+    			
+    			  res.render('visuals/user_viz_data/sequences', {
+    		            title: 'Sequences',
+    		            ds : pjds,
+    		            tax : tax,
+    				        rows : JSON.stringify(rows),
+    		            user: req.user
+    		    });
+
 	      }
 
 	  });

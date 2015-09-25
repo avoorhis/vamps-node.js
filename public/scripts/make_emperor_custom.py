@@ -35,7 +35,7 @@ from emperor.util import (copy_support_files, preprocess_mapping_file,
 #sys.path.append(os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources"))
 #sys.path = [os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources")] + sys.path
 sys.path = [os.path.dirname(os.path.realpath(__file__))+"/../emperor_required_resources"] + sys.path
-print sys.path
+#print sys.path
 from format import (format_pcoa_to_js, format_mapping_file_to_js,
     format_taxa_to_js, format_vectors_to_js, format_emperor_html_footer_string,
     format_comparison_bars_to_js, EMPEROR_HEADER_HTML_STRING, EmperorLogicError,
