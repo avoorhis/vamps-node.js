@@ -1,8 +1,9 @@
 
-<% data = JSON.parse(info) %>
-<% dscounts = JSON.parse(dscounts) %>
+<% data = JSON.parse(info)          %>
+<% dscounts = JSON.parse(dscounts)  %>
 <% project_info  = JSON.parse(info) %>
-<% metadata  = JSON.parse(mdata) %>
+<% metadata  = JSON.parse(mdata)    %>
+<% abstract  = JSON.parse(abstract) %>
 <img src='/images/dna01.jpg' alt="Smiley_face"  height='80' >
 
 <div role="tabpanel" >
@@ -76,7 +77,9 @@
   	</div> <!-- End project div -->
 	
 		<div role="tabpanel" class="tab-pane" id="abstract">
-		    Abstract here
+		    <table class="table">
+		  		<tr><td> <%= abstract.abstract %></td></tr>
+		  	</table>
 		</div> <!-- End abstract div -->
 	
   	<div role="tabpanel" class="tab-pane" id="datasets">
