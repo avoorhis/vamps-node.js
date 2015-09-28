@@ -15,6 +15,7 @@ var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 
+
 //
 // YOUR DATA
 //
@@ -23,8 +24,9 @@ router.get('/your_data',  function(req,res){
     res.render('user_data/your_data', {        
       title: 'VAMPS:Data Administration',
       message: req.flash('message'),
-      user: req.user
-       });
+      hostname: req.C.hostname,
+      user:     req.user
+    });
 });
 
 //

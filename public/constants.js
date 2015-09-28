@@ -1,16 +1,14 @@
 var constants = {};
 var path = require("path");
-
-
-
-
+var os = require("os");
 
 
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 //// DO NOT CHANGE ANYTHING BELOW HERE ////
-////
-////
+///////////////////////////////////////////
+///////////////////////////////////////////
+constants.hostname = os.hostname();
 constants.blast_db      = 'ALL_SEQS';
 constants.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
 constants.ENV_SOURCE = { 
