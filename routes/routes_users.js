@@ -85,6 +85,8 @@ router.post('/signup',
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
+    
+
     res.render('user_admin/profile', {
         title:'profile',
         message: req.flash('loginMessage'), 

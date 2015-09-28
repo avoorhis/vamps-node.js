@@ -407,7 +407,8 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
           env:{'PATH':req.config.PATH},
           detached: true, 
           stdio: [ 'ignore', null, log ]
-      });  // stdin, stdout, stderr
+          //stdio: 'pipe'  // stdin, stdout, stderr
+      }); 
   
   
 
@@ -556,7 +557,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr
+            //stdio: 'pipe' // stdin, stdout, stderr
+        });  
     
         
         pcoa_process.on('close', function (code) {
@@ -648,6 +650,9 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     }
     
 });
+//
+//  EMPEROR....
+//
 router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
     console.log(visual_post_items)
     var ts = visual_post_items.ts;    
@@ -689,10 +694,10 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         });  // stdin, stdout, stderr    
        
         pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
-        err_out1=''
+        stderr1=''
         pcoa_process.stderr.on('data', function (data) {
                 console.log('1stderr: ' + data);
-                err_out1 += data;               
+                stderr += data;               
         });
         pcoa_process.on('close', function (code1) {
             console.log('pcoa_process1 process exited with code ' + code1);
@@ -707,39 +712,31 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     });  
                 
                 emperor_process.stdout.on('data', function (data) { console.log('2stdout: ' + data);  });
-                err_out2=''
+                stderr2=''
                 emperor_process.stderr.on('data', function (data) {
                         console.log('2stderr: ' + data);
-                        err_out2 += data;                       
+                        stderr2 += data;                       
                 });
                 emperor_process.on('close', function (code2) {
                   console.log('emperor_process process exited with code ' + code2);
                   
                   if(code2 == 0){           
-                   //console.log('PID last line: '+last_line)                    
-                      //ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                      //ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
-                      //console.log(html_path);
-                      
                       
                       console.log('opening file:///'+html_path)
                       //res.send()
                       res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd})
 
                       //open('file://'+html_path);
-                      //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
-                  
-
+                      //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
                   }else{
                     // python script error
                     //console.log('make_emperor script error:' + errdata2);
-                    res.send('make_emperor SCRIPT error '+err_out2)
+                    res.send('make_emperor SCRIPT error '+stderr2)
                   }      
                 });                      
             }else{
                 //console.log('ERROR');
-                res.send('Python Script Error: '+err_out1);
-                
+                res.send('Python Script Error: '+stderr1);
             }      
         });   
         
@@ -758,8 +755,6 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     //console.log('column_totals '+biom_matrix.column_totals);
     //console.log('max_total_count '+max_total_count.toString());
 
-    
-   
     // sum counts
     sumator = get_sumator(req)
  

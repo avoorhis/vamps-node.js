@@ -192,6 +192,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
+var os = require("os");
+console.log('HOSTNAME: '+os.hostname())
 
 /**
 * Create global objects once upon server startup
@@ -239,7 +241,8 @@ catch (e) {
 
 
 console.log('Loading METADATA as AllMetadata from: '+meta_file);
-//console.log(process)
+
+
 
 //see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {
