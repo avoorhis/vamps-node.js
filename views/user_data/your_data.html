@@ -7,20 +7,23 @@
 	<div id='' class='well col-sm-12'>
 		<div class='row'>
 		  <% if(hostname.substring(0,7) !== 'bpcweb7'){ %>
-			  <div class="col-sm-3">
-			            <div class="panel panel-default">
-			              <div class="panel-heading">
-			                <a class="btn btn-sm btn-primary" href='/user_data/import_choices'>Import Data</a>
-							
-			              </div>
-			              <div class="panel-body">
-			                Validate and upload sequence and metadata to the VAMPS database 
-			                for viewing in the community visualization pages.		                
-			              </div>
-			            </div>
-				</div>
+			<%  	var span = 'col-sm-3'; %>
+					  <div class="<%= span %>">
+					            <div class="panel panel-default">
+					              <div class="panel-heading">
+					                <a class="btn btn-sm btn-primary" href='/user_data/import_choices'>Import Data</a>
+									
+					              </div>
+					              <div class="panel-body">
+					                Validate and upload sequence and metadata to the VAMPS database 
+					                for viewing in the community visualization pages.		                
+					              </div>
+					            </div>
+						</div>
+			<% }else{ %>
+			<%  	var span = 'col-sm-5'; %>
 			<% } %>
-			<div class="col-sm-3">
+			<div class="<%= span %>">
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
 		                <a class="btn btn-sm btn-primary" href='/user_data/export_data'>Export Data</a>
@@ -33,7 +36,7 @@
 		              </div>
 		            </div>
 			</div>
-			<div class="col-sm-3">
+			<div class="<%= span %>">
 				
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
@@ -45,7 +48,7 @@
 		              </div>
 		            </div>
 		    </div>
-			<div class="col-sm-3">
+			<div class="<%= span %>">
 				
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
@@ -61,7 +64,7 @@
 		            </div>
 		  </div>
 			<% if(hostname.substring(0,7) !== 'bpcweb7'){ %>
-			<div class="col-sm-3">				
+			<div class="<%= span %>">			
 		          <div class="panel panel-default">
 		              <div class="panel-heading">
 		                <a class="btn btn-sm btn-primary" href='/user_data/your_projects'>Your Projects</a>
