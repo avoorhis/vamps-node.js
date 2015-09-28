@@ -51,7 +51,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         mdata[dsinfo[n].dname] = AllMetadata[did]; 
 
       }
-      console.log(info);
+      console.log('MD: '+JSON.stringify(mdata));
       var abstract_file = info.project+'.json';
       var abstract_file_path = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--abstracts',abstract_file)
       
@@ -59,7 +59,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       fs.readFile(abstract_file_path, {encoding: 'utf-8'}, function(err,data){
             if (err){            
                 console.log('ERR '+err)
-                abstract = '{"abstract":"none available"}';
+                abstract = '{"abstract":"Not Available"}';
             }else{
               //abstract = JSON.parse(data);
               console.log('project: '+info.project+' AB: '+data)
