@@ -20,7 +20,7 @@ import csv
 #print >> sys.stderr, sys.argv[1:]
 
 from cogent.maths import distance_transform as dt
-print sys.path
+#print sys.path
 
 def calculate_distance(args):
     

@@ -114,7 +114,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 metadata  :           JSON.stringify(metadata),
                                 constants :           JSON.stringify(req.C),
                                 post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,
+                                user      :           req.user,hostname: req.C.hostname,
 	                          //locals: {flash: req.flash('infomessage')},
                                 message   : req.flash('message')
                  });
@@ -219,7 +219,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
 		  				        message      : req.flash(),
-	                    user         : req.user
+	                    user         : req.user,hostname: req.C.hostname,
 	  });  // end render
   }
     // benchmarking
@@ -252,7 +252,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants: JSON.stringify(req.C),
 	  							              message  : req.flash('nodataMessage'),
-                                user     : req.user
+                                user     : req.user,hostname: req.C.hostname,
                             });
 });
 
@@ -268,7 +268,7 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                                 constants    : JSON.stringify(req.C),
 								                referer: req.body.referer,
                                 ts : ts,
-                                user: req.user
+                                user: req.user, hostname: req.C.hostname,
                             });
   //console.log(chosen_id_name_hash)
 });
@@ -352,15 +352,22 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
          
     heatmap_process.on('close', function (code) {
         console.log('heatmap_process process exited with code ' + code);
-        distance_matrix = JSON.parse(stdout);
+               
         //var last_line = ary[ary.length - 1];
-        if(code === 0){   // SUCCESS       
-          res.render('visuals/partials/load_distance',{
+        if(code === 0){   // SUCCESS     
+          try{
+            distance_matrix = JSON.parse(stdout);
+          }
+          catch(err){
+            distance_matrix = {'ERROR':err};
+          }  
+            res.render('visuals/partials/load_distance',{
                   dm        : distance_matrix,
                   hash      : JSON.stringify(chosen_id_name_hash),                      
                   constants : JSON.stringify(req.C),
-              });                                        
-    }else{
+              }); 
+
+        }else{
           console.log('output: '+stderr);
           res.send(stderr);
         }      
@@ -501,8 +508,12 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
           if(image_type == 'svg'){
-                    newick = JSON.parse(stdout);
-            
+                    try{
+                      newick = JSON.parse(stdout);
+                    }
+                    catch(err){
+                      newick = {"ERROR":err}
+                    }
                     res.send(newick);
                     return;
 
@@ -1176,7 +1187,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   		  post_items:           JSON.stringify(visual_post_items),
   		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
         html: html,
-        user: req.user
+        user: req.user, hostname: req.C.hostname,
     });
 
 });
@@ -1224,7 +1235,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     		            ds : pjds,
     		            tax : tax,
     				        rows : JSON.stringify(rows),
-    		            user: req.user
+    		            user: req.user, hostname: req.C.hostname,
     		    });
 
 	      }
@@ -1347,7 +1358,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
       		      finfo: JSON.stringify(file_info),
       		      times: modify_times,
       		  	  message: req.flash('message'),
-      		      user: 	req.user
+      		      user: req.user, hostname: req.C.hostname,
       		}); 		
 	
       });
@@ -1478,45 +1489,48 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
       console.log('heatmap_process process exited with code ' + code);
       
       //var last_line = ary[ary.length - 1];
-      if(code === 0){   // SUCCESS       
-        
-        dataset_list = JSON.parse(output);
-console.log(output);
-        potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
-        ascii_file = ts+'_'+metric+'_tree.txt';
-        ascii_file_path = path.join(pwd,'tmp',ascii_file);
-        fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
-          if (err) {
-            return console.log(err);
-          }else{
-            //console.log(data);
-          
-            html = '';
-            //console.log('potential_chosen_id_name_hash');        
-            //console.log(potential_chosen_id_name_hash)
+      if(code === 0){   // SUCCESS        
+        try{
+            dataset_list = JSON.parse(output);        
+            console.log(output);
+            potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
+            ascii_file = ts+'_'+metric+'_tree.txt';
+            ascii_file_path = path.join(pwd,'tmp',ascii_file);
+            fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
+              if (err) {
+                return console.log(err);
+              }else{
+                //console.log(data);
+              
+                html = '';
+                //console.log('potential_chosen_id_name_hash');        
+                //console.log(potential_chosen_id_name_hash)
 
-            html += "<table id='drag_table' class='table table-condensed' >"
-            html += "<thead></thead>";
-            html += "  <tbody>";
-            for (var i in potential_chosen_id_name_hash.names){
-                html += "<tr class='tooltip_row'>";
-                html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-                html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-                html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
-                html += "</td>";
-                html += "   <td>";
-                html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-                html += "   </td>";
-                html += "</tr>";
-            } 
-            html += "</tbody>";
-            html += "</table>"; 
-            html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
+                html += "<table id='drag_table' class='table table-condensed' >"
+                html += "<thead></thead>";
+                html += "  <tbody>";
+                for (var i in potential_chosen_id_name_hash.names){
+                    html += "<tr class='tooltip_row'>";
+                    html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+                    html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+                    html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+                    html += "</td>";
+                    html += "   <td>";
+                    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+                    html += "   </td>";
+                    html += "</tr>";
+                } 
+                html += "</tbody>";
+                html += "</table>"; 
+                html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
 
-            res.send(html)
-          }
-        });
-
+                res.send(html)
+              }
+            });
+        }
+        catch(err){
+          res.send('Calculation Error: '+err.toString())
+        }
 
 
       }else{

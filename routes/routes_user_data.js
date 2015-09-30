@@ -23,9 +23,9 @@ router.get('/your_data',  function(req,res){
   console.log('in your data');
     res.render('user_data/your_data', {        
       title: 'VAMPS:Data Administration',
+      user: req.user, hostname: req.C.hostname,
       message: req.flash('message'),
-      hostname: req.C.hostname,
-      user:     req.user
+      
     });
 });
 
@@ -54,10 +54,10 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
       }
       //console.log(file_info)
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
-                           user: req.user,
-                           finfo: JSON.stringify(file_info),
+              user: req.user, hostname: req.C.hostname,
+              finfo: JSON.stringify(file_info),
 							message : req.flash('message'),
-                          });
+            });
     });
 });
 
@@ -79,7 +79,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 		      message: 'Select one or more file formats',
-		      user: req.user
+		      user: req.user, hostname: req.C.hostname
 		    });
 		    return;
 		}
@@ -102,7 +102,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
 		      message: "Your files are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
-		      user: req.user
+		      user: req.user, hostname: req.C.hostname
 		});
 	  
 
@@ -140,7 +140,7 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
           chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
           message: req.flash('successMessage'),
           failmessage: req.flash('failMessage'),
-          user: req.user
+          user: req.user, hostname: req.C.hostname
         });
   }
 });
@@ -153,7 +153,7 @@ router.get('/export_data', helpers.isLoggedIn, function(req, res) {
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.C),
 								message  : req.flash('nodataMessage'),
-                user     : req.user
+                user: req.user, hostname: req.C.hostname
           });
 });
 //
@@ -170,7 +170,7 @@ router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
           title: 'VAMPS:Import Choices',
           message: req.flash('successMessage'),
           failmessage: req.flash('failMessage'),
-          user: req.user
+          user: req.user, hostname: req.C.hostname
           });
   }
 });
@@ -210,9 +210,9 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 				    title: 'VAMPS:Import Data',
 			  		message: req.flash('successMessage'),
 				    failmessage: req.flash('failMessage'),
-			        import_type: import_type,
-			        my_projects:my_projects,
-			          user: req.user
+			      import_type: import_type,
+			      my_projects:my_projects,
+			      user: req.user, hostname: req.C.hostname
 			    });
 
 				} // end else
@@ -237,7 +237,7 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
         file_style:'',
         result:'',
         original_fname:'',
-          user: req.user
+        user: req.user, hostname: req.C.hostname
                           });
 });
 //
@@ -299,7 +299,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 				       result_ary:    ary,
 				       original_fname: req.file.originalname,
 				       result : result,
-				       user: req.user
+				       user: req.user, hostname: req.C.hostname
              });
 
 				}else{
@@ -308,9 +308,8 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 					res.render('user_data/validate_format', { 
 					    title: 'VAMPS:Import Data',
 				  		message: req.flash('message'),
-					    
-				        file_type: file_type,
-				          user: req.user
+				      file_type: file_type,
+				      user: req.user, hostname: req.C.hostname
                           });
 				}
 
@@ -331,7 +330,7 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 			project : project,
 			pinfo   : JSON.stringify(config),
 			title   : project,
-	        user    : req.user 
+	    user: req.user, hostname: req.C.hostname
          });
 });
 //
@@ -793,7 +792,7 @@ console.log(ALL_CLASSIFIERS_BY_PID)
 			  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
 			  	  failmessage : req.flash('failMessage'),
 			  	  successmessage : req.flash('successMessage'),
-			      user: 	req.user
+			      user: req.user, hostname: req.C.hostname
 		    });
 
     });  // readdir
@@ -868,7 +867,7 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 				pinfo       : JSON.stringify(project_info),
 				env_sources : JSON.stringify(req.C.ENV_SOURCE),
 				message     : req.flash('message'),
-	    	user        : req.user
+	    	user: req.user, hostname: req.C.hostname,
 	  });
 });
 

@@ -196,6 +196,44 @@ module.exports = {
 
   },
   //
+  //  tax file for phyloseq
+  //
+  output_tax_file: function( tax_file, biom_matrix, rank_num) {
+    var tax;
+    txt = '';
+    //console.log('rank '+rank)
+    
+    var header = "\tDomain"
+    for(r = 1; r <= rank_num; r++){  
+      rank = C.RANKS[r]
+      if(rank == 'klass'){ rank = 'Class'}
+      rank = rank[0].toUpperCase() + rank.slice(1)
+      header += "\t"+rank;
+    }
+    header += "\n";
+    txt += header;
+    for(i in biom_matrix.rows){
+      tax = biom_matrix.rows[i].id;
+      console.log(tax)
+      items = tax.split(';');
+      txt += tax;
+      for(t in items){
+        txt += "\t"+items[t];
+      }
+      txt += "\n";
+    }
+
+    fs.writeFile(path.resolve(__dirname, tax_file), txt, function(err) {
+      if(err) {
+        console.log('Could not write tax file: '+tax_file+' Here is the error: '+err);
+      } else {
+        console.log("The file ("+tax_file+") was saved!");
+      }
+    });
+
+
+  },
+  //
   // NORMALIZATION
   //
   normalize_counts: function(norm_type, selection_obj, max_count) {

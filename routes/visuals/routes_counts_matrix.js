@@ -235,7 +235,10 @@ module.exports = {
 			}
 
 			matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-
+			
+			// For R:phyloseq object
+			var tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+			COMMON.output_tax_file( tax_file, biom_matrix,C.RANKS.indexOf(post_items.tax_depth));
 
 			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
 			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );

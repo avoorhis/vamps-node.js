@@ -47,7 +47,9 @@ REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
-
+classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
+                "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
+                'unknown':{'unknown':9}}
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
 #         {'name':'klass',  'id':5,'num':2},
@@ -134,7 +136,12 @@ def create_env_source():
     mysql_conn.commit()
 
 def create_classifier():
-    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST')"
+    q = "INSERT IGNORE INTO classifier VALUES" # (1,'GAST','ITS1'),(2,'GAST','SILVA108_FULL_LENGTH'),(3,'GAST','GG_FEB2011'),(4,'GAST','GG_MAY2013'),"
+    for classifier in classifiers:
+        for db in classifiers[classifier]:
+            id = str(classifiers[classifier][db])
+            q += "('"+id+"','"+classifier+"','"+db+"'),"
+    q = q[:-1]
     cur.execute(q)
     mysql_conn.commit()
     
@@ -184,16 +191,27 @@ def push_project():
     id = CONFIG_ITEMS['owner_id']
     pub = CONFIG_ITEMS['public']
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
-    q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
-    q = q % (proj,title,desc,rev,fund,id,pub)
-    
-    logging.debug(q)
-    cur.execute(q)
-    
-    CONFIG_ITEMS['project_id'] = cur.lastrowid
-    print("PID="+str(CONFIG_ITEMS['project_id']))
-    mysql_conn.commit()
+    if args.add_project:
+        
+        q = "SELECT project_id from project where project='%s'" % (args.project)
+        logging.debug(q)
+        cur.execute(q)
+        mysql_conn.commit()
+        row = cur.fetchone()
+        CONFIG_ITEMS['project_id'] = row[0]
+        print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
+        logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
+    else:
+        q = "INSERT into project ("+(',').join(fields)+")"
+        q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
+        q = q % (proj,title,desc,rev,fund,id,pub)    
+        logging.debug(q)
+        cur.execute(q)
+        mysql_conn.commit()
+        CONFIG_ITEMS['project_id'] = cur.lastrowid
+        print("NEW PID="+str(CONFIG_ITEMS['project_id']))
+        logging.debug("STARTING NEW project -- PID="+str(CONFIG_ITEMS['project_id']))
+        
     
 
 
@@ -543,15 +561,13 @@ def put_custom_metadata():
         q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                q3 += key+","
+                q3 += "`"+key+"`,"
         q3 = q3[:-1]+ ")"
         q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                if key in CUST_METADATA_ITEMS[did]:
-                    
-                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
-                
+                if key in CUST_METADATA_ITEMS[did]:                    
+                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"                
         q3 = q3[:-1] + ")" 
         logging.debug(q3)
         cur.execute(q3)
@@ -724,7 +740,8 @@ if __name__ == '__main__':
         -public/--public                    DEFAULT == '1'  true
         -env_source_id/--env_source_id      DEFAULT == '100' unknown
         -owner/--owner                      REQUIRED  (must be already in users table)
-        
+        -add/--add_project                  Will add to project 
+
         Example project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files like this:
         >>METADATA:
@@ -747,13 +764,12 @@ if __name__ == '__main__':
               
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)  
+    
     parser.add_argument("-p","--project",                   
                 required=True,  action="store",   dest = "project", default='',
                 help="""ProjectID""") 
     
-    #parser.add_argument("-d","--dir",                   
-    #            required=True,  action="store",   dest = "indir", default='',
-    #            help="""ProjectID""") 
+    
     parser.add_argument("-s","--seqs_file",                   
                 required=True,  action="store",   dest = "seqs_file", default='',
                 help="""file path""") 
@@ -772,6 +788,9 @@ if __name__ == '__main__':
     parser.add_argument("-delim","--delimiter",                   
                 required=False,  action="store",   dest = "delim", default='tab',
                 help="""METADATA: comma or tab""")
+    parser.add_argument("-add","--add_project",                   
+                required=False,  action="store_true",   dest = "add_project", default=False,
+                help="""""")
                 
     args = parser.parse_args()
     

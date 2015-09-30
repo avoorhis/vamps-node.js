@@ -22,7 +22,7 @@ router.get('/projects_index', function(req, res) {
                         title          : 'VAMPS Projects',
                         projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
-                        user: req.user 
+                        user: req.user,hostname: req.C.hostname,
                 });
     
 
@@ -51,18 +51,18 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         mdata[dsinfo[n].dname] = AllMetadata[did]; 
 
       }
-      console.log('MD: '+JSON.stringify(mdata));
+      //console.log('MD: '+JSON.stringify(mdata));
       var abstract_file = info.project+'.json';
       var abstract_file_path = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--abstracts',abstract_file)
       
       
       fs.readFile(abstract_file_path, {encoding: 'utf-8'}, function(err,data){
             if (err){            
-                console.log('ERR '+err)
+                //console.log('ERR '+err)
                 abstract = '{"abstract":"Not Available"}';
             }else{
               //abstract = JSON.parse(data);
-              console.log('project: '+info.project+' AB: '+data)
+              //console.log('project: '+info.project+' AB: '+data)
               //console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
               abstract = data;
             }
@@ -77,7 +77,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                           pcount: project_count,
                                           message: '',
                                           abstract:abstract,
-                                          user   : req.user 
+                                          user   : req.user,hostname: req.C.hostname,
                                         });
 
       });

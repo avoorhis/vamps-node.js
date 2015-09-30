@@ -8,6 +8,7 @@ var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d
   router.get('/overview', function(req, res) {
       res.render('help/overview', { title: 'VAMPS:Overview', 
       user: req.user,
+      hostname: req.C.hostname,
       message:'',
    });
   });
@@ -16,7 +17,8 @@ var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d
   router.get('/faq', function(req, res) {
       res.render('help/faq', { title: 'VAMPS:FAQ',
                 message:'',
-                             user: req.user
+                user: req.user,
+                hostname: req.C.hostname
                             });
   });
 
@@ -29,7 +31,8 @@ var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d
             res.render('help/contact', {
               captcha : html,
               title: 'VAMPS:Cuntact-Us',
-              user: req.user
+              user: req.user,
+              hostname: req.C.hostname
                });
         });
   });

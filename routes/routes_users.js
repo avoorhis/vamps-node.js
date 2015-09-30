@@ -22,14 +22,14 @@ router.get('/users_index', helpers.isLoggedIn, function(req, res) {
 		      res.render('user_admin/users_index', { 
                   title: 'users', 
                   rows : rows, 
-                  user: req.user,  message:''  
+                  user: req.user,hostname: req.C.hostname,  message:''  
 				  });
 
 		   }
 	    });
 	}else{
         res.render('denied', { 
-                title: 'users', user: req.user,
+                title: 'users', user: req.user,hostname: req.C.hostname,
 							  message: req.flash('nopermissionMessage', 'Permission Denied') 
 		    });
 
@@ -50,7 +50,7 @@ router.get('/login', function(req, res) {
     res.render('user_admin/login', { 
                       title: 'login',
                       message: req.flash('loginMessage'), 
-                      user: req.user });
+                      user: req.user,hostname: req.C.hostname });
 });
 
 router.post('/login',  passport.authenticate('local-login', { successRedirect: '/users/profile',
@@ -69,7 +69,7 @@ router.get('/signup', function(req, res) {
         // render the page and pass in any flash data if it exists
         res.render('user_admin/signup', { 
                             title: 'signup',
-                            message: req.flash('signupMessage'), user: req.user });
+                            message: req.flash('signupMessage'), user: req.user,hostname: req.C.hostname });
 });
 
 // process the signup form
@@ -90,7 +90,7 @@ router.get('/profile', helpers.isLoggedIn, function(req, res) {
     res.render('user_admin/profile', {
         title:'profile',
         message: req.flash('loginMessage'), 
-        user : req.user // get the user out of session and pass to template
+        user : req.user,hostname: req.C.hostname // get the user out of session and pass to template
     });
 });
 
@@ -120,7 +120,7 @@ router.get('/:id', function(req, res) {
               message   : req.flash('message'), 
               projects  : rows,
               user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
-              user      : req.user // get the user out of session and pass to template
+              user      : req.user,hostname: req.C.hostname // get the user out of session and pass to template
             });  
              
 
