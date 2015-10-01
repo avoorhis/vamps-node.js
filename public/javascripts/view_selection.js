@@ -741,38 +741,38 @@ if (typeof pcoa_btn !== "undefined") {
 //
 // PCOA  3D
 //
-// var pcoa_3d_link = document.getElementById('pcoa_3d_link_id') || null;
-// var pcoa_3d_btn = document.getElementById('pcoa_3d_hide_btn');
-// var pcoa_3d_div = document.getElementById('pcoa_3d_div');
-// var pcoa_3d_download_btn = document.getElementById('pcoa_3d_download_btn');
-// var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
-// if (pcoa_3d_link !== null) {
-//   pcoa_3d_link.addEventListener('click', function () {
+var pcoa_3d_link = document.getElementById('pcoa_3d_link_id') || null;
+var pcoa_3d_btn = document.getElementById('pcoa_3d_hide_btn');
+var pcoa_3d_div = document.getElementById('pcoa_3d_div');
+var pcoa_3d_download_btn = document.getElementById('pcoa_3d_download_btn');
+var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
+if (pcoa_3d_link !== null) {
+  pcoa_3d_link.addEventListener('click', function () {
       
-// 	  if(typeof pcoa_3d_created == "undefined"){
-//         create_viz('pcoa_3d', pi_local.ts);
-// 		pcoa_3d_download_btn.disabled = false;
-//       }else{
-//         if(pcoa_3d_btn.value == 'hide'){        
-//           //toggle_visual_element(pcoa_div,'show',pcoa_btn);
-//         }else{
-//           toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
-//         }
-//       } 
-// 	  $(pre_pcoa_3d_div).scrollView();     
-//   });
-// }
-// if (typeof pcoa_3d_btn !== "undefined") {
-//   pcoa_3d_btn.addEventListener('click', function () {
-//       //alert('here in tt')
-//       if(pcoa_3d_btn.value == 'hide'){        
-//         toggle_visual_element(pcoa_3d_div,'show',pcoa_3d_btn);
-//       }else{
-//         toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
-//       }
+	  if(typeof pcoa_3d_created == "undefined"){
+        create_viz('pcoa_3d', pi_local.ts);
+		pcoa_3d_download_btn.disabled = false;
+      }else{
+        if(pcoa_3d_btn.value == 'hide'){        
+          //toggle_visual_element(pcoa_div,'show',pcoa_btn);
+        }else{
+          toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
+        }
+      } 
+	  $(pre_pcoa_3d_div).scrollView();     
+  });
+}
+if (typeof pcoa_3d_btn !== "undefined") {
+  pcoa_3d_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(pcoa_3d_btn.value == 'hide'){        
+        toggle_visual_element(pcoa_3d_div,'show',pcoa_3d_btn);
+      }else{
+        toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
+      }
       
-//   });
-// }
+  });
+}
 //
 // GEOSPATIAL
 //
@@ -846,6 +846,186 @@ if (typeof adiversity_btn !== "undefined") {
   });
 }
 //
+// PHYLOSEQ 01
+//
+var phyloseq01_link = document.getElementById('phyloseq01_link_id') || null;
+var phyloseq01_btn = document.getElementById('phyloseq01_hide_btn');
+var phyloseq01_div = document.getElementById('phyloseq01_div');
+var phyloseq01_download_btn = document.getElementById('phyloseq01_download_btn');
+var pre_phyloseq01_div = document.getElementById('pre_phyloseq01_div');
+if (phyloseq01_link !== null) {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  phyloseq01_link.addEventListener('click', function () {
+      
+    if(typeof phyloseq01_created == "undefined"){
+        create_viz('phyloseq01', pi_local.ts);
+        phyloseq01_download_btn.disabled = false;
+      }else{
+        if(phyloseq01_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(phyloseq01_div,'hide',phyloseq01_btn);
+        }
+      } 
+    $(pre_phyloseq01_div).scrollView();     
+  });
+}
+if (typeof phyloseq01_btn !== "undefined") {
+  phyloseq01_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(phyloseq01_btn.value == 'hide'){        
+        toggle_visual_element(phyloseq01_div,'show',phyloseq01_btn);
+      }else{
+        toggle_visual_element(phyloseq01_div,'hide',phyloseq01_btn);
+      }
+      
+  });
+}
+//
+// PHYLOSEQ 02
+//
+var phyloseq02_link = document.getElementById('phyloseq02_link_id') || null;
+var phyloseq02_btn = document.getElementById('phyloseq02_hide_btn');
+var phyloseq02_div = document.getElementById('phyloseq02_div');
+var phyloseq02_download_btn = document.getElementById('phyloseq02_download_btn');
+var pre_phyloseq02_div = document.getElementById('pre_phyloseq02_div');
+if (phyloseq02_link !== null) {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  phyloseq02_link.addEventListener('click', function () {
+      
+    if(typeof phyloseq02_created == "undefined"){
+        create_viz('phyloseq02', pi_local.ts);
+        phyloseq02_download_btn.disabled = false;
+      }else{
+        if(phyloseq02_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(phyloseq02_div,'hide',phyloseq02_btn);
+        }
+      } 
+    $(pre_phyloseq02_div).scrollView();     
+  });
+}
+if (typeof phyloseq02_btn !== "undefined") {
+  phyloseq02_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(phyloseq02_btn.value == 'hide'){        
+        toggle_visual_element(phyloseq02_div,'show',phyloseq02_btn);
+      }else{
+        toggle_visual_element(phyloseq02_div,'hide',phyloseq02_btn);
+      }
+      
+  });
+}
+//
+// PHYLOSEQ 03
+//
+var phyloseq03_link = document.getElementById('phyloseq03_link_id') || null;
+var phyloseq03_btn = document.getElementById('phyloseq03_hide_btn');
+var phyloseq03_div = document.getElementById('phyloseq03_div');
+var phyloseq03_download_btn = document.getElementById('phyloseq03_download_btn');
+var pre_phyloseq03_div = document.getElementById('pre_phyloseq03_div');
+if (phyloseq03_link !== null) {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  phyloseq03_link.addEventListener('click', function () {
+      
+    if(typeof phyloseq03_created == "undefined"){
+        create_viz('phyloseq03', pi_local.ts);
+        phyloseq03_download_btn.disabled = false;
+      }else{
+        if(phyloseq03_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(phyloseq03_div,'hide',phyloseq03_btn);
+        }
+      } 
+    $(pre_phyloseq03_div).scrollView();     
+  });
+}
+if (typeof phyloseq03_btn !== "undefined") {
+  phyloseq03_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(phyloseq03_btn.value == 'hide'){        
+        toggle_visual_element(phyloseq03_div,'show',phyloseq03_btn);
+      }else{
+        toggle_visual_element(phyloseq03_div,'hide',phyloseq03_btn);
+      }
+      
+  });
+}
+//
+// PHYLOSEQ 04
+//
+var phyloseq04_link = document.getElementById('phyloseq04_link_id') || null;
+var phyloseq04_btn = document.getElementById('phyloseq04_hide_btn');
+var phyloseq04_div = document.getElementById('phyloseq04_div');
+var phyloseq04_download_btn = document.getElementById('phyloseq04_download_btn');
+var pre_phyloseq04_div = document.getElementById('pre_phyloseq04_div');
+if (phyloseq04_link !== null) {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  phyloseq04_link.addEventListener('click', function () {
+      
+    if(typeof phyloseq04_created == "undefined"){
+        create_viz('phyloseq04', pi_local.ts);
+        phyloseq04_download_btn.disabled = false;
+      }else{
+        if(phyloseq04_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(phyloseq04_div,'hide',phyloseq04_btn);
+        }
+      } 
+    $(pre_phyloseq04_div).scrollView();     
+  });
+}
+if (typeof phyloseq04_btn !== "undefined") {
+  phyloseq04_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(phyloseq04_btn.value == 'hide'){        
+        toggle_visual_element(phyloseq04_div,'show',phyloseq04_btn);
+      }else{
+        toggle_visual_element(phyloseq04_div,'hide',phyloseq04_btn);
+      }
+      
+  });
+}
+//
+// PHYLOSEQ 05
+//
+var phyloseq05_link = document.getElementById('phyloseq05_link_id') || null;
+var phyloseq05_btn = document.getElementById('phyloseq05_hide_btn');
+var phyloseq05_div = document.getElementById('phyloseq05_div');
+var phyloseq05_download_btn = document.getElementById('phyloseq05_download_btn');
+var pre_phyloseq05_div = document.getElementById('pre_phyloseq05_div');
+if (phyloseq05_link !== null) {
+  //google.maps.event.addDomListener(window, 'load', initialize);
+  phyloseq05_link.addEventListener('click', function () {
+      
+    if(typeof phyloseq05_created == "undefined"){
+        create_viz('phyloseq05', pi_local.ts);
+        phyloseq05_download_btn.disabled = false;
+      }else{
+        if(phyloseq05_btn.value == 'hide'){        
+         // toggle_visual_element(adiversity_div,'show',adiversity_btn);
+        }else{
+          toggle_visual_element(phyloseq05_div,'hide',phyloseq05_btn);
+        }
+      } 
+    $(pre_phyloseq05_div).scrollView();     
+  });
+}
+if (typeof phyloseq05_btn !== "undefined") {
+  phyloseq05_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(phyloseq05_btn.value == 'hide'){        
+        toggle_visual_element(phyloseq05_div,'show',phyloseq05_btn);
+      }else{
+        toggle_visual_element(phyloseq05_div,'hide',phyloseq05_btn);
+      }
+      
+  });
+}
+//
 //
 //
 // TEST
@@ -911,6 +1091,16 @@ function create_viz(visual, ts) {
       create_dbrowser(ts);
     }else if(visual === 'adiversity'){
       create_adiversity(ts);
+    }else if(visual === 'phyloseq01'){
+      create_phyloseq(ts,'bar');
+    }else if(visual === 'phyloseq02'){
+      create_phyloseq(ts,'heatmap');
+    }else if(visual === 'phyloseq03'){
+      create_phyloseq(ts,'network');
+    }else if(visual === 'phyloseq04'){
+      create_phyloseq(ts,'ord1');
+    }else if(visual === 'phyloseq05'){
+      create_phyloseq(ts,'tree');
     }else{
 
     }
@@ -1119,21 +1309,24 @@ function create_dendrogram(ts, image_type, script) {
 //  CREATE PCoA -- both 2d and 3d
 //
 function create_pcoa(ts,image_type) {
-      //alert('JS PCoA')
-    if(image_type == '2d'){
+      //alert('JS PCoA: '+image_type)
+    var address, info_line, pcoa_div;
+    if(image_type === '2d'){
         pcoa_created = true;
-        var pcoa_div = document.getElementById('pcoa_div');
-        var info_line = create_header('pcoa', pi_local);
+        pcoa_div = document.getElementById('pcoa_div');
+        info_line = create_header('pcoa', pi_local);
   	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_title').innerHTML = info_line;
         document.getElementById('pre_pcoa_div').style.display = 'block';
-    }else if(image_type =='3d'){
+        address = '/visuals/pcoa';
+    }else if(image_type === '3d'){
         pcoa_created = true;
-        var pcoa_3d_div = document.getElementById('pcoa_3d_div');
-        var info_line = create_header('pcoa_3d', pi_local);
-  	    pcoa_3d_div.style.display = 'block';
+        pcoa_div = document.getElementById('pcoa_3d_div');
+        info_line = create_header('pcoa_3d', pi_local);
+  	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_3d_title').innerHTML = info_line;
         document.getElementById('pre_pcoa_3d_div').style.display = 'block';
+        address = '/visuals/pcoa_3d';
     }else{
         // ERROR
     }
@@ -1144,20 +1337,14 @@ function create_pcoa(ts,image_type) {
       args += "&image_type="+image_type;
       
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("POST", '/visuals/pcoa', true);
+      xmlhttp.open("POST", address, true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("data-type","html");
       xmlhttp.onreadystatechange = function() {
 
         if (xmlhttp.readyState == 4 ) {
-           var response = xmlhttp.responseText;
-           
-           if(image_type == '2d'){
-               pcoa_div.innerHTML = response;
-           }else if(image_type == '3d'){
-               pcoa_3d_div.innerHTML = response;
-           }
-           
+            var response = xmlhttp.responseText;            
+            pcoa_div.innerHTML = response;      
            
         }
       };
@@ -1539,6 +1726,64 @@ function create_adiversity(ts){
 
 }
 
+//
+//  CREATE PHYLOSEQ
+//
+function create_phyloseq(ts,code) {
+      //alert('im HM')
+      phyloseq_created = true;
+      var phylo_div,info_line
+      if(code == 'bar'){
+        phylo_div = document.getElementById('phyloseq01_div');
+        info_line = create_header('phyloseq', pi_local);
+        document.getElementById('phyloseq01_title').innerHTML = info_line;
+        document.getElementById('pre_phyloseq01_div').style.display = 'block';
+      }else if(code == 'heatmap'){
+        phylo_div = document.getElementById('phyloseq02_div');
+        info_line = create_header('phyloseq', pi_local);
+        document.getElementById('phyloseq02_title').innerHTML = info_line;
+        document.getElementById('pre_phyloseq02_div').style.display = 'block';
+      }else if(code == 'network'){
+        phylo_div = document.getElementById('phyloseq03_div');
+        info_line = create_header('phyloseq', pi_local);
+        document.getElementById('phyloseq03_title').innerHTML = info_line;
+        document.getElementById('pre_phyloseq03_div').style.display = 'block';
+      }else if(code == 'ord1'){
+        phylo_div = document.getElementById('phyloseq04_div');
+        info_line = create_header('phyloseq', pi_local);
+        document.getElementById('phyloseq04_title').innerHTML = info_line;
+        document.getElementById('pre_phyloseq04_div').style.display = 'block';
+      }else if(code == 'tree'){
+        phylo_div = document.getElementById('phyloseq05_div');
+        info_line = create_header('phyloseq', pi_local);
+        document.getElementById('phyloseq05_title').innerHTML = info_line;
+        document.getElementById('pre_phyloseq05_div').style.display = 'block';
+      }
+      
+      phylo_div.style.display = 'block';
+      //var dist = cnsts.DISTANCECHOICES.choices.id[]
+      
+      var html = '';
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&plot_type="+code;
+      args += "&ts="+ts;
+      
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/phyloseq', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 ) {
+           var htmlstring = xmlhttp.responseText;           
+           phylo_div.innerHTML = htmlstring;
+        }
+      };
+      xmlhttp.send(args);   
+      
+}
+//
+//
+//
+
 function create_header(viz, pi) {
   
   var txt;
@@ -1573,6 +1818,8 @@ function create_header(viz, pi) {
       txt = 'Data Browser --> ';
     }else if(viz == 'adiversity'){
       txt = 'Alpha Diversity --> ';
+    }else if(viz == 'phyloseq'){
+      txt = 'Phyloseq testing --> ';
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }

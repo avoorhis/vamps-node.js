@@ -146,7 +146,17 @@ constants.VISUAL_THUMBNAILS = { visuals: [
     {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
         tip:''    },
     {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id', 
-        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'}
+        tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'},
+    {name:'Phyloseq Bars (R-svg)',  thumb:'/images/visuals/phyloseq01.png',       link:'user_viz_data/phyloseq01',  id:'phyloseq01_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    {name:'Phyloseq Heatmap (R-svg)',  thumb:'/images/visuals/phyloseq01.png',     link:'user_viz_data/phyloseq02', id:'phyloseq02_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    {name:'Phyloseq Network (R-svg)',  thumb:'/images/visuals/phyloseq01.png',     link:'user_viz_data/phyloseq03', id:'phyloseq03_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    {name:'Phyloseq Ordination (R-svg)',  thumb:'/images/visuals/phyloseq01.png',  link:'user_viz_data/phyloseq04', id:'phyloseq04_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    {name:'Phyloseq Tree (R-svg)',  thumb:'/images/visuals/phyloseq01.png',         link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'}
    
 ]};
     
