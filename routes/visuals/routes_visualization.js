@@ -910,28 +910,31 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     console.log('in phyloseq post')
+    //console.log(req.body)
     var ts = req.body.ts;
     var dist_metric = req.body.metric;
     var plot_type = req.body.plot_type;
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
-    var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    var tax_file_name = ts+'_taxonomy.txt';
-    var tax_file = path.join(process.env.PWD,'tmp', tax_file_name);
-    var map_file_name = ts+'_metadata.txt';
-    var map_file = path.join(process.env.PWD,'tmp', map_file_name);
-    
+    var md1 = req.body.md1 || "Project";
+    var md2 = req.body.md2 || "Description";
+    // var biom_file_name = ts+'_count_matrix.biom';
+    // var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+    // var tax_file_name = ts+'_taxonomy.txt';
+    // var tax_file = path.join(process.env.PWD,'tmp', tax_file_name);
+    // var map_file_name = ts+'_metadata.txt';
+    // var map_file = path.join(process.env.PWD,'tmp', map_file_name);
+    var tmp_path = path.join(process.env.PWD,'tmp');
     var html = '';
     var title = 'VAMPS';
-    console.log(biom_file)
+    //console.log(biom_file)
     //var distmtx_file_name = ts+'_distance.csv';
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
    
     var options = {
       scriptPath : 'public/scripts/',
-      args :       [ biom_file, tax_file, map_file, ts, dist_metric, plot_type],
+      args :       [ tmp_path, ts, plot_type, dist_metric, md1, md2],
     };
-
+    
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
     console.log(options.scriptPath+'/phyloseq_script.R '+options.args.join(' '));
@@ -968,15 +971,27 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                 image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_tree.svg');
               }
               
-              var html = "<div id='pdf'>";
-              //html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-              html += "<object data='"+image+"' type='application/svg' />";
-              html += " <p>ERROR in loading svg file</p>";
-              html += "</object></div>";
-              //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-              console.log(html);
-              res.send(html);
+   //             var html = "<div id='pdf'>";
+//               //html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+//               html += "<object data='"+image+"' type='application/pdf' />";
+//               html += " <p>ERROR in loading svg file</p>";
+//               html += "</object></div>";
+//               console.log(html);
+//               res.send(html);
 
+             fs.readFile(image_file, 'utf8', function (err,data) {
+                if (err) {
+                   return console.log(err);
+                 }
+                 console.log('Reading: '+image)
+                 //data_items = data.split('\n')
+                 
+                 //X=data_items.slice(1,data_items.length)
+                 //d = X.join('\n')
+                 //console.log(d)
+                 res.send(data);
+              });
+              
                                           
           }else{
             console.log('ERROR');

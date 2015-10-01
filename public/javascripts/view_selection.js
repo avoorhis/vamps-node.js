@@ -1733,6 +1733,11 @@ function create_phyloseq(ts,code) {
       //alert('im HM')
       phyloseq_created = true;
       var phylo_div,info_line
+      var html = '';
+      var args =  "metric="+pi_local.selected_distance;
+      args += "&plot_type="+code;
+      args += "&ts="+ts;
+
       if(code == 'bar'){
         phylo_div = document.getElementById('phyloseq01_div');
         info_line = create_header('phyloseq', pi_local);
@@ -1750,27 +1755,29 @@ function create_phyloseq(ts,code) {
         document.getElementById('pre_phyloseq03_div').style.display = 'block';
       }else if(code == 'ord1'){
         phylo_div = document.getElementById('phyloseq04_div');
+        
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
+        md1 = document.getElementById('phyloseq_ord_md1').value;
+        md2 = document.getElementById('phyloseq_ord_md2').value;
+        args += "&md1="+md1+"&md2="+md2;
       }else if(code == 'tree'){
         phylo_div = document.getElementById('phyloseq05_div');
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq05_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq05_div').style.display = 'block';
       }
-      
+      phylo_div.innerHTML = '....';
       phylo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
-      var html = '';
-      var args =  "metric="+pi_local.selected_distance;
-      args += "&plot_type="+code;
-      args += "&ts="+ts;
+      
       
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/phyloseq', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //xmlhttp.setRequestHeader("Content-type","application/xml");
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 ) {
            var htmlstring = xmlhttp.responseText;           

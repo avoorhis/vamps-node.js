@@ -3,22 +3,26 @@
 args <- commandArgs(TRUE)
 print(args)
 
-biom_file <- args[1]
-tax_file <-  args[2]
-map_file <-  args[3]
-prefix   <-  args[4]
-dist     <-  'bray'
-plot_type<- args[6]
+tmp_path <- args[1]
+prefix   <-  args[2]
+plot_type<- args[3]
+md1 <- args[5]
+md2 <- args[6]
+biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
-if(args[5]  == "morisita_horn"){
+dist     <-  'bray'
+
+if(args[4]  == "morisita_horn"){
 	dist = 'horn'
-}else if(args[5] == "jaccard"){
+}else if(args[4] == "jaccard"){
 	dist = 'jaccard'
-}else if(args[5] == "kulczynski"){
+}else if(args[4] == "kulczynski"){
 	dist = 'kulczynski'
-}else if(args[5] == "canberra"){
+}else if(args[4] == "canberra"){
 	dist = 'canberra'
-}else if(args[5] == "bray_curtis"){
+}else if(args[4] == "bray_curtis"){
 	dist = 'bray'
 }
 
@@ -34,6 +38,7 @@ MAP <- import_qiime_sample_data(map_file)
 TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
+#TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
 w = 12
 h = 11
@@ -56,10 +61,11 @@ if(plot_type == 'bar'){
 	svg_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
 	svg(svg_file, width=w, height=h)
 	ordu = ordinate(physeq, "PCoA", dist, weighted = TRUE)
-	p = plot_ordination(physeq, ordu, color = "Description", shape = "latitude")
+	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
 	p = p + geom_point(size = 7, alpha = 0.75)
-	p = p + scale_colour_brewer(type = "qual", palette = "Set1")
-	p + ggtitle(paste("MDS/PCoA on",args[5],"distance",sep=' '))
+	p = p + scale_colour_brewer(type = "qual", palette = "Paired")
+	#p = p + scale_colour_brewer()
+	p + ggtitle(paste("MDS/PCoA on",dist,"distance",sep=' '))
 
 }else if(plot_type == 'tree'){
 	svg_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
