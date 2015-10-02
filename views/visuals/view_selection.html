@@ -69,50 +69,99 @@
 </div>
 
 
-
-<table class='button_row'><tr>
-	<% if(mtx.data == '') { %>
-	  <td>
-          <% disable_thumbs = true %>
-    	  <div id='' class='no_data'>
-    	        <h3>No Sequences Found</h3>
-    	  </div>
-      </td>
-	<% } else { %>
-	    <!-- This form should run in the background and place the files 
-	          in a 'downloads' directory where it can be retrieved.
-	          The user should get an email when its ready.
-	     -->
+<div>
+  <table class='button_row'><tr>
+  	<% if(mtx.data == '') { %>
+  	  <td>
+            <% disable_thumbs = true %>
+      	  <div id='' class='no_data'>
+      	        <h3>No Sequences Found</h3>
+      	  </div>
+        </td>
+  	<% } else { %>
+  	    <!-- This form should run in the background and place the files 
+  	          in a 'downloads' directory where it can be retrieved.
+  	          The user should get an email when its ready.
+  	     -->
         <td>
-  			<form id='download_fasta_form_id' method='POST' action=''>
-  		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
-  		    <input type='hidden' name='download_type' value='partial_project' />
-  		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-  			  <input type='hidden' name='referer' value='/visuals/view_selection' />
-		  	</form>
+    			<form id='download_fasta_form_id' method='POST' action=''>
+    		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
+    		    <input type='hidden' name='download_type' value='partial_project' />
+    		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+    			  <input type='hidden' name='referer' value='/visuals/view_selection' />
+  		  	</form>
+          
+  		</td><td>
+  		    <form id='download_metadata_form_id' method='POST' action=''>
+            <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
+  		      <input type='hidden' name='download_type' value='partial_project' />
+  		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+  			    <input type='hidden' name='referer' value='/visuals/view_selection' />
+  		    </form>	
+          
+  		</td><td>
+          
+          <form id='download_matrix_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Matrix File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
         
-		</td><td>
-		    <form id='download_metadata_form_id' method='POST' action=''>
-          <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
-		      <input type='hidden' name='download_type' value='partial_project' />
-		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-			    <input type='hidden' name='referer' value='/visuals/view_selection' />
-		    </form>	
+          
+      </td><td>
+          
+          <form id='download_biom_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Biom File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
         
-		</td><td>
-        <form id='download_matrix_form_id' method='POST' action=''>
-          <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Matrix File</button>
-          <input type='hidden' name='download_type' value='partial_project' />
-          <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-          <input type='hidden' name='ts' value='<%= pi.ts %>' />
-          <input type='hidden' name='referer' value='/visuals/view_selection' />
-        </form> 
+          
+      </td><td>
+          
+          <form id='download_tax_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Tax File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
         
-    </td>
-    <td><div id='download_confirm_id'></div></td>
-	<% } %>
-</tr></table>  <!-- button.row -->
- 
+          
+      </td><td>
+          
+          <form id='download_meta_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Meta File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
+        
+          
+      </td>
+      <td><div id='download_confirm_id'></div></td>
+  	<% } %>
+  </tr></table>  <!-- button.row -->
+</div>
+<div>
+<table class='pull-center'>
+<tr><td>
+    <form id='download_meta_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Meta File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+      </form> 
+</td></tr>
+</table>
+</div>
+
 <table border='1' class='table'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
@@ -145,7 +194,14 @@
               <% target= '_blank' %>
           <% } %>      
                       
-                      <% if(link_id == 'phyloseq04_link_id'){ %>  
+                      <% if(link_id == 'phyloseq03_link_id' || link_id == 'phyloseq04_link_id'){ %> 
+                        <% if(link_id == 'phyloseq03_link_id'){ %>
+                          <% var id1 = 'phyloseq_network_md1' %>
+                          <% var id2 = 'phyloseq_network_md2' %>
+                        <% }else if(link_id == 'phyloseq04_link_id'){ %>
+                          <% var id1 = 'phyloseq_ord_md1' %>
+                          <% var id2 = 'phyloseq_ord_md2' %>
+                        <% } %>
                           <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                             <center>                        
                               <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
@@ -154,19 +210,21 @@
                               </a>
                             
                             <table><tr><td>Shape el:
-                              <select id='phyloseq_ord_md1' name='phyloseq_ord_md1'>
+                              <select id='<%= id1 %>' name='<%= id1 %>' style='width:50px'>
+                                <option value='Description' selected >...</option>
                                 <% for(var i in pi.metadata){ %>
                                   <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                 <% } %>
                                 <option value='Description'>Project_Dataset</option>
-                                <option value='Project' selected >Project</option>
+                                <option value='Project' >Project</option>
                               </select>
                             </td><td>&nbsp;&nbsp;</td><td>Color el:
-                              <select id='phyloseq_ord_md2' name='phyloseq_ord_md2'>
+                              <select id='<%= id2 %>' name='<%= id2 %>' style='width:50px'>
+                                <option value='Description' selected >...</option>
                                 <% for(var i in pi.metadata){ %>
                                   <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                 <% } %>
-                                <option value='Description' selected >Project_Dataset</option>
+                                <option value='Description' >Project_Dataset</option>
                                 <option value='Project'>Project</option>
                               </select>
                             </td></tr></table>
@@ -205,7 +263,7 @@
 	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-default'>download</button>
   </nav>
-  <div id='tax_table_div'   class='display_none well overflow_500'>....</div>
+  <div id='tax_table_div'   class='display_none well overflow_500'></div>
   
   <!-- Metadata -->
   <br>
@@ -217,7 +275,7 @@
 	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='metadata_local_table_div' class='display_none well overflow_500'>....</div>
+  <div id='metadata_local_table_div' class='display_none well overflow_500'></div>
   
   
   <!-- Distance Heatmap -->
@@ -230,7 +288,7 @@
  	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dheatmap_div' class='display_none well'>....</div>
+  <div id='dheatmap_div' class='display_none well'></div>
   
 
 <!-- Frequency Heatmap -->
@@ -243,7 +301,7 @@
  	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='fheatmap_div' class='display_none well'>....</div>
+  <div id='fheatmap_div' class='display_none well'></div>
 
 
   <!-- BarCharts -->
@@ -257,7 +315,7 @@
 	<button type='button' id='barcharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <center><div id='barcharts_div' class='well display_none'>....</div></center>
+  <center><div id='barcharts_div' class='well display_none'></div></center>
 
   
   <!-- PieCharts -->
@@ -270,7 +328,7 @@
 	<button type='button' id='piecharts_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <center><div id='piecharts_div' class='well display_none'>....</div></center>
+  <center><div id='piecharts_div' class='well display_none'></div></center>
   
   <!-- Dendrogram 1 phylogram -->
   <br>
@@ -282,7 +340,7 @@
 	<button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram1_div'        class='display_none well '>....</div>
+  <div id='dendrogram1_div'        class='display_none well '></div>
   
   <!-- Dendrogram 2 phylonator -->
   <br>
@@ -294,7 +352,7 @@
 	<button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram2_div'        class='display_none well '>....</div>
+  <div id='dendrogram2_div'        class='display_none well '></div>
   
   <!-- Dendrogram 3 radial -->
   <br>
@@ -306,7 +364,7 @@
   <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram3_div'        class='display_none well '>....</div>
+  <div id='dendrogram3_div'        class='display_none well '></div>
 
   <!-- Dendrogram pdf-->
   <br>
@@ -319,7 +377,7 @@
 	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram_pdf_div'        class='display_none well'>....</div>
+  <div id='dendrogram_pdf_div'        class='display_none well'></div>
 
   <!-- PCoA 2D Python -->
   <br>
@@ -331,7 +389,7 @@
 	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='pcoa_div'                    class='display_none well'>....</div> 
+  <div id='pcoa_div'                    class='display_none well'></div> 
 
   <!-- PCoA 3D Emperor -->
    <br>
@@ -343,7 +401,7 @@
 	<button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='pcoa_3d_div'                 class='display_none well'>Working....</div> 
+  <div id='pcoa_3d_div'                 class='display_none well'></div> 
   
   <!-- GEOSPATIAL -->
   <br>
@@ -355,7 +413,7 @@
 	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='map-canvas'      class='display_none well'>....</div> 
+  <div id='map-canvas'      class='display_none well'></div> 
   
   <!-- KRONA (Data Browser) -->
 <!--   
@@ -368,7 +426,7 @@
 	<button type='button' id='dbrowser_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dbrowser_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='dbrowser_div'      class='display_none well'>Working....</div>
+ <div id='dbrowser_div'      class='display_none well'></div>
 -->
   <!-- ALPHA DIVERSITY -->
  <br>
@@ -380,7 +438,7 @@
   <button type='button' id='adiversity_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='adiversity_div'      class='display_none well'>....</div>
+ <div id='adiversity_div'      class='display_none well'></div>
 
   <!-- PHYLOSEQ 01 -->
  <br>
@@ -392,7 +450,7 @@
   <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq01_div'      class='display_none well'>....</div>
+ <div id='phyloseq01_div'      class='display_none well'></div>
  
  <!-- PHYLOSEQ 02 -->
  <br>
@@ -404,7 +462,7 @@
   <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq02_div'      class='display_none well'>....</div>
+ <div id='phyloseq02_div'      class='display_none well'></div>
  
   <!-- PHYLOSEQ 03 -->
  <br>
@@ -416,7 +474,7 @@
   <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq03_div'      class='display_none well'>....</div>
+ <div id='phyloseq03_div'      class='display_none well'></div>
  
   <!-- PHYLOSEQ 04 -->
  <br>
@@ -425,10 +483,11 @@
       <span id='phyloseq04_title' class="navbar-brand table_title" >Phyloseq-04</span> 
   </div>
   <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
+  <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>xxx
   <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  
  </nav>
- <div id='phyloseq04_div'      class='display_none well'>....</div>
+ <div id='phyloseq04_div'      class='display_none well'></div>
  
   <!-- PHYLOSEQ 05 -->
  <br>
@@ -439,8 +498,9 @@
   <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" src="/images/up_arrow.png" width="30" height="30"></a>
   <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
+  
  </nav>
- <div id='phyloseq05_div'      class='display_none well'>....</div>
+ <div id='phyloseq05_div'      class='display_none well'></div>
 
 <!-- -------------------------------------------------- -->
 

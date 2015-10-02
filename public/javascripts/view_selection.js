@@ -176,7 +176,7 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
       }
               
 });              
-
+var showDots='';
 // download fasta
 if (document.getElementById('download_fasta_btn') !== null) {
 download_fasta_btn = document.getElementById('download_fasta_btn');
@@ -1244,9 +1244,11 @@ function create_dendrogram(ts, image_type, script) {
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/dendrogram', true);  // gets newick
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xmlhttp.onreadystatechange = function() {
-
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,dend_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
+          clearInterval(myWaitVar);
           var htmlstring = xmlhttp.responseText;
           if(image_type == 'pdf'){
               html = "<div id='' >"+htmlstring+"</div>";
@@ -1340,9 +1342,11 @@ function create_pcoa(ts,image_type) {
       xmlhttp.open("POST", address, true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.setRequestHeader("data-type","html");
-      xmlhttp.onreadystatechange = function() {
-
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,pcoa_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
+            clearInterval(myWaitVar);
             var response = xmlhttp.responseText;            
             pcoa_div.innerHTML = response;      
            
@@ -1366,8 +1370,11 @@ function create_dbrowser(ts) {
          var xmlhttp = new XMLHttpRequest();  
          xmlhttp.open("POST", '/visuals/dbrowser', true);
          xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-         xmlhttp.onreadystatechange = function() {
+         showDots='';
+         var myWaitVar = setInterval(myWaitFunction,1000,dbrowser_div);
+         xmlhttp.onreadystatechange = function() {          
            if (xmlhttp.readyState == 4 ) {
+              clearInterval(myWaitVar);
               var response = xmlhttp.responseText;              
               dbrowser_div.innerHTML = response;            
            }
@@ -1385,7 +1392,7 @@ function create_dheatmap(ts) {
       //alert('im HM')
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
-	  dhm_div.style.display = 'block';
+	    dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
@@ -1398,10 +1405,13 @@ function create_dheatmap(ts) {
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/heatmap', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xmlhttp.onreadystatechange = function() {
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,dhm_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
-           var htmlstring = xmlhttp.responseText;           
-           dhm_div.innerHTML = htmlstring;
+            clearInterval(myWaitVar);
+            var htmlstring = xmlhttp.responseText;           
+            dhm_div.innerHTML = htmlstring;
         }
       };
       xmlhttp.send(args);      
@@ -1425,10 +1435,13 @@ function create_fheatmap(ts) {
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/frequency_heatmap', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xmlhttp.onreadystatechange = function() {
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,fhm_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
-           var htmlstring = xmlhttp.responseText;           
-           fhm_div.innerHTML = htmlstring;
+            clearInterval(myWaitVar);
+            var htmlstring = xmlhttp.responseText;           
+            fhm_div.innerHTML = htmlstring;
         }
       };
       xmlhttp.send(args);   
@@ -1692,8 +1705,11 @@ function create_adiversity(ts){
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/alpha_diversity', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-      xmlhttp.onreadystatechange = function() {
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
+           clearInterval(myWaitVar);
            var retstring = xmlhttp.responseText;           
            var lines = retstring.split('\n');
            //alert(lines[0])
@@ -1753,9 +1769,12 @@ function create_phyloseq(ts,code) {
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq03_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq03_div').style.display = 'block';
+        md1 = document.getElementById('phyloseq_network_md1').value;
+        md2 = document.getElementById('phyloseq_network_md2').value;
+        args += "&md1="+md1+"&md2="+md2;
       }else if(code == 'ord1'){
         phylo_div = document.getElementById('phyloseq04_div');
-        
+
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
@@ -1768,7 +1787,7 @@ function create_phyloseq(ts,code) {
         document.getElementById('phyloseq05_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq05_div').style.display = 'block';
       }
-      phylo_div.innerHTML = '....';
+      //phylo_div.innerHTML = '....';
       phylo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
@@ -1778,14 +1797,25 @@ function create_phyloseq(ts,code) {
       xmlhttp.open("POST", '/visuals/phyloseq', true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       //xmlhttp.setRequestHeader("Content-type","application/xml");
-      xmlhttp.onreadystatechange = function() {
+      showDots='';
+      var myWaitVar = setInterval(myWaitFunction,1000,phylo_div);
+      xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
+           clearInterval(myWaitVar);
            var htmlstring = xmlhttp.responseText;           
            phylo_div.innerHTML = htmlstring;
         }
       };
       xmlhttp.send(args);   
       
+}
+//
+//  Interval timer  
+//
+function myWaitFunction(div) {
+    showDots = showDots || '.';
+    div.innerHTML = showDots;
+    showDots += '.';
 }
 //
 //

@@ -55,6 +55,7 @@ if(plot_type == 'bar'){
 }else if(plot_type == 'network'){
 	svg_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
 	svg(svg_file, width=w, height=h)
+	plot_net(physeq, maxdist = 0.3, color = md2, shape = md1)
 }else if(plot_type == 'ord1'){
 
 	# 3- PCoA on 'bray' Distance
