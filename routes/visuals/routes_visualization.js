@@ -425,20 +425,26 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
         //distance_matrix = JSON.parse(output);
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
-          
-            //var image = '/tmp_images/'+ts+'_heatmap.pdf';
-            var image = '/'+ts+'_heatmap.pdf';
-            var html = "<div id='pdf'>";
-            html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-            html += " <p>ERROR in loading pdf file</p>";
-            html += "</object></div>";
-            //var html = "<img alt='alt_freq-heatmap-fig' src='"+image+"' />"
-            console.log(html);
-            res.send(html);  
+              image = '/'+ts+'__heatmap.svg';
+              image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
+            
+              fs.readFile(image_file, 'utf8', function (err,data) {
+                if (err) {
+                   console.log(err);
+                   res.send('FreqHeatmap File Error');
+                 }
+                 console.log('Reading: '+image)
+                 //data_items = data.split('\n')
+                 
+                 //X=data_items.slice(1,data_items.length)
+                 //d = X.join('\n')
+                 //console.log(d)
+                 res.send(data);
+              });
                                         
         }else{
           console.log('ERROR');
-          res.send('Frequency Heatmap R Error');
+          res.send('Frequency Heatmap R Script Error');
         }      
   });   
   
@@ -531,6 +537,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
           }                                     
         }else{
           console.log('stderr: '+stderr)
+          res.send('Script Error');
         }      
     });   
     
@@ -611,7 +618,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         res.send(txt)
 });
 // GET is to create and open EMPEROR
-router.get('/pcoa_3dX', helpers.isLoggedIn, function(req, res) {
+router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         
         console.log('in 3D')
         console.log(visual_post_items)
@@ -979,23 +986,24 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //               console.log(html);
 //               res.send(html);
 
-             fs.readFile(image_file, 'utf8', function (err,data) {
+               fs.readFile(image_file, 'utf8', function (err,data) {
                 if (err) {
-                   return console.log(err);
+                   console.log(err);
+                   res.send('Phyloseq File Error');
                  }
                  console.log('Reading: '+image)
                  //data_items = data.split('\n')
-                 
+             
                  //X=data_items.slice(1,data_items.length)
                  //d = X.join('\n')
                  //console.log(d)
                  res.send(data);
               });
-              
+           
                                           
           }else{
             console.log('ERROR');
-            res.send('Phyloseq R Error');
+            res.send('Phyloseq R script Error');
           }      
     });   
 

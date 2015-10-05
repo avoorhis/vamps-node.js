@@ -45,22 +45,22 @@ h = 11
 
 
 if(plot_type == 'bar'){
-	svg_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
-	svg(svg_file, width=w, height=h)
+	out_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
+	svg(out_file, width=w, height=h)
 	plot_bar(physeq, fill = "Phylum")
 
 }else if(plot_type == 'heatmap'){
-	svg_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
-	svg(svg_file, width=w, height=h)
+	out_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
+	svg(out_file, width=w, height=h)
 }else if(plot_type == 'network'){
-	svg_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
-	svg(svg_file, width=w, height=h)
+	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
+	svg(out_file, width=w, height=h)
 	plot_net(physeq, maxdist = 0.3, color = md2, shape = md1)
 }else if(plot_type == 'ord1'){
 
 	# 3- PCoA on 'bray' Distance
-	svg_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
-	svg(svg_file, width=w, height=h)
+	out_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
+	svg(out_file, width=w, height=h)
 	ordu = ordinate(physeq, "PCoA", dist, weighted = TRUE)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
 	p = p + geom_point(size = 7, alpha = 0.75)
@@ -69,8 +69,11 @@ if(plot_type == 'bar'){
 	p + ggtitle(paste("MDS/PCoA on",dist,"distance",sep=' '))
 
 }else if(plot_type == 'tree'){
-	svg_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
-	svg(svg_file, width=w, height=h)
+	out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
+	svg(out_file, width=w, height=h)
+}else{
+    cat("plot_type must be one of: 'bar', 'heatmap', 'network', 'ord1' or 'tree' -- Exiting\n")
+    quit()
 }
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")

@@ -69,7 +69,7 @@
 </div>
 
 
-<div>
+<div style='float:left;'>
   <table class='button_row'><tr>
   	<% if(mtx.data == '') { %>
   	  <td>
@@ -109,55 +109,44 @@
             <input type='hidden' name='referer' value='/visuals/view_selection' />
           </form> 
         
-          
-      </td><td>
-          
-          <form id='download_biom_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Biom File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-        
-          
-      </td><td>
-          
-          <form id='download_tax_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Tax File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-        
-          
-      </td><td>
-          
-          <form id='download_meta_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Meta File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-        
-          
       </td>
       <td><div id='download_confirm_id'></div></td>
   	<% } %>
   </tr></table>  <!-- button.row -->
+
 </div>
-<div>
-<table class='pull-center'>
-<tr><td>
-    <form id='download_meta_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs ">Download Meta File</button>
+<div style='float:right'>
+<table class=''>
+<tr><td>Phyloseq Input Files:</td>
+  <td>       
+          <form id='download_biom_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Biom File</button>
             <input type='hidden' name='download_type' value='partial_project' />
             <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
-      </form> 
+          </form>     
+      </td><td>
+          <form id='download_tax_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Tax File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
+        
+      </td><td>
+          
+          <form id='download_meta_form_id'  method='POST' action=''>
+            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Meta File</button>
+            <input type='hidden' name='download_type' value='partial_project' />
+            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+            <input type='hidden' name='ts' value='<%= pi.ts %>' />
+            <input type='hidden' name='referer' value='/visuals/view_selection' />
+          </form> 
+        
+          
+      
 </td></tr>
 </table>
 </div>
@@ -211,7 +200,7 @@
                             
                             <table><tr><td>Shape el:
                               <select id='<%= id1 %>' name='<%= id1 %>' style='width:50px'>
-                                <option value='Description' selected >...</option>
+                                <option value='Project' selected >...</option>
                                 <% for(var i in pi.metadata){ %>
                                   <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                 <% } %>

@@ -75,13 +75,16 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf"  )
     cur = mysql_conn.cursor()
     
+    logging.debug("checking user")
+    check_user(args)  ## script dies if user not in db
+    logging.debug("checking project")
+    check_project(args)
     
     logging.debug("running get_config_data")
     logging.debug("running get_config_data")
     get_config_data(args)
     
-    logging.debug("checking user")
-    check_user()  ## script dies if user not in db
+    
     #
     logging.debug("recreating ranks")
     recreate_ranks()
@@ -117,18 +120,29 @@ def start(NODE_DATABASE, args):
     return CONFIG_ITEMS['project_id']
     
     
-def check_user():
+def check_user(args):
     """
     check_user()
-      the owner/user (from config file) must be present in 'user' table for script to continue
+    the owner/user (from config file) must be present in 'user' table for script to continue
     """
-    q = "select user_id from user where username='"+CONFIG_ITEMS['owner']+"'"
+    q = "select user_id from user where username='"+args.owner+"'"
     cur.execute(q)
     numrows = int(cur.rowcount)
     if numrows==0:
-        sys.exit('Could not find owner: '+CONFIG_ITEMS['owner']+' --Exiting')
-    row = cur.fetchone()
-    CONFIG_ITEMS['owner_id'] = row[0] 
+        sys.exit('Could not find owner: '+args.owner+' --Exiting')
+        row = cur.fetchone()
+        CONFIG_ITEMS['owner_id'] = row[0] 
+
+def check_project(args):
+    """
+    check_project()
+    the project must not already exist in db table 'project' for script to continue
+    """
+    q = "select project_id from project where project='"+args.project+"'"
+    cur.execute(q)
+    numrows = int(cur.rowcount)
+    if numrows > 0:
+        sys.exit('Project already Exists: '+args.project+' --Exiting')
        
 def create_env_source():
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
