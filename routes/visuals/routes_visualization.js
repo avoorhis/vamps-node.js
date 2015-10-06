@@ -961,23 +961,24 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
           if(code === 0){   // SUCCESS       
             
               //var image = '/tmp_images/'+ts+'_heatmap.pdf';
-              if(plot_type == 'bar'){
-                image = '/'+ts+'_phyloseq_bar.svg';
-                image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_bar.svg');
-              }else if(plot_type == 'heatmap'){
-                image = '/'+ts+'_phyloseq_heatmap.svg';
-                image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_heatmap.svg');
-              }else if(plot_type == 'network'){
-                image = '/'+ts+'_phyloseq_network.svg';
-                image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_network.svg');
-              }else if(plot_type == 'ord1'){
-                image = '/'+ts+'_phyloseq_ord1.svg';
-                image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_ord1.svg');
-              }else if(plot_type == 'tree'){
-                image = '/'+ts+'_phyloseq_tree.svg';
-                image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_tree.svg');
-              }
-              
+              // if(plot_type == 'bar'){
+              //   image = '/'+ts+'_phyloseq_bar.svg';
+              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_bar.svg');
+              // }else if(plot_type == 'heatmap'){
+              //   image = '/'+ts+'_phyloseq_heatmap.svg';
+              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_heatmap.svg');
+              // }else if(plot_type == 'network'){
+              //   image = '/'+ts+'_phyloseq_network.svg';
+              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_network.svg');
+              // }else if(plot_type == 'ord1'){
+              //   image = '/'+ts+'_phyloseq_ord1.svg';
+              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_ord1.svg');
+              // }else if(plot_type == 'tree'){
+              //   image = '/'+ts+'_phyloseq_tree.svg';
+              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_tree.svg');
+              // }
+              image_file = ts+'_phyloseq_'+plot_type+'.svg';
+              image_path = path.join(process.env.PWD,'tmp', image_file);
    //             var html = "<div id='pdf'>";
 //               //html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
 //               html += "<object data='"+image+"' type='application/pdf' />";
@@ -986,12 +987,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //               console.log(html);
 //               res.send(html);
 
-               fs.readFile(image_file, 'utf8', function (err,data) {
+               fs.readFile(image_path, 'utf8', function (err, data) {
                 if (err) {
                    console.log(err);
                    res.send('Phyloseq File Error');
                  }
-                 console.log('Reading: '+image)
+                 console.log('Reading: '+image_file)
                  //data_items = data.split('\n')
              
                  //X=data_items.slice(1,data_items.length)
@@ -1509,7 +1510,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     console.log(req.body)
     var options = {
@@ -1596,6 +1597,25 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
     
 });
+router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
+    console.log('in download_file')
+    var html = '';
+    var ts = req.body.ts;
+    var file_type = req.body.file_type;
+    if(file_type == 'biom'){
+      file_name = ts+'_count_matrix.biom';      
+    }else if(file_type == 'tax'){
+      file_name = ts+'_taxonomy.txt';      
+    }else if(file_type == 'meta'){
+      file_name = ts+'_metadata.txt';      
+    }else{
+      // ERROR
+    }
+    file_path = path.join(process.env.PWD, 'tmp', file_name);
+    res.setHeader('Content-Type', 'text');
+    res.download(file_path); // Set disposition and send it.
+});
+
 module.exports = router;
 
 /**

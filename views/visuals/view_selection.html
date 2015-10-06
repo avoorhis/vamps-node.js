@@ -119,34 +119,26 @@
 <table class=''>
 <tr><td>Phyloseq Input Files:</td>
   <td>       
-          <form id='download_biom_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Biom File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+          <form id='download_biom_form_id'  method='POST' action='download_file'>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Biom File</button>
+            <input type='hidden' name='file_type' value='biom' />           
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
           </form>     
       </td><td>
-          <form id='download_tax_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Tax File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+          <form id='download_tax_form_id'  method='POST' action='download_file'>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Tax File</button>
+            <input type='hidden' name='file_type' value='tax' />           
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
           </form> 
-        
       </td><td>
-          
-          <form id='download_meta_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Meta File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+          <form id='download_meta_form_id'  method='POST' action='download_file'>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Meta File</button>
+            <input type='hidden' name='file_type' value='meta' />          
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-        
-          
-      
+          </form>       
 </td></tr>
 </table>
 </div>

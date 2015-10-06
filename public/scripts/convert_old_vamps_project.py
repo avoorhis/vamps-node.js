@@ -60,7 +60,7 @@ classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2
 #         {'name':'strain', 'id':11,'num':7}]
 
 LOG_FILENAME = os.path.join('.','convert_old_vamps_project.log')
-logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 #logging = logging.getlogging('')
 #os.chdir(args.indir)

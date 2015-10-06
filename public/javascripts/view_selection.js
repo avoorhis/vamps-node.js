@@ -1774,7 +1774,6 @@ function create_phyloseq(ts,code) {
         args += "&md1="+md1+"&md2="+md2;
       }else if(code == 'ord1'){
         phylo_div = document.getElementById('phyloseq04_div');
-
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
@@ -1787,7 +1786,7 @@ function create_phyloseq(ts,code) {
         document.getElementById('phyloseq05_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq05_div').style.display = 'block';
       }
-      //phylo_div.innerHTML = '....';
+      phylo_div.innerHTML = '';
       phylo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
@@ -1895,3 +1894,4 @@ function download_data(type, datasets, download_type, ts) {
     };
     xmlhttp.send(args);   
 }
+
