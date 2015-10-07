@@ -985,11 +985,27 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var phyloseq_process = spawn( options.scriptPath+script, options.args, {
             env:{'PATH':req.config.PATH},
             detached: true, 
-            stdio: [ 'ignore', null, log ]
-            //stdio: 'pipe'  // stdin, stdout, stderr
+            //stdio: [ 'ignore', null, log ]
+            stdio: 'pipe'  // stdin, stdout, stderr
         }); 
-
+    stdout = '';
+    phyloseq_process.stdout.on('data', function (data) {
+        
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        //data = data.toString().trim()
+        //console.log(data)
+        stdout += data;    
      
+    });
+    stderr = '';
+    phyloseq_process.stderr.on('data', function (data) {
+        
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        //data = data.toString().trim()
+        //console.log(data)
+        stderr += data;    
+     
+    }); 
     phyloseq_process.on('close', function (code) {
           console.log('phyloseq_process process exited with code ' + code);
           //distance_matrix = JSON.parse(output);
@@ -997,31 +1013,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
           
           if(code === 0){   // SUCCESS       
             
-              //var image = '/tmp_images/'+ts+'_heatmap.pdf';
-              // if(plot_type == 'bar'){
-              //   image = '/'+ts+'_phyloseq_bar.svg';
-              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_bar.svg');
-              // }else if(plot_type == 'heatmap'){
-              //   image = '/'+ts+'_phyloseq_heatmap.svg';
-              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_heatmap.svg');
-              // }else if(plot_type == 'network'){
-              //   image = '/'+ts+'_phyloseq_network.svg';
-              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_network.svg');
-              // }else if(plot_type == 'ord1'){
-              //   image = '/'+ts+'_phyloseq_ord.svg';
-              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_ord1.svg');
-              // }else if(plot_type == 'tree'){
-              //   image = '/'+ts+'_phyloseq_tree.svg';
-              //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_tree.svg');
-              // }
-              
-   //             var html = "<div id='pdf'>";
-//               //html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-//               html += "<object data='"+image+"' type='application/pdf' />";
-//               html += " <p>ERROR in loading svg file</p>";
-//               html += "</object></div>";
-//               console.log(html);
-//               res.send(html);
 //res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 //  res.header('Expires', '-1');
  // res.header('Pragma', 'no-cache');
@@ -1043,7 +1034,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                                           
           }else{
             console.log('ERROR');
-            res.send('Phyloseq R script Error');
+            res.send('Phyloseq R script Error: '+stderr);
           }      
     });   
 

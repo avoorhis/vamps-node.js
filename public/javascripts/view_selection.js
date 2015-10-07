@@ -1756,14 +1756,14 @@ function create_phyloseq(ts,code) {
 
       if(code == 'bar'){
         phylo_div = document.getElementById('phyloseq01_div');
-        info_line = create_header('phyloseq', pi_local);
+        info_line = create_header('phyloseq01', pi_local);
         document.getElementById('phyloseq01_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq01_div').style.display = 'block';
         phy = document.getElementById('phyloseq_bar_phylum').value;
         args += "&phy="+phy;
       }else if(code == 'heatmap'){
         phylo_div = document.getElementById('phyloseq02_div');
-        info_line = create_header('phyloseq', pi_local);
+        info_line = create_header('phyloseq02', pi_local);
         document.getElementById('phyloseq02_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq02_div').style.display = 'block';
         phy = document.getElementById('phyloseq_heatmap_phylum').value;
@@ -1776,7 +1776,7 @@ function create_phyloseq(ts,code) {
         args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
       }else if(code == 'network'){
         phylo_div = document.getElementById('phyloseq03_div');
-        info_line = create_header('phyloseq', pi_local);
+        info_line = create_header('phyloseq03', pi_local);
         document.getElementById('phyloseq03_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq03_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_network_md1').value;
@@ -1795,7 +1795,7 @@ function create_phyloseq(ts,code) {
         args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
       }else if(code == 'ord'){
         phylo_div = document.getElementById('phyloseq04_div');
-        info_line = create_header('phyloseq', pi_local);
+        info_line = create_header('phyloseq04', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_ord_md1').value;
@@ -1881,8 +1881,17 @@ function create_header(viz, pi) {
       txt = 'Data Browser --> ';
     }else if(viz == 'adiversity'){
       txt = 'Alpha Diversity --> ';
-    }else if(viz == 'phyloseq'){
-      txt = 'Phyloseq testing --> ';
+    }else if(viz == 'phyloseq01'){
+      txt = 'Phyloseq Bars --> ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'phyloseq02'){
+      txt = 'Phyloseq Heatmap --> ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'phyloseq03'){
+      txt = 'Phyloseq Network --> ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'phyloseq04'){
+      txt = 'Phyloseq Ordination --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else{
       txt = 'ERROR in fxn create_headers '+viz;

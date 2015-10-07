@@ -58,9 +58,11 @@ h = 5
 # scale_fill_discrete <- function(palname = pal, ...) {
 #     scale_fill_brewer(palette = palname, ...)
 # }
-theme_set(theme_bw())
+#theme_set(theme_bw())
 
-
+colourCount = ncol(OTU)
+library(RColorBrewer)
+cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 
 	# 3- PCoA on 'bray' Distance
 	#ord_type = 'NMDS'
@@ -69,10 +71,12 @@ theme_set(theme_bw())
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
-	p = p + geom_point(size = 7, alpha = 0.75)
-	p = p + scale_colour_brewer(type = "qual", palette = "Paired")
+	p = p + geom_point(size = 4, alpha = 0.75)
+	#p = p + scale_colour_brewer(cols)
 	#p = p + scale_colour_brewer()
+	p = p + scale_color_manual(values = cols)
 	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
+	p + theme_bw() + theme(text = element_text(size = 10))
 
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
