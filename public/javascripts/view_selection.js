@@ -1098,7 +1098,7 @@ function create_viz(visual, ts) {
     }else if(visual === 'phyloseq03'){
       create_phyloseq(ts,'network');
     }else if(visual === 'phyloseq04'){
-      create_phyloseq(ts,'ord1');
+      create_phyloseq(ts,'ord');
     }else if(visual === 'phyloseq05'){
       create_phyloseq(ts,'tree');
     }else{
@@ -1748,7 +1748,7 @@ function create_adiversity(ts){
 function create_phyloseq(ts,code) {
       //alert('im HM')
       phyloseq_created = true;
-      var phylo_div,info_line
+      var phylo_div,info_line,md1='',md2='',phy='',ord_type;
       var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&plot_type="+code;
@@ -1759,11 +1759,21 @@ function create_phyloseq(ts,code) {
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq01_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq01_div').style.display = 'block';
+        phy = document.getElementById('phyloseq_bar_phylum').value;
+        args += "&phy="+phy;
       }else if(code == 'heatmap'){
         phylo_div = document.getElementById('phyloseq02_div');
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq02_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq02_div').style.display = 'block';
+        phy = document.getElementById('phyloseq_heatmap_phylum').value;
+        ord_types = document.getElementsByName('phyloseq_heatmap_type');
+        md1 = document.getElementById('phyloseq_heatmap_md1').value;
+        ord_type = 'PCoA';
+        if(ord_types[0].checked == true){
+          ord_type = 'NMDS';
+        }
+        args += "&phy="+phy+"&md1="+md1+"&ordtype="+ord_type;
       }else if(code == 'network'){
         phylo_div = document.getElementById('phyloseq03_div');
         info_line = create_header('phyloseq', pi_local);
@@ -1771,15 +1781,31 @@ function create_phyloseq(ts,code) {
         document.getElementById('pre_phyloseq03_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_network_md1').value;
         md2 = document.getElementById('phyloseq_network_md2').value;
-        args += "&md1="+md1+"&md2="+md2;
-      }else if(code == 'ord1'){
+        max_dists = document.getElementsByName('phyloseq_nwk_dist');
+        max_dist = '0.3';
+        if(max_dists[0].checked == true){
+          max_dist = '0.1';
+        }else if(max_dists[1].checked == true){
+          max_dist = '0.2';
+        }else if(max_dists[2].checked == true){
+          max_dist = '0.3';
+        }else if(max_dists[3].checked == true){
+          max_dist = '0.4';
+        }
+        args += "&md1="+md1+"&md2="+md2+"&maxdist="+max_dist;
+      }else if(code == 'ord'){
         phylo_div = document.getElementById('phyloseq04_div');
         info_line = create_header('phyloseq', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_ord_md1').value;
         md2 = document.getElementById('phyloseq_ord_md2').value;
-        args += "&md1="+md1+"&md2="+md2;
+        ord_types = document.getElementsByName('phyloseq_ord_type');
+        ord_type = 'PCoA';
+        if(ord_types[0].checked == true){
+          ord_type = 'NMDS';
+        }
+        args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
       }else if(code == 'tree'){
         phylo_div = document.getElementById('phyloseq05_div');
         info_line = create_header('phyloseq', pi_local);
@@ -1801,8 +1827,9 @@ function create_phyloseq(ts,code) {
       xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           var htmlstring = xmlhttp.responseText;           
-           phylo_div.innerHTML = htmlstring;
+           var response = xmlhttp.responseText; 
+           //var svgString = new XMLSerializer().serializeToString(response);          
+           phylo_div.innerHTML = response;
         }
       };
       xmlhttp.send(args);   
@@ -1856,6 +1883,7 @@ function create_header(viz, pi) {
       txt = 'Alpha Diversity --> ';
     }else if(viz == 'phyloseq'){
       txt = 'Phyloseq testing --> ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else{
       txt = 'ERROR in fxn create_headers '+viz;
     }

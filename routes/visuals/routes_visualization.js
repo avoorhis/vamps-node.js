@@ -921,9 +921,15 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     var dist_metric = req.body.metric;
     var plot_type = req.body.plot_type;
+    var image_file = ts+'_phyloseq_'+plot_type+'.svg';
+    var image_path = path.join(process.env.PWD,'tmp', image_file);
+    try{
+      fs.unlinkSync(image_path);
+    }catch(err){
+      console.log(err);
+    }
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
-    var md1 = req.body.md1 || "Project";
-    var md2 = req.body.md2 || "Description";
+    
     // var biom_file_name = ts+'_count_matrix.biom';
     // var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     // var tax_file_name = ts+'_taxonomy.txt';
@@ -936,16 +942,47 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     //console.log(biom_file)
     //var distmtx_file_name = ts+'_distance.csv';
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-   
     var options = {
       scriptPath : 'public/scripts/',
-      args :       [ tmp_path, ts, plot_type, dist_metric, md1, md2],
+      args :       [ tmp_path, ts ],
     };
-    
+    if(plot_type == 'bar'){
+      script = 'phyloseq_bar.R';
+      var phy = req.body.phy;
+      var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
+      if(fill === 'Klass'){
+        fill = 'Class';
+      }
+      options.args = options.args.concat([phy, fill]);
+    }else if(plot_type == 'heatmap'){
+      script = 'phyloseq_heatmap.R';
+      var phy = req.body.phy;
+      var md1 = req.body.md1;
+      var ordtype = req.body.ordtype;
+      var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
+      if(fill === 'Klass'){
+        fill = 'Class';
+      }
+      options.args = options.args.concat([dist_metric, phy, md1, ordtype, fill]);
+    }else if(plot_type == 'network'){
+      script = 'phyloseq_network.R';
+      var md1 = req.body.md1 || "Project";
+      var md2 = req.body.md2 || "Description";
+      var maxdist = req.body.maxdist || "0.3";
+      options.args = options.args.concat([dist_metric, md1, md2, maxdist]);
+    }else if(plot_type == 'ord'){
+      script = 'phyloseq_ord.R';
+      var md1 = req.body.md1 || "Project";
+      var md2 = req.body.md2 || "Description";
+      var ordtype = req.body.ordtype || "PCoA";
+      options.args = options.args.concat([dist_metric, md1, md2, ordtype]);
+    }else{
+      //ERROR
+    }
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
-    console.log(options.scriptPath+'/phyloseq_script.R '+options.args.join(' '));
-    var phyloseq_process = spawn( options.scriptPath+'/phyloseq_script.R', options.args, {
+    console.log(options.scriptPath+script+' '+options.args.join(' '));
+    var phyloseq_process = spawn( options.scriptPath+script, options.args, {
             env:{'PATH':req.config.PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
@@ -957,7 +994,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
           console.log('phyloseq_process process exited with code ' + code);
           //distance_matrix = JSON.parse(output);
           //var last_line = ary[ary.length - 1];
-          var image, image_file
+          
           if(code === 0){   // SUCCESS       
             
               //var image = '/tmp_images/'+ts+'_heatmap.pdf';
@@ -971,14 +1008,13 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
               //   image = '/'+ts+'_phyloseq_network.svg';
               //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_network.svg');
               // }else if(plot_type == 'ord1'){
-              //   image = '/'+ts+'_phyloseq_ord1.svg';
+              //   image = '/'+ts+'_phyloseq_ord.svg';
               //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_ord1.svg');
               // }else if(plot_type == 'tree'){
               //   image = '/'+ts+'_phyloseq_tree.svg';
               //   image_file = path.join(process.env.PWD,'tmp', ts+'_phyloseq_tree.svg');
               // }
-              image_file = ts+'_phyloseq_'+plot_type+'.svg';
-              image_path = path.join(process.env.PWD,'tmp', image_file);
+              
    //             var html = "<div id='pdf'>";
 //               //html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
 //               html += "<object data='"+image+"' type='application/pdf' />";
@@ -986,20 +1022,23 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //               html += "</object></div>";
 //               console.log(html);
 //               res.send(html);
-
-               fs.readFile(image_path, 'utf8', function (err, data) {
-                if (err) {
-                   console.log(err);
-                   res.send('Phyloseq File Error');
-                 }
-                 console.log('Reading: '+image_file)
-                 //data_items = data.split('\n')
+//res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+//  res.header('Expires', '-1');
+ // res.header('Pragma', 'no-cache');
+                res.send("<img src='/"+image_file+"'>")
+              //  fs.readFile(image_path, 'utf8', function (err, data) {
+              //   if (err) {
+              //      console.log(err);
+              //      res.send('Phyloseq File Error');
+              //    }
+              //    console.log('Reading: '+image_file)
+              //    //data_items = data.split('\n')
              
-                 //X=data_items.slice(1,data_items.length)
-                 //d = X.join('\n')
-                 //console.log(d)
-                 res.send(data);
-              });
+              //    //X=data_items.slice(1,data_items.length)
+              //    //d = X.join('\n')
+              //    //console.log(d)
+              //    res.send(data);
+              // });
            
                                           
           }else{

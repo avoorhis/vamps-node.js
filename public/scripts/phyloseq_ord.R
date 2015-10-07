@@ -5,28 +5,29 @@ print(args)
 
 tmp_path <- args[1]
 prefix   <-  args[2]
-plot_type<- args[3]
-md1 <- args[5]
-md2 <- args[6]
+dist_metric<-args[3]
+md1 <- args[4]
+md2 <- args[5]
+ord_type <- args[6]
 biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
 map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
-if(args[4]  == "morisita_horn"){
+if(dist_metric  == "morisita_horn"){
 	dist = 'horn'
 	disp = "Morisita-Horn"
-}else if(args[4] == "jaccard"){
+}else if(dist_metric == "jaccard"){
 	dist = 'jaccard'
 	disp = "Jaccard"
-}else if(args[4] == "kulczynski"){
+}else if(dist_metric == "kulczynski"){
 	dist = 'kulczynski'
 	disp = "Kulczynski"
-}else if(args[4] == "canberra"){
+}else if(dist_metric == "canberra"){
 	dist = 'canberra'
 	disp = "Canberra"
-}else if(args[4] == "bray_curtis"){
+}else if(dist_metric == "bray_curtis"){
 	dist = 'bray'
 	disp = "Bray_Curtis"
 }
@@ -59,30 +60,12 @@ h = 5
 # }
 theme_set(theme_bw())
 
-if(plot_type == 'bar'){
-	out_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	plot_bar(physeq, fill = "Phylum")
 
-}else if(plot_type == 'heatmap'){
-	out_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
-	#svg(out_file, width=w, height=h)
-	#png(out_file, width=w, height=h)
-	svg(out_file,width=w)
-	gpac <- subset_taxa(physeq, Phylum=="Acidobacteria")
-	gpt <- subset_taxa(physeq, Domain=="Bacteria")
-	plot_heatmap(gpt)
-}else if(plot_type == 'network'){
-	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	plot_net(physeq, maxdist = 0.3, color = md2, shape = md1)
-
-}else if(plot_type == 'ord1'){
 
 	# 3- PCoA on 'bray' Distance
 	#ord_type = 'NMDS'
-	ord_type = 'PCoA'
-	out_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
+	#ord_type = 'PCoA'
+	out_file = paste("tmp/",prefix,"_phyloseq_ord.svg",sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
@@ -91,13 +74,7 @@ if(plot_type == 'bar'){
 	#p = p + scale_colour_brewer()
 	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
 
-}else if(plot_type == 'tree'){
-	out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-}else{
-    cat("plot_type must be one of: 'bar', 'heatmap', 'network', 'ord1' or 'tree' -- Exiting\n")
-    quit()
-}
+
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
 

@@ -5,28 +5,30 @@ print(args)
 
 tmp_path <- args[1]
 prefix   <-  args[2]
-plot_type<- args[3]
+dist_metric<-args[3]
+phy   <- args[4]
 md1 <- args[5]
-md2 <- args[6]
+ord_type <- args[6]
+fill <- args[7]
 biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
 map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
-if(args[4]  == "morisita_horn"){
+if(dist_metric  == "morisita_horn"){
 	dist = 'horn'
 	disp = "Morisita-Horn"
-}else if(args[4] == "jaccard"){
+}else if(dist_metric == "jaccard"){
 	dist = 'jaccard'
 	disp = "Jaccard"
-}else if(args[4] == "kulczynski"){
+}else if(dist_metric == "kulczynski"){
 	dist = 'kulczynski'
 	disp = "Kulczynski"
-}else if(args[4] == "canberra"){
+}else if(dist_metric == "canberra"){
 	dist = 'canberra'
 	disp = "Canberra"
-}else if(args[4] == "bray_curtis"){
+}else if(dist_metric == "bray_curtis"){
 	dist = 'bray'
 	disp = "Bray_Curtis"
 }
@@ -34,19 +36,21 @@ if(args[4]  == "morisita_horn"){
 #biom_file<- "andy_1443630794574_count_matrix.biom"
 #tax_file <- "andy_1443630794574_taxonomy.txt"
 #map_file <- "andy_1443630794574_metadata.txt"
-
+library(scales)
 library(phyloseq)
-library(ggplot2)
+#library(ggplot2)
+
 TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
 OTU <- import_biom(biom_file)
 MAP <- import_qiime_sample_data(map_file)
 TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
+
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
-w = 14
-h = 11
+#w = 14
+#h = 11
 w = 7
 h = 5
 #theme_set(theme_bw())
@@ -57,47 +61,19 @@ h = 5
 # scale_fill_discrete <- function(palname = pal, ...) {
 #     scale_fill_brewer(palette = palname, ...)
 # }
-theme_set(theme_bw())
 
-if(plot_type == 'bar'){
-	out_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	plot_bar(physeq, fill = "Phylum")
 
-}else if(plot_type == 'heatmap'){
 	out_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
+	unlink(out_file)
 	#svg(out_file, width=w, height=h)
 	#png(out_file, width=w, height=h)
-	svg(out_file,width=w)
-	gpac <- subset_taxa(physeq, Phylum=="Acidobacteria")
-	gpt <- subset_taxa(physeq, Domain=="Bacteria")
-	plot_heatmap(gpt)
-}else if(plot_type == 'network'){
-	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	plot_net(physeq, maxdist = 0.3, color = md2, shape = md1)
+	svg(out_file)
+	gpac <- subset_taxa(physeq, Phylum==phy)
+	gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+	#gpac50 <-names(sort(taxa_sums(gpac),TRUE)[1:50])
+	#gpac50<-prune_taxa(gpac50, gpac)
+	plot_heatmap(gpac, method=ord_type, distance=dist, sample.label=md1, taxa.label=fill, na.value = "black",)
 
-}else if(plot_type == 'ord1'){
-
-	# 3- PCoA on 'bray' Distance
-	#ord_type = 'NMDS'
-	ord_type = 'PCoA'
-	out_file = paste("tmp/",prefix,"_phyloseq_ord1.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	ordu = ordinate(physeq, ord_type, dist)
-	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
-	p = p + geom_point(size = 7, alpha = 0.75)
-	p = p + scale_colour_brewer(type = "qual", palette = "Paired")
-	#p = p + scale_colour_brewer()
-	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
-
-}else if(plot_type == 'tree'){
-	out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-}else{
-    cat("plot_type must be one of: 'bar', 'heatmap', 'network', 'ord1' or 'tree' -- Exiting\n")
-    quit()
-}
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
 

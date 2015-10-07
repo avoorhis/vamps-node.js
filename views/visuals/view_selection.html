@@ -165,62 +165,182 @@
                         <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
                       </td>
           <%        }else{                                                                            %>
+          <%            if(link_id == 'dbrowser_link_id'){ %> 
+          <%              link = 'dbrowser' %>
+          <%              target = '_blank' %>
+          <%            }else if(link_id == 'pcoa_3d_link_id'){ %>
+          <%              link = 'pcoa_3d' %>
+          <%              target= '_blank' %>
+          <%            } %>  
 
+          <%            var phy_lookup = {} %>
+          <%                for(var i in mtx.rows){ %>
+          <%                  tax_items = mtx.rows[i].id.split(';') %>
+          <%                  phy = tax_items[1] %>
+          <%                  if(phy !== 'phylum_NA'){ %>
+          <%                    phy_lookup[phy] = 1 %>
+          <%                  } %>
+          <%            } %>
 
-          <% if(link_id == 'dbrowser_link_id'){ %> 
-              <% link = 'dbrowser' %>
-              <% target = '_blank' %>
-          <% }else if(link_id == 'pcoa_3d_link_id'){ %>
-              <% link = 'pcoa_3d' %>
-              <% target= '_blank' %>
-          <% } %>      
+          <%            if(link_id == 'phyloseq01_link_id'){ %>   
+          <%                var phy_id = 'phyloseq_bar_phylum' %> 
+          
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                              <center>                        
+                                <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                                  <%= name %><br>              
+                                   <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                                </a>
+                              
+                              <table><tr><td>(subset) Phylum:
+                                <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:100px'>
+                                  
+                                  <% for(var phy in phy_lookup){ %>
+                                    <option value='<%= phy %>'><%= phy %></option>
+                                  <% } %>
+                                  
+                                </select>
+                              </td>
+                            </tr></table>
+                              </center>              
+                            </td>             
+          <%            }else if(link_id == 'phyloseq02_link_id'){ %>   
+          <%                var phy_id  = 'phyloseq_heatmap_phylum' %> 
+          <%                var id1     = 'phyloseq_heatmap_md1' %> 
+          <%                var ordtype = 'phyloseq_heatmap_type' %>
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                              <center>                        
+                                <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                                  <%= name %><br>              
+                                   <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                                </a>
+                              
+                              <table><tr><td>(subset) Phylum:
+                                <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:120px'>
+                                  
+                                  <% for(var phy in phy_lookup){ %>
+                                    <option value='<%= phy %>'><%= phy %></option>
+                                  <% } %>
+                                  
+                                </select>
+                              </td>
+                            </tr>
+                            <tr><td>(metadata) Variable:
+                                <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
+                                  <option value='Project' selected >...</option>
+                                  <% for(var i in pi.metadata){ %>
+                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                  <% } %>
+                                  <option value='Description'>Project_Dataset</option>
+                                  <option value='Project' >Project</option>
+                                </select>
+                              </td>
+                            </tr>
+                            <tr><td>Ord Type: 
+                              <input type='radio' name='<%= ordtype %>' id='' value='NMDS' > NMDS&nbsp;&nbsp;
+                              <input type='radio' checked name='<%= ordtype %>' id='' value='PCoA' > PCoA
+                              </td>
+                            </tr>
+                          </table>
+                              </center>              
+                            </td>  
+          <%            }else if(link_id == 'phyloseq03_link_id'){ %> 
                       
-                      <% if(link_id == 'phyloseq03_link_id' || link_id == 'phyloseq04_link_id'){ %> 
-                        <% if(link_id == 'phyloseq03_link_id'){ %>
-                          <% var id1 = 'phyloseq_network_md1' %>
-                          <% var id2 = 'phyloseq_network_md2' %>
-                        <% }else if(link_id == 'phyloseq04_link_id'){ %>
-                          <% var id1 = 'phyloseq_ord_md1' %>
-                          <% var id2 = 'phyloseq_ord_md2' %>
-                        <% } %>
-                          <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+          <%                var id1 = 'phyloseq_network_md1' %>
+          <%                var id2 = 'phyloseq_network_md2' %>
+          
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                              <center>                        
+                                <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                                  <%= name %><br>              
+                                   <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                                </a>
+                              
+                              <table><tr><td>(metadata) Shape:
+                                <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
+                                  <option value='Project' selected >...</option>
+                                  <% for(var i in pi.metadata){ %>
+                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                  <% } %>
+                                  <option value='Description'>Project_Dataset</option>
+                                  <option value='Project' >Project</option>
+                                </select>
+                              </td>
+                            </tr><tr>
+                              <td>(metadata) Color:
+                                <select id='<%= id2 %>' name='<%= id2 %>' style='width:120px'>
+                                  <option value='Description' selected >...</option>
+                                  <% for(var i in pi.metadata){ %>
+                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                  <% } %>
+                                  <option value='Description' >Project_Dataset</option>
+                                  <option value='Project'>Project</option>
+                                </select>
+                              </td></tr>
+                              <tr><td>Max Dist: 
+                              <input type='radio' name='phyloseq_nwk_dist' id='' value='0.1' > 0.1&nbsp;&nbsp;
+                              <input type='radio' name='phyloseq_nwk_dist' id='' value='0.2' > 0.2&nbsp;&nbsp;
+                              <input type='radio' checked name='phyloseq_nwk_dist' id='' value='0.3' > 0.3&nbsp;&nbsp;
+                              <input type='radio' name='phyloseq_nwk_dist' id='' value='0.4' > 0.4
+                              </td></tr>
+                            </table>
+                              </center>              
+                            </td>                      
+          <%            }else if(link_id == 'phyloseq04_link_id'){ %> 
+         
+          <%               var id1 = 'phyloseq_ord_md1' %>
+          <%               var id2 = 'phyloseq_ord_md2' %>
+          <%               var ordtype = 'phyloseq_ord_type' %>
+         
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                              <center>                        
+                                <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                                  <%= name %><br>              
+                                   <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                                </a>
+                              
+                              <table><tr><td>(metadata)  Shape:
+                                <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
+                                  <option value='Project' selected >...</option>
+                                  <% for(var i in pi.metadata){ %>
+                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                  <% } %>
+                                  <option value='Description'>Project_Dataset</option>
+                                  <option value='Project' >Project</option>
+                                </select>
+                              </td>
+                            </tr><tr>
+                              <td>(metadata) Color:
+                                <select id='<%= id2 %>' name='<%= id2 %>' style='width:120px'>
+                                  <option value='Description' selected >...</option>
+                                  <% for(var i in pi.metadata){ %>
+                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                  <% } %>
+                                  <option value='Description' >Project_Dataset</option>
+                                  <option value='Project'>Project</option>
+                                </select>
+                              </td></tr>
+                              <tr><td>Ord Type: 
+                              <input type='radio' name='<%= ordtype %>' id='<%= ordtype %>' value='NMDS' > NMDS&nbsp;&nbsp;
+                              <input type='radio' checked name='<%= ordtype %>' id='<%= ordtype %>' value='PCoA' > PCoA
+                              </td></tr>
+                            </table>
+                              </center>              
+                            </td>                      
+          
+
+          
+
+          <%            }else{ %>                                         
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                             <center>                        
                               <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
                                 <%= name %><br>              
                                  <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
                               </a>
-                            
-                            <table><tr><td>Shape el:
-                              <select id='<%= id1 %>' name='<%= id1 %>' style='width:50px'>
-                                <option value='Project' selected >...</option>
-                                <% for(var i in pi.metadata){ %>
-                                  <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
-                                <% } %>
-                                <option value='Description'>Project_Dataset</option>
-                                <option value='Project' >Project</option>
-                              </select>
-                            </td><td>&nbsp;&nbsp;</td><td>Color el:
-                              <select id='<%= id2 %>' name='<%= id2 %>' style='width:50px'>
-                                <option value='Description' selected >...</option>
-                                <% for(var i in pi.metadata){ %>
-                                  <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
-                                <% } %>
-                                <option value='Description' >Project_Dataset</option>
-                                <option value='Project'>Project</option>
-                              </select>
-                            </td></tr></table>
-                            </center>              
-                          </td>                      
-                      <% }else{ %>                                         
-                          <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
-                          <center>                        
-                            <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
-                              <%= name %><br>              
-                               <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
-                            </a>
-                          </center>                     
-                          </td>
-                      <% } %>
+                            </center>                     
+                            </td>
+          <%            } %>
 
           <%        }                                                                                 %>              
           <%    }                                                                                     %>
@@ -244,7 +364,7 @@
 	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-default'>download</button>
   </nav>
-  <div id='tax_table_div'   class='display_none well overflow_500'></div>
+  <center><div id='tax_table_div'   class='display_none well overflow_500'></div></center>
   
   <!-- Metadata -->
   <br>
@@ -256,7 +376,7 @@
 	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='metadata_local_table_div' class='display_none well overflow_500'></div>
+  <center><div id='metadata_local_table_div' class='display_none well overflow_500'></div></center>
   
   
   <!-- Distance Heatmap -->
@@ -269,7 +389,7 @@
  	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dheatmap_div' class='display_none well'></div>
+  <center><div id='dheatmap_div' class='display_none well'></div></center>
   
 
 <!-- Frequency Heatmap -->
@@ -282,7 +402,7 @@
  	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
  	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='fheatmap_div' class='display_none well'></div>
+  <center><div id='fheatmap_div' class='display_none well'></div></center>
 
 
   <!-- BarCharts -->
@@ -321,7 +441,7 @@
 	<button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram1_div'        class='display_none well '></div>
+  <center><div id='dendrogram1_div'        class='display_none well '></div></center>
   
   <!-- Dendrogram 2 phylonator -->
   <br>
@@ -333,7 +453,7 @@
 	<button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram2_div'        class='display_none well '></div>
+  <center><div id='dendrogram2_div'        class='display_none well '></div></center>
   
   <!-- Dendrogram 3 radial -->
   <br>
@@ -345,7 +465,7 @@
   <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram3_div'        class='display_none well '></div>
+  <center><div id='dendrogram3_div'        class='display_none well '></div></center>
 
   <!-- Dendrogram pdf-->
   <br>
@@ -358,7 +478,7 @@
 	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='dendrogram_pdf_div'        class='display_none well'></div>
+  <center><div id='dendrogram_pdf_div'        class='display_none well'></div></center>
 
   <!-- PCoA 2D Python -->
   <br>
@@ -370,7 +490,7 @@
 	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='pcoa_div'                    class='display_none well'></div> 
+  <center><div id='pcoa_div'                    class='display_none well'></div> </center>
 
   <!-- PCoA 3D Emperor -->
    <br>
@@ -382,7 +502,7 @@
 	<button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='pcoa_3d_div'                 class='display_none well'></div> 
+  <center><div id='pcoa_3d_div'                 class='display_none well'></div> </center>
   
   <!-- GEOSPATIAL -->
   <br>
@@ -394,7 +514,7 @@
 	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
 	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   </nav>
-  <div id='map-canvas'      class='display_none well'></div> 
+  <center><div id='map-canvas'      class='display_none well'></div> </center>
   
   <!-- KRONA (Data Browser) -->
 <!--   
@@ -419,7 +539,7 @@
   <button type='button' id='adiversity_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='adiversity_div'      class='display_none well'></div>
+ <center><div id='adiversity_div'      class='display_none well'></div></center>
 
   <!-- PHYLOSEQ 01 -->
  <br>
@@ -431,7 +551,7 @@
   <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq01_div'      class='display_none well'></div>
+ <center><div id='phyloseq01_div'      class='display_none well'></div></center>
  
  <!-- PHYLOSEQ 02 -->
  <br>
@@ -443,7 +563,7 @@
   <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq02_div'      class='display_none well'></div>
+ <center><div id='phyloseq02_div'      class='display_none well'></div></center>
  
   <!-- PHYLOSEQ 03 -->
  <br>
@@ -455,7 +575,7 @@
   <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn pull-right btn-default' value='hide'>hide</button>
   <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
  </nav>
- <div id='phyloseq03_div'      class='display_none well'></div>
+ <center><div id='phyloseq03_div'      class='display_none well'></div></center>
  
   <!-- PHYLOSEQ 04 -->
  <br>
@@ -468,7 +588,7 @@
   <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   
  </nav>
- <div id='phyloseq04_div'      class='display_none well'></div>
+ <center><div id='phyloseq04_div'      class='display_none well'></div></center>
  
   <!-- PHYLOSEQ 05 -->
  <br>
@@ -481,7 +601,7 @@
   <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn pull-right btn-default'>download</button>
   
  </nav>
- <div id='phyloseq05_div'      class='display_none well'></div>
+ <center><div id='phyloseq05_div'      class='display_none well'></div></center>
 
 <!-- -------------------------------------------------- -->
 
