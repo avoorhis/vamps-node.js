@@ -6,10 +6,10 @@ print(args)
 tmp_path 		<- args[1]
 prefix   		<- args[2]
 out_file 		<- args[3]
-dist_metric	<- args[3]
-md1 				<- args[4]
-md2 				<- args[5]
-max_dist 		<- args[6]
+dist_metric	<- args[4]
+md1 				<- args[5]
+md2 				<- args[6]
+max_dist 		<- args[7]
 biom_file 	<- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 tax_file 		<- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
 map_file 		<- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
