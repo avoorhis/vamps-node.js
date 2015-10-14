@@ -1116,7 +1116,8 @@ function create_counts_table() {
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
       var tax_counts_div = document.getElementById('tax_table_div');
-	  tax_counts_div.style.display = 'block';
+      tax_counts__div.innerHTML = '';
+	    tax_counts_div.style.display = 'block';
       var html = '';
          
       html += "</table>  ";
@@ -1171,7 +1172,8 @@ function create_metadata_table() {
     metadata_table_created = true;
     var info_line = create_header('mtable', pi_local);
     var metadata_div = document.getElementById('metadata_local_table_div');
-	  metadata_div.style.display = 'block';
+	  metadata_div.innerHTML = '';
+    metadata_div.style.display = 'block';
     document.getElementById('pre_metadata_table_div').style.display = 'block';
     var html = '';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
@@ -1207,29 +1209,29 @@ function create_dendrogram(ts, image_type, script) {
       if(image_type == 'pdf'){
         //dendrogram_pdf_created = true;
         var dend_div = document.getElementById('dendrogram_pdf_div');
-        document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';
+        document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';        
   	    dend_div.style.display = 'block';
         document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
       }else if(script == 'phylogram'){  // svg
         //dendrogram1_created = true;
         var dend_div = document.getElementById('dendrogram1_div');
-        document.getElementById('pre_dendrogram1_div').style.display = 'block';
+        document.getElementById('pre_dendrogram1_div').style.display = 'block';        
   	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram1_title').innerHTML = info_line;
       }else if(script == 'phylonator'){  // svg
         //dendrogram2_created = true;
         var dend_div = document.getElementById('dendrogram2_div');
-        document.getElementById('pre_dendrogram2_div').style.display = 'block';
+        document.getElementById('pre_dendrogram2_div').style.display = 'block';        
   	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram2_title').innerHTML = info_line;
       }else if(script == 'radial'){  // svg
         //dendrogram3_created = true;
         var dend_div = document.getElementById('dendrogram3_div');
-        document.getElementById('pre_dendrogram3_div').style.display = 'block';
+        document.getElementById('pre_dendrogram3_div').style.display = 'block';        
         dend_div.style.display = 'block';
         document.getElementById('dendrogram3_title').innerHTML = info_line;
       }
-      
+      dend_div.innerHTML = '';
       
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       
@@ -1317,6 +1319,7 @@ function create_pcoa(ts,image_type) {
         pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_div');
         info_line = create_header('pcoa', pi_local);
+        
   	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_title').innerHTML = info_line;
         document.getElementById('pre_pcoa_div').style.display = 'block';
@@ -1325,6 +1328,7 @@ function create_pcoa(ts,image_type) {
         pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_3d_div');
         info_line = create_header('pcoa_3d', pi_local);
+        
   	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_3d_title').innerHTML = info_line;
         document.getElementById('pre_pcoa_3d_div').style.display = 'block';
@@ -1333,7 +1337,7 @@ function create_pcoa(ts,image_type) {
         // ERROR
     }
       
-      
+      pcoa_div.innerHTML = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
@@ -1392,6 +1396,7 @@ function create_dheatmap(ts) {
       //alert('im HM')
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
+      dhm_div.innerHTML = '';
 	    dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('dhm', pi_local);
@@ -1423,6 +1428,7 @@ function create_fheatmap(ts) {
       //alert('im HM')
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
+      fhm_div.innerHTML = '';
 	    fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('fhm', pi_local);
@@ -1454,7 +1460,8 @@ function create_geospatial(ts) {
       //alert('in GEO')
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
-	    geo_div.style.display = 'block';
+	    geo_div.innerHTML = '';
+      geo_div.style.display = 'block';
 	    geo_div.style.height = '900px';
             
       var info_line = create_header('geo', pi_local);
@@ -1692,6 +1699,7 @@ function create_adiversity(ts){
 
       adiversity_created = true;
       var adiversity_div = document.getElementById('adiversity_div');
+      adiversity_div.innerHTML = '';
       adiversity_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('adiversity', pi_local);
@@ -1808,15 +1816,15 @@ function create_phyloseq(ts,code) {
         args += "&md1="+md1+"&md2="+md2+"&ordtype="+ord_type;
       }else if(code == 'tree'){
         phylo_div = document.getElementById('phyloseq05_div');
-        info_line = create_header('phyloseq', pi_local);
+        info_line = create_header('phyloseq05', pi_local);
         document.getElementById('phyloseq05_title').innerHTML = info_line;
         document.getElementById('pre_phyloseq05_div').style.display = 'block';
+        md1 = document.getElementById('phyloseq_tree_md1').value;
+        args += "&md1="+md1;
       }
       phylo_div.innerHTML = '';
       phylo_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
-      
-      
       
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/phyloseq', true);
@@ -1839,6 +1847,7 @@ function create_phyloseq(ts,code) {
 //  Interval timer  
 //
 function myWaitFunction(div) {
+    if(showDots === '..........'){ showDots = ''; }
     showDots = showDots || '.';
     div.innerHTML = showDots;
     showDots += '.';
@@ -1892,6 +1901,9 @@ function create_header(viz, pi) {
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else if(viz == 'phyloseq04'){
       txt = 'Phyloseq Ordination --> ';
+      txt += ' Metric: ' + pi.selected_distance+'; ';  
+    }else if(viz == 'phyloseq05'){
+      txt = 'Phyloseq Tree --> ';
       txt += ' Metric: ' + pi.selected_distance+'; ';  
     }else{
       txt = 'ERROR in fxn create_headers '+viz;

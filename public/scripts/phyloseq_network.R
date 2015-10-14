@@ -58,13 +58,14 @@ h = 5
 # scale_fill_discrete <- function(palname = pal, ...) {
 #     scale_fill_brewer(palette = palname, ...)
 # }
-theme_set(theme_bw())
+#theme_set(theme_bw())
 
 
 	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
+	plot_title = paste('Network using ',disp,'; max-dist: ',max_dist,sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ig <- make_network(physeq, dist.fun=distance, max.dist=max_dist)
-	plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1)
+	plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1, title = plot_title)
 
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html

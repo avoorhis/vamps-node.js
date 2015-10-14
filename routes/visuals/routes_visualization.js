@@ -413,43 +413,54 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var fheatmap_process = spawn( options.scriptPath+'/fheatmap.R', options.args, {
           env:{'PATH':req.config.PATH},
           detached: true, 
-          stdio: [ 'ignore', null, log ]
-          //stdio: 'pipe'  // stdin, stdout, stderr
+          //stdio: [ 'ignore', null, log ]
+          stdio: 'pipe'  // stdin, stdout, stderr
       }); 
-  
-  
-
+  stdout = '';
+  fheatmap_process.stdout.on('data', function (data) {
+      
+      stdout += data;    
    
+  });
+  stderr = '';
+  fheatmap_process.stderr.on('data', function (data) {
+      
+      stderr += data;    
+   
+  }); 
+  
   fheatmap_process.on('close', function (code) {
         console.log('fheatmap_process process exited with code ' + code);
         //distance_matrix = JSON.parse(output);
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
-              image = '/'+ts+'__heatmap.svg';
-              image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
-            
-              fs.readFile(image_file, 'utf8', function (err,data) {
-                if (err) {
-                   console.log(err);
-                   res.send('FreqHeatmap File Error');
-                 }
-                 console.log('Reading: '+image)
-                 //data_items = data.split('\n')
+              image_file = ts+'_heatmap.svg';
+              //image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
+              res.send("<img src='/"+image_file+"'>")
+              // fs.readFile(image_file, 'utf8', function (err,data) {
+              //   if (err) {
+              //      console.log(err);
+              //      res.send('FreqHeatmap File Error');
+              //    }
+              //    console.log('Reading: '+image)
+              //    //data_items = data.split('\n')
                  
-                 //X=data_items.slice(1,data_items.length)
-                 //d = X.join('\n')
-                 //console.log(d)
-                 res.send(data);
-              });
+              //    //X=data_items.slice(1,data_items.length)
+              //    //d = X.join('\n')
+              //    //console.log(d)
+              //    res.send(data);
+              // });
                                         
         }else{
           console.log('ERROR');
-          res.send('Frequency Heatmap R Script Error');
+          res.send('Frequency Heatmap R Script Error:'+stderr);
         }      
   });   
   
 
 });
+
+
 //
 //
 //
@@ -885,8 +896,6 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     stdout = '';
     alphadiv_process.stdout.on('data', function (data) {
         
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString().trim()
         console.log(data)
         stdout += data;    
      
@@ -894,8 +903,6 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     stderr = '';
     alphadiv_process.stderr.on('data', function (data) {
         
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString().trim()
         console.log(data)
         stderr += data;    
      
@@ -923,59 +930,52 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var plot_type = req.body.plot_type;
     var image_file = ts+'_phyloseq_'+plot_type+'.svg';
     var image_path = path.join(process.env.PWD,'tmp', image_file);
+    var phy,md1,md2,ordtype,maxdist,script
     try{
       fs.unlinkSync(image_path);
+      console.log('Deleted: '+image_file)
     }catch(err){
-      console.log(err);
+      console.log('file not found to unlink: '+image_file);
     }
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
-    
-    // var biom_file_name = ts+'_count_matrix.biom';
-    // var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    // var tax_file_name = ts+'_taxonomy.txt';
-    // var tax_file = path.join(process.env.PWD,'tmp', tax_file_name);
-    // var map_file_name = ts+'_metadata.txt';
-    // var map_file = path.join(process.env.PWD,'tmp', map_file_name);
+    var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
+    if(fill === 'Klass'){
+        fill = 'Class';
+    }
     var tmp_path = path.join(process.env.PWD,'tmp');
     var html = '';
     var title = 'VAMPS';
     //console.log(biom_file)
-    //var distmtx_file_name = ts+'_distance.csv';
-    //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
     var options = {
       scriptPath : 'public/scripts/',
       args :       [ tmp_path, ts ],
     };
     if(plot_type == 'bar'){
       script = 'phyloseq_bar.R';
-      var phy = req.body.phy;
-      var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
-      if(fill === 'Klass'){
-        fill = 'Class';
-      }
+      phy = req.body.phy;
       options.args = options.args.concat([phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
-      var phy = req.body.phy;
-      var md1 = req.body.md1;
-      var ordtype = req.body.ordtype;
-      var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
-      if(fill === 'Klass'){
-        fill = 'Class';
-      }
+      phy = req.body.phy;
+      md1 = req.body.md1;
+      ordtype = req.body.ordtype;
       options.args = options.args.concat([dist_metric, phy, md1, ordtype, fill]);
     }else if(plot_type == 'network'){
       script = 'phyloseq_network.R';
-      var md1 = req.body.md1 || "Project";
-      var md2 = req.body.md2 || "Description";
-      var maxdist = req.body.maxdist || "0.3";
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      maxdist = req.body.maxdist || "0.3";
       options.args = options.args.concat([dist_metric, md1, md2, maxdist]);
     }else if(plot_type == 'ord'){
       script = 'phyloseq_ord.R';
-      var md1 = req.body.md1 || "Project";
-      var md2 = req.body.md2 || "Description";
-      var ordtype = req.body.ordtype || "PCoA";
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      ordtype = req.body.ordtype || "PCoA";
       options.args = options.args.concat([dist_metric, md1, md2, ordtype]);
+    }else if(plot_type == 'tree'){
+      script = 'phyloseq_tree.R';
+      md1 = req.body.md1 || "Description";
+      options.args = options.args.concat([dist_metric, md1]);
     }else{
       //ERROR
     }
@@ -1016,21 +1016,9 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 //  res.header('Expires', '-1');
  // res.header('Pragma', 'no-cache');
+
                 res.send("<img src='/"+image_file+"'>")
-              //  fs.readFile(image_path, 'utf8', function (err, data) {
-              //   if (err) {
-              //      console.log(err);
-              //      res.send('Phyloseq File Error');
-              //    }
-              //    console.log('Reading: '+image_file)
-              //    //data_items = data.split('\n')
              
-              //    //X=data_items.slice(1,data_items.length)
-              //    //d = X.join('\n')
-              //    //console.log(d)
-              //    res.send(data);
-              // });
-           
                                           
           }else{
             console.log('ERROR');

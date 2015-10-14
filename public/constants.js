@@ -155,8 +155,8 @@ constants.VISUAL_THUMBNAILS = { visuals: [
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
     {name:'Phyloseq Ordination (R-svg)',thumb:'/images/visuals/phyloseq_ord1.png',  link:'user_viz_data/phyloseq04', id:'phyloseq04_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
-   // {name:'Phyloseq Tree (R-svg)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
-   //     tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'}
+    {name:'Phyloseq Tree (R-svg)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'}
    
 ]};
     

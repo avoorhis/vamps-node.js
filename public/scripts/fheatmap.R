@@ -150,7 +150,7 @@ pdf_title="VAMPS Frequency Heatmap"
 #print(w)
 #pdf(pdf_file, width=w, height=h, title=pdf_title)
 #pdf(pdf_file, width=w, height=h, title=pdf_title)
-svg(out_file, width=w, height=h)
+svg(out_file)
 
 if(depth=="genus" || depth=="species" || depth=="strain"){
     r_margin=45
@@ -295,7 +295,7 @@ pheatmap(x1,  scale="none", color=mypalette6,
 #title(main=main_label)
 
 
-print(warnings())
+#print(warnings())
 dev.off()
 
 

@@ -25,7 +25,7 @@ var toggle_checking_datasets_by_pr = function(pr_checkbox, datasets_per_pr) {
 
 var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
   if (datasets_per_pr.find('input').prop('checked')) {
-    datasets_per_pr.find('input').prop('checked', false);
+    datasets_per_pr.find('input').prop('checked', false);    
   }
   else {
     datasets_per_pr.find('input').prop('checked', true);
@@ -59,6 +59,11 @@ var toggle_plus_img = function(clicked) {
     plus_img(my_img);
   }
   return false;
+};
+
+var checkme = function(){
+  //var dataset_ids = document.getElementsByName('dataset_ids');
+  alert('dataset_ids[0].value')
 };
 
 var uncheck_closed = function(parent_place) {

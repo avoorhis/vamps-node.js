@@ -6,27 +6,27 @@ $(document).ready(function(){
     $("#unit_selection_id").on("change", get_requested_units_selection_box);
 
     toggle_taxa_btn = document.getElementById('toggle_taxa_btn');
-    if (typeof toggle_taxa_btn !=="undefined") {
+    if (typeof toggle_taxa_btn !== "undefined") {
       toggle_taxa_btn.addEventListener('click', function () {
           toggle_simple_taxa();
       });
     }
 
 
-
-    toggle_meta_r_btn = document.getElementById('toggle_meta_r_btn');
-    if (typeof toggle_meta_r_btn !=="undefined") {
+    toggle_meta_r_btn = document.getElementById('toggle_meta_r_btn') || null;
+    if (toggle_meta_r_btn !== null) {
       toggle_meta_r_btn.addEventListener('click', function () {
           toggle_required_metadata();
       });
     }
 
-    toggle_meta_c_btn = document.getElementById('toggle_meta_c_btn');
-    if (typeof toggle_meta_c_btn !=="undefined") {
+    toggle_meta_c_btn = document.getElementById('toggle_meta_c_btn') || null;
+    if (toggle_meta_c_btn !== null) {
       toggle_meta_c_btn.addEventListener('click', function () {
           toggle_custom_metadata();
       });
     }
+
 
 });
 

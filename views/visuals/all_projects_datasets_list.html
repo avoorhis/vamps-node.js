@@ -47,7 +47,7 @@
               <% var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc; %>
               <li>
                 <label id='<%= pd %>' class='dataset-select'  >
-                   <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= did %>'/>
+                   <input type='checkbox' id='<%= pd %>' name='dataset_ids[]' class='dataset_check' value='<%= did %>' onclick='checkme()'/>
                    <span id='<%= tt_ds_id %>' class='tooltip_pjds_list'><%= dname %></span>
                 </label>
               </li>

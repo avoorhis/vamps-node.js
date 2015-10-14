@@ -78,7 +78,7 @@ app.use(compression());
  * to "uncache" some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
 app.use(express.static( 'public', {maxAge: '24h' }));
-app.use(express.static('tmp', {maxAge: '24h' }));
+app.use(express.static('tmp'));
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
 

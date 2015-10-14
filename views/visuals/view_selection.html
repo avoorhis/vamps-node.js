@@ -117,24 +117,24 @@
 </div>
 <div style='float:right'>
 <table class=''>
-<tr><td>Phyloseq Input Files:</td>
+<tr><td>Phyloseq Input File Downloads:</td>
   <td>       
           <form id='download_biom_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Biom File</button>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom File</button>
             <input type='hidden' name='file_type' value='biom' />           
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
           </form>     
       </td><td>
           <form id='download_tax_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Tax File</button>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Tax File</button>
             <input type='hidden' name='file_type' value='tax' />           
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
           </form> 
       </td><td>
           <form id='download_meta_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Download Meta File</button>
+            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Meta File</button>
             <input type='hidden' name='file_type' value='meta' />          
             <input type='hidden' name='ts' value='<%= pi.ts %>' />
             <input type='hidden' name='referer' value='/visuals/view_selection' />
@@ -204,10 +204,10 @@
                             </tr></table>
                               </center>              
                             </td>             
-          <%            }else if(link_id == 'phyloseq02_link_id'){ %>   
-          <%                var phy_id  = 'phyloseq_heatmap_phylum' %> 
-          <%                var id1     = 'phyloseq_heatmap_md1' %> 
-          <%                var ordtype = 'phyloseq_heatmap_type' %>
+          <%            }else if(link_id == 'phyloseq02_link_id'){                                    %>   
+          <%                var phy_id  = 'phyloseq_heatmap_phylum'                                   %> 
+          <%                var id1     = 'phyloseq_heatmap_md1'                                      %> 
+          <%                var ordtype = 'phyloseq_heatmap_type'                                     %>
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                               <center>                        
                                 <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
@@ -227,11 +227,11 @@
                             </tr>
                             <tr><td>(metadata) Variable:
                                 <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
-                                  <option value='Project' selected >...</option>
+                                  <option value='Project' selected >Project</option>
                                   <% for(var i in pi.metadata){ %>
                                     <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                   <% } %>
-                                  <option value='Description'>Project_Dataset</option>
+                                  <option value='X.SampleID'>Dataset</option>
                                   <option value='Project' >Project</option>
                                 </select>
                               </td>
@@ -244,10 +244,10 @@
                           </table>
                               </center>              
                             </td>  
-          <%            }else if(link_id == 'phyloseq03_link_id'){ %> 
+          <%            }else if(link_id == 'phyloseq03_link_id'){                                    %> 
                       
-          <%                var id1 = 'phyloseq_network_md1' %>
-          <%                var id2 = 'phyloseq_network_md2' %>
+          <%                var id1 = 'phyloseq_network_md1'                                          %>
+          <%                var id2 = 'phyloseq_network_md2'                                          %>
           
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                               <center>                        
@@ -258,22 +258,22 @@
                               
                               <table><tr><td>(metadata) Shape:
                                 <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
-                                  <option value='Project' selected >...</option>
+                                  <option value='Project' selected >Project</option>
                                   <% for(var i in pi.metadata){ %>
                                     <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                   <% } %>
-                                  <option value='Description'>Project_Dataset</option>
+                                  <option value='X.SampleID'>Dataset</option>
                                   <option value='Project' >Project</option>
                                 </select>
                               </td>
                             </tr><tr>
                               <td>(metadata) Color:
                                 <select id='<%= id2 %>' name='<%= id2 %>' style='width:120px'>
-                                  <option value='Description' selected >...</option>
+                                  <option value='X.SampleID' selected >Dataset</option>
                                   <% for(var i in pi.metadata){ %>
                                     <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
                                   <% } %>
-                                  <option value='Description' >Project_Dataset</option>
+                                  <option value='X.SampleID'>Dataset</option>
                                   <option value='Project'>Project</option>
                                 </select>
                               </td></tr>
@@ -286,11 +286,11 @@
                             </table>
                               </center>              
                             </td>                      
-          <%            }else if(link_id == 'phyloseq04_link_id'){ %> 
+          <%            }else if(link_id == 'phyloseq04_link_id'){                                    %> 
          
-          <%               var id1 = 'phyloseq_ord_md1' %>
-          <%               var id2 = 'phyloseq_ord_md2' %>
-          <%               var ordtype = 'phyloseq_ord_type' %>
+          <%               var id1 = 'phyloseq_ord_md1'                                               %>
+          <%               var id2 = 'phyloseq_ord_md2'                                               %>
+          <%               var ordtype = 'phyloseq_ord_type'                                          %>
          
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                               <center>                        
@@ -299,37 +299,60 @@
                                    <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
                                 </a>
                               
-                              <table><tr><td>(metadata)  Shape:
-                                <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
-                                  <option value='Project' selected >...</option>
-                                  <% for(var i in pi.metadata){ %>
-                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
-                                  <% } %>
-                                  <option value='Description'>Project_Dataset</option>
-                                  <option value='Project' >Project</option>
-                                </select>
-                              </td>
-                            </tr><tr>
-                              <td>(metadata) Color:
-                                <select id='<%= id2 %>' name='<%= id2 %>' style='width:120px'>
-                                  <option value='Description' selected >...</option>
-                                  <% for(var i in pi.metadata){ %>
-                                    <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
-                                  <% } %>
-                                  <option value='Description' >Project_Dataset</option>
-                                  <option value='Project'>Project</option>
-                                </select>
-                              </td></tr>
-                              <tr><td>Ord Type: 
-                              <input type='radio' name='<%= ordtype %>' id='<%= ordtype %>' value='NMDS' > NMDS&nbsp;&nbsp;
-                              <input type='radio' checked name='<%= ordtype %>' id='<%= ordtype %>' value='PCoA' > PCoA
-                              </td></tr>
-                            </table>
+                                    <table><tr><td>(metadata)  Shape:
+                                      <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
+                                        <option value='Project' selected >Project</option>
+                                        <% for(var i in pi.metadata){ %>
+                                          <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                        <% } %>
+                                        <option value='X.SampleID'>Dataset</option>
+                                        <option value='Project' >Project</option>
+                                      </select>
+                                      </td>
+                                      </tr><tr>
+                                      <td>(metadata) Color:
+                                      <select id='<%= id2 %>' name='<%= id2 %>' style='width:120px'>
+                                        <option value='X.SampleID' selected >Dataset</option>
+                                        <% for(var i in pi.metadata){ %>
+                                          <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                        <% } %>
+                                        <option value='X.SampleID'>Dataset</option>
+                                        <option value='Project'>Project</option>
+                                      </select>
+                                    </td></tr>
+                                    <tr><td>Ord Type: 
+                                    <input type='radio' name='<%= ordtype %>' id='<%= ordtype %>' value='NMDS' > NMDS&nbsp;&nbsp;
+                                    <input type='radio' checked name='<%= ordtype %>' id='<%= ordtype %>' value='PCoA' > PCoA
+                                    </td></tr>
+                                  </table>
                               </center>              
                             </td>                      
           
-
-          
+          <%            }else if(link_id == 'phyloseq05_link_id'){                                    %> 
+         
+          <%               var id1 = 'phyloseq_tree_md1'                                              %>
+         
+                            <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
+                              <center>                        
+                                <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
+                                  <%= name %><br>              
+                                   <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                                </a>
+                              
+                                  <table><tr>
+                                  <td>(metadata) Color:
+                                    <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
+                                      <option value='X.SampleID' selected >Dataset</option>
+                                      <% for(var i in pi.metadata){ %>
+                                        <option value='<%= pi.metadata[i] %>'><%= pi.metadata[i] %></option>
+                                      <% } %>
+                                      <option value='X.SampleID'>Dataset</option>
+                                      <option value='Project'>Project</option>
+                                    </select>
+                                  </td></tr>
+                                  </table>
+                              </center>              
+                            </td>                                
 
           <%            }else{ %>                                         
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
@@ -340,7 +363,7 @@
                               </a>
                             </center>                     
                             </td>
-          <%            } %>
+          <%            }                                                                             %>
 
           <%        }                                                                                 %>              
           <%    }                                                                                     %>

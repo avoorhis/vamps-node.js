@@ -6,9 +6,9 @@ print(args)
 tmp_path <- args[1]
 prefix   <-  args[2]
 dist_metric<-args[3]
-md1 <- args[4]
-md2 <- args[5]
-ord_type <- args[6]
+md1<- args[4]
+#md1 <- args[5]
+#md2 <- args[6]
 biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
 map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
@@ -32,19 +32,56 @@ if(dist_metric  == "morisita_horn"){
 	disp = "Bray_Curtis"
 }
 
+
+
 #biom_file<- "andy_1443630794574_count_matrix.biom"
 #tax_file <- "andy_1443630794574_taxonomy.txt"
 #map_file <- "andy_1443630794574_metadata.txt"
 
 library(phyloseq)
 library(ggplot2)
+library(vegan)
+library(ape)
+
 TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
 OTU <- import_biom(biom_file)
 MAP <- import_qiime_sample_data(map_file)
 TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
-physeq <- phyloseq(OTU,TAX,MAP)
+#physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
+#biods=t(OTU)
+biods=OTU
+stand=decostand(data.matrix(biods),"total")
+dis=vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
+hc<-hclust(dis)
+phylo<-as.phylo(hc);
+physeq <- phyloseq(OTU,TAX,MAP,phylo)
+#dend <- as.dendrogram(hc)
+#physeq1 = merge_phyloseq(physeq, phylo)
+# get rid of datasets with zero sum over all the taxa:
+#data_matrix<-data_matrix[,colSums(data_matrix) > 0]
+#biods = t(data_matrix); #
+#print(biods);
+#require(vegan,quietly=TRUE);
+#stand <-decostand(data.matrix(biods),"total");
+#  http://cc.oulu.fi/~jarioksa/softhelp/vegan/html/vegdist.html
+# must use upper=FALSE so that get_distanceR can parse the output correctly
+#dis <- 0
+#if(metric == "horn"){
+#   dis<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
+#}
+#library(ape);
+#hc = upgma(dd);
+#hc<-hclust(dis); 
+
+# ape as.phylo is a generic function which converts an object into a tree of class "phylo".
+#phc<-as.phylo(hc);
+#dend <- as.dendrogram(hc)
+#  write tree to: 
+#tree_file<-paste('/usr/local/www/vamps/tmp/',prefix,'_outtree.tre',sep='')
+#write.tree(phc, file=tree_file)
+
 
 w = 14
 h = 11
@@ -60,24 +97,12 @@ h = 5
 # }
 #theme_set(theme_bw())
 
-colourCount = ncol(OTU)
-library(RColorBrewer)
-cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 
-	# 3- PCoA on 'bray' Distance
-	#ord_type = 'NMDS'
-	#ord_type = 'PCoA'
-	out_file = paste("tmp/",prefix,"_phyloseq_ord.svg",sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
-	ordu = ordinate(physeq, ord_type, dist)
-	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
-	p = p + geom_point(size = 4, alpha = 0.75)
-	#p = p + scale_colour_brewer(cols)
-	#p = p + scale_colour_brewer()
-	p = p + scale_color_manual(values = cols)
-	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
-	#p + theme_bw() + theme(text = element_text(size = 10))
-
+out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
+svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+plot_title=paste('Taxonomy Tree; distance: ',disp,sep='')
+#plot_tree(physeq,  color = md1, title = 'Tree Title', ladderize = "left")
+plot_tree(physeq,  color = md1, title = plot_title)
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
