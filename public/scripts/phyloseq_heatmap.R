@@ -3,16 +3,17 @@
 args <- commandArgs(TRUE)
 print(args)
 
-tmp_path <- args[1]
-prefix   <-  args[2]
-dist_metric<-args[3]
-phy   <- args[4]
-md1 <- args[5]
-ord_type <- args[6]
-fill <- args[7]
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+tmp_path   <- args[1]
+prefix     <- args[2]
+out_file   <- args[3]
+dist_metric<- args[4]
+phy        <- args[5]
+md1        <- args[6]
+ord_type   <- args[7]
+fill       <- args[8]
+biom_file  <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+tax_file   <- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file   <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
@@ -47,12 +48,12 @@ TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
 
-#TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
-
-#w = 14
-#h = 11
-w = 7
-h = 5
+ds_count<-ncol(OTU)
+w = floor(ds_count/5)
+if(w <= 7)
+{
+    w = 7
+}
 #theme_set(theme_bw())
 # pal = "Set1"
 # scale_colour_discrete <- function(palname = pal, ...) {
@@ -63,16 +64,17 @@ h = 5
 # }
 
 
-	out_file = paste("tmp/",prefix,"_phyloseq_heatmap.svg",sep='')
+	out_file = paste("tmp/",out_file,sep='')
 	unlink(out_file)
 	#svg(out_file, width=w, height=h)
 	#png(out_file, width=w, height=h)
-	svg(out_file)
+	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	gpac <- subset_taxa(physeq, Phylum==phy)
 	gpac = prune_samples(sample_sums(gpac) > 50, gpac)
 	#gpac50 <-names(sort(taxa_sums(gpac),TRUE)[1:50])
 	#gpac50<-prune_taxa(gpac50, gpac)
-	plot_heatmap(gpac, method=ord_type, distance=dist, sample.label=md1, taxa.label=fill, na.value = "black",)
+	plot_title = paste('Phylum:',phy, sep=' ')
+	plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=fill, na.value = "black",)
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")

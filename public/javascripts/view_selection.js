@@ -1116,7 +1116,7 @@ function create_counts_table() {
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
       var tax_counts_div = document.getElementById('tax_table_div');
-      tax_counts__div.innerHTML = '';
+      tax_counts_div.innerHTML = '';
 	    tax_counts_div.style.display = 'block';
       var html = '';
          

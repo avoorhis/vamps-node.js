@@ -142,7 +142,9 @@
 </td></tr>
 </table>
 </div>
-
+<% ds_count = mtx.shape[1]; %>
+<% tx_count = mtx.shape[0]; %>
+<% matrix_size = mtx.shape[0] * mtx.shape[1]; %>
 <table border='1' class='table'>
         <tr>
           <% for(n in cnsts.VISUAL_THUMBNAILS.visuals) {                                              %>
@@ -154,11 +156,35 @@
           <%    var target='';                                                                        %>
           <%    var ttip = cnsts.VISUAL_THUMBNAILS.visuals[n].tip;                                    %>
           <%    var cols = 5                                                                          %>
-          <%    if(mtx.shape[1] === 1  && (name.substring(0,16) === 'Distance Heatmap' 
+          <%    if(ds_count === 1  && (name.substring(0,16) === 'Distance Heatmap' 
                                         || name.substring(0,10) === 'Dendrogram' 
                                         || name.substring(0,17) === 'Frequency Heatmap'
                                         || name.substring(0,4)  === 'PCoA' ))           { %>
                     <td class='td_top'><%= name %><br><br>Not Available<br>(single dataset)</td>
+          <%    } else if(ds_count > 500  && (name.substring(0,13) === 'Phyloseq Bars' 
+                                        || name.substring(0,16) === 'Phyloseq Heatmap' 
+                                        || name.substring(0,16) === 'Phyloseq Network'
+                                        || name.substring(0,17) === 'Phyloseq Tree'
+                                        || name.substring(0,19)  === 'Phyloseq Ordination' ))            { %>
+
+                    <td class='td_top' id='<%= ttip %>'>                       
+                            <center>    
+                                Too Many Datasets Selected<br>              
+                                 <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                            </center>                     
+                    </td>
+          <%    } else if(matrix_size === 0  && (name.substring(0,13) === 'Phyloseq Bars' 
+                                        || name.substring(0,16) === 'Phyloseq Heatmap' 
+                                        || name.substring(0,16) === 'Phyloseq Network'
+                                        || name.substring(0,17) === 'Phyloseq Tree'
+                                        || name.substring(0,19)  === 'Phyloseq Ordination' ))            { %>
+
+                    <td class='td_top' id='<%= ttip %>'>                       
+                            <center>    
+                                Too Much Data<br>              
+                                 <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
+                            </center>                     
+                    </td>
           <%    } else {                                                                              %>
           <%        if(disable_thumbs) {                                                              %>
                       <td class='td_top'><%= name %><br>

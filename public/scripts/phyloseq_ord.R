@@ -3,15 +3,16 @@
 args <- commandArgs(TRUE)
 print(args)
 
-tmp_path <- args[1]
-prefix   <-  args[2]
-dist_metric<-args[3]
-md1 <- args[4]
-md2 <- args[5]
-ord_type <- args[6]
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+tmp_path 		<- args[1]
+prefix   		<- args[2]
+out_file 		<- args[3]
+dist_metric	<- args[4]
+md1 				<- args[5]
+md2 				<- args[6]
+ord_type 		<- args[7]
+biom_file 	<- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+tax_file 		<-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file 		<-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
@@ -67,7 +68,7 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 	# 3- PCoA on 'bray' Distance
 	#ord_type = 'NMDS'
 	#ord_type = 'PCoA'
-	out_file = paste("tmp/",prefix,"_phyloseq_ord.svg",sep='')
+	out_file = paste("tmp/",out_file,sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)

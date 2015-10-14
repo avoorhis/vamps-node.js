@@ -3,15 +3,16 @@
 args <- commandArgs(TRUE)
 print(args)
 
-tmp_path <- args[1]
-prefix   <-  args[2]
-dist_metric<-args[3]
-md1 <- args[4]
-md2 <- args[5]
-max_dist <- args[6]
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+tmp_path 		<- args[1]
+prefix   		<- args[2]
+out_file 		<- args[3]
+dist_metric	<- args[3]
+md1 				<- args[4]
+md2 				<- args[5]
+max_dist 		<- args[6]
+biom_file 	<- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+tax_file 		<- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file 		<- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 distance     <-  'bray'
 
@@ -61,7 +62,7 @@ h = 5
 #theme_set(theme_bw())
 
 
-	out_file = paste("tmp/",prefix,"_phyloseq_network.svg",sep='')
+	out_file = paste("tmp/",out_file,sep='')
 	plot_title = paste('Network using ',disp,'; max-dist: ',max_dist,sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 	ig <- make_network(physeq, dist.fun=distance, max.dist=max_dist)

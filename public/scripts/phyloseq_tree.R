@@ -3,15 +3,14 @@
 args <- commandArgs(TRUE)
 print(args)
 
-tmp_path <- args[1]
-prefix   <-  args[2]
-dist_metric<-args[3]
-md1<- args[4]
-#md1 <- args[5]
-#md2 <- args[6]
-biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+tmp_path 		<- args[1]
+prefix   		<- args[2]
+out_file 		<- args[3]
+dist_metric	<- args[4]
+md1					<- args[5]
+biom_file 	<- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+tax_file 		<- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file 		<- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 dist     <-  'bray'
 
@@ -81,12 +80,14 @@ physeq <- phyloseq(OTU,TAX,MAP,phylo)
 #  write tree to: 
 #tree_file<-paste('/usr/local/www/vamps/tmp/',prefix,'_outtree.tre',sep='')
 #write.tree(phc, file=tree_file)
-
-
-w = 14
-h = 11
+tx_count<-nrow(OTU)
+h = floor(tx_count/8)
+if(h <= 5)
+{
+    h = 5
+}
 w = 7
-h = 5
+
 #theme_set(theme_bw())
 # pal = "Set1"
 # scale_colour_discrete <- function(palname = pal, ...) {
@@ -98,8 +99,8 @@ h = 5
 #theme_set(theme_bw())
 
 
-out_file = paste("tmp/",prefix,"_phyloseq_tree.svg",sep='')
-svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+out_file = paste("tmp/",out_file,sep='')
+svg(out_file, width=w, height= h, pointsize=6, family = "sans", bg = "black")
 plot_title=paste('Taxonomy Tree; distance: ',disp,sep='')
 #plot_tree(physeq,  color = md1, title = 'Tree Title', ladderize = "left")
 plot_tree(physeq,  color = md1, title = plot_title)

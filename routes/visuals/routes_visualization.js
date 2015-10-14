@@ -86,7 +86,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('visual_post_items:>>');
   console.log(visual_post_items);
   console.log('<<visual_post_items:');
-
+ 
 
   // GLOBAL
   //console.log('metadata>>');
@@ -926,17 +926,18 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     console.log('in phyloseq post')
     //console.log(req.body)
     var ts = req.body.ts;
+    var trailor = Math.floor((Math.random() * 100000) + 1);
     var dist_metric = req.body.metric;
     var plot_type = req.body.plot_type;
-    var image_file = ts+'_phyloseq_'+plot_type+'.svg';
-    var image_path = path.join(process.env.PWD,'tmp', image_file);
+    var image_file = ts+'_phyloseq_'+plot_type+'_'+trailor.toString()+'.svg';
+    //var image_path = path.join(process.env.PWD,'tmp', image_file);
     var phy,md1,md2,ordtype,maxdist,script
-    try{
-      fs.unlinkSync(image_path);
-      console.log('Deleted: '+image_file)
-    }catch(err){
-      console.log('file not found to unlink: '+image_file);
-    }
+    // try{
+    //   fs.unlinkSync(image_path);
+    //   console.log('Deleted: '+image_file)
+    // }catch(err){
+    //   console.log('file not found to unlink: '+image_file);
+    // }
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
     if(fill === 'Klass'){
@@ -948,7 +949,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     //console.log(biom_file)
     var options = {
       scriptPath : 'public/scripts/',
-      args :       [ tmp_path, ts ],
+      args :       [ tmp_path, ts, image_file ],
     };
     if(plot_type == 'bar'){
       script = 'phyloseq_bar.R';

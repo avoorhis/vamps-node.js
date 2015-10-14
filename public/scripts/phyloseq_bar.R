@@ -5,11 +5,12 @@ print(args)
 
 tmp_path <- args[1]
 prefix   <- args[2]
-phy   <- args[3]
-rank   <- args[4]
+out_file <- args[3]
+phy   	 <- args[4]
+rank     <- args[5]
 biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file <-  paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file <-  paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+tax_file <- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
+map_file <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
 
 #biom_file<- "andy_1443630794574_count_matrix.biom"
@@ -26,10 +27,14 @@ OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
-w = 14
-h = 11
-w = 7
-h = 5
+ds_count<-ncol(OTU)
+w = floor(ds_count/5)
+print(w)
+if(w <= 7)
+{
+    w = 7
+}
+print(w)
 #theme_set(theme_bw())
 # pal = "Set1"
 # scale_colour_discrete <- function(palname = pal, ...) {
@@ -41,7 +46,7 @@ h = 5
 theme_set(theme_bw())
 
 
-	out_file = paste("tmp/",prefix,"_phyloseq_bar.svg",sep='')
+	out_file = paste("tmp/",out_file,sep='')
 	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 
 	gp.ch = subset_taxa(physeq, Phylum == phy)
