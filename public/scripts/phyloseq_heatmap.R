@@ -39,41 +39,57 @@ if(dist_metric  == "morisita_horn"){
 #map_file <- "andy_1443630794574_metadata.txt"
 library(scales)
 library(phyloseq)
-#library(ggplot2)
-
-TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
+library(ggplot2)
+theme_set(theme_bw())
+TAX1<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
+TAX <- tax_table(TAX1)
 OTU <- import_biom(biom_file)
-MAP <- import_qiime_sample_data(map_file)
-TAX <- tax_table(TAX)
 OTU <- otu_table(OTU)
+MAP <- import_qiime_sample_data(map_file)
+
+print(colnames(TAX))
+print(class(TAX))
+print(is.recursive(TAX))
+print(is.atomic(TAX))
+
+df <- as.data.frame(TAX)[fill]
+rows <- nrow(df)
+print(df)
+print(ncol(df))
+print(rows)
 physeq <- phyloseq(OTU,TAX,MAP)
 
 ds_count<-ncol(OTU)
 w = floor(ds_count/5)
-if(w <= 7)
-{
-    w = 7
-}
-#theme_set(theme_bw())
-# pal = "Set1"
-# scale_colour_discrete <- function(palname = pal, ...) {
-#     scale_colour_brewer(palette = palname, ...)
-# }
-# scale_fill_discrete <- function(palname = pal, ...) {
-#     scale_fill_brewer(palette = palname, ...)
-# }
+if(w <= 7){ w = 10 }
+h = floor(rows/10)
+#print(paste('height1',h))
+#if(rows < 5){	h = 5 }
+h = 8
+#print(paste('height2',h))
 
+w=10
+h=10
 
 	out_file = paste("tmp/",out_file,sep='')
 	unlink(out_file)
-	#svg(out_file, width=w, height=h)
-	#png(out_file, width=w, height=h)
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+	
+	pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
+
 	gpac <- subset_taxa(physeq, Phylum==phy)
-	gpac = prune_samples(sample_sums(gpac) > 50, gpac)
-	#gpac50 <-names(sort(taxa_sums(gpac),TRUE)[1:50])
-	#gpac50<-prune_taxa(gpac50, gpac)
+	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+
+	gpac <- tryCatch({ 
+			  prune_samples(sample_sums(gpac) > 50, gpac)
+		}, error = function(err) {
+ 			  cat(paste("ERROR -- no data available for '",phy,"' after subsetting\n",sep=''))
+  		  q()
+		},
+		finally = { 
+			
+		})
 	plot_title = paste('Phylum:',phy, sep=' ')
+	print(gpac)
 	plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=fill, na.value = "black",)
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html

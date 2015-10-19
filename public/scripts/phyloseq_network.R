@@ -47,10 +47,20 @@ OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
-w = 14
-h = 11
-w = 7
-h = 5
+
+w = 10
+h = 8
+
+md1_unique_count <- length(levels(MAP[[md1]]))
+md2_unique_count <- length(levels(MAP[[md2]]))
+if(md1_unique_count + md2_unique_count > 60){
+	cat("ERROR - Too many unique metadata items\n")
+	q()
+}
+
+colourCount = ncol(OTU)
+library(RColorBrewer)
+cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 #theme_set(theme_bw())
 # pal = "Set1"
 # scale_colour_discrete <- function(palname = pal, ...) {
@@ -63,11 +73,14 @@ h = 5
 
 
 	out_file = paste("tmp/",out_file,sep='')
-	plot_title = paste('Network using ',disp,'; max-dist: ',max_dist,sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
 	ig <- make_network(physeq, dist.fun=distance, max.dist=max_dist)
-	plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1, title = plot_title)
-
+	p = plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1)
+	p = p + scale_color_manual(values = cols)
+	#p = p + geom_point(size = 3, alpha = 0.75)
+	p = p + theme(legend.text = element_text(size = 6))
+	
+	p + ggtitle(paste('Network using ',disp,'; max-dist: ',max_dist,sep=''))
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")

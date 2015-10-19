@@ -130,6 +130,7 @@ def check_user(args):
     numrows = int(cur.rowcount)
     if numrows==0:
         sys.exit('Could not find owner: '+args.owner+' --Exiting')
+    else:
         row = cur.fetchone()
         CONFIG_ITEMS['owner_id'] = row[0] 
 

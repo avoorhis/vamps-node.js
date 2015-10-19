@@ -39,18 +39,26 @@ if(dist_metric  == "morisita_horn"){
 
 library(phyloseq)
 library(ggplot2)
-TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
-OTU <- import_biom(biom_file)
-MAP <- import_qiime_sample_data(map_file)
+TAX<-as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
 TAX <- tax_table(TAX)
+OTU <- import_biom(biom_file)
 OTU <- otu_table(OTU)
+MAP <- import_qiime_sample_data(map_file)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
-w = 14
-h = 11
-w = 7
-h = 5
+#w = 14
+#h = 11
+w = 10
+h = 8
+
+md1_unique_count <- length(levels(MAP[[md1]]))
+md2_unique_count <- length(levels(MAP[[md2]]))
+if(md1_unique_count + md2_unique_count > 60){
+	cat("ERROR - Too many unique metadata items\n")
+	q()
+}
+
 #theme_set(theme_bw())
 # pal = "Set1"
 # scale_colour_discrete <- function(palname = pal, ...) {
@@ -69,20 +77,20 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 	#ord_type = 'NMDS'
 	#ord_type = 'PCoA'
 	out_file = paste("tmp/",out_file,sep='')
-	svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
+	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
-	p = p + geom_point(size = 4, alpha = 0.75)
+	p = p + geom_point(size = 3, alpha = 0.75)
 	#p = p + scale_colour_brewer(cols)
 	#p = p + scale_colour_brewer()
 	p = p + scale_color_manual(values = cols)
+	#p = p + theme(legend.text = element_text(size = 6))
 	p + ggtitle(paste(ord_type, "on distance:", disp, sep=' '))
 	#p + theme_bw() + theme(text = element_text(size = 10))
 
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
-
 # 1- Just OTUs
 # p1 = plot_ordination(physeq, GP.ord, type = "taxa", color = "Phylum", title = "taxa")
 # print(p1)

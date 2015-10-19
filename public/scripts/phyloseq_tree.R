@@ -86,7 +86,7 @@ if(h <= 5)
 {
     h = 5
 }
-w = 7
+w = 8
 
 #theme_set(theme_bw())
 # pal = "Set1"
@@ -100,7 +100,7 @@ w = 7
 
 
 out_file = paste("tmp/",out_file,sep='')
-svg(out_file, width=w, height= h, pointsize=6, family = "sans", bg = "black")
+svg(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
 plot_title=paste('Taxonomy Tree; distance: ',disp,sep='')
 #plot_tree(physeq,  color = md1, title = 'Tree Title', ladderize = "left")
 plot_tree(physeq,  color = md1, title = plot_title)

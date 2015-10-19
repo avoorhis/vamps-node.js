@@ -949,34 +949,35 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     //console.log(biom_file)
     var options = {
       scriptPath : 'public/scripts/',
-      args :       [ tmp_path, ts, image_file ],
+      args :       [ tmp_path, ts ],
     };
     if(plot_type == 'bar'){
       script = 'phyloseq_bar.R';
       phy = req.body.phy;
-      options.args = options.args.concat([phy, fill]);
+      options.args = options.args.concat([image_file, phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
+      image_file = ts+'_phyloseq_'+plot_type+'_'+trailor.toString()+'.pdf';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
-      options.args = options.args.concat([dist_metric, phy, md1, ordtype, fill]);
+      options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
     }else if(plot_type == 'network'){
       script = 'phyloseq_network.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       maxdist = req.body.maxdist || "0.3";
-      options.args = options.args.concat([dist_metric, md1, md2, maxdist]);
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
     }else if(plot_type == 'ord'){
       script = 'phyloseq_ord.R';
       md1 = req.body.md1 || "Project";
       md2 = req.body.md2 || "Description";
       ordtype = req.body.ordtype || "PCoA";
-      options.args = options.args.concat([dist_metric, md1, md2, ordtype]);
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
     }else if(plot_type == 'tree'){
       script = 'phyloseq_tree.R';
       md1 = req.body.md1 || "Description";
-      options.args = options.args.concat([dist_metric, md1]);
+      options.args = options.args.concat([image_file, dist_metric, md1]);
     }else{
       //ERROR
     }
@@ -990,11 +991,13 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
             stdio: 'pipe'  // stdin, stdout, stderr
         }); 
     stdout = '';
+    lastline='';
     phyloseq_process.stdout.on('data', function (data) {
         
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         //data = data.toString().trim()
         //console.log(data)
+        lastline = data;
         stdout += data;    
      
     });
@@ -1017,10 +1020,24 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
 //res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 //  res.header('Expires', '-1');
  // res.header('Pragma', 'no-cache');
+            console.log('last '+lastline.toString().substring(0,5))
+            if(plot_type == 'heatmap'){
+              var html = "<div id='pdf'>";
+              //html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+              html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+              //html += "<object data='/"+image_file+"' type='application/pdf' />";
+              html += " <p>ERROR in loading svg file</p>";
+              html += "</object></div>";
+              console.log(html);
+              res.send(html);
 
-                res.send("<img src='/"+image_file+"'>")
-             
-                                          
+            }else{
+                if(lastline.toString().substring(0,5) == 'ERROR'){
+                    res.send(lastline);
+                }else{
+                    res.send("<img src='/"+image_file+"'>")
+                }
+            }                              
           }else{
             console.log('ERROR');
             res.send('Phyloseq R script Error: '+stderr);

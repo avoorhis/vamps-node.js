@@ -30,10 +30,7 @@ physeq <- phyloseq(OTU,TAX,MAP)
 ds_count<-ncol(OTU)
 w = floor(ds_count/5)
 print(w)
-if(w <= 7)
-{
-    w = 7
-}
+if(w <= 7){ w = 10 }
 print(w)
 #theme_set(theme_bw())
 # pal = "Set1"
