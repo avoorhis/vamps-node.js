@@ -48,6 +48,7 @@ insert_access_table: function(uid,pid){
     
     var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
     qInsertAccess += " VALUES('"+uid+"','"+pid+"')"; 
+    console.log(qInsertAccess);
     return qInsertAccess; 
      
 },

@@ -1,0 +1,159 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+<% pinfo = JSON.parse(project_info) %>
+<% uinfo = JSON.parse(user_info) %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit">
+	            <h2>VAMPS: Website Administration</h2>
+				<h3>Permissions</h3>
+		             
+	</div>
+
+	<br>
+	<br>
+	<div id='response_info'></div>
+	<hr>
+
+<table><tr>
+
+<td>
+
+ Public Projects
+	<br>
+	<div style='height:300px;overflow:auto;'>
+	<table border='1'>
+		<tr><th>Project Name</th></tr>
+		<% for(pid in pinfo) { %>
+			<% if(pinfo[pid].public === 1) { %>
+			<tr><td><%= pinfo[pid].project %></td></tr>
+			<% }else{ %>
+				
+								
+			<% } %>
+		<% } %>
+
+	</table>
+
+
+
+</td><td>&nbsp;&nbsp;&nbsp;
+</td><td>
+	 By Project
+	<br>
+	<div style='height:300px;overflow:auto;'>
+	<table border='1'>
+		<tr><th>Project Name</th><th>Current Users</th><th>To Add?</th><th></th></tr>
+		<% for(pid in pinfo) { %>
+		<% 		formname = 'by_project_'+pid; %>
+					<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
+		<% 		if(pinfo[pid].public !== 1) { %>			
+					<tr><td><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td><td>
+					<select id='' name='' width='100' style='width: 100px'>
+		<% 			for(n in pinfo[pid].permissions) { %>
+					
+		<% 				user_id = pinfo[pid].permissions[n] %>
+		<% 				user    = uinfo[user_id].username %>
+							<option><%= user %></option>
+		<% 			} %>
+				
+					</select>
+			</td>
+
+			<td>
+
+
+					<select id='by_project_select' width='100' style='width: 100px'>
+							<option value='0'>.....</option>
+		<% for(uid in uinfo) { %>
+		<% 		if(uinfo[uid].username !== 'guest') { %>
+							<option value='<%= uid %>'><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uinfo[uid].username %>)</small></option>
+		<% 		} %>		
+		<% 	} %>			
+					</select>
+			</td>
+			<td>
+				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
+			</td>
+			</tr>
+		<% 		} %>
+			</form>
+
+			
+		<% } %>
+
+	</table>
+</div>
+
+</td><td>&nbsp;&nbsp;&nbsp;
+</td><td>
+
+
+By User	
+<br>
+<div style='height:300px;overflow:auto;'>
+	<table border='1'>
+		<tr><th>User</th><th>Current Projects</th><th>To Add?</th><th></th></tr>
+		<% for(uid in uinfo) { %>
+		<% 	var plist = [] %>
+		<%  formname = 'by_user_'+uid; %>
+		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
+
+			<tr><td><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> </td>
+
+				<td>
+
+		<% 			for(pid in pinfo) { %>
+		<%					if(pinfo[pid].permissions.length > 0 ){ %>
+		<%						if(pinfo[pid].permissions.indexOf(parseInt(uid)) !== -1) { %>
+		<%								plist.push(pinfo[pid].project); %>		
+		<%						} %>
+		<%					} %>
+		<% 			} %>	 
+		<%			if(plist.length > 0 ){ %>
+							<select id='xxxx' name='xxxx' width='100' style='width: 100px'>
+		<%				for(p in plist){ %>									
+											<option><%= plist[p] %></option>										
+		<%				} %>
+		<%			} %>
+							</select>
+				</td>
+
+				<td>
+
+
+				<select id='by_user_select' name='by_user_select' width='100' style='width: 100px'>
+							<option value='0'>.....</option>
+		<% for(pid in pinfo) { %>		
+							<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
+		<% 			} %>				
+				</select>
+			</td>
+			<td>
+				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_user','<%= uid %>')" >
+			</td>
+
+			</tr>
+			<input type='hidden' name='uid' value='<%= uid %>'>
+		</form>
+		
+		<% } %>
+
+	</table>
+</div>   
+      
+</td>
+</tr>
+</table>
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/admin.js"></script>     
+ </body>
+ </html>

@@ -117,12 +117,31 @@ function show_access_button()
     document.getElementById('assign_access_div').style.visibility = 'visible';
 
 }
-function grant_access()
+function grant_access(type, id)
 {
-    selected_uid = document.getElementById('select_user').value;
-    selected_pid = document.getElementById('select_project').value;
-    document.getElementById('select_project').value = '.....';
-    document.getElementById('assign_access_div').style.visibility = 'hidden';
+    info_div = document.getElementById('response_info');
+    
+    form = document.getElementById(type+'_'+id);
+
+    
+    var selected_pid, selected_uid;
+     //alert(type+" "+id)   
+    if(type==='by_user'){ 
+      selected_pid = form.by_user_select.value
+      selected_uid = id
+    }else if(type==='by_project'){
+      selected_uid = form.by_project_select.value
+      selected_pid = id
+   }else{
+      info_div.innerHTML = 'Error-1'; 
+      return;
+   }
+   //alert(selected_pid+" "+selected_uid)  
+   if(selected_uid === '0' || selected_pid === '0'){
+      info_div.innerHTML = 'Choose a name'; 
+      return;
+   }
+   //return
     
     var xmlhttp = new XMLHttpRequest();  
     xmlhttp.open("POST", '/admin/grant_access', true);
@@ -140,6 +159,29 @@ function grant_access()
     xmlhttp.send(args);
 
 }
+// function grant_access2()
+// {
+//     selected_uid = document.getElementById('select_user').value;
+//     selected_pid = document.getElementById('select_project').value;
+//     document.getElementById('select_project').value = '.....';
+//     document.getElementById('assign_access_div').style.visibility = 'hidden';
+    
+//     var xmlhttp = new XMLHttpRequest();  
+//     xmlhttp.open("POST", '/admin/grant_access', true);
+//     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//     xmlhttp.setRequestHeader("data-type","html");
+//     var args = 'uid='+selected_uid+'&pid='+selected_pid;
+//     xmlhttp.onreadystatechange = function() {        
+//       if (xmlhttp.readyState == 4 ) {
+          
+//           var response = xmlhttp.responseText;            
+//           info_div.innerHTML = response;      
+         
+//       }
+//     };
+//     xmlhttp.send(args);
+
+// }
 //
 //
 //

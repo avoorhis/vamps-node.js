@@ -49,11 +49,12 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
 //
 //
 //
-router.get('/view_permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
    
    console.log('in view_permissions')
    //console.log(ALL_USERS_BY_UID)
-   res.render('admin/view_permissions', {
+   console.log(PROJECT_INFORMATION_BY_PID)
+   res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'), 
               user: req.user, 
@@ -275,12 +276,18 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       var html = 'Successfully Updated'
       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
       if(selected_pid in PROJECT_INFORMATION_BY_PID){        
-        
-        if(selected_uid in PROJECT_INFORMATION_BY_PID[selected_pid].permissions){
-            html = 'User already has access in PROJECT_INFORMATION_BY_PID'
+        console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
+        console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
+        if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1){
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
+            console.log('11111')
         }else{
-          PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(selected_uid)
+          html = 'User already has access to this project'
+          res.send(html)
 
+          //html = 'Trying to push!'
+          console.log('22222')
+          return
         }
       }else{
         html = 'Could not find project - This is a PROBLEM!'
@@ -308,6 +315,46 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       
 
 });
+// router.post('/grant_access2', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+//       console.log('in grant_access')
+//       selected_uid = req.body.uid;
+//       selected_pid = req.body.pid;
+//       var html = 'Successfully Updated'
+//       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
+//       if(selected_pid in PROJECT_INFORMATION_BY_PID){        
+        
+//         if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(selected_uid) === -1){
+//             html = 'User already has access in PROJECT_INFORMATION_BY_PID'
+//         }else{
+//           PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(selected_uid)
 
+//         }
+//       }else{
+//         html = 'Could not find project - This is a PROBLEM!'
+//       }
+      
+//       // 2- add to table 'access'
+//       //q = "INSERT ignore into `access` (user_id, project_id) VALUES('"+selected_uid+"','"+selected_pid+"')"
+//       connection.query(queries.insert_access_table(selected_uid,selected_pid), function(err, rows, fields){ 
+//       //console.log(qSequenceCounts)
+//           if (err)  {
+//             console.log('Query error: ' + err);
+            
+//             html = 'Query error: ' + err
+//           } else {            
+            
+//           }
+//           res.send(html)
+         
+//       });
+      
+
+
+
+
+      
+
+// });
 
 module.exports = router;
