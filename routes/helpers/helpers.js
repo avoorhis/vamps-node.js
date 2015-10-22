@@ -186,6 +186,7 @@ module.exports.run_select_datasets_query = function(rows){
             "last" :            rows[i].last_name,
             "first" :			      rows[i].first_name,
             "username" :		    rows[i].username,
+            "oid" :             owner_id,
             "email" :			      rows[i].email,
             "env_source_name" : rows[i].env_source_name,
             "institution" :		  rows[i].institution,

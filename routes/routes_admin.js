@@ -51,7 +51,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
 //
 router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
    
-   console.log('in view_permissions')
+   console.log('in permissions')
    //console.log(ALL_USERS_BY_UID)
    console.log(PROJECT_INFORMATION_BY_PID)
    res.render('admin/permissions', {
@@ -64,7 +64,59 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
             }); 
 
 });
+router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+   console.log('in public')
+   //console.log(ALL_USERS_BY_UID)
+   console.log(PROJECT_INFORMATION_BY_PID)
+   res.render('admin/public', {
+              title     :'VAMPS Site Administration',
+              message   : req.flash('message'), 
+              user: req.user, 
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.C.hostname, // get the user out of session and pass to template
+            }); 
 
+});
+router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+   console.log('in public_update')
+   //console.log(ALL_USERS_BY_UID)
+   console.log(PROJECT_INFORMATION_BY_PID);
+   selected_pid = req.body.pid 
+   new_public = parseInt(req.body.public);
+   if(new_public !== PROJECT_INFORMATION_BY_PID[selected_pid].public){
+        q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'"
+
+       if(new_public === 1){
+            PROJECT_INFORMATION_BY_PID[selected_pid].public = 1;
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
+       }else{
+            // give owner sole permissions
+            PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [PROJECT_INFORMATION_BY_PID[selected_pid].oid];
+            PROJECT_INFORMATION_BY_PID[selected_pid].public = 0;
+          
+       }
+
+   
+       connection.query(q, function(err, rows, fields){ 
+            //console.log(qSequenceCounts)
+                if (err)  {
+                  console.log('Query error: ' + err);
+                  response = 'Query error: ' + err
+                }else{
+                  response = 'Successfully updated'
+                   
+                }    
+                   
+                res.send(response)
+              
+        });
+  }else{
+    res.send('no change to public status')
+  }
+});
 router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
    
       console.log('in show_user_info')
@@ -222,6 +274,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
           PROJECT_INFORMATION_BY_PID[pid].username    = ALL_USERS_BY_UID[new_owner_id].username;
           PROJECT_INFORMATION_BY_PID[pid].email       = ALL_USERS_BY_UID[new_owner_id].email;
           PROJECT_INFORMATION_BY_PID[pid].institution = ALL_USERS_BY_UID[new_owner_id].institution;
+          PROJECT_INFORMATION_BY_PID[pid].oid         = new_owner_id;
           q += " owner_user_id='"+new_owner_id+"'" ;          
           break;
 
@@ -282,7 +335,7 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
             console.log('11111')
         }else{
-          html = 'User already has access to this project'
+          html = 'User already has access to this project.'
           res.send(html)
 
           //html = 'Trying to push!'

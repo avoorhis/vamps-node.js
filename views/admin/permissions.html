@@ -48,12 +48,12 @@
 	<br>
 	<div style='height:300px;overflow:auto;'>
 	<table border='1'>
-		<tr><th>Project Name</th><th>Current Users</th><th>To Add?</th><th></th></tr>
+		<tr><th>Project Name</th><th>Current Users</th><th>User to Add?</th><th></th></tr>
 		<% for(pid in pinfo) { %>
 		<% 		formname = 'by_project_'+pid; %>
 					<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
 		<% 		if(pinfo[pid].public !== 1) { %>			
-					<tr><td><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td><td>
+					<tr><td style='white-space: nowrap;'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td><td>
 					<select id='' name='' width='100' style='width: 100px'>
 		<% 			for(n in pinfo[pid].permissions) { %>
 					
@@ -84,7 +84,7 @@
 		<% 		} %>
 			</form>
 
-			
+
 		<% } %>
 
 	</table>
@@ -98,13 +98,13 @@ By User
 <br>
 <div style='height:300px;overflow:auto;'>
 	<table border='1'>
-		<tr><th>User</th><th>Current Projects</th><th>To Add?</th><th></th></tr>
+		<tr><th>User</th><th>Current Projects</th><th>Project to Add?</th><th></th></tr>
 		<% for(uid in uinfo) { %>
 		<% 	var plist = [] %>
 		<%  formname = 'by_user_'+uid; %>
 		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
 
-			<tr><td><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> </td>
+			<tr><td style='white-space: nowrap;'><%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uid %>)</small></td>
 
 				<td>
 

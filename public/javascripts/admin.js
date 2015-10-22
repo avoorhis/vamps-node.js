@@ -119,7 +119,7 @@ function show_access_button()
 }
 function grant_access(type, id)
 {
-    info_div = document.getElementById('response_info');
+    var info_div = document.getElementById('response_info');
     
     form = document.getElementById(type+'_'+id);
 
@@ -158,6 +158,37 @@ function grant_access(type, id)
     };
     xmlhttp.send(args);
 
+}
+function change_public(pid)
+{
+  var info_div = document.getElementById('response_info');
+  var form = document.getElementById('public_form_'+pid);
+  radio_name = 'public_radio_'+pid
+  //alert(document.forms[4].name)
+  //alert(form.name)
+
+   pub = form[radio_name][0]
+   priv = form[radio_name][1]
+   
+   if(pub.checked){
+     public = '1'
+   }else{
+    public = '0'
+   }
+   var xmlhttp = new XMLHttpRequest();  
+    xmlhttp.open("POST", '/admin/public_update', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("data-type","html");
+    var args = 'public='+public+'&pid='+pid;
+    xmlhttp.onreadystatechange = function() {        
+      if (xmlhttp.readyState == 4 ) {
+          
+          var response = xmlhttp.responseText;            
+          info_div.innerHTML = response;      
+         
+      }
+    };
+    xmlhttp.send(args);
 }
 // function grant_access2()
 // {
