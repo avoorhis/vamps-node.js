@@ -1,0 +1,57 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+<% pinfo = JSON.parse(project_info) %>
+<% uinfo = JSON.parse(user_info) %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit">
+	            <h2>VAMPS: Website Administration</h2>
+				<h3>Change Project Information</h3>
+		             
+	</div>
+
+	<br>
+	<br>
+	<hr>
+	
+	<div style=''>
+	<table border='0'>
+		<tr><td valign='top'>
+			Select Project:<br>
+					<select id='select_project_alter' >
+						<option value='.....'>.....</option>
+						<% for(pid in pinfo) { %>
+							
+								<option value='<%= pid %>'><%= pinfo[pid].project %></option>
+							
+						<% } %>
+					</select>
+		</td>
+
+		<td>
+			
+				<div id='current_info'>
+
+				</div>
+		</td>
+
+	</tr>
+
+	</table>
+</div>
+
+
+      
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/admin.js"></script>   
+ </body>
+ </html>

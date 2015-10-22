@@ -69,13 +69,13 @@ h = 8
 #print(paste('height2',h))
 
 w=10
-h=10
+h=5
 
 	out_file = paste("tmp/",out_file,sep='')
 	unlink(out_file)
 	
 	pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-
+	#svg(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
 	gpac <- subset_taxa(physeq, Phylum==phy)
 	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
 

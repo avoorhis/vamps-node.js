@@ -1835,8 +1835,7 @@ function create_phyloseq(ts,code) {
       xmlhttp.onreadystatechange = function() {        
         if (xmlhttp.readyState == 4 ) {
            clearInterval(myWaitVar);
-           var response = xmlhttp.responseText; 
-           //var svgString = new XMLSerializer().serializeToString(response);          
+           var response = xmlhttp.responseText;          
            phylo_div.innerHTML = response;
         }
       };

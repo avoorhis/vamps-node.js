@@ -3,9 +3,10 @@
   <% var info = JSON.parse(proj_info) %>
   <% for (i in all_pr_dat) { %>
   <% var pid = all_pr_dat[i].pid %>
-    <!-- admin OR public-project OR this-users-project -->
+  <!-- admin OR public-project OR this-users-project -->
   <!-- permissions[pid]  === 0   means PUBLIC -->
-    <% if(user.security_level === 1 || info[pid].permissions  === 0 || info[pid].permissions === user.user_id ) { %>
+    <% if(user.security_level === 1 || (info[pid].permissions.length === 0) || (info[pid].permissions.indexOf(user.user_id) !== -1) ) { %>
+    <% //if(info[pid].permissions.length == 0 ) { %>
       <% pname = all_pr_dat[i].name %>
       <% title = all_pr_dat[i].title %>
       <% datasets = all_pr_dat[i].datasets %>

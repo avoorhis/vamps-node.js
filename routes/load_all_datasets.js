@@ -10,12 +10,13 @@ var helpers = require('./helpers/helpers');
 //console.log(queries.qSequenceCounts)
 // This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
 module.exports.get_datasets = function(callback){
+  PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
   
   connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       ALL_DATASETS                = {};  // GLOBAL
       DATASET_NAME_BY_DID         = {};  // GLOBAL
       PROJECT_ID_BY_DID           = {};
-      PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
+      
       PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
       DATASET_IDS_BY_PID          = {};
       ALL_CLASSIFIERS_BY_PID      = {};
@@ -27,9 +28,9 @@ module.exports.get_datasets = function(callback){
 	  
 
       if (err)  {
-		  console.log('Query error: ' + err);
-		  console.log(err.stack);
-		  process.exit(1);
+		    console.log('Query error: ' + err);
+		    console.log(err.stack);
+		    process.exit(1);
       } else {
 
         console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and helpers.run_select_datasets_query):');
@@ -55,9 +56,9 @@ module.exports.get_datasets = function(callback){
   
   connection.query(queries.get_all_user_query(), function(err, rows, fields){     
       if (err)  {
-      console.log('Query error: ' + err);
-      console.log(err.stack);
-      process.exit(1);
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
       } else {
         ALL_USERS_BY_UID            = {};
         for (var i=0; i < rows.length; i++) {
@@ -76,9 +77,9 @@ module.exports.get_datasets = function(callback){
       
       //console.log(qSequenceCounts)
       if (err)  {
-      console.log('Query error: ' + err);
-      console.log(err.stack);
-      process.exit(1);
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
       } else {
         ALL_CLASSIFIERS_BY_CID      = {};
         for (var i=0; i < rows.length; i++) {
@@ -87,6 +88,7 @@ module.exports.get_datasets = function(callback){
       }
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_CID');      
   });
+
   
   connection.query(queries.get_select_sequences_query(), function(err, rows, fields){    
       ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
@@ -94,9 +96,9 @@ module.exports.get_datasets = function(callback){
       ALL_CLASSIFIERS_BY_PID = {}; 
       //console.log(qSequenceCounts)
       if (err)  {
-      console.log('Query error: ' + err);
-      console.log(err.stack);
-      process.exit(1);
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
       } else {
         helpers.run_select_sequences_query(rows);		
         
@@ -107,7 +109,7 @@ module.exports.get_datasets = function(callback){
       console.log(' INITIALIZING ALL_CLASSIFIERS_BY_PID');
   });
   
-
+  
   
   
 };

@@ -1,0 +1,62 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+<% pinfo = JSON.parse(project_info) %>
+<% uinfo = JSON.parse(user_info) %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	<center>
+	<div class="hero-unit">
+	            <h2>VAMPS: Website Administration</h2>
+				<h3>Permissions</h3>
+		             
+	</div>
+
+	<br>
+	<br>
+	<hr>
+	 By Project
+	<br>
+	<div style='height:180px;overflow:auto;'>
+	<table border='1'>
+		<% for(pid in pinfo) { %>
+			<% if(pinfo[pid].public === 1) { %>
+			<tr><td><%= pinfo[pid].project %></td><td><small>&lt;pub&gt;</small></td></tr>
+			<% }else{ %>
+				
+				<% for(n in pinfo[pid].permissions) { %>
+					<% user_id = pinfo[pid].permissions[n] %>
+					<% user    = uinfo[user_id].username %>
+					<tr><td><%= pinfo[pid].project %></td><td><%= user %></td></tr>
+				<% } %>
+				
+			<% } %>
+		<% } %>
+
+	</table>
+</div>
+<br><br>
+By User	
+<br>
+<div style='height:180px;overflow:auto;'>
+	<table border='1'>
+		<% for(uid in uinfo) { %>
+		
+		<tr><td><%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %></td><td><%= uinfo[uid].username %></td></tr>
+		
+		<% } %>
+
+	</table>
+</div>   
+      
+</center>
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

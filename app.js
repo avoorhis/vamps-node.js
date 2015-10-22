@@ -39,6 +39,7 @@ var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
+var admin     = require('./routes/routes_admin');
 
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
@@ -129,6 +130,7 @@ app.use(function(req, res, next){
 // ROUTES:
 app.use('/', routes);
 app.use('/help', help);
+app.use('/admin', admin);
 app.use('/users', users);
 app.use('/projects', projects);
 app.use('/datasets', datasets);

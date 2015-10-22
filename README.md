@@ -133,6 +133,20 @@ MySQL db schema is included in root dir as: db_schema.sql
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
+  2015-10-20 AAV Added new table: 
+      CREATE TABLE `access` (
+        `access_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+        `user_id` int(11) unsigned DEFAULT NULL,
+        `project_id` int(11) unsigned DEFAULT NULL,
+        PRIMARY KEY (`access_id`),
+        UNIQUE KEY `pid_uid` (`user_id`,`project_id`),
+        KEY `project_id` (`project_id`),
+        KEY `user_id` (`user_id`),
+        CONSTRAINT `access_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,
+        CONSTRAINT `access_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE
+      ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+
   2015-06-25 AAV Changed the field project.project_description from varchar to text.
   2015-06-25 AAV Changed the field project.title size from varchar 64 to varchar 255.
 

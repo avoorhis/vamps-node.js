@@ -245,7 +245,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {}
-  
+  console.log(ALL_DATASETS)
   res.render('visuals/visuals_index', {
                                 title    : 'VAMPS: Select Datasets',
                                 rows     : JSON.stringify(ALL_DATASETS),
@@ -926,18 +926,12 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     console.log('in phyloseq post')
     //console.log(req.body)
     var ts = req.body.ts;
-    var trailor = Math.floor((Math.random() * 100000) + 1);
+    var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var dist_metric = req.body.metric;
     var plot_type = req.body.plot_type;
-    var image_file = ts+'_phyloseq_'+plot_type+'_'+trailor.toString()+'.svg';
-    //var image_path = path.join(process.env.PWD,'tmp', image_file);
+    var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
     var phy,md1,md2,ordtype,maxdist,script
-    // try{
-    //   fs.unlinkSync(image_path);
-    //   console.log('Deleted: '+image_file)
-    // }catch(err){
-    //   console.log('file not found to unlink: '+image_file);
-    // }
+    
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
     var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
     if(fill === 'Klass'){
@@ -945,7 +939,6 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }
     var tmp_path = path.join(process.env.PWD,'tmp');
     var html = '';
-    var title = 'VAMPS';
     //console.log(biom_file)
     var options = {
       scriptPath : 'public/scripts/',
@@ -957,7 +950,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       options.args = options.args.concat([image_file, phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
-      image_file = ts+'_phyloseq_'+plot_type+'_'+trailor.toString()+'.pdf';
+      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.pdf';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
@@ -989,61 +982,45 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
             detached: true, 
             //stdio: [ 'ignore', null, log ]
             stdio: 'pipe'  // stdin, stdout, stderr
-        }); 
+    }); 
     stdout = '';
     lastline='';
     phyloseq_process.stdout.on('data', function (data) {
-        
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString().trim()
-        //console.log(data)
         lastline = data;
-        stdout += data;    
-     
+        stdout += data;      
     });
     stderr = '';
     phyloseq_process.stderr.on('data', function (data) {
-        
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString().trim()
-        //console.log(data)
-        stderr += data;    
-     
+        stderr += data;      
     }); 
     phyloseq_process.on('close', function (code) {
           console.log('phyloseq_process process exited with code ' + code);
           //distance_matrix = JSON.parse(output);
           //var last_line = ary[ary.length - 1];
-          
-          if(code === 0){   // SUCCESS       
-            
-//res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-//  res.header('Expires', '-1');
- // res.header('Pragma', 'no-cache');
-            console.log('last '+lastline.toString().substring(0,5))
-            if(plot_type == 'heatmap'){
-              var html = "<div id='pdf'>";
-              //html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-              html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-              //html += "<object data='/"+image_file+"' type='application/pdf' />";
-              html += " <p>ERROR in loading svg file</p>";
-              html += "</object></div>";
-              console.log(html);
-              res.send(html);
-
-            }else{
-                if(lastline.toString().substring(0,5) == 'ERROR'){
-                    res.send(lastline);
+          if(code === 0){   // SUCCESS
+            console.log('last: '+lastline);
+            if(lastline.toString().substring(0,5) == 'ERROR'){
+                    console.log('ERROR-1'); 
+                    html = lastline;                   
+            }else{                  
+                if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                      html = "<div id='pdf'>";
+                      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+                      html += " <p>ERROR in loading pdf file</p>";
+                      html += "</object></div>"; 
                 }else{
-                    res.send("<img src='/"+image_file+"'>")
-                }
-            }                              
-          }else{
-            console.log('ERROR');
-            res.send('Phyloseq R script Error: '+stderr);
-          }      
-    });   
+                      html = "<img src='/"+image_file+"'>";                    
+                }              
+            }
 
+          }else{
+            console.log('ERROR-2');            
+            html = 'Phyloseq R Script Error: '+stderr;
+          } 
+          console.log(html);
+          res.send(html);
+
+    });   
 
 });
 

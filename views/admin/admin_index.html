@@ -1,0 +1,32 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit">
+	        <h2>VAMPS: Website Administration</h2>	             
+	</div>
+
+	<br>
+	<br>
+	<hr>
+	<table>
+		<tr><td><a href='/admin/assign_permissions'>Grant User Access to Projects</a></td></tr>
+		<tr><td><a href='/admin/view_permissions'>View User Permissions</a></td></tr>
+		<tr><td><a href='/admin/alter_public_status'>Grant/Revoke Public Status for Projects</a></td></tr>
+		<tr><td><a href='/admin/alter_admin_for_user'>Grant/Revoke Admin Status for Users</a></td></tr>
+		<tr><td><a href='/admin/update_json_files'>Re-Install JSON Files</a></td></tr>
+		<tr><td><a href='/users/users_index'>View User List</a></td></tr>
+		<tr><td><a href='/admin/alter_project'>Change Project Information</a></td></tr>
+		
+
+	</table>
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

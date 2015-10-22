@@ -1,14 +1,10 @@
 var express = require('express');
-
-
 var router = express.Router();
-
 var fs   = require('fs-extra');
 var path  = require('path');
-
 var helpers = require('./helpers/helpers');
-
 var ds = require('./load_all_datasets');
+
 var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   
   GLOBAL.ALL_DATASETS = ALL_DATASETS;
@@ -25,17 +21,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 
 
-  router.get('/admin', function(req, res) {
-   
-   console.log('in amin')
-   res.render('user_admin/admin', {
-              title     :'admin',
-              message   : req.flash('message'), 
-              user: req.user, 
-              hostname: req.C.hostname, // get the user out of session and pass to template
-            }); 
-
-  });
+  
 
 
 
