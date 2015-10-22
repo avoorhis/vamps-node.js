@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>selenium_all</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">selenium_all</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>link=login</td>
+	<td>userIsLoggedOut</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>${userIsLoggedOut} == false</td>
+	<td>userIsLoggedIn</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>60000</td>
+	<td>Wait one minute</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>AnnaSh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>userIsLoggedIn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>60000</td>
+	<td>Wait one minute</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>AnnaSh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[3]/div</td>
+	<td>Profile Page</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Account</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[3]/div</td>
+	<td>Profile Page</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Search</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Metadata (search by name)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=option[value=&quot;Air_Temperature&quot;]</td>
+	<td>Air_Temperature</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#taxonomy_search_div &gt; strong</td>
+	<td>Taxonomy</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#names_search_div &gt; strong</td>
+	<td>Names (key words)</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//a[4]/span</td>
+	<td>top</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#project_search_div &gt; strong</td>
+	<td>User Search</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>xpath=(//div[@id='project_search_div']/div/div[2])[2]</td>
+	<td>Type partial name:</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=blast_search_div</td>
+	<td>Local Blast How to make a blast database <br /> No Blast Database Found</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=How to make a blast database</td>
+	<td>How to make a blast database</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Visualizations</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.title</td>
+	<td>Community Visualization</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=ICM_AGW_Bv6--pj-id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTable</td>
+	<td>css=table.table.table-bordered.1.0</td>
+	<td>ICM_AGW_Bv6 (public) AGW_0001_2005_06_15 AGW_0002_2005_06_15 AGW_0003_2006_06_15 AGW_0004_2006_06_15 <br /> ICM_LCY_Bv6 (public) LCY_0001_2003_05_11 LCY_0003_2003_05_04 LCY_0005_2003_05_16 LCY_0007_2003_05_04 <br /> ICM_SPO_Bv6 (public) SPO_0001_2008_01_31 SPO_0002_2008_01_31 SPO_0003_2008_01_31 SPO_0004_2008_01_31 SPO_0005_2008_01_31 SPO_0006_2008_01_31 SPO_0007_2008_01_31 SPO_0008_2008_01_31 SPO_0009_2008_01_31 SPO_0010_2008_01_31 SPO_0011_2008_01_31 SPO_0012_2008_01_31 SPO_0013_2008_01_31 SPO_0014_2008_01_31 SPO_0015_2008_01_31 SPO_0016_2008_01_31</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=unit_selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>exact:VAMPS: Units Selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#dataset_names_div &gt; ul &gt; li</td>
+	<td>1 (id:1038) - ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>xpath=(//button[@type='button'])[3]</td>
+	<td>Taxonomy -Simple Silva108</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//input[@id=''])[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=get_graphics</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=small</td>
+	<td>Taxonomic Depth: order --- Domains: Archaea,Bacteria,Eukarya,Organelle,Unknown</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#dataset_names_div &gt; ul &gt; li</td>
+	<td>1 (id:1038) - ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=show_selected_metadata_div</td>
+	<td>Here are your selected metadata:<br /> 1 - latitude 2 - longitude <br /> Change Metadata</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#show_selected_metadata_div &gt; #dataset_names_div &gt; ul &gt; li</td>
+	<td>1 - latitude</td>
+</tr>
+</tbody></table>
+</body>
+</html>

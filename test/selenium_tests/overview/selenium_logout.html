@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>selenium_all</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">selenium_all</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>link=login</td>
+	<td>userIsLoggedOut</td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>link=logout</td>
+	<td>userIsLoggedOut</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>${userIsLoggedOut} == true</td>
+	<td>userIsLoggedOut</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>${userIsLoggedOut} == false</td>
+	<td>userIsLoggedIn</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>userIsLoggedIn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>userIsLoggedOut</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Overview</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Overview</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Your Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Data Administration</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.title</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Contact Us</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Contact Us</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=label</td>
+	<td>Your Name</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Register</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.title</td>
+	<td>Add User</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=form[name=&quot;newuser_form&quot;] &gt; ul &gt; li</td>
+	<td>Username (alphanumeric only. no spaces.)</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Public Project List</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.title.left_justify</td>
+	<td>Public Projects Listing</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id='project_list_div']/table/thead/tr/th[2]</td>
+	<td>ID</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Distribution</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Metadata</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Metadata</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Export</td>
+	<td>Export</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>xpath=(//a[contains(text(),'Search')])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Upload</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Export Data</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.title</td>
+	<td>Login</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[contains(text(),'Overview')])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Overview</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=FAQ</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>FAQ</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Clustering and Diversity</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Links</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[contains(text(),'Contact Us')])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=p.title</td>
+	<td>Contact Us</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=contact-form-name</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
