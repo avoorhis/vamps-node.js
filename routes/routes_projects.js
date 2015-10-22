@@ -6,6 +6,7 @@ var transporter = nodemailer.createTransport();
 var zlib = require('zlib');
 var Readable = require('stream').Readable;
 var helpers = require('./helpers/helpers');
+var path = require('path');
 //var crypto = require('crypto');
 // These are all under /projects
 /* GET New User page. */
@@ -21,7 +22,7 @@ router.get('/projects_index', function(req, res) {
                         title          : 'VAMPS Projects',
                         projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
-                        user: req.user 
+                        user: req.user,hostname: req.C.hostname,
                 });
     
 
@@ -32,7 +33,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var dsinfo = []; 
     var mdata = {}
     var dscounts = {};  
-    // PROJECT_INFORMATION_BY_PID is a global variable created on server start in 'load_all_datasets.js'
+    
 	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
@@ -50,24 +51,42 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
         mdata[dsinfo[n].dname] = AllMetadata[did]; 
 
       }
-      console.log(mdata['EXX136'])
-      //console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
-      res.render('projects/profile', { 
-                                  title  : 'VAMPS Project',
-                                  info: JSON.stringify(info),
-                                  dsinfo: dsinfo,
-                                  dscounts: JSON.stringify(dscounts),
-                                  pid: req.params.id,
-                                  mdata: JSON.stringify(mdata),
-                                  pcount: project_count,
-      						                message: '',
-                                  user   : req.user 
-                                });
-    }else{
+      //console.log('MD: '+JSON.stringify(mdata));
+      var abstract_file = info.project+'.json';
+      var abstract_file_path = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--abstracts',abstract_file)
+      
+      
+      fs.readFile(abstract_file_path, {encoding: 'utf-8'}, function(err,data){
+            if (err){            
+                //console.log('ERR '+err)
+                abstract = '{"abstract":"Not Available"}';
+            }else{
+              //abstract = JSON.parse(data);
+              //console.log('project: '+info.project+' AB: '+data)
+              //console.log('PROJECT_INFORMATION_BY_PID',JSON.stringify(PROJECT_INFORMATION_BY_PID))
+              abstract = data;
+            }
+
+            res.render('projects/profile', { 
+                                          title  : 'VAMPS Project',
+                                          info: JSON.stringify(info),
+                                          dsinfo: dsinfo,
+                                          dscounts: JSON.stringify(dscounts),
+                                          pid: req.params.id,
+                                          mdata: JSON.stringify(mdata),
+                                          pcount: project_count,
+                                          message: '',
+                                          abstract:abstract,
+                                          user   : req.user,hostname: req.C.hostname,
+                                        });
+
+      });
+      
+  }else{
       req.flash('message','not found')
       res.redirect(req.get('referer'));
       //return
-    }
+  }
     
 });
 

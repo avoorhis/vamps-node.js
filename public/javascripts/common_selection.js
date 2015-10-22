@@ -30,10 +30,13 @@ if (reorder_datasets_btn !== null) {
 //
 var save_datasets_list = function(ds_local, user)
 {
-	
+	  if(user=='guest'){
+      document.getElementById('save_ds_result').innerHTML = "The 'guest' user is not permitted to save datasets.";
+      return;
+    }
     var timestamp = +new Date();  // millisecs since the epoch!
     
-	var filename = 'datasets:' + timestamp + '.json';
+	  var filename = 'datasets:' + timestamp + '.json';
     
     var args =  "datasets="+JSON.stringify(ds_local);
     args += "&filename="+filename;
@@ -61,30 +64,29 @@ var save_datasets_list = function(ds_local, user)
 //
 // PIES and BARS
 //
-
 function create_barcharts(imagetype) {
 
         var ts = pi_local.ts;
        
-		var barcharts_div = document.getElementById('barcharts_div');
-		barcharts_div.style.display = 'block';
+		    var barcharts_div = document.getElementById('barcharts_div');
+		    barcharts_div.style.display = 'block';
         
         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
         var unit_list = [];
         for (var o in mtx_local.rows){
-            unit_list.push(mtx_local.rows[o].name);
+            unit_list.push(mtx_local.rows[o].id);
         }
         var colors = get_colors(unit_list);
 
         data = [];
-        did_by_names ={}
+        //did_by_names ={}
         for (var p in mtx_local.columns){
           tmp={};
-          tmp.datasetName = mtx_local.columns[p].name;
-		  did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
-		  //tmp.did = mtx_local.columns[p].did;
+          tmp.datasetName = mtx_local.columns[p].id;
+		      //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
+		      //tmp.did = mtx_local.columns[p].did;
           for (var t in mtx_local.rows){
-            tmp[mtx_local.rows[t].name] = mtx_local.data[t][p];
+            tmp[mtx_local.rows[t].id] = mtx_local.data[t][p];
           }
           data.push(tmp);
         }
@@ -132,15 +134,18 @@ function create_barcharts(imagetype) {
   	      props.x.domain([0, 100]);	
 			
         if(imagetype=='single'){
-        	create_singlebar_svg_object(svg,props, did_by_names, data, ts)
+        	//create_singlebar_svg_object(svg,props, did_by_names, data, ts);
+          create_singlebar_svg_object(svg, props, data, ts);
         }else{
-        	create_svg_object(svg,props, did_by_names, data, ts);
+        	//create_svg_object(svg,props, did_by_names, data, ts);
+          create_svg_object(svg, props, data, ts);
         }
 }
+
 //
 //
 //
-function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
+function create_singlebar_svg_object(svg, props, data, ts) {
 
 	       var datasetBar = svg.selectAll(".bar")
 	          .data(data)
@@ -153,7 +158,8 @@ function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
 	           .data(function(d) { return d.unitObj; })
 	           .enter()
 	             .append('a').attr("xlink:href",  function(d) {
-				     return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.name);
+				     //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
+             return 'sequences?id='+mtx_local.dataset+'&taxa='+encodeURIComponent(d.name);
 				  }).style("fill",   function(d) { return string_to_color_code(d.name); });
 
 	       gnodes.append("rect")
@@ -171,17 +177,7 @@ function create_singlebar_svg_object(svg,props, did_by_names, data, ts) {
 	              })
 				  .attr("class","tooltip_viz");
 }
-function create_svg_object(svg,props, did_by_names, data, ts) {
-      
-
-      // svg.append("g")
-      //     .attr("class", "y axis")
-      // 	      .style({  'stroke-width': '1px'})
-      //     .call(props.yAxis)
-      //     .selectAll("text")
-      //        .style("text-anchor", "end")
-      //        .attr("dx", "-.5em")
-      //        .attr("dy", "1.4em");
+function create_svg_object(svg, props, data, ts) {
              
              
       svg.append("g")
@@ -201,15 +197,15 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
           .attr("class", "g")
           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
           .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'bar_single?did='+did_by_names[d.datasetName]+'&ts='+ts;} )
+        .attr("xlink:xlink:href",  function(d) { return 'bar_single?id='+d.datasetName+'&ts='+ts;} )
 		  .attr("target", '_blank' );
   
   var labels = datasetBar.append("text")
-            .attr("class", "y label")
+          .attr("class", "y label")
 			.attr("text-anchor", "end")
 		  .style({"font-size":  "13px","font-weight":  "normal" })
-            .attr("x", "-2")
-            .attr("y", props.bar_height*2)
+          .attr("x", "-2")
+          .attr("y", props.bar_height*2)
 			.text(function(d) { return d.datasetName; })
 			
 			
@@ -224,6 +220,7 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
           .attr("id",function(d,i) { 
+            //console.log(this.parentNode.__data__);
             var cnt =  this.parentNode.__data__[d.name];
             var total = this.parentNode.__data__['total'];
             
@@ -232,7 +229,7 @@ function create_svg_object(svg,props, did_by_names, data, ts) {
             var pct = (cnt * 100 / total).toFixed(2);
             var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
             return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-            //return this._parentNode.__data__.DatasetName + '-|-' + d.name + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            //return this._parentNode.__data__.DatasetName + '-|-' + d.id + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
           }) 
 
           .attr("class","tooltip_viz")

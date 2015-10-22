@@ -10,9 +10,13 @@ INSTALL
  * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
  * Node.js (http://nodejs.org/)
  * Python (https://www.python.org/) 
+ (required python modules: numpy,scikit-bio,qiime,cogent,illumina-utils)
  
- For some additional functionality 
- * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html) (Used for frequency heatmaps)
+ For some additional functionality:
+ * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html) 
+ (Used for frequency heatmaps 
+ --required modules:pheatmap,RColorBrowser,gtables,jsonlite,permute,vegan,Rcpp,colorspace,labeling,munsell,plyr,scales)
+
  * Emperor (Qiime's module, http://qiime.org/install/index.html) (Used for 3D PCoA visualizations)
  * Perl (https://www.perl.org/)  (used in GAST Taxonomic assignments)
 
@@ -23,7 +27,7 @@ Which will create the directory 'vamps-node.js'.
 **Install node packages**
  * Move into the vamps-node.js directory ('cd vamps-node.js')
  * run: (sudo) npm install
- * look in file 'package.json' to see required modules.
+ * (optional) look in file 'package.json' to see required modules.
 
 **Install MYSQL database schema**
  * There are two mysql database schemas included in the vamps-node.js installation.
@@ -49,7 +53,7 @@ Create a new database in your mysql installation and install one of the schemas 
     user     : 'mysql-username',
     password : 'mysql-password',
     database :  NODE_DATABASE,
-    socketPath: '/private/var/mysql/mysql.sock'
+    socketPath: '/tmp/mysql.sock'
   };
 ```
 **Before starting the server**
@@ -129,6 +133,20 @@ MySQL db schema is included in root dir as: db_schema.sql
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
+  2015-10-20 AAV Added new table: 
+      CREATE TABLE `access` (
+        `access_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+        `user_id` int(11) unsigned DEFAULT NULL,
+        `project_id` int(11) unsigned DEFAULT NULL,
+        PRIMARY KEY (`access_id`),
+        UNIQUE KEY `pid_uid` (`user_id`,`project_id`),
+        KEY `project_id` (`project_id`),
+        KEY `user_id` (`user_id`),
+        CONSTRAINT `access_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,
+        CONSTRAINT `access_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE
+      ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+
   2015-06-25 AAV Changed the field project.project_description from varchar to text.
   2015-06-25 AAV Changed the field project.title size from varchar 64 to varchar 255.
 

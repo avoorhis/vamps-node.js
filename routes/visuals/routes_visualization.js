@@ -16,9 +16,8 @@ var Readable = require('readable-stream').Readable;
 var helpers = require('../helpers/helpers');
 var QUERY = require('../queries');
 
-
 var COMMON  = require('./routes_common');
-var META    = require('./routes_metadata');
+var META    = require('./routes_visuals_metadata');
 //var PCOA    = require('./routes_pcoa');
 var MTX     = require('./routes_counts_matrix');
 //var HMAP    = require('./routes_distance_heatmap');
@@ -26,10 +25,12 @@ var MTX     = require('./routes_counts_matrix');
 //var BCHARTS = require('./routes_bar_charts');
 //var PCHARTS = require('./routes_pie_charts');
 //var CTABLE  = require('./routes_counts_table');
-var PythonShell = require('python-shell');
+//var PythonShell = require('python-shell');
+var spawn = require('child_process').spawn;
 var app = express();
-var d3 = require("d3");
-var xmldom = require('xmldom');
+
+//var xmldom = require('xmldom');
+
 // // init_node var node_class =
 // var CustomTaxa  = require('./custom_taxa_class');
 
@@ -85,15 +86,15 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('visual_post_items:>>');
   console.log(visual_post_items);
   console.log('<<visual_post_items:');
-
+ 
 
   // GLOBAL
-  console.log('metadata>>');
+  //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
   metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //metadata = JSON.parse(metadata);
-  console.log(metadata);
-  console.log('<<metadata');
+  //console.log(metadata);
+  //console.log('<<metadata');
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["724_class"]["taxon"])
@@ -113,7 +114,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 metadata  :           JSON.stringify(metadata),
                                 constants :           JSON.stringify(req.C),
                                 post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,
+                                user      :           req.user,hostname: req.C.hostname,
 	                          //locals: {flash: req.flash('infomessage')},
                                 message   : req.flash('message')
                  });
@@ -174,11 +175,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 		  TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
 		  METADATA[dataset_ids[i]]  = jsonfile['metadata'];
 	  }
-	  console.log(JSON.stringify(METADATA))
+	  //console.log(JSON.stringify(METADATA))
 	  //console.log(JSON.stringify(TAXCOUNTS))
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
-    console.log('METADATA= '+JSON.stringify(METADATA));
+    //console.log('METADATA= '+JSON.stringify(METADATA));
 	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
@@ -218,7 +219,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
 		  				        message      : req.flash(),
-	                    user         : req.user
+	                    user         : req.user,hostname: req.C.hostname,
 	  });  // end render
   }
     // benchmarking
@@ -241,17 +242,17 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {}
-  
+  console.log(ALL_DATASETS)
   res.render('visuals/visuals_index', {
                                 title    : 'VAMPS: Select Datasets',
                                 rows     : JSON.stringify(ALL_DATASETS),
                                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants: JSON.stringify(req.C),
 	  							              message  : req.flash('nodataMessage'),
-                                user     : req.user
+                                user     : req.user,hostname: req.C.hostname,
                             });
 });
 
@@ -267,70 +268,33 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
                                 constants    : JSON.stringify(req.C),
 								                referer: req.body.referer,
                                 ts : ts,
-                                user: req.user
+                                user: req.user, hostname: req.C.hostname,
                             });
   //console.log(chosen_id_name_hash)
 });
+//
+//
+//
 router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
-
+  // this fxn is required for viewing list of saved datasets
+  // when 'toggle open button is activated'
     fxn = req.body.fxn;
-	//console.log('XX'+JSON.stringify(req.body));
-	var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
-	console.log(file_path);
-	var dataset_ids = [];
-	fs.readFile(file_path, 'utf8',function(err,data) {
-		if (err) {
-			msg = 'ERROR Message '+err;
-  			helpers.render_error_page(req,res,msg);
-		
-		}else{		
-			res.send(data);
-		}
-			
-	});
-	
+  //console.log('XX'+JSON.stringify(req.body));
+  var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
+  console.log(file_path);
+  var dataset_ids = [];
+  fs.readFile(file_path, 'utf8',function(err,data) {
+    if (err) {
+      msg = 'ERROR Message '+err;
+        helpers.render_error_page(req,res,msg);
+    
+    }else{    
+      res.send(data);
+    }
+      
+  });
+  
 });
-//
-// Download Counts Matrix
-//
-// router.post('/download_counts_matrix', helpers.isLoggedIn, function(req, res) {
-// 	//console.log('in download_counts_matrix')
-// 	//console.log(biom_matrix)
-//   var timestamp = +new Date();  // millisecs since the epoch!
-//   timestamp = req.user.username + '_' + timestamp;
-//   var out_file = path.join('user_data',NODE_DATABASE,req.user.username,'matrix:'+timestamp+".csv.gz");
-//   var wstream = fs.createWriteStream(out_file);
-//   var gzip = zlib.createGzip();
-//   var rs = new Readable();
-	
-// 	header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
-// 	for (var y in biom_matrix.columns){
-// 		header_txt += ','+biom_matrix.columns[y].name;
-// 	}
-// 	header_txt += '\n\r';
-// 	rs.push(header_txt);
-// 	for (var i in biom_matrix.rows){
-// 		row_txt = '';
-// 		row_txt += biom_matrix.rows[i].name;
-// 		for (var k in biom_matrix.data[i]){
-// 			row_txt += ','+biom_matrix.data[i][k];
-// 		}
-// 		row_txt += '\n\r';
-// 		rs.push(row_txt);
-// 	}
-// 	rs.push('\n\r');
-// 	rs.push(null);
-//   	rs
-// 	  .pipe(gzip)
-//       .pipe(wstream)
-//       .on('finish', function () {  // finished
-//         console.log('done compressing and writing file');
-//       });
-//       //res.redirect('/visuals/view_selection');
-//       //res.send()
-
-
-// });
 //
 //
 //
@@ -343,168 +307,256 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var biom_file = path.join(pwd,'tmp', biom_file_name);
     //console.log('mtx1')
-
-  //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
-    var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
+   
     var html = '';
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
     
     var options = {
-      scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
-    };
+     scriptPath : 'public/scripts',
+       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
+     };
+        
+    
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    
+    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    PythonShell.run('distance.py', options, function (err, mtx) {
-      if (err) {
-  		  res.send(err);
-  	  }else{
-	      distance_matrix = JSON.parse(mtx);
-	     
-	      res.render('visuals/partials/load_distance',{
-	                    dm        : distance_matrix,
-			  							hash   	  : JSON.stringify(chosen_id_name_hash),			  							
-	                    constants : JSON.stringify(req.C),
-	               });
-	  }
+    var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            detached: true, 
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe' // stdin, stdout, stderr
+        });  
+    
+    
+    var stdout = '';
+    heatmap_process.stdout.on('data', function (data) {
+        console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
     });
+    var stderr = '';
+    heatmap_process.stderr.on('data', function (data) {
+        console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+         
+    heatmap_process.on('close', function (code) {
+        console.log('heatmap_process process exited with code ' + code);
+               
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS     
+          try{
+            distance_matrix = JSON.parse(stdout);
+          }
+          catch(err){
+            distance_matrix = {'ERROR':err};
+          }  
+            res.render('visuals/partials/load_distance',{
+                  dm        : distance_matrix,
+                  hash      : JSON.stringify(chosen_id_name_hash),                      
+                  constants : JSON.stringify(req.C),
+              }); 
+
+        }else{
+          console.log('output: '+stderr);
+          res.send(stderr);
+        }      
+    });   
 
 });
+
 
 //
 //   F R E Q U E N C Y  H E A T M A P
 //
 router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
-  console.log('in Freq HP');
+  console.log('in Freq HM');
   var ts = req.body.ts;
   var metric = req.body.metric;
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
-
-  var exec = require('child_process').exec;
-  //var PythonShell = require('python-shell');
+  var pwd = process.env.PWD || req.config.PROCESS_DIR;
   var html = '';
   var title = 'VAMPS';
 
   var distmtx_file_name = ts+'_distance.csv';
-  var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+  var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
   
 
-  var fheatmap_script_file = path.resolve(process.env.PWD, 'public','scripts','fheatmap.R');
+  var fheatmap_script_file = path.resolve(pwd, 'public','scripts','fheatmap.R');
 
   shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
 
-  COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
-
+  //COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
+  var options = {
+     scriptPath : 'public/scripts',
+       args :       [  biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts],
+  };
+  // RScript --no-restore --no-save /usr/local/www/vampsdev/projects/vamps-node.js/public/scripts/fheatmap.R 
+  //    /usr/local/www/vampsdev/projects/vamps-node.js/tmp/avoorhis_1443031027846_count_matrix.biom morisita_horn phylum avoorhis_1443031027846    
+  
+  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  
+  
+  console.log(options.scriptPath+'/fheatmap.R '+options.args.join(' '));
+  var fheatmap_process = spawn( options.scriptPath+'/fheatmap.R', options.args, {
+          env:{'PATH':req.config.PATH},
+          detached: true, 
+          //stdio: [ 'ignore', null, log ]
+          stdio: 'pipe'  // stdin, stdout, stderr
+      }); 
+  stdout = '';
+  fheatmap_process.stdout.on('data', function (data) {
+      
+      stdout += data;    
+   
+  });
+  stderr = '';
+  fheatmap_process.stderr.on('data', function (data) {
+      
+      stderr += data;    
+   
+  }); 
+  
+  fheatmap_process.on('close', function (code) {
+        console.log('fheatmap_process process exited with code ' + code);
+        //distance_matrix = JSON.parse(output);
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS       
+              image_file = ts+'_heatmap.svg';
+              //image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
+              res.send("<img src='/"+image_file+"'>")
+              // fs.readFile(image_file, 'utf8', function (err,data) {
+              //   if (err) {
+              //      console.log(err);
+              //      res.send('FreqHeatmap File Error');
+              //    }
+              //    console.log('Reading: '+image)
+              //    //data_items = data.split('\n')
+                 
+              //    //X=data_items.slice(1,data_items.length)
+              //    //d = X.join('\n')
+              //    //console.log(d)
+              //    res.send(data);
+              // });
+                                        
+        }else{
+          console.log('ERROR');
+          res.send('Frequency Heatmap R Script Error:'+stderr);
+        }      
+  });   
+  
 
 });
-router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
-    console.log('found routes_dendrogram');
 
-    //console.log('req.body dnd');
-    //console.log(req.body);
-    //console.log('req.body dnd');
+
+//
+//
+//
+router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
+    console.log('found routes_dendrogram-x');
+    ///// this vesion of dendrogram is or running d3 on CLIENT: Currently:WORKING
+    ///// It passes the newick string back to view_selection.js
+    ///// and tries to construct the svg there before showing it.
+    console.log('req.body dnd');
+    console.log(req.body);
+    console.log('req.body dnd');
     var ts = req.body.ts;
     var metric = req.body.metric;
-	  var script = req.body.script; // python, phylogram or phylonator
+    var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
-	
-	  var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
+  
+    var biom_file_name = ts+'_count_matrix.biom';
+    var biom_file = path.join(pwd,'tmp',biom_file_name);
 
-
-    var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
     var html = '';
     var title = 'VAMPS';
 
     var distmtx_file_name = ts+'_distance.csv';
-    var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
+    var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
     
 
     var options = {
       scriptPath : 'public/scripts',
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', process.env.PWD, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
     };
+   
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-
-    PythonShell.run('distance.py', options, function (err, output) {
-      if (err) {
-		  res.send(err);  // for now we'll send errors to the browser
-	  }else{
-	      function buildNewickNodes(node, callback) {
-	        newickNodes.push(node);
-	        if (node.branchset) {
-	          for (var i=0; i < node.branchset.length; i++) {
-	            buildNewickNodes(node.branchset[i]);
-	          }
-	        }
-	      }
-		  var viz_width = 1200;
-		  var viz_height = (visual_post_items.no_of_datasets*12)+100;
-	      //var m = JSON.stringify(mtx)
-	      var html;
-	      if(image_type == 'svg'){
-	        //console.log(JSON.parse(output))
-  			var d3 = require("d3");
-  			var xmldom = require('xmldom');
-  			var Newick    = require(path.join(process.env.PWD,'public','javascripts','newick'));
-			var div_width = 1200;
-  			newick = JSON.parse(output);
-  			//console.log('Newick ',newick)
-  			var json  = Newick.parse(newick);
-  			//console.log(JSON.stringify(json,null,4))
-  			var newickNodes = [];
-
-  			buildNewickNodes(json);
-			
-			if(script == 'phylogram'){
-				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylogram'));
-				var tree_data = d3.phylogram.build('body', json, {
-				  width: viz_width-400,   // minus 400 is for padding on right to view dataset names
-				  height: viz_height
-				});
-			}else if(script == 'phylonator'){
-				var Phylogram = require(path.join(process.env.PWD,'public','javascripts','d3.phylonator'));
-				var tree_data = d3.phylonator.build('body', json, {
-				  width: viz_width-400,    // minus 400 is for padding on right to view dataset names
-				  height: viz_height,
-				  skipBranchLengthScaling: true
-				});
-			}
-
-			//console.log('Newick2 ')
-			
-			//console.log('Newick3 ')
-			var svgXML = (new xmldom.XMLSerializer()).serializeToString( tree_data.vis[0][0] );
-			//console.log('Newick4 ')
-			html = "<svg height='"+viz_height+"' width='100%'>"+svgXML+"</svg>";
-
-			d3.select('svg').remove();
-
-			//console.log(html);
-
-	      }else{
-	        var image = '/tmp_images/'+ts+'_dendrogram.pdf';
-	        html = "<div id='pdf'>";
-	        html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
-	        html += " <p>ERROR in loading pdf file</p>";
-	        html += "</object></div>";
-	      }
-	      //html = viz_height
-          res.send(html);
-  	  }
-
+    var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            detached: true, 
+            //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+            stdio: 'pipe'  // stdin, stdout, stderr
+    });  
+    
+    var stdout = '';
+    dendrogram_process.stdout.on('data', function (data) {
+        console.log('stdout: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stdout += data;
     });
+    var stderr = '';
+    dendrogram_process.stderr.on('data', function (data) {
+        console.log('stderr: ' + data);
+        //data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString();
+        stderr += data;
+    });
+    
+    dendrogram_process.on('close', function (code) {
+        console.log('dendrogram_process process exited with code ' + code);
+      
+        //var last_line = ary[ary.length - 1];
+        if(code === 0){   // SUCCESS       
+          if(image_type == 'svg'){
+                    try{
+                      newick = JSON.parse(stdout);
+                    }
+                    catch(err){
+                      newick = {"ERROR":err}
+                    }
+                    res.send(newick);
+                    return;
 
+          }else{  // 'pdf'
+                    var viz_width = 1200;
+                    var viz_height = (visual_post_items.no_of_datasets*12)+100;
+                    var image = '/'+ts+'_dendrogram.pdf';
+                    //console.log(image)
+                    html = "<div id='pdf'>";
+                    html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='"+viz_height+"' />";
+                    html += " <p>ERROR in loading pdf file</p>";
+                    html += "</object></div>";
+                    res.send(html);
+                    return;
+          }                                     
+        }else{
+          console.log('stderr: '+stderr)
+          res.send('Script Error');
+        }      
+    });   
+    
+    
+    
+ 
 });
+
 //
 // P C O A
 //
@@ -516,9 +568,12 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var image_type = req.body.image_type;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
     
-    var exec = require('child_process').exec;
+    
     if(image_type == '2d'){
         
         var options = {
@@ -526,36 +581,74 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        PythonShell.run('distance.py', options, function (err, pcoa_data) {
-          if (err) {
-    		  res.send('ERROR '+err); // for now we'll send errors to the browser
-    	  }else{
-    	      //console.log(pcoa_data)
-    	      //pcoa_data = JSON.parse(pcoa_data)
-    	      //console.log(pcoa_data);
-
-    	      var image = '/tmp_images/'+ts+'_pcoa.pdf';
-    	      var html = "<div id='pdf'>";
-    	      html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-    	      html += " <p>ERROR in loading pdf file</p>";
-    	      html += "</object></div>";
-    	      //console.log(html);
-              
-    	      res.send(html);
-      	}
-
-        });       
+        
+        var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            detached: true, 
+            stdio: [ 'ignore', null, log ]
+            //stdio: 'pipe' // stdin, stdout, stderr
+        });  
+    
+        
+        pcoa_process.on('close', function (code) {
+            //console.log('pcoa_process process exited with code ' + code+' -- '+output);
+            //distance_matrix = JSON.parse(output);
+            //var last_line = ary[ary.length - 1];
+            if(code === 0){   // SUCCESS       
+              var image = path.join('/',ts+'_pcoa.pdf');              
+              var html = "<div id='pdf'>";
+              html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+              html += " <p>ERROR in loading pdf file</p>";
+              html += "</object></div>";
+              //console.log(html);                 
+              res.send(html);                                    
+            }else{
+                console.log('ERROR');
+                res.send('PCoA Python Error');
+            }      
+        });   
         
         
     }else if(image_type == '3d'){
         
-        var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(process.env.PWD,'tmp', mapping_file_name);        
+     
+        // see next FXN
+        
+    }
+    
+});
+//
+//  EMPEROR....
+// POST is for PC file link
+router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+        var ts = visual_post_items.ts; 
+        var pwd = process.env.PWD || req.config.PROCESS_DIR;
         var pc_file_name = ts+'.pc';
-        var pc_file = path.join(process.env.PWD,'tmp', pc_file_name);
+        //var pc_file = path.join(pwd,'tmp', pc_file_name);
+        var txt = "Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+        res.send(txt)
+});
+// GET is to create and open EMPEROR
+router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+        
+        console.log('in 3D')
+        console.log(visual_post_items)
+        var ts = visual_post_items.ts;    
+        var metric = visual_post_items.selected_distance;
+        
+        var pwd = process.env.PWD || req.config.PROCESS_DIR;
+        var biom_file_name = ts+'_count_matrix.biom';
+        var biom_file = path.join(pwd,'tmp', biom_file_name);
+        
+        var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+
+        var mapping_file_name = ts+'_metadata.txt';
+        var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
+        var pc_file_name = ts+'.pc';
+        var pc_file = path.join(pwd,'tmp', pc_file_name);
         
         var dir_name = ts+'_pcoa_3d';
-        var dir_path = path.join(process.env.PWD,'tmp', dir_name);        
+        var dir_path = path.join(pwd,'tmp', dir_name);        
         var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
         //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
         var options1 = {
@@ -563,109 +656,82 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
         };
         var options2 = {
-            scriptPath : req.C.PATH_TO_QIIME_BIN,
+            //scriptPath : req.config.PATH_TO_QIIME_BIN,
+            scriptPath : 'public/scripts',
             args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
         };
+        console.log('outdir: '+dir_path);
         console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
-        PythonShell.run('distance.py', options1, function (err, pcoa_data) {
-          if (err) {
-    		      res.send('ERROR-1 '+err); // for now we'll send errors to the browser
-    	    }else{
-    	        //console.log(pcoa_data)
-    	        //pcoa_data = JSON.parse(pcoa_data)
-    	        //console.log(pcoa_data);
-              //console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-              var spawn = require('child_process').spawn;
-              var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
-              // script will remove data from mysql and datset taxfile
-              console.log(options2.scriptPath+'make_emperor.py '+options2.args.join(' '));
-              var emperor_process = spawn( options2.scriptPath+'make_emperor.py', options2.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
-              emperor_process.on('close', function (code) {
-                  console.log('emperor_process process exited with code ' + code);
-                  if(code == 0){           
-                   //console.log('PID last line: '+last_line)                    
-                      ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-                      ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";   
-                      console.log(html_path);
-                      open('file://'+html_path);
-                      res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser.");                                 
-                  }else{
-                    // python script error
-                    console.log('python script error');
-                  }      
-              });   
-
-
-              // PythonShell.run(options2.scriptPath+'make_emperor.py', options2, function (err, pcoa_data) {
-              //   ok_form = "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+pc_file_name+"'>PC File</a><br>";
-              //   ok_form += "<a href='/user_data/file_utils?fxn=download&user="+req.user.username+"&type=pcoa&filename="+mapping_file_name+"'>Mapping File</a><br>";
-              //   if (err) {            		    
-              //       res.send('ERROR-2 '+err); // for now we'll send errors to the browser
-            	 //  }else{
-              //         console.log(html_path);
-              //         open('file://'+html_path);
-              //         res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> should open a new window in your default browser.");
-              //   }
-
-              // });
-
-
-
-
-
-
-
-
-
-      	  }
-
-        });
         
-    }
-    
+        var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+            env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
+            detached: true, 
+            stdio:['pipe', 'pipe', 'pipe']
+            //stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr    
+       
+        pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
+        stderr1=''
+        pcoa_process.stderr.on('data', function (data) {
+                console.log('1stderr: ' + data);
+                stderr += data;               
+        });
+        pcoa_process.on('close', function (code1) {
+                console.log('pcoa_process1 process exited with code ' + code1);
+                
+                if(code1 === 0){    // SUCCESS       
+                    console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
+                    var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
+                            env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
+                            detached: true, 
+                            stdio:'pipe' // stdin, stdout, stderr
+                            //stdio: [ 'ignore', null, log ]
+                    });  
+                    
+                    emperor_process.stdout.on('data', function (data) { console.log('2stdout: ' + data);  });
+                    stderr2=''
+                    emperor_process.stderr.on('data', function (data) {
+                            console.log('2stderr: ' + data);
+                            stderr2 += data;                       
+                    });
+                    emperor_process.on('close', function (code2) {
+                          console.log('emperor_process process exited with code ' + code2);
+                          
+                          if(code2 == 0){           
+                              
+                              console.log('opening file:///'+html_path)
+                              //res.send()
+                              res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd})
+
+                              //open('file://'+html_path);
+                              //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                          }else{
+                            // python script error
+                            //console.log('make_emperor script error:' + errdata2);
+                            res.send('make_emperor2 SCRIPT error '+stderr2)
+                          }      
+                    });                      
+                }else{
+                    //console.log('ERROR');
+                    res.send('Python Script Error: '+stderr1);
+                }      
+        });   
+        
+
 });
+
 //
 // DATA BROWSER 
 //
-router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
-    var ts = req.body.ts;
+router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
+    var ts = visual_post_items.ts;
     console.log('in dbrowser');
     //console.log(JSON.stringify(biom_matrix,null,2));
-    
+    var html='';
     var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
     //console.log('column_totals '+biom_matrix.column_totals);
     //console.log('max_total_count '+max_total_count.toString());
-    var html = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n";
-    html += "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang=\"en\" lang=\"en\">\n";
-    html += "<head>\n";
-    html += " <meta charset=\"utf-8\"/>\n";
-    html += " <link rel='shortcut icon' href='../public/images/favicon.ico' />\n";
-    html += " <script id=\"notfound\">window.onload=function(){document.body.innerHTML=\"Could not get resources from 'http://krona.sourceforge.net'.\"}</script>\n";
-    html += " <script src=\"../public/javascripts/krona-2.0.js\"></script>\n";
-    html += "</head>\n";
-    html += "<body>\n";
-    html += " <img id='hiddenImage' src='../public/images/hidden.png' style='display:none' />\n";
-    html += " <noscript>Javascript must be enabled to view this page.</noscript>\n";
-    html += " <div style='display:none'>\n";
-    html += "  <krona  collapse='false' key='true'>\n";
-    html += "  <attributes magnitude='seqcount'>\n";
-    html += "  <attribute display='Abundance'>seqcount</attribute>\n";
-    html += "  <attribute display='Rank' mono='true'>rank</attribute>\n";
-    html += "  </attributes>\n";
-    html += "  <color attribute='seqcount' valueStart='0' valueEnd='"+max_total_count.toString()+"' hueStart='120' hueEnd='240'></color>\n";
-    html += "  <datasets>\n";
-    for(i in chosen_id_name_hash.names){
-        html += "    <dataset>"+chosen_id_name_hash.names[i]+"</dataset>\n";
-    }
-    html += "  </datasets>\n";
-    html += "  <node id='dataset_name' name='root'>\n";
-	html += "   <seqcount>";
-    for(i in chosen_id_name_hash.names){
-        html += "<val>"+biom_matrix.column_totals[i].toString()+"</val>";
-    }
-    html += "</seqcount>\n";
-   
+
     // sum counts
     sumator = get_sumator(req)
  
@@ -676,20 +742,20 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
       // #### DOMAIN ####
       //var dnode_name =  dname
       html += "<node name='"+d+"'>\n";
-	    html += " <seqcount>";
-	    for(c_domain in sumator['domain'][d]['knt']){
-	        html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
-	    }
+      html += " <seqcount>";
+      for(c_domain in sumator['domain'][d]['knt']){
+          html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
+      }
         html += "</seqcount>\n";
         html += " <rank><val>domain</val></rank>\n";
         
         // #### PHYLUM ####
         for(p in sumator['domain'][d]['phylum']){              
           html += " <node name='"+p+"'>\n";
-    	    html += "  <seqcount>";
-    	    for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
-    	        html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
-    	    }
+          html += "  <seqcount>";
+          for(c_phylum in sumator['domain'][d]['phylum'][p]['knt']){
+              html += "<val>"+sumator['domain'][d]['phylum'][p]['knt'][c_phylum].toString()+"</val>";
+          }
             html += "</seqcount>\n";
             html += "  <rank><val>phylum</val></rank>\n";
 ///            
@@ -773,23 +839,25 @@ router.post('/dbrowser', helpers.isLoggedIn, function(req, res) {
         html += "</node>\n";
     }    // end domain
     html += "  </node>\n";
-    html += "  </krona>\n";
-    html += " </div></body></html>\n";
+    
+    
     // write html to a file and open it 
     
-    
-    var file_name = ts+'_krona.html';
-    var html_path = path.join(process.env.PWD,'tmp', file_name);
-    console.log(html_path);
-    fs.writeFile(html_path,html,function(err){
-        if(err){
-            res.send(err)
-        }else{
-            console.log('opening file:///'+html_path)
-            open('file:///'+html_path);
-            res.send("Done - <a href='http://sourceforge.net/projects/krona/' target='_blank'>Krona Hierarchical Data Browser</a> should open a new window in your default browser.");
-        }
-    })
+    console.log("render visuals/dbrowser")
+    //var file_name = ts+'_krona.html';
+    //var html_path = path.join(process.env.PWD,'tmp', file_name);
+
+    res.render('visuals/dbrowser', {        
+      title: 'VAMPS:Taxonomy Browser (Krona)',
+      message:             req.flash('message'),
+      user:                req.user,
+      html:                html,
+      max_total_count:     max_total_count,
+      matrix:              JSON.stringify(biom_matrix),
+      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash)            
+
+    });
+
     
 });
 //
@@ -802,50 +870,50 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
 
-    //mtx = COMMON.run_pyscript_cmd(req,res, ts, biom_file, 'heatmap', metric);
-    //var exec = require('child_process').exec;
-    //var PythonShell = require('python-shell');
+    
     var html = '';
     var title = 'VAMPS';
-
+    console.log(biom_file)
     //var distmtx_file_name = ts+'_distance.csv';
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
-
+   
     var options = {
-      scriptPath : 'public/scripts',
+      scriptPath : 'public/scripts/',
       args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
     };
 
-    var spawn = require('child_process').spawn;
+   
     var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
     // script will remove data from mysql and datset taxfile
-    console.log(options.scriptPath+'/alpha_diversity.py '+options.args.join(' '));
-    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-    output = '';
+    console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
+    var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
+                env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+                detached: true, 
+                //stdio: [ 'ignore', null, log ]
+                stdio: 'pipe'  // stdin, stdout, stderr
+            }); 
+    
+    stdout = '';
     alphadiv_process.stdout.on('data', function (data) {
         
-        //data = data.toString().replace(/^\s+|\s+$/g, '');
-        //data = data.toString().trim()
+        console.log(data)
+        stdout += data;    
+     
+    });
+    stderr = '';
+    alphadiv_process.stderr.on('data', function (data) {
         
-          output += data;
-        
-        //var lines = data.split('\n')
-        // for(var n in lines){
-        //   //console.log('line: ' + lines[n]);
-        // if(lines[n].substring(0,4) == 'PID='){
-        //   console.log('pid line '+lines[n]);
-        // }
-        // }
-      });
+        console.log(data)
+        stderr += data;    
+     
+    });
     alphadiv_process.on('close', function (code) {
         console.log('alphadiv_process process exited with code ' + code);
         if(code == 0){           
-         //console.log('PID last line: '+last_line)                    
-            console.log('stdout: ' + output);
-            res.send(output);                                 
+            res.send(stdout);                                 
         }else{
-          // python script error
-          console.log('python script error');
+          console.log('python script error: '+stderr);
+          res.send(stderr); 
         }      
     });   
 
@@ -853,6 +921,111 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
 });
 //
 //
+//
+router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
+    console.log('in phyloseq post')
+    //console.log(req.body)
+    var ts = req.body.ts;
+    var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
+    var dist_metric = req.body.metric;
+    var plot_type = req.body.plot_type;
+    var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
+    var phy,md1,md2,ordtype,maxdist,script
+    
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
+    if(fill === 'Klass'){
+        fill = 'Class';
+    }
+    var tmp_path = path.join(process.env.PWD,'tmp');
+    var html = '';
+    //console.log(biom_file)
+    var options = {
+      scriptPath : 'public/scripts/',
+      args :       [ tmp_path, ts ],
+    };
+    if(plot_type == 'bar'){
+      script = 'phyloseq_bar.R';
+      phy = req.body.phy;
+      options.args = options.args.concat([image_file, phy, fill]);
+    }else if(plot_type == 'heatmap'){
+      script = 'phyloseq_heatmap.R';
+      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.pdf';
+      phy = req.body.phy;
+      md1 = req.body.md1;
+      ordtype = req.body.ordtype;
+      options.args = options.args.concat([image_file, dist_metric, phy, md1, ordtype, fill]);
+    }else if(plot_type == 'network'){
+      script = 'phyloseq_network.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      maxdist = req.body.maxdist || "0.3";
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, maxdist]);
+    }else if(plot_type == 'ord'){
+      script = 'phyloseq_ord.R';
+      md1 = req.body.md1 || "Project";
+      md2 = req.body.md2 || "Description";
+      ordtype = req.body.ordtype || "PCoA";
+      options.args = options.args.concat([image_file, dist_metric, md1, md2, ordtype]);
+    }else if(plot_type == 'tree'){
+      script = 'phyloseq_tree.R';
+      md1 = req.body.md1 || "Description";
+      options.args = options.args.concat([image_file, dist_metric, md1]);
+    }else{
+      //ERROR
+    }
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    
+    console.log(options.scriptPath+script+' '+options.args.join(' '));
+    var phyloseq_process = spawn( options.scriptPath+script, options.args, {
+            env:{'PATH':req.config.PATH},
+            detached: true, 
+            //stdio: [ 'ignore', null, log ]
+            stdio: 'pipe'  // stdin, stdout, stderr
+    }); 
+    stdout = '';
+    lastline='';
+    phyloseq_process.stdout.on('data', function (data) {
+        lastline = data;
+        stdout += data;      
+    });
+    stderr = '';
+    phyloseq_process.stderr.on('data', function (data) {
+        stderr += data;      
+    }); 
+    phyloseq_process.on('close', function (code) {
+          console.log('phyloseq_process process exited with code ' + code);
+          //distance_matrix = JSON.parse(output);
+          //var last_line = ary[ary.length - 1];
+          if(code === 0){   // SUCCESS
+            console.log('last: '+lastline);
+            if(lastline.toString().substring(0,5) == 'ERROR'){
+                    console.log('ERROR-1'); 
+                    html = lastline;                   
+            }else{                  
+                if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                      html = "<div id='pdf'>";
+                      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+                      html += " <p>ERROR in loading pdf file</p>";
+                      html += "</object></div>"; 
+                }else{
+                      html = "<img src='/"+image_file+"'>";                    
+                }              
+            }
+
+          }else{
+            console.log('ERROR-2');            
+            html = 'Phyloseq R Script Error: '+stderr;
+          } 
+          console.log(html);
+          res.send(html);
+
+    });   
+
+});
+
+//
+//  for alpha diversity
 //
 function get_sumator(req){
     
@@ -862,10 +1035,10 @@ function get_sumator(req){
     var dname = chosen_id_name_hash.names[i];
     
     for(r in biom_matrix.rows){
-        tax_string = biom_matrix.rows[r].name;
+        tax_string = biom_matrix.rows[r].id;
         tax_items = tax_string.split(';');
         key = tax_items[0];
-        console.log(tax_items);
+        //console.log(tax_items);
         for(t in tax_items){
            var taxa = tax_items[t];
            var rank = req.C.RANKS[t];
@@ -1029,63 +1202,71 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
-    var did = myurl.query.did;
-	var pid = PROJECT_ID_BY_DID[did]
-	//PROJECT_INFORMATION_BY_PID[pid].project
-	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    //var id = myurl.query.id;
+    //var pid = PROJECT_ID_BY_DID[did]
+    //PROJECT_INFORMATION_BY_PID[pid].project
+    //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    var pjds = myurl.query.id;
+    var ds_items = pjds.split('--');
+
     //var html  = COMMON.start_visuals_html('piechart');
-	var html  = 'My HTML';
+    var html  = 'My HTML';
 
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
-    
+
     var new_matrix={}
-	new_matrix.rows = biom_matrix.rows;
-	new_matrix.columns =[];
-	new_matrix.dataset = ds_name;
-	new_matrix.did = did;
-	new_matrix.data = []
-	new_matrix.total = 0
-	new_matrix.shape = [biom_matrix.shape[0],1]
-	var idx = -1;
+    new_matrix.rows = biom_matrix.rows;
+    new_matrix.columns =[];
+    new_matrix.dataset = pjds;
+    new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+    //console.log('did ');
+    //console.log(new_matrix.did );
+    //console.log(ds_name );
+    //console.log(new_matrix.did ); 
+    new_matrix.data = []
+    new_matrix.total = 0
+    new_matrix.shape = [biom_matrix.shape[0],1]
+    var idx = -1;
+
+    for(d in biom_matrix.columns){
+      if(biom_matrix.columns[d].id == pjds){
+      	//console.log('found idx '+biom_matrix.columns[d].name)
+      	idx = d;
+      	new_matrix.columns.push(biom_matrix.columns[d]);
+      	//new_matrix.columns.push({"name":ds_name,"did":did});
+      	break;
+      }
+    }
+
+
+    for(n in biom_matrix.data){
+      //new_matrix.rows.push(biom_matrix.rows[n].name)
+      //new_matrix.data.push(biom_matrix.data[n][d])
+      new_matrix.data.push([biom_matrix.data[n][d]])
+      new_matrix.total += biom_matrix.data[n][d]
+    }
+    console.log(JSON.stringify(new_matrix))
 	
-	for(d in biom_matrix.columns){
-		if(biom_matrix.columns[d].did == did){
-			//console.log('found idx '+biom_matrix.columns[d].name)
-			idx = d;
-			new_matrix.columns.push(biom_matrix.columns[d]);
-			//new_matrix.columns.push({"name":ds_name,"did":did});
-			break;
-		}
-	}
-	
-	
-	for(n in biom_matrix.data){
-		//new_matrix.rows.push(biom_matrix.rows[n].name)
-		//new_matrix.data.push(biom_matrix.data[n][d])
-		new_matrix.data.push([biom_matrix.data[n][d]])
-		new_matrix.total += biom_matrix.data[n][d]
-	}
-	console.log(JSON.stringify(new_matrix))
-	
-	res.render('visuals/user_viz_data/bar_single', {
-          title: 'Dataset Taxonomic Data',
-          ts: ts || 'default_timestamp',
-		  matrix    :           JSON.stringify(new_matrix),
-		  post_items:           JSON.stringify(visual_post_items),
-		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-          html: html,
-          user: req.user
-        });
+  	res.render('visuals/user_viz_data/bar_single', {
+        title: 'Dataset Taxonomic Data',
+        ts: ts || 'default_timestamp',
+  		  matrix    :           JSON.stringify(new_matrix),
+  		  post_items:           JSON.stringify(visual_post_items),
+  		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+        html: html,
+        user: req.user, hostname: req.C.hostname,
+    });
 
 });
 
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
-	var did = myurl.query.did;
-	var pid = PROJECT_ID_BY_DID[did]
+	var pjds = myurl.query.id;
+  did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+	//var pid = PROJECT_ID_BY_DID[did]
 	//PROJECT_INFORMATION_BY_PID[pid].project
-	var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+	//var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
 	//console.log('in sequences '+tax)
 
 	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
@@ -1095,38 +1276,35 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	      if (err)  {
 	  		  console.log('Query error: ' + err);
 	  		  console.log(err.stack);
-	  		  process.exit(1);
+	  		  res.send(err)
 	      } else {
-		  	//console.log(rows)
-			//console.log(JSON.stringify(rows))
-			  for(s in rows){
-			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
-				//var seqcomp = buffer.toString('base64');
-				rows[s].seq = rows[s].seq.toString('utf8')
-				rows[s].tax = ''
+		  	
+    			  for(s in rows){
+    			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
+      				//var seqcomp = buffer.toString('base64');
+      				rows[s].seq = rows[s].seq.toString('utf8')
+      				rows[s].tax = ''
 
-				for(i in req.C.RANKS){
-					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
-					//console.log(id_n_rank);
-					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
-					if(taxname.substr(-3) != '_NA'){
-						rows[s].tax += taxname+';'
-					}
-				} 
-				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
-				//rows[s].tax = domain+';'+phylum+';'+klass;
-// 				  console.log(seqcomp);
- 				  //seq = zlib.Inflate(seqcomp.toString('utf8'))
-				  //console.log(JSON.stringify(seq))
-			  }
+      				for(i in req.C.RANKS){
+      					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
+      					//console.log(id_n_rank);
+      					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
+      					if(taxname.substr(-3) != '_NA'){
+      						rows[s].tax += taxname+';'
+      					}
+      				} 
+      				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
 			
-			res.render('visuals/user_viz_data/sequences', {
-		            title: 'Sequences',
-		            ds : ds_name,
-		            tax : tax,
-				        rows : JSON.stringify(rows),
-		            user: req.user
-		          });
+    			  }
+    			
+    			  res.render('visuals/user_viz_data/sequences', {
+    		            title: 'Sequences',
+    		            ds : pjds,
+    		            tax : tax,
+    				        rows : JSON.stringify(rows),
+    		            user: req.user, hostname: req.C.hostname,
+    		    });
+
 	      }
 
 	  });
@@ -1188,9 +1366,9 @@ router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
 
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
-    console.log('req.body: save_datasets-->>');
-    console.log(req.body);
-    console.log('req.body: save_datasets');
+  console.log('req.body: save_datasets-->>');
+  console.log(req.body);
+  console.log('req.body: save_datasets');
 	
 	var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,req.body.filename);
 	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
@@ -1199,6 +1377,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 	helpers.write_to_file(filename_path,req.body.datasets);
 		
 	res.send('OK');
+  
 	
 });
 //
@@ -1206,47 +1385,51 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
-    //console.log('req.body: show_saved_datasets-->>');
-    //console.log(req.body);
-    //console.log('req.body: show_saved_datasets');
-    var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-   
-	file_info = {};
-	modify_times = [];
-	helpers.mkdirSync(saved_datasets_dir);
-    fs.readdir(saved_datasets_dir, function(err, files){
-		if(err){
-  			
-				msg = 'ERROR Message '+err;
-				helpers.render_error_page(req,res,msg);
-			
-			
-		}else{
-		  for (var f in files){
-	        var pts = files[f].split(':');
-	        if(pts[0] === 'datasets'){
-	          //file_info.files.push(files[f]);
-	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-			  file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
-			  modify_times.push(stat.mtime.getTime());
-			  
-	        }
-	      }	  
-		  modify_times.sort().reverse();
-		  console.log(JSON.stringify(file_info));
-		} 
-		  
-		res.render('visuals/saved_datasets',
-		    { title: 'saved_datasets',
-		     
-		      finfo: JSON.stringify(file_info),
-		      times: modify_times,
-		  	  message: req.flash('message'),
-		      user: 	req.user
-		});
-			//}
+    if(req.user.username == 'guest'){
+      req.flash('message', "The 'guest' user has no saved datasets");
+      res.redirect('/user_data/your_data');
+    }else{
+      //console.log('req.body: show_saved_datasets-->>');
+      //console.log(req.body);
+      //console.log('req.body: show_saved_datasets');
+      var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+
+      file_info = {};
+      modify_times = [];
+      helpers.mkdirSync(saved_datasets_dir);
+      fs.readdir(saved_datasets_dir, function(err, files){
+          if(err){
+      			
+    				msg = 'ERROR Message '+err;
+    				helpers.render_error_page(req,res,msg);
+    			
+    			
+    		  }else{
+      		  for (var f in files){
+      	        var pts = files[f].split(':');
+      	        if(pts[0] === 'datasets'){
+      	          //file_info.files.push(files[f]);
+      	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
+      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+      			       modify_times.push(stat.mtime.getTime());
+      			  
+      	        }
+      	    }	  
+      		  modify_times.sort().reverse();
+      		  //console.log(JSON.stringify(file_info));
+      		} 
+    		  
+      		res.render('visuals/saved_datasets',
+      		    { title: 'saved_datasets',
+      		     
+      		      finfo: JSON.stringify(file_info),
+      		      times: modify_times,
+      		  	  message: req.flash('message'),
+      		      user: req.user, hostname: req.C.hostname,
+      		}); 		
 	
-    });
+      });
+    }
 	
 });
 //
@@ -1340,59 +1523,112 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var biom_file = path.join(__dirname, '../../tmp/'+biom_file_name);
+    var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
+    var pwd = process.env.PWD || req.config.PROCESS_DIR;
     console.log(req.body)
     var options = {
       scriptPath : 'public/scripts',
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--site_base', process.env.PWD, '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-    PythonShell.run('distance.py', options, function (err, list) {
-      if (err) {
-        res.send(err);
-      }else{
-        dataset_ids = JSON.parse(list);
-        potential_chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);  
-        
-        ascii_file = ts+'_'+metric+'_tree.txt';
-        ascii_file_path = path.join(process.env.PWD,'tmp',ascii_file);
-        fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
-          if (err) {
-            return console.log(err);
-          }
-            //console.log(data);
-          
-            html = '';
-            //console.log('potential_chosen_id_name_hash');        
-            //console.log(potential_chosen_id_name_hash)
-
-            html += "<table id='drag_table' class='table table-condensed' >"
-            html += "<thead></thead>";
-            html += "  <tbody>";
-            for (var i in potential_chosen_id_name_hash.names){
-                html += "<tr class='tooltip_row'>";
-                html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
-                html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
-                html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
-                html += "</td>";
-                html += "   <td>";
-                html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
-                html += "   </td>";
-                html += "</tr>";
-            } 
-            html += "</tbody>";
-            html += "</table>"; 
-            html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
-
-            res.send(html)
-        });
-      }
+    
+    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    
+    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+    
+    var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
+            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            detached: true, 
+            stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr
+    
+    
+    //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
+    var output = '';
+    cluster_process.stdout.on('data', function (data) {
+      // console.log('stdout: ' + data);
+      // //data = data.toString().replace(/^\s+|\s+$/g, '');
+      // data = data.toString();
+       output += data;
     });
+       
+    cluster_process.on('close', function (code) {
+      console.log('heatmap_process process exited with code ' + code);
+      
+      //var last_line = ary[ary.length - 1];
+      if(code === 0){   // SUCCESS        
+        try{
+            dataset_list = JSON.parse(output);        
+            console.log(output);
+            potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
+            ascii_file = ts+'_'+metric+'_tree.txt';
+            ascii_file_path = path.join(pwd,'tmp',ascii_file);
+            fs.readFile(ascii_file_path, 'utf8', function (err,ascii_tree_data) {
+              if (err) {
+                return console.log(err);
+              }else{
+                //console.log(data);
+              
+                html = '';
+                //console.log('potential_chosen_id_name_hash');        
+                //console.log(potential_chosen_id_name_hash)
 
+                html += "<table id='drag_table' class='table table-condensed' >"
+                html += "<thead></thead>";
+                html += "  <tbody>";
+                for (var i in potential_chosen_id_name_hash.names){
+                    html += "<tr class='tooltip_row'>";
+                    html += "<td class='dragHandle' id='"+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"'> ";
+                    html += "<input type='hidden' name='ds_order[]' value='"+potential_chosen_id_name_hash.ids[i]+"'>";
+                    html += (parseInt(i)+1).toString()+" (id:"+ potential_chosen_id_name_hash.ids[i]+") - "+potential_chosen_id_name_hash.names[i];
+                    html += "</td>";
+                    html += "   <td>";
+                    html += "       <a href='#' onclick='move_to_the_top("+(parseInt(i)+1).toString()+",\""+potential_chosen_id_name_hash.ids[i]+"--"+potential_chosen_id_name_hash.names[i]+"\")'>^</a>";
+                    html += "   </td>";
+                    html += "</tr>";
+                } 
+                html += "</tbody>";
+                html += "</table>"; 
+                html += '/////<pre style="font-size:10px"><small>'+ascii_tree_data+'</small></pre>';
+
+                res.send(html)
+              }
+            });
+        }
+        catch(err){
+          res.send('Calculation Error: '+err.toString())
+        }
+
+
+      }else{
+        //console.log('output')
+        //console.log(output);
+        //res.send(err);
+      }      
+    });   
 
 
     
 });
+router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
+    console.log('in download_file')
+    var html = '';
+    var ts = req.body.ts;
+    var file_type = req.body.file_type;
+    if(file_type == 'biom'){
+      file_name = ts+'_count_matrix.biom';      
+    }else if(file_type == 'tax'){
+      file_name = ts+'_taxonomy.txt';      
+    }else if(file_type == 'meta'){
+      file_name = ts+'_metadata.txt';      
+    }else{
+      // ERROR
+    }
+    file_path = path.join(process.env.PWD, 'tmp', file_name);
+    res.setHeader('Content-Type', 'text');
+    res.download(file_path); // Set disposition and send it.
+});
+
 module.exports = router;
 
 /**

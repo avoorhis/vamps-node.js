@@ -39,12 +39,15 @@ var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
+var admin     = require('./routes/routes_admin');
+
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
-
+console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
-var C = require('./public/constants');
-
+console.log('test2')
+var constants = require('./public/constants');
+var config = require('./config/config');
 var app = express();
 app.set('appName', 'VAMPS');
 require('./config/passport')(passport, connection); // pass passport for configuration
@@ -75,7 +78,8 @@ app.use(compression());
  * maxAge used to cache the content, # msec
  * to "uncache" some pages: http://stackoverflow.com/questions/17407770/express-setting-different-maxage-for-certain-files
  */
-app.use(express.static(path.join(__dirname, 'public'), {maxAge: '24h' }));
+app.use(express.static( 'public', {maxAge: '24h' }));
+app.use(express.static('tmp'));
 // app.use(express.static(__dirname + '/public', {maxAge: 900000 }));
 // app.use(express.static(path.join(__dirname, '/public')));
 
@@ -102,8 +106,8 @@ app.use(function(req, res, next){
 	   return;
 	 }else{
 	    req.db = connection;
-	    req.C = C;
-      
+	    req.C = constants;
+        req.config = config;
 	    return next();
 	}
 });
@@ -126,6 +130,7 @@ app.use(function(req, res, next){
 // ROUTES:
 app.use('/', routes);
 app.use('/help', help);
+app.use('/admin', admin);
 app.use('/users', users);
 app.use('/projects', projects);
 app.use('/datasets', datasets);
@@ -189,6 +194,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
+var os = require("os");
+console.log('HOSTNAME: '+os.hostname())
 
 /**
 * Create global objects once upon server startup
@@ -233,9 +240,11 @@ catch (e) {
   console.log(e);
   AllMetadata = {}
 }
-//console.log(AllMetadata)
+
 
 console.log('Loading METADATA as AllMetadata from: '+meta_file);
+
+
 
 //see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {

@@ -4,7 +4,6 @@
   <li><a href='/overview'>Overview</a></li>
   <li><a href='/visuals/visuals_index'>Community Visualization</a></li>
   <li><a href='/projects/projects_index'>Public Project List</a></li>
-  <li><a href='/users/users_index'>User List (admin only)</a></li>
   <li><a href='/users/profile'>Account Information</a></li>
   <li><a href='/user_data/your_data'>Your Data</a></li>
   
@@ -13,7 +12,9 @@
   
   <li><a href='/geodistribution'>Distribution</a></li>
   <li><a href='/metadata/metadata'>Metadata</a></li>
-  <li><a href='/portals/portals_index'>Portals</a></li>
+  <% //if(hostname.substring(0,6) === 'bpcweb'){ %>
+    <li><a href='/portals/portals_index'>Portals</a></li>
+  <% //} %>
   <li><a href='/faq'>FAQ</a></li>
   <li><a href='/contact'>Contact Us</a></li>
   

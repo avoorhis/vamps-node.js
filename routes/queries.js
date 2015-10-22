@@ -3,9 +3,12 @@ var express = require('express');
 var router = express.Router();
 var C = require('../public/constants');
 module.exports = {
-
+get_project_permissions: function(){
+    var qSelectAccess = "SELECT user_id, project_id from access";
+    return qSelectAccess;
+},
 get_select_datasets_query: function(){
-		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
+		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id, public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
@@ -14,6 +17,7 @@ get_select_datasets_query: function(){
 		return qSelectDatasets;
 	
 },
+
 get_select_datasets_queryPID: function(pid){
 		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
 		qSelectDatasets += " FROM dataset";
@@ -23,9 +27,9 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " WHERE project_id='"+pid+"'";
 		qSelectDatasets += " ORDER BY project, dataset";
 		//console.log(qSelectDatasets);
-    return qSelectDatasets;
-	
+    return qSelectDatasets;	
 },
+
 get_select_classifier_query: function(){
 		var qSelectClassifiers = "SELECT classifier_id as cid, classifier, `database`";
 		qSelectClassifiers += " FROM classifier";
@@ -39,6 +43,13 @@ get_all_user_query: function(){
     //console.log(qSelectClassifiers);
     return qSelectUser;
   
+},
+insert_access_table: function(uid,pid){
+    
+    var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
+    qInsertAccess += " VALUES('"+uid+"','"+pid+"')"; 
+    return qInsertAccess; 
+     
 },
 get_select_sequences_query: function(){
 		

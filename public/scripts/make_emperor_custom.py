@@ -1,4 +1,6 @@
-#!/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
+#!/usr/bin/env python
+
+##!/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
 # File created on 06 Jul 2012
 from __future__ import division
 
@@ -12,6 +14,7 @@ __maintainer__ = "Yoshiki Vazquez Baeza"
 __email__ = "antgonza@gmail.com"
 __status__ = "Release"
 
+import sys,os
 from os import listdir, makedirs
 from os.path import join, exists, isdir, abspath
 
@@ -28,10 +31,19 @@ from emperor.filter import keep_samples_from_pcoa_data
 from emperor.util import (copy_support_files, preprocess_mapping_file,
     preprocess_coords_file, fill_mapping_field_from_mapping_file,
     EmperorInputFilesError)
-from emperor.format import (format_pcoa_to_js, format_mapping_file_to_js,
+#/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/emperor
+#sys.path.append(os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources"))
+#sys.path = [os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources")] + sys.path
+sys.path = [os.path.dirname(os.path.realpath(__file__))+"/../emperor_required_resources"] + sys.path
+#print sys.path
+from format import (format_pcoa_to_js, format_mapping_file_to_js,
     format_taxa_to_js, format_vectors_to_js, format_emperor_html_footer_string,
     format_comparison_bars_to_js, EMPEROR_HEADER_HTML_STRING, EmperorLogicError,
     format_emperor_autograph)
+# from emperor.format import (format_pcoa_to_js, format_mapping_file_to_js,
+#     format_taxa_to_js, format_vectors_to_js, format_emperor_html_footer_string,
+#     format_comparison_bars_to_js, EMPEROR_HEADER_HTML_STRING, EmperorLogicError,
+#     format_emperor_autograph)
 from emperor.parse import parse_coords
 
 script_info = {}

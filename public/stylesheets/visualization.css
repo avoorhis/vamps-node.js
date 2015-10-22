@@ -39,6 +39,11 @@
     list-style-type: none;
     margin-left: -30px;
 }
+#taxdepth_domains_div {
+    border:1px solid black;
+    top:50px;
+    padding:0 3px 0 3px;
+}
 #show_selected_datasets_div {
     
     

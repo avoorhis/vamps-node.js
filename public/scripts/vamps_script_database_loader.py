@@ -320,7 +320,10 @@ def push_pdr_seqs(args):
             count = SEQ_COLLECTOR[ds][seq]['seq_count']
             q = "INSERT into sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)"
             #if args.classifier.upper() == 'GAST':
-            id = classifiers[args.classifier.upper()][args.ref_db_dir]
+            try:
+                classid = classifiers[args.classifier.upper()][args.ref_db_dir]
+            except:
+                classid=9  # 'unknown'
             q += " VALUES ('%s','%s','%s','%s')"   
 
 
@@ -333,7 +336,7 @@ def push_pdr_seqs(args):
             #print
             logging.info(q)
             try:
-                cur.execute(q % (str(did),str(seqid),str(count),str(id)))
+                cur.execute(q % (str(did),str(seqid),str(count),str(classid)))
             except:
                 logging.error(q)
                 print "ERROR Exiting: "+ds +"; Query: "+q

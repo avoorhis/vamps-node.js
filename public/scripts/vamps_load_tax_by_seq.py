@@ -25,6 +25,7 @@ import csv
 import logging
 import MySQLdb
 from time import sleep
+import gzip
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 #py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
@@ -119,8 +120,12 @@ def parse_file(args):
         print 'Have project: not using orig names'
     with open(args.tax_by_seq_file, mode='r') as infile:
         
-        for l in infile:
+        for i,l in enumerate(infile):
             line_items = l.strip().split('\t')
+            print '0',line_items[0]
+            if i == 0 and line_items[0] != 'TaxBySeq':
+                print 'This doesnt look like a TaxBySeq File from VAMPS -- Exiting'
+                sys.exit()
             if line_items[0] == 'TaxBySeq':
                 continue
             if line_items[0] == 'refhvr_ids':
@@ -150,7 +155,7 @@ def parse_file(args):
             
             #tax_collector[ds][tax]
             if not header_items:
-                sys.exit('no headers')
+                sys.exit('no headers This doesn"t look like a TaxBySeq File' )
             
             #print len(line_items),len(std_headers),len(pjds_ary)
             if len(line_items) != (len(std_headers)+len(pjds_ary)):
@@ -231,7 +236,10 @@ def unique_seqs(args,stats):
             ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
 
 def check_project_names(args,collector):
-
+    """
+    This alters any project name from collector that is the same as already in the database.
+    
+    """
     tmp = {}
     for pj in collector:
         q = "SELECT project from project where project='%s'" % (pj)
@@ -244,15 +252,42 @@ def check_project_names(args,collector):
             #return ('ERROR','Duplicate project name1; Query:'+q)
     for pj in tmp:
         collector[tmp[pj]] = collector[pj]
+        print 'removing duplicate project:',pj
         del collector[pj]
     for pj in collector:
         print pj
     return collector
         
-
-
+def run_metadata(args):
+    print 'csv',args.metadata_file
+    logging.info('csv '+ args.metadata_file)
+    lol = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
+    found_dsets_dict={}
+    TMP_METADATA_ITEMS = {}
      
-        
+    for line in lol:
+        pj = line[0]
+        ds = line[1]
+        scn = line[2]
+        val = line[3]
+        uts = line[4]
+        if pj in TMP_METADATA_ITEMS:
+            if ds in TMP_METADATA_ITEMS[pj]:
+                if scn in TMP_METADATA_ITEMS[pj][ds]:
+                    print 'ERROR: Two scn for same ds',pj,ds,scn,val
+                else:
+                    TMP_METADATA_ITEMS[pj][ds][scn]=val
+            else:
+                TMP_METADATA_ITEMS[pj][ds]={}
+                TMP_METADATA_ITEMS[pj][ds][scn]=val
+        else:
+            TMP_METADATA_ITEMS[pj]={}
+            TMP_METADATA_ITEMS[pj][ds]={}
+            TMP_METADATA_ITEMS[pj][ds][scn]=val
+    
+    print TMP_METADATA_ITEMS
+
+
 if __name__ == '__main__':
     import argparse
     
@@ -337,66 +372,78 @@ if __name__ == '__main__':
     parser.add_argument('-file', '--file',         
                 required=True,   action="store",  dest = "tax_by_seq_file",            
                 help = '')
+    parser.add_argument('-md_file', '--md_file',         
+                required=False,   action="store",  dest = "metadata_file", default='',           
+                help = '')
+    parser.add_argument('-use_tax', '--use_tax',         
+                required=False,   action="store_true",  dest = "use_tax",         
+                help = '')
     args = parser.parse_args() 
-    args.ref_db = 'none'   
+    args.ref_db_dir = 'none'   
     args.classifier = 'unknown' 
     args.input_type = 'tax_by_seq' 
     args.datetime     = str(datetime.date.today())    
     
-    mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          db = args.NODE_DATABASE,
-                          read_default_file="~/.my.cnf"  )
-    cur = mysql_conn.cursor()
+  #   mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
+  #                         db = args.NODE_DATABASE,
+  #                         read_default_file="~/.my.cnf"  )
+  #   cur = mysql_conn.cursor()
     
     
-    collector = parse_file(args) 
-    
-    collector = check_project_names(args,collector)
+  #   collector = parse_file(args) 
     
     
-    create_dirs(args,collector)   
     
-    #sys.exit()
-    stats = write_seqfiles(args,collector)
-    print "STATS:\n",stats
-    unique_seqs(args,stats)
-  #  write_metafile(args,stats)
-    write_config(args,stats)
+  #   collector = check_project_names(args,collector)
+  #   print collector
+  #   #push_to_database(collector)
+  #   #sys.exit()
+  #   create_dirs(args,collector)   
     
-    pids = []
-    for pj in stats:
-        print
-        print "STARTING DB Load - Project: "+pj
-        args.basedir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE, args.owner,'project:'+pj)
+  #   #sys.exit()
+  #   stats = write_seqfiles(args,collector)
+  #   print "STATS:\n",stats
+  #   unique_seqs(args,stats)
+  # #  write_metafile(args,stats)
+  #   write_config(args,stats)
+  #   if args.use_tax:
+  #       pids = []
+  #       for pj in stats:
+  #           print
+  #           print "STARTING DB Load - Project: "+pj
+  #           args.basedir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE, args.owner,'project:'+pj)
 
-        
-        logging.info('running vamps_script_database_loader.py')
-        args.pid = int(load_data.start(args))
-        
-        logging.info('GOT NEW PID: '+str(args.pid))
-        print 'GOT NEW PID: '+str(args.pid)
-        stats[pj]["pid"]=args.pid
-        pids.append(str(args.pid))
+  #           logging.info('running vamps_script_database_loader.py')
+  #           args.pid = int(load_data.start(args))
+            
+  #           logging.info('GOT NEW PID: '+str(args.pid))
+  #           print 'GOT NEW PID: '+str(args.pid)
+  #           stats[pj]["pid"]=args.pid
+  #           pids.append(str(args.pid))
 
-    for pj in stats:
-        print
-        print "STARTING taxcounts files - Project: "+pj
-        args.pid =  stats[pj]["pid"]   
-        logging.info('running vamps_script_create_json_dataset_files.py')   
-        dataset_files_creator.go_add(args)
-        logging.info("finishing taxcounts")
-        
-        
-        # 5-5-5-5-5-5
+  #       for pj in stats:
+  #           print
+  #           print "STARTING taxcounts files - Project: "+pj
+  #           args.pid =  stats[pj]["pid"]   
+  #           logging.info('running vamps_script_create_json_dataset_files.py')   
+  #           dataset_files_creator.go_add(args)
+  #           logging.info("finishing taxcounts")
+            
+            
+  #           # 5-5-5-5-5-5
 
-        logging.info("DONE")
-        print "DONE WITH ",pj
-
-    #
-    # this must be the last print:
+  #           logging.info("DONE")
+  #           print "DONE WITH ",pj
     
-    #
-    #
-    print "PIDS="+'-'.join(pids) 
-    logging.info("ALL DONE: (PID="+str(args.pid)+')')
+    
+
+  #       #
+  #       # this must be the last print:
         
+  #       #
+  #       #
+  #       print "PIDS="+'-'.join(pids) 
+  #       logging.info("ALL DONE: (PID="+str(args.pid)+')')
+        
+    if args.metadata_file:
+        run_metadata(args)

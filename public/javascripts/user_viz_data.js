@@ -174,9 +174,9 @@ function get_single_bar_html(obj){
 	html += '<tr><td width="25">color</td><td>Taxonomy</td><td>Count</td></tr>';
 	for(n in obj.rows){
 		if(obj.data[n] > 0){
-			color = string_to_color_code(obj.rows[n].name)
-			link = 'sequences?did='+obj.did+'&taxa='+encodeURIComponent(obj.rows[n].name);
-			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n].name+'</a></td><td>'+obj.data[n]+'</td></tr>';
+			color = string_to_color_code(obj.rows[n].id)
+			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id);
+			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n].id+'</a></td><td>'+obj.data[n]+'</td></tr>';
 		}
 	}
 	html += '</table></div>';

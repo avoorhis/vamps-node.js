@@ -1,0 +1,40 @@
+<%  var items  = JSON.parse(chosen_id_name_hash); %>
+<%  var mtx    = JSON.parse(matrix); %>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+    <html xmlns='http://www.w3.org/1999/xhtml' xml:lang="en" lang="en">
+   <head>
+    <meta charset="utf-8"/>
+      <link rel='shortcut icon' href='/images/krona/favicon.ico' />
+     
+      <script id="notfound">window.onload=function(){document.body.innerHTML="Could not get resources from 'http://krona.sourceforge.net'."}</script>
+      <script src="/javascripts/krona-2.0.js"></script>
+      
+</head>
+    <body>
+     <img id='hiddenImage' src='/images/krona/hidden.png' style='display:none' />
+     
+     <noscript>Javascript must be enabled to view this page.</noscript>
+     <div style='display:none'>
+      <krona  collapse='false' key='true'>
+      <attributes magnitude='seqcount'>
+      <attribute display='Abundance'>seqcount</attribute>
+      <attribute display='Rank' mono='true'>rank</attribute>
+      </attributes>
+      <color attribute='seqcount' valueStart='0' valueEnd='<%= max_total_count.toString() %>' hueStart='120' hueEnd='240'></color>
+      <datasets>
+<%    for(i in items.names){ %>
+            <dataset><%= items.names[i] %></dataset>
+<%    }  %>
+      </datasets>
+      <node id='dataset_name' name='root'>
+       <seqcount>
+<%     for(i in items.names){  %>
+        <val><%= mtx.column_totals[i].toString() %></val>
+<%     } %>
+    </seqcount>
+
+<%- html %>
+
+     </krona>
+     </div>
+     </body></html>

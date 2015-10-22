@@ -16,7 +16,7 @@
   all copies or substantial portions of the Software.
     
 */
-var d3 = require("d3");
+var d3 = d3 || require("d3");
 if (!d3) { throw "d3 wasn't included!"};
 (function() {
   d3.phylonator = {}

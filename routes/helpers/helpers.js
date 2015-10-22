@@ -10,6 +10,8 @@ var path  = require('path');
 
 module.exports = {
 
+  
+
   // route middleware to make sure a user is logged in
   isLoggedIn: function (req, res, next) {
 
@@ -36,8 +38,27 @@ module.exports = {
       //                 user         : req.user
       // });  // end render
 
-  }
+  },
   
+  // route middleware to make sure a user is an aministrator
+  isAdmin: function (req, res, next) {
+
+      //if user is authenticated in the session, carry on
+      
+      if (req.user.security_level === 1) {
+        console.log("Hurray! USER is an Admin");
+        return next();
+      }
+      // if they aren't redirect them to the home page
+      console.log("Whoa! NOT an Admin");
+      // save the url in the session 
+      req.session.returnTo = req.path;
+      //console.log('URL Requested: '+JSON.stringify(req));
+      //console.log(util.inspect(req, {showHidden: false, depth: null}));
+      //req.flash('loginMessage', 'Please login or register before continuing.');
+      res.redirect('/');
+      return;
+  }
   
 };
 
@@ -157,28 +178,28 @@ module.exports.run_select_datasets_query = function(rows){
           var dataset_description = rows[i].dataset_description;
           var pid = rows[i].pid;
           var public = rows[i].public;
-          var user_id = rows[i].owner_user_id;
+          var owner_id = rows[i].owner_user_id;
           
           PROJECT_ID_BY_DID[did]=pid;
 
           PROJECT_INFORMATION_BY_PID[pid] = {
-            "last" :			rows[i].last_name,
-            "first" :			rows[i].first_name,
-            "username" :		rows[i].username,
-            "email" :			rows[i].email,
-            "env_source_name" :	rows[i].env_source_name,
-            "institution" :		rows[i].institution,
-            "project" :			project,
-    		    "pid" :			    pid,
-            "title" :			rows[i].title,
-            "description" :		rows[i].project_description,
+            "last" :            rows[i].last_name,
+            "first" :			      rows[i].first_name,
+            "username" :		    rows[i].username,
+            "email" :			      rows[i].email,
+            "env_source_name" : rows[i].env_source_name,
+            "institution" :		  rows[i].institution,
+            "project" :			    project,
+    		    "pid" :			        pid,
+            "title" :			      rows[i].title,
+            "description" :	    rows[i].project_description,
             "public" :          rows[i].public,
     		  
           }
-          if(public){
-            PROJECT_INFORMATION_BY_PID[pid].permissions = 0;
-          }else{
-            PROJECT_INFORMATION_BY_PID[pid].permissions = user_id;
+          if(public || rows[i].username === 'guest'){
+            PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
+          }else{            
+            PROJECT_INFORMATION_BY_PID[pid].permissions = [owner_id]; // initially has only project owner_id
           }
     	    PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
     	  
@@ -254,7 +275,19 @@ module.exports.run_select_datasets_query = function(rows){
     }
     AllMetadata = clean_metadata;
     AllMetadataNames.sort();
-    
+
+    connection.query(queries.get_project_permissions(), function(err, rows, fields){ 
+      //console.log(qSequenceCounts)
+      if (err)  {
+        console.log('Query error: ' + err);
+        console.log(err.stack);
+        process.exit(1);
+      } else {
+        module.exports.run_permissions_query(rows);          
+      }
+      
+      console.log(' UPDATING PERMISSIONS');
+    });
 	
 
 }
@@ -281,11 +314,31 @@ module.exports.run_select_sequences_query = function(rows){
 }
 module.exports.run_ranks_query = function(rank,rows){
         for (var i=0; i < rows.length; i++) {
-		  var id = rows[i][rank+'_id'];
+		      var id = rows[i][rank+'_id'];
           var name = rows[i][rank];
-          
           RANK_ID_BY_NAME[rank][name] = id;
         }
+}
+module.exports.run_permissions_query = function(rows){
+        //
+        //console.log(PROJECT_INFORMATION_BY_PID)
+        for (var i=0; i < rows.length; i++) {
+          var pid = rows[i].project_id;
+          var uid = rows[i].user_id;
+          
+          if(pid in PROJECT_INFORMATION_BY_PID ){
+            var project = PROJECT_INFORMATION_BY_PID[pid].project;
+            PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+            if(PROJECT_INFORMATION_BY_PID[pid].public === 1 || PROJECT_INFORMATION_BY_PID[pid].username === 'guest'){
+              PROJECT_INFORMATION_BY_PID[pid].permissions = [];
+            }else{
+              if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1){
+                  PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid)
+              }
+            }
+          }          
+        }
+        //console.log(PROJECT_INFORMATION_BY_PID)
 }
 module.exports.update_global_variables = function(pid,type){
 	if(type=='del'){

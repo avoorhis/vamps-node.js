@@ -218,10 +218,24 @@
         </div>
     </div>
     <hr>
+    <div class="form-group">  
+        <label class="control-label col-sm-3" for="">Use Taxonomy from TaxBySeq File:</label> 
+        <div class="col-sm-5">
+          <input type='radio' checked name='use_tax_from_file' value='1'> Yes &nbsp; &nbsp;&nbsp;&nbsp;    <input type='radio' name='use_tax' value='0'> No
+           -- You will need to assign taxonomy later.
+        </div>
+    </div>
+    <hr>
     <div class="form-group">
-      <label class="control-label col-sm-3" for="fasta">TaxBySeq File:</label>
+      <label class="control-label col-sm-3" for="fasta">TaxBySeq File (required):</label>
       <div class="col-sm-3 btn">
-        <input type="file" name='upload_file' class="" id="tax_by_seq" >
+        <input type="file" name='upload_files' class="" id="tax_by_seq" >
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-3" for="fasta">Metadata File (optional):</label>
+      <div class="col-sm-3 btn">
+        <input type="file" name='upload_files' class="" id="metadata" >
       </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     

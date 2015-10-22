@@ -47,7 +47,9 @@ module.exports = {
 			var did,rank,db_tax_id,node_id,cnt,matrix_file;
 			biom_matrix = {
 					id: post_items.ts,
-					format: "Biological Observation Matrix",
+					format: "Biological Observation Matrix 0.9.1-dev",
+					format_url:"http://biom-format.org/documentation/format_versions/biom-1.0.html",
+					type: "OTU table",
 					units: post_items.unit_choice,
 					generated_by:"VAMPS-NodeJS Version 2.0",
 					date: date.toISOString(),
@@ -56,9 +58,9 @@ module.exports = {
 					column_totals:[],								// ORDERED datasets count sums
 					max_dataset_count:0,						// maximum dataset count
 					matrix_type: 'dense',
-	    			matrix_element_type: 'int',
-	     			shape: [],									// [row_count, col_count]
-	     			data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+	    		matrix_element_type: 'int',
+	     		shape: [],									// [row_count, col_count]
+	     		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
 	     		};
 			//GLOBAL.boim_matrix;
 			var ukeys = [];
@@ -233,7 +235,10 @@ module.exports = {
 			}
 
 			matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-
+			
+			// For R:phyloseq object
+			var tax_file = '../../tmp/'+post_items.ts+'_taxonomy.txt';
+			COMMON.output_tax_file( tax_file, biom_matrix,C.RANKS.indexOf(post_items.tax_depth));
 
 			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
 			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
@@ -496,12 +501,13 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
+	    //biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
+	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: null });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
 		
-		biom_matrix.rows.push({ name: ukeys[uk], metadata: {} });
+		biom_matrix.rows.push({ id: ukeys[uk], metadata: null });
 		
 		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
@@ -514,16 +520,16 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 		max = 0;
 	}else{
 		for (var n1 in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n1].did] = 0;
+		  	max_count[biom_matrix.columns[n1].id] = 0;
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n1].did] += biom_matrix.data[d][n1];
+		  		max_count[biom_matrix.columns[n1].id] += biom_matrix.data[d][n1];
 		  	}
 		}
 		max = 0;
-		for (var n2 in chosen_id_name_hash.ids) { 		// correct order
-		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.ids[n2]]);
-		  	if(max_count[chosen_id_name_hash.ids[n2]] > max){
-		  		max = max_count[chosen_id_name_hash.ids[n2]];
+		for (var n2 in chosen_id_name_hash.names) { 		// correct order
+		  	biom_matrix.column_totals.push(max_count[chosen_id_name_hash.names[n2]]);
+		  	if(max_count[chosen_id_name_hash.names[n2]] > max){
+		  		max = max_count[chosen_id_name_hash.names[n2]];
 		  	}
 		}
 	}

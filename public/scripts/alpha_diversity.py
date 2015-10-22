@@ -50,7 +50,7 @@ def alpha_diversity(args):
     #A.astype(int)
     #print A
     for i,counts in enumerate(data['data']):
-        #print 'OTU:',data['rows'][i]['name'],  counts
+        #print 'OTU:',data['rows'][i]['id'],  counts
         #print alpha.chao1(counts)
         A[i] = counts 
         #pass
@@ -61,7 +61,7 @@ def alpha_diversity(args):
     txt = "Dataset\tobserved richness\tACE\tchao1\tShannon\tSimpson\n"
     
     for i,row in enumerate(Y):
-        ds = data['columns'][i]['name']
+        ds = data['columns'][i]['id']
         #print ds+"\t"
         #print ds,row
         try:

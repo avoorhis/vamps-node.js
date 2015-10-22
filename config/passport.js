@@ -114,6 +114,11 @@ function login_auth_user(req, username, password, done, db){
             db.query(q,function(err,rows){
                 if (err){ console.log(err); }
             });
+
+            // Here on login we delete the users tmp/* files from previous sessions.
+            // This seems better than on logout bacause users are less likely to manually logout.
+            delete_previous_tmp_files(username);
+
             return done(null, rows[0]); 
         }
         
@@ -197,12 +202,51 @@ function signup_user(req, username, password, done, db){
     });
 
 }
-
-function checkUserName(name){
+//
+//
+//
+var checkUserName = function(username){
     reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-    a = (reg.test(name));  
+    a = (reg.test(username));  
     //console.log(a)  
     return a;
 }
+//
+//
+//
+var delete_previous_tmp_files = function(username){
+    var path = require('path');
+    var fs   = require('fs-extra');
+    var temp_dir_path = path.join(process.env.PWD,'tmp');
+    fs.readdirSync(temp_dir_path).forEach(function(file,index){
+        if(file.substring(0,username.length) === username){
+            var curPath = temp_dir_path + "/" + file;
+            deleteFolderRecursive(curPath);
+        }
+    });
+};
+var deleteFolderRecursive = function(path) {
+    var fs   = require('fs-extra');
+    if( fs.existsSync(path) ) {
+        if(fs.lstatSync(path).isFile()) {
+            fs.unlinkSync(path);
+        }else{
+            fs.readdirSync(path).forEach(function(file,index){
+              
+              var curPath = path + "/" + file;
+              //console.log('curPath '+curPath)
+              if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+              } else { // delete file
+                //console.log('deleting '+curPath)
+                fs.unlinkSync(curPath);
+              }
+              
+            });
+            fs.rmdirSync(path);
+        }
+    
+    }
+};
 
 

@@ -64,7 +64,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
         tax_message:     req.flash('tax_message'),
         mkeys:           metadata_fields_array,
         blast_db_path:   blast_db_path,
-        user:            req.user
+        user:            req.user,hostname: req.C.hostname,
     		});
 });
 //
@@ -249,7 +249,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
                     join_type: join_type,
-                    user     : req.user
+                    user     : req.user,hostname: req.C.hostname,
           });  // 
    }
  
@@ -563,7 +563,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     title    : 'VAMPS: BLAST Result',
                     data     : data,
                     show     : 'blast_result',
-                    user     : req.user
+                    user     : req.user,hostname: req.C.hostname,
                 });  //
 
               }
@@ -634,7 +634,7 @@ router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
                     show     : 'datasets', 
                     seqid    : seqid,  
                     obj      : JSON.stringify(obj),              
-                    user     : req.user
+                    user     : req.user,hostname: req.C.hostname,
                 });  //
       }
   });

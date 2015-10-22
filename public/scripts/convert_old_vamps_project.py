@@ -47,7 +47,9 @@ REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
-
+classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
+                "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
+                'unknown':{'unknown':9}}
 # ranks =[{'name':'domain', 'id':1,'num':0},
 #         {'name':'phylum', 'id':4,'num':1},
 #         {'name':'klass',  'id':5,'num':2},
@@ -58,7 +60,7 @@ required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date",
 #         {'name':'strain', 'id':11,'num':7}]
 
 LOG_FILENAME = os.path.join('.','convert_old_vamps_project.log')
-logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 #logging = logging.getlogging('')
 #os.chdir(args.indir)
@@ -73,13 +75,16 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf"  )
     cur = mysql_conn.cursor()
     
+    logging.debug("checking user")
+    check_user(args)  ## script dies if user not in db
+    logging.debug("checking project")
+    check_project(args)
     
     logging.debug("running get_config_data")
     logging.debug("running get_config_data")
     get_config_data(args)
     
-    logging.debug("checking user")
-    check_user()  ## script dies if user not in db
+    
     #
     logging.debug("recreating ranks")
     recreate_ranks()
@@ -115,18 +120,30 @@ def start(NODE_DATABASE, args):
     return CONFIG_ITEMS['project_id']
     
     
-def check_user():
+def check_user(args):
     """
     check_user()
-      the owner/user (from config file) must be present in 'user' table for script to continue
+    the owner/user (from config file) must be present in 'user' table for script to continue
     """
-    q = "select user_id from user where username='"+CONFIG_ITEMS['owner']+"'"
+    q = "select user_id from user where username='"+args.owner+"'"
     cur.execute(q)
     numrows = int(cur.rowcount)
     if numrows==0:
-        sys.exit('Could not find owner: '+CONFIG_ITEMS['owner']+' --Exiting')
-    row = cur.fetchone()
-    CONFIG_ITEMS['owner_id'] = row[0] 
+        sys.exit('Could not find owner: '+args.owner+' --Exiting')
+    else:
+        row = cur.fetchone()
+        CONFIG_ITEMS['owner_id'] = row[0] 
+
+def check_project(args):
+    """
+    check_project()
+    the project must not already exist in db table 'project' for script to continue
+    """
+    q = "select project_id from project where project='"+args.project+"'"
+    cur.execute(q)
+    numrows = int(cur.rowcount)
+    if numrows > 0:
+        sys.exit('Project already Exists: '+args.project+' --Exiting')
        
 def create_env_source():
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
@@ -134,7 +151,12 @@ def create_env_source():
     mysql_conn.commit()
 
 def create_classifier():
-    q = "INSERT IGNORE INTO classifier VALUES (1,'RDP'),(2,'GAST')"
+    q = "INSERT IGNORE INTO classifier VALUES" # (1,'GAST','ITS1'),(2,'GAST','SILVA108_FULL_LENGTH'),(3,'GAST','GG_FEB2011'),(4,'GAST','GG_MAY2013'),"
+    for classifier in classifiers:
+        for db in classifiers[classifier]:
+            id = str(classifiers[classifier][db])
+            q += "('"+id+"','"+classifier+"','"+db+"'),"
+    q = q[:-1]
     cur.execute(q)
     mysql_conn.commit()
     
@@ -184,16 +206,27 @@ def push_project():
     id = CONFIG_ITEMS['owner_id']
     pub = CONFIG_ITEMS['public']
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
-    q = "INSERT into project ("+(',').join(fields)+")"
-    q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
-    q = q % (proj,title,desc,rev,fund,id,pub)
-    
-    logging.debug(q)
-    cur.execute(q)
-    
-    CONFIG_ITEMS['project_id'] = cur.lastrowid
-    print("PID="+str(CONFIG_ITEMS['project_id']))
-    mysql_conn.commit()
+    if args.add_project:
+        
+        q = "SELECT project_id from project where project='%s'" % (args.project)
+        logging.debug(q)
+        cur.execute(q)
+        mysql_conn.commit()
+        row = cur.fetchone()
+        CONFIG_ITEMS['project_id'] = row[0]
+        print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
+        logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
+    else:
+        q = "INSERT into project ("+(',').join(fields)+")"
+        q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
+        q = q % (proj,title,desc,rev,fund,id,pub)    
+        logging.debug(q)
+        cur.execute(q)
+        mysql_conn.commit()
+        CONFIG_ITEMS['project_id'] = cur.lastrowid
+        print("NEW PID="+str(CONFIG_ITEMS['project_id']))
+        logging.debug("STARTING NEW project -- PID="+str(CONFIG_ITEMS['project_id']))
+        
     
 
 
@@ -543,15 +576,13 @@ def put_custom_metadata():
         q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                q3 += key+","
+                q3 += "`"+key+"`,"
         q3 = q3[:-1]+ ")"
         q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                if key in CUST_METADATA_ITEMS[did]:
-                    
-                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
-                
+                if key in CUST_METADATA_ITEMS[did]:                    
+                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"                
         q3 = q3[:-1] + ")" 
         logging.debug(q3)
         cur.execute(q3)
@@ -724,7 +755,8 @@ if __name__ == '__main__':
         -public/--public                    DEFAULT == '1'  true
         -env_source_id/--env_source_id      DEFAULT == '100' unknown
         -owner/--owner                      REQUIRED  (must be already in users table)
-        
+        -add/--add_project                  Will add to project 
+
         Example project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files like this:
         >>METADATA:
@@ -735,23 +767,24 @@ if __name__ == '__main__':
             TAB delimited and wrapped in double quotes:
             This metadatafile is NOT the same as from qiita
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+            > metadata.csv
         
         >>SEQS:
             COMMA delimited and wrapped in double quotes 
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
+            > sequences.csv
         
         NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
               
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)  
+    
     parser.add_argument("-p","--project",                   
                 required=True,  action="store",   dest = "project", default='',
                 help="""ProjectID""") 
     
-    #parser.add_argument("-d","--dir",                   
-    #            required=True,  action="store",   dest = "indir", default='',
-    #            help="""ProjectID""") 
+    
     parser.add_argument("-s","--seqs_file",                   
                 required=True,  action="store",   dest = "seqs_file", default='',
                 help="""file path""") 
@@ -770,6 +803,9 @@ if __name__ == '__main__':
     parser.add_argument("-delim","--delimiter",                   
                 required=False,  action="store",   dest = "delim", default='tab',
                 help="""METADATA: comma or tab""")
+    parser.add_argument("-add","--add_project",                   
+                required=False,  action="store_true",   dest = "add_project", default=False,
+                help="""""")
                 
     args = parser.parse_args()
     

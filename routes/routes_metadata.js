@@ -6,7 +6,7 @@ var helpers = require('./helpers/helpers');
  router.get('/metadata', function(req, res) {
       console.log('in metadata')
       res.render('metadata/metadata', { title: 'VAMPS:Metadata',
-            user: req.user,
+            user: req.user,hostname: req.C.hostname,
 	  				message:'',
                             });
   });
@@ -15,7 +15,7 @@ router.get('/metadata_list', helpers.isLoggedIn, function(req, res) {
       console.log('in metadata')
       //console.log(AllMetadata)
       res.render('metadata/metadata_list', { title: 'VAMPS:Metadata List',
-            user:         req.user,
+            user:         req.user,hostname: req.C.hostname,
             metadata:     AllMetadataNames,
             names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:   JSON.stringify(PROJECT_ID_BY_DID),
@@ -37,7 +37,7 @@ router.get('/list_result/:item', helpers.isLoggedIn, function(req, res) {
       	}
       }
       res.render('metadata/list_result', { title: 'VAMPS:Metadata List Result',
-            user:         req.user,
+            user:         req.user,hostname: req.C.hostname,
             dids:     		did_list,
             names_by_did: JSON.stringify(DATASET_NAME_BY_DID),
             pid_by_did:   JSON.stringify(PROJECT_ID_BY_DID),
