@@ -63,36 +63,6 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=logout</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>link=login</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForPageToLoad</td>
-	<td>60000</td>
-	<td>Wait one minute</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>id=username</td>
-	<td>AnnaSh</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>id=password</td>
-	<td>test</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>css=input[type=&quot;submit&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
 	<td>link=Visualizations</td>
 	<td></td>
 </tr>
@@ -117,17 +87,12 @@
 	<td></td>
 </tr>
 <tr>
-	<td>selectWindow</td>
-	<td>null</td>
-	<td></td>
-</tr>
-<tr>
 	<td>click</td>
 	<td>css=img.thumb_img</td>
 	<td></td>
 </tr>
 <tr>
-	<td>assertText</td>
+	<td>verifyText</td>
 	<td>id=dheatmap_title</td>
 	<td>Distance Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
@@ -192,7 +157,7 @@
 	<td>Barcharts --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
-	<td>assertText</td>
+	<td>verifyText</td>
 	<td>css=text.y.label</td>
 	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
 </tr>
@@ -228,7 +193,22 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>css=#dbrowser_link_id &gt; img.thumb_img</td>
+	<td>id=dbrowser_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>30000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>title=Krona - root</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTitle</td>
+	<td>Krona - root</td>
 	<td></td>
 </tr>
 <tr>
@@ -240,6 +220,16 @@
 	<td>verifyText</td>
 	<td>css=option</td>
 	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>close</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
 </tr>
 <tr>
 	<td>click</td>
@@ -332,9 +322,34 @@
 	<td></td>
 </tr>
 <tr>
+	<td>waitForPopUp</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectPopUp</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>close</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyNotText</td>
 	<td>id=pcoa_div</td>
 	<td>PCoA Python Error</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=pcoa_3d_div</td>
+	<td>*Principal Components File: *pc</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -442,6 +457,11 @@
 	<td>Phyloseq Bars --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>css=#phyloseq01_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyText</td>
 	<td>css=#phyloseq01_div &gt; img</td>
 	<td></td>
@@ -462,6 +482,11 @@
 	<td>Phyloseq Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>css=#phyloseq02_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyNotText</td>
 	<td>id=phyloseq02_div</td>
 	<td>Phyloseq R Script Error: Creating a generic function for 'nchar' from package 'base' in package 'S4Vectors' Warning messages: 1: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;expressionORfunction&quot;; definition not updated 2: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;functionORNULL&quot;; definition not updated Error in array(STATS, dims[perm]) : 'dims' cannot be of length 0 Calls: plot_heatmap ... eval -&gt; ordinate -&gt; pcoa -&gt; sweep -&gt; aperm -&gt; array Execution halted</td>
@@ -475,6 +500,11 @@
 	<td>verifyText</td>
 	<td>id=phyloseq03_title</td>
 	<td>Phyloseq Network --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>css=#phyloseq03_div &gt; img</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -497,6 +527,11 @@
 	<td>Phyloseq Ordination --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>css=#phyloseq04_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
 	<td>verifyText</td>
 	<td>css=#phyloseq04_div &gt; img</td>
 	<td></td>
@@ -515,6 +550,11 @@
 	<td>verifyText</td>
 	<td>id=phyloseq05_title</td>
 	<td>Phyloseq Tree --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>css=#phyloseq05_div &gt; img</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
