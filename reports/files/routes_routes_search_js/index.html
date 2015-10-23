@@ -734,14 +734,14 @@ router.get(&#039;/seqs/:id&#039;, helpers.isLoggedIn, function(req, res) {
 
 router.get(&#039;/make_a_blast_db&#039;, helpers.isLoggedIn, function(req, res) {
   var txt = &quot;&lt;br&gt;&lt;br&gt;&quot;;
-  txt += &quot;&lt;li&gt;Install local ncbi-blast from: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&amp;DOC_TYPE=Download&lt;br&gt;&quot;
-  txt += &quot;&lt;li&gt;Make a fasta file of all seqs to be included in blast db using the db2fasta.py script in the public/scripts directory&lt;br&gt;&quot;
-  txt += &quot;The &#039;makeblastdb&#039; command is part of the ncbi-blast suite of commands&lt;br&gt;&quot;
-  txt += &quot;Run the &#039;makeblastdb&#039; command as shown:&lt;br&gt;&quot;
-  txt += &quot;/&gt;makeblastdb -in new_fasta.fa -parse_seqids -dbtype nucl -out ALL_SEQS&lt;br&gt;&lt;br&gt;&quot;
-  txt += &quot;&lt;li&gt;Then move the newly created files into the directory /public/blast/&amp;lt;NODE_DATABASE_NAME&amp;gt;&lt;br&gt;&quot;
-  txt += &quot;&lt;li&gt;The name of the new blast database should match the name in the public/constants.js file.&quot;
-  res.send(txt)
+  txt += &quot;&lt;li&gt;Install local ncbi-blast from: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&amp;DOC_TYPE=Download&lt;br&gt;&quot;;
+  txt += &quot;&lt;li&gt;Make a fasta file of all seqs to be included in blast db using the db2fasta.py script in the public/scripts directory&lt;br&gt;&quot;;
+  txt += &quot;The &#039;makeblastdb&#039; command is part of the ncbi-blast suite of commands&lt;br&gt;&quot;;
+  txt += &quot;Run the &#039;makeblastdb&#039; command as shown:&lt;br&gt;&quot;;
+  txt += &quot;/&gt;makeblastdb -in new_fasta.fa -parse_seqids -dbtype nucl -out ALL_SEQS&lt;br&gt;&lt;br&gt;&quot;;
+  txt += &quot;&lt;li&gt;Then move the newly created files into the directory /public/blast/&amp;lt;NODE_DATABASE_NAME&amp;gt;&lt;br&gt;&quot;;
+  txt += &quot;&lt;li&gt;The name of the new blast database should match the name in the public/constants.js file.&quot;;
+  res.send(txt);
 });
 //
 //
