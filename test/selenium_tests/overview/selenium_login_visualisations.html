@@ -191,37 +191,21 @@
 	<td>id=piecharts_hide_btn</td>
 	<td></td>
 </tr>
-<!-- <tr>
-  <td>click</td>
-  <td>css=#dbrowser_link_id &gt; img.thumb_img</td>
-  <td></td>
-</tr> -->
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>id=dbrowser_link_id</td>
-	<td>&lt;/td&gt;<br />&lt;!-- &lt;tr&gt;<br /> &lt;td&gt;selectWindow&lt;/td&gt;<br /> &lt;td&gt;name=fbMainContainer&lt;/td&gt;<br /> &lt;td&gt;</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>30000</td>
+	<td></td>
 </tr>
 <tr>
 	<td>selectWindow</td>
 	<td>title=Krona - root</td>
 	<td></td>
 </tr>
-<!--fbPanelBar2-browser -->
-<!-- <tr>
-  <td>selectWindow</td>
-  <td>name=fbMainContainer</td>
-  <td></td>
-</tr> -->
-<!-- <tr>
-  <td>storeAttribute</td>
-  <td>link=http://localhost:3000/visuals/dbrowser</td>
-  <td>br_window_ID</td>
-</tr>
-<tr>
-  <td>selectWindow</td>
-  <td>${br_window_ID}</td>
-  <td></td>
-</tr> -->
 <tr>
 	<td>verifyTitle</td>
 	<td>Krona - root</td>
