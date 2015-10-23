@@ -86,7 +86,7 @@ module.exports.check_if_rank = function(field_name)
 {
   // ranks = ["domain","phylum","klass","order","family","genus","species","strain"]
   return ranks.indexOf(field_name) > -1;
-}
+};
 
 module.exports.render_error_page = function(req,res,msg)
 {
@@ -96,17 +96,17 @@ module.exports.render_error_page = function(req,res,msg)
   	  message : req.flash('errorMessage'),
       user : 	req.user.username
     });
-}
+};
 
 module.exports.clear_file = function(fileName)
 {
   fs.openSync(fileName, "w");
-}
+};
 
 module.exports.append_to_file = function(fileName, text) 
 {
   fs.appendFileSync(fileName, text);
-}
+};
 
 module.exports.write_to_file = function(fileName, text) 
 {
@@ -117,11 +117,11 @@ module.exports.write_to_file = function(fileName, text)
         
 	  }
   });
-}
+};
 module.exports.isInt = function(value) 
 {
-  return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
-}
+  return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value));
+};
 module.exports.IsJsonString = function(str) {
     try {
         JSON.parse(str);
@@ -129,11 +129,11 @@ module.exports.IsJsonString = function(str) {
         return false;
     }
     return true;
-}
+};
 
 module.exports.onlyUnique = function(value, index, self) { 
     return self.indexOf(value) === index;
-}
+};
 
 module.exports.mkdirSync = function (path) {
   try {
@@ -141,7 +141,7 @@ module.exports.mkdirSync = function (path) {
   } catch(e) {
     if ( e.code != 'EEXIST' ) throw e;
   }
-}
+};
 
 module.exports.send_mail = function(mail_info) {
   var to_addr = mail_info.addr;
@@ -163,7 +163,7 @@ module.exports.send_mail = function(mail_info) {
   //         text: msg
   //       });
 
-}
+};
 //
 //
 //
@@ -195,8 +195,7 @@ module.exports.run_select_datasets_query = function(rows){
             "title" :			      rows[i].title,
             "description" :	    rows[i].project_description,
             "public" :          rows[i].public,
-    		  
-          }
+          };
           if(public || rows[i].username === 'guest'){
             PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
           }else{            
@@ -213,7 +212,7 @@ module.exports.run_select_datasets_query = function(rows){
           pids[project] = pid;
           titles[project] = rows[i].title;
           
-          DATASET_NAME_BY_DID[did] = dataset
+          DATASET_NAME_BY_DID[did] = dataset;
           
     	  
           if (project === undefined){ continue; }
@@ -241,12 +240,12 @@ module.exports.run_select_datasets_query = function(rows){
       ALL_DATASETS.projects.push(tmp);
     }
 	
-    console.log('Cleaning Metadata')
-    var clean_metadata = {}
+    console.log('Cleaning Metadata');
+    var clean_metadata = {};
     for(did in AllMetadata){
           if(did in DATASET_NAME_BY_DID){
               clean_metadata[did] = AllMetadata[did];        
-              for(mdname in AllMetadata[did] ){
+              for(var mdname in AllMetadata[did] ){
           		//console.log(mdname)
           		if(AllMetadataNames.indexOf(mdname) == -1){
           			AllMetadataNames.push(mdname);
@@ -260,7 +259,7 @@ module.exports.run_select_datasets_query = function(rows){
           					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
           				}
           			}else{
-          				DatasetsWithLatLong[did]={}
+          				DatasetsWithLatLong[did]={};
         				
         				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
@@ -291,7 +290,7 @@ module.exports.run_select_datasets_query = function(rows){
     });
 	
 
-}
+};
 //
 //
 //
@@ -303,7 +302,7 @@ module.exports.run_select_sequences_query = function(rows){
           var count= rows[i].seq_count;
 		      var cid  =  rows[i].classifier_id;
           ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid]
+          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
 
           if(pid in ALL_PCOUNTS_BY_PID){
              ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
@@ -312,14 +311,14 @@ module.exports.run_select_sequences_query = function(rows){
           }
         }
 
-}
+};
 module.exports.run_ranks_query = function(rank,rows){
         for (var i=0; i < rows.length; i++) {
 		      var id = rows[i][rank+'_id'];
           var name = rows[i][rank];
           RANK_ID_BY_NAME[rank][name] = id;
         }
-}
+};
 module.exports.run_permissions_query = function(rows){
         //
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -334,20 +333,20 @@ module.exports.run_permissions_query = function(rows){
               PROJECT_INFORMATION_BY_PID[pid].permissions = [];
             }else{
               if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1){
-                  PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid)
+                PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
               }
             }
           }          
         }
         //console.log(PROJECT_INFORMATION_BY_PID)
-}
+};
 module.exports.update_global_variables = function(pid,type){
 	if(type=='del'){
 		var dids= DATASET_IDS_BY_PID[pid];
 		var pname = PROJECT_INFORMATION_BY_PID[pid].project;
-		console.log('RE-INTIALIZING ALL_DATASETS')
-		dataset_objs = []
-        for(i in ALL_DATASETS.projects){
+		console.log('RE-INTIALIZING ALL_DATASETS');
+		dataset_objs = [];
+        for(var i in ALL_DATASETS.projects){
 			item = ALL_DATASETS.projects[i];
 			console.log('item'+item);
             // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
@@ -359,10 +358,10 @@ module.exports.update_global_variables = function(pid,type){
 			}
 			
 		}
-    console.log('RE-INTIALIZING PROJECT_ID_BY_DID')
-    console.log('RE-INTIALIZING DATASET_NAME_BY_DID')
-    console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID')
-    for(d in dids){
+    console.log('RE-INTIALIZING PROJECT_ID_BY_DID');
+    console.log('RE-INTIALIZING DATASET_NAME_BY_DID');
+    console.log('RE-INTIALIZING ALL_DCOUNTS_BY_DID');
+    for(var d in dids){
     			
       delete PROJECT_ID_BY_DID[dids[d]];
       delete DATASET_NAME_BY_DID[dids[d]];
@@ -379,7 +378,7 @@ module.exports.update_global_variables = function(pid,type){
     delete PROJECT_INFORMATION_BY_PID[pid];
     delete DATASET_IDS_BY_PID[pid];
     delete ALL_PCOUNTS_BY_PID[pid];
-    delete ALL_CLASSIFIERS_BY_PID[pid]
+    delete ALL_CLASSIFIERS_BY_PID[pid];
     delete PROJECT_INFORMATION_BY_PNAME[pname];
 		
 	}else if(type=='add'){
@@ -387,12 +386,12 @@ module.exports.update_global_variables = function(pid,type){
 	}else{
 		// ERROR
 	}
-}
+};
 module.exports.get_status = function(user, project){
     var statQuery='';
     statQuery += "SELECT status,message from user_project_status";  
     statQuery += " WHERE user='"+user+"' and project ='"+project+"' ";
-    console.log(statQuery)
+    console.log(statQuery);
         connection.query(statQuery , function(err, rows, fields){
               if(err) { console.log('ERROR-in status query: '+err); 
             }else{
@@ -400,20 +399,20 @@ module.exports.get_status = function(user, project){
             } 
                            
     });
-}
+};
 module.exports.update_status = function(status_params){
-  console.log('in update_status')
+  console.log('in update_status');
   if(status_params.type == 'delete'){
-        var statQuery =''
+    var statQuery = '';
         statQuery += "DELETE from user_project_status";  
         statQuery += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' ";
-        console.log('query: '+statQuery)
+        console.log('query: '+statQuery);
         connection.query(statQuery , function(err, rows, fields){
               if(err) { console.log('ERROR1-in status update: '+err); }               
         });
   }else if(status_params.type == 'update'){
         
-              var statQuery2 =''
+    var statQuery2 = '';
               if('pid' in status_params && 'project' in status_params){  
                   statQuery2 += "UPDATE user_project_status set status='"+status_params.status+"', message='"+status_params.msg+"'";  
                   statQuery2 += " WHERE user='"+status_params.user+"' and project ='"+status_params.project+"' and project_id='"+status_params.pid+"'";
@@ -426,7 +425,7 @@ module.exports.update_status = function(status_params){
               }else{
                 //ERROR
               }
-              console.log('query2: '+statQuery2)
+              console.log('query2: '+statQuery2);
               connection.query(statQuery2 , function(err, rows, fields){
                     if(err) { 
                       console.log('ERROR2-in status update: '+err); 
@@ -437,7 +436,7 @@ module.exports.update_status = function(status_params){
                         
         
   } else {
-      var statQuery1 =''
+    var statQuery1 = '';
       if('pid' in status_params && 'project' in status_params){        
         statQuery1 += "INSERT IGNORE into user_project_status (user,project,project_id,status,message)";          
         statQuery1 += " VALUES ('"+status_params.user+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
@@ -461,7 +460,7 @@ module.exports.update_status = function(status_params){
       });
   }       
   
-}
+};
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
         console.log('query ok1 '+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
@@ -505,9 +504,9 @@ module.exports.update_metadata_from_file = function (){
     }
     catch (e) {
       console.log(e);
-      AllMetadata = {}
+      AllMetadata = {};
     }
-}
+};
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
         switch (char) {

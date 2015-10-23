@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">60.84</p>
+      <p class="stat">60.71</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">66.39</p>
+      <p class="stat">66.30</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.21</p>
+      <p class="stat">6.23</p>
     </div>
   </div>
 </div>
@@ -177,7 +177,7 @@ module.exports.check_if_rank = function(field_name)
 {
   // ranks = [&quot;domain&quot;,&quot;phylum&quot;,&quot;klass&quot;,&quot;order&quot;,&quot;family&quot;,&quot;genus&quot;,&quot;species&quot;,&quot;strain&quot;]
   return ranks.indexOf(field_name) &gt; -1;
-}
+};
 
 module.exports.render_error_page = function(req,res,msg)
 {
@@ -187,17 +187,17 @@ module.exports.render_error_page = function(req,res,msg)
   	  message : req.flash(&#039;errorMessage&#039;),
       user : 	req.user.username
     });
-}
+};
 
 module.exports.clear_file = function(fileName)
 {
   fs.openSync(fileName, &quot;w&quot;);
-}
+};
 
 module.exports.append_to_file = function(fileName, text) 
 {
   fs.appendFileSync(fileName, text);
-}
+};
 
 module.exports.write_to_file = function(fileName, text) 
 {
@@ -208,11 +208,11 @@ module.exports.write_to_file = function(fileName, text)
         
 	  }
   });
-}
+};
 module.exports.isInt = function(value) 
 {
-  return !isNaN(value) &amp;&amp; (function(x) { return (x | 0) === x; })(parseFloat(value))
-}
+  return !isNaN(value) &amp;&amp; (function(x) { return (x | 0) === x; })(parseFloat(value));
+};
 module.exports.IsJsonString = function(str) {
     try {
         JSON.parse(str);
@@ -220,11 +220,11 @@ module.exports.IsJsonString = function(str) {
         return false;
     }
     return true;
-}
+};
 
 module.exports.onlyUnique = function(value, index, self) { 
     return self.indexOf(value) === index;
-}
+};
 
 module.exports.mkdirSync = function (path) {
   try {
@@ -232,7 +232,7 @@ module.exports.mkdirSync = function (path) {
   } catch(e) {
     if ( e.code != &#039;EEXIST&#039; ) throw e;
   }
-}
+};
 
 module.exports.send_mail = function(mail_info) {
   var to_addr = mail_info.addr;
@@ -254,7 +254,7 @@ module.exports.send_mail = function(mail_info) {
   //         text: msg
   //       });
 
-}
+};
 //
 //
 //
@@ -277,6 +277,7 @@ module.exports.run_select_datasets_query = function(rows){
             &quot;last&quot; :            rows[i].last_name,
             &quot;first&quot; :			      rows[i].first_name,
             &quot;username&quot; :		    rows[i].username,
+            &quot;oid&quot; :             owner_id,
             &quot;email&quot; :			      rows[i].email,
             &quot;env_source_name&quot; : rows[i].env_source_name,
             &quot;institution&quot; :		  rows[i].institution,
@@ -285,8 +286,7 @@ module.exports.run_select_datasets_query = function(rows){
             &quot;title&quot; :			      rows[i].title,
             &quot;description&quot; :	    rows[i].project_description,
             &quot;public&quot; :          rows[i].public,
-    		  
-          }
+          };
           if(public || rows[i].username === &#039;guest&#039;){
             PROJECT_INFORMATION_BY_PID[pid].permissions = [];  // PUBLIC
           }else{            
@@ -303,7 +303,7 @@ module.exports.run_select_datasets_query = function(rows){
           pids[project] = pid;
           titles[project] = rows[i].title;
           
-          DATASET_NAME_BY_DID[did] = dataset
+          DATASET_NAME_BY_DID[did] = dataset;
           
     	  
           if (project === undefined){ continue; }
@@ -331,12 +331,12 @@ module.exports.run_select_datasets_query = function(rows){
       ALL_DATASETS.projects.push(tmp);
     }
 	
-    console.log(&#039;Cleaning Metadata&#039;)
-    var clean_metadata = {}
+    console.log(&#039;Cleaning Metadata&#039;);
+    var clean_metadata = {};
     for(did in AllMetadata){
           if(did in DATASET_NAME_BY_DID){
               clean_metadata[did] = AllMetadata[did];        
-              for(mdname in AllMetadata[did] ){
+              for(var mdname in AllMetadata[did] ){
           		//console.log(mdname)
           		if(AllMetadataNames.indexOf(mdname) == -1){
           			AllMetadataNames.push(mdname);
@@ -350,7 +350,7 @@ module.exports.run_select_datasets_query = function(rows){
           					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
           				}
           			}else{
-          				DatasetsWithLatLong[did]={}
+          				DatasetsWithLatLong[did]={};
         				
         				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         				DatasetsWithLatLong[did].proj_dset = pname+&#039;--&#039;+DATASET_NAME_BY_DID[did];
@@ -381,7 +381,7 @@ module.exports.run_select_datasets_query = function(rows){
     });
 	
 
-}
+};
 //
 //
 //
@@ -393,7 +393,7 @@ module.exports.run_select_sequences_query = function(rows){
           var count= rows[i].seq_count;
 		      var cid  =  rows[i].classifier_id;
           ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid]
+          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
 
           if(pid in ALL_PCOUNTS_BY_PID){
              ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
@@ -402,14 +402,14 @@ module.exports.run_select_sequences_query = function(rows){
           }
         }
 
-}
+};
 module.exports.run_ranks_query = function(rank,rows){
         for (var i=0; i &lt; rows.length; i++) {
 		      var id = rows[i][rank+&#039;_id&#039;];
           var name = rows[i][rank];
           RANK_ID_BY_NAME[rank][name] = id;
         }
-}
+};
 module.exports.run_permissions_query = function(rows){
         //
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -424,20 +424,20 @@ module.exports.run_permissions_query = function(rows){
               PROJECT_INFORMATION_BY_PID[pid].permissions = [];
             }else{
               if(PROJECT_INFORMATION_BY_PID[pid].permissions.indexOf(uid) === -1){
-                  PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid)
+                PROJECT_INFORMATION_BY_PID[pid].permissions.push(uid);
               }
             }
           }          
         }
         //console.log(PROJECT_INFORMATION_BY_PID)
-}
+};
 module.exports.update_global_variables = function(pid,type){
 	if(type==&#039;del&#039;){
 		var dids= DATASET_IDS_BY_PID[pid];
 		var pname = PROJECT_INFORMATION_BY_PID[pid].project;
-		console.log(&#039;RE-INTIALIZING ALL_DATASETS&#039;)
-		dataset_objs = []
-        for(i in ALL_DATASETS.projects){
+		console.log(&#039;RE-INTIALIZING ALL_DATASETS&#039;);
+		dataset_objs = [];
+        for(var i in ALL_DATASETS.projects){
 			item = ALL_DATASETS.projects[i];
 			console.log(&#039;item&#039;+item);
             // {&quot;name&quot;:&quot;142&quot;,&quot;pid&quot;:105,&quot;title&quot;:&quot;Title&quot;,&quot;datasets&quot;:[{&quot;did&quot;:496,&quot;dname&quot;:&quot;142_ds&quot;,&quot;ddesc&quot;:&quot;142_ds_description&quot;}]
@@ -449,10 +449,10 @@ module.exports.update_global_variables = function(pid,type){
 			}
 			
 		}
-    console.log(&#039;RE-INTIALIZING PROJECT_ID_BY_DID&#039;)
-    console.log(&#039;RE-INTIALIZING DATASET_NAME_BY_DID&#039;)
-    console.log(&#039;RE-INTIALIZING ALL_DCOUNTS_BY_DID&#039;)
-    for(d in dids){
+    console.log(&#039;RE-INTIALIZING PROJECT_ID_BY_DID&#039;);
+    console.log(&#039;RE-INTIALIZING DATASET_NAME_BY_DID&#039;);
+    console.log(&#039;RE-INTIALIZING ALL_DCOUNTS_BY_DID&#039;);
+    for(var d in dids){
     			
       delete PROJECT_ID_BY_DID[dids[d]];
       delete DATASET_NAME_BY_DID[dids[d]];
@@ -469,7 +469,7 @@ module.exports.update_global_variables = function(pid,type){
     delete PROJECT_INFORMATION_BY_PID[pid];
     delete DATASET_IDS_BY_PID[pid];
     delete ALL_PCOUNTS_BY_PID[pid];
-    delete ALL_CLASSIFIERS_BY_PID[pid]
+    delete ALL_CLASSIFIERS_BY_PID[pid];
     delete PROJECT_INFORMATION_BY_PNAME[pname];
 		
 	}else if(type==&#039;add&#039;){
@@ -477,7 +477,7 @@ module.exports.update_global_variables = function(pid,type){
 	}else{
 		// ERROR
 	}
-}
+};
 module.exports.get_status = function(user, project){
     var statQuery=&#039;&#039;;
     statQuery += &quot;SELECT status,message from user_project_status&quot;;  

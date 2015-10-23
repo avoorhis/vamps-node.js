@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">66.10</p>
+      <p class="stat">65.62</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">209</p>
+      <p class="stat">224</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">33.10</p>
+      <p class="stat">33.73</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.35</p>
+      <p class="stat">1.69</p>
     </div>
   </div>
 </div>
@@ -128,6 +128,7 @@
 function update_project(item_to_update, pid)
 {
     
+    
     switch(item_to_update){
       case &#039;pname&#039;:
           response_div = document.getElementById(&#039;new_pname_response_id&#039;);
@@ -160,7 +161,8 @@ function update_project(item_to_update, pid)
       if (xmlhttp.readyState == 4 ) {
           
           var response = xmlhttp.responseText;            
-          response_div.innerHTML = response;      
+          response_div.innerHTML = response;  
+          
          
       }
     };
@@ -210,7 +212,7 @@ function show_access_button()
 }
 function grant_access(type, id)
 {
-    info_div = document.getElementById(&#039;response_info&#039;);
+    var info_div = document.getElementById(&#039;response_info&#039;);
     
     form = document.getElementById(type+&#039;_&#039;+id);
 
@@ -250,29 +252,38 @@ function grant_access(type, id)
     xmlhttp.send(args);
 
 }
-// function grant_access2()
-// {
-//     selected_uid = document.getElementById(&#039;select_user&#039;).value;
-//     selected_pid = document.getElementById(&#039;select_project&#039;).value;
-//     document.getElementById(&#039;select_project&#039;).value = &#039;.....&#039;;
-//     document.getElementById(&#039;assign_access_div&#039;).style.visibility = &#039;hidden&#039;;
-    
-//     var xmlhttp = new XMLHttpRequest();  
-//     xmlhttp.open(&quot;POST&quot;, &#039;/admin/grant_access&#039;, true);
-//     xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
-//     xmlhttp.setRequestHeader(&quot;data-type&quot;,&quot;html&quot;);
-//     var args = &#039;uid=&#039;+selected_uid+&#039;&amp;pid=&#039;+selected_pid;
-//     xmlhttp.onreadystatechange = function() {        
-//       if (xmlhttp.readyState == 4 ) {
-          
-//           var response = xmlhttp.responseText;            
-//           info_div.innerHTML = response;      
-         
-//       }
-//     };
-//     xmlhttp.send(args);
+function change_public(pid)
+{
+  var info_div = document.getElementById(&#039;msg_div_&#039;+pid);
+  var form = document.getElementById(&#039;public_form_&#039;+pid);
+  radio_name = &#039;public_radio_&#039;+pid
+  //alert(document.forms[4].name)
+  //alert(form.name)
 
-// }
+   pub = form[radio_name][0]
+   priv = form[radio_name][1]
+   
+   if(pub.checked){
+     public = &#039;1&#039;
+   }else{
+    public = &#039;0&#039;
+   }
+   var xmlhttp = new XMLHttpRequest();  
+    xmlhttp.open(&quot;POST&quot;, &#039;/admin/public_update&#039;, true);
+    xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+    xmlhttp.setRequestHeader(&quot;data-type&quot;,&quot;html&quot;);
+    var args = &#039;public=&#039;+public+&#039;&amp;pid=&#039;+pid;
+    xmlhttp.onreadystatechange = function() {        
+      if (xmlhttp.readyState == 4 ) {
+          
+          var response = xmlhttp.responseText;            
+          info_div.innerHTML = response;      
+         
+      }
+    };
+    xmlhttp.send(args);
+}
+
 //
 //
 //
@@ -280,8 +291,12 @@ function show_current_project_info()
 {
     //alert(&#039;in show_access_button&#039;);
     
+    
     info_div = document.getElementById(&#039;current_info&#039;);
     selected_pid = document.getElementById(&#039;select_project_alter&#039;).value;
+    document.getElementById(&#039;refresh_div&#039;).href = &#039;alter_project?pid=&#039;+selected_pid
+    //&quot;&lt;a href=&#039;alter_project?pid=&quot;+selected_pid+&quot;&#039;&gt;&lt;/a&gt;&quot;;
+
     var xmlhttp = new XMLHttpRequest();  
     xmlhttp.open(&quot;POST&quot;, &#039;/admin/show_project_info&#039;, true);
     xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
