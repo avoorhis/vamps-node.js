@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">34.41</p>
+      <p class="stat">27.25</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">101</p>
+      <p class="stat">165</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">5.66</p>
+      <p class="stat">7.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.40</p>
+      <p class="stat">2.43</p>
     </div>
   </div>
 </div>
@@ -89,10 +89,42 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">var config = {};
+    <textarea id="file-source" class="col-md-12">var constants = {};
+var path = require(&quot;path&quot;);
+var os = require(&quot;os&quot;);
 
-//console.log( JSON.stringify(datasets_by_project_all) );
-config.DOMAINS = { domains: [
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+//// DO NOT CHANGE ANYTHING BELOW HERE ////
+///////////////////////////////////////////
+///////////////////////////////////////////
+constants.hostname = os.hostname();
+constants.blast_db      = &#039;ALL_SEQS&#039;;
+constants.PATH_TO_SCRIPTS = path.join(process.env.PWD,&#039;public&#039;,&#039;scripts&#039;);
+constants.ENV_SOURCE = { 
+        10: &quot;air&quot;,
+         20: &quot;extreme habitat&quot;,
+        30: &quot;host associated&quot;,
+         40: &quot;human associated&quot;,
+		 41: &quot;human-skin&quot;,
+		 42: &quot;human-oral&quot;,
+		 43: &quot;human-gut&quot;,
+		 45: &quot;human-amniotic-fluid&quot;,
+		 46: &quot;human-urine&quot;,
+		 47: &quot;human-blood&quot;,	
+	     50: &quot;microbial mat/biofilm&quot;,
+		 60: &quot;miscellaneous_natural_or_artificial_environment&quot;,
+		 70: &quot;plant associated&quot;,
+		 80: &quot;sediment&quot;,
+		 90: &quot;soil/sand&quot;,
+		 100: &quot;unknown&quot;,
+		 110: &quot;wastewater/sludge&quot;,
+		 120: &quot;water-freshwater&quot;,
+		 130: &quot;water-marine&quot;,
+		 140: &quot;indoor&quot;
+    };
+constants.DOMAINS = { domains: [
         {id: 1, name: &quot;Archaea&quot;},
         {id: 2, name: &quot;Bacteria&quot;},
         {id: 3, name: &quot;Eukarya&quot;},
@@ -100,17 +132,19 @@ config.DOMAINS = { domains: [
         {id: 5, name: &quot;Unknown&quot;}
     ]};
 
-config.UNITSELECT = { units: [
-        {id : &#039;tax_silva108_simple&#039;,file: &#039;unit_selectors/taxa_silva108_simple.html&#039;, name : &quot;Taxonomy Silva108 (Simple)&quot;},
-        {id : &#039;tax_silva108_custom&#039;,file: &#039;unit_selectors/taxa_silva108_custom.html&#039;,   name : &quot;Taxonomy Silva108 (Custom)&quot;},
-        {id : &#039;tax_gg_simple&#039;,      file: &#039;unit_selectors/taxa_gg_simple.html&#039;,       name : &quot;Taxonomy Greengenes (Simple)&quot;},
-        {id : &#039;tax_gg_custom&#039;,      file: &#039;unit_selectors/taxa_gg_cust.html&#039;,         name : &quot;Taxonomy Greengenes (Custom)&quot;},
-        {id : &#039;tax_rdp&#039;,            file: &#039;unit_selectors/taxa_rdp.html&#039;,             name : &quot;Taxonomy RDP&quot;},
-        {id : &#039;otus&#039;,               file: &#039;unit_selectors/otus.html&#039;,                 name : &quot;OTUs&quot;},
-        {id : &#039;med_nodes&#039;,          file: &#039;unit_selectors/med_nodes.html&#039;,             name : &quot;MED Nodes&quot;}
+constants.UNITSELECT = { units: [
+        {id : &#039;tax_silva108_simple&#039;,file: &#039;unit_selectors/taxa_silva108_simple.html&#039;, name : &quot;Taxonomy -Simple&quot;, subtext: &#039;Silva108&#039;},
+        {id : &#039;tax_silva108_custom&#039;,file: &#039;unit_selectors/taxa_silva108_custom.html&#039;, name : &quot;Taxonomy -Custom&quot;, subtext: &#039;Silva108&#039;},
+        {id : &#039;tax_gg_simple&#039;,      file: &#039;unit_selectors/taxa_gg_simple.html&#039;,       name : &quot;Taxonomy -Simple&quot;, subtext: &#039;Greengenes v13.5&#039;},
+        {id : &#039;tax_gg_custom&#039;,      file: &#039;unit_selectors/taxa_gg_cust.html&#039;,         name : &quot;Taxonomy -Custom&quot;, subtext: &#039;Greengenes v13.5&#039;},
+        {id : &#039;tax_rdp&#039;,            file: &#039;unit_selectors/taxa_rdp.html&#039;,             name : &quot;Taxonomy RDP&quot;,     subtext: &#039;Release 11&#039;},
+        {id : &#039;otus&#039;,               file: &#039;unit_selectors/otus.html&#039;,                 name : &quot;OTUs&quot;,             subtext: &#039;ClosedRef GG v13.5&#039;},
+        {id : &#039;otus&#039;,               file: &#039;unit_selectors/otus.html&#039;,                 name : &quot;OTUs&quot;,             subtext: &#039;UCLUST&#039;},
+        {id : &#039;otus&#039;,               file: &#039;unit_selectors/otus.html&#039;,                 name : &quot;OTUs&quot;,             subtext: &#039;SLP&#039;},
+        {id : &#039;med_nodes&#039;,          file: &#039;unit_selectors/med_nodes.html&#039;,            name : &quot;MED Nodes&quot;,        subtext: &#039;&#039;}
     ]};
 
-config.VISUALOUTPUTCHOICES = { choices: [
+constants.VISUALOUTPUTCHOICES = { choices: [
         {id : &#039;counts_table&#039;,   show: &#039;Counts Table&#039;},
         {id : &#039;barcharts&#039;,      show: &#039;Counts Bar Charts&#039;},
         {id : &#039;heatmap&#039;,        show: &#039;Distance Heatmap&#039;},
@@ -118,14 +152,14 @@ config.VISUALOUTPUTCHOICES = { choices: [
         {id : &#039;alphadiversity&#039;, show: &#039;Alpha Diversity&#039;}
     ]};
 
-config.NORMALIZATIONCHOICES = { choices: [
+constants.NORMALIZATIONCHOICES = { choices: [
         {id: &#039;none&#039;,            show: &#039;Not Normalized (default)&#039;},
         {id: &#039;maximum&#039;,         show: &#039;Normalized to the Maximum Sample&#039;},
         {id: &#039;frequency&#039;,       show: &#039;Normalized to Frequency&#039;}
     ]};
 
    
-config.DISTANCECHOICES = { choices: [
+constants.DISTANCECHOICES = { choices: [
         
     {id: &#039;jaccard&#039;,         show: &#039;Jaccard&#039;     },
     {id: &#039;kulczynski&#039;,      show: &#039;Kulczynski&#039;  },
@@ -163,33 +197,63 @@ config.DISTANCECHOICES = { choices: [
     ]};
 
 // This List MUST match the fields in sequence_uniq_infos
-config.AVAILABLE_UNITS = [&#039;silva_taxonomy_info_per_seq_id&#039;, &#039;oligotype_id&#039;, &#039;gg_otu_id&#039;];
+constants.AVAILABLE_UNITS = [&#039;silva_taxonomy_info_per_seq_id&#039;, &#039;oligotype_id&#039;, &#039;gg_otu_id&#039;];
 // blue to red
-config.HEATMAP_COLORS = [&#039;1111ff&#039;,&#039;3333ff&#039;,&#039;5555ff&#039;,&#039;7777ff&#039;,&#039;9999ff&#039;,&#039;aaaaff&#039;,&#039;ccccff&#039;,&#039;ddeeee&#039;,&#039;eeeedd&#039;,&#039;ffdddd&#039;,&#039;ffbbbb&#039;,&#039;ff9999&#039;,&#039;ff7777&#039;,&#039;ff5555&#039;,&#039;ff3333&#039;,&#039;ff0000&#039;];
+constants.HEATMAP_COLORS = [&#039;1111ff&#039;,&#039;3333ff&#039;,&#039;5555ff&#039;,&#039;7777ff&#039;,&#039;9999ff&#039;,&#039;aaaaff&#039;,&#039;ccccff&#039;,&#039;ddeeee&#039;,&#039;eeeedd&#039;,&#039;ffdddd&#039;,&#039;ffbbbb&#039;,&#039;ff9999&#039;,&#039;ff7777&#039;,&#039;ff5555&#039;,&#039;ff3333&#039;,&#039;ff0000&#039;];
 
-config.RSCRIPT_CMD = &#039;RScript --no-restore --no-save&#039;;
+constants.RSCRIPT_CMD = &#039;RScript --no-restore --no-save&#039;;
 
-config.RANKS = [&quot;domain&quot;, &quot;phylum&quot;, &quot;klass&quot;, &quot;order&quot;, &quot;family&quot;, &quot;genus&quot;, &quot;species&quot;, &quot;strain&quot;];
+constants.RANKS = [&quot;domain&quot;, &quot;phylum&quot;, &quot;klass&quot;, &quot;order&quot;, &quot;family&quot;, &quot;genus&quot;, &quot;species&quot;, &quot;strain&quot;];
 
-config.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
+constants.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 
-config.VISUAL_THUMBNAILS = { visuals: [
-    {name:&#039;Distance Heatmap (py)&#039;,      thumb:&#039;/images/visuals/heatmap.png&#039;,     link:&#039;user_data/heatmap&#039;,       id:&#039;dheatmap_link_id&#039;     },
-    {name:&#039;Frequency Heatmap (R-pdf)&#039;,  thumb:&#039;/images/visuals/frequency_heatmap.png&#039;, link:&#039;user_data/frequency_heatmap&#039;, id:&#039;fheatmap_link_id&#039;  },
-    {name:&#039;Stackbar Charts (d3-svg)&#039;,   thumb:&#039;/images/visuals/barcharts.png&#039;,   link:&#039;user_data/barcharts&#039;,     id:&#039;barcharts_link_id&#039;      },
-    {name:&#039;Pie Charts (d3-svg)&#039;,        thumb:&#039;/images/visuals/pie_charts.png&#039;,  link:&#039;user_data/piecharts&#039;,     id:&#039;piecharts_link_id&#039;    },
-    {name:&#039;Dendrogram (d3-svg)&#039;,        thumb:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;,    id:&#039;dendrogram_link_id&#039;    },
-    {name:&#039;Dendrogram (py-pdf)&#039;,        thumb:&#039;/images/visuals/dendrogram.png&#039;,  link:&#039;user_data/dendrogram&#039;,    id:&#039;dendrogram_pdf_link_id&#039;    },
-    {name:&#039;PCoA Analyses (R-pdf)&#039;,      thumb:&#039;/images/visuals/pcoa.png&#039;,        link:&#039;user_data/pcoa&#039;,          id: &#039;pcoa_link_id&#039;    },
-    {name:&#039;Frequency Matrix (Table)&#039;,   thumb:&#039;/images/visuals/counts_table.png&#039;,link:&#039;user_data/counts_table&#039;,  id:&#039;counts_table_link_id&#039;    },
-    {name:&#039;Metadata Table&#039;,             thumb:&#039;/images/visuals/metadata.png&#039;,    link:&#039;user_data/metadata_table&#039;,id:&#039;metadata_table_link_id&#039;     },
-    {name:&#039;Data Location&#039;,              thumb:&#039;/images/visuals/map.png&#039;,         link:&#039;user_data/geospatial&#039;,    id:&#039;geospatial_link_id&#039;     },
-    {name:&#039;TEST_TEST&#039;,                  thumb:&#039;&#039;,                                link:&#039;user_data/test_page&#039;,     id:&#039;test_page_link_id&#039;     }
+constants.VISUAL_THUMBNAILS = { visuals: [
+    {name:&#039;Distance Heatmap (py)&#039;,      thumb:&#039;/images/visuals/heatmap.png&#039;,		link:&#039;user_viz_data/heatmap&#039;,        id:&#039;dheatmap_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)&#039;},
+    {name:&#039;Frequency Heatmap (R-pdf)&#039;,  thumb:&#039;/images/visuals/fheatmap.png&#039;, 		link:&#039;user_viz_data/frequency_heatmap&#039;, id:&#039;fheatmap_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)&#039;},
+    {name:&#039;Stackbar Charts (d3-svg)&#039;,   thumb:&#039;/images/visuals/barcharts.png&#039;,   	link:&#039;user_viz_data/barcharts&#039;,      id:&#039;barcharts_link_id&#039;, 
+        tip:&#039;&#039;    },
+    {name:&#039;Pie Charts (d3-svg)&#039;,        thumb:&#039;/images/visuals/pie_charts.png&#039;,  	link:&#039;user_viz_data/piecharts&#039;,      id:&#039;piecharts_link_id&#039;, 
+        tip:&#039;&#039;    },
+    {name:&#039;Data Browser (Krona)&#039;,       thumb:&#039;/images/visuals/krona.png&#039;,  		link:&#039;user_viz_data/dbrowser&#039;,       id:&#039;dbrowser_link_id&#039;, 
+        tip:&#039;&#039;     },
+	{name:&#039;Dendrogram (d3-phylogram)&#039;,  thumb:&#039;/images/visuals/dendrogram.png&#039;,		link:&#039;user_viz_data/dendrogram&#039;,     id:&#039;dendrogram1_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)&#039;   },
+	{name:&#039;Dendrogram (d3-phylonator)&#039;, thumb:&#039;/images/visuals/dendrogram.png&#039;,  	link:&#039;user_viz_data/dendrogram&#039;,     id:&#039;dendrogram2_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)&#039;   },
+    {name:&#039;Dendrogram (d3-radial)&#039;,     thumb:&#039;/images/visuals/radial.png&#039;,         link:&#039;user_viz_data/dendrogram&#039;,     id:&#039;dendrogram3_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)&#039;   },
+    {name:&#039;Dendrogram (py-pdf)&#039;,        thumb:&#039;/images/visuals/dendrogram.png&#039;,  	link:&#039;user_viz_data/dendrogram&#039;,     id:&#039;dendrogram_pdf_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)&#039;},
+    {name:&#039;PCoA 2D Analyses (R-pdf)&#039;,   thumb:&#039;/images/visuals/pcoa.png&#039;,        	link:&#039;user_viz_data/pcoa&#039;,           id:&#039;pcoa_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-jsonlite (R-package)&#039;        },
+    {name:&#039;PCoA 3D Analyses (Emperor)&#039;, thumb:&#039;/images/visuals/emperor.png&#039;,        link:&#039;user_viz_data/pcoa&#039;,           id:&#039;pcoa_3d_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)&#039; },
+    {name:&#039;Frequency Matrix (Table)&#039;,   thumb:&#039;/images/visuals/counts_table.png&#039;,	link:&#039;user_viz_data/counts_table&#039;,   id:&#039;counts_table_link_id&#039;, 
+        tip:&#039;&#039;  },
+    {name:&#039;Metadata Table&#039;,             thumb:&#039;/images/visuals/metadata.png&#039;,    	link:&#039;user_viz_data/metadata_table&#039;, id:&#039;metadata_table_link_id&#039;, 
+        tip:&#039;&#039;},
+    {name:&#039;Data Geo-Location&#039;,          thumb:&#039;/images/visuals/map.png&#039;,         	link:&#039;user_viz_data/geospatial&#039;,     id:&#039;geospatial_link_id&#039;, 
+        tip:&#039;&#039;    },
+    {name:&#039;Alpha Diversity&#039;,            thumb:&#039;/images/visuals/alpha.png&#039;,          link:&#039;user_viz_data/alpha_diversity&#039;,id:&#039;adiversity_link_id&#039;, 
+        tip:&#039;Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio&#039;},
+    {name:&#039;Phyloseq Bars (R-svg)&#039;,      thumb:&#039;/images/visuals/phyloseq_bars.png&#039;,  link:&#039;user_viz_data/phyloseq01&#039;,  id:&#039;phyloseq01_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-phyloseq (R-package)&#039;},
+    {name:&#039;Phyloseq Heatmap (R-svg)&#039;,   thumb:&#039;/images/visuals/phyloseq_heatmap.png&#039;,link:&#039;user_viz_data/phyloseq02&#039;, id:&#039;phyloseq02_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-phyloseq (R-package)&#039;},
+    {name:&#039;Phyloseq Network (R-svg)&#039;,   thumb:&#039;/images/visuals/phyloseq_network.png&#039;,link:&#039;user_viz_data/phyloseq03&#039;, id:&#039;phyloseq03_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-phyloseq (R-package)&#039;},
+    {name:&#039;Phyloseq Ordination (R-svg)&#039;,thumb:&#039;/images/visuals/phyloseq_ord1.png&#039;,  link:&#039;user_viz_data/phyloseq04&#039;, id:&#039;phyloseq04_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-phyloseq (R-package)&#039;},
+    {name:&#039;Phyloseq Tree (R-svg)&#039;,      thumb:&#039;/images/visuals/phyloseq_tree.png&#039;,     link:&#039;user_viz_data/phyloseq05&#039;, id:&#039;phyloseq05_link_id&#039;, 
+        tip:&#039;R (https://www.r-project.org/)-|-phyloseq (R-package)&#039;}
+   
 ]};
     
-config.REQ_METADATA_FIELDS = [&quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;common_name&quot;, &quot;country&quot;, &quot;depth&quot;, &quot;description&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;public&quot;, &quot;taxon_id&quot;];
+constants.REQ_METADATA_FIELDS = [&quot;altitude&quot;, &quot;assigned_from_geo&quot;, &quot;collection_date&quot;, &quot;common_name&quot;, &quot;country&quot;, &quot;depth&quot;, &quot;description&quot;, &quot;elevation&quot;, &quot;env_biome&quot;, &quot;env_feature&quot;, &quot;env_matter&quot;, &quot;latitude&quot;, &quot;longitude&quot;, &quot;public&quot;, &quot;taxon_id&quot;];
 
-module.exports = config;</textarea>
+module.exports = constants;</textarea>
   </div>
 </div>
 

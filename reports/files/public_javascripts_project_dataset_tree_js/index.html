@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">78.42</p>
+      <p class="stat">77.79</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">81</p>
+      <p class="stat">107</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">13.96</p>
+      <p class="stat">16.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.55</p>
+      <p class="stat">0.70</p>
     </div>
   </div>
 </div>
@@ -97,14 +97,15 @@
 // };
 
 var toggle_checking_all = function(clicked) {
+  
   $(clicked.parentNode.parentNode).find(&#039;input&#039;).prop(&#039;checked&#039;,
      function(idx, oldProp) {
-       return !oldProp;
+	   return !oldProp;
      });
   return false;
 };
 
-var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+var toggle_checking_datasets_by_pr = function(pr_checkbox, datasets_per_pr) {
   if (pr_checkbox.prop(&#039;checked&#039;)) {
    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, true);
   }
@@ -112,6 +113,16 @@ var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
   }
 };
+
+var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+  if (datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;)) {
+    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, false);    
+  }
+  else {
+    datasets_per_pr.find(&#039;input&#039;).prop(&#039;checked&#039;, true);
+  }
+};
+
 
 var toggle_datasets = function(clicked) {
   $(clicked.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;).toggle();
@@ -141,36 +152,51 @@ var toggle_plus_img = function(clicked) {
   return false;
 };
 
+var checkme = function(){
+  //var dataset_ids = document.getElementsByName(&#039;dataset_ids&#039;);
+  alert(&#039;dataset_ids[0].value&#039;)
+};
+
 var uncheck_closed = function(parent_place) {
   // if (!is_visible(parent_place.find(&#039;.datasets_per_pr&#039;))) {
   //   parent_place.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
   // }
-  if (parent_place.find(&#039;.datasets_per_pr&#039;).not(&quot;:visible&quot;)) {
+  if (parent_place.find(&#039;.datasets_per_pr&#039;).is(&quot;:hidden&quot;)) {
     parent_place.find(&#039;input&#039;).prop(&#039;checked&#039;, false);
   }
 };
 
 $(document).ready(function () {
-  // alert(&quot;HERE&quot;);
-
+   
   // by default everything is visible, in case there is no js
   $(&#039;.datasets_per_pr&#039;).addClass( &quot;display_none&quot; );
+  
+  // the minus sign should always close the tree AND uncheck all the ds cbs 
+  //           the plus sign should always open the tree but not check anything.
+  //  if the tree is closed the project cb should open AND check all the ds cbs
+  //  if the tree is open the project cb should toggle on/off the ds cbs
+  //  The project cb should never itself be checked — just open the tree and check ds (if tree is closed)
+  //      and check or uncheck all the ds (if tree is open)
 
+  // minus_plus_sign
   $(&#039;a.project_toggle&#039;).click(function(){
-    // e.preventDefault();
     toggle_datasets(this);
-    toggle_checking_all(this);
+    // toggle_checking_all(this);  
+    var datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);    
+    toggle_checking_datasets(this, datasets_per_pr);
     toggle_plus_img(this);
     uncheck_closed($(this.parentNode.parentNode));
     return false;
-  });
-
+    });
+  
+  // project checkbox
   $(&#039;input.project_toggle&#039;).click(function() {
-    var checkbox = $(this),
-      datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);
-
-    // if (!is_visible(datasets_per_pr)) {
-    if (datasets_per_pr.not(&quot;:visible&quot;)) {
+    
+	  var checkbox = $(this);
+    $(this).prop(&#039;checked&#039;, false)
+    var datasets_per_pr = $(this.parentNode.parentNode).find(&#039;.datasets_per_pr&#039;);
+    
+    if (datasets_per_pr.is(&quot;:hidden&quot;)) {
       datasets_per_pr.show();
       minus_img(checkbox.siblings(&#039;a&#039;).find(&#039;img&#039;));
     }

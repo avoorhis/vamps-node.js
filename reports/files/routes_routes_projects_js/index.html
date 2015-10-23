@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">58.30</p>
+      <p class="stat">57.06</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">209</p>
+      <p class="stat">240</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">12.90</p>
+      <p class="stat">15.83</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.51</p>
+      <p class="stat">0.80</p>
     </div>
   </div>
 </div>
@@ -97,20 +97,23 @@ var transporter = nodemailer.createTransport();
 var zlib = require(&#039;zlib&#039;);
 var Readable = require(&#039;stream&#039;).Readable;
 var helpers = require(&#039;./helpers/helpers&#039;);
+var path = require(&#039;path&#039;);
 //var crypto = require(&#039;crypto&#039;);
 // These are all under /projects
 /* GET New User page. */
-router.get(&#039;/index_projects&#039;, helpers.isLoggedIn, function(req, res) {
+router.get(&#039;/projects_index&#039;, function(req, res) {
     var db = req.db;
     
-    console.log(ALL_DATASETS);
+    //console.log(ALL_DATASETS);
+	console.log(PROJECT_INFORMATION_BY_PID)
+  	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
-    res.render(&#039;projects/index_projects&#039;, { 
+    res.render(&#039;projects/projects_index&#039;, { 
                         title          : &#039;VAMPS Projects&#039;,
-                        ALL    : JSON.stringify(ALL_DATASETS),
+                        projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
-                        user: req.user 
+                        user: req.user,hostname: req.C.hostname,
                 });
     
 
@@ -119,34 +122,62 @@ router.get(&#039;/index_projects&#039;, helpers.isLoggedIn, function(req, res) {
 router.get(&#039;/:id&#039;, helpers.isLoggedIn, function(req, res) {
     var db = req.db;
     var dsinfo = []; 
+    var mdata = {}
     var dscounts = {};  
-    // PROJECT_INFORMATION_BY_PID is a global variable created on server start in &#039;load_all_datasets.js&#039;
-    var info = PROJECT_INFORMATION_BY_PID[req.params.id]
-    var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
-    //console.log(info);
-
-    dataset_counts = {};
-    for(n in ALL_DATASETS.projects){
+    
+	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
+      var info = PROJECT_INFORMATION_BY_PID[req.params.id]
+      var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
       
-      if(ALL_DATASETS.projects[n].pid == req.params.id){
-        dsinfo = ALL_DATASETS.projects[n].datasets
+
+      dataset_counts = {};
+      for(n in ALL_DATASETS.projects){        
+        if(ALL_DATASETS.projects[n].pid == req.params.id){
+          dsinfo = ALL_DATASETS.projects[n].datasets;
+        }
+      }
+      for(n in dsinfo){
+        var did = dsinfo[n].did;
+        dscounts[did] = ALL_DCOUNTS_BY_DID[did];
+        mdata[dsinfo[n].dname] = AllMetadata[did]; 
 
       }
-    }
-    for(n in dsinfo){
-      var did = dsinfo[n].did;
-      dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-    }
-    res.render(&#039;projects/profile&#039;, { 
-                                title  : &#039;VAMPS Project&#039;,
-                                info: JSON.stringify(info),
-                                dsinfo: dsinfo,
-                                dscounts: JSON.stringify(dscounts),
-                                pid: req.params.id,
-                                pcount: project_count,
-                                permissions: JSON.stringify(PROJECT_PERMISSION_BY_PID),
-                                user   : req.user 
-                              });
+      //console.log(&#039;MD: &#039;+JSON.stringify(mdata));
+      var abstract_file = info.project+&#039;.json&#039;;
+      var abstract_file_path = path.join(process.env.PWD,&#039;public&#039;,&#039;json&#039;,NODE_DATABASE+&#039;--abstracts&#039;,abstract_file)
+      
+      
+      fs.readFile(abstract_file_path, {encoding: &#039;utf-8&#039;}, function(err,data){
+            if (err){            
+                //console.log(&#039;ERR &#039;+err)
+                abstract = &#039;{&quot;abstract&quot;:&quot;Not Available&quot;}&#039;;
+            }else{
+              //abstract = JSON.parse(data);
+              //console.log(&#039;project: &#039;+info.project+&#039; AB: &#039;+data)
+              //console.log(&#039;PROJECT_INFORMATION_BY_PID&#039;,JSON.stringify(PROJECT_INFORMATION_BY_PID))
+              abstract = data;
+            }
+
+            res.render(&#039;projects/profile&#039;, { 
+                                          title  : &#039;VAMPS Project&#039;,
+                                          info: JSON.stringify(info),
+                                          dsinfo: dsinfo,
+                                          dscounts: JSON.stringify(dscounts),
+                                          pid: req.params.id,
+                                          mdata: JSON.stringify(mdata),
+                                          pcount: project_count,
+                                          message: &#039;&#039;,
+                                          abstract:abstract,
+                                          user   : req.user,hostname: req.C.hostname,
+                                        });
+
+      });
+      
+  }else{
+      req.flash(&#039;message&#039;,&#039;not found&#039;)
+      res.redirect(req.get(&#039;referer&#039;));
+      //return
+  }
     
 });
 

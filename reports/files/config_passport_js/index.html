@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">68.26</p>
+      <p class="stat">68.74</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">204</p>
+      <p class="stat">248</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">35.26</p>
+      <p class="stat">34.95</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.64</p>
+      <p class="stat">2.04</p>
     </div>
   </div>
 </div>
@@ -205,12 +205,17 @@ function login_auth_user(req, username, password, done, db){
             db.query(q,function(err,rows){
                 if (err){ console.log(err); }
             });
-            return done(null, rows[0], req.flash(&#039;loginMessage&#039;, &#039;Success!&#039;)); 
+
+            // Here on login we delete the users tmp/* files from previous sessions.
+            // This seems better than on logout bacause users are less likely to manually logout.
+            delete_previous_tmp_files(username);
+
+            return done(null, rows[0]); 
         }
         
         // if the user is found but the password is wrong:
         // create the loginMessage and save it to session as flashdata
-        return done(null, false, req.flash(&#039;loginMessage&#039;, &#039;Oops! Wrong password.&#039;));
+        return done(null, false, req.flash(&#039;loginMessage&#039;, &#039;Wrong password -- try again.&#039;));
         // all is well, return successful user
 
     });
@@ -276,7 +281,7 @@ function signup_user(req, username, password, done, db){
                                     &quot; 1,&quot;+
                                     &quot; 1,&quot;+
                                     &quot; CURRENT_TIMESTAMP(), &quot;+
-                                    &quot; &#039;0000-00-00 00:00:00&#039; )&quot;;
+                                    &quot; &#039;&#039; )&quot;;
 
 
                 console.log(insertQuery);
@@ -288,13 +293,52 @@ function signup_user(req, username, password, done, db){
     });
 
 }
-
-function checkUserName(name){
+//
+//
+//
+var checkUserName = function(username){
     reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
-    a = (reg.test(name));  
+    a = (reg.test(username));  
     //console.log(a)  
     return a;
-}</textarea>
+}
+//
+//
+//
+var delete_previous_tmp_files = function(username){
+    var path = require(&#039;path&#039;);
+    var fs   = require(&#039;fs-extra&#039;);
+    var temp_dir_path = path.join(process.env.PWD,&#039;tmp&#039;);
+    fs.readdirSync(temp_dir_path).forEach(function(file,index){
+        if(file.substring(0,username.length) === username){
+            var curPath = temp_dir_path + &quot;/&quot; + file;
+            deleteFolderRecursive(curPath);
+        }
+    });
+};
+var deleteFolderRecursive = function(path) {
+    var fs   = require(&#039;fs-extra&#039;);
+    if( fs.existsSync(path) ) {
+        if(fs.lstatSync(path).isFile()) {
+            fs.unlinkSync(path);
+        }else{
+            fs.readdirSync(path).forEach(function(file,index){
+              
+              var curPath = path + &quot;/&quot; + file;
+              //console.log(&#039;curPath &#039;+curPath)
+              if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+              } else { // delete file
+                //console.log(&#039;deleting &#039;+curPath)
+                fs.unlinkSync(curPath);
+              }
+              
+            });
+            fs.rmdirSync(path);
+        }
+    
+    }
+};</textarea>
   </div>
 </div>
 

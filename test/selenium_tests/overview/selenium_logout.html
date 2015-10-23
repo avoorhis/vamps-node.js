@@ -22,11 +22,6 @@
 	<td>userIsLoggedOut</td>
 </tr>
 <tr>
-	<td>storeElementPresent</td>
-	<td>link=logout</td>
-	<td>userIsLoggedOut</td>
-</tr>
-<tr>
 	<td>gotoIf</td>
 	<td>${userIsLoggedOut} == true</td>
 	<td>userIsLoggedOut</td>
@@ -74,6 +69,11 @@
 <tr>
 	<td>clickAndWait</td>
 	<td>link=Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>link=login</td>
 	<td></td>
 </tr>
 <tr>
