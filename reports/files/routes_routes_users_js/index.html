@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">75.13</p>
+      <p class="stat">68.10</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">90</p>
+      <p class="stat">133</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">12.54</p>
+      <p class="stat">17.02</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.51</p>
+      <p class="stat">0.96</p>
     </div>
   </div>
 </div>
@@ -98,46 +98,59 @@ var helpers = require(&#039;./helpers/helpers&#039;);
 //var flash    = require(&#039;connect-flash&#039;);
 //var LocalStrategy = require(&#039;passport-local&#039;).Strategy;
 
-
-
-// These are all under /user
 /* GET User List (index) page. */
-router.get(&#039;/index_users&#039;, helpers.isLoggedIn, function(req, res) {
-    var db = req.db;
+router.get(&#039;/users_index&#039;, helpers.isLoggedIn, function(req, res) {
+    
 	console.log(&#039;in indexusers&#039;)
-    var qSelect = &quot;SELECT * from user&quot;;
-    var collection = db.query(qSelect, function (err, rows, fields){
-      if (err)  {
-      throw err;
-    } else {
+	console.log(req.user)
+    if(req.user.security_level == 1){
+		var qSelect = &quot;SELECT * from user&quot;;
+	    var collection = req.db.query(qSelect, function (err, rows, fields){
+	      if (err)  {
+  			 msg = &#039;ERROR Message &#039;+err;
+  			 helpers.render_error_page(req,res,msg);
+		   } else {
+		      res.render(&#039;user_admin/users_index&#039;, { 
+                  title: &#039;users&#039;, 
+                  rows : rows, 
+                  user: req.user,hostname: req.C.hostname,  message:&#039;&#039;  
+				  });
 
-        res.render(&#039;user_admin/index_users&#039;, { 
-                              title: &#039;users&#039;,
-                              rows : rows, 
-                              user: req.user  });
+		   }
+	    });
+	}else{
+        res.render(&#039;denied&#039;, { 
+                title: &#039;users&#039;, user: req.user,hostname: req.C.hostname,
+							  message: req.flash(&#039;nopermissionMessage&#039;, &#039;Permission Denied&#039;) 
+		    });
 
-      }
-    });
+          
+	}
 
 });
+
+
 // =====================================
 // LOGIN ===============================
 // =====================================
 // show the login form
 router.get(&#039;/login&#039;, function(req, res) {
+    
+    //var url = req.session.returnTo || &#039;user_admin/login&#039;
+    
     res.render(&#039;user_admin/login&#039;, { 
                       title: &#039;login&#039;,
                       message: req.flash(&#039;loginMessage&#039;), 
-                      user: req.user });
+                      user: req.user,hostname: req.C.hostname });
 });
 
-router.post(&#039;/login&#039;,
-    
-    passport.authenticate(&#039;local-login&#039;, { successRedirect: &#039;/users/profile&#039;,
+router.post(&#039;/login&#039;,  passport.authenticate(&#039;local-login&#039;, { successRedirect: &#039;/users/profile&#039;,
                                    failureRedirect: &#039;login&#039;,
                                    failureFlash: true })
 );
-
+//router.post(&#039;/login&#039;, passport.authenticate(&#039;local-login&#039;), function(req, res) {
+//    res.redirect(request.session.returnTo || &#039;/&#039;);
+//});
 // =====================================
 // SIGNUP ==============================
 // =====================================
@@ -147,7 +160,7 @@ router.get(&#039;/signup&#039;, function(req, res) {
         // render the page and pass in any flash data if it exists
         res.render(&#039;user_admin/signup&#039;, { 
                             title: &#039;signup&#039;,
-                            message: req.flash(&#039;signupMessage&#039;), user: req.user });
+                            message: req.flash(&#039;signupMessage&#039;), user: req.user,hostname: req.C.hostname });
 });
 
 // process the signup form
@@ -163,10 +176,12 @@ router.post(&#039;/signup&#039;,
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get(&#039;/profile&#039;, helpers.isLoggedIn, function(req, res) {
+    
+
     res.render(&#039;user_admin/profile&#039;, {
         title:&#039;profile&#039;,
         message: req.flash(&#039;loginMessage&#039;), 
-        user : req.user // get the user out of session and pass to template
+        user : req.user,hostname: req.C.hostname // get the user out of session and pass to template
     });
 });
 
@@ -177,6 +192,34 @@ router.get(&#039;/logout&#039;, function(req, res) {
     req.logout();
     res.redirect(&#039;/&#039;);
 });
+
+router.get(&#039;/:id&#039;, function(req, res) {
+   
+   var uid = req.params.id
+   console.log(ALL_USERS_BY_UID[uid]);
+   console.log(&#039;in indexusers:id&#039;)
+   //console.log(req.user)
+
+   var qSelect = &quot;SELECT * from project where owner_user_id=&#039;&quot;+uid+&quot;&#039;&quot;;
+      var collection = req.db.query(qSelect, function (err, rows, fields){
+        if (err)  {
+          msg = &#039;ERROR Message &#039;+err;
+          helpers.render_error_page(req,res,msg);
+        } else {
+            res.render(&#039;users/profile&#039;, {
+              title     :&#039;profile&#039;,
+              message   : req.flash(&#039;message&#039;), 
+              projects  : rows,
+              user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),
+              user      : req.user,hostname: req.C.hostname // get the user out of session and pass to template
+            });  
+             
+
+        }
+      });
+
+});
+
 
 module.exports = router;</textarea>
   </div>

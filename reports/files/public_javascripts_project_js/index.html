@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">75.75</p>
+      <p class="stat">67.61</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">37</p>
+      <p class="stat">55</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">10.80</p>
+      <p class="stat">15.17</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.17</p>
+      <p class="stat">0.41</p>
     </div>
   </div>
 </div>
@@ -92,40 +92,77 @@
     <textarea id="file-source" class="col-md-12">download_project_fasta_form_id
 download_project_metadata_form_id
 
-download_project_metadata_form_btn = document.getElementById(&#039;download_project_metadata_form_btn&#039;);
-if (typeof download_project_metadata_form_btn !==&quot;undefined&quot;) {
-  download_project_metadata_form_btn.addEventListener(&#039;click&#039;, function () {
-      create_download_file(&#039;metadata&#039;);
-  });
-}
+
 
 download_project_fasta_form_btn = document.getElementById(&#039;download_project_fasta_form_btn&#039;);
 if (typeof download_project_fasta_form_btn !==&quot;undefined&quot;) {
   download_project_fasta_form_btn.addEventListener(&#039;click&#039;, function () {
-      create_download_file(&#039;fasta&#039;);
+      form = document.getElementById(&#039;download_project_fasta_form_id&#039;);
+      pid = form.project_id.value;
+      project = form.project.value;
+      download_type = form.download_type.value;      
+      download_data(&#039;fasta&#039;, pid, project, download_type);
   });
 }
-
+download_project_metadata_form_btn = document.getElementById(&#039;download_project_metadata_form_btn&#039;);
+if (typeof download_project_metadata_form_btn !==&quot;undefined&quot;) {
+  download_project_metadata_form_btn.addEventListener(&#039;click&#039;, function () {
+      form = document.getElementById(&#039;download_project_metadata_form_id&#039;);
+      pid = form.project_id.value;
+      project = form.project.value;
+      download_type = form.download_type.value;    
+      download_data(&#039;metadata&#039;, pid, project, download_type);
+  });
+}
 
 //
 // SAVE DATASET LIST
 //
-var create_download_file = function(type)
-{
+
+// TODO this is same code as in view_selection.js
+function download_data(type, pid, project, download_type) {
+    var html = &#039;&#039;;
+    var args =  &quot;pid=&quot;+pid;
+    args += &quot;&amp;project=&quot;+project;
+    args += &quot;&amp;download_type=&quot;+download_type;
+    
+    var xmlhttp = new XMLHttpRequest(); 
+    if(type == &#039;metadata&#039;){
+      target = &#039;/user_data/download_selected_metadata&#039;;      
+    } else{
+      target = &#039;/user_data/download_selected_seqs&#039;
+    }
+    xmlhttp.open(&quot;POST&quot;, target, true);
+    xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText; 
+         html += &quot;&lt;div class=&#039;pull-right&#039;&gt;Your file is being compiled.&lt;br&gt;The filename is: &quot;+filename;
+         html += &quot;&lt;br&gt;When ready your file can be downloaded from the &lt;a href=&#039;/user_data/file_retrieval&#039;&gt;file retrieval page.&lt;/a&gt;&lt;/div&gt;&quot;
+         document.getElementById(&#039;download_confirm_id&#039;).innerHTML = html;
+      }
+    };
+    xmlhttp.send(args);   
+}
+// var download_data = function(type)
+// {
 	
-	if(type == &#039;fasta&#039;){
-		form = document.getElementById(&#039;download_project_fasta_form_id&#039;);
-		el = document.getElementById(&#039;download_fasta_response&#039;);		
-	}else if(type == &#039;metadata&#039;){
-		form = document.getElementById(&#039;download_project_metadata_form_id&#039;);
-		el = document.getElementById(&#039;download_metadata_response&#039;);		
-	}
 	
-	form.submit();
-	el.innerHTML = &#039;Gathering Data -- you will recieve and email when ready.&#039;
+
+
+// 	if(type == &#039;fasta&#039;){
+// 		form = document.getElementById(&#039;download_project_fasta_form_id&#039;);
+// 		el = document.getElementById(&#039;download_fasta_response&#039;);		
+// 	}else if(type == &#039;metadata&#039;){
+// 		form = document.getElementById(&#039;download_project_metadata_form_id&#039;);
+// 		el = document.getElementById(&#039;download_metadata_response&#039;);		
+// 	}
+	
+// 	form.submit();
+// 	el.innerHTML = &#039;Gathering Data -- you will recieve and email when ready.&#039;
 	    
  	
-}</textarea>
+// }</textarea>
   </div>
 </div>
 

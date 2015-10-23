@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/emperor_required_resources/emperor/js/util.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/emperor_required_resources/emperor/js/util.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">65.46</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">200</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">25.28</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.24</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ *
+ * @author Yoshiki Vazquez Baeza
+ * @copyright Copyright 2013, The Emperor Project
+ * @credits Yoshiki Vazquez Baeza
+ * @license BSD
+ * @version 0.9.51
+ * @maintainer Yoshiki Vazquez Baeza
+ * @email yoshiki89@gmail.com
+ * @status Release
+ *
+ */
+
+
+// http://colorbrewer2.org &gt; qualitative &gt; Number of Data Classes = 12
+// colorbrewer will provide you with two lists of colors, those have been
+// added here
+var colorbrewerDiscrete = [&quot;#8dd3c7&quot;, &quot;#ffffb3&quot;, &quot;#bebada&quot;, &quot;#fb8072&quot;,
+    &quot;#80b1d3&quot;, &quot;#fdb462&quot;, &quot;#b3de69&quot;, &quot;#fccde5&quot;, &quot;#d9d9d9&quot;, &quot;#bc80bd&quot;,
+    &quot;#ccebc5&quot;, &quot;#ffed6f&quot;, /*first list ends here*/
+    &quot;#a6cee3&quot;, &quot;#1f78b4&quot;, &quot;#b2df8a&quot;, &quot;#33a02c&quot;, &quot;#fb9a99&quot;, &quot;#e31a1c&quot;,
+    &quot;#fdbf6f&quot;, &quot;#ff7f00&quot;, &quot;#cab2d6&quot;, &quot;#6a3d9a&quot;, &quot;#ffff99&quot;, &quot;#b15928&quot;];
+// taken from the qiime/colors.py module; a total of 24 colors
+var qiimeDiscrete = [ &quot;#ff0000&quot;, &quot;#0000ff&quot;, &quot;#f27304&quot;, &quot;#008000&quot;, &quot;#91278d&quot;,
+    &quot;#ffff00&quot;, &quot;#7cecf4&quot;, &quot;#f49ac2&quot;, &quot;#5da09e&quot;, &quot;#6b440b&quot;, &quot;#808080&quot;,
+    &quot;#f79679&quot;, &quot;#7da9d8&quot;, &quot;#fcc688&quot;, &quot;#80c99b&quot;, &quot;#a287bf&quot;, &quot;#fff899&quot;,
+    &quot;#c49c6b&quot;, &quot;#c0c0c0&quot;, &quot;#ed008a&quot;, &quot;#00b6ff&quot;, &quot;#a54700&quot;, &quot;#808000&quot;,
+    &quot;#008080&quot;];
+var k_DiscreteColorMaps = {&quot;discrete-coloring&quot;:colorbrewerDiscrete,
+                           &quot;discrete-coloring-qiime&quot;:qiimeDiscrete};
+
+// these colors are included in chroma and are the only ones we should
+// use to interpolate through whe coloring in a continuous mode
+var k_CHROMABREWER_MAPS = [&#039;discrete-coloring-qiime&#039;, &#039;discrete-coloring&#039;,
+    &#039;OrRd&#039;, &#039;PuBu&#039;, &#039;BuPu&#039;, &#039;Oranges&#039;, &#039;BuGn&#039;, &#039;YlOrBr&#039;, &#039;YlGn&#039;, &#039;Reds&#039;,
+    &#039;RdPu&#039;, &#039;Greens&#039;, &#039;YlGnBu&#039;, &#039;Purples&#039;, &#039;GnBu&#039;, &#039;Greys&#039;, &#039;YlOrRd&#039;, &#039;PuRd&#039;,
+    &#039;Blues&#039;, &#039;PuBuGn&#039;, &#039;Spectral&#039;, &#039;RdYlGn&#039;, &#039;RdBu&#039;, &#039;PiYG&#039;, &#039;PRGn&#039;, &#039;RdYlBu&#039;,
+    &#039;BrBG&#039;, &#039;RdGy&#039;, &#039;PuOr&#039;];
+var k_CHROMABREWER_MAPNAMES = [&#039;Classic QIIME Colors&#039;,
+    &#039;Discrete Coloring (Colorbrewer)&#039;, &#039;Orange-Red&#039;, &#039;Purple-Blue&#039;,
+    &#039;Blue-Purple&#039;, &#039;Oranges&#039;, &#039;Blue-Green&#039;, &#039;Yellow-Orange-Brown&#039;,
+    &#039;Yellow-Green&#039;, &#039;Reds&#039;, &#039;Red-Purple&#039;, &#039;Greens&#039;, &#039;Yellow-Green-Blue&#039;,
+    &#039;Purples&#039;, &#039;Green-Blue&#039;, &#039;Greys&#039;, &#039;Yellow-Orange-Red&#039;, &#039;Purple-Red&#039;,
+    &#039;Blues&#039;, &#039;Purple-Blue-Green&#039;, &#039;Spectral&#039;, &#039;Red-Yellow-Green&#039;, &#039;Red-Blue&#039;,
+    &#039;Pink-Yellow-Green&#039;, &#039;Pink-Red-Green&#039;, &#039;Red-Yellow-Blue&#039;,
+    &#039;Brown-Blue-Green&#039;, &#039;Red-Grey&#039;, &#039;Purple-Orange&#039;];
+
+/**
+ *
+ * Sorting function that deals with alpha and numeric elements
+ * 
+ * This function takes a list of strings, divides it into two new lists, one
+ * that&#039;s alpha-only and one that&#039;s numeric only.
+ *
+ * @param {list} an Array of strings.
+ *
+ * @return a sorted Array where all alpha elements at the beginning &amp; all
+ * numeric elements at the end.
+ *
+ */
+function naturalSort(list){
+  var numericPart = [], alphaPart = [], result = [];
+
+  // separate the numeric and the alpha elements of the array
+  for(var index = 0; index &lt; list.length; index++){
+    if(isNaN(parseFloat(list[index]))){
+      alphaPart.push(list[index])
+    }
+    else{
+      numericPart.push(list[index])
+    }
+  }
+
+  // ignore casing of the strings, taken from:
+  // http://stackoverflow.com/a/9645447/379593
+  alphaPart.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
+  // sort in ascending order
+  numericPart.sort(function(a,b){return parseFloat(a)-parseFloat(b)})
+
+  return result.concat(alphaPart, numericPart);
+}
+
+/**
+ *
+ * Utility function to convert an XML DOM documents to a string useful for unit
+ * testing
+ *
+ * @param {node} XML DOM object, usually as created by the document object.
+ *
+ * @return string representation of the node object.
+ *
+ * This code is based on this answer http://stackoverflow.com/a/1750890
+ *
+ */
+function convertXMLToString(node) {
+  if (typeof(XMLSerializer) !== &#039;undefined&#039;) {
+    var serializer = new XMLSerializer();
+    return serializer.serializeToString(node);
+  }
+  else if (node.xml) {
+    return node.xml;
+  }
+}
+
+/**
+ *
+ * Retrieve a discrete color.
+ *
+ * @param {index} int, the index of the color to retrieve.
+ * @param {map} string, name of the discrete color map to use.
+ *
+ * @return string representation of the hexadecimal value for a color in the
+ * list the QIIME colors or the ColorBrewer discrete colors. If this value
+ * value is greater than the number of colors available, the function will just
+ * rollover and retrieve the next available color.
+ *
+ * Defaults to use ColorBrewer colors if there&#039;s no map passed in.
+ *
+ */
+function getDiscreteColor(index, map){
+  if (map === undefined){
+    map = &#039;discrete-coloring&#039;;
+  }
+  if (_.has(k_DiscreteColorMaps, map) === false){
+    throw new Error(&quot;Could not find &quot;+map+&quot; as a discrete colormap.&quot;)
+  }
+
+  var size = k_DiscreteColorMaps[map].length;
+  if(index &gt;= size){
+    index = index - (Math.floor(index/size)*size)
+  }
+
+  return k_DiscreteColorMaps[map][index]
+}
+
+
+/**
+ *
+ * Generate a list of colors that corresponds to all the samples in the plot
+ *
+ * @param {values} list of objects to generate a color for, usually a category
+ * in a given metadata column.
+ * @param {map} name of the color map to use, see k_CHROMABREWER_MAPS.
+ *
+ *
+ * This function will generate a list of coloring values depending on the
+ * coloring scheme that the system is currently using (discrete or continuous).
+*/
+function getColorList(values, map) {
+  var colors = {}, numColors = values.length-1, counter=0, interpolator,
+      discrete = false;
+
+  if (k_CHROMABREWER_MAPS.indexOf(map) === -1) {
+    throw new Error(&quot;Could not find &quot;+map+&quot; in the available colormaps&quot;);
+  }
+
+  if (map === &#039;discrete-coloring&#039; || map === &#039;discrete-coloring-qiime&#039;){
+    discrete = true;
+  }
+
+  // 1 color and continuous coloring should return the first element of the map
+  if (numColors === 0 &amp;&amp; discrete === false){
+    colors[values[0]] = chroma.brewer[map][0];
+    return colors;
+  }
+
+  if (discrete === false){
+    map = chroma.brewer[map];
+    interpolator = chroma.interpolate.bezier([map[0], map[3], map[4], map[5],
+                                              map[8]]);
+  }
+
+  for(var index in values){
+    if(discrete){
+      // get the next available color
+      colors[values[index]] = getDiscreteColor(index, map);
+    }
+    else{
+      colors[values[index]] =  interpolator(counter/numColors).hex();
+      counter = counter + 1;
+    }
+  }
+
+  return colors;
+}
+
+
+/**
+ *
+ * Escape special characters in a string for use in a regular expression.
+ *
+ * @param {regex} string to escape for use in a regular expression.
+ *
+ * @return string with escaped characters for use in a regular expression.
+ *
+ * Credits go to this SO answer http://stackoverflow.com/a/5306111
+ */
+function escapeRegularExpression(regex){
+    return regex.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, &quot;\\$&amp;&quot;);
+}
+
+/**
+ *
+ * Clean a string in HTML formatted strings that get created with the namespace
+ * tag in some browsers and not in others. Intended to facilitate testing.
+ *
+ * @param {htmlString} string to remove namespace from.
+ *
+ * @return string without namespace.
+ *
+ */
+function cleanHTML(htmlString){
+    return htmlString.replace(&#039; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&#039;, &#039;&#039;)
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

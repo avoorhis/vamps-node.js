@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:3000/" />
+<title>selenium_all</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">selenium_all</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeElementPresent</td>
+	<td>link=login</td>
+	<td>userIsLoggedOut</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>${userIsLoggedOut} == false</td>
+	<td>userIsLoggedIn</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>60000</td>
+	<td>Wait one minute</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>AnnaSh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>userIsLoggedIn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPageToLoad</td>
+	<td>60000</td>
+	<td>Wait one minute</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=username</td>
+	<td>AnnaSh</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=password</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=input[type=&quot;submit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Visualizations</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=ICM_AGW_Bv6--pj-id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=unit_selection</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//input[@id=''])[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=get_graphics</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>id=dheatmap_title</td>
+	<td>Distance Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dragInfoArea</td>
+	<td>exact:** Drag a row to change the dataset order. **</td>
+</tr>
+<tr>
+	<td>verifyTable</td>
+	<td>id=drag_table.1.1</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dheatmap_hide_btn</td>
+	<td>hide</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dheatmap_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dheatmap_hide_btn</td>
+	<td>show</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#pre_dheatmap_div &gt; a.btn.pull-right &gt; img[alt=&quot;Top&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#fheatmap_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=fheatmap_title</td>
+	<td>Frequency Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>id=fheatmap_div</td>
+	<td>exact:Frequency Heatmap R Script Error: Attaching package: 'jsonlite' The following object is masked from 'package:utils': View This is vegan 2.3-1 *** caught segfault *** address 0x4, cause 'memory not mapped' Traceback: 1: strwidth(t, units = &quot;in&quot;) 2: which.max(strwidth(t, units = &quot;in&quot;)) 3: lo(coln = labels_col, rown = labels_row, nrow = nrow(matrix), ncol = ncol(matrix), cellwidth = cellwidth, cellheight = cellheight, treeheight_col = treeheight_col, treeheight_row = treeheight_row, legend = legend, annotation_col = annotation_col, annotation_row = annotation_row, annotation_colors = annotation_colors, annotation_legend = annotation_legend, main = main, fontsize = fontsize, fontsize_row = fontsize_row, fontsize_col = fontsize_col, gaps_row = gaps_row, gaps_col = gaps_col, ...) 4: heatmap_motor(mat, border_color = border_color, cellwidth = cellwidth, cellheight = cellheight, treeheight_col = treeheight_col, treeheight_row = treeheight_row, tree_col = tree_col, tree_row = tree_row, filename = filename, width = width, height = height, breaks = breaks, color = color, legend = legend, annotation_row = annotation_row, annotation_col = annotation_col, annotation_colors = annotation_colors, annotation_legend = annotation_legend, main = main, fontsize = fontsize, fontsize_row = fontsize_row, fontsize_col = fontsize_col, fmat = fmat, fontsize_number = fontsize_number, number_color = number_color, gaps_row = gaps_row, gaps_col = gaps_col, labels_row = labels_row, labels_col = labels_col, ...) 5: pheatmap(x1, scale = &quot;none&quot;, color = mypalette6, clustering_distance_rows = drows, clustering_distance_cols = dcols, margins = c(15, r_margin), fontsize_row = fontsize_row, cellwidth = 12, cellheight = 6, main = main_label) aborting ...</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#pre_fheatmap_div &gt; a.btn.pull-right &gt; img[alt=&quot;Top&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=barcharts_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=barcharts_title</td>
+	<td>Barcharts --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>css=text.y.label</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=barcharts_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=fheatmap_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#piecharts_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=piecharts_title</td>
+	<td>Piecharts --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=svg &gt; g &gt; a &gt; text</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=piecharts_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#dbrowser_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>css=option</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=option</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram1_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dendrogram1_title</td>
+	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dendrogram1_div</td>
+	<td>00.010.010.020.020.030.030.040.040.050.050.00679898185296'ICM_AGW_Bv6--AGW_0003_2006_06_15' (0.0468130887856)'ICM_AGW_Bv6--AGW_0001_2005_06_15' (0.0468130887856)0.0457011207811'ICM_AGW_Bv6--AGW_0004_2006_06_15' (0.00791094985745)'ICM_AGW_Bv6--AGW_0002_2005_06_15' (0.00791094985745)</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram1_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram2_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dendrogram2_title</td>
+	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#phylonator_svg &gt; rect</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram2_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram3_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dendrogram3_title</td>
+	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#dendrogram3_div &gt; svg</td>
+	<td>0.00679898185296'ICM_AGW_Bv6--AGW_0003_2006_06_15' (0.0468130887856)'ICM_AGW_Bv6--AGW_0001_2005_06_15' (0.0468130887856)0.0457011207811'ICM_AGW_Bv6--AGW_0004_2006_06_15' (0.00791094985745)'ICM_AGW_Bv6--AGW_0002_2005_06_15' (0.00791094985745)</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=dendrogram3_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#dendrogram_pdf_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=dendrogram_pdf_title</td>
+	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=pcoa_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=pcoa_title</td>
+	<td>PCoA 2D --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tr[3]/td/center</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=pcoa_3d_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>id=pcoa_div</td>
+	<td>PCoA Python Error</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=pcoa_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=pcoa_3d_title</td>
+	<td>PCoA 3D --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=pcoa_3d_div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=pcoa_3d_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=pcoa_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=counts_table_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=counts_table_title</td>
+	<td>Frequency Table --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id='tax_table_div']/table/tbody/tr[9]/td[2]</td>
+	<td>Archaea;phylum_NA;klass_NA;order_NA</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=counts_table_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=metadata_table_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=metadata_title</td>
+	<td>Metadata Table</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#metadata_table &gt; tbody &gt; tr &gt; td</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=metadata_table_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#geospatial_link_id &gt; img.thumb_img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=geospatial_title</td>
+	<td>Geospatial --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=#pre_geospatial_div &gt; a.btn.pull-right &gt; img[alt=&quot;Top&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=geospatial_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=adiversity_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=adiversity_title</td>
+	<td>Alpha Diversity --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq01_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=phyloseq01_title</td>
+	<td>Phyloseq Bars --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#phyloseq01_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq01_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq02_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=phyloseq02_title</td>
+	<td>Phyloseq Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>id=phyloseq02_div</td>
+	<td>Phyloseq R Script Error: Creating a generic function for 'nchar' from package 'base' in package 'S4Vectors' Warning messages: 1: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;expressionORfunction&quot;; definition not updated 2: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;functionORNULL&quot;; definition not updated Error in array(STATS, dims[perm]) : 'dims' cannot be of length 0 Calls: plot_heatmap ... eval -&gt; ordinate -&gt; pcoa -&gt; sweep -&gt; aperm -&gt; array Execution halted</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq03_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=phyloseq03_title</td>
+	<td>Phyloseq Network --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#phyloseq03_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq03_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq04_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=phyloseq04_title</td>
+	<td>Phyloseq Ordination --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#phyloseq04_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq04_hide_btn</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq05_link_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=phyloseq05_title</td>
+	<td>Phyloseq Tree --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#phyloseq05_div &gt; img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=phyloseq05_hide_btn</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

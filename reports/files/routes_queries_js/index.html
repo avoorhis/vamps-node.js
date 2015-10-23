@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">47.09</p>
+      <p class="stat">58.44</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">184</p>
+      <p class="stat">280</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">31.85</p>
+      <p class="stat">33.67</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.28</p>
+      <p class="stat">2.08</p>
     </div>
   </div>
 </div>
@@ -94,7 +94,74 @@ var express = require(&#039;express&#039;);
 var router = express.Router();
 var C = require(&#039;../public/constants&#039;);
 module.exports = {
+get_project_permissions: function(){
+    var qSelectAccess = &quot;SELECT user_id, project_id from access&quot;;
+    return qSelectAccess;
+},
+get_select_datasets_query: function(){
+		var qSelectDatasets = &quot;SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id, public&quot;;
+		qSelectDatasets += &quot; FROM dataset&quot;;
+		qSelectDatasets += &quot; JOIN project USING(project_id)&quot;;
+		qSelectDatasets += &quot; JOIN user on(project.owner_user_id=user.user_id)&quot;;  // this will need to be changed when table user_project in incorporated
+		qSelectDatasets += &quot; JOIN env_sample_source USING(env_sample_source_id)&quot;;
+		qSelectDatasets += &quot; ORDER BY project, dataset&quot;;
+		return qSelectDatasets;
+	
+},
 
+get_select_datasets_queryPID: function(pid){
+		var qSelectDatasets = &quot;SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public&quot;;
+		qSelectDatasets += &quot; FROM dataset&quot;;
+		qSelectDatasets += &quot; JOIN project USING(project_id)&quot;;
+		qSelectDatasets += &quot; JOIN user on(project.owner_user_id=user.user_id)&quot;;  // this will need to be changed when table user_project in incorporated
+		qSelectDatasets += &quot; JOIN env_sample_source USING(env_sample_source_id)&quot;;
+		qSelectDatasets += &quot; WHERE project_id=&#039;&quot;+pid+&quot;&#039;&quot;;
+		qSelectDatasets += &quot; ORDER BY project, dataset&quot;;
+		//console.log(qSelectDatasets);
+    return qSelectDatasets;	
+},
+
+get_select_classifier_query: function(){
+		var qSelectClassifiers = &quot;SELECT classifier_id as cid, classifier, `database`&quot;;
+		qSelectClassifiers += &quot; FROM classifier&quot;;
+		//console.log(qSelectClassifiers);
+    return qSelectClassifiers;
+	
+},
+get_all_user_query: function(){
+    var qSelectUser = &quot;SELECT user_id as uid, username, email, institution, last_name, first_name&quot;;
+    qSelectUser += &quot; FROM user&quot;;
+    //console.log(qSelectClassifiers);
+    return qSelectUser;
+  
+},
+insert_access_table: function(uid,pid){
+    
+    var qInsertAccess = &quot;INSERT ignore into `access` (user_id, project_id)&quot;;
+    qInsertAccess += &quot; VALUES(&#039;&quot;+uid+&quot;&#039;,&#039;&quot;+pid+&quot;&#039;)&quot;; 
+    console.log(qInsertAccess);
+    return qInsertAccess; 
+     
+},
+get_select_sequences_query: function(){
+		
+		var qSequenceCounts = &quot;SELECT project_id, dataset_id, classifier_id, SUM(seq_count) as seq_count&quot;; 
+		qSequenceCounts += &quot; FROM sequence_pdr_info&quot;;
+		qSequenceCounts += &quot; JOIN dataset using(dataset_id)&quot;;
+		qSequenceCounts += &quot; GROUP BY project_id, dataset_id, classifier_id&quot;;
+		return qSequenceCounts;
+	
+},	
+get_select_sequences_queryPID: function(pid){
+		
+		var qSequenceCounts = &quot;SELECT project_id, dataset_id, SUM(seq_count) as seq_count&quot;; 
+		qSequenceCounts += &quot; FROM sequence_pdr_info&quot;;
+		qSequenceCounts += &quot; JOIN dataset using(dataset_id)&quot;;
+		qSequenceCounts += &quot; WHERE project_id=&#039;&quot;+pid+&quot;&#039;&quot;;
+		qSequenceCounts += &quot; GROUP BY project_id, dataset_id&quot;;
+		return qSequenceCounts;
+	
+},	
 get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
     //console.log(body);
     //selection_obj = selection_obj;
@@ -272,8 +339,37 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       return tmp_array;
     }
 
-  }
-}</textarea>
+  },
+  //
+  //
+  //
+  get_sequences_perDID_and_taxa_query: function( did, taxa ) {
+  	var tax_items  = taxa.split(&#039;;&#039;);
+	
+  	var seqQuery = &quot;SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n&quot;
+    seqQuery += &quot;,domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n&quot;
+  	seqQuery += &quot; JOIN sequence_pdr_info as t1 USING(sequence_id)\n&quot;
+   	seqQuery += &quot; JOIN sequence_uniq_info as t2 USING(sequence_id)\n&quot;
+  	seqQuery += &quot; JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n&quot;
+  	seqQuery += &quot; JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n&quot;
+    seqQuery += &quot; JOIN classifier as t5 USING(classifier_id)\n&quot;
+  	seqQuery += &quot; WHERE dataset_id=&#039;&quot;+did+&quot;&#039;&quot;;
+	for(t=0;t&lt;  tax_items.length;t++){
+		var name = tax_items[t]
+		var val = name+&#039;_&#039;+C.RANKS[t];
+		//console.log(val)
+		var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
+		seqQuery += &quot; and &quot;+C.RANKS[t]+&quot;_id=&#039;&quot;+id+&quot;&#039;&quot;
+	}
+	seqQuery += &quot;\nORDER BY seq_count DESC&quot;;
+	seqQuery += &quot; LIMIT 100&quot;;
+	console.log(seqQuery)
+	return seqQuery;
+  },
+  
+  
+  
+} // end of module.exports</textarea>
   </div>
 </div>
 

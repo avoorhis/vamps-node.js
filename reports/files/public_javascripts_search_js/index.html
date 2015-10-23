@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.85</p>
+      <p class="stat">57.89</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">226</p>
+      <p class="stat">409</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">35.57</p>
+      <p class="stat">52.44</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.18</p>
+      <p class="stat">4.30</p>
     </div>
   </div>
 </div>
@@ -90,13 +90,19 @@
 <div class="container">
   <div class="row">
     <textarea id="file-source" class="col-md-12">// search.js
-
+// $(&#039;.selectpicker&#039;).selectpicker();
 // $(document).ready(function(){
 //     $(&#039;a.back&#039;).click(function(){
 //         parent.history.back();
 //         return false;
 //     });
 // });
+document.getElementById(&quot;livesearch_result_div&quot;).value = &#039;&#039;;
+document.getElementById(&quot;create_fasta_hidden_id&quot;).value = &#039;&#039;
+document.getElementById(&quot;find_datasets_hidden_id&quot;).value = &#039;&#039;
+document.getElementById(&quot;find_datasets_btn&quot;).disabled=true;
+document.getElementById(&quot;create_fasta_btn&quot;).disabled=true;
+
 var metadata_search_range_div1 = document.getElementById(&#039;metadata_search_range_div1&#039;);
 var metadata_search_field1 = document.getElementById(&#039;field1_metadata_search&#039;);
 var metadata_search_range_div2 = document.getElementById(&#039;metadata_search_range_div2&#039;);
@@ -120,8 +126,10 @@ if (typeof search_metadata_btn !==&quot;undefined&quot;) {
 
 if (typeof search_metadata_activate_btn2 !==&quot;undefined&quot;) {
   search_metadata_activate_btn2.addEventListener(&#039;click&#039;, function () {
-    if(metadata_search_field2.disabled === true){
-      metadata_search_field2.disabled = false;
+    
+	if(metadata_search_field2.disabled === true){
+      
+	  metadata_search_field2.disabled = false;
     }else{
       metadata_search_field2.disabled = true;
     }
@@ -140,7 +148,6 @@ if (typeof search_metadata_activate_btn3 !==&quot;undefined&quot;) {
 
 
 
-
 var selection_choices = [&#039;equal_to&#039;,&#039;less_than&#039;,&#039;greater_than&#039;,&#039;not_equal_to&#039;,&#039;between_range&#039;,&#039;outside_range&#039;];
 
 if (typeof metadata_search_field1 !==&quot;undefined&quot;) {
@@ -155,7 +162,7 @@ if (typeof metadata_search_field1 !==&quot;undefined&quot;) {
           for(var i in mi_local[item]){
             val = mi_local[item][i];
             name = &#039;search1_data_&#039;+item+&#039;[]&#039;;
-            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&quot;+val;
+            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&amp;nbsp;&quot;+val;
             //html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;data[]&#039; value=&#039;&quot;+val+&quot;&#039; onclick=\&quot;save_value1(this.value,&#039;&quot;+item+&quot;&#039;)\&quot; &gt;&quot;+val;
           }
         }else{
@@ -206,7 +213,7 @@ if (typeof metadata_search_field2 !==&quot;undefined&quot;) {
           for (var i in mi_local[item]){
             val = mi_local[item][i];
             name = &#039;search2_data_&#039;+item+&#039;[]&#039;;
-            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&quot;+val;
+            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&amp;nbsp;&quot;+val;
           }
         }else{
           var min = mi_local[item].min;
@@ -254,7 +261,7 @@ if (typeof metadata_search_field3 !==&quot;undefined&quot;) {
           for (var i in mi_local[item]){
             val = mi_local[item][i];
             name = &#039;search3_data_&#039;+item+&#039;[]&#039;;
-            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&quot;+val;
+            html += &quot; &lt;input type=&#039;checkbox&#039; id=&#039;&quot;+val+&quot;&#039; name=&#039;&quot;+name+&quot;&#039; value=&#039;&quot;+val+&quot;&#039; &gt;&amp;nbsp;&quot;+val;
           }
         }else{
           var min = mi_local[item].min;
@@ -288,7 +295,9 @@ if (typeof metadata_search_field3 !==&quot;undefined&quot;) {
       }
   });
 }
-
+//
+//
+//
 function change_comparison(comparison, item){
     var comparison_input;  
     var minval;
@@ -322,6 +331,180 @@ function change_comparison(comparison, item){
     comparison_input.innerHTML = html;
   }
   
+}
+//
+//
+//
+function showMetadataHint(str) {
+    var html=&#039;&#039;;
+	if (str.length == 0) {
+        document.getElementById(&quot;txtHint&quot;).innerHTML = &quot;&quot;;
+        return;
+    } else {
+	    if (window.XMLHttpRequest) {
+	      // code for IE7+, Firefox, Chrome, Opera, Safari
+	      xmlhttp=new XMLHttpRequest();
+	    } else {  // code for IE6, IE5
+	      xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+	    }
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 &amp;&amp; xmlhttp.status == 200) {
+                //var response = xmlhttp.responseText;
+                
+				var response = xmlhttp.responseText;
+				if(response == &#039;No Suggestions&#039;){
+					html = response;
+				}else{
+				    var items = response.split(&#039;--&#039;);
+
+       	            html += &quot;&lt;div class=&#039;my_custom_dropdown&#039; &gt;&quot;;
+                   
+                    html += &quot;&lt;ul class=&#039;&#039; &gt;&quot;;
+                    for(i in items){					 
+                 	   html += &quot;&lt;li &gt;&lt;a role=\&quot;menuitem\&quot; tabindex=\&quot;-1\&quot; href=&#039;metadata_name/&quot;+items[i]+&quot;&#039; &gt;&quot;+items[i]+&quot;&lt;/a&gt;&lt;/li&gt;&quot;;
+                    }
+                    html += &quot;&lt;/ul&gt;&quot;;
+                    html += &quot;&lt;/div&gt;&quot;;
+				    //html = &quot;&lt;div&gt;my div&lt;/div&gt;&quot;
+					//alert(html)
+				}
+				//alert(&#039;here &#039;+html)
+				document.getElementById(&quot;txtHint&quot;).innerHTML = html;
+				
+            }
+        }
+        xmlhttp.open(&quot;GET&quot;, &quot;gethint/&quot; + str, true);
+        xmlhttp.send();
+    }
+}
+//
+//  SHOW  RESULTS for Taxonomy Search
+//
+function showTaxResult(str) {
+  
+  if (str.length==0) {
+    document.getElementById(&quot;livesearch_taxonomy&quot;).innerHTML=&quot;&quot;;
+    document.getElementById(&quot;livesearch_taxonomy&quot;).style.border=&quot;0px&quot;;
+    document.getElementById(&quot;livesearch_taxonomy&quot;).style.height=&quot;0&quot;;
+    document.getElementById(&quot;livesearch_result_div&quot;).value = &#039;&#039;
+    document.getElementById(&quot;find_datasets_btn&quot;).disabled=true;
+    document.getElementById(&quot;create_fasta_btn&quot;).disabled=true;
+    document.getElementById(&quot;create_fasta_hidden_id&quot;).value = &#039;&#039;
+    document.getElementById(&quot;find_datasets_hidden_id&quot;).value = &#039;&#039;
+    return;
+  }else{
+    document.getElementById(&quot;find_datasets_btn&quot;).disabled=false;
+    document.getElementById(&quot;create_fasta_btn&quot;).disabled=false;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200) {
+      document.getElementById(&quot;livesearch_taxonomy&quot;).innerHTML=xmlhttp.responseText;
+      document.getElementById(&quot;livesearch_taxonomy&quot;).style.border=&quot;1px solid #A5ACB2&quot;;
+      document.getElementById(&quot;livesearch_taxonomy&quot;).style.height=&quot;200px&quot;;
+      document.getElementById(&quot;livesearch_taxonomy&quot;).style.width=&quot;500px&quot;;
+      document.getElementById(&quot;livesearch_taxonomy&quot;).style.overflow=&quot;auto&quot;;
+    }
+  }
+  xmlhttp.open(&quot;GET&quot;,&quot;livesearch_taxonomy/&quot;+str,true);
+  xmlhttp.send();
+}
+//
+//  SHOW  RESULTS for User Search
+//
+function showUserResult(str) {
+  if (str.length==0) {
+    document.getElementById(&quot;livesearch_user&quot;).innerHTML=&quot;&quot;;
+    document.getElementById(&quot;livesearch_user&quot;).style.border=&quot;0px&quot;;
+    document.getElementById(&quot;livesearch_user&quot;).style.height=&quot;0&quot;;
+    //document.getElementById(&quot;livesearch_result_div&quot;).value = &#039;&#039;
+    //document.getElementById(&quot;find_datasets_btn&quot;).disabled=true;
+    //document.getElementById(&quot;create_fasta_btn&quot;).disabled=true;
+    //document.getElementById(&quot;create_fasta_hidden_id&quot;).value = &#039;&#039;
+    //document.getElementById(&quot;find_datasets_hidden_id&quot;).value = &#039;&#039;
+    return;
+  }else{
+    //document.getElementById(&quot;find_datasets_btn&quot;).disabled=false;
+    //document.getElementById(&quot;create_fasta_btn&quot;).disabled=false;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200) {
+      document.getElementById(&quot;livesearch_user&quot;).innerHTML=xmlhttp.responseText;
+      document.getElementById(&quot;livesearch_user&quot;).style.border=&quot;1px solid #A5ACB2&quot;;
+      document.getElementById(&quot;livesearch_user&quot;).style.height=&quot;200px&quot;;
+      document.getElementById(&quot;livesearch_user&quot;).style.width=&quot;500px&quot;;
+      document.getElementById(&quot;livesearch_user&quot;).style.overflow=&quot;auto&quot;;
+    }
+  }
+  xmlhttp.open(&quot;GET&quot;,&quot;livesearch_user/&quot;+str,true);
+  xmlhttp.send();
+}
+//
+//  SHOW  RESULTS for Project Search
+//
+function showProjectResult(str) {
+  if (str.length==0) {
+    document.getElementById(&quot;livesearch_project&quot;).innerHTML=&quot;&quot;;
+    document.getElementById(&quot;livesearch_project&quot;).style.border=&quot;0px&quot;;
+    document.getElementById(&quot;livesearch_project&quot;).style.height=&quot;0&quot;;
+    
+    return;
+  }else{
+    //document.getElementById(&quot;find_datasets_btn&quot;).disabled=false;
+    //document.getElementById(&quot;create_fasta_btn&quot;).disabled=false;
+  }
+  if (window.XMLHttpRequest) {
+    // code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  } else {  // code for IE6, IE5
+    xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+  }
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200) {
+      document.getElementById(&quot;livesearch_project&quot;).innerHTML=xmlhttp.responseText;
+      document.getElementById(&quot;livesearch_project&quot;).style.border=&quot;1px solid #A5ACB2&quot;;
+      document.getElementById(&quot;livesearch_project&quot;).style.height=&quot;200px&quot;;
+      document.getElementById(&quot;livesearch_project&quot;).style.width=&quot;500px&quot;;
+      document.getElementById(&quot;livesearch_project&quot;).style.overflow=&quot;auto&quot;;
+    }
+  }
+  xmlhttp.open(&quot;GET&quot;,&quot;livesearch_project/&quot;+str,true);
+  xmlhttp.send();
+}
+//
+//
+//
+function get_tax_str(taxon,rank){
+    
+	if (window.XMLHttpRequest) {
+      // code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+    } else {  // code for IE6, IE5
+      xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 &amp;&amp; xmlhttp.status == 200) {
+          document.getElementById(&quot;find_datasets_btn&quot;).disabled=false;
+          document.getElementById(&quot;create_fasta_btn&quot;).disabled=false;
+          var response = xmlhttp.responseText;
+          document.getElementById(&quot;livesearch_result_div&quot;).value = response;
+          document.getElementById(&quot;create_fasta_hidden_id&quot;).value = response;
+          document.getElementById(&quot;find_datasets_hidden_id&quot;).value = response;
+        }
+    }
+    xmlhttp.open(&quot;GET&quot;, &quot;livesearch_taxonomy/&quot; + rank+&#039;/&#039;+taxon, true);
+    xmlhttp.send();
 }</textarea>
   </div>
 </div>

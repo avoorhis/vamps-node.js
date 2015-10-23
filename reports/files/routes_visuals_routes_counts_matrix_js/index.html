@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">51.77</p>
+      <p class="stat">50.45</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">494</p>
+      <p class="stat">538</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">57.32</p>
+      <p class="stat">59.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.03</p>
+      <p class="stat">3.44</p>
     </div>
   </div>
 </div>
@@ -138,7 +138,9 @@ module.exports = {
 			var did,rank,db_tax_id,node_id,cnt,matrix_file;
 			biom_matrix = {
 					id: post_items.ts,
-					format: &quot;Biological Observation Matrix&quot;,
+					format: &quot;Biological Observation Matrix 0.9.1-dev&quot;,
+					format_url:&quot;http://biom-format.org/documentation/format_versions/biom-1.0.html&quot;,
+					type: &quot;OTU table&quot;,
 					units: post_items.unit_choice,
 					generated_by:&quot;VAMPS-NodeJS Version 2.0&quot;,
 					date: date.toISOString(),
@@ -147,9 +149,9 @@ module.exports = {
 					column_totals:[],								// ORDERED datasets count sums
 					max_dataset_count:0,						// maximum dataset count
 					matrix_type: &#039;dense&#039;,
-	    			matrix_element_type: &#039;int&#039;,
-	     			shape: [],									// [row_count, col_count]
-	     			data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
+	    		matrix_element_type: &#039;int&#039;,
+	     		shape: [],									// [row_count, col_count]
+	     		data:  []										// ORDERED list of lists of counts: [ [],[],[] ... ]
 	     		};
 			//GLOBAL.boim_matrix;
 			var ukeys = [];
@@ -157,6 +159,7 @@ module.exports = {
 			var unit_name_lookup_per_dataset = {};
 			var unit_name_counts = {};
 		
+
 			// TESTING
 			// data from DB or JSON_file or HTF5
 			//var read_choices = [&#039;DB&#039;,&#039;JSON&#039;,&#039;HTF5&#039;];
@@ -222,6 +225,7 @@ module.exports = {
 							// 	return biom_matrix;
 							//
 							// })
+
 							for(var x in TAXCOUNTS[did]){
 
 								if((x.match(/_/g) || []).length == rank_no){
@@ -229,18 +233,51 @@ module.exports = {
 									var ids = x.split(&#039;_&#039;);   // x === _5_55184_61061_62018_62239_63445
 									cnt = TAXCOUNTS[did][x];
 									var tax_long_name = &#039;&#039;;
+									var domain = &#039;&#039;;
 									for(var y=1;y&lt;ids.length;y++){  // must start at 1 because leading &#039;_&#039;:  _2_55184
 										var db_id = ids[y];
 										var this_rank = C.RANKS[y-1];
 										var db_id_n_rank = db_id+&#039;_&#039;+this_rank;
-										var tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+										//console.log(&#039;tax_node2 &#039;+JSON.stringify(db_id_n_rank))
+										var tax_node = {};
+										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
+											tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+									  }
+									  if(this_rank == &#039;domain&#039;){
+											domain = tax_node.taxon;
+										}
+										//console.log(&#039;tax_node3 &#039;+JSON.stringify(tax_node))
 										tax_long_name += tax_node.taxon+&#039;;&#039;;
-
+                                        //console.log(&#039;tax_node3 &#039;+JSON.stringify(tax_node))
 									}
+									
 									tax_long_name = tax_long_name.slice(0,-1); // remove trailing &#039;;&#039;
 									//console.log(&#039;long tax_name &#039;+tax_long_name+&#039; - &#039;+cnt.toString());
-									unit_name_lookup[tax_long_name] = 1;
-									unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+									//console.log(&#039;IN NO NAs1&#039;)
+									//console.log(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length))
+									//console.log(&#039;domain &#039;+domain)
+									//console.log(post_items.domains)
+									// SCREEN INCLUDE_NAS
+									if(post_items.include_nas == &#039;no&#039; ){
+										
+										if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != &#039;_NA&#039;){
+											//console.log(&#039;ADDING &#039;+tax_long_name)
+											// SCREEN DOMAINS
+											if(post_items.domains.indexOf(domain) != -1){
+												unit_name_lookup[tax_long_name] = 1;
+												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+											}
+										}
+										
+									}else{
+										// SCREEN DOMAINS
+										if(post_items.domains.indexOf(domain) != -1){
+												unit_name_lookup[tax_long_name] = 1;
+												unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+										}
+									}
+
+
 								}
 
 							}
@@ -275,12 +312,12 @@ module.exports = {
 
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
-			console.log(&#039;POSTx&#039;);
+			console.log(&#039;POSTx - from routes_common_matrix.js&#039;);
 			console.log(post_items);
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 
-			if(post_items.update_data === true){
+			if(post_items.update_data === true || post_items.update_data === 1 || post_items.update_data === &#039;1&#039;){
 
 				biom_matrix = this.get_custom_biom_matrix( post_items, biom_matrix );
 
@@ -289,7 +326,10 @@ module.exports = {
 			}
 
 			matrix_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_count_matrix.biom&#039;;
-
+			
+			// For R:phyloseq object
+			var tax_file = &#039;../../tmp/&#039;+post_items.ts+&#039;_taxonomy.txt&#039;;
+			COMMON.output_tax_file( tax_file, biom_matrix,C.RANKS.indexOf(post_items.tax_depth));
 
 			//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
 			COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
@@ -342,7 +382,8 @@ module.exports = {
         // Adjust for normalization
         var tmp1 = [];
         if (norm === &#039;maximum&#039;|| norm === &#039;max&#039;) {
-            for(var cc in custom_count_matrix.data) {
+            console.log(&#039;calculating norm MAX&#039;)
+			for(var cc in custom_count_matrix.data) {
               new_counts = [];
               for (var kc in custom_count_matrix.data[cc]) {
                   new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
@@ -352,7 +393,8 @@ module.exports = {
             }
             custom_count_matrix.data = tmp1;
         }else if(norm === &#039;frequency&#039; || norm === &#039;freq&#039;){
-            for (var cc1 in custom_count_matrix.data) {
+            console.log(&#039;calculating norm FREQ&#039;)
+			for (var cc1 in custom_count_matrix.data) {
               new_counts = [];
               for (var kc1 in custom_count_matrix.data[cc1]) {
                   new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
@@ -362,6 +404,7 @@ module.exports = {
             custom_count_matrix.data = tmp1;
         }else{
           // nothing here
+			console.log(&#039;no-calculating norm NORM&#039;)
         }
 
         // re-calculate totals
@@ -549,12 +592,13 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	//console.log(chosen_id_name_hash);
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
-	    biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], metadata: {} });
+	    //biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
+	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: null });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {
 		
-		biom_matrix.rows.push({ name: ukeys[uk], metadata: {} });
+		biom_matrix.rows.push({ id: ukeys[uk], metadata: null });
 		
 		biom_matrix.data.push(unit_name_counts[ukeys[uk]]);
 	}
@@ -567,9 +611,9 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 		max = 0;
 	}else{
 		for (var n1 in biom_matrix.columns) {
-		  	max_count[biom_matrix.columns[n1].name] = 0;
+		  	max_count[biom_matrix.columns[n1].id] = 0;
 		  	for(var d in biom_matrix.data) {
-		  		max_count[biom_matrix.columns[n1].name] += biom_matrix.data[d][n1];
+		  		max_count[biom_matrix.columns[n1].id] += biom_matrix.data[d][n1];
 		  	}
 		}
 		max = 0;

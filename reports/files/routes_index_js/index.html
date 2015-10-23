@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">62.46</p>
+      <p class="stat">65.94</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">429</p>
+      <p class="stat">126</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">39.33</p>
+      <p class="stat">12.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.10</p>
+      <p class="stat">0.73</p>
     </div>
   </div>
 </div>
@@ -91,168 +91,71 @@
   <div class="row">
     <textarea id="file-source" class="col-md-12">var express = require(&#039;express&#039;);
 var router = express.Router();
-var fs   = require(&#039;fs&#039;);
+var fs   = require(&#039;fs-extra&#039;);
 var path  = require(&#039;path&#039;);
-var nodemailer = require(&#039;nodemailer&#039;);
-var transporter = nodemailer.createTransport();
-var zlib = require(&#039;zlib&#039;);
-var Readable = require(&#039;stream&#039;).Readable;
 var helpers = require(&#039;./helpers/helpers&#039;);
 var ds = require(&#039;./load_all_datasets&#039;);
-var sweetcaptcha = new require(&#039;sweetcaptcha&#039;)(&#039;233846&#039;, &#039;f2a70ef1df3edfaa6cf45d7c338e40b8&#039;, &#039;720457356dc3156eb73fe316a293af2f&#039;);
-var rs_ds = ds.get_datasets(function(ALL_DATASETS){
-  GLOBAL.ALL_DATASETS = ALL_DATASETS;
 
+var rs_ds = ds.get_datasets(function(ALL_DATASETS){
+  
+  GLOBAL.ALL_DATASETS = ALL_DATASETS;
+  
 
   /* GET home page. */
   router.get(&#039;/&#039;, function(req, res) {
     res.render(&#039;index&#039;, {
             title: &#039;VAMPS:Home&#039;,
             message: req.flash(&#039;fail&#039;),
-            user: req.user });
-  });
-
-  /* GET Overview page. */
-  router.get(&#039;/overview&#039;, function(req, res) {
-      res.render(&#039;overview&#039;, { title: &#039;VAMPS:Overview&#039;, user: req.user });
+            user: req.user, 
+            hostname: req.C.hostname });
   });
 
 
 
-  /* GET Import Data page. */
-  router.get(&#039;/import_data&#039;, helpers.isLoggedIn, function(req, res) {
-      res.render(&#039;import_data&#039;, { title: &#039;VAMPS:Import Data&#039;,
-                             user: req.user
-                            });
-  });
+  
+
+
+
+  
   /* GET Saved Data page. */
   router.get(&#039;/saved_data&#039;, helpers.isLoggedIn, function(req, res) {
       res.render(&#039;saved_data&#039;, { title: &#039;VAMPS:Saved Data&#039;,
-                             user: req.user
+                user: req.user, 
+                hostname: req.C.hostname,
+	               message:&#039;&#039;,
                             });
   });
-  /* GET Import Data page. */
-  router.get(&#039;/export_data&#039;, helpers.isLoggedIn, function(req, res) {
-      res.render(&#039;export_data&#039;, { title: &#039;VAMPS:Import Data&#039;,
-                             user: req.user
-                            });
-  });
-  /* GET Export Data page. */
-  router.get(&#039;/file_retrieval&#039;, helpers.isLoggedIn, function(req, res) {
+ 
 
-      var export_dir = path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username);
-      var mtime = {};
-      var size = {};
-      var file_info = {};
-      file_info.mtime ={};
-      file_info.size = {};
-      file_info.files = [];
-      fs.readdir(export_dir, function(err, files){
-        for (var f in files){
-          var pts = files[f].split(&#039;_&#039;);
-          if(pts[1] === &#039;metadata&#039; || pts[1] === &#039;fasta&#039;){
-            file_info.files.push(files[f]);
-            stat = fs.statSync(export_dir+&#039;/&#039;+files[f]);
-            file_info.mtime[files[f]] = stat.mtime;  // modify time
-            file_info.size[files[f]] = stat.size;
-          }
-        }
-        //console.log(file_info)
-        res.render(&#039;file_retrieval&#039;, { title: &#039;VAMPS:Export Data&#039;,
-                             user: req.user.username,
-                             finfo: JSON.stringify(file_info),
-							message : req.flash(&#039;deleteMessage&#039;),
-                            });
-      });
-  });
 
-  router.get(&#039;/file_utils&#039;, helpers.isLoggedIn, function(req, res){
-
-	//console.log(&#039;dnld&#039;);
-	//console.log(req.query.filename);
-	var user = req.query.user;
-	var file = path.join(&#039;user_data&#039;,NODE_DATABASE,user,req.query.filename);
-	//console.log(file);
-	//// DOWNLOAD //////
-	if(req.query.fxn == &#039;download&#039; &amp;&amp; req.query.type == &#039;fasta&#039;){
-		res.download(file); // Set disposition and send it.
-	}else if(req.query.fxn == &#039;download&#039; &amp;&amp; req.query.type == &#039;metadata&#039;){
-		res.download(file); // Set disposition and send it.
-	}
-	
-	//// DELETE FILES /////
-	if(req.query.fxn == &#039;delete&#039;){
-		if(req.query.type == &#039;datasets&#039;){
-			fs.unlink(file, function(err){
-				if(err){ console.log(err); }
-				req.flash(&#039;deleteMessage&#039;, &#039;Deleted&#039;);
-				res.redirect(&quot;/visuals/saved_datasets&quot;);	
-			}); //
-		}else{
-			fs.unlink(file, function(err){
-				if(err){ console.log(err); }
-				req.flash(&#039;deleteMessage&#039;, &#039;Deleted&#039;);
-				res.redirect(&quot;/file_retrieval&quot;);	
-			}); //
-		}
-		
-	}
-	
-	//// VIEW DATA (datasets) /////
-	if(req.query.fxn == &#039;view&#039;){
-			
-	}
-	//// USE DATA (datasets) /////
-	// redirect to /visuals/unit_selection
-	if(req.query.fxn == &#039;usethese&#039;){
-		
-			
-	}
-	
-	////  FINALLY REDIRECT /////
-	// if(req.query.type == &#039;datasets&#039;){
-	// 	res.redirect(&quot;/visuals/show_saved_datasets&quot;);
-	// }else if (req.query.type == &#039;metadata&#039; || req.query.type == &#039;fasta&#039;){
-	// 	res.redirect(&quot;/file_retrieval&quot;);
-	// }else{
-	// 	res.redirect(&quot;/&quot;);
-	// }
-  });
 
   /* GET Geo-Distribution page. */
   router.get(&#039;/geodistribution&#039;, function(req, res) {
-      res.render(&#039;geodistribution&#039;, { title: &#039;VAMPS:Geo_Distribution&#039;,
-                             user: req.user
-                            });
+
+      
+
+	  testpaths = {}
+	  testpaths[&#039;495&#039;] = {&quot;latitude&quot;:10,&quot;longitude&quot;:-45};
+	  testpaths[&#039;496&#039;] = {&quot;latitude&quot;:10.23,&quot;longitude&quot;:-10};
+	  testpaths[&#039;497&#039;] = {&quot;latitude&quot;:20,&quot;longitude&quot;:-30};
+	  testpaths[&#039;498&#039;] = {&quot;latitude&quot;:2,&quot;longitude&quot;:-34};
+	  
+	  res.render(&#039;geodistribution&#039;, { title: &#039;VAMPS:Geo_Distribution&#039;,
+      user: req.user, 
+      hostname: req.C.hostname,
+	    geodata: JSON.stringify(DatasetsWithLatLong),
+	    message:&#039;&#039;,
+              });
   });
 
-  /* GET metadata page. */
-  router.get(&#039;/metadata&#039;, function(req, res) {
-      res.render(&#039;metadata&#039;, { title: &#039;VAMPS:Metadata&#039;,
-                             user: req.user
-                            });
-  });
-
-  /* GET Portals page. */
-  router.get(&#039;/portals&#039;, function(req, res) {
-      res.render(&#039;portals&#039;, { title: &#039;VAMPS:Portals&#039;,
-                             user: req.user
-                            });
-  });
-
-  /* GET Contact Us page. */
-  router.get(&#039;/contact&#039;, function(req, res) {
-
-      //get sweetcaptcha html for the contact area
-        sweetcaptcha.api(&#039;get_html&#039;, function(err,html){
-            //Send the guts of the captcha to your template
-            res.render(&#039;contact&#039;, {
-              captcha : html,
-              title: &#039;VAMPS:Cuntact-Us&#039;,
-              user: req.user
-               });
-        });
-  });
+  
+  
+  
+ 
+  
+  //
+  //
+  //
   router.post(&#039;/contact&#039;, function(req, res) {
 
     //Validate captcha
@@ -286,192 +189,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 });
 
 
-  //
-  // DOWNLOAD SEQUENCES
-  //
-  router.post(&#039;/download_selected_seqs&#039;, function(req, res) {
-    var db = req.db;
-    console.log(req.body);
-
-    var qSelect = &quot;select UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n&quot;;
-    //var qSelect = &quot;select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n&quot;;
-    qSelect += &quot; join sequence using (sequence_id)\n&quot;;
-    qSelect += &quot; join dataset using (dataset_id)\n&quot;;
-    qSelect += &quot; join project using (project_id)\n&quot;;
-    var seq, seqid, seq_count, pjds;
-    var timestamp = +new Date();  // millisecs since the epoch!
-
-	var user_dir = path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username);
-	helpers.mkdirSync(path.join(&#039;user_data&#039;,NODE_DATABASE));
-	helpers.mkdirSync(user_dir);  // create dir if not exists
-	  var file_name;
-	  var out_file_path;
-    if(req.body.download_type == &#039;whole_project&#039;)
-    {
-  		var pid = req.body.project_id;
-  		var project = req.body.project;
-  		file_name = req.user.username+&#039;_fasta_&#039;+timestamp+&#039;_&#039;+project+&#039;.fa.gz&#039;;
-    	out_file_path = path.join(user_dir,file_name);
-    	qSelect += &quot; where project_id = &#039;&quot;+pid+&quot;&#039;&quot;;
-    }else{
-      var pids = JSON.parse(req.body.datasets).ids;
-		  file_name = req.user.username+&#039;_fasta_&#039;+timestamp+&#039;_&#039;+&#039;_custom.fa.gz&#039;;
-      out_file_path = path.join(user_dir,file_name);
-      qSelect += &quot; where dataset_id in (&quot;+pids+&quot;)&quot;;
-      console.log(pids);
-
-    }
-    qSelect += &quot; limit 100 &quot;;                     // &lt;&lt;&lt;&lt;-----  for testing
-
-
-
-
-                 // &lt;&lt;&lt;&lt;-----  for testing
-    var gzip = zlib.createGzip();
-    console.log(qSelect);
-
-    var wstream = fs.createWriteStream(out_file_path);
-    var rs = new Readable();
-    var collection = db.query(qSelect, function (err, rows, fields){
-      if (err) {
-          throw err;
-      } else {
-        for (var i in rows){
-          seq = rows[i].seq.toString();
-          //var buffer = new Buffer(rows[i].seq, &#039;base64&#039;);
-          //console.log(seq);
-          seq_id = rows[i].sequence_id.toString();
-          seq_count = rows[i].seq_count.toString();
-          //project = rows[i].project;
-          pjds = rows[i].project+&#039;--&#039;+rows[i].dataset;
-          entry = &#039;&gt;&#039;+seq_id+&#039;|&#039;+pjds+&#039;|&#039;+seq_count+&quot;\n&quot;+seq+&quot;\n&quot;;
-          //console.log(entry);
-          rs.push(entry);
-        }
-
-        rs.push(null);
-      }
-      rs
-        .pipe(gzip)
-        .pipe(wstream)
-        .on(&#039;finish&#039;, function () {  // finished
-          console.log(&#039;done compressing and writing file&#039;);
-          var info = {
-                to:&#039;avoorhis@mbl.edu&#039;,
-                from:&quot;vamps@mbl.edu&quot;,
-                subject:&quot;fasta file is ready&quot;,
-                text:&quot;Your fasta file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
-              };
-          send_mail(info);
-        });
-    });
-
-  });
-
-  //
-  // DOWNLOAD METADATA
-  //
-  router.post(&#039;/download_selected_metadata&#039;, function(req, res) {
-    var db = req.db;
-    console.log(req.body);
-    var timestamp = +new Date();  // millisecs since the epoch!
-
-	
-	var user_dir = path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username);
-	helpers.mkdirSync(path.join(&#039;user_data&#039;,NODE_DATABASE));
-	helpers.mkdirSync(user_dir);  // create dir if not exists
-	var dids;
-	var project;
-	var file_name;
-	var out_file_path;
-	
-	if(req.body.download_type == &#039;whole_project&#039;){
-    var pid  = req.body.project_id;
-    dids = DATASET_IDS_BY_PID[pid];
-    project = req.body.project;
-    file_name = req.user.username+&#039;_metadata_&#039;+timestamp+&#039;_&#039;+project+&#039;.gz&#039;;
-    out_file_path = path.join(user_dir,file_name);
-  }else{
-    dids = JSON.parse(req.body.datasets).ids;
-    file_name = req.user.username+&#039;_metadata_&#039;+timestamp+&#039;.gz&#039;;
-    out_file_path = path.join(user_dir, file_name);
-    }
-    console.log(&#039;dids&#039;);
-    console.log(dids);
-
-
-    // check if custom metadata table exists
-    //var qSelect = &quot;SHOW tables like &#039;custom_metadata_&quot;+pid+&quot;&#039;&quot;;
-
-    // get the fields from required_metadata_info as they may vary
-    //var qSelect = &quot;SHOW columns from required_metadata_info&quot;;
-    //console.log(&#039;in projects--&gt;&#039;);
-    //console.log(MetadataValues);
-    //console.log(&#039;&lt;--in projects&#039;);
-    // we have all the metadata in MetadataValues by did
-
-    var gzip = zlib.createGzip();
-    var myrows = {}; // myrows[mdname] == [] list of values
-    var header = &#039;Project: &#039;+project+&quot;\n\t&quot;;
-
-    var wstream = fs.createWriteStream(out_file_path);
-    var rs = new Readable();
-    var filetxt;
-
-        for (var i in dids){
-          did = dids[i];
-          dname = DATASET_NAME_BY_DID[did];
-          header += dname+&quot;\t&quot;;
-          for (var k in MetadataValues[did]){
-            nm = k;
-            val = MetadataValues[did][k];
-            if(nm in myrows){
-              myrows[nm].push(val);
-            }else{
-              myrows[nm] = [];
-              myrows[nm].push(val);
-            }
-          }
-        }
-
-      // print
-      header += &quot;\n&quot;;
-      rs.push(header);
-      if(Object.keys(myrows).length === 0){
-        rs.push(&quot;NO METADATA FOUND\n&quot;);
-      }else{
-        for (var mdname in myrows){
-          filetxt = mdname+&quot;\t&quot;;  // restart sting
-          for(i in myrows[mdname]){
-            filetxt += myrows[mdname][i]+&quot;\t&quot;;
-          }
-          filetxt += &quot;\n&quot;;
-          rs.push(filetxt);
-        }
-      }
-      rs.push(null);
-      rs
-        .pipe(gzip)
-        .pipe(wstream)
-        .on(&#039;finish&#039;, function () {  // finished
-          console.log(&#039;done compressing and writing file&#039;);
-          var info = {
-                to:&#039;avoorhis@mbl.edu&#039;,
-                from:&quot;vamps@mbl.edu&quot;,
-                subject:&quot;metadata is ready&quot;,
-                text:&quot;Your metadata file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
-          };
-          send_mail(info);
-          // transporter.sendMail({
-          //   from: &#039;vamps@mbl.edu&#039;,
-          //   to: &#039;avoorhis@mbl.edu&#039;,
-          //   subject: &#039;metadata is ready&#039;,
-          //   text: &quot;Your metadata file is ready here:\n\nhttp://localhost:3000/&quot;+&quot;export_data/&quot;
-          // });
-        });
-
-    //console.log(datasets);
-  });
 
 // transporter.sendMail(mailOptions, function (error, info) {
 //                 if (error) {
@@ -480,27 +197,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 //                     console.log(&#039;Message sent: &#039; + info.response);
 //                 }
 //             });
-  function send_mail(mail_info) {
-    var to_addr = mail_info.addr;
-    var from_addr = mail_info.from;
-    var subj = mail_info.subj;
-    var msg = mail_info.msg;
-    transporter.sendMail(mail_info, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(&#039;Message sent: &#039; + info.response);
-                }
-            });
 
-    // transporter.sendMail({
-    //         from: from_addr,
-    //         to: to_addr,
-    //         subject: subj,
-    //         text: msg
-    //       });
-
-  }
   // function IsNumeric(n) {
   //   return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
   // }
