@@ -6,14 +6,14 @@
   <% user_rows = rows %>
   <table id='user_list_div' class='table sortable' >
    <thead>
-    <tr><th>PI</th>
+    <tr><th>Name (username-uid) (click to sort)</th>
     </thead>
     <tbody>
     <% for (i=0; i < user_rows.length; i++) { %>
       <tr>
         <td>
         <form method='GET' action='/users/<%= user_rows[i].user_id %>'>
-          <button type='submit' class='btn btn-sm btn-link'><%= user_rows[i].last_name %>, <%= user_rows[i].first_name %> (<%= user_rows[i].username %>)</button>
+          <button type='submit' class='btn btn-sm btn-link'><%= user_rows[i].last_name %>, <%= user_rows[i].first_name %> (<%= user_rows[i].username %>-<%= user_rows[i].user_id %>)</button>
         </form>
        </td>
       </tr>

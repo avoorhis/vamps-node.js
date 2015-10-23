@@ -235,3 +235,13 @@ td.left_justify {
     display: block;
 }
 */
+
+.admin_table {
+  border:1px solid black;
+}
+.admin_table td {
+  padding:0px 3px;
+  font-size:12px;
+  white-space: nowrap;
+}
+

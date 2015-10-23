@@ -161,7 +161,7 @@ function grant_access(type, id)
 }
 function change_public(pid)
 {
-  var info_div = document.getElementById('response_info');
+  var info_div = document.getElementById('msg_div_'+pid);
   var form = document.getElementById('public_form_'+pid);
   radio_name = 'public_radio_'+pid
   //alert(document.forms[4].name)

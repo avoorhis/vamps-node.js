@@ -26,43 +26,48 @@
 
  Public Projects
 	<br>
-	<div style='height:300px;overflow:auto;'>
-	<table border='1'>
-		<tr><th>Project Name</th></tr>
+	<div style='width:100%;height:400px;overflow:auto;'>
+	<table border='1' class='admin_table table sortable'>
+		<tr><thead><th>Project Name</th></thead></tr>
+		<tbody>
 		<% for(pid in pinfo) { %>
-			<% if(pinfo[pid].public === 1) { %>
-			<tr><td><%= pinfo[pid].project %></td></tr>
-			<% }else{ %>
-				
-								
-			<% } %>
+		<% 		if(pinfo[pid].public === 1) { %>
+						<tr><td><%= pinfo[pid].project %></td></tr>
+		<% 		} %>
 		<% } %>
-
+	</tbody>
 	</table>
 
 
 
 </td><td>&nbsp;&nbsp;&nbsp;
 </td><td>
-	 By Project
+	 By Project (sortable)
 	<br>
-	<div style='height:300px;overflow:auto;'>
-	<table border='1'>
-		<tr><th>Project Name</th><th>Current Users</th><th>User to Add?</th><th></th></tr>
+	<div style='height:400px;overflow:auto;'>
+	<table border='1'  class='admin_table table sortable' style='width:500px;'>
+		<tr><thead><th>Project Name</th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th><th data-defaultsort='disabled'></th></thead></tr>
+		<tbody>
 		<% for(pid in pinfo) { %>
 		<% 		formname = 'by_project_'+pid; %>
 					<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
 		<% 		if(pinfo[pid].public !== 1) { %>			
-					<tr><td style='white-space: nowrap;'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td><td>
-					<select id='' name='' width='100' style='width: 100px'>
+		
+			<tr>
+			<td><%= pinfo[pid].project %> <small>(<%= pid %>)</small>
+
+
+			</td>
+			<td><%= pinfo[pid].username %></td>
+			<td>
+				<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
 		<% 			for(n in pinfo[pid].permissions) { %>
-					
 		<% 				user_id = pinfo[pid].permissions[n] %>
 		<% 				user    = uinfo[user_id].username %>
-							<option><%= user %></option>
+							<%= user %><br>
 		<% 			} %>
-				
-					</select>
+				</div>
+
 			</td>
 
 			<td>
@@ -86,7 +91,7 @@
 
 
 		<% } %>
-
+	</tbody>
 	</table>
 </div>
 
@@ -94,17 +99,18 @@
 </td><td>
 
 
-By User	
+By User	(sortable)
 <br>
-<div style='height:300px;overflow:auto;'>
-	<table border='1'>
-		<tr><th>User</th><th>Current Projects</th><th>Project to Add?</th><th></th></tr>
+<div style='width:110%;height:400px;overflow:auto;'>
+	<table border='1' class='admin_table table sortable' style='width:500px;'>
+		<tr><thead><th>User</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th><th data-defaultsort='disabled'></th></thead></tr>
+		<tbody>
 		<% for(uid in uinfo) { %>
 		<% 	var plist = [] %>
 		<%  formname = 'by_user_'+uid; %>
 		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
 
-			<tr><td style='white-space: nowrap;'><%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uid %>)</small></td>
+			<tr><td><%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %><br><small>(<%= uinfo[uid].username %>-<%= uid %>)</small></td>
 
 				<td>
 
@@ -114,14 +120,16 @@ By User
 		<%								plist.push(pinfo[pid].project); %>		
 		<%						} %>
 		<%					} %>
-		<% 			} %>	 
+		<% 			} %>	
+					<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
 		<%			if(plist.length > 0 ){ %>
-							<select id='xxxx' name='xxxx' width='100' style='width: 100px'>
+							
 		<%				for(p in plist){ %>									
-											<option><%= plist[p] %></option>										
+									<%= plist[p] %><br>									
 		<%				} %>
 		<%			} %>
-							</select>
+					</div>
+							
 				</td>
 
 				<td>
@@ -143,7 +151,7 @@ By User
 		</form>
 		
 		<% } %>
-
+	</tbody>
 	</table>
 </div>   
       
@@ -154,6 +162,7 @@ By User
 
 	
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/admin.js"></script>     
+<script type="text/javascript" src="/javascripts/admin.js"></script>  
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>   
  </body>
  </html>

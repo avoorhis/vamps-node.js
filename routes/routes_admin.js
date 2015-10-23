@@ -155,8 +155,8 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       }
       html = ''
       
-      html += "<table border='1'>";
-      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th></tr>';
+      html += "<table class='admin_table' border='1'>";
+      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th>Msg</th></tr>';
       
       html += '<tr>';
       html += "<form id='' name='update_pname_form' method='POST' action='update_pname'>"
@@ -169,15 +169,17 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       
       html += '<tr>';
       html += "<form id='' name='update_powner_form' method='POST' action='update_powner'>"
-      html += ' <td>Owner</td><td>'+info.last+', '+info.first+' <small>('+info.username+')</small></td>';
+      html += ' <td>Owner (username-uid)</td><td>'+info.last+', '+info.first+' <small>('+info.username+"-"+info.oid+')</small></td>';
       html += ' <td>';
       html += " <select id='new_oid' name='new_oid' width='200' style='width: 200px'>";      
       for(uid in ALL_USERS_BY_UID) { 
           if(ALL_USERS_BY_UID[uid].username !== 'guest'){
             if(ALL_USERS_BY_UID[uid].username === info.username){
-              html += "    <option selected value='"+uid+"'>"+ALL_USERS_BY_UID[uid].last_name+","+ALL_USERS_BY_UID[uid].first_name+" <small>("+ALL_USERS_BY_UID[uid].username+")</small></option>";
+              html += "    <option selected value='"+uid+"'>"+ALL_USERS_BY_UID[uid].last_name+","+ALL_USERS_BY_UID[uid].first_name;
+              html += "     <small>("+ALL_USERS_BY_UID[uid].username+")</small></option>";
             }else{
-              html += "    <option value='"+uid+"'>"+ALL_USERS_BY_UID[uid].last_name+","+ALL_USERS_BY_UID[uid].first_name+" <small>("+ALL_USERS_BY_UID[uid].username+")</small></option>";
+              html += "    <option value='"+uid+"'>"+ALL_USERS_BY_UID[uid].last_name+","+ALL_USERS_BY_UID[uid].first_name;
+              html += "     <small>("+ALL_USERS_BY_UID[uid].username+")</small></option>";
             }  
           }        
       } 
@@ -208,15 +210,21 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html += '</tr>';
       
       html += '<tr>';
-      html += '<td>Public</td><td>'+info.public+'</td>';
-      html += '<td><a href="">Change</a></td>';
+      if(info.public === 1){
+        html += '<td>Public</td><td>True</td>';
+      }else{
+        html += '<td>Public</td><td>False</td>';
+      }
+      
+      
+      html += '<td><a href="public">View or Change</a></td>';
       html += "<td></td>";
       html += "<td></td>";
       html += '</tr>';
       
       html += '<tr>';
       html += '<td>Permissions</td><td>'+info.permissions+'</td>';
-      html += '<td><a href="view_permissions">View</a> - <a href="assign_permissions">Change</a></td>';
+      html += '<td><a href="permissions">View or Change</a></td>';
       html += "<td></td>";
       html += "<td></td>";
       html += '</tr>';
