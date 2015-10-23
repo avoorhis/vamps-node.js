@@ -482,7 +482,7 @@ module.exports.get_status = function(user, project){
     var statQuery=&#039;&#039;;
     statQuery += &quot;SELECT status,message from user_project_status&quot;;  
     statQuery += &quot; WHERE user=&#039;&quot;+user+&quot;&#039; and project =&#039;&quot;+project+&quot;&#039; &quot;;
-    console.log(statQuery)
+    console.log(statQuery);
         connection.query(statQuery , function(err, rows, fields){
               if(err) { console.log(&#039;ERROR-in status query: &#039;+err); 
             }else{
@@ -490,20 +490,20 @@ module.exports.get_status = function(user, project){
             } 
                            
     });
-}
+};
 module.exports.update_status = function(status_params){
-  console.log(&#039;in update_status&#039;)
+  console.log(&#039;in update_status&#039;);
   if(status_params.type == &#039;delete&#039;){
-        var statQuery =&#039;&#039;
+    var statQuery = &#039;&#039;;
         statQuery += &quot;DELETE from user_project_status&quot;;  
         statQuery += &quot; WHERE user=&#039;&quot;+status_params.user+&quot;&#039; and project =&#039;&quot;+status_params.project+&quot;&#039; &quot;;
-        console.log(&#039;query: &#039;+statQuery)
+        console.log(&#039;query: &#039;+statQuery);
         connection.query(statQuery , function(err, rows, fields){
               if(err) { console.log(&#039;ERROR1-in status update: &#039;+err); }               
         });
   }else if(status_params.type == &#039;update&#039;){
         
-              var statQuery2 =&#039;&#039;
+    var statQuery2 = &#039;&#039;;
               if(&#039;pid&#039; in status_params &amp;&amp; &#039;project&#039; in status_params){  
                   statQuery2 += &quot;UPDATE user_project_status set status=&#039;&quot;+status_params.status+&quot;&#039;, message=&#039;&quot;+status_params.msg+&quot;&#039;&quot;;  
                   statQuery2 += &quot; WHERE user=&#039;&quot;+status_params.user+&quot;&#039; and project =&#039;&quot;+status_params.project+&quot;&#039; and project_id=&#039;&quot;+status_params.pid+&quot;&#039;&quot;;
@@ -516,7 +516,7 @@ module.exports.update_status = function(status_params){
               }else{
                 //ERROR
               }
-              console.log(&#039;query2: &#039;+statQuery2)
+              console.log(&#039;query2: &#039;+statQuery2);
               connection.query(statQuery2 , function(err, rows, fields){
                     if(err) { 
                       console.log(&#039;ERROR2-in status update: &#039;+err); 
@@ -527,7 +527,7 @@ module.exports.update_status = function(status_params){
                         
         
   } else {
-      var statQuery1 =&#039;&#039;
+    var statQuery1 = &#039;&#039;;
       if(&#039;pid&#039; in status_params &amp;&amp; &#039;project&#039; in status_params){        
         statQuery1 += &quot;INSERT IGNORE into user_project_status (user,project,project_id,status,message)&quot;;          
         statQuery1 += &quot; VALUES (&#039;&quot;+status_params.user+&quot;&#039;,&#039;&quot;+status_params.project+&quot;&#039;,&#039;&quot;+status_params.pid+&quot;&#039;,&#039;&quot;+status_params.status+&quot;&#039;,&#039;&quot;+status_params.msg+&quot;&#039;)&quot;;
@@ -551,7 +551,7 @@ module.exports.update_status = function(status_params){
       });
   }       
   
-}
+};
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
         console.log(&#039;query ok1 &#039;+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
@@ -595,9 +595,9 @@ module.exports.update_metadata_from_file = function (){
     }
     catch (e) {
       console.log(e);
-      AllMetadata = {}
+      AllMetadata = {};
     }
-}
+};
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r&quot;&#039;\\\%]/g, function (char) {
         switch (char) {

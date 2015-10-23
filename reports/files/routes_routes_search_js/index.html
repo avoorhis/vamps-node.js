@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">50.65</p>
+      <p class="stat">50.36</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -66,7 +66,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">9.59</p>
+      <p class="stat">9.63</p>
     </div>
   </div>
 </div>
@@ -98,7 +98,7 @@ var path  = require(&#039;path&#039;);
 
 /* GET Search page. */
 router.get(&#039;/search_index&#039;, helpers.isLoggedIn, function(req, res) {
-    
+
     var tmp_metadata_fields = {};
     var metadata_fields = {};
 	  var metadata_fields_array = [];
@@ -106,21 +106,21 @@ router.get(&#039;/search_index&#039;, helpers.isLoggedIn, function(req, res) {
       for (var name in AllMetadata[did]){
           val = AllMetadata[did][name];
           if(name in tmp_metadata_fields){
-            tmp_metadata_fields[name].push(val); 
+            tmp_metadata_fields[name].push(val);
           }else{
             if(IsNumeric(val)){
               tmp_metadata_fields[name]=[];
             }else{
               tmp_metadata_fields[name]=[&#039;non-numeric&#039;];
             }
-            tmp_metadata_fields[name].push(val); 
-          }           
+            tmp_metadata_fields[name].push(val);
+          }
       }
     }
     //console.log(tmp_metadata_fields)
 	
     for (var tmp_name in tmp_metadata_fields){
-      metadata_fields_array.push(tmp_name)
+      metadata_fields_array.push(tmp_name);
 	  if(tmp_metadata_fields[tmp_name][0] == &#039;non-numeric&#039;){
         tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
         metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
@@ -135,17 +135,17 @@ router.get(&#039;/search_index&#039;, helpers.isLoggedIn, function(req, res) {
     var blast_db = req.C.blast_db;
     // check if blast database exists:
     var blast_nin = path.join(&#039;public&#039;,&#039;blast&#039;, NODE_DATABASE, blast_db+&#039;.nin&#039;);
-    console.log(blast_nin)
+    console.log(blast_nin);
     try{
       stats = fs.lstatSync(blast_nin);
       if (stats.isFile()) {
-        var blast_db_path = path.join(&#039;public&#039;,&#039;blast&#039;, NODE_DATABASE, blast_db);;
+        var blast_db_path = path.join(&#039;public&#039;,&#039;blast&#039;, NODE_DATABASE, blast_db);
       }else{
         var blast_db_path = false;
       }
     }
     catch (e){
-      console.log(e)
+      console.log(e);
     }
     //console.log(metadata_fields)
     res.render(&#039;search/search_index&#039;, { title: &#039;VAMPS:Search&#039;,
@@ -162,7 +162,7 @@ router.get(&#039;/search_index&#039;, helpers.isLoggedIn, function(req, res) {
 //  TAXONOMY SEARCH
 //
 router.post(&#039;/taxonomy_search_for_datasets&#039;, helpers.isLoggedIn, function(req, res) {
-	console.log(&#039;in tax search result&#039;)
+	console.log(&#039;in tax search result&#039;);
     console.log(&#039;req.body--&gt;&gt;&#039;);
     console.log(req.body);
     console.log(&#039;&lt;&lt;--req.body&#039;);
@@ -170,7 +170,7 @@ router.post(&#039;/taxonomy_search_for_datasets&#039;, helpers.isLoggedIn, funct
 
   if(! req.body.tax_string){
 		req.flash(&#039;tax_message&#039;, &#039;Error&#039;);
-		res.redirect(&#039;search_index#taxonomy&#039;); 
+		res.redirect(&#039;search_index#taxonomy&#039;);
     return;
 	}
 	var tax_string = req.body.tax_string;
@@ -181,33 +181,33 @@ router.post(&#039;/taxonomy_search_for_datasets&#039;, helpers.isLoggedIn, funct
 		// ERROR
 	}
 	
-	qSelect += &quot; JOIN silva_taxonomy_info_per_seq using (sequence_id)\n&quot;; 
+	qSelect += &quot; JOIN silva_taxonomy_info_per_seq using (sequence_id)\n&quot;;
 	qSelect += &quot; JOIN silva_taxonomy using (silva_taxonomy_id)\n&quot;;
-	add_where = &#039; WHERE &#039;
-	for(n in tax_items){
-		rank = req.C.RANKS[n]
-		qSelect += &#039; JOIN `&#039;+rank+ &#039;` using (&#039;+rank+&#039;_id)\n&#039;
-		add_where += &#039;`&#039;+rank+&quot;`=&#039;&quot;+tax_items[n]+&quot;&#039; and &quot; 
+	add_where = &#039; WHERE &#039;;
+	for(var n in tax_items){
+		rank = req.C.RANKS[n];
+		qSelect += &#039; JOIN `&#039;+rank+ &#039;` using (&#039;+rank+&#039;_id)\n&#039;;
+		add_where += &#039;`&#039;+rank+&quot;`=&#039;&quot;+tax_items[n]+&quot;&#039; and &quot; ;
 	}
-	qSelect = qSelect + add_where.substring(0, add_where.length - 5)
-	console.log(qSelect)
+	qSelect = qSelect + add_where.substring(0, add_where.length - 5);
+	console.log(qSelect);
 	var query = req.db.query(qSelect, function (err, rows, fields){
     if (err) {
         req.flash(&#039;tax_message&#039;, &#039;SQL Error: &#039;+err);
-        res.redirect(&#039;search_index#taxonomy&#039;); 
+        res.redirect(&#039;search_index#taxonomy&#039;);
     } else {
       var datasets = {};
       datasets.ids = [];
       datasets.names = [];
-      for(n in rows){
-        console.log(rows[n])
+      for(var n in rows){
+        console.log(rows[n]);
         did = rows[n][&#039;did&#039;];
         pid = PROJECT_ID_BY_DID[did];
         pname = PROJECT_INFORMATION_BY_PID[pid].project;
-        datasets.ids.push(did)
-        datasets.names.push(pname+&#039;--&#039;+DATASET_NAME_BY_DID[did])
+        datasets.ids.push(did);
+        datasets.names.push(pname+&#039;--&#039;+DATASET_NAME_BY_DID[did]);
       }
-      console.log(datasets)
+      console.log(datasets);
       var timestamp = +new Date();  // millisecs since the epoch!
       var filename = &#039;datasets:&#039;+timestamp+&#039;.json&#039;;
       var filename_path = path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username,filename);
@@ -215,9 +215,9 @@ router.post(&#039;/taxonomy_search_for_datasets&#039;, helpers.isLoggedIn, funct
       helpers.mkdirSync(path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username)); // create dir if not present
       //console.log(filename);
       helpers.write_to_file(filename_path,JSON.stringify(datasets));
-      msg = &quot;&lt;a href=&#039;/visuals/saved_datasets&#039;&gt;&quot;+filename+&quot;&lt;/a&gt;&quot;
+      msg = &quot;&lt;a href=&#039;/visuals/saved_datasets&#039;&gt;&quot;+filename+&quot;&lt;/a&gt;&quot;;
       req.flash(&#039;tax_message&#039;, &#039;Saved as: &#039;+msg);
-      res.redirect(&#039;search_index#taxonomy&#039;); 
+      res.redirect(&#039;search_index#taxonomy&#039;);
     }
   });
 	
@@ -236,7 +236,7 @@ router.post(&#039;/metadata_search_result&#039;, helpers.isLoggedIn, function(re
   var searches = {};
   var allowed = [ &#039;search1&#039;, &#039;search2&#039;, &#039;search3&#039; ];
   if (search_function === &#039;search_metadata_all_datasets&#039;){
-    for (var name in req.body){  
+    for (var name in req.body){
       items = name.split(&#039;_&#039;);
       var search = items[0];
       if(allowed.indexOf(search) != -1){
@@ -252,7 +252,7 @@ router.post(&#039;/metadata_search_result&#039;, helpers.isLoggedIn, function(re
 
   // search datasets
   //console.log(AllMetadata);
-  // This assumes that ALL datasets are in AllMetadata. 
+  // This assumes that ALL datasets are in AllMetadata.
   //var datasets = [];
    // use for posting to unit_selection
   //
@@ -307,12 +307,12 @@ router.post(&#039;/metadata_search_result&#039;, helpers.isLoggedIn, function(re
     filtered.datasets = filtered.datasets.filter(onlyUnique);
   }else{   // intersection
     filtered.datasets = ds1;
-    if(&#039;search2&#039; in searches) { 
+    if(&#039;search2&#039; in searches) {
       filtered.datasets = ds1.filter(function(n) {
           return ds2.indexOf(n) != -1;
       });
     }
-    if(&#039;search3&#039; in searches) { 
+    if(&#039;search3&#039; in searches) {
       filtered.datasets = filtered.datasets.filter(function(n) {
           return ds3.indexOf(n) != -1;
       });
@@ -333,17 +333,17 @@ router.post(&#039;/metadata_search_result&#039;, helpers.isLoggedIn, function(re
   	console.log(&#039;redirecting back -- no data found&#039;);
 	  req.flash(&#039;message&#039;, &#039;No Data Found&#039;);
 	  res.redirect(&#039;search_index&#039;);
-    return; 
+    return;
   }else{
-          res.render(&#039;search/search_result_metadata&#039;, {   
+          res.render(&#039;search/search_result_metadata&#039;, {
                     title    : &#039;VAMPS: Search Datasets&#039;,
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
                     join_type: join_type,
                     user     : req.user,hostname: req.C.hostname,
-          });  // 
+          });  //
    }
- 
+
 });
 //
 //  SEARCH DATASETS
@@ -356,13 +356,13 @@ router.get(&#039;/gethint/:hint&#039;, helpers.isLoggedIn, function(req, res) {
 	if (q !== &quot;&quot;) {
 	    q = q.toLowerCase();
 	    len=q.length;
-		for(n in AllMetadataNames){
+		for(var n in AllMetadataNames){
 			var name = AllMetadataNames[n];
 			
 				if(name.substring(0,len) === q){
-	              console.log(&#039;name= &#039;+name)
+          console.log(&#039;name= &#039;+name);
 				  if (hint === &quot;&quot;) {
-      	                hint = name;
+      	              hint = name;
       	            } else {
      	                hint += &quot;--&quot;+name;
       	            }
@@ -370,10 +370,10 @@ router.get(&#039;/gethint/:hint&#039;, helpers.isLoggedIn, function(req, res) {
 	    }
 	}
 	//AllMetadataNames
-	console.log(&#039;hint= &#039;+hint)
-	var result = (hint==&quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
-	console.log(&#039;result= &#039;+result)
-	res.send(result)
+	console.log(&#039;hint= &#039;+hint);
+	var result = (hint === &quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
+	console.log(&#039;result= &#039;+result);
+	res.send(result);
 	
 });
 //
@@ -388,49 +388,49 @@ router.get(&#039;/livesearch_taxonomy/:q&#039;, helpers.isLoggedIn, function(req
 	var hint = &#039;&#039;;
 	var obj = new_taxonomy.taxa_tree_dict_map_by_rank;
 	var taxon;
-	if(q != &#039;&#039;){
-		for(n in obj[&quot;domain&quot;]){
+	if(q !== &#039;&#039;){
+		for(var n in obj[&quot;domain&quot;]){
 			taxon = obj[&quot;domain&quot;][n].taxon;
 			if(taxon.toLowerCase() != &#039;domain_na&#039; &amp;&amp; taxon.toLowerCase().indexOf(q) != -1){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;domain&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(domain)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;phylum&quot;]){
+		for(var n in obj[&quot;phylum&quot;]){
 			taxon = obj[&quot;phylum&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;phylum_na&#039; &amp;&amp; t_lower.indexOf(q) != -1){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;phylum&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(phylum)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;klass&quot;]){
+		for(var n in obj[&quot;klass&quot;]){
 			taxon = obj[&quot;klass&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;klass_na&#039; &amp;&amp; t_lower.indexOf(q) != -1 ){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;klass&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(class)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;order&quot;]){
+		for(var n in obj[&quot;order&quot;]){
 			taxon = obj[&quot;order&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;order_na&#039; &amp;&amp; t_lower.indexOf(q) != -1){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;order&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(order)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;family&quot;]){
+		for(var n in obj[&quot;family&quot;]){
 			taxon = obj[&quot;family&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;family_na&#039; &amp;&amp; t_lower.indexOf(q) != -1){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;family&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(family)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;genus&quot;]){
+		for(var n in obj[&quot;genus&quot;]){
 			taxon = obj[&quot;genus&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;genus_na&#039; &amp;&amp; t_lower.indexOf(q) != -1){
 				hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_tax_str(&#039;&quot;+taxon+&quot;&#039;,&#039;genus&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(genus)&lt;/small&gt;&lt;br&gt;&quot;;
 			}
 		}
-		for(n in obj[&quot;species&quot;]){
+		for(var n in obj[&quot;species&quot;]){
 			taxon = obj[&quot;species&quot;][n].taxon;
 			t_lower = taxon.toLowerCase();
 			if(t_lower != &#039;species_na&#039; &amp;&amp; t_lower.indexOf(q) != -1){
@@ -439,7 +439,7 @@ router.get(&#039;/livesearch_taxonomy/:q&#039;, helpers.isLoggedIn, function(req
 		}
 		
 	}
-	var result = (hint==&quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
+	var result = (hint === &quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
 	res.send(result);
 });
 //
@@ -454,12 +454,12 @@ router.get(&#039;/livesearch_user/:q&#039;, helpers.isLoggedIn, function(req, re
   var hint = &#039;&#039;;
   var obj = ALL_USERS_BY_UID;
   var taxon;
-  if(q != &#039;&#039;){
-    for(uid in obj){
+  if(q !== &#039;&#039;){
+    for(var uid in obj){
       user  = obj[uid].username;
       last  = obj[uid].last_name;
       first = obj[uid].first_name;
-      
+
       if(last.toLowerCase().indexOf(q) != -1 || first.toLowerCase().indexOf(q) != -1){
         //hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_user_str(&#039;&quot;+taxon+&quot;&#039;,&#039;domain&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(domain)&lt;/small&gt;&lt;br&gt;&quot;;
         //hint += &quot;&lt;a href=&#039;#&#039;&gt;&quot;+last+&#039;, &#039;+first+&#039; (&#039;+user+&quot;)&lt;/a&gt;&lt;br&gt;&quot;;
@@ -469,7 +469,7 @@ router.get(&#039;/livesearch_user/:q&#039;, helpers.isLoggedIn, function(req, re
       }
     }
   }
-  var result = (hint==&quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
+  var result = (hint === &quot;&quot;) ? (&quot;No Suggestions&quot;) : (hint);
   res.send(result);
 });
 //
@@ -482,13 +482,13 @@ router.get(&#039;/livesearch_project/:q&#039;, helpers.isLoggedIn, function(req,
   console.log(&#039;in livesearch project&#039;);
   var q = req.params.q.toLowerCase();
   var hint = &#039;Projects:&lt;br&gt;&#039;;
-    
-  if(q != &#039;&#039;){
+
+  if(q !== &#039;&#039;){
     //hint += &#039;projects:&lt;br&gt;&#039;
-    for(pid in PROJECT_INFORMATION_BY_PID){
-      
-      pname = PROJECT_INFORMATION_BY_PID[pid].project
-      
+    for(var pid in PROJECT_INFORMATION_BY_PID){
+
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+
       console.log(PROJECT_INFORMATION_BY_PID);
       if(pname.toLowerCase().indexOf(q) != -1){
         //hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_user_str(&#039;&quot;+taxon+&quot;&#039;,&#039;domain&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(domain)&lt;/small&gt;&lt;br&gt;&quot;;
@@ -500,10 +500,10 @@ router.get(&#039;/livesearch_project/:q&#039;, helpers.isLoggedIn, function(req,
     }
     hint += &#039;Datasets:&lt;br&gt;&#039;;
     //hint += &#039;datasets:&lt;br&gt;&#039;;
-    for(n in DATASET_NAME_BY_DID){
-      dname = DATASET_NAME_BY_DID[n]
-      pid = PROJECT_ID_BY_DID[n]
-      pname = PROJECT_INFORMATION_BY_PID[pid].project
+    for(var n in DATASET_NAME_BY_DID){
+      dname = DATASET_NAME_BY_DID[n];
+      pid = PROJECT_ID_BY_DID[n];
+      pname = PROJECT_INFORMATION_BY_PID[pid].project;
       //console.log(dname);
       if(dname.toLowerCase().indexOf(q) != -1){
         //hint += &quot;&lt;a href=&#039;&#039; onclick=\&quot;get_user_str(&#039;&quot;+taxon+&quot;&#039;,&#039;domain&#039;);return false;\&quot; &gt;&quot;+taxon + &quot;&lt;/a&gt; &lt;small&gt;(domain)&lt;/small&gt;&lt;br&gt;&quot;;
@@ -513,7 +513,7 @@ router.get(&#039;/livesearch_project/:q&#039;, helpers.isLoggedIn, function(req,
         hint += &quot;&lt;/form&gt;&quot;;
       }
     }
-    
+
 
 
 
@@ -532,13 +532,13 @@ router.get(&#039;/livesearch_taxonomy/:rank/:taxon&#039;, helpers.isLoggedIn, fu
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+&#039;_&#039;+selected_rank];
 	var tax_str = selected_taxon;
 
-	var item = this_item
-	console.log(item)
+	var item = this_item;
+	console.log(item);
   // goes up the tree to get taxon parents:
-  while(item.parent_id != 0){
-		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id]
-		tax_str = item.taxon +&#039;;&#039;+tax_str
-		//console.log(item)
+  while(item.parent_id !== 0){
+		item  = new_taxonomy.taxa_tree_dict_map_by_id[item.parent_id];
+		tax_str = item.taxon +&#039;;&#039;+tax_str;
+		//console.log(item);
 	}
 
   // Would like to get list of all children for user selection
@@ -557,16 +557,16 @@ router.get(&#039;/livesearch_taxonomy/:rank/:taxon&#039;, helpers.isLoggedIn, fu
   //   console.log(t)
   //   //tax_str = item.taxon +&#039;;&#039;+tax_str
   //   //console.log(item)
-  
+
 
 
   // }
 	
-  
+
 
 
   //console.log(base_taxon);
-	console.log(&#039;sending tax_str&#039;)
+	console.log(&#039;sending tax_str&#039;);
 	res.send(tax_str);
 	
 });
@@ -586,7 +586,7 @@ router.get(&#039;/livesearch_taxonomy/:rank/:taxon&#039;, helpers.isLoggedIn, fu
 //   console.log(&#039;returning&#039;);
 //   return new_tax_str;
 
-  
+
 
 // }
 //
@@ -595,10 +595,10 @@ router.get(&#039;/livesearch_taxonomy/:rank/:taxon&#039;, helpers.isLoggedIn, fu
 router.post(&#039;/blast_search_result&#039;, helpers.isLoggedIn, function(req, res) {
     console.log(&#039;in blast res&#039;);
     console.log(req.body);
-    if(req.body.query == &#039;&#039;){
+    if(req.body.query === &#039;&#039;){
       //req.flash(&#039;message&#039;, &#039;No Query Sequence Found&#039;);
-      res.redirect(&#039;search_index#blast&#039;); 
-      return
+      res.redirect(&#039;search_index#blast&#039;);
+      return;
     }
     var blast_db = req.body.blast_db_path;
     // got query now put it in a file (where?)
@@ -606,51 +606,51 @@ router.post(&#039;/blast_search_result&#039;, helpers.isLoggedIn, function(req, 
     timestamp = req.user.username + &#039;_&#039; + timestamp;
     var query_file = timestamp+&quot;_blast_query.fa&quot;;
     var query_file_path = path.join(&#039;tmp&#039;,query_file);
-    
+
     // using blastn with -outfmt 13 option produces 2 files
     var out_file0 = timestamp+&quot;_blast_result.json&quot;;
-    var out_file_path0 = path.join(&#039;tmp&#039;,out_file0);    
+    var out_file_path0 = path.join(&#039;tmp&#039;,out_file0);
     var out_file1 = timestamp+&quot;_blast_result_1.json&quot;;
     var out_file_path1 = path.join(&#039;tmp&#039;,out_file1);
-    // then run &#039;blastn&#039; command 
+    // then run &#039;blastn&#039; command
     // blastn -db &lt;dbname&gt; -query &lt;query_file&gt; -outfmt 13 -out &lt;outfile_name&gt;
     fs.writeFile(query_file_path,req.body.query+&quot;\n&quot;,function(err){
       if(err){
         req.flash(&#039;message&#039;, &#039;ERROR - Could not write query file&#039;);
-        res.redirect(&#039;search_index&#039;);       
+        res.redirect(&#039;search_index&#039;);
       }else{
         var spawn = require(&#039;child_process&#039;).spawn;
         var log = fs.openSync(path.join(process.env.PWD,&#039;logs&#039;,&#039;blast.log&#039;), &#039;a&#039;);
         var blast_options = {
           scriptPath : req.C.PATH_TO_BLAST,
           args :       [ &#039;-db&#039;, blast_db, &#039;-query&#039;, query_file_path, &#039;-outfmt&#039;,&#039;13&#039;,&#039;-out&#039;,out_file_path0 ],
-        }
+        };
         //var blastn_cmd = &#039;blastn -db &#039;+blast_db+&#039; -query &#039;+query_file_path+&#039; -outfmt 13 -out &#039;+out_file_path0
-        var blast_process = spawn( blast_options.scriptPath+&#039;/blastn&#039;, blast_options.args, {detached: true, stdio: [ &#039;ignore&#039;, null, log ]} );  
-        
+        var blast_process = spawn( blast_options.scriptPath+&#039;/blastn&#039;, blast_options.args, {detached: true, stdio: [ &#039;ignore&#039;, null, log ]} );
+
         blast_process.stdout.on(&#039;data&#039;, function (data) {
           //console.log(&#039;stdout: &#039; + data);
           data = data.toString().replace(/^\s+|\s+$/g, &#039;&#039;);
           var lines = data.split(&#039;\n&#039;);
-          for(var n in lines){        
+          for(var n in lines){
             console.log(&#039;blastn line &#039;+lines[n]);
           }
         });
         // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
         blast_process.on(&#039;close&#039;, function (code) {
-         console.log(&#039;blast_process process exited with code &#039; + code);         
-         if(code == 0){                   
-           console.log(&#039;BLAST SUCCESS&#039;); 
+         console.log(&#039;blast_process process exited with code &#039; + code);
+         if(code === 0){
+           console.log(&#039;BLAST SUCCESS&#039;);
            // now read file
            fs.readFile(out_file_path1,&#039;utf8&#039;, function(err, data){
               if(err){
                 req.flash(&#039;message&#039;, &#039;ERROR - Could not read blast outfile&#039;);
-                res.redirect(&#039;search_index&#039;); 
+                res.redirect(&#039;search_index&#039;);
               }else{
                 var obj = JSON.parse(data);
                 console.log(out_file_path1);
                 console.log(data);
-                res.render(&#039;search/search_result_blast&#039;, {   
+                res.render(&#039;search/search_result_blast&#039;, {
                     title    : &#039;VAMPS: BLAST Result&#039;,
                     data     : data,
                     show     : &#039;blast_result&#039;,
@@ -658,24 +658,24 @@ router.post(&#039;/blast_search_result&#039;, helpers.isLoggedIn, function(req, 
                 });  //
 
               }
-           })                      
-                                       
+           });
+
          }else{
             req.flash(&#039;message&#039;, &#039;ERROR - BLAST command exit code: &#039;+code);
             res.redirect(&#039;search_index&#039;);
-         }       
-        });   
-        
+         }
+        });
+
       }
 
-    });     
+    });
 
   });
 //
 //
 //
 router.get(&#039;/seqs/:id&#039;, helpers.isLoggedIn, function(req, res) {
-  console.log(req.params)
+  console.log(req.params);
   var seqid = req.params.id;
 
   q_tax = &quot;SELECT domain,phylum,klass,`order`,family,genus&quot;;
@@ -689,17 +689,17 @@ router.get(&#039;/seqs/:id&#039;, helpers.isLoggedIn, function(req, res) {
   q_tax += &quot; JOIN genus using (genus_id)&quot;;
   q_tax += &quot; WHERE sequence_id=&#039;&quot;+seqid+&quot;&#039;&quot;;
 
-  //we want to know the taxonomy AND which projects 
+  //we want to know the taxonomy AND which projects
   q_ds = &quot;SELECT dataset_id, seq_count from sequence_pdr_info&quot;;
   q_ds += &quot; WHERE sequence_id=&#039;&quot;+seqid+&quot;&#039;&quot;;
-  console.log(q_ds)
+  console.log(q_ds);
   connection.query(q_ds, function(err, rows, fields){
     if(err){
       console.log(err);
-    }else{   
+    }else{
       var obj = {};
 
-      for(i in rows){
+      for(var i in rows){
         did = rows[i].dataset_id;
         cnt = rows[i].seq_count;
         ds  = DATASET_NAME_BY_DID[did];
@@ -712,19 +712,19 @@ router.get(&#039;/seqs/:id&#039;, helpers.isLoggedIn, function(req, res) {
           obj[pj][ds] = cnt;
         }else{
           obj[pj] = {};
-          obj[pj][ds] = cnt;    
+          obj[pj][ds] = cnt;
 
         }
-        
+
       }
       //console.log(obj);
       //console.log(JSON.stringify(obj));
       // AAGTCTTGACATCCCGATGAAAGATCCTTAACCAGATTCCCTCTTCGGAGCATTGGAGAC
-      res.render(&#039;search/search_result_blast&#039;, {   
-                    title    : &#039;VAMPS: BLAST Result&#039;, 
-                    show     : &#039;datasets&#039;, 
-                    seqid    : seqid,  
-                    obj      : JSON.stringify(obj),              
+      res.render(&#039;search/search_result_blast&#039;, {
+                    title    : &#039;VAMPS: BLAST Result&#039;,
+                    show     : &#039;datasets&#039;,
+                    seqid    : seqid,
+                    obj      : JSON.stringify(obj),
                     user     : req.user,hostname: req.C.hostname,
                 });  //
       }
@@ -733,7 +733,7 @@ router.get(&#039;/seqs/:id&#039;, helpers.isLoggedIn, function(req, res) {
 });
 
 router.get(&#039;/make_a_blast_db&#039;, helpers.isLoggedIn, function(req, res) {
-  var txt = &quot;&lt;br&gt;&lt;br&gt;&quot;
+  var txt = &quot;&lt;br&gt;&lt;br&gt;&quot;;
   txt += &quot;&lt;li&gt;Install local ncbi-blast from: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&amp;DOC_TYPE=Download&lt;br&gt;&quot;
   txt += &quot;&lt;li&gt;Make a fasta file of all seqs to be included in blast db using the db2fasta.py script in the public/scripts directory&lt;br&gt;&quot;
   txt += &quot;The &#039;makeblastdb&#039; command is part of the ncbi-blast suite of commands&lt;br&gt;&quot;
@@ -757,16 +757,16 @@ router.get(&#039;/make_a_blast_db&#039;, helpers.isLoggedIn, function(req, res) 
     var datasets = [];  // use for posting to unit_selection
     var tmp_metadata = {};
     for (var did in metadata){
-    
+
       // search only if did allowed by permissions
       var pid = PROJECT_ID_BY_DID[did];
       if(user.security_level === 1 || PROJECT_INFORMATION_BY_PID[pid].permissions  === 0 || PROJECT_INFORMATION_BY_PID[pid].permissions === user.user_id ){
         //console.log(&#039;IN METADATA&#039;);
         for (var mdname in metadata[did]){
           if(mdname === search[&#039;metadata-item&#039;]){
-          
+
             mdvalue = metadata[did][mdname];
-            
+
             if((&#039;comparison&#039; in search) &amp;&amp; (search[&#039;comparison&#039;] === &#039;equal_to&#039;)){
               search_value = Number(search[&#039;single-comparison-value&#039;]);
               if( Number(mdvalue) ===  search_value ){
@@ -909,11 +909,11 @@ router.get(&#039;/make_a_blast_db&#039;, helpers.isLoggedIn, function(req, res) 
       }
       return ds_plus;
   }
-  
+
   function IsNumeric(n) {
     return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
   }
-  function onlyUnique(value, index, self) { 
+  function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
   module.exports = router;</textarea>
