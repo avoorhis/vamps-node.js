@@ -9,100 +9,82 @@
 	
 	
 	
-	<div class="hero-unit">
-	            <h2>VAMPS: Website Administration</h2>
-				<h3>Permissions</h3>
-		             
-	</div>
-
-	<br>
-	<br>
-	<div id='response_info'></div>
-	<hr>
-
-<table><tr>
-
-<td>
-
- Public Projects
-	<br>
-	<div style='width:100%;height:400px;overflow:auto;'>
-	<table border='1' class='admin_table table sortable'>
-		<tr><thead><th>Project Name</th></thead></tr>
-		<tbody>
-		<% for(pid in pinfo) { %>
-		<% 		if(pinfo[pid].public === 1) { %>
-						<tr><td><%= pinfo[pid].project %></td></tr>
-		<% 		} %>
-		<% } %>
-	</tbody>
-	</table>
-
-
-
-</td><td>&nbsp;&nbsp;&nbsp;
-</td><td>
-	 By Project (sortable)
-	<br>
-	<div style='height:400px;overflow:auto;'>
-	<table border='1'  class='admin_table table sortable' style='width:500px;'>
-		<tr><thead><th>Project Name</th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th><th data-defaultsort='disabled'></th></thead></tr>
-		<tbody>
-		<% for(pid in pinfo) { %>
-		<% 		formname = 'by_project_'+pid; %>
-					<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
-		<% 		if(pinfo[pid].public !== 1) { %>			
-		
-			<tr>
-			<td><%= pinfo[pid].project %> <small>(<%= pid %>)</small>
-
-
-			</td>
-			<td><%= pinfo[pid].username %></td>
-			<td>
-				<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
-		<% 			for(n in pinfo[pid].permissions) { %>
-		<% 				user_id = pinfo[pid].permissions[n] %>
-		<% 				user    = uinfo[user_id].username %>
-							<%= user %><br>
-		<% 			} %>
+				<div class="hero-unit">
+				            <h2>VAMPS: Website Administration</h2>
+							<h3>Permissions</h3>
+					             
 				</div>
 
-			</td>
+	<br>
+	<br>
+	<a href='admin_index'><--back</a> | <a href='permissions'>refresh</a> | <a href='/projects/projects_index'>View Public Projects</a><div class='pull-right' id='response_info'></div>
+	<hr>
+<div class="container">
 
-			<td>
-
-
-					<select id='by_project_select' width='100' style='width: 100px'>
-							<option value='0'>.....</option>
-		<% for(uid in uinfo) { %>
-		<% 		if(uinfo[uid].username !== 'guest') { %>
-							<option value='<%= uid %>'><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uinfo[uid].username %>)</small></option>
-		<% 		} %>		
-		<% 	} %>			
-					</select>
-			</td>
-			<td>
-				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
-			</td>
-			</tr>
-		<% 		} %>
-			</form>
+<div class='col-md-6'>
 
 
-		<% } %>
-	</tbody>
-	</table>
+			 By Project (sortable)
+			<br>
+			<div class='admin_table_div'>
+			<table border='1'  class='admin_table table sortable' style=''>
+				<tr><thead><th>Project Name</th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th><th data-defaultsort='disabled'></th></thead></tr>
+				<tbody>
+				<% for(pid in pinfo) { %>
+				<% 		formname = 'by_project_'+pid; %>
+							<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>
+				<% 		if(pinfo[pid].public !== 1) { %>			
+				
+					<tr>
+					<td><%= pinfo[pid].project %><br><small>(<%= pid %>)</small>
+
+
+					</td>
+					<td><%= pinfo[pid].username %></td>
+					<td>
+						<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
+				<% 			for(n in pinfo[pid].permissions) { %>
+				<% 				user_id = pinfo[pid].permissions[n] %>
+				<% 				user    = uinfo[user_id].username %>
+									<%= user %><br>
+				<% 			} %>
+						</div>
+
+					</td>
+
+					<td>
+
+
+							<select id='by_project_select'  >
+									<option value='0'>.....</option>
+				<% for(uid in uinfo) { %>
+				<% 		if(uinfo[uid].username !== 'guest') { %>
+									<option value='<%= uid %>'><%= uid %> <%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %> <small>(<%= uinfo[uid].username %>)</small></option>
+				<% 		} %>		
+				<% 	} %>			
+							</select>
+					</td>
+					<td>
+						<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
+					</td>
+					</tr>
+				<% 		} %>
+					</form>
+
+
+				<% } %>
+			</tbody>
+			</table>
+			</div>
+
 </div>
-
-</td><td>&nbsp;&nbsp;&nbsp;
-</td><td>
+<div class='col-md-6'>
 
 
-By User	(sortable)
-<br>
-<div style='width:110%;height:400px;overflow:auto;'>
-	<table border='1' class='admin_table table sortable' style='width:500px;'>
+		By User	(sortable)
+		<br>
+		<div class='admin_table_div' >
+		<table border='1' class='admin_table table sortable' style=''>
 		<tr><thead><th>User</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th><th data-defaultsort='disabled'></th></thead></tr>
 		<tbody>
 		<% for(uid in uinfo) { %>
@@ -121,7 +103,7 @@ By User	(sortable)
 		<%						} %>
 		<%					} %>
 		<% 			} %>	
-					<div id='' style='height:50px;overflow:auto;padding-left:5px;'>
+					<div id='' style='height:50px;overflow:auto;'>
 		<%			if(plist.length > 0 ){ %>
 							
 		<%				for(p in plist){ %>									
@@ -135,7 +117,7 @@ By User	(sortable)
 				<td>
 
 
-				<select id='by_user_select' name='by_user_select' width='100' style='width: 100px'>
+				<select id='by_user_select' name='by_user_select' >
 							<option value='0'>.....</option>
 		<% for(pid in pinfo) { %>		
 							<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
@@ -153,11 +135,10 @@ By User	(sortable)
 		<% } %>
 	</tbody>
 	</table>
-</div>   
+	</div>   
       
-</td>
-</tr>
-</table>
+</div>
+</div>
 
 
 	

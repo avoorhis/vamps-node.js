@@ -30,22 +30,7 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
             }); 
 
 });
-//
-//
-//
-router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-   
-   console.log('in alter_project')
-   res.render('admin/alter_project', {
-              title     :'VAMPS Site Administration',
-              message   : req.flash('message'), 
-              user: req.user, 
-              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-              user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.C.hostname, // get the user out of session and pass to template
-            }); 
 
-});
 //
 //
 //
@@ -143,10 +128,41 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(r
       res.send(html)
 
 });
+//
+//
+//
+router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+   console.log('in alter_project')
+   var url = require('url');
+   var url_parts = url.parse(req.url, true);
+   var query = url_parts.query;
+   
+   if(url_parts.query.pid === undefined){
+    var pid = 0;
+   }else{
+    var pid = url_parts.query.pid;
+   }
+   console.log(pid) 
+   res.render('admin/alter_project', {
+              title     :'VAMPS Site Administration',
+              message   : req.flash('message'), 
+              user: req.user, 
+              pid_to_open:pid,
+              project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.C.hostname, // get the user out of session and pass to template
+            }); 
+
+});
+//
+//
+//
 router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
    
       console.log('in show_user_info')
       console.log(PROJECT_INFORMATION_BY_PID)
+
       selected_pid = req.body.pid 
       if(selected_pid in PROJECT_INFORMATION_BY_PID){
         info = PROJECT_INFORMATION_BY_PID[selected_pid]
@@ -156,7 +172,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html = ''
       
       html += "<table class='admin_table' border='1'>";
-      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th>Msg</th></tr>';
+      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th><th>Msg</th></tr>';
       
       html += '<tr>';
       html += "<form id='' name='update_pname_form' method='POST' action='update_pname'>"

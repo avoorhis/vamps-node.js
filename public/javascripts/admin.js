@@ -37,6 +37,7 @@ $(document).ready(function(){
 function update_project(item_to_update, pid)
 {
     
+    
     switch(item_to_update){
       case 'pname':
           response_div = document.getElementById('new_pname_response_id');
@@ -69,7 +70,8 @@ function update_project(item_to_update, pid)
       if (xmlhttp.readyState == 4 ) {
           
           var response = xmlhttp.responseText;            
-          response_div.innerHTML = response;      
+          response_div.innerHTML = response;  
+          
          
       }
     };
@@ -190,29 +192,7 @@ function change_public(pid)
     };
     xmlhttp.send(args);
 }
-// function grant_access2()
-// {
-//     selected_uid = document.getElementById('select_user').value;
-//     selected_pid = document.getElementById('select_project').value;
-//     document.getElementById('select_project').value = '.....';
-//     document.getElementById('assign_access_div').style.visibility = 'hidden';
-    
-//     var xmlhttp = new XMLHttpRequest();  
-//     xmlhttp.open("POST", '/admin/grant_access', true);
-//     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//     xmlhttp.setRequestHeader("data-type","html");
-//     var args = 'uid='+selected_uid+'&pid='+selected_pid;
-//     xmlhttp.onreadystatechange = function() {        
-//       if (xmlhttp.readyState == 4 ) {
-          
-//           var response = xmlhttp.responseText;            
-//           info_div.innerHTML = response;      
-         
-//       }
-//     };
-//     xmlhttp.send(args);
 
-// }
 //
 //
 //
@@ -220,8 +200,12 @@ function show_current_project_info()
 {
     //alert('in show_access_button');
     
+    
     info_div = document.getElementById('current_info');
     selected_pid = document.getElementById('select_project_alter').value;
+    document.getElementById('refresh_div').href = 'alter_project?pid='+selected_pid
+    //"<a href='alter_project?pid="+selected_pid+"'></a>";
+
     var xmlhttp = new XMLHttpRequest();  
     xmlhttp.open("POST", '/admin/show_project_info', true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
