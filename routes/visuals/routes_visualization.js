@@ -743,7 +743,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
       //var dnode_name =  dname
       html += "<node name='"+d+"'>\n";
       html += " <seqcount>";
-      for(c_domain in sumator['domain'][d]['knt']){
+      for(var c_domain in sumator['domain'][d]['knt']){
           html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
       }
         html += "</seqcount>\n";

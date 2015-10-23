@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.52</p>
+      <p class="stat">53.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">105.46</p>
+      <p class="stat">108.86</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">30.00</p>
+      <p class="stat">30.02</p>
     </div>
   </div>
 </div>
@@ -180,7 +180,7 @@ router.post(&#039;/export_confirm&#039;, helpers.isLoggedIn, function(req, res) 
 		if(req.body.fasta){
 
 		}
-		for(fmt in req.body){
+		for(var fmt in req.body){
 			if(fmt != &#039;dids&#039;){
 				requested_files.push(fmt);
 			}
@@ -454,10 +454,10 @@ router.get(&#039;/delete_project/:project/:kind&#039;, helpers.isLoggedIn,  func
 			// must delete pid data from mysql ()
 			// and all datasets files
 			options.args = options.args.concat([&#039;--action&#039;, &#039;delete_whole_project&#039;]);
-		}else if(delete_kind == &#039;tax&#039; &amp;&amp; pid != 0){
+		}else if(delete_kind == &#039;tax&#039; &amp;&amp; pid !== 0){
 			options.args = options.args.concat([&#039;--action&#039;, &#039;delete_tax_only&#039; ]);
 
-		}else if(delete_kind == &#039;meta&#039; &amp;&amp; pid != 0){
+		}else if(delete_kind == &#039;meta&#039; &amp;&amp; pid !== 0){
 			options.args = options.args.concat([&#039;--action&#039;,  &#039;delete_metadata_only&#039; ]);
 
 		}else{
@@ -493,7 +493,7 @@ router.get(&#039;/delete_project/:project/:kind&#039;, helpers.isLoggedIn,  func
 			    console.log(&#039;delete_process process exited with code &#039; + code);
 			    var ary = output.split(&quot;\n&quot;);
 			    var last_line = ary[ary.length - 1];
-			    if(code == 0){
+			    if(code === 0){
 				   //console.log(&#039;PID last line: &#039;+last_line)
               status_params = {&#039;type&#039;:&#039;delete&#039;, &#039;user&#039;:req.user.username,
                                 &#039;project&#039;:project, &#039;status&#039;:&#039;delete&#039;,	&#039;msg&#039;:&#039;delete&#039; };
@@ -505,7 +505,7 @@ router.get(&#039;/delete_project/:project/:kind&#039;, helpers.isLoggedIn,  func
   		// called imediately
       var msg = &quot;&quot;;
   		if(delete_kind == &#039;all&#039;){    
-  			msg = &quot;Deletion in progress: &#039;&quot;+project+&quot;&#039;&quot;
+  			msg = &quot;Deletion in progress: &#039;&quot;+project+&quot;&#039;&quot;;
   		}else if(delete_kind == &#039;tax&#039;){
   			msg = &quot;Deletion in progress: taxonomy from &#039;&quot;+project+&quot;&#039;&quot;;
   		}else if(delete_kind == &#039;meta&#039;){
@@ -530,7 +530,7 @@ router.get(&#039;/delete_project/:project/:kind&#039;, helpers.isLoggedIn,  func
     					return;
 						}
 
-					})
+					});
 
 			}else{
 				req.flash(&#039;successMessage&#039;, msg);
@@ -567,18 +567,18 @@ router.get(&#039;/duplicate_project/:project&#039;, helpers.isLoggedIn,  functio
   			var config_file = path.join(new_data_dir,&#039;config.ini&#039;);
   			var project_info = {};
   			project_info.config = iniparser.parseSync(config_file);
-				var config_info = project_info.config.GENERAL
+				var config_info = project_info.config.GENERAL;
 				config_info.project = project+&#039;_dupe&#039;;
 				config_info.baseoutputdir = new_data_dir;
 				config_info.configPath = path.join(new_data_dir,&#039;config.ini&#039;);
 				config_info.fasta_file = path.join(new_data_dir,&#039;fasta.fa&#039;);
 				config_info.datasets = [];
-				for(ds in project_info.config.DATASETS){
+				for(var ds in project_info.config.DATASETS){
 					config_info.datasets.push({ &quot;dsname&quot;:ds, &quot;count&quot;:project_info.config.DATASETS[ds], &quot;oldname&quot;:ds });
 				}
 				update_config(res,req, config_file, config_info, false, &#039;Duplicated &#039;+project+&#039; to: &#039;+config_info.project);
     	}
-		}) // copies directory, even if it has subdirectories or files
+		}); // copies directory, even if it has subdirectories or files
 
 });
 
@@ -602,7 +602,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 	//var base_dir = path.join(process.env.PWD,&#039;user_data&#039;,NODE_DATABASE,req.user.username,&#039;project:&#039;+project);
 	var data_dir = path.join(process.env.PWD,&#039;user_data&#039;,NODE_DATABASE,req.user.username,&#039;project:&#039;+project);
 
-	var data = &#039;&#039;
+	var data = &#039;&#039;;
 
 	//console.log(&#039;PROJECT_INFORMATION_BY_PID0: &#039;+JSON.stringify(PROJECT_INFORMATION_BY_PID));
 
@@ -611,7 +611,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 
 	if(classifier == &#039;GAST&#039; || classifier == &#039;gast&#039;){
 		status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-                                &#039;project&#039;:project, &#039;status&#039;:&#039;OK-GAST&#039;,	&#039;msg&#039;:&#039;Starting GAST&#039; }
+                                &#039;project&#039;:project, &#039;status&#039;:&#039;OK-GAST&#039;,	&#039;msg&#039;:&#039;Starting GAST&#039; };
 		helpers.update_status(status_params);
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
@@ -631,7 +631,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 
 
 
-		var output = &#039;&#039;
+		var output = &#039;&#039;;
 		// communicating with an external python process
 		// all the print statements in the py script are printed to stdout
 		// so you can grab the projectID here at the end of the process.
@@ -640,7 +640,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 		  //console.log(&#039;stdout: &#039; + data);
 		  data = data.toString().replace(/^\s+|\s+$/g, &#039;&#039;);
 		  output += data;
-		  var lines = data.split(&#039;\n&#039;)
+		  var lines = data.split(&#039;\n&#039;);
 		  for(var n in lines){
 		  	//console.log(&#039;line: &#039; + lines[n]);
 			if(lines[n].substring(0,4) == &#039;PID=&#039;){
@@ -653,7 +653,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 		   console.log(&#039;gast_process process exited with code &#039; + code);
 		   var ary = output.split(&quot;\n&quot;);
 		   var last_line = ary[ary.length - 1];
-		   if(code == 0){
+		   if(code === 0){
 			   console.log(&#039;GAST Success&#039;);
 			   //console.log(&#039;PID last line: &#039;+last_line)
 			   var ll = last_line.split(&#039;=&#039;);
@@ -671,7 +671,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
         				 		  	console.log(&#039;2-GAST-Query error: &#039; + err);        				 		  
         				    	} else {
                       	status_params = {&#039;type&#039;:&#039;update&#039;,  &#039;user&#039;:req.user.username,
-                                        &#039;project&#039;:project, &#039;status&#039;:&#039;GAST-SUCCESS&#039;,&#039;msg&#039;:&#039;GAST -Tax assignments&#039; }
+                                        &#039;project&#039;:project, &#039;status&#039;:&#039;GAST-SUCCESS&#039;,&#039;msg&#039;:&#039;GAST -Tax assignments&#039; };
 								   
 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
 												helpers.update_status(status_params);
@@ -708,7 +708,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 
 	}else if(classifier == &#039;RDP&#039; || classifier == &#039;rdp&#039;){
 		status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-                     &#039;project&#039;:project,     &#039;status&#039;:&#039;OK-RDP&#039;,	&#039;msg&#039;:&#039;Starting RDP&#039; }
+                     &#039;project&#039;:project,     &#039;status&#039;:&#039;OK-RDP&#039;,	&#039;msg&#039;:&#039;Starting RDP&#039; };
 		helpers.update_status(status_params);
 
 		var rdp_options = {
@@ -725,7 +725,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 
 
 
-		var output = &#039;&#039;
+		var output = &#039;&#039;;
 		// communicating with an external python process
 		// all the print statements in the py script are printed to stdout
 		// so you can grab the projectID here at the end of the process.
@@ -734,7 +734,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 		  //console.log(&#039;stdout: &#039; + data);
 		  data = data.toString().replace(/^\s+|\s+$/g, &#039;&#039;);
 		  output += data;
-		  var lines = data.split(&#039;\n&#039;)
+		  var lines = data.split(&#039;\n&#039;);
 		  for(var n in lines){
 		  	console.log(&#039;line: &#039; + lines[n]);
 			if(lines[n].substring(0,4) == &#039;PID=&#039;){
@@ -747,7 +747,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
 		   console.log(&#039;rdp_process process exited with code &#039; + code);
 		   var ary = output.split(&quot;\n&quot;);
 		   var last_line = ary[ary.length - 1];
-		   if(code == 0){
+		   if(code === 0){
 			   console.log(&#039;RDP Success&#039;);
 			   //console.log(&#039;PID last line: &#039;+last_line)
 			   var ll = last_line.split(&#039;=&#039;);
@@ -765,7 +765,7 @@ router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.i
         				 		  		console.log(&#039;2-RDP-Query error: &#039; + err);        				 		  
         				      } else {
 													status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-													               &#039;project&#039;:project, &#039;status&#039;:&#039;OK-RDP&#039;,	&#039;msg&#039;:&#039;Finished RDP&#039;  }
+													               &#039;project&#039;:project, &#039;status&#039;:&#039;OK-RDP&#039;,	&#039;msg&#039;:&#039;Finished RDP&#039;  };
 
 													helpers.assignment_finish_request(res,rows1,rows2,status_params);
 													helpers.update_status(status_params);
@@ -814,9 +814,9 @@ router.get(&#039;/your_projects&#039;, helpers.isLoggedIn,  function(req,res){
 		if(err){
 
 			fs.ensureDir(user_projects_base_dir, function (err) {
-  			console.log(err) // =&gt; null
+  			console.log(err); // =&gt; null
   			// dir has now been created, including the directory it is to be placed in
-			})
+			});
 
 
 		}else{
@@ -837,7 +837,7 @@ router.get(&#039;/your_projects&#039;, helpers.isLoggedIn,  function(req,res){
 			  		try{
 				  		var stat_config = fs.statSync(config_file);
   				 		// console.log(&#039;1 &#039;,config_file)
-		 		 			var config = iniparser.parseSync(config_file)
+		 		 			var config = iniparser.parseSync(config_file);
 
 		      
   				  	project_info[project_name] = {};
@@ -846,7 +846,7 @@ router.get(&#039;/your_projects&#039;, helpers.isLoggedIn,  function(req,res){
 
   				  	//new_status = helpers.get_status(req.user.username,project_name);
   				  	//console.log(new_status); // Async only -- doesn&#039;t work
-console.log(ALL_CLASSIFIERS_BY_PID)
+              console.log(ALL_CLASSIFIERS_BY_PID);
 				 			// console.log(&#039;2 &#039;,config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
@@ -863,7 +863,7 @@ console.log(ALL_CLASSIFIERS_BY_PID)
 
 			  		}
 			  		catch (err) {
-			  			console.log(&#039;nofile &#039;,err)
+			  			console.log(&#039;nofile &#039;,err);
 			  		}
 			  
 			  	}
@@ -906,7 +906,7 @@ router.get(&#039;/edit_project/:project&#039;, helpers.isLoggedIn, function(req,
  	project_info.config = iniparser.parseSync(config_file);
 
 	if(project_name in PROJECT_INFORMATION_BY_PNAME){   // these projects have tax assignments
-		console.log(PROJECT_INFORMATION_BY_PNAME[project_name])
+		console.log(PROJECT_INFORMATION_BY_PNAME[project_name]);
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = &#039;Taxonomic Data Available&#039;;
 		project_info.tax = &#039;GAST&#039;;
@@ -939,7 +939,7 @@ router.get(&#039;/edit_project/:project&#039;, helpers.isLoggedIn, function(req,
 		project_info.status = &#039;No Taxonomic Assignments Yet&#039;;
 		project_info.tax = 0;
 		project_info.dsets = [];
-		project_info.title = project_info.config.GENERAL.project_title
+		project_info.title = project_info.config.GENERAL.project_title;
 		project_info.pdesc = project_info.config.GENERAL.project_description;
 		if(project_info.config.GENERAL.public == &#039;True&#039; || project_info.config.GENERAL.public == 1){
 			project_info.public = 1;
@@ -983,7 +983,7 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 
 
 	// UPDATE DB if TAX ASSIGNMENTS PRESENT
-	if(req.body.project_pid != 0){
+	if(req.body.project_pid !== 0){
 		//sql call to projects, datasets
 		var p_sql = &quot;UPDATE project set project=&#039;&quot;+req.body.new_project_name+&quot;&#039;,\n&quot;;
 		p_sql += &quot; title=&#039;&quot;+helpers.mysql_real_escape_string(req.body.new_project_title)+&quot;&#039;,\n&quot;;
@@ -994,13 +994,13 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 		}else{
 			p_sql += &quot; public=&#039;1&#039;\n&quot;;
 		}
-		p_sql += &quot; WHERE project_id=&#039;&quot;+req.body.project_pid+&quot;&#039; &quot;
+		p_sql += &quot; WHERE project_id=&#039;&quot;+req.body.project_pid+&quot;&#039; &quot;;
 		console.log(p_sql);
     connection.query(p_sql, function(err, rows, fields){
        if(err){
-          console.log(&#039;ERROR-in project update: &#039;+err)
+         console.log(&#039;ERROR-in project update: &#039;+err);
        }else{
-        	console.log(&#039;OK- project info updated: &#039;+req.body.project_pid)
+         console.log(&#039;OK- project info updated: &#039;+req.body.project_pid);
        }
     });
 
@@ -1028,13 +1028,13 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 
 		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
-    for(d in req.body.new_dataset_names){
+    for(var d in req.body.new_dataset_names){
     
     	var d_sql = &quot;UPDATE dataset set dataset=&#039;&quot;+req.body.new_dataset_names[d]+&quot;&#039;,\n&quot;;
 			d_sql += &quot; env_sample_source_id=&#039;&quot;+req.body.new_env_source_id+&quot;&#039;,\n&quot;;
 			d_sql += &quot; dataset_description=&#039;&quot;+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+&quot;&#039;\n&quot;;
-			d_sql += &quot; WHERE dataset_id=&#039;&quot;+req.body.dataset_ids[d]+&quot;&#039; &quot;
-			d_sql += &quot; AND project_id=&#039;&quot;+req.body.project_pid+&quot;&#039; &quot;
+			d_sql += &quot; WHERE dataset_id=&#039;&quot;+req.body.dataset_ids[d]+&quot;&#039; &quot;;
+			d_sql += &quot; AND project_id=&#039;&quot;+req.body.project_pid+&quot;&#039; &quot;;
 			console.log(d_sql);
 			connection.query(d_sql, function(err, rows, fields){
         if(err){
@@ -1087,7 +1087,7 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
   	  	}else{
   	  		console.log(&quot;copy success!&quot;);
   	  	}
-	}) // copies fi
+	}); // copies fi
 	//console.log(config_file);
 
 
@@ -1103,11 +1103,11 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 	// So just (1)alter the config.ini and the (2)directory name where it is located in user_data/NODE_DATABASE/&lt;user&gt;/project:*
 	// Also the dataset (3)directories need to be updated.
 
-	config_info = {}
+	config_info = {};
 
 	if(req.body.new_project_name &amp;&amp; req.body.new_project_name != req.body.old_project_name){
 		console.log(&#039;updating project name&#039;);
-		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,&#039;_&#039;)
+		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,&#039;_&#039;);
 		config_info.project = new_project_name;
 		project_info.config.GENERAL.project=new_project_name;
 		new_base_dir = path.join(user_projects_base_dir,&#039;project\:&#039;+new_project_name);
@@ -1129,54 +1129,54 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 		console.log(&#039;updating project title&#039;);
 
 		config_info.project_title = req.body.new_project_title;
-		project_info.config.GENERAL.project_title = req.body.new_project_title
+		project_info.config.GENERAL.project_title = req.body.new_project_title;
 	}else{
 		config_info.project_title = project_info.config.GENERAL.project_title;
 	}
 	if(req.body.new_project_description){
 		console.log(&#039;updating project description&#039;);
 		config_info.project_description = req.body.new_project_description;
-		project_info.config.GENERAL.project_description = req.body.new_project_description
+		project_info.config.GENERAL.project_description = req.body.new_project_description;
 	}else{
 		config_info.project_description = project_info.config.GENERAL.project_description;
 	}
 
-	config_info.platform = project_info.config.GENERAL.platform
-	config_info.owner = project_info.config.GENERAL.owner
-	config_info.config_file_type = project_info.config.GENERAL.config_file_type
+	config_info.platform = project_info.config.GENERAL.platform;
+	config_info.owner = project_info.config.GENERAL.owner;
+	config_info.config_file_type = project_info.config.GENERAL.config_file_type;
 	if(req.body.new_privacy != project_info.config.GENERAL.public){
 		console.log(&#039;updating privacy&#039;);
-		config_info.public = req.body.new_privacy
-		project_info.config.GENERAL.public =req.body.new_privacy
+		config_info.public = req.body.new_privacy;
+		project_info.config.GENERAL.public =req.body.new_privacy;
 	}else{
-		config_info.public = project_info.config.GENERAL.public
+		config_info.public = project_info.config.GENERAL.public;
 	}
 
-	config_info.fasta_type = project_info.config.GENERAL.fasta_type
-	config_info.dna_region = project_info.config.GENERAL.dna_region
-	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count
-	config_info.domain = project_info.config.GENERAL.domain
-	config_info.number_of_datasets = project_info.config.GENERAL.number_of_datasets
-	config_info.sequence_counts = project_info.config.GENERAL.sequence_counts
+	config_info.fasta_type = project_info.config.GENERAL.fasta_type;
+	config_info.dna_region = project_info.config.GENERAL.dna_region;
+	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count;
+	config_info.domain = project_info.config.GENERAL.domain;
+	config_info.number_of_datasets = project_info.config.GENERAL.number_of_datasets;
+	config_info.sequence_counts = project_info.config.GENERAL.sequence_counts;
 
 	if(req.body.new_env_source_id != project_info.config.GENERAL.env_source_id){
 		console.log(&#039;updating env id&#039;);
-		config_info.env_source_id = req.body.new_env_source_id
-		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
+		config_info.env_source_id = req.body.new_env_source_id;
+		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id;
 	}else{
-		config_info.env_source_id = project_info.config.GENERAL.env_source_id
+		config_info.env_source_id = project_info.config.GENERAL.env_source_id;
 	}
 
-	config_info.has_tax = project_info.config.GENERAL.has_tax
+	config_info.has_tax = project_info.config.GENERAL.has_tax;
 
-	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
-	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
+	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k; });
+	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k]; });
 	console.log(old_dataset_array);
-	project_info.config.DATASETS={}
-	config_info.datasets = []
-	for(n in req.body.dataset_ids){
-		new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,;:]/g,&#039;_&#039;)
-		config_info.datasets.push({&quot;oldname&quot;:old_dataset_array[n],&quot;dsname&quot;:new_dataset_name,&quot;did&quot;:req.body.dataset_ids[n],&quot;count&quot;:counts_array[n]})
+	project_info.config.DATASETS={};
+	config_info.datasets = [];
+	for(var n in req.body.dataset_ids){
+		new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,;:]/g,&#039;_&#039;);
+		config_info.datasets.push({&quot;oldname&quot;:old_dataset_array[n],&quot;dsname&quot;:new_dataset_name,&quot;did&quot;:req.body.dataset_ids[n],&quot;count&quot;:counts_array[n]});
 	}
 
 	//console.log(config_info.datasets);
@@ -1202,7 +1202,7 @@ router.post(&#039;/edit_project&#039;, helpers.isLoggedIn, function(req,res){
 
 
 	if(req.body.new_project_name &amp;&amp; req.body.new_project_name != req.body.old_project_name){
-		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir
+		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir;
 		update_config(res,req, config_file, config_info, true, &#039;Updated project: &#039;+config_info.project);
 	}else{
 		update_config(res,req, config_file, config_info,  false, &#039;Updated project: &#039;+config_info.project);
@@ -1222,9 +1222,9 @@ router.post(&#039;/upload_metadata&#039;, [helpers.isLoggedIn, upload.single(&#0
   console.log(req.body);
   console.log(req.file);
   console.log(&#039;2-req.body upload_metadata&#039;);
-  var has_tax = false
+  var has_tax = false;
   if(project in PROJECT_INFORMATION_BY_PNAME){
-  	has_tax = true
+  	has_tax = true;
   
   }
 
@@ -1250,7 +1250,7 @@ router.post(&#039;/upload_metadata&#039;, [helpers.isLoggedIn, upload.single(&#0
 					var spawn = require(&#039;child_process&#039;).spawn;
 					var log = fs.openSync(path.join(process.env.PWD,&#039;node.log&#039;), &#039;a&#039;);
 					var upload_metadata_process = spawn( options.scriptPath+&#039;/metadata_utils.py&#039;, options.args, {detached: true, stdio: [ &#039;ignore&#039;, null, log ]} );  // stdin, stdout, stderr
-					var output = &#039;&#039;
+					var output = &#039;&#039;;
 					upload_metadata_process.stdout.on(&#039;data&#039;, function (data) {
 					  console.log(&#039;stdout: &#039; + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, &#039;&#039;);
@@ -1268,14 +1268,14 @@ router.post(&#039;/upload_metadata&#039;, [helpers.isLoggedIn, upload.single(&#0
 				   console.log(&#039;upload_metadata_process exited with code &#039; + code);
 				   var ary = output.split(&quot;\n&quot;);
 				   var last_line = ary[ary.length - 1];
-				   if(code == 0){
+				   if(code === 0){
 					   		console.log(&#039;Upload METADATA Success&#039;);
 					   		//console.log(&#039;PID last line: &#039;+last_line)
 					   		//var ll = last_line.split(&#039;=&#039;);
 					   		// possible multiple pids
 					    	if(has_tax){
-					   			console.log(PROJECT_INFORMATION_BY_PNAME[project])
-					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid
+					   			console.log(PROJECT_INFORMATION_BY_PNAME[project]);
+					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
 									connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
 								    if (err)  {
 							 		  	console.log(&#039;1-Upload METADATA-Query error: &#039; + err);				 		  			 
@@ -1328,7 +1328,7 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
   console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
 
-  if(project == &#039;&#039; || req.body.project == undefined){
+  if(project === &#039;&#039; || req.body.project === undefined){
 		req.flash(&#039;failMessage&#039;, &#039;A project name is required.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
@@ -1336,11 +1336,11 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 		req.flash(&#039;failMessage&#039;, &#039;That project name is already taken.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
-  }else if(req.files[0].filename==undefined || req.files[0].size==0){
+  }else if(req.files[0].filename === undefined || req.files[0].size === 0){
   	req.flash(&#039;failMessage&#039;, &#039;A fasta file is required.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
-  }else if(req.files[1].filename==undefined || req.files[1].size==0){
+  }else if(req.files[1].filename === undefined || req.files[1].size === 0){
   	req.flash(&#039;failMessage&#039;, &#039;A metadata csv file is required.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
@@ -1348,13 +1348,13 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 			var data_repository = path.join(process.env.PWD,&#039;user_data&#039;,NODE_DATABASE,req.user.username,&#039;project:&#039;+project);
 		   console.log(data_repository);
 			status_params = {&#039;type&#039;:&#039;new&#039;, &#039;user&#039;:req.user.username,
-											&#039;project&#039;:project, &#039;status&#039;:&#039;OK&#039;,	&#039;msg&#039;:&#039;Upload Started&#039;  }
+											&#039;project&#039;:project, &#039;status&#039;:&#039;OK&#039;,	&#039;msg&#039;:&#039;Upload Started&#039;  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ &#039;-dir&#039;, data_repository, &#039;-o&#039;, username, &#039;-p&#039;, project]
 		    			};
 			if(req.body.type == &#039;simple_fasta&#039;){
-			    if(req.body.dataset == &#039;&#039; || req.body.dataset == undefined){
+			    if(req.body.dataset === &#039;&#039; || req.body.dataset === undefined){
 				  	req.flash(&#039;failMessage&#039;, &#039;A dataset name is required.&#039;);
 				  	res.redirect(&quot;/user_data/import_data&quot;);
 				  	return;
@@ -1383,12 +1383,12 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 					                display : &quot;Import_Success&quot;,
 						              user    : req.user
 						        });
-			}
+			};
 			fs.move(original_fastafile, path.join(data_repository,&#039;fasta.fa&#039;), function (err) {
 		    	if (err) {
 						req.flash(&#039;failMessage&#039;, &#039;1-File move failure  &#039;+err);
 						status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-											&#039;project&#039;:project, &#039;status&#039;:&#039;FAIL-1&#039;,	&#039;msg&#039;:&#039;1-File move failure&#039;  }
+											&#039;project&#039;:project, &#039;status&#039;:&#039;FAIL-1&#039;,	&#039;msg&#039;:&#039;1-File move failure&#039;  };
 						helpers.update_status(status_params);
 						res.redirect(&quot;/user_data/import_data&quot;);
 						return;
@@ -1397,7 +1397,7 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 			    	if (err) {
 							req.flash(&#039;failMessage&#039;, &#039;2-File move failure &#039;+err);
 							status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-											&#039;project&#039;:project, &#039;status&#039;:&#039;FAIL-2&#039;,	&#039;msg&#039;:&#039;2-File move failure&#039;  }
+											&#039;project&#039;:project, &#039;status&#039;:&#039;FAIL-2&#039;,	&#039;msg&#039;:&#039;2-File move failure&#039;  };
 							helpers.update_status(status_params);
 							res.redirect(&quot;/user_data/import_data&quot;);
 							return;
@@ -1409,7 +1409,7 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 				    var spawn = require(&#039;child_process&#039;).spawn;
 						var log = fs.openSync(path.join(data_repository,&#039;node.log&#039;), &#039;a&#039;);
 						var load_trim_process = spawn( options.scriptPath+&#039;/vamps_load_trimmed_data.py&#039;, options.args, {detached: true, stdio: [ &#039;ignore&#039;, null, log ]} );  // stdin, stdout, stderr
-						var output = &#039;&#039;
+						var output = &#039;&#039;;
 
 						load_trim_process.stdout.on(&#039;data&#039;, function (data) {
 						  //console.log(&#039;stdout: &#039; + data);
@@ -1421,16 +1421,16 @@ router.post(&#039;/upload_data&#039;, [helpers.isLoggedIn, upload.array(&#039;up
 						   console.log(&#039;load_trim_process process exited with code &#039; + code);
 						   var ary = output.split(&quot;\n&quot;);
 						   var last_line = ary[ary.length - 1];
-						   if(code == 0){
+						   if(code === 0){
 							   	console.log(&#039;Load Success&#039;);
 							   	status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-								 			&#039;project&#039;:project, &#039;status&#039;:&#039;LOADED&#039;,	&#039;msg&#039;:&#039;Project is loaded --without tax assignments&#039;  }
+								 			&#039;project&#039;:project, &#039;status&#039;:&#039;LOADED&#039;,	&#039;msg&#039;:&#039;Project is loaded --without tax assignments&#039;  };
 						   		helpers.update_status(status_params);
 						   		console.log(&#039;Finished loading &#039;+project);
 							 }else{
 								 	req.flash(&#039;failMessage&#039;, &#039;Script Failure &#039;+err);
 								  status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-												&#039;project&#039;:project, &#039;status&#039;:&#039;Script Failure&#039;,	&#039;msg&#039;:&#039;Script Failure&#039;  }
+												&#039;project&#039;:project, &#039;status&#039;:&#039;Script Failure&#039;,	&#039;msg&#039;:&#039;Script Failure&#039;  };
 								  helpers.update_status(status_params);
 								  res.redirect(&quot;/user_data/import_data&quot;);  // for now we&#039;ll send errors to the browser
 								  return;
@@ -1473,7 +1473,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 
 	console.log(&#039;upload_data_tax_by_seq&#039;);
 	var project = req.body.project || &#039;&#039;;
-	var use_original_names = req.body.use_original_names || &#039;off&#039;
+	var use_original_names = req.body.use_original_names || &#039;off&#039;;
   var username = req.user.username;
   var use_file_taxonomy = req.body.use_tax_from_file;
   console.log(&#039;1req.body upload_data_tax_by_seq&#039;);
@@ -1485,7 +1485,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
   //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
 
-  if((project == &#039;&#039; || req.body.project == undefined) &amp;&amp; req.body.use_original_names != &#039;on&#039;){
+  if((project === &#039;&#039; || req.body.project === undefined) &amp;&amp; req.body.use_original_names != &#039;on&#039;){
 		req.flash(&#039;failMessage&#039;, &#039;A project name is required.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
@@ -1493,24 +1493,24 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 		req.flash(&#039;failMessage&#039;, &#039;That project name is already taken.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
-  }else if(req.files[0].filename==undefined || req.files[0].size==0){
+  }else if(req.files[0].filename === undefined || req.files[0].size === 0){
   	req.flash(&#039;failMessage&#039;, &#039;A tax_by_seq file is required.&#039;);
 		res.redirect(&quot;/user_data/import_data&quot;);
 		return;
   }else{
 
-			console.log(&#039;working&#039;)
+    console.log(&#039;working&#039;);
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join(&#039;./user_data&#039;, NODE_DATABASE, &#039;tmp&#039;, req.files[0].filename);
 			//var original_metafile  = path.join(&#039;./user_data&#039;, NODE_DATABASE, &#039;tmp&#039;, req.files[1].filename);
 			var original_taxbyseqfile = path.join(process.env.PWD,&#039;user_data&#039;, NODE_DATABASE, &#039;tmp&#039;,req.files[0].filename); //path.join(&#039;./user_data&#039;, NODE_DATABASE, &#039;tmp&#039;, req.files[0].filename);
-			console.log(original_taxbyseqfile)
+			console.log(original_taxbyseqfile);
 			var original_metafile  = &#039;&#039;;
 			try{
 				original_metafile  = path.join(process.env.PWD,&#039;user_data&#039;, NODE_DATABASE, &#039;tmp&#039;,req.files[1].filename); //path.join(&#039;./user_data&#039;, NODE_DATABASE, &#039;tmp&#039;, req.files[1].filename);
 			}
 			catch(err){
-				console.log(err)
+				console.log(err);
 			}
 
 			console.log(original_metafile);
@@ -1550,7 +1550,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 					                display : &quot;Import_Success&quot;,
 						              user    : req.user
 						  });
-			}
+			};
 
 	  
 				//console.log(&#039;Moved file &#039;+req.file.filename+ &#039; to &#039;+path.join(data_dir,&#039;tax_by_seq.txt&#039;))
@@ -1560,7 +1560,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 		    var spawn = require(&#039;child_process&#039;).spawn;
 				var log = fs.openSync(path.join(process.env.PWD,&#039;node.log&#039;), &#039;a&#039;);
 				var tax_by_seq_process = spawn( options.scriptPath+&#039;/vamps_load_tax_by_seq.py&#039;, options.args, {detached: true, stdio: [ &#039;ignore&#039;, null, log ]} );  // stdin, stdout, stderr
-				var output = &#039;&#039;
+				var output = &#039;&#039;;
 				// communicating with an external python process
 				// all the print statements in the py script are printed to stdout
 				// so you can grab the projectID here at the end of the process.
@@ -1569,7 +1569,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 					  //console.log(&#039;stdout: &#039; + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, &#039;&#039;);
 					  output += data;
-					  var lines = data.split(&#039;\n&#039;)
+					  var lines = data.split(&#039;\n&#039;);
 					  for(var n in lines){
 					  	//console.log(&#039;line: &#039; + lines[n]);
 							if(lines[n].substring(0,4) == &#039;PID=&#039;){
@@ -1581,12 +1581,12 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 				   console.log(&#039;tax_by_seq_process process exited with code &#039; + code);
 				   var ary = output.split(&quot;\n&quot;);
 				   var last_line = ary[ary.length - 1];
-				   if(code == 0){
+				   if(code === 0){
 					   console.log(&#039;TAXBYSEQ Success&#039;);
 					   //console.log(&#039;PID last line: &#039;+last_line)
 					   var ll = last_line.split(&#039;=&#039;);
 					   // possible multiple pids
-					   pid_list = ll[1].split(&#039;-&#039;)
+					   pid_list = ll[1].split(&#039;-&#039;);
 					   for(var i in pid_list){
 						   //var pid = ll[1];
 						   var pid = pid_list[i];
@@ -1603,11 +1603,11 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,  [helpers.isLoggedIn, upload.ar
 			        				 		  	console.log(&#039;2-TAXBYSEQ-Query error: &#039; + err);        				 		  
 			        				    	} else {
 			                      	status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user&#039;:req.user.username,
-			                                        &#039;pid&#039;:pid,&#039;status&#039;:&#039;TAXBYSEQ-SUCCESS&#039;,&#039;msg&#039;:&#039;TAXBYSEQ -Tax assignments&#039; }
+			                                        &#039;pid&#039;:pid,&#039;status&#039;:&#039;TAXBYSEQ-SUCCESS&#039;,&#039;msg&#039;:&#039;TAXBYSEQ -Tax assignments&#039; };
 											   
 															helpers.assignment_finish_request(res,rows1,rows2,status_params);
 															helpers.update_status(status_params);
-															ALL_CLASSIFIERS_BY_PID[pid] = &#039;unknown&#039;
+															ALL_CLASSIFIERS_BY_PID[pid] = &#039;unknown&#039;;
 
 
 			        				    	}
@@ -1738,13 +1738,13 @@ router.post(&#039;/download_selected_seqs&#039;, helpers.isLoggedIn, function(re
 			tax_items = tax_string.split(&#039;;&#039;);
 			qSelect += &quot; JOIN silva_taxonomy_info_per_seq using (sequence_id)\n&quot;;
 			qSelect += &quot; JOIN silva_taxonomy using (silva_taxonomy_id)\n&quot;;
-			add_where = &#039; WHERE &#039;
+			add_where = &#039; WHERE &#039;;
 			for(n in tax_items){
-				rank = req.C.RANKS[n]
-				qSelect += &#039; JOIN `&#039;+rank+ &#039;` using (&#039;+rank+&#039;_id)\n&#039;
-				add_where += &#039;`&#039;+rank+&quot;`=&#039;&quot;+tax_items[n]+&quot;&#039; and &quot;
+				rank = req.C.RANKS[n];
+				qSelect += &#039; JOIN `&#039;+rank+ &#039;` using (&#039;+rank+&#039;_id)\n&#039;;
+				add_where += &#039;`&#039;+rank+&quot;`=&#039;&quot;+tax_items[n]+&quot;&#039; and &quot;;
 			}
-			qSelect = qSelect + add_where.substring(0, add_where.length - 5)
+			qSelect = qSelect + add_where.substring(0, add_where.length - 5);
 
   }
   //qSelect += &quot; limit 100 &quot;;                     // &lt;&lt;&lt;&lt;-----  for testing
@@ -1778,7 +1778,7 @@ router.post(&#039;/download_selected_seqs&#039;, helpers.isLoggedIn, function(re
       .pipe(wstream)
       .on(&#039;finish&#039;, function () {  // finished
         console.log(&#039;done compressing and writing file&#039;);
-        console.log(JSON.stringify(req.user))
+        console.log(JSON.stringify(req.user));
         var info = {
               to : req.user.email,
               from : &quot;vamps@mbl.edu&quot;,
@@ -1912,7 +1912,7 @@ router.post(&#039;/download_selected_matrix&#039;, helpers.isLoggedIn, function(
 		for (var i in biom_matrix.rows){
  			row_txt = &#039;&#039;;
  			row_txt += biom_matrix.rows[i].name;
- 			console.log(row_txt)
+ 			console.log(row_txt);
  		}
 
 		var user_dir = path.join(&#039;user_data&#039;,NODE_DATABASE,req.user.username);
@@ -1965,7 +1965,7 @@ router.post(&#039;/download_selected_matrix&#039;, helpers.isLoggedIn, function(
 // &lt;&lt;&lt;&lt; FUNCTIONS &gt;&gt;&gt;&gt;
 //
 function update_config(res,req, config_file, config_info, has_new_pname, msg){
-	console.log(config_info)
+	console.log(config_info);
 	var new_config_txt = &quot;[GENERAL]\n&quot;;
 	new_config_txt += &quot;project=&quot;+config_info.project+&quot;\n&quot;;
 	new_config_txt += &quot;baseoutputdir=&quot;+config_info.baseoutputdir+&quot;\n&quot;;
@@ -1991,51 +1991,51 @@ function update_config(res,req, config_file, config_info, has_new_pname, msg){
 	new_config_txt += &quot;has_tax=&quot;+config_info.has_tax+&quot;\n\n&quot;;
 	new_config_txt += &quot;[DATASETS]\n&quot;;
 
-	for(n in config_info.datasets){
+	for(var n in config_info.datasets){
 			new_config_txt += config_info.datasets[n].dsname+&quot;=&quot;+config_info.datasets[n].count+&quot;\n&quot;;
 	}
 
-	console.log(new_config_txt)
+	console.log(new_config_txt);
 
 	fs.writeFile(config_file, new_config_txt, function(err){
         if(err){
 					console.log(err);
 					res.send(err);
         }else{
-           	console.log(&#039;write new config file success&#039;)
+          console.log(&#039;write new config file success&#039;);
 				  	if(has_new_pname){
 						// now change the directory name if the project_name is being updated
-							old_base_dir = config_info.old_base_name
-							new_base_name = config_info.baseoutputdir
+							old_base_dir = config_info.old_base_name;
+							new_base_name = config_info.baseoutputdir;
 							fs.move(old_base_dir, new_base_dir, function(err){
 								if(err){
 									console.log(err);
 									res.send(err);
 								}else{
 						  
-									update_dataset_names(config_info)
+									update_dataset_names(config_info);
 									req.flash(&#039;successMessage&#039;, msg);
 									res.redirect(&#039;/user_data/your_projects&#039;);
 
 								}
 
-							})
+							});
 					}else{
 
-						update_dataset_names(config_info)
+						update_dataset_names(config_info);
 						req.flash(&#039;successMessage&#039;, msg);
 						res.redirect(&#039;/user_data/your_projects&#039;);
 
 					}
 
         }
-    })
+    });
 
 
 }
 function update_dataset_names(config_info){
 
-		for(n in config_info.datasets){
+		for(var n in config_info.datasets){
 
 					old_name_path = path.join(config_info.baseoutputdir,&#039;analysis&#039;,config_info.datasets[n].oldname);
 					new_name_path =path.join(config_info.baseoutputdir,&#039;analysis&#039;,config_info.datasets[n].dsname);
