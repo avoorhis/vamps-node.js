@@ -1,8 +1,17 @@
 <% include ../add_ins/begin.ejs %>
-  <div class='title'  >Login</div>
+<div class="title fa fa-anchor">Login</div>
+<div class="row">
+    <div class="col-lg-3"></div>
+      <div class="col-lg-6">
+    <div class="well">
+
+
+  
+  
   <% if (message.length > 0) { %>
       <div class="message"><%= message %></div>
   <% } %><br>
+  
   <form action="/users/login" method="post">
       <div>
           <label>Username:</label>
@@ -20,6 +29,9 @@
   <p>Need an account? <a href="/users/signup">Signup</a></p>
   <p>Or go to the <a href="/">home</a> page.</p>
 
+</div>
+</div>
+</div>
 <% include ../add_ins/end.ejs %>
  </body>
  </html>

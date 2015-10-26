@@ -1,9 +1,15 @@
 <% include ../add_ins/begin.ejs %>
-  <div class='title'>Add User</div>
+<div class="title fa fa-anchor">Add User</div>
+<div class="row">
+<div class="col-lg-3"></div>
+<div class="col-lg-6">
+<div class="well">
+
+ 
   <% if (message.length > 0) { %>
       <div class="message"><%= message %></div>
   <% } %><br>
-  <div id='new_user_div' class='table' >All fields are required
+  <div id='new_user_divX' class='table' >All fields are required
     <form id='' name='newuser_form' method='POST' action='/users/signup'>
       <ul>
       <li> <input id='username'       name='username'       type="text"     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
@@ -20,6 +26,8 @@
     <p>Already have an account? <a href="/users/login">Login</a></p>
     <p>Or go to the <a href="/">home</a> page.</p>
   </div>
-  <a href="#" class="back">Go back!</a>
+</div>
+</div>
+</div>  
   
 <% include ../add_ins/end.ejs %>
