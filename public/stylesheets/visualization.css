@@ -107,7 +107,11 @@
 
 /*  COUNTS TABLE */
 .table_title {
-    float:left;
+    
+}
+.navbar-header{
+
+    color:red;
 }
 .visualization_download_btn{
     float:right;

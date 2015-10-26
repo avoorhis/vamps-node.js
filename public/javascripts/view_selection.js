@@ -1910,7 +1910,7 @@ function create_header(viz, pi) {
   txt += ' Normalization: ' + pi.normalization+'; ';
   txt += ' Counts Min/Max: ' + pi.min_range+'% -- '+pi.max_range+'%';
      
-  return txt;
+  return "<div style='color:ivory;font-size:small;'>"+txt+"</div>";
 }
 
 function download_data(type, datasets, download_type, ts) {
