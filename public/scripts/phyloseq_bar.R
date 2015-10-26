@@ -48,7 +48,15 @@ theme_set(theme_bw())
 
 	gp.ch = subset_taxa(physeq, Phylum == phy)
 	plot_title = paste('Phylum:',phy, sep=' ')
-	plot_bar(gp.ch, fill = rank, title=plot_title)
+	    tryCatch({ 
+			  plot_bar(gp.ch, fill = rank, title=plot_title)
+		}, error = function(err) {
+ 			  cat(paste("ERROR -- no data. Try using more data or deeper taxa\n",sep=''))
+  		  q()
+	    },
+	    finally = { 
+			
+	})
 
 
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html

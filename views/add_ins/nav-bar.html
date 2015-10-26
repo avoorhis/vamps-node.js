@@ -1,26 +1,25 @@
 
+    <p class="navbar-text " style='position:relative;float:right;top:-15px;right:10px'>
+              <% if (user === undefined) { %>
+                  <a href='/users/login' class="navbar-link" >login</a> or
+                  <a href='/users/signup' class="navbar-link" >register</a>
+              <% } else { %>
+                  Logged in as: <a href="/users/profile" class="navbar-link"><%= user.username %></a>
+                  <% if (user.security_level === 1) { %>
+                    (<span class='color_red '>admin</span>)
+                  <% } %>
+                  <a href='/users/logout'> logout</a>
+              <% } %>   
+          </p>
+
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
-        <div class="navbar-header">
-          
-         
-        </div>
+        
         <div id="navbar" class="navbar-collapse collapse">
-			<p class="navbar-text pull-right">
-			        
-					<% if (user === undefined) { %>
-					    
-					    <a href='/users/login' class="navbar-link" >login</a> or
-					    <a href='/users/signup' class="navbar-link" >register</a>
-					<% } else { %>
-					    Logged in as: <a href="/users/profile" class="navbar-link"><%= user.username %></a>
-					    <% if (user.security_level === 1) { %>
-					      (<span class='color_red '>admin</span>)
-					    <% } %>
-					    <a href='/users/logout'> logout</a>
-					<% } %>
-					
-			 </p>
+			
+          
+      
+
           <ul class="nav navbar-nav">
             <li class="active"><a href="/">VAMPS Home</a></li>
 
@@ -37,8 +36,6 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
               
-
-
 
               <ul class="dropdown-menu" role="menu">
                 <% if (user === undefined) { %>
@@ -68,6 +65,9 @@
               </ul>
             </li>
           </ul>
+
+
+
         </div><!--/.nav-collapse -->
-      </div>
+      </div><!--/.container -->
     </nav>
