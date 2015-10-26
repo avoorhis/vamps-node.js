@@ -8,7 +8,7 @@ var helpers = require('./helpers/helpers');
 //var LocalStrategy = require('passport-local').Strategy;
 
 /* GET User List (index) page. */
-router.get('/users_index', helpers.isLoggedIn, function(req, res) {
+router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
     
 	console.log('in indexusers')
 	console.log(req.user)
@@ -57,9 +57,9 @@ router.post('/login',  passport.authenticate('local-login', { successRedirect: '
                                    failureRedirect: 'login',
                                    failureFlash: true })
 );
-//router.post('/login', passport.authenticate('local-login'), function(req, res) {
-//    res.redirect(request.session.returnTo || '/');
-//});
+
+
+
 // =====================================
 // SIGNUP ==============================
 // =====================================
