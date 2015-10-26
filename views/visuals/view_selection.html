@@ -17,20 +17,16 @@
   var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
   var user_local  = '<%= user.username %>';
 </script>
-<style>
-  
-
-</style>
+<div id='taxdepth_domains_div' >
+  <small>
+    Taxonomic Depth: <%= pi.tax_depth %> --- 
+    Included Domains: <%= pi.domains %>
+  </small>
+</div>
 
 
 <div class='title'>Community Visualization</div>
 <div class='subtitle'>Display Choices</div>
-<div id='taxdepth_domains_div' class='pull-right'>
-  <small>
-    Taxonomic Depth: <%= pi.tax_depth %> --- 
-    Domains: <%= pi.domains %>
-  </small>
-</div>
 <!-- Need a form here for the back button to retain state -->
 <!-- TODO add state for tax selection and metadata selection -->
 <table class='button_row'>
@@ -62,22 +58,28 @@
 <% } %>
 
 
-
-<div class='well'>
+<div class="container">
   <div class="row">
-    <div  id='show_selected_datasets_div'  class="col-md-4">
-            <% include partials/show_selected_datasets.html %>
-    </div> <!-- End  show_selected_datasets_div -->
-  
-    <div id='show_selected_metadata_div'  class="col-md-4">
-            <% include partials/show_selected_metadata.html %>
-    </div> <!-- End  show_selected_metadata_div -->
- 
-    <div  id='show_select_items_div' class="col-md-4">
-            <% include partials/show_visual_output_choices.html %>
-    </div> <!-- End  show_select_items_div -->  
+      <div  id='show_selected_datasets_div'  class="col-md-4">
+        <div class='well'>
+              <% include partials/show_selected_datasets.html %>
+        </div> <!-- End  show_selected_datasets_div -->
+      </div>
+    
+      <div id='show_selected_metadata_div'  class="col-md-4">
+        <div class='well'>
+              <% include partials/show_selected_metadata.html %>
+        </div> <!-- End  show_selected_metadata_div -->
+      </div>
+    
+      <div  id='show_select_items_div' class="col-md-4">
+        <div class='well'>
+              <% include partials/show_visual_output_choices.html %>
+        </div> <!-- End  show_select_items_div -->  
+      </div>
   </div>
 </div>
+
 
 
 

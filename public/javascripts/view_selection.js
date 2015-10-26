@@ -1115,6 +1115,8 @@ function create_counts_table() {
       var info_line = create_header('ftable', pi_local);
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
+      document.getElementById('counts_table_title').style.color = 'red';
+      document.getElementById('counts_table_title').style['font-size'] = 'small';
       var tax_counts_div = document.getElementById('tax_table_div');
       tax_counts_div.innerHTML = '';
 	    tax_counts_div.style.display = 'block';
@@ -1910,7 +1912,7 @@ function create_header(viz, pi) {
   txt += ' Normalization: ' + pi.normalization+'; ';
   txt += ' Counts Min/Max: ' + pi.min_range+'% -- '+pi.max_range+'%';
      
-  return "<div style='color:ivory;font-size:small;'>"+txt+"</div>";
+  return txt;
 }
 
 function download_data(type, datasets, download_type, ts) {
