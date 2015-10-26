@@ -91,10 +91,17 @@
 	<td>link=Contact Us</td>
 	<td></td>
 </tr>
+<!--
 <tr>
 	<td>verifyText</td>
 	<td>css=p.title</td>
 	<td>Contact Us</td>
+</tr>
+-->
+<tr>
+	<td>verifyTitle</td>
+	<td>exact:VAMPS:Contact-Us</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -133,7 +140,7 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>css=div.title.left_justify</td>
+	<td>//div/div/div/div</td>
 	<td>Public Projects Listing</td>
 </tr>
 <tr>
@@ -162,9 +169,9 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>css=p.title</td>
-	<td>Metadata</td>
+	<td>verifyTitle</td>
+	<td>exact:VAMPS:Metadata</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -246,11 +253,19 @@
 	<td>xpath=(//a[contains(text(),'Contact Us')])[2]</td>
 	<td></td>
 </tr>
+<!--
 <tr>
 	<td>verifyText</td>
 	<td>css=p.title</td>
 	<td>Contact Us</td>
 </tr>
+-->
+<tr>
+	<td>verifyTitle</td>
+	<td>exact:VAMPS:Contact-Us</td>
+	<td></td>
+</tr>
+
 <tr>
 	<td>verifyElementPresent</td>
 	<td>id=contact-form-name</td>
