@@ -131,6 +131,42 @@ router.post('/show_user_info', [helpers.isLoggedIn, helpers.isAdmin], function(r
 //
 //
 //
+router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+   
+    console.log('in alter_datasets')
+    var url = require('url');
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+
+    if(url_parts.query.pid === undefined){
+     //ERROR
+     return
+    }else{
+    var pid = url_parts.query.pid;
+    }
+
+    ALL_DATASETS.projects.forEach(function(prj) {
+      if(prj.pid == pid){
+        myjson = prj;        
+      }
+    });
+
+    console.log(myjson) 
+    res.render('admin/alter_datasets', {
+              title     :'VAMPS Site Administration',
+              message   : req.flash('message'), 
+              user: req.user, 
+              pid: pid,
+              //constants.ENV_SOURCE
+              project_info: JSON.stringify(myjson),
+              project: PROJECT_INFORMATION_BY_PID[pid].project,
+              hostname: req.C.hostname, // get the user out of session and pass to template
+            }); 
+
+});
+//
+//
+//
 router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
    
    console.log('in alter_project')
@@ -149,6 +185,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
               message   : req.flash('message'), 
               user: req.user, 
               pid_to_open:pid,
+              env: JSON.stringify(req.C.ENV_SOURCE),
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
               hostname: req.C.hostname, // get the user out of session and pass to template
@@ -172,7 +209,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html = ''
       
       html += "<table class='admin_table' border='1'>";
-      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th><th>Msg</th></tr>';
+      html += '<tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th><th>msg</th></tr>';
       
       html += '<tr>';
       html += "<form id='' name='update_pname_form' method='POST' action='update_pname'>"
@@ -225,6 +262,28 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html += "</form>"
       html += '</tr>';
       
+
+      html += '<tr>';
+      html += "<form id='' name='update_penv_form' method='POST' action='update_penv'>";
+      html += "<td>Environmental Source</td><td>"+ info.env_source_name+"</td>";
+      html += "<td>";
+      html += " <select id='new_eid' name='new_eid' width='200' style='width: 200px'> ";   
+      for(eid in req.C.ENV_SOURCE) {                        
+          if(req.C.ENV_SOURCE[eid] === info.env_source_name){
+              html += "<option selected value='"+ eid+"'>"+ req.C.ENV_SOURCE[eid];
+              html += " <small>("+ eid +")</small></option>";
+          }else{
+              html += "<option value='"+ eid+"'>"+ req.C.ENV_SOURCE[eid];
+              html += " <small>("+ eid +")</small></option>";
+          }                           
+      }  
+      html += '</select>';
+      html += '</td>';
+      html += "<td><input id='new_penv_btn' type='button' value='Update' onclick=\"update_project('penv', '"+selected_pid+"')\"></td>";
+      html += "<td><div id='new_penv_response_id'></div></td>";
+      html += "</form>";
+      html += '</tr>';
+
       html += '<tr>';
       if(info.public === 1){
         html += '<td>Public</td><td>True</td>';
@@ -247,7 +306,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       
       html += '<tr>';
       html += '<td>Datasets</td><td></td>';
-      html += '<td><a href="">View or Change</a></td>';
+      html += "<td><a href=\"alter_datasets?pid="+selected_pid+"\">View or Change</a></td>";
       html += "<td></td>";
       html += "<td></td>";
       html += '</tr>';
@@ -263,15 +322,42 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
 //
 //
 //
+router.post('/update_dataset_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+  //console.log(req.body)
+  console.log('in update_dataset_info');
+  var did = req.body.did;
+  var pid = req.body.pid;
+  var new_name = req.body.name;
+  var new_desc = req.body.desc;
+
+  DATASET_NAME_BY_DID[did] = name;
+  ALL_DATASETS.projects.forEach(function(prj) {
+    if(prj.pid == pid){
+      prj.datasets.forEach(function(ds) {
+        if(ds.did == did){
+          ds.dname = new_name;
+          ds.ddesc = new_desc;
+        }
+      });          
+    }
+  });
+
+  console.log(new_name+' -- '+new_desc)
+  res.send('Done!')
+
+});
+//
+//
+//
 router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-  console.log(req.body)
+  //console.log(req.body)
   console.log('in update_project_info');
   var item_to_update = req.body.item;
   var value = req.body.value;
   var pid = req.body.pid;
   var q = "UPDATE project set";
-  console.log(ALL_DATASETS)
-  console.log(typeof ALL_DATASETS)
+  //console.log(ALL_DATASETS)
+  //console.log(typeof ALL_DATASETS)
   switch(item_to_update){
       case 'pname':
           new_project_name = value;
@@ -319,6 +405,11 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
           q += " project_description='"+new_project_desc+"'";          
           break;
 
+      case 'penv':
+          new_project_envid = value;
+          PROJECT_INFORMATION_BY_PID[pid].env_source_name = new_project_envid;
+          q += " env_source_id='"+new_project_env+"'";          
+          break;
       default:
           console.log('ERROR in update_project_info');
       
@@ -353,17 +444,17 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       var html = 'Successfully Updated'
       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
       if(selected_pid in PROJECT_INFORMATION_BY_PID){        
-        console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
-        console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
+        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions)
+        //console.log(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)))
         if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(parseInt(selected_uid)) === -1){
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(parseInt(selected_uid))
-            console.log('11111')
+            //console.log('11111')
         }else{
           html = 'User already has access to this project.'
           res.send(html)
 
           //html = 'Trying to push!'
-          console.log('22222')
+          //console.log('22222')
           return
         }
       }else{
@@ -392,46 +483,8 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
       
 
 });
-// router.post('/grant_access2', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
-   
-//       console.log('in grant_access')
-//       selected_uid = req.body.uid;
-//       selected_pid = req.body.pid;
-//       var html = 'Successfully Updated'
-//       // 1-add to PROJECT_INFORMATION_BY_PID[selected_pid]
-//       if(selected_pid in PROJECT_INFORMATION_BY_PID){        
-        
-//         if(PROJECT_INFORMATION_BY_PID[selected_pid].permissions.indexOf(selected_uid) === -1){
-//             html = 'User already has access in PROJECT_INFORMATION_BY_PID'
-//         }else{
-//           PROJECT_INFORMATION_BY_PID[selected_pid].permissions.push(selected_uid)
-
-//         }
-//       }else{
-//         html = 'Could not find project - This is a PROBLEM!'
-//       }
-      
-//       // 2- add to table 'access'
-//       //q = "INSERT ignore into `access` (user_id, project_id) VALUES('"+selected_uid+"','"+selected_pid+"')"
-//       connection.query(queries.insert_access_table(selected_uid,selected_pid), function(err, rows, fields){ 
-//       //console.log(qSequenceCounts)
-//           if (err)  {
-//             console.log('Query error: ' + err);
-            
-//             html = 'Query error: ' + err
-//           } else {            
-            
-//           }
-//           res.send(html)
-         
-//       });
       
 
 
-
-
-      
-
-// });
 
 module.exports = router;

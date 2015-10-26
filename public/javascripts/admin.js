@@ -34,9 +34,36 @@ $(document).ready(function(){
 //
 //
 //
+function update_dataset(did, pid)
+{
+  //alert(did+' - '+pid)
+      response_div = document.getElementById('msg_div_'+did);
+      name = document.getElementById('new_dname_edit_'+did).value;
+      desc = document.getElementById('new_ddesc_edit_'+did).value;
+      
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/admin/update_dataset_info', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.setRequestHeader("data-type","html");
+      var args = 'pid='+pid+'&did='+did+'&name='+name+'&desc='+desc;
+
+      xmlhttp.onreadystatechange = function() {        
+        if (xmlhttp.readyState == 4 ) {
+            
+            var response = xmlhttp.responseText;            
+            response_div.innerHTML = response;  
+            
+        }
+      };
+      xmlhttp.send(args);
+
+
+}
+//
+//
+//
 function update_project(item_to_update, pid)
 {
-    
     
     switch(item_to_update){
       case 'pname':
@@ -55,6 +82,10 @@ function update_project(item_to_update, pid)
           response_div = document.getElementById('new_pdesc_response_id');
           new_value = document.getElementById('new_pdesc').value;
           break;
+      case 'penv':
+          response_div = document.getElementById('new_penv_response_id');
+          new_value = document.getElementById('new_penv').value;
+          break;
       default:
           response_div = document.getElementById('new_pname_response_id');
           new_value = document.getElementById('new_pname').value;
@@ -67,12 +98,9 @@ function update_project(item_to_update, pid)
     xmlhttp.setRequestHeader("data-type","html");
     var args = 'item='+item_to_update+'&value='+new_value+'&pid='+pid;
     xmlhttp.onreadystatechange = function() {        
-      if (xmlhttp.readyState == 4 ) {
-          
+      if (xmlhttp.readyState == 4 ) {          
           var response = xmlhttp.responseText;            
-          response_div.innerHTML = response;  
-          
-         
+          response_div.innerHTML = response;         
       }
     };
     xmlhttp.send(args);

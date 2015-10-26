@@ -2,6 +2,7 @@
 
 <% pinfo = JSON.parse(project_info) %>
 <% uinfo = JSON.parse(user_info) %>
+<% env_names   = JSON.parse(env) %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -47,7 +48,7 @@
 					<% if(pid_to_open > 0){ %>
 
 						    	<table class='admin_table' border='1'>
-						      <tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th>Msg</th></tr>
+						      <tr><th></th><th>Current Value</th><th>Enter or Select New Value</th><th></th><th>msg</th></tr>
 						      
 						      <tr>
 						      <form id='' name='update_pname_form' method='POST' action='update_pname'>
@@ -66,7 +67,7 @@
 						      <% for(uid in uinfo) { %>
 						      <%     if(uinfo[uid].username !== 'guest'){ %>
 						      <%       if(uinfo[uid].username === pinfo[pid_to_open].username){ %>
-						              <option selected value='<%= uid %>'><%= uinfo[uid].last_name %>,<%= uinfo[uid].first_name %>
+						              		<option selected value='<%= uid %>'><%= uinfo[uid].last_name %>,<%= uinfo[uid].first_name %>
 						                   <small>(<%= uinfo[uid].username %>)</small></option>
 						      <%       }else{ %>
 						                  <option value='<%= uid %>'><%= uinfo[uid].last_name %>,<%= uinfo[uid].first_name %>
@@ -94,12 +95,35 @@
 						      <tr>
 						      <form id='' name='update_pdesc_form' method='POST' action='update_pdesc'>
 						       <td>Project Description</td><td><%= pinfo[pid_to_open].description %></td>
-						       <td><textarea id='new_pdesc' name='new_pdesc'  value='<%= pinfo[pid_to_open].description %>' rows='2' cols='28'><%= pinfo.description %></textarea></td>
+						       <td><textarea id='new_pdesc' name='new_pdesc'  value='<%= pinfo[pid_to_open].description %>' rows='2' cols='28'><%= pinfo[pid_to_open].description %></textarea></td>
 						       <td><input id='new_pdesc_btn' type='button' value='Update' onclick="update_project('pdesc', '<%= pid_to_open %>')"></td>
 						       <td><div id='new_pdesc_response_id'></div></td>
 						      </form>
 						      </tr>
 						      
+						      <tr>
+						      <form id='' name='update_penv_form' method='POST' action='update_penv'>
+						       <td>Environmental Source</td><td><%= pinfo[pid_to_open].env_source_name %></td>
+						       <td>
+												<select id='new_eid' name='new_eid' width='200' style='width: 200px'>    
+									      <% for(eid in env_names) { %>
+									      
+									      <%       if(env_names[eid] === pinfo[pid_to_open].env_source_name){ %>
+									              		<option selected value='<%= eid %>'><%= env_names[eid] %>
+									                   <small>(<%= eid %>)</small></option>
+									      <%       }else{ %>
+									                  <option value='<%= eid %>'><%= env_names[eid] %>
+									                   <small>(<%= eid %>)</small></option>
+									      <%       }   %>
+									         
+									      <% }  %>
+									       </select>
+						       </td>
+						       <td><input id='new_penv_btn' type='button' value='Update' onclick="update_project('penv', '<%= pid_to_open %>')"></td>
+						       <td><div id='new_penv_response_id'></div></td>
+						      </form>
+						      </tr>
+
 						      <tr>
 						      <% if(pinfo[pid_to_open].public === 1){ %>
 						        <td>Public</td><td>True</td>
@@ -122,7 +146,7 @@
 						      
 						      <tr>
 						      <td>Datasets</td><td></td>
-						      <td><a href="">View or Change</a></td>
+						      <td><a href="alter_datasets?pid=<%= pid_to_open %>">View or Change</a></td>
 						      <td></td>
 						      <td></td>
 						      </tr>

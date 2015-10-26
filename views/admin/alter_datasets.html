@@ -1,0 +1,63 @@
+<% include ../add_ins/begin-no_menu.ejs %>
+
+<% myjson = JSON.parse(project_info) %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	
+	<div class="hero-unit">
+	            <h2>VAMPS: Website Administration</h2>
+				<h3>Change Project Information: <%= project %></h3>
+		             
+	</div>
+
+	<br>
+	<br>
+	
+	<a href='alter_project?pid=<%= pid %>'><--back</a> | <a id='refresh_div' href="alter_datasets?pid=<%= pid %>">refresh</a>
+	
+	<hr>
+	
+	
+		<table class='admin_table' border='1'>
+				<tr><th>id</th><th>Dataset</th><th>Enter New Values</th><th></th><th>msg</th></tr>
+				<% for(n in myjson.datasets) { %>
+							<form id='' name='update_pdesc_form' method='POST' action='update_pdesc'>
+				<% 		ds = myjson.datasets[n] %>
+
+				 			<tr>
+				 				<td><%= ds.did %></td>
+				 				<td><%= ds.dname %></td>
+				 				<td>
+<table>
+<tr><td>
+Name</td><td>       <input id='new_dname_edit_<%= ds.did %>' name='new_dname_edit' type='edit' value='<%= ds.dname %>' ></td>
+</tr>
+<tr><td>
+Description</td><td><input id='new_ddesc_edit_<%= ds.did %>' name='new_ddesc_edit' type='edit' value='<%= ds.ddesc %>' ></td>
+</tr>
+<tr><td>
+ENV Source</td><td><input id='new_ddesc_edit_<%= ds.did %>' name='new_ddesc_edit' type='edit' value='<%= ds.ddesc %>' ></td>
+</tr>
+</table>
+				 				</td>
+				 				<td><input id='new_dname_btn' type='button' value='Update' onclick="update_dataset('<%= ds.did %>', '<%= pid %>')"></td>
+				 				<td><div id='msg_div_<%= ds.did %>'></div></td>
+				 			</tr>
+				 			
+				 		</form>
+	 			<% } %>
+	
+						      
+		<table>
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/admin.js"></script>   
+ </body>
+ </html>
