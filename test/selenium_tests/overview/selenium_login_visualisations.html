@@ -12,10 +12,20 @@
 <tr><td rowspan="1" colspan="3">selenium_all</td></tr>
 </thead><tbody>
 <tr>
+	<td>setTimeout</td>
+	<td>60000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>open</td>
 	<td>/</td>
 	<td></td>
 </tr>
+<!-- <tr>
+  <td>open</td>
+  <td>http://vampsdev.mbl.edu:8124/</td>
+  <td></td>
+</tr> -->
 <tr>
 	<td>storeElementPresent</td>
 	<td>link=login</td>
@@ -97,6 +107,11 @@
 	<td>Distance Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>id=dragInfoArea</td>
+	<td>exact:** Drag a row to change the dataset order. **</td>
+</tr>
+<tr>
 	<td>verifyText</td>
 	<td>id=dragInfoArea</td>
 	<td>exact:** Drag a row to change the dataset order. **</td>
@@ -139,7 +154,7 @@
 <tr>
 	<td>verifyNotText</td>
 	<td>id=fheatmap_div</td>
-	<td>exact:Frequency Heatmap R Script Error: Attaching package: 'jsonlite' The following object is masked from 'package:utils': View This is vegan 2.3-1 *** caught segfault *** address 0x4, cause 'memory not mapped' Traceback: 1: strwidth(t, units = &quot;in&quot;) 2: which.max(strwidth(t, units = &quot;in&quot;)) 3: lo(coln = labels_col, rown = labels_row, nrow = nrow(matrix), ncol = ncol(matrix), cellwidth = cellwidth, cellheight = cellheight, treeheight_col = treeheight_col, treeheight_row = treeheight_row, legend = legend, annotation_col = annotation_col, annotation_row = annotation_row, annotation_colors = annotation_colors, annotation_legend = annotation_legend, main = main, fontsize = fontsize, fontsize_row = fontsize_row, fontsize_col = fontsize_col, gaps_row = gaps_row, gaps_col = gaps_col, ...) 4: heatmap_motor(mat, border_color = border_color, cellwidth = cellwidth, cellheight = cellheight, treeheight_col = treeheight_col, treeheight_row = treeheight_row, tree_col = tree_col, tree_row = tree_row, filename = filename, width = width, height = height, breaks = breaks, color = color, legend = legend, annotation_row = annotation_row, annotation_col = annotation_col, annotation_colors = annotation_colors, annotation_legend = annotation_legend, main = main, fontsize = fontsize, fontsize_row = fontsize_row, fontsize_col = fontsize_col, fmat = fmat, fontsize_number = fontsize_number, number_color = number_color, gaps_row = gaps_row, gaps_col = gaps_col, labels_row = labels_row, labels_col = labels_col, ...) 5: pheatmap(x1, scale = &quot;none&quot;, color = mypalette6, clustering_distance_rows = drows, clustering_distance_cols = dcols, margins = c(15, r_margin), fontsize_row = fontsize_row, cellwidth = 12, cellheight = 6, main = main_label) aborting ...</td>
+	<td>*Error*</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -198,7 +213,7 @@
 </tr>
 <tr>
 	<td>waitForPageToLoad</td>
-	<td>30000</td>
+	<td></td>
 	<td></td>
 </tr>
 <tr>
@@ -242,9 +257,14 @@
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>id=dendrogram1_div</td>
+	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr>
+<tr>
 	<td>verifyText</td>
 	<td>id=dendrogram1_div</td>
-	<td>00.010.010.020.020.030.030.040.040.050.050.00679898185296'ICM_AGW_Bv6--AGW_0003_2006_06_15' (0.0468130887856)'ICM_AGW_Bv6--AGW_0001_2005_06_15' (0.0468130887856)0.0457011207811'ICM_AGW_Bv6--AGW_0004_2006_06_15' (0.00791094985745)'ICM_AGW_Bv6--AGW_0002_2005_06_15' (0.00791094985745)</td>
+	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -260,6 +280,11 @@
 	<td>verifyText</td>
 	<td>id=dendrogram2_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>css=#phylonator_svg &gt; rect</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -282,9 +307,14 @@
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>waitForText</td>
+	<td>css=#dendrogram3_div &gt; svg</td>
+	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr>
+<tr>
 	<td>verifyText</td>
 	<td>css=#dendrogram3_div &gt; svg</td>
-	<td>0.00679898185296'ICM_AGW_Bv6--AGW_0003_2006_06_15' (0.0468130887856)'ICM_AGW_Bv6--AGW_0001_2005_06_15' (0.0468130887856)0.0457011207811'ICM_AGW_Bv6--AGW_0004_2006_06_15' (0.00791094985745)'ICM_AGW_Bv6--AGW_0002_2005_06_15' (0.00791094985745)</td>
+	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -301,6 +331,16 @@
 	<td>id=dendrogram_pdf_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!-- <tr>
+  <td>waitForText</td>
+  <td>css=div.textLayer</td>
+  <td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr> -->
+<!-- <tr>
+  <td>verifyText</td>
+  <td>css=div.textLayer</td>
+  <td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr> -->
 <tr>
 	<td>click</td>
 	<td>id=pcoa_link_id</td>
@@ -312,6 +352,21 @@
 	<td>PCoA 2D --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>selectWindow</td>
+	<td>null</td>
+	<td></td>
+</tr>
+<!-- <tr>
+  <td>waitForText</td>
+  <td>css=div.textLayer</td>
+  <td>*ICM_AGW_Bv6--AGW_0002_2005_06_15*</td>
+</tr> -->
+<!-- <tr>
+  <td>verifyText</td>
+  <td>css=div.textLayer</td>
+  <td>*ICM_AGW_Bv6--AGW_0002_2005_06_15*</td>
+</tr> -->
+<tr>
 	<td>click</td>
 	<td>//tr[3]/td/center</td>
 	<td></td>
@@ -321,15 +376,20 @@
 	<td>id=pcoa_3d_link_id</td>
 	<td></td>
 </tr>
-<tr>
-	<td>waitForPopUp</td>
-	<td></td>
-	<td></td>
-</tr>
+<!-- <tr>
+  <td>waitForPopUp</td>
+  <td></td>
+  <td></td>
+</tr> -->
 <tr>
 	<td>selectPopUp</td>
 	<td></td>
 	<td></td>
+</tr>
+<tr>
+	<td>verifyNotText</td>
+	<td>css=body</td>
+	<td>*emperor2*error*</td>
 </tr>
 <tr>
 	<td>close</td>
@@ -385,6 +445,11 @@
 	<td>verifyText</td>
 	<td>id=counts_table_title</td>
 	<td>Frequency Table --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//div[@id='tax_table_div']/table/tbody/tr[9]/td[2]</td>
+	<td>Archaea;phylum_NA;klass_NA;order_NA</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -446,6 +511,16 @@
 	<td>id=adiversity_title</td>
 	<td>Alpha Diversity --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!-- <tr>
+  <td>waitForText</td>
+  <td>css=#adiversity_div &gt; table.table &gt; tbody &gt; tr &gt; td</td>
+  <td>Dataset</td>
+</tr> -->
+<!-- <tr>
+  <td>verifyText</td>
+  <td>//div[@id='adiversity_div']/table/tbody/tr[2]/td</td>
+  <td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr> -->
 <tr>
 	<td>click</td>
 	<td>id=phyloseq01_link_id</td>
@@ -489,7 +564,7 @@
 <tr>
 	<td>verifyNotText</td>
 	<td>id=phyloseq02_div</td>
-	<td>Phyloseq R Script Error: Creating a generic function for 'nchar' from package 'base' in package 'S4Vectors' Warning messages: 1: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;expressionORfunction&quot;; definition not updated 2: In .recacheSubclasses(def@className, def, doSubclasses, env) : undefined subclass &quot;externalRefMethod&quot; of class &quot;functionORNULL&quot;; definition not updated Error in array(STATS, dims[perm]) : 'dims' cannot be of length 0 Calls: plot_heatmap ... eval -&gt; ordinate -&gt; pcoa -&gt; sweep -&gt; aperm -&gt; array Execution halted</td>
+	<td>Phyloseq R Script Error: *</td>
 </tr>
 <tr>
 	<td>click</td>

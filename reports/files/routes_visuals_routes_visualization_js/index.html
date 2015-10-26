@@ -44,7 +44,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">53.01</p>
+      <p class="stat">52.99</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -156,9 +156,9 @@ router.post(&#039;/view_selection&#039;, helpers.isLoggedIn, function(req, res) 
   
   
   if(req.body.resorted === &#039;1&#039;){
-  	 req.flash(&#039;message&#039;,&#039;The dataset order has been updated.&#039;)
-	   dataset_ids = req.body.ds_order;
-	   chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
+    req.flash(&#039;message&#039;,&#039;The dataset order has been updated.&#039;);
+    dataset_ids = req.body.ds_order;
+    chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);
@@ -335,8 +335,8 @@ router.get(&#039;/visuals_index&#039;, helpers.isLoggedIn, function(req, res) {
   //      return to the page.
   //console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {}
-  console.log(ALL_DATASETS)
+  METADATA  = {};
+  console.log(ALL_DATASETS);
   res.render(&#039;visuals/visuals_index&#039;, {
                                 title    : &#039;VAMPS: Select Datasets&#039;,
                                 rows     : JSON.stringify(ALL_DATASETS),
@@ -527,7 +527,7 @@ router.post(&#039;/frequency_heatmap&#039;, helpers.isLoggedIn, function(req, re
         if(code === 0){   // SUCCESS       
               image_file = ts+&#039;_heatmap.svg&#039;;
               //image_file = path.join(process.env.PWD,&#039;tmp&#039;, ts+&#039;_heatmap.svg&#039;);
-              res.send(&quot;&lt;img src=&#039;/&quot;+image_file+&quot;&#039;&gt;&quot;)
+              res.send(&quot;&lt;img src=&#039;/&quot;+image_file+&quot;&#039;&gt;&quot;);
               // fs.readFile(image_file, &#039;utf8&#039;, function (err,data) {
               //   if (err) {
               //      console.log(err);
@@ -620,7 +620,7 @@ router.post(&#039;/dendrogram&#039;, helpers.isLoggedIn, function(req, res) {
                       newick = JSON.parse(stdout);
                     }
                     catch(err){
-                      newick = {&quot;ERROR&quot;:err}
+                      newick = {&quot;ERROR&quot;:err};
                     }
                     res.send(newick);
                     return;
@@ -638,7 +638,7 @@ router.post(&#039;/dendrogram&#039;, helpers.isLoggedIn, function(req, res) {
                     return;
           }                                     
         }else{
-          console.log(&#039;stderr: &#039;+stderr)
+          console.log(&#039;stderr: &#039;+stderr);
           res.send(&#039;Script Error&#039;);
         }      
     });   
@@ -717,52 +717,52 @@ router.post(&#039;/pcoa_3d&#039;, helpers.isLoggedIn, function(req, res) {
         var pc_file_name = ts+&#039;.pc&#039;;
         //var pc_file = path.join(pwd,&#039;tmp&#039;, pc_file_name);
         var txt = &quot;Principal Components File: &lt;a href=&#039;/&quot;+pc_file_name+&quot;&#039;&gt;&quot;+pc_file_name+&quot;&lt;/a&gt;&quot;;
-        res.send(txt)
+        res.send(txt);
 });
 // GET is to create and open EMPEROR
 router.get(&#039;/pcoa_3d&#039;, helpers.isLoggedIn, function(req, res) {
         
-        console.log(&#039;in 3D&#039;)
-        console.log(visual_post_items)
-        var ts = visual_post_items.ts;    
-        var metric = visual_post_items.selected_distance;
-        
-        var pwd = process.env.PWD || req.config.PROCESS_DIR;
-        var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
-        var biom_file = path.join(pwd,&#039;tmp&#039;, biom_file_name);
-        
-        var log = fs.openSync(path.join(pwd,&#039;logs&#039;,&#039;node.log&#039;), &#039;a&#039;);
+  console.log(&#039;in 3D&#039;);
+  console.log(visual_post_items);
+  var ts = visual_post_items.ts;    
+  var metric = visual_post_items.selected_distance;
+  
+  var pwd = process.env.PWD || req.config.PROCESS_DIR;
+  var biom_file_name = ts+&#039;_count_matrix.biom&#039;;
+  var biom_file = path.join(pwd,&#039;tmp&#039;, biom_file_name);
+  
+  var log = fs.openSync(path.join(pwd,&#039;logs&#039;,&#039;node.log&#039;), &#039;a&#039;);
 
-        var mapping_file_name = ts+&#039;_metadata.txt&#039;;
-        var mapping_file = path.join(pwd,&#039;tmp&#039;, mapping_file_name);        
-        var pc_file_name = ts+&#039;.pc&#039;;
-        var pc_file = path.join(pwd,&#039;tmp&#039;, pc_file_name);
-        
-        var dir_name = ts+&#039;_pcoa_3d&#039;;
-        var dir_path = path.join(pwd,&#039;tmp&#039;, dir_name);        
-        var html_path = path.join(dir_path, &#039;index.html&#039;);  // file to be created by make_emperor.py script
-        //var html_path2 = path.join(&#039;../&#039;,&#039;tmp&#039;, dir_name, &#039;index.html&#039;);  // file to be created by make_emperor.py script
-        var options1 = {
-          scriptPath : &#039;public/scripts&#039;,
-          args :       [ &#039;-i&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;pcoa_3d&#039;, &#039;--site_base&#039;, process.env.PWD, &#039;--prefix&#039;, ts],
-        };
-        var options2 = {
-            //scriptPath : req.config.PATH_TO_QIIME_BIN,
-            scriptPath : &#039;public/scripts&#039;,
-            args :       [ &#039;-i&#039;, pc_file, &#039;-m&#039;, mapping_file, &#039;-o&#039;, dir_path],
-        };
-        console.log(&#039;outdir: &#039;+dir_path);
-        console.log(options1.scriptPath+&#039;/distance.py &#039;+options1.args.join(&#039; &#039;));
-        
-        var pcoa_process = spawn( options1.scriptPath+&#039;/distance.py&#039;, options1.args, {
-            env:{ &#039;PATH&#039;:req.config.PATH,&#039;LD_LIBRARY_PATH&#039;:req.config.LD_LIBRARY_PATH },
-            detached: true, 
-            stdio:[&#039;pipe&#039;, &#039;pipe&#039;, &#039;pipe&#039;]
-            //stdio: [ &#039;ignore&#039;, null, log ]
+  var mapping_file_name = ts+&#039;_metadata.txt&#039;;
+  var mapping_file = path.join(pwd,&#039;tmp&#039;, mapping_file_name);        
+  var pc_file_name = ts+&#039;.pc&#039;;
+  var pc_file = path.join(pwd,&#039;tmp&#039;, pc_file_name);
+  
+  var dir_name = ts+&#039;_pcoa_3d&#039;;
+  var dir_path = path.join(pwd,&#039;tmp&#039;, dir_name);        
+  var html_path = path.join(dir_path, &#039;index.html&#039;);  // file to be created by make_emperor.py script
+  //var html_path2 = path.join(&#039;../&#039;,&#039;tmp&#039;, dir_name, &#039;index.html&#039;);  // file to be created by make_emperor.py script
+  var options1 = {
+    scriptPath : &#039;public/scripts&#039;,
+    args :       [ &#039;-i&#039;, biom_file, &#039;-metric&#039;, metric, &#039;--function&#039;, &#039;pcoa_3d&#039;, &#039;--site_base&#039;, process.env.PWD, &#039;--prefix&#039;, ts],
+  };
+  var options2 = {
+      //scriptPath : req.config.PATH_TO_QIIME_BIN,
+      scriptPath : &#039;public/scripts&#039;,
+      args :       [ &#039;-i&#039;, pc_file, &#039;-m&#039;, mapping_file, &#039;-o&#039;, dir_path],
+  };
+  console.log(&#039;outdir: &#039;+dir_path);
+  console.log(options1.scriptPath+&#039;/distance.py &#039;+options1.args.join(&#039; &#039;));
+  
+  var pcoa_process = spawn( options1.scriptPath+&#039;/distance.py&#039;, options1.args, {
+      env:{ &#039;PATH&#039;:req.config.PATH,&#039;LD_LIBRARY_PATH&#039;:req.config.LD_LIBRARY_PATH },
+      detached: true, 
+      stdio:[&#039;pipe&#039;, &#039;pipe&#039;, &#039;pipe&#039;]
+      //stdio: [ &#039;ignore&#039;, null, log ]
         });  // stdin, stdout, stderr    
        
         pcoa_process.stdout.on(&#039;data&#039;, function (data) { console.log(&#039;1stdout: &#039; + data);  });
-        stderr1=&#039;&#039;
+        stderr1=&#039;&#039;;
         pcoa_process.stderr.on(&#039;data&#039;, function (data) {
                 console.log(&#039;1stderr: &#039; + data);
                 stderr += data;               
@@ -780,7 +780,7 @@ router.get(&#039;/pcoa_3d&#039;, helpers.isLoggedIn, function(req, res) {
                     });  
                     
                     emperor_process.stdout.on(&#039;data&#039;, function (data) { console.log(&#039;2stdout: &#039; + data);  });
-                    stderr2=&#039;&#039;
+                    stderr2=&#039;&#039;;
                     emperor_process.stderr.on(&#039;data&#039;, function (data) {
                             console.log(&#039;2stderr: &#039; + data);
                             stderr2 += data;                       
@@ -788,18 +788,18 @@ router.get(&#039;/pcoa_3d&#039;, helpers.isLoggedIn, function(req, res) {
                     emperor_process.on(&#039;close&#039;, function (code2) {
                           console.log(&#039;emperor_process process exited with code &#039; + code2);
                           
-                          if(code2 == 0){           
+                          if(code2 === 0){           
                               
-                              console.log(&#039;opening file:///&#039;+html_path)
-                              //res.send()
-                              res.sendFile(&#039;tmp/&#039;+dir_name+&#039;/index.html&#039;, {root:pwd})
+                              console.log(&#039;opening file:///&#039;+html_path);
+                              //res.send();
+                              res.sendFile(&#039;tmp/&#039;+dir_name+&#039;/index.html&#039;, {root:pwd});
 
                               //open(&#039;file://&#039;+html_path);
                               //res.send(ok_form+&quot;Done - &lt;a href=&#039;https://github.com/biocore/emperor&#039; target=&#039;_blank&#039;&gt;Emperor&lt;/a&gt; will open a new window in your default browser.&quot;); 
                           }else{
                             // python script error
                             //console.log(&#039;make_emperor script error:&#039; + errdata2);
-                            res.send(&#039;make_emperor2 SCRIPT error &#039;+stderr2)
+                            res.send(&#039;make_emperor2 SCRIPT error &#039;+stderr2);
                           }      
                     });                      
                 }else{
@@ -824,17 +824,17 @@ router.get(&#039;/dbrowser&#039;, helpers.isLoggedIn, function(req, res) {
     //console.log(&#039;max_total_count &#039;+max_total_count.toString());
 
     // sum counts
-    sumator = get_sumator(req)
+    sumator = get_sumator(req);
  
     //console.log(JSON.stringify(sumator))
     
-    for(d in sumator[&#039;domain&#039;]){
+    for(var d in sumator[&#039;domain&#039;]){
         
       // #### DOMAIN ####
       //var dnode_name =  dname
       html += &quot;&lt;node name=&#039;&quot;+d+&quot;&#039;&gt;\n&quot;;
       html += &quot; &lt;seqcount&gt;&quot;;
-      for(c_domain in sumator[&#039;domain&#039;][d][&#039;knt&#039;]){
+      for(var c_domain in sumator[&#039;domain&#039;][d][&#039;knt&#039;]){
           html += &quot;&lt;val&gt;&quot;+sumator[&#039;domain&#039;][d][&#039;knt&#039;][c_domain].toString()+&quot;&lt;/val&gt;&quot;;
       }
         html += &quot;&lt;/seqcount&gt;\n&quot;;

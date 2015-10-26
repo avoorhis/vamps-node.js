@@ -65,9 +65,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   
   if(req.body.resorted === '1'){
-  	 req.flash('message','The dataset order has been updated.')
-	   dataset_ids = req.body.ds_order;
-	   chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
+    req.flash('message','The dataset order has been updated.');
+    dataset_ids = req.body.ds_order;
+    chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
   } 
   // GLOBAL Variable
   visual_post_items = COMMON.save_post_items(req);
@@ -244,8 +244,8 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //      return to the page.
   //console.log(PROJECT_INFORMATION_BY_PID);
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {}
-  console.log(ALL_DATASETS)
+  METADATA  = {};
+  console.log(ALL_DATASETS);
   res.render('visuals/visuals_index', {
                                 title    : 'VAMPS: Select Datasets',
                                 rows     : JSON.stringify(ALL_DATASETS),
@@ -436,7 +436,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
         if(code === 0){   // SUCCESS       
               image_file = ts+'_heatmap.svg';
               //image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
-              res.send("<img src='/"+image_file+"'>")
+              res.send("<img src='/"+image_file+"'>");
               // fs.readFile(image_file, 'utf8', function (err,data) {
               //   if (err) {
               //      console.log(err);
@@ -529,7 +529,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                       newick = JSON.parse(stdout);
                     }
                     catch(err){
-                      newick = {"ERROR":err}
+                      newick = {"ERROR":err};
                     }
                     res.send(newick);
                     return;
@@ -547,7 +547,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
                     return;
           }                                     
         }else{
-          console.log('stderr: '+stderr)
+          console.log('stderr: '+stderr);
           res.send('Script Error');
         }      
     });   
@@ -626,52 +626,52 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         var pc_file_name = ts+'.pc';
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
         var txt = "Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-        res.send(txt)
+        res.send(txt);
 });
 // GET is to create and open EMPEROR
 router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         
-        console.log('in 3D')
-        console.log(visual_post_items)
-        var ts = visual_post_items.ts;    
-        var metric = visual_post_items.selected_distance;
-        
-        var pwd = process.env.PWD || req.config.PROCESS_DIR;
-        var biom_file_name = ts+'_count_matrix.biom';
-        var biom_file = path.join(pwd,'tmp', biom_file_name);
-        
-        var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  console.log('in 3D');
+  console.log(visual_post_items);
+  var ts = visual_post_items.ts;    
+  var metric = visual_post_items.selected_distance;
+  
+  var pwd = process.env.PWD || req.config.PROCESS_DIR;
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(pwd,'tmp', biom_file_name);
+  
+  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
 
-        var mapping_file_name = ts+'_metadata.txt';
-        var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
-        var pc_file_name = ts+'.pc';
-        var pc_file = path.join(pwd,'tmp', pc_file_name);
-        
-        var dir_name = ts+'_pcoa_3d';
-        var dir_path = path.join(pwd,'tmp', dir_name);        
-        var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
-        //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
-        var options1 = {
-          scriptPath : 'public/scripts',
-          args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
-        };
-        var options2 = {
-            //scriptPath : req.config.PATH_TO_QIIME_BIN,
-            scriptPath : 'public/scripts',
-            args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
-        };
-        console.log('outdir: '+dir_path);
-        console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
-        
-        var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-            env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
-            detached: true, 
-            stdio:['pipe', 'pipe', 'pipe']
-            //stdio: [ 'ignore', null, log ]
+  var mapping_file_name = ts+'_metadata.txt';
+  var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
+  var pc_file_name = ts+'.pc';
+  var pc_file = path.join(pwd,'tmp', pc_file_name);
+  
+  var dir_name = ts+'_pcoa_3d';
+  var dir_path = path.join(pwd,'tmp', dir_name);        
+  var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+  //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+  var options1 = {
+    scriptPath : 'public/scripts',
+    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+  };
+  var options2 = {
+      //scriptPath : req.config.PATH_TO_QIIME_BIN,
+      scriptPath : 'public/scripts',
+      args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+  };
+  console.log('outdir: '+dir_path);
+  console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+  
+  var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+      env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
+      detached: true, 
+      stdio:['pipe', 'pipe', 'pipe']
+      //stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr    
        
         pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
-        stderr1=''
+        stderr1='';
         pcoa_process.stderr.on('data', function (data) {
                 console.log('1stderr: ' + data);
                 stderr += data;               
@@ -689,7 +689,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     });  
                     
                     emperor_process.stdout.on('data', function (data) { console.log('2stdout: ' + data);  });
-                    stderr2=''
+                    stderr2='';
                     emperor_process.stderr.on('data', function (data) {
                             console.log('2stderr: ' + data);
                             stderr2 += data;                       
@@ -697,18 +697,18 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     emperor_process.on('close', function (code2) {
                           console.log('emperor_process process exited with code ' + code2);
                           
-                          if(code2 == 0){           
+                          if(code2 === 0){           
                               
-                              console.log('opening file:///'+html_path)
-                              //res.send()
-                              res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd})
+                              console.log('opening file:///'+html_path);
+                              //res.send();
+                              res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
 
                               //open('file://'+html_path);
                               //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
                           }else{
                             // python script error
                             //console.log('make_emperor script error:' + errdata2);
-                            res.send('make_emperor2 SCRIPT error '+stderr2)
+                            res.send('make_emperor2 SCRIPT error '+stderr2);
                           }      
                     });                      
                 }else{
@@ -733,17 +733,17 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     //console.log('max_total_count '+max_total_count.toString());
 
     // sum counts
-    sumator = get_sumator(req)
+    sumator = get_sumator(req);
  
     //console.log(JSON.stringify(sumator))
     
-    for(d in sumator['domain']){
+    for(var d in sumator['domain']){
         
       // #### DOMAIN ####
       //var dnode_name =  dname
       html += "<node name='"+d+"'>\n";
       html += " <seqcount>";
-      for(c_domain in sumator['domain'][d]['knt']){
+      for(var c_domain in sumator['domain'][d]['knt']){
           html += "<val>"+sumator['domain'][d]['knt'][c_domain].toString()+"</val>";
       }
         html += "</seqcount>\n";

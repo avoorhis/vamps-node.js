@@ -11,7 +11,7 @@ var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
-var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}))
+var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}));
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 
@@ -21,11 +21,11 @@ var COMMON  = require('./visuals/routes_common');
 //
 router.get('/your_data',  function(req,res){
   console.log('in your data');
-    res.render('user_data/your_data', {        
+    res.render('user_data/your_data', {
       title: 'VAMPS:Data Administration',
       user: req.user, hostname: req.C.hostname,
       message: req.flash('message'),
-      
+
     });
 });
 
@@ -68,10 +68,10 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		console.log('req.body: export_confirm-->>');
 		console.log(req.body);
 		console.log('req.body: <<--export_confirm');
-		if(req.body.fasta === undefined 
-				&& req.body.taxbyseq === undefined  
-				&& req.body.taxbyref === undefined  
-				&& req.body.taxbytax === undefined 
+		if(req.body.fasta === undefined
+				&& req.body.taxbyseq === undefined
+				&& req.body.taxbyref === undefined
+				&& req.body.taxbytax === undefined
 				&& req.body.metadata === undefined ){
 				req.flash('failMessage', 'Select one or more file formats');
 				res.render('user_data/export_selection', {
@@ -89,7 +89,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		if(req.body.fasta){
 
 		}
-		for(fmt in req.body){
+		for(var fmt in req.body){
 			if(fmt != 'dids'){
 				requested_files.push(fmt);
 			}
@@ -104,7 +104,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		      message: "Your files are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
 		      user: req.user, hostname: req.C.hostname
 		});
-	  
+
 
 });
 //
@@ -112,12 +112,12 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 //
 /* GET Import Choices page. */
 router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
-  console.log('in routes_user_data.js /export_selection')
+  console.log('in routes_user_data.js /export_selection');
   console.log('req.body: export_selection-->>');
   console.log(req.body);
   console.log('req.body: <<--export_selection');
   if(req.body.retain_data === '1'){
-    dataset_ids = JSON.parse(req.body.dataset_ids);	
+    dataset_ids = JSON.parse(req.body.dataset_ids);
   }else{
     dataset_ids = req.body.dataset_ids;
   }
@@ -148,7 +148,7 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
 //  EXPORT DATA
 //
 router.get('/export_data', helpers.isLoggedIn, function(req, res) {
-    res.render('user_data/export_data', { title: 'VAMPS:Import Data',                                
+    res.render('user_data/export_data', { title: 'VAMPS:Import Data',
                 rows     : JSON.stringify(ALL_DATASETS),
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.C),
@@ -161,10 +161,10 @@ router.get('/export_data', helpers.isLoggedIn, function(req, res) {
 //
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
-   console.log('import_choices')
+  console.log('import_choices');
    if(req.user.username == 'guest'){
    		req.flash('message', "The 'guest' user is not permitted to import data");
-   		res.redirect('/user_data/your_data')
+   		res.redirect('/user_data/your_data');
    }else{
     	res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
@@ -179,34 +179,34 @@ router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
 //
 /* GET Import Data page. */
 router.get('/import_data', helpers.isLoggedIn, function(req, res) {
-    console.log('import_data')
-    console.log(JSON.stringify(req.url))
-    var myurl = url.parse(req.url, true);
-    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-    var my_projects = [];
-    var import_type    = myurl.query.import_type;
+  console.log('import_data');
+  console.log(JSON.stringify(req.url));
+  var myurl = url.parse(req.url, true);
+  var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  var my_projects = [];
+  var import_type    = myurl.query.import_type;
 
 		fs.readdir(user_projects_base_dir, function(err, items){
-				if(err){		  
-					
+				if(err){
+
 					fs.ensureDir(user_projects_base_dir, function (err) {
-		  			console.log(err) // => null
+		  			console.log(err); // => null
 		  			// dir has now been created, including the directory it is to be placed in
-					})
-					
-				  
+					});
+
+
 				}else{
 				  for (var d in items){
 		        var pts = items[d].split(':');
 		        if(pts[0] === 'project'){
-					
+
 							var project_name = pts[1];
 							my_projects.push(project_name);
 
 						}
 					}
 
-					res.render('user_data/import_data', { 
+					res.render('user_data/import_data', {
 				    title: 'VAMPS:Import Data',
 			  		message: req.flash('successMessage'),
 				    failmessage: req.flash('failMessage'),
@@ -218,81 +218,81 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 				} // end else
 			});
 
-			    
+
 });
 //
 // VALIDATE FORMAT
 //
 /* GET Validate page. */
 router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
-    console.log('validate_format')
-    console.log(JSON.stringify(req.url))
-    var myurl = url.parse(req.url, true);
-    console.log(myurl.query)
-    var file_type    = myurl.query.file_type;
-    res.render('user_data/validate_format', { 
-	    title: 'VAMPS:Import Data',
-  		message: req.flash('successMessage'),
-        file_type: file_type,
-        file_style:'',
-        result:'',
-        original_fname:'',
-        user: req.user, hostname: req.C.hostname
-                          });
+  console.log('validate_format');
+  console.log(JSON.stringify(req.url));
+  var myurl = url.parse(req.url, true);
+  console.log(myurl.query);
+  var file_type    = myurl.query.file_type;
+  res.render('user_data/validate_format', {
+    title: 'VAMPS:Import Data',
+		message: req.flash('successMessage'),
+      file_type: file_type,
+      file_style:'',
+      result:'',
+      original_fname:'',
+      user: req.user, hostname: req.C.hostname
+                        });
 });
 //
 //  VALIDATE FILE
 //
 router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req, res) {
-    console.log('POST validate_file')
+  console.log('POST validate_file');
     //console.log(JSON.stringify(req.url))
     //var myurl = url.parse(req.url, true);
-    console.log(req.body)
+    console.log(req.body);
     console.log(req.file);
     var file_type    = req.body.file_type;
     var file_style   = req.body.file_style;
-    console.log('file_type '+ file_type)
+    console.log('file_type '+ file_type);
     console.log('file_style '+ file_style);
-    var file_path = path.join(process.env.PWD,req.file.path)
+    var file_path = path.join(process.env.PWD,req.file.path);
     console.log('file_path '+ file_path);
 
 		var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args : [ '-i', file_path, '-ft',file_type,'-s', file_style,'-pdir',process.env.PWD,]
 		    			};
-					
+
 		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
 		var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-		var output = ''
+		var output = '';
 		validate_process.stdout.on('data', function (data) {
 		  //console.log('stdout: ' + data);
 		  data = data.toString().replace(/^\s+|\s+$/g, '');
 		  output += data;
 
-		 
+
 		});
 		validate_process.on('close', function (code) {
 				console.log('validate_process exited with code ' + code);
-				console.log(output)
-				
+				console.log(output);
+
 				var ary = output.substring(2,output.length-2).split("', '");
-				var result = ary.shift()				
-				console.log(ary)
+				var result = ary.shift();
+				console.log(ary);
 				//var last_line = ary[ary.length - 1];
-				if(code == 0){
+				if(code === 0){
 					//console.log('OK '+code)
-					console.log(typeof ary)
-					
+					console.log(typeof ary);
+
 					if(result == 'OK'){
 						req.flash('message', 'Validates');
 					}else{
 						req.flash('message', 'Failed Validation');
 					}
-					res.render('user_data/validate_format', { 
+					res.render('user_data/validate_format', {
 					     title: 'VAMPS:Import Data',
 				  		 message: req.flash('message'),
-					     
+
 				       file_type: file_type,
 				       //result:    JSON.stringify(ary),
 				       file_style: file_style,
@@ -303,9 +303,9 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
              });
 
 				}else{
-					console.log('ERROR '+code)
+					console.log('ERROR '+code);
 					req.flash('message', 'Failed Validation');
-					res.render('user_data/validate_format', { 
+					res.render('user_data/validate_format', {
 					    title: 'VAMPS:Import Data',
 				  		message: req.flash('message'),
 				      file_type: file_type,
@@ -325,8 +325,8 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 	var project = req.params.id;
     var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
 	var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
-	console.log(config)
-	res.render('user_data/profile', { 
+	console.log(config);
+	res.render('user_data/profile', {
 			project : project,
 			pinfo   : JSON.stringify(config),
 			title   : project,
@@ -337,44 +337,44 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 //  DELETE PROJECT:PROJECT:KIND
 //
 router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,res){
-	
+
 	var delete_kind = req.params.kind;
 	var project = req.params.project;
 	var timestamp = +new Date();  // millisecs since the epoch!
 	console.log('in delete_project1: '+project+' - '+delete_kind);
 	//console.log(JSON.stringify(PROJECT_INFORMATION_BY_PNAME));
-	
+
 	if(project in PROJECT_INFORMATION_BY_PNAME){
 		var pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
 	  helpers.update_global_variables(pid,'del');
 	}else{
 		// project not in db?
-		console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME')
+		console.log('project was not found in db: PROJECT_INFORMATION_BY_PNAME');
     var pid = 0;
-		
+
 	}
-        
+
     console.log('in delete_project2: '+project+' - '+pid);
 		var options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 	      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--user',req.user.username,'--project',project,'-pdir',process.env.PWD ],
-        }
+        };
 		if(delete_kind == 'all'){
 			// must delete pid data from mysql ()
 			// and all datasets files
-			options.args = options.args.concat(['--action', 'delete_whole_project']);		    
-		}else if(delete_kind == 'tax' && pid != 0){
+			options.args = options.args.concat(['--action', 'delete_whole_project']);
+		}else if(delete_kind == 'tax' && pid !== 0){
 			options.args = options.args.concat(['--action', 'delete_tax_only' ]);
-		    
-		}else if(delete_kind == 'meta' && pid != 0){
+
+		}else if(delete_kind == 'meta' && pid !== 0){
 			options.args = options.args.concat(['--action',  'delete_metadata_only' ]);
-		    
+
 		}else{
 			req.flash('message', 'ERROR nothing deleted');
 	    res.redirect("/user_data/your_projects");
 	    return;
 		}
-			console.log(options.args.join(' '))
+    console.log(options.args.join(' '));
 			var spawn = require('child_process').spawn;
 			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 			// script will remove data from mysql and datset taxfile
@@ -389,7 +389,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			  //console.log('stdout: ' + data);
 			  data = data.toString().replace(/^\s+|\s+$/g, '');
 			  output += data;
-			  var lines = data.split('\n')
+			  var lines = data.split('\n');
 			  for(var n in lines){
 			  	//console.log('line: ' + lines[n]);
 				if(lines[n].substring(0,4) == 'PID='){
@@ -397,36 +397,37 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 				}
 			  }
 			});
-		 
+
 			delete_process.on('close', function (code) {
 			    console.log('delete_process process exited with code ' + code);
 			    var ary = output.split("\n");
 			    var last_line = ary[ary.length - 1];
-			    if(code == 0){				   
-				   //console.log('PID last line: '+last_line)	                   
+			    if(code === 0){
+				   //console.log('PID last line: '+last_line)
               status_params = {'type':'delete', 'user':req.user.username,
-                                'project':project, 'status':'delete',	'msg':'delete' } 
-              helpers.update_status(status_params );                            					   
+                                'project':project, 'status':'delete',	'msg':'delete' };
+              helpers.update_status(status_params );                            
 			    }else{
 			   	  // python script error
-			    }		   
-	    });		
+			    }
+	    });
   		// called imediately
-  		if(delete_kind == 'all'){    			
-  			var msg = "Deletion in progress: '"+project+"'"	    
+      var msg = "";
+  		if(delete_kind == 'all'){    
+  			msg = "Deletion in progress: '"+project+"'";
   		}else if(delete_kind == 'tax'){
-  			var msg = "Deletion in progress: taxonomy from '"+project+"'"		    
+  			msg = "Deletion in progress: taxonomy from '"+project+"'";
   		}else if(delete_kind == 'meta'){
-  			var msg = "Deletion in progress: metadata from '"+project+"'"	    
+  			msg = "Deletion in progress: metadata from '"+project+"'";
   		}else{
   			req.flash('message', 'ERROR nothing deleted');
   	    res.redirect("/user_data/your_projects");
   	    return;
   		}
-  		if(delete_kind == 'all'){					
+  		if(delete_kind == 'all'){
   				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
 					var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project'+timestamp+':'+project);							
+					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project'+timestamp+':'+project);
 					fs.move(data_dir, deleted_data_dir, function(err){
 						if(err){
 							console.log(err);
@@ -434,18 +435,18 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 						}else{
 							console.log('moved project_dir to DELETED_project_dir');
 							req.flash('successMessage', msg);
-    					res.redirect("/user_data/your_projects");	
+    					res.redirect("/user_data/your_projects");
     					return;
 						}
-						
-					})
-	    
+
+					});
+
 			}else{
 				req.flash('successMessage', msg);
-      	res.redirect("/user_data/your_projects");	
+      	res.redirect("/user_data/your_projects");
 			}
-    				   
-	
+    
+
 });
 //
 // DUPLICATE_PROJECT
@@ -465,7 +466,7 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 	  }catch(err){
 	  	console.log('dir doesnt exist -good- continuing on');
 	  }
-		
+
 		fs.copy(data_dir, new_data_dir, function (err) {
   		if (err) {
   			console.log(err);
@@ -475,19 +476,19 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
   			var config_file = path.join(new_data_dir,'config.ini');
   			var project_info = {};
   			project_info.config = iniparser.parseSync(config_file);
-				var config_info = project_info.config.GENERAL
+				var config_info = project_info.config.GENERAL;
 				config_info.project = project+'_dupe';
 				config_info.baseoutputdir = new_data_dir;
 				config_info.configPath = path.join(new_data_dir,'config.ini');
 				config_info.fasta_file = path.join(new_data_dir,'fasta.fa');
 				config_info.datasets = [];
-				for(ds in project_info.config.DATASETS){
+				for(var ds in project_info.config.DATASETS){
 					config_info.datasets.push({ "dsname":ds, "count":project_info.config.DATASETS[ds], "oldname":ds });
 				}
 				update_config(res,req, config_file, config_info, false, 'Duplicated '+project+' to: '+config_info.project);
     	}
-		}) // copies directory, even if it has subdirectories or files
-		
+		}); // copies directory, even if it has subdirectories or files
+
 });
 
 //
@@ -496,8 +497,8 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
 
 
-    
-	
+
+
 	console.log(req.params.project);
 	var project = req.params.project;
 
@@ -509,18 +510,18 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-	
-	var data = ''
-	
+
+	var data = '';
+
 	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
-	
+
 	var config_file = path.join(data_dir,'config.ini');
-  
+
 
 	if(classifier == 'GAST' || classifier == 'gast'){
 		status_params = {'type':'update', 'user':req.user.username,
-                                'project':project, 'status':'OK-GAST',	'msg':'Starting GAST' } 
-		helpers.update_status(status_params); 
+                                'project':project, 'status':'OK-GAST',	'msg':'Starting GAST' };
+		helpers.update_status(status_params);
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
@@ -530,7 +531,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 	    };
 	    console.log('CMD> '+gast_options.scriptPath+'/vamps_script_assign_taxonomy.py '+gast_options.args.join(' '));
-		
+
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
 
@@ -539,7 +540,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 
 
-		var output = ''
+		var output = '';
 		// communicating with an external python process
 		// all the print statements in the py script are printed to stdout
 		// so you can grab the projectID here at the end of the process.
@@ -548,7 +549,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		  //console.log('stdout: ' + data);
 		  data = data.toString().replace(/^\s+|\s+$/g, '');
 		  output += data;
-		  var lines = data.split('\n')
+		  var lines = data.split('\n');
 		  for(var n in lines){
 		  	//console.log('line: ' + lines[n]);
 			if(lines[n].substring(0,4) == 'PID='){
@@ -556,12 +557,12 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 			}
 		  }
 		});
-		 
+
 		gast_process.on('close', function (code) {
 		   console.log('gast_process process exited with code ' + code);
 		   var ary = output.split("\n");
 		   var last_line = ary[ary.length - 1];
-		   if(code == 0){
+		   if(code === 0){
 			   console.log('GAST Success');
 			   //console.log('PID last line: '+last_line)
 			   var ll = last_line.split('=');
@@ -569,123 +570,29 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 			   console.log('NEW PID=: '+pid);
 			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 			   if(helpers.isInt(pid)){
-                   
-            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
-					    if (err)  {
-				 		  	console.log('1-GAST-Query error: ' + err);				 		  			 		  
-				      } else {
-        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
-        				   		if (err)  {
-        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  	
-        				    	} else {        
-                      	status_params = {'type':'update',  'user':req.user.username,
-                                        'project':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' } 
-								   	
-												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-												helpers.update_status(status_params); 
 
-												ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;			   
+            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
+					    if (err)  {
+				 		  	console.log('1-GAST-Query error: ' + err);				 		  			 
+				      } else {
+        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
+        				   		if (err)  {
+        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  
+        				    	} else {
+                      	status_params = {'type':'update',  'user':req.user.username,
+                                        'project':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' };
+								   
+												helpers.assignment_finish_request(res,rows1,rows2,status_params);
+												helpers.update_status(status_params);
+
+												ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
 
 
         				    	}
-				       
+
         				   	});
 					   	} // end else
-				       
-				   });		   
-                   
-	           }else{ // end if int
-                   console.log('ERROR pid is not an integer: '+pid.toString());
-			   }
-		   }else{
-		   		// ERROR
-			   console.log('ERROR last line: '+last_line);
-	   	  		//req.flash('message', 'Script Error');
-	         	//res.redirect("/user_data/your_projects");
-		   }
-		});  // end gast_process ON Close
-		
-		
-	  	
-		// called imediately
-		req.flash('successMessage', "GAST has been started for project: '"+project+"'");
-      	res.redirect("/user_data/your_projects");
-		
 
-
-
-	}else if(classifier == 'RDP' || classifier == 'rdp'){
-		status_params = {'type':'update', 'user':req.user.username,
-                     'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' } 
-		helpers.update_status(status_params); 
-		
-		var rdp_options = {
-	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
-	    };
-	  
-	  
-	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py '+rdp_options.args.join(' '));
-		
-		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
-		
-
-		var output = ''
-		// communicating with an external python process
-		// all the print statements in the py script are printed to stdout
-		// so you can grab the projectID here at the end of the process.
-		// use looging in the script to log to a file.
-		rdp_process.stdout.on('data', function (data) {
-		  //console.log('stdout: ' + data);
-		  data = data.toString().replace(/^\s+|\s+$/g, '');
-		  output += data;
-		  var lines = data.split('\n')
-		  for(var n in lines){
-		  	console.log('line: ' + lines[n]);
-			if(lines[n].substring(0,4) == 'PID='){
-				console.log('pid line '+lines[n]);
-			}
-		  }
-		});
-		 
-		rdp_process.on('close', function (code) {
-		   console.log('rdp_process process exited with code ' + code);
-		   var ary = output.split("\n");
-		   var last_line = ary[ary.length - 1];
-		   if(code == 0){
-			   console.log('RDP Success');
-			   //console.log('PID last line: '+last_line)
-			   var ll = last_line.split('=');
-			   var pid = ll[1];
-			   console.log('NEW PID=: '+pid);
-			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-			   if(helpers.isInt(pid)){
-                   
-           connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){			       
-					   if (err)  {
-				 		  console.log('1-RDP-Query error: ' + err);				 		  				 		  
-				       } else {						   
-        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  			     
-        				      if (err)  {
-        				 		  		console.log('2-RDP-Query error: ' + err);        				 		  	
-        				      } else {        
-													status_params = {'type':'update', 'user':req.user.username,
-													               'project':project, 'status':'OK-RDP',	'msg':'Finished RDP'  } 
-
-													helpers.assignment_finish_request(res,rows1,rows2,status_params);
-													helpers.update_status(status_params); 
-
-													ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;  
-													
-											}
-				       
-        				   });                           
-                           
-					   } // end else
-				       
 				   });
 
 	           }else{ // end if int
@@ -698,68 +605,162 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	         	//res.redirect("/user_data/your_projects");
 		   }
 		});  // end gast_process ON Close
-        
-        
+
+
+	  
+		// called imediately
+		req.flash('successMessage', "GAST has been started for project: '"+project+"'");
+      	res.redirect("/user_data/your_projects");
+
+
+
+
+	}else if(classifier == 'RDP' || classifier == 'rdp'){
+		status_params = {'type':'update', 'user':req.user.username,
+                     'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' };
+		helpers.update_status(status_params);
+
+		var rdp_options = {
+	      scriptPath : req.C.PATH_TO_SCRIPTS,
+	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
+	    };
+
+
+	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py '+rdp_options.args.join(' '));
+
+		var spawn = require('child_process').spawn;
+		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+
+
+
+		var output = '';
+		// communicating with an external python process
+		// all the print statements in the py script are printed to stdout
+		// so you can grab the projectID here at the end of the process.
+		// use looging in the script to log to a file.
+		rdp_process.stdout.on('data', function (data) {
+		  //console.log('stdout: ' + data);
+		  data = data.toString().replace(/^\s+|\s+$/g, '');
+		  output += data;
+		  var lines = data.split('\n');
+		  for(var n in lines){
+		  	console.log('line: ' + lines[n]);
+			if(lines[n].substring(0,4) == 'PID='){
+				console.log('pid line '+lines[n]);
+			}
+		  }
+		});
+
+		rdp_process.on('close', function (code) {
+		   console.log('rdp_process process exited with code ' + code);
+		   var ary = output.split("\n");
+		   var last_line = ary[ary.length - 1];
+		   if(code === 0){
+			   console.log('RDP Success');
+			   //console.log('PID last line: '+last_line)
+			   var ll = last_line.split('=');
+			   var pid = ll[1];
+			   console.log('NEW PID=: '+pid);
+			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+			   if(helpers.isInt(pid)){
+
+           connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){
+					   if (err)  {
+				 		  console.log('1-RDP-Query error: ' + err);				 		  				 
+				       } else {
+        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  
+        				      if (err)  {
+        				 		  		console.log('2-RDP-Query error: ' + err);        				 		  
+        				      } else {
+													status_params = {'type':'update', 'user':req.user.username,
+													               'project':project, 'status':'OK-RDP',	'msg':'Finished RDP'  };
+
+													helpers.assignment_finish_request(res,rows1,rows2,status_params);
+													helpers.update_status(status_params);
+
+													ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
+
+											}
+
+        				   });
+
+					   } // end else
+
+				   });
+
+	           }else{ // end if int
+                   console.log('ERROR pid is not an integer: '+pid.toString());
+			   }
+		   }else{
+		   		// ERROR
+			   console.log('ERROR last line: '+last_line);
+	   	  		//req.flash('message', 'Script Error');
+	         	//res.redirect("/user_data/your_projects");
+		   }
+		});  // end gast_process ON Close
+
+
 		req.flash('successMessage', "RDP has been started for project: '"+project+"'");
 		res.redirect("/user_data/your_projects");
-		
+
 	}else{
-		
+
 	}
-	
-	
+
+
 });
 //
 // YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
-  
+
   var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-   
+
 	project_info = {};
 	pnames = [];
     fs.readdir(user_projects_base_dir, function(err, items){
-		if(err){		  
-			
+		if(err){
+
 			fs.ensureDir(user_projects_base_dir, function (err) {
-  			console.log(err) // => null
+  			console.log(err); // => null
   			// dir has now been created, including the directory it is to be placed in
-			})
-			
-		  
+			});
+
+
 		}else{
 		  for (var d in items){
         var pts = items[d].split(':');
         if(pts[0] === 'project'){
-			
+
 					var project_name = pts[1];
 					var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
-			
+
 			  	if(stat_dir.isDirectory()){
 				  	// stat.mtime.getTime() is for sorting to list in oreder
-				  
+
 				  	// need to read config file
 				  	// check status?? dir strcture: analisis/gast/<ds>
 				  	var config_file = path.join(user_projects_base_dir,items[d],'config.ini');
-			  
+
 			  		try{
 				  		var stat_config = fs.statSync(config_file);
   				 		// console.log('1 ',config_file)
-		 		 			var config = iniparser.parseSync(config_file)
+		 		 			var config = iniparser.parseSync(config_file);
+
 		      
-		      	
   				  	project_info[project_name] = {};
-  				  	
+  				  
   				  	pnames.push(project_name);
 
   				  	//new_status = helpers.get_status(req.user.username,project_name);
   				  	//console.log(new_status); // Async only -- doesn't work
-console.log(ALL_CLASSIFIERS_BY_PID)
+              console.log(ALL_CLASSIFIERS_BY_PID);
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 								project_info[project_name].tax_status = 'Taxonomic Data Available';
-								project_info[project_name].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];  
+								project_info[project_name].classified_by = ALL_CLASSIFIERS_BY_PID[PROJECT_INFORMATION_BY_PNAME[project_name].pid];
 							}else{
 					  		project_info[project_name].pid = 0;
 					  		project_info[project_name].tax_status = 'No Taxonomic Assignments Yet';
@@ -768,25 +769,25 @@ console.log(ALL_CLASSIFIERS_BY_PID)
 				  	  project_info[project_name].config = config;
 				  	  project_info[project_name].directory = items[d];
 				  	  project_info[project_name].mtime = stat_dir.mtime;
-				  
+
 			  		}
 			  		catch (err) {
-			  			console.log('nofile ',err)
+			  			console.log('nofile ',err);
 			  		}
-			  	 
+			  
 			  	}
-			
+
         }
 	    }
-	  
+
 		  pnames.sort();
 		  //console.log(pnames);
 		  //console.log(JSON.stringify(project_info));
-		  
+
 		}  // readdir/err
-	
+
 			res.render('user_data/your_projects',
-			    { title: 'User Projects',		     
+			    { title: 'User Projects',
 			      pinfo: JSON.stringify(project_info),
 			      pnames: pnames,
 			  	  env_sources :   JSON.stringify(req.C.ENV_SOURCE),
@@ -796,7 +797,7 @@ console.log(ALL_CLASSIFIERS_BY_PID)
 		    });
 
     });  // readdir
-   
+
 });
 //
 //   GET -- EDIT_PROJECT: When first enter the page.
@@ -814,14 +815,14 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
  	project_info.config = iniparser.parseSync(config_file);
 
 	if(project_name in PROJECT_INFORMATION_BY_PNAME){   // these projects have tax assignments
-		console.log(PROJECT_INFORMATION_BY_PNAME[project_name])
+		console.log(PROJECT_INFORMATION_BY_PNAME[project_name]);
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = 'Taxonomic Data Available';
 		project_info.tax = 'GAST';
 		project_info.title = PROJECT_INFORMATION_BY_PNAME[project_name].title;
 		project_info.pdesc = PROJECT_INFORMATION_BY_PNAME[project_name].description;
 		project_info.public = PROJECT_INFORMATION_BY_PNAME[project_name].public;
-		
+
 
 		//console.log('datasets with dids')
 		//project_info.dids = DATASET_IDS_BY_PID[project_info.pid]
@@ -840,29 +841,29 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 				}
 			}
 		}
-			
+
 
 	}else{
 		project_info.pid =0;
 		project_info.status = 'No Taxonomic Assignments Yet';
-		project_info.tax = 0; 
+		project_info.tax = 0;
 		project_info.dsets = [];
-		project_info.title = project_info.config.GENERAL.project_title
+		project_info.title = project_info.config.GENERAL.project_title;
 		project_info.pdesc = project_info.config.GENERAL.project_description;
 		if(project_info.config.GENERAL.public == 'True' || project_info.config.GENERAL.public == 1){
 			project_info.public = 1;
 		}else{
 			project_info.public = 0;
 		}
-		
+
 		for(var ds in project_info.config.DATASETS) {
 			project_info.dsets.push({ "did":'', "name":ds, "ddesc":'' });
 		}
 
 	}
 
-	res.render('user_data/edit_project', { 
-				title       : 'Edit Project',   
+	res.render('user_data/edit_project', {
+				title       : 'Edit Project',
 				project     : project_name,
 				pinfo       : JSON.stringify(project_info),
 				env_sources : JSON.stringify(req.C.ENV_SOURCE),
@@ -878,8 +879,8 @@ router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	console.log('in edit project:POST');
 	console.log(req.body);
-	
-	
+
+
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		if(req.body.new_project_name in PROJECT_INFORMATION_BY_PNAME){
 			console.log('ERROR');
@@ -891,7 +892,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 
 
 	// UPDATE DB if TAX ASSIGNMENTS PRESENT
-	if(req.body.project_pid != 0){
+	if(req.body.project_pid !== 0){
 		//sql call to projects, datasets
 		var p_sql = "UPDATE project set project='"+req.body.new_project_name+"',\n";
 		p_sql += " title='"+helpers.mysql_real_escape_string(req.body.new_project_title)+"',\n";
@@ -901,18 +902,18 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			p_sql += " public='0'\n";
 		}else{
 			p_sql += " public='1'\n";
-		}		
-		p_sql += " WHERE project_id='"+req.body.project_pid+"' "
+		}
+		p_sql += " WHERE project_id='"+req.body.project_pid+"' ";
 		console.log(p_sql);
     connection.query(p_sql, function(err, rows, fields){
-       if(err){ 
-          console.log('ERROR-in project update: '+err)
+       if(err){
+         console.log('ERROR-in project update: '+err);
        }else{
-        	console.log('OK- project info updated: '+req.body.project_pid)
+         console.log('OK- project info updated: '+req.body.project_pid);
        }
     });
-    
-    // TODO  needed updates to data objects:  
+
+    // TODO  needed updates to data objects:
     //1- PROJECT_INFORMATION_BY_PNAME
     //console.log('PROJECT_INFORMATION_BY_PNAME')
     //console.log(PROJECT_INFORMATION_BY_PNAME);
@@ -920,7 +921,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     delete PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
     PROJECT_INFORMATION_BY_PNAME[req.body.new_project_name] = tmp;
     //console.log(PROJECT_INFORMATION_BY_PNAME);
-    
+
     //2- PROJECT_INFORMATION_BY_PID
     //console.log('PROJECT_INFORMATION_BY_PID')
 		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
@@ -933,19 +934,19 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     }else{
     	PROJECT_INFORMATION_BY_PID[req.body.project_pid].public = 1;
     }
-          
+
 		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
-    for(d in req.body.new_dataset_names){
-    	
+    for(var d in req.body.new_dataset_names){
+    
     	var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"',\n";
 			d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"',\n";
 			d_sql += " dataset_description='"+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+"'\n";
-			d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' "
-			d_sql += " AND project_id='"+req.body.project_pid+"' "
+			d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' ";
+			d_sql += " AND project_id='"+req.body.project_pid+"' ";
 			console.log(d_sql);
 			connection.query(d_sql, function(err, rows, fields){
-        if(err){ 
+        if(err){
           console.log('ERROR - in dataset update: '+err);
         }else{
         	console.log('OK - dataset info updated: '+req.body.dataset_ids[d]);
@@ -958,16 +959,16 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 			//console.log(DATASET_NAME_BY_DID[req.body.dataset_ids[d]]);
     }
 
-    
-  
-    //4- ALL_DATASETS  
-    //console.log('ALL_DATASETS')  
+
+
+    //4- ALL_DATASETS
+    //console.log('ALL_DATASETS')
     //console.log(ALL_DATASETS.projects[0]);
     for(var i = 0; i < ALL_DATASETS.projects.length; i++) {
 			if(ALL_DATASETS.projects[i].pid == req.body.project_pid) {
 				ALL_DATASETS.projects[i].name = req.body.new_project_name;
 				ALL_DATASETS.projects[i].title = req.body.new_project_title;
-				
+
 
 				for(var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
 					var did = ALL_DATASETS.projects[i].datasets[d].did;
@@ -978,8 +979,8 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 				}
 			}
 		}
-    
-	}		
+
+	}
 
 
 	var project_info = {};
@@ -995,27 +996,27 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
   	  	}else{
   	  		console.log("copy success!");
   	  	}
-	}) // copies fi
+	}); // copies fi
 	//console.log(config_file);
 
 
 	project_info.config = iniparser.parseSync(config_file);
 
-	
+
 
 	//console.log('config:');
 	//console.log(JSON.stringify(project_info.config));
-	// HAS NO ASSIGNMENTS: NEED CHANGE FILES ONLY	
+	// HAS NO ASSIGNMENTS: NEED CHANGE FILES ONLY
 	// changing data on the system must take this into account:
 	// if the project has no assignments yet then it has no data in the database (ie no pid).
 	// So just (1)alter the config.ini and the (2)directory name where it is located in user_data/NODE_DATABASE/<user>/project:*
 	// Also the dataset (3)directories need to be updated.
-	
-	config_info = {}
-	
+
+	config_info = {};
+
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
 		console.log('updating project name');
-		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,'_')
+		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,'_');
 		config_info.project = new_project_name;
 		project_info.config.GENERAL.project=new_project_name;
 		new_base_dir = path.join(user_projects_base_dir,'project\:'+new_project_name);
@@ -1025,68 +1026,68 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		config_info.configPath = new_config_file;
 		config_info.fasta_file = new_fasta_file;
 		project_name = new_project_name;
-		
-	}else{	
+
+	}else{
 		config_info.project = project_name;
 		config_info.baseoutputdir = project_info.config.GENERAL.baseoutputdir;
 		config_info.configPath = project_info.config.GENERAL.configPath;
 		config_info.fasta_file = project_info.config.GENERAL.fasta_file;
 	}
-	
+
 	if(req.body.new_project_title){
 		console.log('updating project title');
-		
+
 		config_info.project_title = req.body.new_project_title;
-		project_info.config.GENERAL.project_title = req.body.new_project_title
+		project_info.config.GENERAL.project_title = req.body.new_project_title;
 	}else{
 		config_info.project_title = project_info.config.GENERAL.project_title;
 	}
 	if(req.body.new_project_description){
 		console.log('updating project description');
 		config_info.project_description = req.body.new_project_description;
-		project_info.config.GENERAL.project_description = req.body.new_project_description
+		project_info.config.GENERAL.project_description = req.body.new_project_description;
 	}else{
 		config_info.project_description = project_info.config.GENERAL.project_description;
 	}
-	
-	config_info.platform = project_info.config.GENERAL.platform
-	config_info.owner = project_info.config.GENERAL.owner
-	config_info.config_file_type = project_info.config.GENERAL.config_file_type
+
+	config_info.platform = project_info.config.GENERAL.platform;
+	config_info.owner = project_info.config.GENERAL.owner;
+	config_info.config_file_type = project_info.config.GENERAL.config_file_type;
 	if(req.body.new_privacy != project_info.config.GENERAL.public){
 		console.log('updating privacy');
-		config_info.public = req.body.new_privacy
-		project_info.config.GENERAL.public =req.body.new_privacy
+		config_info.public = req.body.new_privacy;
+		project_info.config.GENERAL.public =req.body.new_privacy;
 	}else{
-		config_info.public = project_info.config.GENERAL.public
+		config_info.public = project_info.config.GENERAL.public;
 	}
-	
-	config_info.fasta_type = project_info.config.GENERAL.fasta_type
-	config_info.dna_region = project_info.config.GENERAL.dna_region
-	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count
-	config_info.domain = project_info.config.GENERAL.domain
-	config_info.number_of_datasets = project_info.config.GENERAL.number_of_datasets
-	config_info.sequence_counts = project_info.config.GENERAL.sequence_counts
-	
+
+	config_info.fasta_type = project_info.config.GENERAL.fasta_type;
+	config_info.dna_region = project_info.config.GENERAL.dna_region;
+	config_info.project_sequence_count = project_info.config.GENERAL.project_sequence_count;
+	config_info.domain = project_info.config.GENERAL.domain;
+	config_info.number_of_datasets = project_info.config.GENERAL.number_of_datasets;
+	config_info.sequence_counts = project_info.config.GENERAL.sequence_counts;
+
 	if(req.body.new_env_source_id != project_info.config.GENERAL.env_source_id){
 		console.log('updating env id');
-		config_info.env_source_id = req.body.new_env_source_id
-		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id
+		config_info.env_source_id = req.body.new_env_source_id;
+		project_info.config.GENERAL.env_source_id = req.body.new_env_source_id;
 	}else{
-		config_info.env_source_id = project_info.config.GENERAL.env_source_id
+		config_info.env_source_id = project_info.config.GENERAL.env_source_id;
 	}
 
-	config_info.has_tax = project_info.config.GENERAL.has_tax
+	config_info.has_tax = project_info.config.GENERAL.has_tax;
 
-	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k });
-	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k] });
+	var old_dataset_array = Object.keys(project_info.config.DATASETS).map(function(k) { return k; });
+	var counts_array = Object.keys(project_info.config.DATASETS).map(function(k) { return project_info.config.DATASETS[k]; });
 	console.log(old_dataset_array);
-	project_info.config.DATASETS={}
-	config_info.datasets = []
-	for(n in req.body.dataset_ids){
-		new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,;:]/g,'_')
-		config_info.datasets.push({"oldname":old_dataset_array[n],"dsname":new_dataset_name,"did":req.body.dataset_ids[n],"count":counts_array[n]})
+	project_info.config.DATASETS={};
+	config_info.datasets = [];
+	for(var n in req.body.dataset_ids){
+		new_dataset_name = req.body.new_dataset_names[n].replace(/[\s+,;:]/g,'_');
+		config_info.datasets.push({"oldname":old_dataset_array[n],"dsname":new_dataset_name,"did":req.body.dataset_ids[n],"count":counts_array[n]});
 	}
-	
+
 	//console.log(config_info.datasets);
 	if(req.body.project_pid > 0){
 		// TODO: HAS ASSIGNMENTS: NEED CHANGE DB & FILES
@@ -1096,27 +1097,27 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		// and the dataset_name,description and env_id in NODE_DATABASE.dataset
 		// Also need to update PROJECT_INFORMATION_BY_PNAME
 	}
-	
- 	
+
+ 
 	if(project_name in PROJECT_INFORMATION_BY_PNAME){
 		project_info.pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
 		project_info.status = 'Taxonomic Data Available';
-		project_info.tax = 'GAST'; 
+		project_info.tax = 'GAST';
 	}else{
 		project_info.pid = 0;
 		project_info.status = 'No Taxonomic Assignments Yet';
-		project_info.tax = 0; 
+		project_info.tax = 0;
 	}
 
 
 	if(req.body.new_project_name && req.body.new_project_name != req.body.old_project_name){
-		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir
+		config_info.old_base_name = project_info.config.GENERAL.baseoutputdir;
 		update_config(res,req, config_file, config_info, true, 'Updated project: '+config_info.project);
 	}else{
 		update_config(res,req, config_file, config_info,  false, 'Updated project: '+config_info.project);
 	}
-	
-	
+
+
 });
 //
 //  UPLOAD  METADATA
@@ -1130,12 +1131,12 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   console.log(req.body);
   console.log(req.file);
   console.log('2-req.body upload_metadata');
-  var has_tax = false
+  var has_tax = false;
   if(project in PROJECT_INFORMATION_BY_PNAME){
-  	has_tax = true
-  	
-  }
+  	has_tax = true;
   
+  }
+
   var timestamp = +new Date();  // millisecs since the epoch!
   var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
   //var new_metafile = path.join(data_repository,'metadata_'+timestamp+'.csv');
@@ -1143,7 +1144,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 		//     	if (err) {
 		// 				req.flash('failMessage', '1-File move failure  '+err);
 		// 				status_params = {'type':'update', 'user':req.user.username,
-		// 									'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+		// 									'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  }
 		// 				helpers.update_status(status_params);
 		// 				res.redirect("/user_data/import_data");
 		// 				return;
@@ -1158,7 +1159,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 					var spawn = require('child_process').spawn;
 					var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-					var output = ''
+					var output = '';
 					upload_metadata_process.stdout.on('data', function (data) {
 					  console.log('stdout: ' + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
@@ -1176,37 +1177,37 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 				   console.log('upload_metadata_process exited with code ' + code);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
-				   if(code == 0){
+				   if(code === 0){
 					   		console.log('Upload METADATA Success');
 					   		//console.log('PID last line: '+last_line)
 					   		//var ll = last_line.split('=');
 					   		// possible multiple pids
 					    	if(has_tax){
-					   			console.log(PROJECT_INFORMATION_BY_PNAME[project])
-					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid
-									connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+					   			console.log(PROJECT_INFORMATION_BY_PNAME[project]);
+					   			pid = PROJECT_INFORMATION_BY_PNAME[project].pid;
+									connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
 								    if (err)  {
-							 		  	console.log('1-Upload METADATA-Query error: ' + err);				 		  			 		  
+							 		  	console.log('1-Upload METADATA-Query error: ' + err);				 		  			 
 							      } else {
-			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
 			        				   		if (err)  {
-			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		  	
-			        				    	} else {        
-			                      												   	
+			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		  
+			        				    	} else {
+			                      												   
 															helpers.update_metadata_from_file();
 															req.flash('successMessage', 'Metadata Upload in Progress');
 			       									res.redirect("/user_data/import_choices");
 			        				    	}
-							       
+
 			        				   	});
 								   	} // end else
-							       
+
 							   	});
-								}else{  // end if(has_tax)	
+								}else{  // end if(has_tax)
 									req.flash('successMessage', 'Metadata Upload in Progress');
 			       			res.redirect("/user_data/import_choices");
-								}				   
-					   
+								}
+
 				   }else{
 				   		// ERROR
 				   		//console.log(last_line);
@@ -1216,17 +1217,17 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 			   	  	req.flash('failMessage', 'Script Error: '+last_line);
 			        res.redirect("/user_data/import_choices");
 				   }
-				});  // end upload_metadata_process ON Close  
+				});  // end upload_metadata_process ON Close
 
 //	});
-		
+
 });
 
 //
 //  UPLOAD DATA
 //
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function(req,res){
-   
+
   var project = req.body.project;
   var username = req.user.username;
   console.log('1-req.body upload_data');
@@ -1235,8 +1236,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   console.log('2-req.body upload_data');
   console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-  
-  if(project == '' || req.body.project == undefined){
+
+  if(project === '' || req.body.project === undefined){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1244,11 +1245,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		req.flash('failMessage', 'That project name is already taken.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files[0].filename==undefined || req.files[0].size==0){
+  }else if(req.files[0].filename === undefined || req.files[0].size === 0){
   	req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files[1].filename==undefined || req.files[1].size==0){
+  }else if(req.files[1].filename === undefined || req.files[1].size === 0){
   	req.flash('failMessage', 'A metadata csv file is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1256,20 +1257,20 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
 		   console.log(data_repository);
 			status_params = {'type':'new', 'user':req.user.username,
-											'project':project, 'status':'OK',	'msg':'Upload Started'  } 
-			helpers.update_status(status_params); 
+											'project':project, 'status':'OK',	'msg':'Upload Started'  };
+			helpers.update_status(status_params);
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
 		    			};
 			if(req.body.type == 'simple_fasta'){
-			    if(req.body.dataset == '' || req.body.dataset == undefined){
+			    if(req.body.dataset === '' || req.body.dataset === undefined){
 				  	req.flash('failMessage', 'A dataset name is required.');
 				  	res.redirect("/user_data/import_data");
 				  	return;
 					}
-					options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);            
+					options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);
 		  }else if(req.body.type == 'multi_fasta') {
-					options.args = options.args.concat(['-t', 'multi' ]); 
+					options.args = options.args.concat(['-t', 'multi' ]);
 		  }else{
 					req.flash('failMessage', 'No file type info found');
 					res.redirect("/user_data/import_data");
@@ -1283,20 +1284,20 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			var LoadDataFinishRequest = function() {
 					// START STATUS //
 					req.flash('successMessage', "Upload in Progress: '"+ project+"'");
-					
+
 					// type, user, project, status, msg
-					
-					res.render('success', {  title   : 'VAMPS: Import Success',                                
+
+					res.render('success', {  title   : 'VAMPS: Import Success',
 								          message : req.flash('successMessage'),
 					                display : "Import_Success",
-						              user    : req.user                        
+						              user    : req.user
 						        });
-			}
+			};
 			fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
 		    	if (err) {
 						req.flash('failMessage', '1-File move failure  '+err);
 						status_params = {'type':'update', 'user':req.user.username,
-											'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  } 
+											'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  };
 						helpers.update_status(status_params);
 						res.redirect("/user_data/import_data");
 						return;
@@ -1305,7 +1306,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			    	if (err) {
 							req.flash('failMessage', '2-File move failure '+err);
 							status_params = {'type':'update', 'user':req.user.username,
-											'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  } 
+											'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  };
 							helpers.update_status(status_params);
 							res.redirect("/user_data/import_data");
 							return;
@@ -1313,12 +1314,12 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
-				    
+
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-						var output = ''
-								
+						var output = '';
+
 						load_trim_process.stdout.on('data', function (data) {
 						  //console.log('stdout: ' + data);
 						  data = data.toString().replace(/^\s+|\s+$/g, '');
@@ -1329,16 +1330,16 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						   console.log('load_trim_process process exited with code ' + code);
 						   var ary = output.split("\n");
 						   var last_line = ary[ary.length - 1];
-						   if(code == 0){
+						   if(code === 0){
 							   	console.log('Load Success');
 							   	status_params = {'type':'update', 'user':req.user.username,
-								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
+								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  };
 						   		helpers.update_status(status_params);
 						   		console.log('Finished loading '+project);
 							 }else{
 								 	req.flash('failMessage', 'Script Failure '+err);
 								  status_params = {'type':'update', 'user':req.user.username,
-												'project':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
+												'project':project, 'status':'Script Failure',	'msg':'Script Failure'  };
 								  helpers.update_status(status_params);
 								  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
 								  return;
@@ -1350,17 +1351,17 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    //   if (err) {
 							 //  req.flash('failMessage', 'Script Failure '+err);
 							 //  status_params = {'type':'update', 'user':req.user.username,
-								// 			'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  } 
+								// 			'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  }
 							 //  helpers.update_status(status_params);
 							 //  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
 							 //  return;
 						  // }
 						  // status_params = {'type':'update', 'user':req.user.username,
-								// 			'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  } 
+								// 			'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  }
 						  // helpers.update_status(status_params);
 						  // console.log('Finished loading '+project);
-						  
-						  
+
+
 				    // });
 
 
@@ -1369,9 +1370,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			  	}); // END move 2
 			}); // END move 1
 
-  } 
+  }
   LoadDataFinishRequest();
-	
+
 });
 
 //
@@ -1381,7 +1382,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 
 	console.log('upload_data_tax_by_seq');
 	var project = req.body.project || '';
-	var use_original_names = req.body.use_original_names || 'off'
+	var use_original_names = req.body.use_original_names || 'off';
   var username = req.user.username;
   var use_file_taxonomy = req.body.use_tax_from_file;
   console.log('1req.body upload_data_tax_by_seq');
@@ -1392,8 +1393,8 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
   console.log('2req.body upload_data_tax_by_seq');
   //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-  
-  if((project == '' || req.body.project == undefined) && req.body.use_original_names != 'on'){
+
+  if((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on'){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
 		return;
@@ -1401,66 +1402,66 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		req.flash('failMessage', 'That project name is already taken.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files[0].filename==undefined || req.files[0].size==0){
+  }else if(req.files[0].filename === undefined || req.files[0].size === 0){
   	req.flash('failMessage', 'A tax_by_seq file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else{
-			
-			console.log('working')
+
+    console.log('working');
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
 			var original_taxbyseqfile = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[0].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
-			console.log(original_taxbyseqfile)
+			console.log(original_taxbyseqfile);
 			var original_metafile  = '';
 			try{
 				original_metafile  = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
 			}
 			catch(err){
-				console.log(err)
+				console.log(err);
 			}
-			
+
 			console.log(original_metafile);
-			
-			
+
+
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
 		        			args :       [ '-file', original_taxbyseqfile, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
 		    			};
 			if(original_metafile){
-				options.args = options.args.concat(['-md_file',original_metafile]); 
+				options.args = options.args.concat(['-md_file',original_metafile]);
 			}
 			if(req.body.use_tax_from_file === 1){
-				options.args = options.args.concat(['-use_tax']); 
+				options.args = options.args.concat(['-use_tax']);
 			}
-			if(use_original_names == 'on'){			    
-					options.args = options.args.concat(['-orig_names']); 
-		  }else if(use_original_names == 'off'){			    
-					options.args = options.args.concat(['-p', project]); 
+			if(use_original_names == 'on'){
+					options.args = options.args.concat(['-orig_names']);
+		  }else if(use_original_names == 'off'){
+					options.args = options.args.concat(['-p', project]);
 		  }else{
 					req.flash('failMessage', 'No file type info found:  ');
 					res.redirect("/user_data/import_data");
 					return;
 		  }
 			//var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.file.filename);
-			
+
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
 			var LoadDataFinishRequest = function() {
 					// START STATUS //
 					req.flash('successMessage', "Upload in Progress: 'TaxBySeq File'");
-					
+
 					// type, user, project, status, msg
-					
-					res.render('success', {  title   : 'VAMPS: Import Success',                                
+
+					res.render('success', {  title   : 'VAMPS: Import Success',
 								          message : req.flash('successMessage'),
 					                display : "Import_Success",
-						              user    : req.user                        
+						              user    : req.user
 						  });
-			}
-			
-	  	
+			};
+
+	  
 				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
@@ -1468,7 +1469,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-				var output = ''
+				var output = '';
 				// communicating with an external python process
 				// all the print statements in the py script are printed to stdout
 				// so you can grab the projectID here at the end of the process.
@@ -1477,7 +1478,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					  //console.log('stdout: ' + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
 					  output += data;
-					  var lines = data.split('\n')
+					  var lines = data.split('\n');
 					  for(var n in lines){
 					  	//console.log('line: ' + lines[n]);
 							if(lines[n].substring(0,4) == 'PID='){
@@ -1489,42 +1490,42 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				   console.log('tax_by_seq_process process exited with code ' + code);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
-				   if(code == 0){
+				   if(code === 0){
 					   console.log('TAXBYSEQ Success');
 					   //console.log('PID last line: '+last_line)
 					   var ll = last_line.split('=');
 					   // possible multiple pids
-					   pid_list = ll[1].split('-')
+					   pid_list = ll[1].split('-');
 					   for(var i in pid_list){
 						   //var pid = ll[1];
 						   var pid = pid_list[i];
 						   console.log('NEW PID=: '+pid);
 						   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 						   if(helpers.isInt(pid)){
-			                   
-			            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){			       
+
+			            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
 								    if (err)  {
-							 		  	console.log('1-TAXBYSEQ-Query error: ' + err);				 		  			 		  
+							 		  	console.log('1-TAXBYSEQ-Query error: ' + err);				 		  			 
 							      } else {
-			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  			     
+			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
 			        				   		if (err)  {
-			        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  	
-			        				    	} else {        
+			        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  
+			        				    	} else {
 			                      	status_params = {'type':'update', 'user':req.user.username,
-			                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' } 
-											   	
+			                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' };
+											   
 															helpers.assignment_finish_request(res,rows1,rows2,status_params);
-															helpers.update_status(status_params); 
-															ALL_CLASSIFIERS_BY_PID[pid] = 'unknown'				   
+															helpers.update_status(status_params);
+															ALL_CLASSIFIERS_BY_PID[pid] = 'unknown';
 
 
 			        				    	}
-							       
+
 			        				   	});
 								   	} // end else
-							       
-							   });		   
-			                   
+
+							   });
+
 				           }else{ // end if int
 			                   console.log('ERROR pid is not an integer: '+pid.toString());
 						   }
@@ -1537,11 +1538,11 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			   	  	//req.flash('message', 'Script Error'+last_line);
 			        //res.redirect("/user_data/your_projects");
 				   }
-				});  // end tax_by_seq_process ON Close  
-			  
-			
+				});  // end tax_by_seq_process ON Close
 
-  } 
+
+
+  }
   LoadDataFinishRequest();
 
 
@@ -1555,7 +1556,7 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 	console.log('in file_utils');
 	//console.log(req.query.filename);
 	var user = req.query.user;
-	
+
 	console.log(file);
 	//// DOWNLOAD //////
 	if(req.query.fxn == 'download' && req.query.template == '1'){
@@ -1565,34 +1566,34 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
   }else if(req.query.fxn == 'download' &&  req.query.type=='pcoa'){
 	    var file = path.join(process.env.PWD,'tmp',req.query.filename);
 		  res.setHeader('Content-Type', 'text');
-		  res.download(file); // Set disposition and send it.	
+		  res.download(file); // Set disposition and send it.
 	}else if(req.query.fxn == 'download'){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
 		  res.setHeader('Content-Type', 'text');
-		  res.download(file); // Set disposition and send it.	
+		  res.download(file); // Set disposition and send it.
 	///// DELETE /////
 	}else if(req.query.fxn == 'delete'){
 	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
 		if(req.query.type == 'datasets'){
 			fs.unlink(file, function(err){
-				if(err){ 
-					console.log(err); 
+				if(err){
+					console.log(err);
 				}else{
 					req.flash('message', 'Deleted: '+req.query.filename);
 					res.redirect("/visuals/saved_datasets");
-				}	
+				}
 			}); //
 		}else{
 			fs.unlink(file, function(err){
-				if(err){ 
-					console.log(err); 
+				if(err){
+					console.log(err);
 				}else{
 					req.flash('message', 'Deleted: '+req.query.filename);
-					res.redirect("/user_data/file_retrieval");	
+					res.redirect("/user_data/file_retrieval");
 				}
-			}); 
+			});
 		}
-	
+
 	}
 
 });
@@ -1620,17 +1621,17 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
-  
+
   if(req.body.download_type == 'whole_project'){
-	  
+
 		var pid = req.body.project_id;
 		var project = req.body.project;
 		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
   	out_file_path = path.join(user_dir,file_name);
   	qSelect += " where project_id = '"+pid+"'";
-  
+
   }else if(req.body.download_type == 'partial_project'){
-	  
+
     var pids = JSON.parse(req.body.datasets).ids;
 		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
     out_file_path = path.join(user_dir,file_name);
@@ -1644,16 +1645,16 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   		out_file_path = path.join(user_dir,file_name);
 			var tax_string = req.body.tax_string;
 			tax_items = tax_string.split(';');
-			qSelect += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n"; 
+			qSelect += " JOIN silva_taxonomy_info_per_seq using (sequence_id)\n";
 			qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
-			add_where = ' WHERE '
-			for(n in tax_items){
-				rank = req.C.RANKS[n]
-				qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n'
-				add_where += '`'+rank+"`='"+tax_items[n]+"' and " 
+			add_where = ' WHERE ';
+			for(var n in tax_items){
+				rank = req.C.RANKS[n];
+				qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n';
+				add_where += '`'+rank+"`='"+tax_items[n]+"' and ";
 			}
-			qSelect = qSelect + add_where.substring(0, add_where.length - 5)
-			
+			qSelect = qSelect + add_where.substring(0, add_where.length - 5);
+
   }
   //qSelect += " limit 100 ";                     // <<<<-----  for testing
 
@@ -1686,7 +1687,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
       .pipe(wstream)
       .on('finish', function () {  // finished
         console.log('done compressing and writing file');
-        console.log(JSON.stringify(req.user))
+        console.log(JSON.stringify(req.user));
         var info = {
               to : req.user.email,
               from : "vamps@mbl.edu",
@@ -1694,12 +1695,12 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
               text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
             };
         helpers.send_mail(info);
-        
-				
+
+
       });
-      
+
   });
-  
+
   res.send(file_name);
 
 });
@@ -1801,9 +1802,9 @@ if(req.body.download_type == 'whole_project'){
         };
         helpers.send_mail(info);
         //req.flash('Done')
-				
-				
-		
+
+
+
       });
 
   	res.send(file_name);
@@ -1820,19 +1821,19 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		for (var i in biom_matrix.rows){
  			row_txt = '';
  			row_txt += biom_matrix.rows[i].name;
- 			console.log(row_txt)
+ 			console.log(row_txt);
  		}
 
 		var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
 		helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 		helpers.mkdirSync(user_dir);  // create dir if not exists
-		
-		
+
+
 		dids = JSON.parse(req.body.datasets).ids;
 		var timestamp = req.body.ts;
 		var file_name = 'matrix:'+timestamp+'.csv';
 		//out_file_path = path.join(user_dir, file_name);
-	
+
 
 		var out_file = path.join('user_data',NODE_DATABASE,req.user.username,file_name);
 		var wstream = fs.createWriteStream(out_file);
@@ -1867,18 +1868,18 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		console.log('dids');
 		console.log(dids);
 		res.send(file_name);
-		
+
 });
 //
 // <<<< FUNCTIONS >>>>
 //
 function update_config(res,req, config_file, config_info, has_new_pname, msg){
-	console.log(config_info)
+	console.log(config_info);
 	var new_config_txt = "[GENERAL]\n";
 	new_config_txt += "project="+config_info.project+"\n";
 	new_config_txt += "baseoutputdir="+config_info.baseoutputdir+"\n";
 	new_config_txt += "configPath="+config_info.configPath+"\n";
-	new_config_txt += "fasta_file="+config_info.fasta_file+"\n";		
+	new_config_txt += "fasta_file="+config_info.fasta_file+"\n";
 
 
 	new_config_txt += "project_title="+helpers.mysql_real_escape_string(config_info.project_title)+"\n";
@@ -1898,66 +1899,66 @@ function update_config(res,req, config_file, config_info, has_new_pname, msg){
 	new_config_txt += "env_source_id="+config_info.env_source_id+"\n";
 	new_config_txt += "has_tax="+config_info.has_tax+"\n\n";
 	new_config_txt += "[DATASETS]\n";
-	
-	for(n in config_info.datasets){		
-			new_config_txt += config_info.datasets[n].dsname+"="+config_info.datasets[n].count+"\n";		
+
+	for(var n in config_info.datasets){
+			new_config_txt += config_info.datasets[n].dsname+"="+config_info.datasets[n].count+"\n";
 	}
-	
-	console.log(new_config_txt)
-	
+
+	console.log(new_config_txt);
+
 	fs.writeFile(config_file, new_config_txt, function(err){
         if(err){
 					console.log(err);
 					res.send(err);
         }else{
-           	console.log('write new config file success')
+          console.log('write new config file success');
 				  	if(has_new_pname){
 						// now change the directory name if the project_name is being updated
-							old_base_dir = config_info.old_base_name
-							new_base_name = config_info.baseoutputdir
+							old_base_dir = config_info.old_base_name;
+							new_base_name = config_info.baseoutputdir;
 							fs.move(old_base_dir, new_base_dir, function(err){
 								if(err){
 									console.log(err);
 									res.send(err);
 								}else{
-						  		
-									update_dataset_names(config_info)
+						  
+									update_dataset_names(config_info);
 									req.flash('successMessage', msg);
 									res.redirect('/user_data/your_projects');
-									
+
 								}
-								
-							})
+
+							});
 					}else{
-					  
-						update_dataset_names(config_info)
+
+						update_dataset_names(config_info);
 						req.flash('successMessage', msg);
 						res.redirect('/user_data/your_projects');
-						
+
 					}
-			
+
         }
-    })
-	
+    });
+
 
 }
 function update_dataset_names(config_info){
-		
-		for(n in config_info.datasets){			
-				
+
+		for(var n in config_info.datasets){
+
 					old_name_path = path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].oldname);
 					new_name_path =path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].dsname);
-					console.log(old_name_path)
-					console.log(new_name_path)
+					console.log(old_name_path);
+					console.log(new_name_path);
 					fs.move(old_name_path, new_name_path, function(err){
 						if(err){
-							console.log('WARNING failed to move dataset name '+err.toString())
+							console.log('WARNING failed to move dataset name '+err.toString());
 						}else{
 							console.log('moving '+config_info.datasets[n].oldname+' to '+config_info.datasets[n].dsname);
 						}
-					})
-		
-			
+					});
+
+
 		}
 }
 function create_fasta_file(req, pids){
@@ -1979,7 +1980,7 @@ function create_fasta_file(req, pids){
 		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
 		out_file_path = path.join(user_dir,file_name);
 		qSelect += " where dataset_id in ("+pids+")";
-		
+
 		var gzip = zlib.createGzip();
 		console.log(qSelect);
 
@@ -2009,7 +2010,7 @@ function create_fasta_file(req, pids){
 		    .pipe(wstream)
 		    .on('finish', function () {  // finished
 		      console.log('done compressing and writing file');
-		      console.log(JSON.stringify(req.user))
+		      console.log(JSON.stringify(req.user));
 		      var info = {
 		            to : req.user.email,
 		            from : "vamps@mbl.edu",
@@ -2017,14 +2018,14 @@ function create_fasta_file(req, pids){
 		            text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
 		          };
 		      helpers.send_mail(info);
-		      
-					
+
+
 		    });
-		    
+
 		});
 
 		res.send(file_name);
- 
+
 }
 
 

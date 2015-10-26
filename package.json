@@ -50,6 +50,7 @@
   "devDependencies": {
     "debug": "2.1.0",
     "istanbul": "",
+    "jshint": "^2.8.0",
     "mocha": "",
     "passport-stub": "",
     "plato": "",
