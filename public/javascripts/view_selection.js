@@ -1061,6 +1061,7 @@ function toggle_visual_element(table_div, tog, btn){
 
 function create_viz(visual, ts) {
    
+    
     if(visual === 'counts_table'){
       create_counts_table();      
     }else if(visual === 'metadata_table'){
@@ -1115,7 +1116,7 @@ function create_counts_table() {
       var info_line = create_header('ftable', pi_local);
       document.getElementById('counts_table_title').innerHTML = info_line;
       document.getElementById('pre_counts_table_div').style.display = 'block';
-      document.getElementById('counts_table_title').style.color = 'red';
+      document.getElementById('counts_table_title').style.color = 'white';
       document.getElementById('counts_table_title').style['font-size'] = 'small';
       var tax_counts_div = document.getElementById('tax_table_div');
       tax_counts_div.innerHTML = '';
@@ -1173,7 +1174,11 @@ function create_metadata_table() {
      
     metadata_table_created = true;
     var info_line = create_header('mtable', pi_local);
+    document.getElementById('metadata_title').innerHTML = info_line;
+    document.getElementById('metadata_title').style.color = 'white';
+    document.getElementById('metadata_title').style['font-size'] = 'small';
     var metadata_div = document.getElementById('metadata_local_table_div');
+    
 	  metadata_div.innerHTML = '';
     metadata_div.style.display = 'block';
     document.getElementById('pre_metadata_table_div').style.display = 'block';
@@ -1210,28 +1215,36 @@ function create_dendrogram(ts, image_type, script) {
       var dend_div;
       if(image_type == 'pdf'){
         //dendrogram_pdf_created = true;
-        var dend_div = document.getElementById('dendrogram_pdf_div');
+        var dend_div = document.getElementById('dendrogram_pdf_div');        
         document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';        
   	    dend_div.style.display = 'block';
         document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
+        document.getElementById('dendrogram_pdf_title').style.color = 'white';
+        document.getElementById('dendrogram_pdf_title').style['font-size'] = 'small';
       }else if(script == 'phylogram'){  // svg
         //dendrogram1_created = true;
-        var dend_div = document.getElementById('dendrogram1_div');
+        var dend_div = document.getElementById('dendrogram1_div');        
         document.getElementById('pre_dendrogram1_div').style.display = 'block';        
   	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram1_title').innerHTML = info_line;
+        document.getElementById('dendrogram1_title').style.color = 'white';
+        document.getElementById('dendrogram1_title').style['font-size'] = 'small';
       }else if(script == 'phylonator'){  // svg
         //dendrogram2_created = true;
-        var dend_div = document.getElementById('dendrogram2_div');
+        var dend_div = document.getElementById('dendrogram2_div');        
         document.getElementById('pre_dendrogram2_div').style.display = 'block';        
   	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram2_title').innerHTML = info_line;
+        document.getElementById('dendrogram2_title').style.color = 'white';
+        document.getElementById('dendrogram2_title').style['font-size'] = 'small';
       }else if(script == 'radial'){  // svg
         //dendrogram3_created = true;
-        var dend_div = document.getElementById('dendrogram3_div');
+        var dend_div = document.getElementById('dendrogram3_div');        
         document.getElementById('pre_dendrogram3_div').style.display = 'block';        
         dend_div.style.display = 'block';
         document.getElementById('dendrogram3_title').innerHTML = info_line;
+        document.getElementById('dendrogram3_title').style.color = 'white';
+        document.getElementById('dendrogram3_title').style['font-size'] = 'small';
       }
       dend_div.innerHTML = '';
       
@@ -1319,20 +1332,22 @@ function create_pcoa(ts,image_type) {
     var address, info_line, pcoa_div;
     if(image_type === '2d'){
         pcoa_created = true;
-        pcoa_div = document.getElementById('pcoa_div');
-        info_line = create_header('pcoa', pi_local);
-        
+        pcoa_div = document.getElementById('pcoa_div');        
+        info_line = create_header('pcoa', pi_local);        
   	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_title').innerHTML = info_line;
+        document.getElementById('pcoa_title').style.color = 'white';
+        document.getElementById('pcoa_title').style['font-size'] = 'small';
         document.getElementById('pre_pcoa_div').style.display = 'block';
         address = '/visuals/pcoa';
     }else if(image_type === '3d'){
         pcoa_created = true;
-        pcoa_div = document.getElementById('pcoa_3d_div');
-        info_line = create_header('pcoa_3d', pi_local);
-        
+        pcoa_div = document.getElementById('pcoa_3d_div');        
+        info_line = create_header('pcoa_3d', pi_local);        
   	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_3d_title').innerHTML = info_line;
+        document.getElementById('pcoa_3d_title').style.color = 'white';
+        document.getElementById('pcoa_3d_title').style['font-size'] = 'small';
         document.getElementById('pre_pcoa_3d_div').style.display = 'block';
         address = '/visuals/pcoa_3d';
     }else{
@@ -1369,8 +1384,11 @@ function create_dbrowser(ts) {
          dbrowser_created = true;
          var info_line = create_header('dbrowser', pi_local);
          var dbrowser_div = document.getElementById('dbrowser_div');
-         dbrowser_div.style.display = 'block';
          document.getElementById('dbrowser_title').innerHTML = info_line;
+         document.getElementById('dbrowser_title').style.color = 'white';
+        document.getElementById('dbrowser_title').style['font-size'] = 'small';
+         dbrowser_div.style.display = 'block';
+         
          document.getElementById('pre_dbrowser_div').style.display = 'block';
          var args =  "ts="+ts;
          var xmlhttp = new XMLHttpRequest();  
@@ -1398,12 +1416,14 @@ function create_dheatmap(ts) {
       //alert('im HM')
       dheatmap_created = true;
       var dhm_div = document.getElementById('dheatmap_div');
+      
       dhm_div.innerHTML = '';
 	    dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
-      
+      document.getElementById('dheatmap_title').style.color = 'white';
+      document.getElementById('dheatmap_title').style['font-size'] = 'small';
       var html = '';
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
@@ -1430,11 +1450,14 @@ function create_fheatmap(ts) {
       //alert('im HM')
       fheatmap_created = true;
       var fhm_div = document.getElementById('fheatmap_div');
+      
       fhm_div.innerHTML = '';
 	    fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('fhm', pi_local);
       document.getElementById('fheatmap_title').innerHTML = info_line;
+      document.getElementById('fheatmap_title').style.color = 'white';
+      document.getElementById('fheatmap_title').style['font-size'] = 'small';
       
       var html = '';
       var args =  "metric="+pi_local.selected_distance;
@@ -1462,14 +1485,15 @@ function create_geospatial(ts) {
       //alert('in GEO')
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
+      
 	    geo_div.innerHTML = '';
       geo_div.style.display = 'block';
 	    geo_div.style.height = '900px';
             
-      var info_line = create_header('geo', pi_local);
-      
+      var info_line = create_header('geo', pi_local);      
       document.getElementById('geospatial_title').innerHTML = info_line;
-       
+      document.getElementById('geospatial_title').style.color = 'white';
+      document.getElementById('geospatial_title').style['font-size'] = 'small';
       document.getElementById('pre_geospatial_div').style.display = 'block';
       
       var loc_data = [];
@@ -1569,10 +1593,13 @@ function create_piecharts(ts) {
     piecharts_created = true;
     
     var info_line = create_header('pies', pi_local);
+    document.getElementById('piecharts_title').innerHTML = info_line;
 	  var piecharts_div = document.getElementById('piecharts_div');
+    document.getElementById('piecharts_title').style.color = 'white';
+    document.getElementById('piecharts_title').style['font-size'] = 'small';
     piecharts_div.innerHTML = '';
 	  piecharts_div.style.display = 'block';
-    document.getElementById('piecharts_title').innerHTML = info_line;
+    
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
     var unit_list = [];
@@ -1678,9 +1705,12 @@ function create_barcharts_group(ts) {
 //         
          barcharts_created = true;
          var info_line = create_header('bars', pi_local);
+         document.getElementById('barcharts_title').innerHTML = info_line;
+         document.getElementById('barcharts_title').style.color = 'white';
+         document.getElementById('barcharts_title').style['font-size'] = 'small';
  		     document.getElementById('barcharts_div').innerHTML = '';
 // 		barcharts_div.style.display = 'block';
-         document.getElementById('barcharts_title').innerHTML = info_line;
+         
          document.getElementById('pre_barcharts_table_div').style.display = 'block';
 		 
          // this fxn is in common_selection.js
@@ -1695,6 +1725,8 @@ function create_adiversity(ts){
     adiversity_created = true;
     var info_line = create_header('adiversity', pi_local);
     document.getElementById('adiversity_title').innerHTML = info_line;
+    document.getElementById('adiversity_title').style.color = 'white';
+    document.getElementById('adiversity_title').style['font-size'] = 'small';
     document.getElementById('pre_adiversity_div').style.display = 'block';
     document.getElementById('adiversity_div').style.display = 'block';
     document.getElementById('adiversity_div').innerHTML = '....';
@@ -1768,6 +1800,8 @@ function create_phyloseq(ts,code) {
         phylo_div = document.getElementById('phyloseq01_div');
         info_line = create_header('phyloseq01', pi_local);
         document.getElementById('phyloseq01_title').innerHTML = info_line;
+        document.getElementById('phyloseq01_title').style.color = 'white';
+        document.getElementById('phyloseq01_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq01_div').style.display = 'block';
         phy = document.getElementById('phyloseq_bar_phylum').value;
         args += "&phy="+phy;
@@ -1775,6 +1809,8 @@ function create_phyloseq(ts,code) {
         phylo_div = document.getElementById('phyloseq02_div');
         info_line = create_header('phyloseq02', pi_local);
         document.getElementById('phyloseq02_title').innerHTML = info_line;
+        document.getElementById('phyloseq02_title').style.color = 'white';
+        document.getElementById('phyloseq02_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq02_div').style.display = 'block';
         phy = document.getElementById('phyloseq_heatmap_phylum').value;
         ord_types = document.getElementsByName('phyloseq_heatmap_type');
@@ -1788,6 +1824,8 @@ function create_phyloseq(ts,code) {
         phylo_div = document.getElementById('phyloseq03_div');
         info_line = create_header('phyloseq03', pi_local);
         document.getElementById('phyloseq03_title').innerHTML = info_line;
+        document.getElementById('phyloseq03_title').style.color = 'white';
+        document.getElementById('phyloseq03_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq03_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_network_md1').value;
         md2 = document.getElementById('phyloseq_network_md2').value;
@@ -1807,6 +1845,8 @@ function create_phyloseq(ts,code) {
         phylo_div = document.getElementById('phyloseq04_div');
         info_line = create_header('phyloseq04', pi_local);
         document.getElementById('phyloseq04_title').innerHTML = info_line;
+        document.getElementById('phyloseq04_title').style.color = 'white';
+        document.getElementById('phyloseq04_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq04_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_ord_md1').value;
         md2 = document.getElementById('phyloseq_ord_md2').value;
@@ -1820,6 +1860,8 @@ function create_phyloseq(ts,code) {
         phylo_div = document.getElementById('phyloseq05_div');
         info_line = create_header('phyloseq05', pi_local);
         document.getElementById('phyloseq05_title').innerHTML = info_line;
+        document.getElementById('phyloseq05_title').style.color = 'white';
+        document.getElementById('phyloseq05_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq05_div').style.display = 'block';
         md1 = document.getElementById('phyloseq_tree_md1').value;
         args += "&md1="+md1;
