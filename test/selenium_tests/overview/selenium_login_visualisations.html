@@ -54,12 +54,12 @@
 <tr>
 	<td>type</td>
 	<td>id=username</td>
-	<td>AnnaSh</td>
+	<td>guest</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>id=password</td>
-	<td>test</td>
+	<td>guest</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -107,9 +107,21 @@
 	<td>Distance Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
 <tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
+</tr>
+<!--
+<tr>
 	<td>waitForText</td>
 	<td>id=dragInfoArea</td>
 	<td>exact:** Drag a row to change the dataset order. **</td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -226,10 +238,17 @@
 	<td>Krona - root</td>
 	<td></td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=option</td>
 	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -256,10 +275,17 @@
 	<td>id=dendrogram1_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>id=dendrogram1_div</td>
 	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -281,10 +307,17 @@
 	<td>id=dendrogram2_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phylonator_svg &gt; rect</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -306,10 +339,17 @@
 	<td>id=dendrogram3_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#dendrogram3_div &gt; svg</td>
 	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -331,16 +371,23 @@
 	<td>id=dendrogram_pdf_title</td>
 	<td>Dendrogram --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
-<!-- <tr>
+<!--
+<tr>
   <td>waitForText</td>
   <td>css=div.textLayer</td>
   <td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
-</tr> -->
-<!-- <tr>
-  <td>verifyText</td>
-  <td>css=div.textLayer</td>
-  <td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
-</tr> -->
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.textLayer</td>
+	<td>*ICM_AGW_Bv6--AGW_0003_2006_06_15*</td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>id=pcoa_link_id</td>
@@ -356,16 +403,23 @@
 	<td>null</td>
 	<td></td>
 </tr>
-<!-- <tr>
+<!--
+<tr>
   <td>waitForText</td>
   <td>css=div.textLayer</td>
   <td>*ICM_AGW_Bv6--AGW_0002_2005_06_15*</td>
-</tr> -->
-<!-- <tr>
-  <td>verifyText</td>
-  <td>css=div.textLayer</td>
-  <td>*ICM_AGW_Bv6--AGW_0002_2005_06_15*</td>
-</tr> -->
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=div.textLayer</td>
+	<td>*ICM_AGW_Bv6--AGW_0002_2005_06_15*</td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>//tr[3]/td/center</td>
@@ -446,10 +500,17 @@
 	<td>id=counts_table_title</td>
 	<td>Frequency Table --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>//div[@id='tax_table_div']/table/tbody/tr[9]/td[2]</td>
 	<td>Archaea;phylum_NA;klass_NA;order_NA</td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -511,16 +572,23 @@
 	<td>id=adiversity_title</td>
 	<td>Alpha Diversity --&gt; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
-<!-- <tr>
+<!--
+<tr>
   <td>waitForText</td>
   <td>css=#adiversity_div &gt; table.table &gt; tbody &gt; tr &gt; td</td>
   <td>Dataset</td>
-</tr> -->
-<!-- <tr>
-  <td>verifyText</td>
-  <td>//div[@id='adiversity_div']/table/tbody/tr[2]/td</td>
-  <td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
-</tr> -->
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>//div[@id='adiversity_div']/table/tbody/tr[2]/td</td>
+	<td>ICM_AGW_Bv6--AGW_0001_2005_06_15</td>
+</tr>
 <tr>
 	<td>click</td>
 	<td>id=phyloseq01_link_id</td>
@@ -531,10 +599,17 @@
 	<td>id=phyloseq01_title</td>
 	<td>Phyloseq Bars --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phyloseq01_div &gt; img</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -556,10 +631,17 @@
 	<td>id=phyloseq02_title</td>
 	<td>Phyloseq Heatmap --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phyloseq02_div &gt; img</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyNotText</td>
@@ -576,10 +658,17 @@
 	<td>id=phyloseq03_title</td>
 	<td>Phyloseq Network --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phyloseq03_div &gt; img</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -601,10 +690,17 @@
 	<td>id=phyloseq04_title</td>
 	<td>Phyloseq Ordination --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phyloseq04_div &gt; img</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>
@@ -626,10 +722,17 @@
 	<td>id=phyloseq05_title</td>
 	<td>Phyloseq Tree --&gt; Metric: morisita_horn; Normalization: none; Counts Min/Max: 0% -- 100%</td>
 </tr>
+<!--
 <tr>
 	<td>waitForText</td>
 	<td>css=#phyloseq05_div &gt; img</td>
 	<td></td>
+</tr>
+-->
+<tr>
+	<td>pause</td>
+	<td></td>
+	<td>60000</td>
 </tr>
 <tr>
 	<td>verifyText</td>

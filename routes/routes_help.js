@@ -30,7 +30,7 @@ var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d
             //Send the guts of the captcha to your template
             res.render('help/contact', {
               captcha : html,
-              title: 'VAMPS:Cuntact-Us',
+              title: 'VAMPS:Contact-Us',
               user: req.user,
               hostname: req.C.hostname
                });
