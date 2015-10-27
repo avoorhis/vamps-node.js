@@ -11,7 +11,29 @@ router.get('/portals_index', function(req, res) {
     		message:'',
                           });
 });
-
+router.get('/visuals_index/:portal', function(req, res) {
+    console.log('in portals visuals_index')
+    console.log(ALL_DATASETS);
+    var portal = req.params.portal;
+    console.log('portal '+portal);
+    var some_datasets = {}
+    some_datasets.projects = []
+    ALL_DATASETS.projects.forEach(function(prj) {
+      parts = prj.name.split('_')
+      if(parts[0] == portal){  // UC, ICM, HMP, MBE ....
+        some_datasets.projects.push(prj);        
+      }
+    });
+    console.log('some'+JSON.stringify(some_datasets));
+    res.render('visuals/visuals_index', { 
+            title: 'VAMPS:Portals_Index',
+            rows     : JSON.stringify(some_datasets),
+            proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            constants: JSON.stringify(req.C),
+            user: req.user,hostname: req.C.hostname,
+            message:'',
+                          });
+});
 //
 //  MOBE
 //

@@ -11,24 +11,24 @@
   <% if (message.length > 0) { %>
       <div class="message"><%= message %></div>
   <% } %><br>
-  
-  <form action="/users/login" method="post">
-      <div>
-          <label>Username:</label>
-          <input type="text" id='username' name="username"/>
-      </div>
-      <div>
-          <label>Password:</label>
-          <input type="password" id='password' name="password"/>
-      </div>
-      <div>
-          <input type="submit" value="Log In"/>
-      </div>
-  </form>
-  <hr>
-  <p>Need an account? <a href="/users/signup">Signup</a></p>
-  <p>Or go to the <a href="/">home</a> page.</p>
-
+      <div id='login_div' class='table' >
+      <form action="/users/login" method="post">
+          <div>
+              <label>Username:</label>
+              <input type="text" id='username' name="username"/>
+          </div>
+          <div>
+              <label>Password:</label>
+              <input type="password" id='password' name="password"/>
+          </div>
+          <div>
+              <input type="submit" value="Log In"/>
+          </div>
+      </form>
+      <hr>
+      <p>Need an account? <a href="/users/signup">Signup</a></p>
+      <p>Or go to the <a href="/">home</a> page.</p>
+    </div>
 </div>
 </div>
 </div>
