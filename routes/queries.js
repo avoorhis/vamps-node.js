@@ -8,7 +8,8 @@ get_project_permissions: function(){
     return qSelectAccess;
 },
 get_select_datasets_query: function(){
-		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id, public";
+		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, project_description, dataset, dataset_description,";
+    qSelectDatasets += " username, email, institution, first_name, last_name, env_source_name, env_sample_source_id, owner_user_id, public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
@@ -19,7 +20,8 @@ get_select_datasets_query: function(){
 },
 
 get_select_datasets_queryPID: function(pid){
-		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution, first_name, last_name, env_source_name, owner_user_id,public";
+		var qSelectDatasets = "SELECT project, title, dataset_id as did, project_id as pid, dataset, dataset_description, username, email, institution,";
+    qSelectDatasets += " first_name, last_name, env_source_name, env_sample_source_id, owner_user_id,public";
 		qSelectDatasets += " FROM dataset";
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated

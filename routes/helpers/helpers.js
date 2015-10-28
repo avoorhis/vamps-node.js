@@ -189,6 +189,7 @@ module.exports.run_select_datasets_query = function(rows){
             "oid" :             owner_id,
             "email" :			      rows[i].email,
             "env_source_name" : rows[i].env_source_name,
+            "env_source_id" :   rows[i].env_sample_source_id,
             "institution" :		  rows[i].institution,
             "project" :			    project,
     		    "pid" :			        pid,

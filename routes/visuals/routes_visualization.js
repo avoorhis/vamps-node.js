@@ -1629,6 +1629,81 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     res.download(file_path); // Set disposition and send it.
 });
 
+//
+//  LIVESEARCH PROJECTS FILTER
+//
+router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q.toLowerCase();
+  var info = PROJECT_INFORMATION_BY_PID 
+  console.log(q)
+  
+
+   var all_pr_dat = []
+   if(q === '----'){
+          
+          all_pr_dat = ALL_DATASETS.projects
+    }else{ 
+          ALL_DATASETS.projects.forEach(function(prj) {
+            lcname = prj.name.toLowerCase();
+            if(lcname.indexOf(q) != -1){
+              all_pr_dat.push(prj);        
+            }
+          });
+    }
+
+   html = get_livesearch_html(all_pr_dat, info, req.user);
+  res.send(html);
+
+});
+
+//
+//  LIVESEARCH ENV PROJECTS FILTER
+//
+router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q;
+  var info = PROJECT_INFORMATION_BY_PID 
+  //console.log(PROJECT_INFORMATION_BY_PID)
+  
+   var all_pr_dat = []
+   if(q === '.....'){          
+          all_pr_dat = ALL_DATASETS.projects
+    }else{
+          ALL_DATASETS.projects.forEach(function(prj) {
+            if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
+              all_pr_dat.push(prj);        
+            }
+          });
+    }
+
+  html = get_livesearch_html(all_pr_dat, info, req.user);
+  res.send(html);
+
+});
+//
+//  LIVESEARCH TARGET PROJECTS FILTER
+//
+router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q;
+  var info = PROJECT_INFORMATION_BY_PID 
+  console.log(q)
+  
+   var all_pr_dat = []
+   if(q === '.....'){          
+          all_pr_dat = ALL_DATASETS.projects
+    }else{
+          ALL_DATASETS.projects.forEach(function(prj) {
+            pparts = prj.name.split('_');
+            last_el = pparts[pparts.length - 1]
+            if(last_el === q){
+              all_pr_dat.push(prj);        
+            }
+          });
+    }
+
+   html = get_livesearch_html(all_pr_dat, info, req.user);
+   res.send(html);
+
+});
 module.exports = router;
 
 /**
@@ -1639,5 +1714,77 @@ module.exports = router;
 //
 //
 //
+function get_livesearch_html(all_pr_dat, info, user)
+{
+
+ html = '';
+  html += "<ul>";
+   
+
+   
+
+   for (i in all_pr_dat) { 
+      
+          var pid = all_pr_dat[i].pid 
+      
+          if(user.security_level === 1 || (info[pid].permissions.length === 0) || (info[pid].permissions.indexOf(user.user_id) !== -1) ) { 
+        
+            pname = all_pr_dat[i].name;
+            title = all_pr_dat[i].title;
+            datasets = all_pr_dat[i].datasets;
+            if(info[pid].public  === 1 || info[pid].public  === '1') { 
+              var status='public'; 
+            } else { 
+              var status = 'private'; 
+            } 
+            var tt_pj_id  = 'project-|-'+pname+'-|-'+title+'-|-'+status; 
+          
+            html += "<li>";
+            html += "  <label id='"+pname+"' class='project-select'>";
+            html += "    <a href='#'  id='"+ pname +"_toggle' class='project_toggle'>";
+            html += "      <img alt='plus' src='/images/tree_plus.gif'/>";
+            html += "    </a>";
+              
+            html += "    <input type='checkbox' class='project_toggle' id='"+ pname+"--pj-id'  name='project_names[]' value='"+ pname +"'/>";
+            html += "    <a href='/projects/"+pid+"'>";
+            html += "      <span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>";
+            if(status == 'public') {     
+              html += pname+"</span></a><small> <i>(public)</i></small>";
+            }else{ 
+                if(user.security_level === 1 ){
+                    html += pname+"</span></a></a><small> <i>(PI: "+info[pid].username +")</i></small>";
+                }else{ 
+                    html += pname+"</span></a></a>";
+                }
+            }
+            html += "  </label>";
+            html += "  <ul>";
+            html += "    <div id='"+ pname +"_ds_div' class='datasets_per_pr'>";
+           //     <!--  class='display_none' -->
+            for (k in datasets) { 
+              did = datasets[k].did; 
+              dname = datasets[k].dname;
+              ddesc = datasets[k].ddesc; 
+              pd = pname + '--' + dname; 
+              pass_thru_value = did + '--' + pname + '--' + dname;
+              var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc;
+              html += "       <li>";
+              html += "         <label id='"+pd+"' class='dataset-select'  >";
+              html += "            <input type='checkbox' id='"+pd+"' name='dataset_ids[]' class='dataset_check' value='"+did+"' onclick='checkme()'/>";
+              html += "           <span id='"+tt_ds_id+"' class='tooltip_pjds_list'>"+ dname +"</span>";
+              html += "        </label>";
+              html += "      </li>";
+            }
+            html += "  </div>";
+            html += "</ul>";
+            html += "</li>"
+
+        }
+     
+  }
+  html += "</ul>";
+  
+  return html;
+}
 
 

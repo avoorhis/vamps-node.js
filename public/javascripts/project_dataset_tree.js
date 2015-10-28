@@ -76,8 +76,11 @@ var uncheck_closed = function(parent_place) {
 };
 
 $(document).ready(function () {
-   
-  // by default everything is visible, in case there is no js
+   onPageLoad();
+});
+function onPageLoad(){
+  // All commands here in separate file so I can run them after changing project list
+    // by default everything is visible, in case there is no js
   $('.datasets_per_pr').addClass( "display_none" );
   
   // the minus sign should always close the tree AND uncheck all the ds cbs 
@@ -90,7 +93,8 @@ $(document).ready(function () {
   // minus_plus_sign
   $('a.project_toggle').click(function(){
     toggle_datasets(this);
-    // toggle_checking_all(this);  
+    // toggle_checking_all(this); 
+    
     var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');    
     toggle_checking_datasets(this, datasets_per_pr);
     toggle_plus_img(this);
@@ -100,8 +104,8 @@ $(document).ready(function () {
   
   // project checkbox
   $('input.project_toggle').click(function() {
-    
-	  var checkbox = $(this);
+     
+    var checkbox = $(this);
     $(this).prop('checked', false)
     var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
     
@@ -111,4 +115,5 @@ $(document).ready(function () {
     }
     toggle_checking_datasets(checkbox, datasets_per_pr);
   });
-});
+}
+
