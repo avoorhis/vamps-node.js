@@ -407,3 +407,9 @@ i.icon-minus-sign {
   font-size: 10px; 
   padding-bottom: 10px;
 }
+#filters_table td{
+   padding:3px;
+}
+#filters_table select{
+   width:140px;
+}

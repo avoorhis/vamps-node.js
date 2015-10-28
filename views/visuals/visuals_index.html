@@ -36,16 +36,16 @@
         <td style='width:100px;'>Filter Projects
           <!-- FILTER -->
           <div id='' class=''>
-            <table border='1' width='' style=''>
+            <table id='filters_table' border='1' width=''>
               <tr>
-                <td style='padding:3px'>by substring:<br>
+                <td>by substring:<br>
                   <input id="tax_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
                 </td>
               </tr>
               <tr>
-                <td style='padding:3px'>
+                <td>
                   by env source<br>
-                  <select id='env_source_select' style='width:120px'>
+                  <select id='env_source_select' >
                     <option>.....</option>
                     <% for(n in env_sources) { %>
                       <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
@@ -54,9 +54,9 @@
                 </td>
               </tr>
               <tr>
-                <td style='padding:3px'>
+                <td>
                   by domain/target<br>
-                  <select  id='target_select' style='width:120px'>
+                  <select  id='target_select'>
                     <option>.....</option>
                     <% for(n in targets) { %>
                       <option value='<%= targets[n] %>'><%= targets[n] %></option>
@@ -66,6 +66,7 @@
               </tr>
               
             </table>
+            <button id='clear_filters_btn_id' type='button' value='' class='btn btn-xs'>Clear Filters</button>
           </div>
         </td>
         <td>

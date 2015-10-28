@@ -1628,16 +1628,22 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     res.setHeader('Content-Type', 'text');
     res.download(file_path); // Set disposition and send it.
 });
+//
+//
+//
+router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 
+    html = get_livesearch_html(ALL_DATASETS.projects, PROJECT_INFORMATION_BY_PID, req.user);
+    res.send(html);
+});
 //
 //  LIVESEARCH PROJECTS FILTER
 //
 router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
   var q = req.params.q.toLowerCase();
   var info = PROJECT_INFORMATION_BY_PID 
-  console.log(q)
+  //console.log(q)
   
-
    var all_pr_dat = []
    if(q === '----'){
           
@@ -1685,7 +1691,7 @@ router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
 router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
   var q = req.params.q;
   var info = PROJECT_INFORMATION_BY_PID 
-  console.log(q)
+  //console.log(q)
   
    var all_pr_dat = []
    if(q === '.....'){          
@@ -1717,13 +1723,13 @@ module.exports = router;
 function get_livesearch_html(all_pr_dat, info, user)
 {
 
- html = '';
+  html = '';
   html += "<ul>";
    
 
    
 
-   for (i in all_pr_dat) { 
+  for (i in all_pr_dat) { 
       
           var pid = all_pr_dat[i].pid 
       
@@ -1782,8 +1788,7 @@ function get_livesearch_html(all_pr_dat, info, user)
         }
      
   }
-  html += "</ul>";
-  
+  html += "</ul>";  
   return html;
 }
 

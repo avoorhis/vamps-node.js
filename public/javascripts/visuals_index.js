@@ -8,6 +8,13 @@ if (typeof view_saved_datasets_btn !== 'undefined') {
 }
 
 
+var clear_filters_btn_id = document.getElementById('clear_filters_btn_id');
+if (typeof clear_filters_btn_id !== 'undefined') {
+	clear_filters_btn_id.addEventListener('click', function () {
+  	  clear_filters();
+	});
+}
+
 var env_source_select = document.getElementById('env_source_select');
 if (typeof env_source_select !== 'undefined') {
 	env_source_select.addEventListener('change', function () {
@@ -24,6 +31,25 @@ if (typeof target_select !== 'undefined') {
 //
 //
 //
+function clear_filters() {
+	
+	document.getElementById('target_select').value='.....';
+	document.getElementById('env_source_select').value='.....';
+  document.getElementById('tax_search_id').value='';
+  var xmlhttp = new XMLHttpRequest();  
+	xmlhttp.open("GET", "/visuals/clear_filters", true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      onPageLoad();
+    }
+  }
+  xmlhttp.send();
+}
+//
+//
+//
 function filter_by_env() {
 
 	var xmlhttp = new XMLHttpRequest();  
@@ -32,13 +58,12 @@ function filter_by_env() {
   document.getElementById('target_select').value='.....';
   document.getElementById('tax_search_id').value='';
 
-  xmlhttp.open("GET","/visuals/livesearch_env/"+env_source_id,true);
+  xmlhttp.open("GET", "/visuals/livesearch_env/"+env_source_id, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
       document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
-      onPageLoad();
-      
+      onPageLoad();      
     }
   }
  
@@ -53,13 +78,12 @@ function filter_by_target() {
 	var target =   document.getElementById('target_select').value;
 	document.getElementById('env_source_select').value='.....';
 	document.getElementById('tax_search_id').value='';
-  xmlhttp.open("GET","/visuals/livesearch_target/"+target,true);
+  xmlhttp.open("GET", "/visuals/livesearch_target/"+target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
       document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
-      onPageLoad();
-      
+      onPageLoad();      
     }
   }
  
@@ -77,13 +101,12 @@ function showLiveProjectNames(str) {
   document.getElementById('target_select').value='.....';
 
   var xmlhttp = new XMLHttpRequest();  
-  xmlhttp.open("GET","/visuals/livesearch_projects/"+str,true);
+  xmlhttp.open("GET", "/visuals/livesearch_projects/"+str, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
       document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
-      onPageLoad();
-      
+      onPageLoad();      
     }
   }
  
