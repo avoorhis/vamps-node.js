@@ -1644,20 +1644,24 @@ router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
   var info = PROJECT_INFORMATION_BY_PID 
   //console.log(q)
   
-   var all_pr_dat = []
-   if(q === '----'){
+  var all_pr_dat = []
+  if(q === '----'){
           
           all_pr_dat = ALL_DATASETS.projects
-    }else{ 
+  }else{ 
           ALL_DATASETS.projects.forEach(function(prj) {
             lcname = prj.name.toLowerCase();
             if(lcname.indexOf(q) != -1){
               all_pr_dat.push(prj);        
             }
           });
-    }
+  }
 
-   html = get_livesearch_html(all_pr_dat, info, req.user);
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
   res.send(html);
 
 });
@@ -1670,18 +1674,21 @@ router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
   var info = PROJECT_INFORMATION_BY_PID 
   //console.log(PROJECT_INFORMATION_BY_PID)
   
-   var all_pr_dat = []
-   if(q === '.....'){          
+  var all_pr_dat = []
+  if(q === '.....'){          
           all_pr_dat = ALL_DATASETS.projects
-    }else{
+  }else{
           ALL_DATASETS.projects.forEach(function(prj) {
             if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
               all_pr_dat.push(prj);        
             }
           });
-    }
-
-  html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
   res.send(html);
 
 });
@@ -1693,10 +1700,10 @@ router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
   var info = PROJECT_INFORMATION_BY_PID 
   //console.log(q)
   
-   var all_pr_dat = []
-   if(q === '.....'){          
+  var all_pr_dat = []
+  if(q === '.....'){          
           all_pr_dat = ALL_DATASETS.projects
-    }else{
+  }else{
           ALL_DATASETS.projects.forEach(function(prj) {
             pparts = prj.name.split('_');
             last_el = pparts[pparts.length - 1]
@@ -1704,9 +1711,13 @@ router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
               all_pr_dat.push(prj);        
             }
           });
-    }
+  }
 
-   html = get_livesearch_html(all_pr_dat, info, req.user);
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
    res.send(html);
 
 });
@@ -1726,9 +1737,6 @@ function get_livesearch_html(all_pr_dat, info, user)
   html = '';
   html += "<ul>";
    
-
-   
-
   for (i in all_pr_dat) { 
       
           var pid = all_pr_dat[i].pid 
