@@ -98,11 +98,17 @@ var uncheck_closed = function(parent_place) {
 };
 
 $(document).ready(function () {
-   onPageLoad();
+      onPageLoad();
+
+      if(! filtering){         
+        clear_filters(); 
+      }
 });
 function onPageLoad(){
   // All commands here in separate file so I can run them after changing project list
     // by default everything is visible, in case there is no js
+  
+  //alert(substring_filter)
   $('.datasets_per_pr').addClass( "display_none" );
   
   // the minus sign should always close the tree AND uncheck all the ds cbs 
@@ -142,8 +148,9 @@ function onPageLoad(){
 //
 //
 //
+
 function clear_filters() {
-  
+  filtering = 0;  
   document.getElementById('target_select').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('tax_search_id').value='';
@@ -162,7 +169,7 @@ function clear_filters() {
 //
 //
 function filter_by_env() {
-
+  filtering = 1;
   var xmlhttp = new XMLHttpRequest();  
   
   var env_source_id =  document.getElementById('env_source_select').value;
@@ -184,7 +191,7 @@ function filter_by_env() {
 //
 //
 function filter_by_target() {
-
+  filtering = 1;
   var xmlhttp = new XMLHttpRequest(); 
   var target =   document.getElementById('target_select').value;
   document.getElementById('env_source_select').value='.....';
@@ -204,7 +211,7 @@ function filter_by_target() {
 //  SHOW  RESULTS for project Search
 //
 function showLiveProjectNames(str) {
-
+  filtering = 1
   if (str.length==0) {
     str = '----';  // cannot be empty string : (hopefully no-one will search for this)
   }

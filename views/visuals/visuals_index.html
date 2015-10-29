@@ -2,6 +2,12 @@
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
+<% filtering = 0 %>
+
+<script>
+ var filtering  =  <%= filtering  %>
+ 
+</script>
 <div class='title'>Community Visualization</div>
 
 <div class='subtitle'>Dataset Selection Page</div>
@@ -102,11 +108,6 @@
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 <script>
-
-    $(document).ready(function(){
-      // this loads the project tree on first open
-      clear_filters();       
-    });
 
     // code for tooltips
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),

@@ -248,7 +248,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   console.log(ALL_DATASETS);
   res.render('visuals/visuals_index', {
                                 title    : 'VAMPS: Select Datasets',
-                                rows     : JSON.stringify(ALL_DATASETS),
+                                //rows     : JSON.stringify(ALL_DATASETS),
                                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants: JSON.stringify(req.C),
 	  							              message  : req.flash('nodataMessage'),
