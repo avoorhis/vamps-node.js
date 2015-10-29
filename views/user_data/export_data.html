@@ -1,8 +1,8 @@
 <% include ../add_ins/begin.ejs %>
 <% var info = JSON.parse(proj_info) %>
-<script>
-  //referer_local = 
-</script>
+<% var env_sources = JSON.parse(constants).ENV_SOURCE %>
+<% var targets = JSON.parse(constants).TARGETS %>
+
 <div class='title'>Export Data</div>
 
 <div class='subtitle'>Dataset Selection Page</div>
@@ -15,6 +15,7 @@
 
       <table class='table table-bordered'>
         <tr>
+          <td></td>
           <td>
               <button type="button" class="btn btn-xs btn-primary"  id="view_saved_datasets_btn">View Saved Datasets</button>
 			  <h4>Select Datasets Below:</h4>
@@ -31,12 +32,52 @@
           </td>
           </tr>
           <tr>
+            <td style='width:100px;'>Filter Projects
+              <!-- FILTER -->
+              <div id='' class=''>
+                <table id='filters_table' border='1' width=''>
+                  <tr>
+                    <td>by substring:<br>
+                      <input id="tax_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      by env source<br>
+                      <select id='env_source_select' >
+                        <option>.....</option>
+                        <% for(n in env_sources) { %>
+                          <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
+                        <% } %>
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      by domain/target<br>
+                      <select  id='target_select'>
+                        <option>.....</option>
+                        <% for(n in targets) { %>
+                          <option value='<%= targets[n] %>'><%= targets[n] %></option>
+                        <% } %>
+                      </select>
+                    </td>
+                  </tr>
+                  
+                </table>
+                <button id='clear_filters_btn_id' type='button' value='' class='btn btn-xs'>Clear Filters</button>
+              </div>
+            </td>
+
+
+
+          
           <td>
             <div id='projects_select_div'>
-				<% include ../visuals/all_projects_datasets_list.html %>
-			</div>
+				
+			      </div>
           </td>
-		  <td class='td_top'>			  
+		      <td class='td_top'>			  
 			  
               See the next page for a list of choices:
               <ul>
@@ -44,7 +85,7 @@
                 <li>-- TaxByTax, TaxByRef and TaxBySeq files (csv)
                 <li>-- Metadata (csv)
               </ul>
-		  </td>
+		      </td>
         </tr>
       </table>
 	  
@@ -58,7 +99,11 @@
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 <script>
-// code for tooltips
+    $(document).ready(function(){
+      // this loads the project tree on first open
+      clear_filters();       
+    });
+    // code for tooltips
 
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
         $win = $(window),

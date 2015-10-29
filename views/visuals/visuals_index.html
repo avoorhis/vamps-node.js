@@ -71,7 +71,7 @@
         </td>
         <td>
             <div id='projects_select_div'>
-				      <% include all_projects_datasets_list.html %>
+				      <!-- project tree is first loaded on document.ready{ clear_filters() } see below-->
 			     </div>
         </td>
       
@@ -102,8 +102,13 @@
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
 <script>
-// code for tooltips
 
+    $(document).ready(function(){
+      // this loads the project tree on first open
+      clear_filters();       
+    });
+
+    // code for tooltips
     var $liveTip_pjds = $('<div id="livetip_pjds"></div>').hide().appendTo('body'),
         $win = $(window),
         showTip;
