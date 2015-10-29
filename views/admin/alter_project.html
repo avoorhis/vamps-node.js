@@ -85,7 +85,7 @@
 						      
 						      <tr>
 						      <form id='' name='update_ptitle_form' method='POST' action='update_ptitle'>
-						       <td>Project Title</td><td><%= pinfo[pid_to_open].title %></td>
+						       <td>Project Title</td><td><span><%= pinfo[pid_to_open].title %></span></td>
 						       <td><input type='edit' id='new_ptitle' name='new_ptitle' value='<%= pinfo[pid_to_open].title %>' width='200' style='width: 200px'/></td>
 						       <td><input id='new_ptitle_btn' type='button' value='Update' onclick="update_project('ptitle', '<%= pid_to_open %>')"></td>
 						       <td><div id='new_ptitle_response_id'></div></td>
@@ -94,7 +94,7 @@
 						      
 						      <tr>
 						      <form id='' name='update_pdesc_form' method='POST' action='update_pdesc'>
-						       <td>Project Description</td><td><%= pinfo[pid_to_open].description %></td>
+						       <td>Project Description</td><td><span><%= pinfo[pid_to_open].description %></span></td>
 						       <td><textarea id='new_pdesc' name='new_pdesc'  value='<%= pinfo[pid_to_open].description %>' rows='2' cols='28'><%= pinfo[pid_to_open].description %></textarea></td>
 						       <td><input id='new_pdesc_btn' type='button' value='Update' onclick="update_project('pdesc', '<%= pid_to_open %>')"></td>
 						       <td><div id='new_pdesc_response_id'></div></td>

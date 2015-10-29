@@ -1947,7 +1947,7 @@ function update_dataset_names(config_info){
 		for(var n in config_info.datasets){
 
 					old_name_path = path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].oldname);
-					new_name_path =path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].dsname);
+					new_name_path = path.join(config_info.baseoutputdir,'analysis',config_info.datasets[n].dsname);
 					console.log(old_name_path);
 					console.log(new_name_path);
 					fs.move(old_name_path, new_name_path, function(err){

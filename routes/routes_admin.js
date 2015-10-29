@@ -248,7 +248,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
 
       html += '<tr>';
       html += "<form id='' name='update_ptitle_form' method='POST' action='update_ptitle'>";
-      html += ' <td>Project Title</td><td>'+info.title+'</td>';
+      html += ' <td>Project Title</td><td><span>'+info.title+'</span></td>';
       html += " <td><input type='edit' id='new_ptitle' name='new_ptitle' value='"+info.title+"' width='200' style='width: 200px'/></td>";
       html += " <td><input id='new_ptitle_btn' type='button' value='Update' onclick=\"update_project('ptitle', '"+selected_pid+"')\"></td>";
       html += " <td><div id='new_ptitle_response_id'></div></td>";
@@ -257,7 +257,7 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
 
       html += '<tr>';
       html += "<form id='' name='update_pdesc_form' method='POST' action='update_pdesc'>";
-      html += ' <td>Project Description</td><td>'+info.description+'</td>';
+      html += ' <td>Project Description</td><td><span>'+info.description+'</span></td>';
       html += " <td><textarea id='new_pdesc' name='new_pdesc'  value='"+info.description+"' rows='2' cols='28'>"+info.description+"</textarea></td>";
       html += " <td><input id='new_pdesc_btn' type='button' value='Update' onclick=\"update_project('pdesc', '"+selected_pid+"')\"></td>";
       html += " <td><div id='new_pdesc_response_id'></div></td>";
