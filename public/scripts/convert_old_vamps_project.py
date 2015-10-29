@@ -610,6 +610,8 @@ def get_metadata(args):
     TMP_METADATA_ITEMS = {}
     for line in lines:
         #print line
+        if not line:
+            continue
         if line[0] == 'dataset' and line[1] == 'parameterName':
             headers = line
         else:

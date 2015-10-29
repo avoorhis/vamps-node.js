@@ -10,21 +10,16 @@
 
 </div>
 </div>
-  
+ 
 <% include ../add_ins/end.ejs %>
+
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
-<script type="text/javascript" src="/javascripts/jquery-ui.min.js"></script>
-  <script>
-  $(function() {
-    $( document ).tooltip();
+
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
   });
-  $("body").tooltip({
-    open: function (event, ui) {
-        ui.tooltip.css("max-width", "800px");
-        ui.tooltip.css("font-size", "12px");
-    }
-	});
-  </script>
-  
+</script>
+
 </body>
 </html>

@@ -218,23 +218,15 @@ td.left_justify {
   text-decoration: none;
   color: navy;
 }
-/*
-.btn-file input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 100%;
-    min-height: 100%;
-    font-size: 100px;
-    text-align: right;
-    filter: alpha(opacity=0);
-    opacity: 0;
-    outline: none;
-    background: white;
-    cursor: inherit;
-    display: block;
-}
-*/
+/* bootstrap tooltips (see project_index.html) */
+.tooltip > .tooltip-inner {
+    background-color: black; 
+    color: #FFFFFF; 
+    border: 1px solid green;
+    padding: 15px;
+    font-size: 12px;
+    max-width: 600px;
+  }
 
 .admin_table {
   border:1px solid black;
