@@ -98,11 +98,10 @@ var uncheck_closed = function(parent_place) {
 };
 
 $(document).ready(function () {
+      
       onPageLoad();
-
-      if(! filtering){         
-        clear_filters(); 
-      }
+      clear_filters();
+      
 });
 function onPageLoad(){
   // All commands here in separate file so I can run them after changing project list

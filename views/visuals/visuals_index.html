@@ -1,12 +1,13 @@
+
 <% include ../add_ins/begin.ejs %>
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
-<% filtering = 0 %>
+<% if(filtering == undefined){ %>
+<%  filtering = 0 %>
+<% } %>
 
-<script>
- var filtering  =  <%= filtering  %> 
-</script>
+
 <div class='title'>Community Visualization</div>
 
 <div class='subtitle'>Dataset Selection Page</div>

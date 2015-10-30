@@ -7,15 +7,16 @@ var path  = require('path');
 router.get('/portals_index', function(req, res) {
     res.render('portals/portals_index', { 
     		title: 'VAMPS:Portals',
-        user: req.user,hostname: req.C.hostname,
+            user: req.user,hostname: req.C.hostname,
     		message:'',
                           });
 });
 router.get('/visuals_index/:portal', function(req, res) {
     console.log('in portals visuals_index')
     console.log(ALL_DATASETS);
+    
     var portal = req.params.portal;
-    console.log('portal '+portal);
+    console.log('xportal '+portal);
     var some_datasets = {}
     some_datasets.projects = []
     ALL_DATASETS.projects.forEach(function(prj) {
@@ -24,12 +25,15 @@ router.get('/visuals_index/:portal', function(req, res) {
         some_datasets.projects.push(prj);        
       }
     });
+    SHOW_DATA = some_datasets;
     console.log('some'+JSON.stringify(some_datasets));
     res.render('visuals/visuals_index', { 
             title: 'VAMPS:Portals_Index',
-            rows     : JSON.stringify(some_datasets),
+            //rows     : JSON.stringify(some_datasets),
             proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants: JSON.stringify(req.C),
+            filtering: 0,
+            //portal_name: portal,
             user: req.user,hostname: req.C.hostname,
             message:'',
                           });

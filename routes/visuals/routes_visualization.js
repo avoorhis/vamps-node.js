@@ -246,13 +246,16 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   console.log(ALL_DATASETS);
+  SHOW_DATA = ALL_DATASETS;
   res.render('visuals/visuals_index', {
-                                title    : 'VAMPS: Select Datasets',
+                                title      : 'VAMPS: Select Datasets',
                                 //rows     : JSON.stringify(ALL_DATASETS),
-                                proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants: JSON.stringify(req.C),
-	  							              message  : req.flash('nodataMessage'),
-                                user     : req.user,hostname: req.C.hostname,
+                                proj_info  : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                constants  : JSON.stringify(req.C),
+                                filtering  : 0,
+                                //portal_name: 'none',
+	  							              message    : req.flash('nodataMessage'),
+                                user       : req.user,hostname: req.C.hostname,
                             });
 });
 
@@ -1633,7 +1636,7 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 
-    html = get_livesearch_html(ALL_DATASETS.projects, PROJECT_INFORMATION_BY_PID, req.user);
+    html = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     res.send(html);
 });
 //
@@ -1647,9 +1650,9 @@ router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
   var all_pr_dat = []
   if(q === '----'){
           
-          all_pr_dat = ALL_DATASETS.projects
+          all_pr_dat = SHOW_DATA.projects
   }else{ 
-          ALL_DATASETS.projects.forEach(function(prj) {
+          SHOW_DATA.projects.forEach(function(prj) {
             lcname = prj.name.toLowerCase();
             if(lcname.indexOf(q) != -1){
               all_pr_dat.push(prj);        
@@ -1676,9 +1679,9 @@ router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
   
   var all_pr_dat = []
   if(q === '.....'){          
-          all_pr_dat = ALL_DATASETS.projects
+          all_pr_dat = SHOW_DATA.projects
   }else{
-          ALL_DATASETS.projects.forEach(function(prj) {
+          SHOW_DATA.projects.forEach(function(prj) {
             if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
               all_pr_dat.push(prj);        
             }
@@ -1702,9 +1705,9 @@ router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
   
   var all_pr_dat = []
   if(q === '.....'){          
-          all_pr_dat = ALL_DATASETS.projects
+          all_pr_dat = SHOW_DATA.projects
   }else{
-          ALL_DATASETS.projects.forEach(function(prj) {
+          SHOW_DATA.projects.forEach(function(prj) {
             pparts = prj.name.split('_');
             last_el = pparts[pparts.length - 1]
             if(last_el === q){
