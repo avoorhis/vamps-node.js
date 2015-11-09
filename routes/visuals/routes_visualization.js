@@ -246,6 +246,7 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   console.log(ALL_DATASETS);
+  // GLOBAL
   SHOW_DATA = ALL_DATASETS;
   res.render('visuals/visuals_index', {
                                 title      : 'VAMPS: Select Datasets',
@@ -567,12 +568,14 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     console.log('in PCoA');
     //console.log(metadata);
     var ts = req.body.ts;
+    var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var metric = req.body.metric;
     var image_type = req.body.image_type;
+    var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.svg';
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
-    
+    var tmp_path = path.join(process.env.PWD,'tmp');
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
     
@@ -583,10 +586,14 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
           scriptPath : 'public/scripts',
           args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
         };
-        console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        
-        var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+        var options2 = {
+          scriptPath : 'public/scripts',
+          args :       [ tmp_path, ts, metric, image_file],
+        };
+        console.log(options2.scriptPath+'/pcoa.R '+options2.args.join(' '));
+        //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+        var pcoa_process = spawn( options2.scriptPath+'/pcoa.R', options2.args, {
+            env:{'PATH':req.config.PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
             //stdio: 'pipe' // stdin, stdout, stderr
@@ -598,18 +605,46 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             //distance_matrix = JSON.parse(output);
             //var last_line = ary[ary.length - 1];
             if(code === 0){   // SUCCESS       
-              var image = path.join('/',ts+'_pcoa.pdf');              
-              var html = "<div id='pdf'>";
-              html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-              html += " <p>ERROR in loading pdf file</p>";
-              html += "</object></div>";
-              //console.log(html);                 
-              res.send(html);                                    
+                
+              html = "<img src='/"+image_file+"'>";                               
             }else{
                 console.log('ERROR');
-                res.send('PCoA Python Error');
-            }      
+                html='PCoA Script Error';
+            } 
+
+            res.send(html);
+
         });   
+
+
+
+
+
+        // var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
+        //     env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+        //     detached: true, 
+        //     stdio: [ 'ignore', null, log ]
+        //     //stdio: 'pipe' // stdin, stdout, stderr
+        // });  
+    
+        
+        // pcoa_process.on('close', function (code) {
+        //     //console.log('pcoa_process process exited with code ' + code+' -- '+output);
+        //     //distance_matrix = JSON.parse(output);
+        //     //var last_line = ary[ary.length - 1];
+        //     if(code === 0){   // SUCCESS       
+        //       var image = path.join('/',ts+'_pcoa.pdf');              
+        //       var html = "<div id='pdf'>";
+        //       html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+        //       html += " <p>ERROR in loading pdf file</p>";
+        //       html += "</object></div>";
+        //       //console.log(html);                 
+        //       res.send(html);                                    
+        //     }else{
+        //         console.log('ERROR');
+        //         res.send('PCoA Python Error');
+        //     }      
+        // });   
         
         
     }else if(image_type == '3d'){

@@ -20,21 +20,57 @@ router.get('/visuals_index/:portal', function(req, res) {
     var some_datasets = {}
     some_datasets.projects = []
     ALL_DATASETS.projects.forEach(function(prj) {
-      parts = prj.name.split('_')
-      if(parts[0] == portal){  // UC, ICM, HMP, MBE ....
+      
+      if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
         some_datasets.projects.push(prj);        
       }
     });
+    // GLOBAL
     SHOW_DATA = some_datasets;
-    console.log('some'+JSON.stringify(some_datasets));
+    
     res.render('visuals/visuals_index', { 
-            title: 'VAMPS:Portals_Index',
+            title     : 'VAMPS:Portals_Index',
             //rows     : JSON.stringify(some_datasets),
-            proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            constants: JSON.stringify(req.C),
-            filtering: 0,
+            proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            constants : JSON.stringify(req.C),
+            filtering : 0,
             //portal_name: portal,
+            user      : req.user,hostname: req.C.hostname,
+            message   :'',
+                          });
+});
+//
+// PROJECTS
+//
+router.get('/projects/:portal', function(req, res) {
+    var portal = req.params.portal;
+    some_datasets = []
+    ALL_DATASETS.projects.forEach(function(prj) {
+      //project = PROJECT_INFORMATION_BY_PID[pid].project
+      if(prj.name.indexOf(portal) === 0 ){  // UC, ICM, HMP, MBE ....
+        some_datasets.push(prj.pid);        
+      }
+    });
+    console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
+    res.render('portals/projects', { 
+            title     : 'VAMPS:'+portal+'Portals',
+            user      : req.user,hostname: req.C.hostname,
+            portal    : portal,
+            pinfo : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            data      : some_datasets,
+            message   : '',
+                          });
+});
+//
+// METADATA
+//
+router.get('/metadata/:portal', function(req, res) {
+    var portal = req.params.portal;
+
+    res.render('portals/metadata', { 
+            title: 'VAMPS:'+portal+' Portal Metadata',
             user: req.user,hostname: req.C.hostname,
+            portal:portal,
             message:'',
                           });
 });

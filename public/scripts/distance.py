@@ -398,7 +398,7 @@ def pcoa_pdf(args, data):
         import pylab
         from pylab import rcParams      
         import matplotlib.pyplot as plt
-
+        
 
         metadata = {}
         try:

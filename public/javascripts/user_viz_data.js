@@ -38,65 +38,65 @@ var tip = {
     });
   }
 };
-$("body").delegate(".tooltip_user", "mouseover mouseout mousemove", function (event) {
-      var link = this,
-      html = '';
-      $link = $(this);
+// $("body").delegate(".tooltip_user", "mouseover mouseout mousemove", function (event) {
+//       var link = this,
+//       html = '';
+//       $link = $(this);
      
-      if (event.type == 'mouseover') {
-        tip.id = link.id;
-		//alert(tip.id)
-        link.id = '';
-        id_items = tip.id.split('-|-');
-        html = "<table><tr>";
-        if(id_items[0] == 'dheatmap') {
-          html += "<td>"+id_items[1]+"</td>";
-          html += "</tr><tr>";
-          html += "<td>"+id_items[2]+"</td>";
-          html += "</tr><tr>";
-          html += "<td>Distance: "+id_items[3]+"</td>";
-        }else if(id_items[0] == 'frequencies'){
-          html += "<td>"+id_items[1]+"</td>";
-          html += "</tr><tr>";
-          html += "<td>"+id_items[2]+"</td>";
-          html += "</tr><tr>";
-          html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
-        }else{  // barcharts and piecharts            
-          html += "<td>"+id_items[1]+"</td>";
-          html += "</tr><tr>";
-          html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
-        }
-        html += "</tr><table>";
+//       if (event.type == 'mouseover') {
+//         tip.id = link.id;
+// 		//alert(tip.id)
+//         link.id = '';
+//         id_items = tip.id.split('-|-');
+//         html = "<table><tr>";
+//         if(id_items[0] == 'dheatmap') {
+//           html += "<td>"+id_items[1]+"</td>";
+//           html += "</tr><tr>";
+//           html += "<td>"+id_items[2]+"</td>";
+//           html += "</tr><tr>";
+//           html += "<td>Distance: "+id_items[3]+"</td>";
+//         }else if(id_items[0] == 'frequencies'){
+//           html += "<td>"+id_items[1]+"</td>";
+//           html += "</tr><tr>";
+//           html += "<td>"+id_items[2]+"</td>";
+//           html += "</tr><tr>";
+//           html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
+//         }else{  // barcharts and piecharts            
+//           html += "<td>"+id_items[1]+"</td>";
+//           html += "</tr><tr>";
+//           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
+//         }
+//         html += "</tr><table>";
 
-        showTip = setTimeout(function() {
+//         showTip = setTimeout(function() {
      
-          $link.data('tipActive', true);
+//           $link.data('tipActive', true);
           
-          tip.position(event);
-     //alert(event.pageX)
-          $liveTip
-          .html('<div>' + html  + '</div>')
-          .fadeOut(0)
-          .fadeIn(200);
+//           tip.position(event);
+//      //alert(event.pageX)
+//           $liveTip
+//           .html('<div>' + html  + '</div>')
+//           .fadeOut(0)
+//           .fadeIn(200);
      
-        }, tip.delay);
-      }
+//         }, tip.delay);
+//       }
      
-      if (event.type == 'mouseout') {
-        link.id = tip.id || link.id;
-        if ($link.data('tipActive')) {
-          $link.removeData('tipActive');
-          $liveTip.hide();
-        } else {
-          clearTimeout(showTip);
-        }
-      }
+//       if (event.type == 'mouseout') {
+//         link.id = tip.id || link.id;
+//         if ($link.data('tipActive')) {
+//           $link.removeData('tipActive');
+//           $liveTip.hide();
+//         } else {
+//           clearTimeout(showTip);
+//         }
+//       }
      
-      if (event.type == 'mousemove' && $link.data('tipActive')) {
-        tip.position(event);
-      }
+//       if (event.type == 'mousemove' && $link.data('tipActive')) {
+//         tip.position(event);
+//       }
               
-});              
+// });              
 
 $(document).ready(function() {  
 
@@ -171,12 +171,20 @@ function get_single_bar_html(obj){
 	var html ='';
 	html += "<div class='overflow_500'>";
 	html += "<table class='table table-condensed overflow200'>";
-	html += '<tr><td width="25">color</td><td>Taxonomy</td><td>Count</td></tr>';
-	for(n in obj.rows){
+	html += "<tr><td width='25' >color</td><td>Taxonomy</td><td>Count</td></tr>";
+	var total = 0;
+  for(n in obj.rows){
+    total += parseInt(obj.data[n]);
+  }
+  for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n].id)
 			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id);
-			html += "<tr><td style='background-color:"+color+"'></td><td><a href='"+link+"'>"+obj.rows[n].id+'</a></td><td>'+obj.data[n]+'</td></tr>';
+			var pct = ((obj.data[n] / total)*100).toFixed(2);
+      var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
+      
+      html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
+      html += "<td><a href='"+link+"'>"+obj.rows[n].id+'</a></td><td>'+obj.data[n]+"</td></tr>";
 		}
 	}
 	html += '</table></div>';
