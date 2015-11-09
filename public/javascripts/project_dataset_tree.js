@@ -85,7 +85,7 @@ var toggle_plus_img = function(clicked) {
 
 var checkme = function(){
   //var dataset_ids = document.getElementsByName('dataset_ids');
-  alert('dataset_ids[0].value')
+  //alert('dataset_ids[0].value')
 };
 
 var uncheck_closed = function(parent_place) {

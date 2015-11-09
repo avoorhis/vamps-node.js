@@ -1286,7 +1286,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     console.log(JSON.stringify(new_matrix))
 	
   	res.render('visuals/user_viz_data/bar_single', {
-        title: 'Dataset Taxonomic Data',
+        title: 'Taxonomic Data',
         ts: ts || 'default_timestamp',
   		  matrix    :           JSON.stringify(new_matrix),
   		  post_items:           JSON.stringify(visual_post_items),
