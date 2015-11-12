@@ -99,15 +99,13 @@ points.axis12<-pcoa$vectors[,1:2]
 points.axis13<-pcoa$vectors[,1:3]
 points.axis23<-pcoa$vectors[,2:3]
 #print(meta_table$env_feature)
+
 # makes 3 accross
-
 par(mfrow=c(2,3))
-
-
 
 ymax=par('usr')[4]
 xmax=par('usr')[2]
-max_md_items_for_legend = 21
+max_md_items_for_legend = 25
 for(md_name in colnames(meta_table))
 {
     print(md_name)
@@ -150,8 +148,8 @@ for(md_name in colnames(meta_table))
 				with(meta_table, points(points.axis23,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
 				#with(meta_table, legend(x=xmax+0.05, y=ymax, legend=l, col=colvec, title=mdname,  cex=0.1))
 				if(lcount < max_md_items_for_legend){
-					#legend("topright", inset=c(-0.3,0), legend=l, col=colvec, fill=colvec, border='black', title=mdname)
-					legend(x=0.2, y=0.1, legend=l, col=colvec, fill=colvec, border='black', title=mdname)			
+					legend("topleft", inset=c(1.05,0), legend=l, col=colvec, fill=colvec, border='black', title=mdname)
+					#legend(x=0.2, y=0.1, legend=l, col=colvec, fill=colvec, border='black', title=mdname)			
 				}else{
 					#legend("topright", inset=c(-0.3,0), legend=c('(too many divisions','- maximum is 20)'), title=mdname)
 					legend(x=0.2, y=0.1, legend=c('(too many divisions',paste('- maximum is ',max_md_items_for_legend,')')), title=mdname)	
