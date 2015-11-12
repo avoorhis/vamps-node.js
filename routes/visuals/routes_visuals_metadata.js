@@ -37,7 +37,12 @@ module.exports = {
 					if(did in METADATA) {
 						ds_row[name] = METADATA[did][name];
 						metadata2[pjds][name] = METADATA[did][name];
-						txt2 += "\t" + metadata2[pjds][name];
+						
+						if(metadata2[pjds][name] == '' || metadata2[pjds][name] == undefined){
+							txt2 += "\tundefined";
+						}else{
+							txt2 += "\t" + metadata2[pjds][name];
+						}
 					}else{
 						txt2 += "\tno_value";
 					}
@@ -92,7 +97,11 @@ module.exports = {
 					if(did in METADATA) {
 						ds_row[name] = METADATA[did][name];
 						metadata2[pjds][name] = METADATA[did][name];
-						txt2 += "\t" + metadata2[pjds][name];
+						if(metadata2[pjds][name] == ''){
+							txt2 += "\tundefined";
+						}else{
+							txt2 += "\t" + metadata2[pjds][name];
+						}
 					}else{
 						txt2 += "\tno_value";
 					}

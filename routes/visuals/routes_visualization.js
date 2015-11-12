@@ -571,7 +571,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var metric = req.body.metric;
     var image_type = req.body.image_type;
-    var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.svg';
+    var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     var pwd = process.env.PWD || req.config.PROCESS_DIR;
@@ -582,17 +582,17 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     
     if(image_type == '2d'){
         
-        var options = {
-          scriptPath : 'public/scripts',
-          args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
-        };
+        // var options = {
+        //   scriptPath : 'public/scripts',
+        //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
+        // };
         var options2 = {
           scriptPath : 'public/scripts',
           args :       [ tmp_path, ts, metric, image_file],
         };
-        console.log(options2.scriptPath+'/pcoa.R '+options2.args.join(' '));
+        console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
         //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        var pcoa_process = spawn( options2.scriptPath+'/pcoa.R', options2.args, {
+        var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
             env:{'PATH':req.config.PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
@@ -606,7 +606,14 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
             //var last_line = ary[ary.length - 1];
             if(code === 0){   // SUCCESS       
                 
-              html = "<img src='/"+image_file+"'>";                               
+              //html = "<img src='/"+image_file+"'>";
+              //var image = path.join('/tmp/',image_file);              
+              var html = "<div id='pdf'>";
+              html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
+              html += " <p>ERROR in loading pdf file</p>";
+              html += "</object></div>";
+              //console.log(html);                 
+                                                        
             }else{
                 console.log('ERROR');
                 html='PCoA Script Error';
@@ -1224,7 +1231,6 @@ function get_sumator(req){
     }
     return sumator;
 }
-
 
 
 

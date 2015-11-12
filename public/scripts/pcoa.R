@@ -28,21 +28,22 @@ MAP <- import_qiime_sample_data(map_file)
 # the QIIME map file doesnt work well: linkerprimersequence,project,dataset,dataset_description
 #mtx<-read.delim(matrix_in, header=T,sep="\t",check.names=TRUE,row.names=1);
 #md<-read.delim(metadata_in, header=T,sep="\t",check.names=TRUE,row.names=1);
-tmp_matrix <- as.matrix(OTU[rowSums(OTU) > 0,])
+tmp_matrix <- t(as.matrix(OTU[rowSums(OTU) > 0,]))
 
 #print(tmp_matrix)
 #print(MAP)
-
-ncols<-ncol(tmp_matrix)  #datasets
+myrownames<-row.names(tmp_matrix)
+ncols<-ncol(tmp_matrix)  
 nrows<-nrow(tmp_matrix)
-print(ncols)
-print(nrows)
+#print(ncols) # taxa
+#print(nrows) #datasets
 
+row.names(tmp_matrix) <- NULL   
+#print(tmp_matrix)
+#q()
 
-print(class(tmp_matrix))
+stand <-decostand(tmp_matrix,"total");
 
-
-stand <-decostand(t(tmp_matrix),"total");
 if(metric=="horn" || metric=="morisita_horn")
 {
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
@@ -73,19 +74,14 @@ if(metric=="horn" || metric=="morisita_horn")
     metric_text<-"Morisita-Horn"
 }
 
-
-# k=4 unless #dataset <= 4 
-# then k = #dataset-1
-k<-4
-if(ncols <= 4 ){
-	k<-ncols-1
-}
-# labdsv pco not working on vamps
-#pcoa <- pco(d, k=k)
 #print(d)
-# ape pcoa
+#q()
+
+
 pcoa_data <- pcoa(d)
-#print(pcoa)
+#print(pcoa_data)
+
+
 # pcoa$points provides the points for all of the samples (matrix columns), and I have conveniently named my matrix columns
 # this gives a new matrix with only the 
 #print(md)
@@ -102,29 +98,9 @@ for(md_name in colnames(MAP))
 #//      axes = FALSE, main = "pcoa (ape)")
 #// text(pcoa$vectors[,1], pcoa$vectors[,2], 
 #//      cex = 0.9, xpd = TRUE)
-     
+   
 
-     
-# point_file <- paste(tmp_path,'/',prefix,'_pcoa_matrix_outR.txt',sep='')
-# cat("pc vector number\n", file = point_file)
-
-# write.table(pcoa$vectors[,c(1,2,3,4)], file = point_file, append = TRUE, quote = FALSE, col.names = FALSE, sep="\t" )
-# #write.table(pcoa$vectors, file = point_file, append = TRUE, quote = FALSE, col.names = FALSE, sep="\t" )
-
-# # creating this for make_emperor.py qiime script
-# cat("\n\neigvals\t", append = TRUE, file = point_file)
-# #eig_vals <- paste(pcoa$eig[1], pcoa$eig[2], pcoa$eig[3], pcoa$eig[4], sep="\t")
-# eig_vals <- pcoa$values[,c(1)]
-# eig_vals_show <- paste(eig_vals[1], eig_vals[2], eig_vals[3], eig_vals[4], sep="\t")
-# cat(eig_vals_show, append = TRUE, file = point_file)
-# sum_eigs <- sum(eig_vals)
-# #cat("\n", append = TRUE, file = point_file)
-# #cat(sum_eigs, append = TRUE, file = point_file)
-# #cat("\n", append = TRUE, file = point_file)
-# cat("\n% variation explained\t", append = TRUE, file = point_file)
-# eig_pcts <- paste((eig_vals[1]*100)/sum_eigs, (eig_vals[2]*100)/sum_eigs, (eig_vals[3]*100)/sum_eigs, (eig_vals[4]*100)/sum_eigs, sep="\t")
-# cat(eig_pcts, append = TRUE, file = point_file)
-# cat("\n", append = TRUE, file = point_file)
+   
 
 
 num_md_items = length(colnames(MAP))
@@ -133,21 +109,16 @@ num_md_items = length(colnames(MAP))
 # for practical reasons
 # so for datasets: anything greater than 6 will show a single color
 maxLength=20
-colors1 = c( "blue" )
-colors2 = c( "blue", "red" )
-colors3 = c( "green", "red",  "blue" )
-colors4 = c( "green", "red",  "blue", "cyan" )
-colors5 = c( "green", "red",  "blue", "cyan","orange")
 colors6<-colorRampPalette(c("blue", "green", "cyan", "orange", "red"))(maxLength)
-one_color<-c( "blue" )
-one_shape<-16
-myshapes<-c(16,17,18,19,20,21,22,23,24,25)
+mypalette = colors6 
+c = mypalette
+
 #pch = c(21,22,23,24,25)
-#image_file = paste(tmp_path,'/',out_file,sep='')
-image_file = out_file
+image_file = paste(tmp_path,'/',out_file,sep='')
+#image_file = out_file
 h=(num_md_items*5)+2
 #svg(image_file, width=25, height=h)
-#png(image_file)
+pdf(image_file, width=10)
 par(mfrow=c(num_md_items,3))
 
 	#print(pcoa$vectors[,1])
@@ -155,7 +126,8 @@ par(mfrow=c(num_md_items,3))
 	#print(mypalette)
 #print(pcoa$vectors[,1])
 	#dev.off()
-	#q()
+	#print(MAP)
+	
 axes=list(c(1:2), c(1,3), c(2:3))
 axes_labels <- c("12", "13", "23")
 for(md_name in colnames(MAP))
@@ -163,101 +135,61 @@ for(md_name in colnames(MAP))
     #print(md_name)
     #  but you need the list of datasets for each metadata value.
     #  how do i find all the discreet values for this md_name?    
-    md_values <- unique(MAP[,md_name])
-    md_val_count<-length(md_values)
-    
-	if(md_val_count == 1)
-	{
-		mypalette = colors1  
-		pch<-19
-		
-	}else if(md_val_count == 2)
-	{
-		mypalette = colors2 
-		pch<-c(21,22)
-	}else if(md_val_count == 3)
-	{
-		mypalette = colors3 
-		pch<-c(19:21)
-	}else if(md_val_count == 4)
-	{
-		mypalette = colors4 
-		pch<-c(19:22)
-	}else if(md_val_count == 5)
-	{
-		mypalette = colors5 
-		pch<-c(19:23)
-	}else if(md_val_count > 5)
-	{
+    md_values <- unique(MAP[,md_name],na.rm=TRUE)
+    row.names(md_values) <- NULL 
+    md_values <- as.vector(md_values)[md_values != ""]
+    #md_values <- md_values[]
+    #tmp_matrix <- tmp_matrix[rowSums(tmp_matrix) > 0,]
+    md_val_count<-nrow(md_values)
+     #print('-')
+     #print(paste('md val count ',md_val_count))
+     #print(MAP[,md_name])
+    # print(md_val_count)
+     #print(md_values[1])
+     #print('--')
 		mypalette = colors6 
 		pch<-c(0:81)
-	}
+	
 	
 	for (ax in c(1,2,3))
 	{
 	
-		xlabel <- paste("PCOA", substring(axes_labels[ax],1,1), " (", round((pcoa_data$values[as.integer(substring(axes_labels[1], 1, 1))]/sum(pcoa_data$values[1:3]))*100, 1), "%)", sep="")
-		ylabel <- paste("PCOA", substring(axes_labels[ax],2,2), " (", round((pcoa_data$values[as.integer(substring(axes_labels[ax], 2, 2))]/sum(pcoa_data$values[1:3]))*100, 1), "%)", sep="")
+		#xlabel <- paste("PCOA", substring(axes_labels[ax],1,1), " (", round((pcoa_data$values[as.integer(substring(axes_labels[1], 1, 1))]/sum(pcoa_data$values[1:3,1]))*100, 1), "%)", sep="")
+		#ylabel <- paste("PCOA", substring(axes_labels[ax],2,2), " (", round((pcoa_data$values[as.integer(substring(axes_labels[ax], 2, 2))]/sum(pcoa_data$values[1:3,1]))*100, 1), "%)", sep="")
+	 	#print(pcoa_data$values[,as.integer(substring(axes_labels[1], 1, 1))])
+	  xlabel <- paste("PCOA", substring(axes_labels[ax],1,1), sep="")
+		ylabel <- paste("PCOA", substring(axes_labels[ax],2,2),  sep="")
 	 
 		# The main title, 
 		main <- paste("PCoA using",metric_text," ( metadata:", md_name, ")")
-		par(xpd=NA, mar = c(5, 4, 4, 18) + 0.1)
-		print(pcoa_data$vectors[,axes[[ax]]])
+		#par(xpd=NA, mar = c(5, 4, 4, 18) + 0.1)
+		#print(pcoa_data$vectors[,axes[[ax]]])
 		#plot(pcoa$points[,axes[[ax]]], main = main, xlab=xlabel, ylab=ylabel)
-		#plot(pcoa_data$vectors[,axes[[ax]]], type="n", main = main, xlab=xlabel, ylab=ylabel)
+		plot(pcoa_data$vectors[,axes[[ax]]], type="n", main = main, xlab=xlabel, ylab=ylabel)
 		#print(md_name)
 		ymax=par('usr')[4]
 		xmax=par('usr')[2]
 		
-		
-		
-		for(i in 1:md_val_count)
-		{
-			prows <- grep(md_values[i], MAP[,md_name])
+
+		#xlabel <- paste("PCoA", substring(axes_labels[1],1,1), " (", round((sum(pcoa$values[as.integer(substring(axes_labels[1], 1, 1))])/sum(pcoa$values[1:3]))*100, 1), "%)", sep="")
+	  #ylabel <- paste("PCoA", substring(axes_labels[1],2,2), " (", round((sum(pcoa$values[as.integer(substring(axes_labels[1], 2, 2))])/sum(pcoa$values[1:3]))*100, 1), "%)", sep="")
+		# plot(pcoa$vectors[,axes[[1]]], type="n", main = main, xlab='xlabel', ylab='ylabel')
+		 for(i in 1:md_val_count){
 			#print(md_values[i])
-			#print(MAP[,md_name])
-			if(length(prows)==1)
-			{
-				# this is needed for single data points; 
-				# it turns a vector into the correct matrix
-				pts<-t(pcoa_data$vectors[prows,axes[[ax]]])
-				
-			}else{
-				pts<-pcoa_data$vectors[prows,axes[[ax]]]
-			}
+			#print(pcoa_data)
+		 	#prows <- grep(md_values[i], MAP[,md_name])
+		 	#print(prows)
+		 	pts<-pcoa_data$vectors[,axes[[ax]]]
 			
-			
-			if(md_val_count > maxLength){
-				c=one_color	
-				p=one_shape
-			}else{
-				c=mypalette[i]
-				p=myshapes[i]
-			}
-					
-			
-			# if(0){   #labels_on_the_plot
- 		# 		cex = 1.2
-			# 	text  (pts, labels = rownames(pcoa_data$vectors)[prows], adj=c(0.25,-0.5), cex=cex, col=c)
-			# }else{
-			# 	cex = 3			
-			# }
-			cex=1.2
-			print(pts)
-			#points(pts, col=c,  pch=p, cex=cex)	
-			
+		 	points(pts, cex=1.2,  col=c)	
+		 	#text(pts, labels = myrownames, adj=c(0.25,-0.5), cex=1.2, col=c)
+			legend(x=xmax+0.05, y=ymax, legend=md_values, col=c, title=md_name,  cex=0.1)
+
+		# 	#print(pts)
+		 }
 		}
-		if(md_val_count > maxLength){
-			c=one_color
-			p=one_shape
-		}else{
-			c=mypalette	
-			p=myshapes
-		}
-		#legend(x=xmax+0.05, y=ymax, legend=md_values, col=c, title=md_name, pch=p, cex=1.2)
-		#legend(x=xmax+0.05, y=ymax, legend=md_values, col=c, fill=c, border='black', title=md_name, pch=myshapes)
-        
-    }
+		
+	
 }
 dev.off()
 

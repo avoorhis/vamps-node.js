@@ -1,4 +1,5 @@
 
+
 $(document).ready(function(){
 
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
@@ -358,19 +359,20 @@ if (typeof counts_table_download_btn !=="undefined") {
 //
 // METADATA  Table
 //
+
 var metadata_link = document.getElementById('metadata_table_link_id') || null;
 var metadata_btn = document.getElementById('metadata_table_hide_btn');
 var metadata_div = document.getElementById('metadata_local_table_div');
 var metadata_download_btn = document.getElementById('metadata_download_btn');
 var pre_metadata_table_div = document.getElementById('pre_metadata_table_div');
 if (metadata_link !== null) {
-  	metadata_link.addEventListener('click', function () {
-      //alert(window)
-	  //$(window).scrollTo(500);
-	  
-	  if(typeof metadata_table_created == "undefined"){
+    metadata_link.addEventListener('click', function () {
+     
+    //$(window).scrollTo(500);
+    
+    if(typeof metadata_table_created == "undefined"){
         create_viz('metadata_table', pi_local.ts);
-		metadata_download_btn.disabled = false;
+    metadata_download_btn.disabled = false;
       }else{
         if(metadata_btn.value == 'hide'){
           //toggle_visual_element(metadata_div,'show',metadata_btn);
@@ -1111,7 +1113,7 @@ function create_viz(visual, ts) {
 // TAX TABLE
 //
 function create_counts_table() {
-      
+      alert('here')
       tax_table_created = true;
       var info_line = create_header('ftable', pi_local);
       document.getElementById('counts_table_title').innerHTML = info_line;
@@ -1171,7 +1173,7 @@ function create_counts_table() {
 //  CREATE METADATA TABLE
 //
 function create_metadata_table() {
-     
+     //alert('here')
     metadata_table_created = true;
     var info_line = create_header('mtable', pi_local);
     document.getElementById('metadata_title').innerHTML = info_line;
@@ -1189,11 +1191,13 @@ function create_metadata_table() {
       
     for (var ds in md_local) {
 
-          for (var k in md_local[ds]) {
+          for (var md_item in md_local[ds]) {
             html += "<tr>";
             html += "<td>"+ds+"</td>";
-            md_item = k;
-            md_val = md_local[ds][k];
+            md_val = md_local[ds][md_item];
+            if(md_val == '' || md_val == undefined){
+              md_val = 'undefined';
+            }
             html += "<td>"+md_item+"</td><td>"+md_val+"</td>";
             html += "</tr>";
           }        
