@@ -578,88 +578,52 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var tmp_path = path.join(process.env.PWD,'tmp');
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
+    md1 = req.body.md1 || "Project";
+    md2 = req.body.md2 || "Description";
+        
+      // var options = {
+      //   scriptPath : 'public/scripts',
+      //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
+      // };
+      var options2 = {
+        scriptPath : 'public/scripts',
+        args :       [ tmp_path, ts, metric, md1, md2, image_file],
+      };
+      console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
+      //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+      var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
+          env:{'PATH':req.config.PATH},
+          detached: true, 
+          stdio: [ 'ignore', null, log ]
+          //stdio: 'pipe' // stdin, stdout, stderr
+      });  
+  
+      
+      pcoa_process.on('close', function (code) {
+          //console.log('pcoa_process process exited with code ' + code+' -- '+output);
+          //distance_matrix = JSON.parse(output);
+          //var last_line = ary[ary.length - 1];
+          if(code === 0){   // SUCCESS       
+              
+            //html = "<img src='/"+image_file+"'>";
+            //var image = path.join('/tmp/',image_file);              
+            var html = "<div id='pdf'>";
+            html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='600' />";
+            html += " <p>ERROR in loading pdf file</p>";
+            html += "</object></div>";
+            //console.log(html);                 
+                                                      
+          }else{
+              console.log('ERROR');
+              html='PCoA Script Error';
+          } 
+
+          res.send(html);
+
+      });   
+      
+        
     
-    
-    if(image_type == '2d'){
-        
-        // var options = {
-        //   scriptPath : 'public/scripts',
-        //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
-        // };
-        var options2 = {
-          scriptPath : 'public/scripts',
-          args :       [ tmp_path, ts, metric, image_file],
-        };
-        console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
-        //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-        var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-            env:{'PATH':req.config.PATH},
-            detached: true, 
-            stdio: [ 'ignore', null, log ]
-            //stdio: 'pipe' // stdin, stdout, stderr
-        });  
-    
-        
-        pcoa_process.on('close', function (code) {
-            //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-            //distance_matrix = JSON.parse(output);
-            //var last_line = ary[ary.length - 1];
-            if(code === 0){   // SUCCESS       
-                
-              //html = "<img src='/"+image_file+"'>";
-              //var image = path.join('/tmp/',image_file);              
-              var html = "<div id='pdf'>";
-              html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-              html += " <p>ERROR in loading pdf file</p>";
-              html += "</object></div>";
-              //console.log(html);                 
-                                                        
-            }else{
-                console.log('ERROR');
-                html='PCoA Script Error';
-            } 
-
-            res.send(html);
-
-        });   
-
-
-
-
-
-        // var pcoa_process = spawn( options.scriptPath+'/distance.py', options.args, {
-        //     env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
-        //     detached: true, 
-        //     stdio: [ 'ignore', null, log ]
-        //     //stdio: 'pipe' // stdin, stdout, stderr
-        // });  
-    
-        
-        // pcoa_process.on('close', function (code) {
-        //     //console.log('pcoa_process process exited with code ' + code+' -- '+output);
-        //     //distance_matrix = JSON.parse(output);
-        //     //var last_line = ary[ary.length - 1];
-        //     if(code === 0){   // SUCCESS       
-        //       var image = path.join('/',ts+'_pcoa.pdf');              
-        //       var html = "<div id='pdf'>";
-        //       html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1000' height='900' />";
-        //       html += " <p>ERROR in loading pdf file</p>";
-        //       html += "</object></div>";
-        //       //console.log(html);                 
-        //       res.send(html);                                    
-        //     }else{
-        //         console.log('ERROR');
-        //         res.send('PCoA Python Error');
-        //     }      
-        // });   
-        
-        
-    }else if(image_type == '3d'){
-        
-     
-        // see next FXN
-        
-    }
     
 });
 //

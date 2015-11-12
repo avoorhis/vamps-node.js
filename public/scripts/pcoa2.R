@@ -6,10 +6,10 @@ print(args)
 tmp_path 	<- args[1]
 prefix   	<- args[2]
 metric 		<- args[3]
-out_file	<- args[4]
-#out_file <- args[3]
-#phy   	 <- args[4]
-#rank     <- args[5]
+md1 			<- args[4]
+md2 			<- args[5]
+out_file	<- args[6]
+
 biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 map_file <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
 
@@ -80,7 +80,7 @@ num_md_items = length(colnames(meta_table))
 #x<-with(meta_table, levels(sample))
 #[1] "Patient f" "Patient m"
 #print(x)
-scl <- 3
+#scl <- 3
 #colvec <- c("red2", "green4", "mediumblue")
 
 colors6<-colorRampPalette(c("blue", "green", "cyan", "orange", "red"))
@@ -90,7 +90,9 @@ pcoa <- pcoa(d)
 
 image_file = paste(tmp_path,'/',out_file,sep='')
 #pdf_file<-"pcoa.pdf"
-ht = num_md_items*5
+#ht = num_md_items*5
+# for 2 rows:
+ht=10
 pdf(image_file, w=20, h=ht)
 
 points.axis12<-pcoa$vectors[,1:2]
@@ -99,62 +101,62 @@ points.axis23<-pcoa$vectors[,2:3]
 #print(meta_table$env_feature)
 # makes 3 accross
 
-par(mfrow=c(num_md_items,3))
+par(mfrow=c(2,3))
 
 
 
 ymax=par('usr')[4]
 xmax=par('usr')[2]
-
+max_md_items_for_legend = 21
 for(md_name in colnames(meta_table))
 {
     print(md_name)
-    #print(meta_table[md_name])
-    # make copy of original par settings
-    #omar<-par()$mar
-    #print(levels(meta_table[,md_name]))
-    meta_col<-meta_table[,md_name]
-    meta_col<-meta_col[meta_col != '']
-    #print(meta_col)
+    if(md_name==md1 || md_name==md2){
+
+		    meta_col<-meta_table[,md_name]
+		    meta_col<-meta_col[meta_col != '']
+		    #print(meta_col)
 
 
-    l<-levels(meta_col)
-    #l <- as.vector(l)[l != ""]
-    
-    #print(l)
-    lcount<-length(l)
-    #print(meta_table[,md_name])
-    colvec<-colors6(lcount)
+		    l<-levels(meta_col)
+		    #l <- as.vector(l)[l != ""]
+		    
+		    #print(l)
+		    lcount<-length(l)
+		    #print(meta_table[,md_name])
+		    colvec<-colors6(lcount)
 
-    if(md_name == 'X.SampleID'){
-    	mdname = 'Dataset'
-    }else{
-    	mdname = md_name
-    }
-    
-		#print(colvec[meta_table[,md_name]])
-		par(xpd=NA, mar=c(5, 4, 4, 2) + 0.1)
-		
-    plot(points.axis12,type = "n" )
-		with(meta_table, points(points.axis12,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
-		
-		
-		main<-paste('[',metric_text,']::[',mdname,']')
-		plot(points.axis13,type = "n", main=main )
-		with(meta_table, points(points.axis13,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
-		
-		
-		par(xpd=NA, mar = c(5, 4, 4, 18) + 0.1)
-		
-		plot(points.axis23,type = "n" )
-		with(meta_table, points(points.axis23,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
-		#with(meta_table, legend(x=xmax+0.05, y=ymax, legend=l, col=colvec, title=mdname,  cex=0.1))
-		if(lcount < 20){
-			legend("topright", inset=c(-0.3,0), legend=l, col=colvec, fill=colvec, border='black', title=mdname)
-			#legend(x=-.5, y=0, legend=l, col=colvec, fill=colvec, border='black', title=mdname)			
-		}else{
-			legend("topright", inset=c(-0.3,0), legend=c('(too many divisions','- maximum is 20)'), title=mdname)
-		}
+		    if(md_name == 'X.SampleID'){
+		    	mdname = 'Dataset'
+		    }else{
+		    	mdname = md_name
+		    }
+		    
+				#print(colvec[meta_table[,md_name]])
+				par(xpd=NA, mar=c(5, 4, 4, 2) + 0.1)
+				
+		    plot(points.axis12, type = "n" )
+				with(meta_table, points(points.axis12,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
+				
+				
+				main<-paste('[',metric_text,']::[',mdname,']')
+				plot(points.axis13,type = "n", main=main )
+				with(meta_table, points(points.axis13,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
+				
+				
+				par(xpd=NA, mar = c(5, 4, 4, 18) + 0.1)
+				
+				plot(points.axis23,type = "n" )
+				with(meta_table, points(points.axis23,  col = colvec[meta_col],   pch = 21, bg = colvec[meta_col]))
+				#with(meta_table, legend(x=xmax+0.05, y=ymax, legend=l, col=colvec, title=mdname,  cex=0.1))
+				if(lcount < max_md_items_for_legend){
+					#legend("topright", inset=c(-0.3,0), legend=l, col=colvec, fill=colvec, border='black', title=mdname)
+					legend(x=0.2, y=0.1, legend=l, col=colvec, fill=colvec, border='black', title=mdname)			
+				}else{
+					#legend("topright", inset=c(-0.3,0), legend=c('(too many divisions','- maximum is 20)'), title=mdname)
+					legend(x=0.2, y=0.1, legend=c('(too many divisions',paste('- maximum is ',max_md_items_for_legend,')')), title=mdname)	
+				}
+	}
 }
 dev.off()
 q()
