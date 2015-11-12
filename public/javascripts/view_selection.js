@@ -1338,7 +1338,7 @@ function create_pcoa(ts,image_type) {
     args += "&ts="+ts;
     args += "&image_type="+image_type;
     if(image_type === '2d'){
-        pcoa_created = true;
+        //pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_div');        
         info_line = create_header('pcoa', pi_local);        
   	    pcoa_div.style.display = 'block';
@@ -1798,7 +1798,7 @@ function create_adiversity(ts){
 //
 function create_phyloseq(ts,code) {
       //alert('im HM')
-      phyloseq_created = true;
+      //phyloseq_created = true;
       var phylo_div,info_line,md1='',md2='',phy='',ord_type;
       var html = '';
       var args =  "metric="+pi_local.selected_distance;

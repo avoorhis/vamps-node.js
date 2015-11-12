@@ -1012,14 +1012,14 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                     console.log('ERROR-1'); 
                     html = lastline;                   
             }else{                  
-                if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-                      html = "<div id='pdf'>";
-                      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-                      html += " <p>ERROR in loading pdf file</p>";
-                      html += "</object></div>"; 
-                }else{
+                // if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                //       html = "<div id='pdf'>";
+                //       html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
+                //       html += " <p>ERROR in loading pdf file</p>";
+                //       html += "</object></div>"; 
+                // }else{
                       html = "<img src='/"+image_file+"'>";                    
-                }              
+                //}              
             }
 
           }else{

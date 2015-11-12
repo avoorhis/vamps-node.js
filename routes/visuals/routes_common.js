@@ -218,7 +218,12 @@ module.exports = {
       items = tax.split(';');
       txt += tax;
       for(t in items){
-        txt += "\t"+items[t];
+        //if(t==1){
+        //  txt += "\t"+items[0]+';'+items[t];
+        //}else{
+          txt += "\t"+items[t];
+        //}
+        
       }
       txt += "\n";
     }

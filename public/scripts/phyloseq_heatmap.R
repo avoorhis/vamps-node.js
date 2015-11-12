@@ -47,10 +47,10 @@ OTU <- import_biom(biom_file)
 OTU <- otu_table(OTU)
 MAP <- import_qiime_sample_data(map_file)
 
-print(colnames(TAX))
-print(class(TAX))
-print(is.recursive(TAX))
-print(is.atomic(TAX))
+#print(colnames(TAX))
+#print(class(TAX))
+#print(is.recursive(TAX))
+#print(is.atomic(TAX))
 
 df <- as.data.frame(TAX)[fill]
 rows <- nrow(df)
@@ -70,11 +70,13 @@ h = 8
 
 w=10
 h=5
-
+w_png = ds_count*20
+h_png = rows*5
 	out_file = paste("tmp/",out_file,sep='')
 	unlink(out_file)
-	
-	pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
+	#print(physeq)
+	#pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
+	png(out_file, width=w_png, height=h_png)
 	#svg(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
 	gpac <- subset_taxa(physeq, Phylum==phy)
 	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
