@@ -138,7 +138,7 @@ constants.VISUAL_THUMBNAILS = { visuals: [
     {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
     {name:'PCoA 2D Analyses (R-pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',           id:'pcoa_link_id', 
-        tip:'R (https://www.r-project.org/)-|-jsonlite (R-package)'        },
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)-|-vegan (R-package)-|-ape (R-package)'        },
     {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',           id:'pcoa_3d_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)' },
     {name:'Frequency Matrix (Table)',   thumb:'/images/visuals/counts_table.png',	link:'user_viz_data/counts_table',   id:'counts_table_link_id', 
