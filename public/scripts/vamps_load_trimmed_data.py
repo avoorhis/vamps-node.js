@@ -134,7 +134,8 @@ def write_seqfiles(args):
                         files[ds] = fp
                         fp.write('>'+id+"\n"+f.seq+"\n")
                 except:
-                    sys.exit("Please check the multi-dataset format: ( defline='>" + defline+"' )")
+                    print "Please check the multi-dataset format: ( defline='>" + defline+"' )"
+                    sys.exit(1)
             
             seq_count += 1
         ds_count = len(datasets)
@@ -155,7 +156,7 @@ def write_metafile(args,stats):
     f = open(mdfile_clean, 'wt')
     
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
-    req_for_multi = ['sample_name','dataset']
+    req_first_col = ['#SampleID','sample_name','dataset_name']
     with open(mdfile, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter
         with open(mdfile_clean, mode='w') as outfile:
@@ -168,39 +169,39 @@ def write_metafile(args,stats):
                     continue
                 if i==0:
                     if len(items) == 0:
-                        sys.exit('No empty lines allowed.')
+                        print 'No empty lines allowed.'
+                        sys.exit(1)
                     headers = items
                     header_count = len(headers)
                     #print headers
                     for n,req in enumerate(req_metadata):
                         if req not in headers:
                             print ','.join(req_metadata)
-                            sys.exit('Found Missing Required Metadata: '+req)
-                    
-                    if args.upload_type == 'multi':
-                        ds_in_headers = False
-                        if req_for_multi[0] in headers:
-                            ds_in_headers = True
-                            dataset_index = headers.index(req_for_multi[0])
-                        elif req_for_multi[1] in headers:
-                            ds_in_headers = True
-                            dataset_index = headers.index(req_for_multi[1])
-                        else:
-                            sys.exit("No dataset column found (allowed column names: 'dataset', 'sample_name')")
+                            print 'Found Missing Required Metadata: '+req
+                            sys.exit(1)
+                    if headers[0] in req_first_col:
+                        ds_in_headers = True
+                        headers[0] = '#SampleID'
+                        dataset_index = 0
                     else:
-                        items.insert(0,'dataset')
+                        ds_in_headers = False
+                        print "No dataset column found in first column (allowed column names: "+','join(req_first_col);
+                        sys.exit(1)
                 else:
                     if args.upload_type == 'multi':
                         md_datasets.append(items[dataset_index])
                     else:
-                        items.insert(0,args.dataset)  
+                        # alter ds name to match that from user input form (over write md spreadsheet)
+                        items[0] = args.dataset  
                 
                 if len(items) > 0:
                     #print items
-                    if args.upload_type == 'multi' and len(items) != header_count:
-                        sys.exit('1-Missing Data: '+','.join(items))
-                    elif args.upload_type == 'single' and len(items) != header_count +1:
-                        sys.exit('2-Missing Data: '+','.join(items))
+                    print items
+                    print headers
+                    if len(items) != header_count:
+                        print '1-Missing Data: '+','.join(items)
+                        sys.exit(1)
+                    
                     print "writing clean metadata file "+mdfile_clean
                     writer.writerow(items)
             if args.upload_type == 'multi':
@@ -210,7 +211,8 @@ def write_metafile(args,stats):
                 #print stats['datasets']
                 for ds in stats['datasets']:
                     if ds not in md_datasets:
-                        sys.exit('Found a dataset that is not in the metadata file: '+ds)
+                        print 'Found a dataset that is not in the metadata file: '+ds
+                        sys.exit(1)
 
     outfile.close()
     infile.close()
@@ -336,7 +338,8 @@ if __name__ == '__main__':
     #check fasta
     #check meta
     if args.upload_type == 'single' and not args.dataset:
-        sys.exit('Requires dataset for single mode')
+        print 'Requires dataset for single mode'
+        sys.exit(1)
     fafile = os.path.join(args.outdir,'fasta.fa')
     mdfile = os.path.join(args.outdir,'meta_original.csv') 
     mdfile_clean = os.path.join(args.outdir,'metadata_clean.csv')

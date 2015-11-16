@@ -151,7 +151,7 @@ constants.VISUAL_THUMBNAILS = { visuals: [
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'},
     {name:'Phyloseq Bars (R-svg)',      thumb:'/images/visuals/phyloseq_bars.png',  link:'user_viz_data/phyloseq01',  id:'phyloseq01_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
-    {name:'Phyloseq Heatmap (R-svg)',   thumb:'/images/visuals/phyloseq_heatmap.png',link:'user_viz_data/phyloseq02', id:'phyloseq02_link_id', 
+    {name:'Phyloseq Heatmap (R-png)',   thumb:'/images/visuals/phyloseq_heatmap.png',link:'user_viz_data/phyloseq02', id:'phyloseq02_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
     {name:'Phyloseq Network (R-svg)',   thumb:'/images/visuals/phyloseq_network.png',link:'user_viz_data/phyloseq03', id:'phyloseq03_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},

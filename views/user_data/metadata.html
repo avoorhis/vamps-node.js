@@ -1,0 +1,51 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	<div class="container">
+<br>
+	<div class="hero-unit">
+	       <h3>Metadata for project: <%=  project %></h3>				        
+	</div>
+	<% if(mdata == ''){ %>
+			No Metadata Found
+	<% }else{ %>
+  <div class="row">  
+      <div class="col-lg-8" style='width:1200px;height:700px;overflow:auto;'>
+				<table border='1' class='table'>
+<%  				for(x in mdata){ %>
+							<tr>
+<% 						row = mdata[x] %>
+<% 						for(z in row){ %>
+								<td>
+<%								if(row[z].length > 50){ %>
+											<div style='height:50px;overflow:auto;'>
+<%= 										row[z] %>
+											</div>
+
+<% 								}else{ %>
+<%= 								row[z] %>
+<% 								} %>
+								</td>
+<% 						} %>
+							</tr>
+<% 					} %>
+				</table>
+			</div>			
+	</div>
+<% } %>
+</div>
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

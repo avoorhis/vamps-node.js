@@ -1,4 +1,4 @@
-<% include ../add_ins/begin.ejs %>
+<% include ../add_ins/begin_nomenu.ejs %>
 	
 
 <% if (message) { %>
@@ -309,7 +309,12 @@ or
 						There are two metadata file formats:<br>
 						<ul>
 						<li>QIIME style mapping file: This file MUST have a header named 'sample_name', '#SampleID' or 'dataset_name'
-						<li>VAMPS style (downloaded from old VAMPS site.)
+							<ul>
+								<li> Header line is required</li>
+								<li>There must be one row for each dataset</li>
+							</ul>
+						</li>
+						<li>VAMPS style (downloaded from old VAMPS site.) -- Not accepted anymore
 						</ul>
 						<br>
 						<p class='standard'><strong>TaxBySeq File</strong></p> 

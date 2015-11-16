@@ -321,9 +321,9 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 // USER PROJECT INFO:ID
 //
 router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
-    console.log(req.params.id);
+  console.log(req.params.id);
 	var project = req.params.id;
-    var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
 	var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
 	console.log(config);
 	res.render('user_data/profile', {
@@ -332,6 +332,101 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 			title   : project,
 	    user: req.user, hostname: req.C.hostname
          });
+});
+//
+// USER PROJECT METADATA:ID
+//
+router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) {
+  var parse = require('csv-parse');
+	var async = require('async');
+  console.log(req.params.id);
+	var project = req.params.id;
+  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+	stats = fs.statSync(config_file);
+	if (stats.isFile()) {
+	   console.log('config found')
+	   var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+	}else{
+		console.log('config NOT found')
+		 config = {'config file NOT AVAILABLE':1}
+	}
+	
+	var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'metadata_clean.csv');
+	var parser = parse({delimiter: '\t'}, function(err, data){
+	  	json_data = {}
+	  	console.log(data)
+
+	  	res.render('user_data/metadata', {
+				project : project,
+				pinfo   : JSON.stringify(config),
+				mdata   : data,
+				title   : project,
+				message : req.flash('successMessage'),
+		    user: req.user, hostname: req.C.hostname
+      });
+
+	});
+	try{
+		console.log('looking for meta')
+		stats = fs.lstatSync(metadata_file);
+		if (stats.isFile()) {
+			console.log('meta found')
+	    fs.createReadStream(metadata_file).pipe(parser);
+		}
+	}
+	catch(e){
+		console.log('meta NOT found')
+			res.render('user_data/metadata', {
+				project : project,
+				pinfo   : JSON.stringify(config),
+				mdata   : [],
+				title   : project,
+				message : req.flash('successMessage'),
+		    user: req.user, hostname: req.C.hostname
+      });
+	}
+	
+
+	// var Converter = require("csvtojson").Converter;
+	// var converter = new Converter({delimiter:'\t'});
+ //  console.log(req.params.id);
+	// var project = req.params.id;
+ //  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+	// var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
+	// var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'metadata_clean.csv');
+	
+	// converter.on("end_parsed", function (jsonArray) {
+ //   	console.log(jsonArray); //here is your result jsonarray 
+	// 	res.render('user_data/metadata', {
+	// 		project : project,
+	// 		pinfo   : JSON.stringify(config),
+	// 		mdata   : JSON.stringify(jsonArray),
+	// 		title   : project,
+	// 		message : req.flash('successMessage'),
+	//     user: req.user, hostname: req.C.hostname
+ //         });
+
+	// });
+
+	  	
+
+	
+	// //try{
+	// 	stats = fs.lstatSync(metadata_file);
+	// 	if (stats.isFile()) {
+	//       require("fs").createReadStream(metadata_file).pipe(converter);
+	   
+	// //}catch(err){
+	// //  	console.log('dir doesnt exist -good- continuing on');
+	// //}
+
+		
+	// }else{
+	// 	metadata = {'NOT AVAILABLE':1}
+	// }
+
+
+	
 });
 //
 //  DELETE PROJECT:PROJECT:KIND
@@ -1325,7 +1420,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						  data = data.toString().replace(/^\s+|\s+$/g, '');
 						  output += data;
 						  var lines = data.split('\n');
+
 						});
+						
 						load_trim_process.on('close', function (code) {
 						   console.log('load_trim_process process exited with code ' + code);
 						   var ary = output.split("\n");
@@ -1336,12 +1433,13 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  };
 						   		helpers.update_status(status_params);
 						   		console.log('Finished loading '+project);
+						   		LoadDataFinishRequest();
 							 }else{
-								 	req.flash('failMessage', 'Script Failure '+err);
+								 	req.flash('failMessage', 'Script Failure: '+last_line);
 								  status_params = {'type':'update', 'user':req.user.username,
 												'project':project, 'status':'Script Failure',	'msg':'Script Failure'  };
 								  helpers.update_status(status_params);
-								  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
+								  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
 								  return;
 							 }
 						});
@@ -1371,7 +1469,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			}); // END move 1
 
   }
-  LoadDataFinishRequest();
+  
 
 });
 

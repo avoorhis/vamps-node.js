@@ -32,14 +32,15 @@
 	  <div class="col-sm-3">
         <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
       </div>
-	  <a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+	  <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-3" for="meta">Dataset Name:</label>
       <div class="col-sm-3">          
         <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter Dataset Name">
       </div>
-	  <a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+	  <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+    This will overwrite dataset name in metadata file
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-3" for="fasta">Fasta File:</label>
@@ -50,7 +51,7 @@
 
 
       </div>
-	  <a href='#' target='_blank' title='format'><span class="glyphicon glyphicon-question-sign"></span></a>
+	  <a href='/help/faq#formats' target='_blank' title='format'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
       <label class="control-label col-sm-3" for="meta">Metadata File:</label>
@@ -60,8 +61,8 @@
         <input type="file" name='upload_files' class="" id="meta">
 
 
-      </div><a href='#' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
-      <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of required metadata</a>)</small>
+      </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+      <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of recommended metadata</a>)</small>
     </div>
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
@@ -99,7 +100,7 @@
       <div class="col-sm-3 btn">          
         <input type="file" name='upload_files' class="" id="meta" >
       </div><a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
-      <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of required metadata</a>)</small>
+      <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of recommended metadata</a>)</small>
     </div>
     <div class="form-group">        
       <div class="col-sm-offset-2 col-sm-10">
@@ -134,9 +135,9 @@
     <div class="form-group">
         <label class="control-label col-sm-3" for="meta">CSV File Format:</label>
         <div class="col-sm-4 btn"> 
-          <input type='radio' name='metadata_file_format' value='vamps'> VAMPS Style
+          <input type='radio' name='metadata_file_format' disabled value='vamps'> VAMPS Style -- Not Accepted Anymore 
           <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template</a>)</small>
-          <input type='radio' checked='checked' name='metadata_file_format' value='qiime'> QIIME Style Mapping File
+          <br><input type='radio' checked='checked' name='metadata_file_format' value='qiime'> QIIME Style Mapping File
           <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
         </div>
         

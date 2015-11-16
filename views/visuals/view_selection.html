@@ -286,7 +286,7 @@
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                               <center>                        
                                 <% if(pi.tax_depth=='domain' || pi.tax_depth=='phylum'){ %>
-                                    <span>Required: Taxonomic depth<br>of 'Class' or deeper</span>
+                                    <%= name %><br><br><span>Required: Taxonomic depth<br>of 'Class' or deeper</span>
                                 <% }else{ %>
                                   <a href='<%= link %>'  target='<%= target %>' id='<%= link_id %>'  >
                                     <%= name %><br>              

@@ -959,7 +959,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       options.args = options.args.concat([image_file, phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
-      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.pdf';
+      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
@@ -1012,12 +1012,14 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                     console.log('ERROR-1'); 
                     html = lastline;                   
             }else{                  
-                // if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                
+                 //if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 // html = "<object type='image/svg+xml' data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0'>Your browser does not support SVG</object>";
                 //       html = "<div id='pdf'>";
                 //       html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
                 //       html += " <p>ERROR in loading pdf file</p>";
                 //       html += "</object></div>"; 
-                // }else{
+                 //}else{
                       html = "<img src='/"+image_file+"'>";                    
                 //}              
             }

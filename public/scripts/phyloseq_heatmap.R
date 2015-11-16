@@ -68,16 +68,16 @@ h = floor(rows/10)
 h = 8
 #print(paste('height2',h))
 
-w=10
-h=5
+w_svg=ds_count*0.5
+h_svg=rows*0.1
 w_png = ds_count*20
 h_png = rows*5
 	out_file = paste("tmp/",out_file,sep='')
 	unlink(out_file)
 	#print(physeq)
 	#pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-	png(out_file, width=w_png, height=h_png)
-	#svg(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
+	#png(out_file, width=w_png, height=h_png)
+	svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
 	gpac <- subset_taxa(physeq, Phylum==phy)
 	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
 
