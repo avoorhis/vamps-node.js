@@ -6,7 +6,7 @@
 <% } %>
 	<div id='' class='well col-sm-12'>
 		<div class='row'>
-		  <% if(hostname.substring(0,6) !== 'bpcweb'){ %>
+		  <% if(user.security_level == 1){ %>
 			<%  	var span = 'col-sm-3'; %>
 					  <div class="<%= span %>">
 					            <div class="panel panel-default">
@@ -63,7 +63,8 @@
 		              </div>
 		            </div>
 		  </div>
-			<% if(hostname.substring(0,6) !== 'bpcweb'){ %>
+			
+			<% if(user.security_level == 1){ %>
 			<div class="<%= span %>">			
 		          <div class="panel panel-default">
 		              <div class="panel-heading">

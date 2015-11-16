@@ -21,6 +21,7 @@ var COMMON  = require('./visuals/routes_common');
 //
 router.get('/your_data',  function(req,res){
   console.log('in your data');
+  console.log(req.user);
     res.render('user_data/your_data', {
       title: 'VAMPS:Data Administration',
       user: req.user, hostname: req.C.hostname,

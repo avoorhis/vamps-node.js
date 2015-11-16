@@ -262,6 +262,10 @@ def run_metadata(args):
     print 'csv',args.metadata_file
     logging.info('csv '+ args.metadata_file)
     lol = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
+    
+    project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project:'+pj)
+    mdfile_clean = os.path.join(project_dir,'metadata_clean.csv')
+    f = open(mdfile_clean, 'w')
     found_dsets_dict={}
     TMP_METADATA_ITEMS = {}
      
@@ -286,7 +290,7 @@ def run_metadata(args):
             TMP_METADATA_ITEMS[pj][ds][scn]=val
     
     print TMP_METADATA_ITEMS
-
+    f.close()
 
 if __name__ == '__main__':
     import argparse
