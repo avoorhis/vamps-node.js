@@ -26,7 +26,7 @@ from time import sleep
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 script_path = os.path.dirname(os.path.realpath(__file__))
-from IlluminaUtils.lib import fastalib
+#from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
 import subprocess
@@ -35,7 +35,50 @@ import subprocess
 """
 
 """
-          
+class FastaReader:
+    def __init__(self,file_name=None):
+        self.file_name = file_name
+        self.h = open(self.file_name)
+        self.seq = ''
+        self.id = None
+        self.revcomp_seq = None
+        self.base_counts = None
+
+    def next(self): 
+        def read_id():
+            return self.h.readline().strip()[1:]
+
+        def read_seq():
+            ret = ''
+            while True:
+                line = self.h.readline()
+                
+                while len(line) and not len(line.strip()):
+                    # found empty line(s)
+                    line = self.h.readline()
+                
+                if not len(line):
+                    # EOF
+                    break
+                
+                if line.startswith('>'):
+                    # found new defline: move back to the start
+                    self.h.seek(-len(line), os.SEEK_CUR)
+                    break
+                    
+                else:
+                    ret += line.strip()
+                    
+            return ret
+        
+        self.id = read_id()
+        self.seq = read_seq()
+        
+        
+        if self.id:
+            return True 
+    #def close(self):
+    #    self.close()
     
     
 def create_dirs(args):
@@ -90,7 +133,8 @@ def write_seqfiles(args):
         seq_count = 0
         ds_count = 0
         
-        f = fastalib.SequenceSource(fafile)
+        #f = fastalib.SequenceSource(fafile)
+        f = FastaReader(fafile)
         while f.next():
             defline = f.id
             
@@ -141,7 +185,7 @@ def write_seqfiles(args):
             
             seq_count += 1
         ds_count = len(datasets)
-        f.close()
+        #f.close()
         #print datasets
     
         for ds in files:
