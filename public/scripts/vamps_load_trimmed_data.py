@@ -25,11 +25,12 @@ import csv
 from time import sleep
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
+script_path = os.path.dirname(os.path.realpath(__file__))
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
 import subprocess
+
 
 """
 
@@ -251,17 +252,21 @@ def write_config(args,stats):
     f.close()
     
 def unique_seqs(args,stats):
-    fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
+    fastaunique_cmd = script_path+'/fastaunique'
+    #fastaunique_cmd = 'fastaunique'
     print args
-    for dataset in stats["datasets"]:
-        print dataset
-        ds_dir = os.path.join(args.outdir, 'analysis',dataset)
-        fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
-        unique_file = os.path.join(ds_dir, 'unique.fa')
-        names_file  = os.path.join(ds_dir, 'names')
-        fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
-        ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
-        
+    try:
+        for dataset in stats["datasets"]:
+            print dataset
+            ds_dir = os.path.join(args.outdir, 'analysis',dataset)
+            fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
+            unique_file = os.path.join(ds_dir, 'unique.fa')
+            names_file  = os.path.join(ds_dir, 'names')
+            fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
+            ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
+    except:
+        print "Could not find fastaunique command"
+        sys.exit(1)
         
 if __name__ == '__main__':
     import argparse

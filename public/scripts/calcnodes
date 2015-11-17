@@ -1,0 +1,129 @@
+#!/usr/bin/env perl
+
+#########################################
+#
+# calcnodes: calculate the number of nodes for a cluster submission
+#
+# Usage:  calcnodes -p=arg1 input.fasta output.fasta
+#
+# Author: Susan Huse, shuse@mbl.edu
+#
+# Date: Tue Aug 29 08:58:52 EDT 2006
+#
+# Keywords: stats cluster
+# 
+# Assumptions: 
+#
+# Revisions:
+#
+# Programming Notes:
+#
+########################################
+
+use strict;
+use warnings;
+
+#######################################
+#
+# Set up usage statement
+#
+#######################################
+my $usage = " Usage:  calcnodes -t total_number_items -n number_of_nodes -f first_value\n\n";
+my $scripthelp = "
+ calcnodes - returns the start and end for running scripts in parallel for a given 
+                 number of items, the number of nodes and the first row (0 or 1)
+";
+
+#######################################
+#
+# Definition statements
+#
+#######################################
+#Commandline parsing
+my $argNum = 2;
+my $verbose = 0;
+
+#Runtime variables
+my $total;
+my $nodes;
+my $start;
+my $end;
+my $first;
+my $div;
+my $j;
+
+
+#######################################
+#
+# Test for commandline arguments
+#
+#######################################
+
+if (! $ARGV[0] ) {
+	print $scripthelp;
+	print $usage;
+	exit -1;
+} 
+
+while ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/))
+{
+	if ($ARGV[0] =~ /-h/) {
+		print $scripthelp;
+		print $usage;
+		exit 0;
+	} elsif ($ARGV[0] =~ /^-t/) {
+		shift @ARGV;
+		$total = $ARGV[0];
+		shift @ARGV;
+	} elsif ($ARGV[0] =~ /^-n/) {
+		shift @ARGV;
+		$nodes = $ARGV[0];
+		shift @ARGV;
+	} elsif ($ARGV[0] =~ /^-f/) {
+		shift @ARGV;
+		$first = $ARGV[0];
+		shift @ARGV;
+	} elsif ($ARGV[0] eq "-v") {
+		$verbose = 1;
+		shift @ARGV;
+	} elsif ($ARGV[0] =~ /^-/) { #unknown parameter, just get rid of it
+		shift @ARGV;
+	}
+}
+
+
+#######################################
+#
+# Parse commandline arguments, ARGV
+#
+#######################################
+
+if ((! $nodes) || (! $total))
+{
+	print "Incorrect number of arguments.\n";
+	print "$usage\n";
+	exit;
+} 
+
+#######################################
+#
+# Calculate the increment, beginning and last item indices
+#
+#######################################
+
+$div = int($total / $nodes) + 1;
+$j = 1;
+
+for (my $i=$first; $i<=$total; $i += $div)
+{
+	my $end = $i + $div - 1;
+	if ($end > $total) 
+	{
+		$div = $total - $i + 1;
+		$end = $total;
+	}
+	print "node=$j start=$i end=$end rows=$div\n";
+	$j++;
+}
+
+

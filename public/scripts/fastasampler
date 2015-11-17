@@ -1,0 +1,574 @@
+#!/usr/bin/env perl
+
+########################################
+#
+# fastasampler: export subset of fasta sequences based on order or a list
+#
+# Author: Susan Huse, shuse@mbl.edu
+#
+# Date: May 17, 2006
+#
+# Copyright (C) 2006 Marine Biological Laborotory, Woods Hole, MA
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# For a copy of the GNU General Public License, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# or visit http://www.gnu.org/copyleft/gpl.html
+#
+# Keywords: sample random fasta 
+# 
+# Assumptions: 
+#
+# Revisions:
+#
+# Programming Notes:
+#
+########################################
+
+use strict;
+use warnings;
+use Bio::Seq;
+use Bio::SeqIO;
+use IO::String;
+
+#######################################
+#
+# Set up usage statement
+#
+#######################################
+my $usage = " Usage:  fastasampler -n i,j -r i -a -q -lo -l list_file -names input.names input.fasta output.fasta\n\n";
+my $scripthelp = "
+ fastasampler - takes a fasta file and returns specified sequences and writes 
+                them to output.fasta.  
+
+              -n selects records i to j, inclusive.  If j is omitted, writes out
+                 only the ith record.  If j = \"-\", writes out all records from i
+                 to the end of the file. The first sequence in the file is index=1. 
+                 > fastasampler -n 1,10 reads.fa first_ten.fa 
+                 > fastasampler -n 50,- reads.fa fifty_to_end.fa
+                 > fastasampler -n 50 reads.fa fiftieth_only.fa
+			  
+              -r randomly selects i sequences from input.fasta. 
+                 > fastasampler -r 25 reads.fa random25.fa 
+
+              -l reads sequence ids from listfile and exports those to output.fasta
+                 Each id should be placed on its own line, and should match the 
+                 corresponding definition line in the fasta file exactly.
+                 > fastasampler -l subset.lst reads.fa subset1.fa 
+
+              -list reads a comma separated list of sequence ids from the command line and exports those to output.fasta
+                    If spaces or special characters are used (e.g. \"|\") use quotes to demark the list.
+                    > fastasampler -list \"seq1,seq2\" reads.fa subset1.fa
+
+              -g match only against 'gi' numbers (requires -l <listfile> argument)
+                  (ie. the very first value in the header line, from left to right, delimited by spaces.)
+
+              -delim delimiter for fasta id and description, [default: ' ']
+							
+              -lo return the sequences in the output fasta file in the same order 
+                  as they appear in the list file, not the order of the input fasta file.
+
+              -v selects all reads NOT matching the criteria (e.g., reads not in the list file)
+
+              -a appends the sequences to output.fasta
+              
+              -names samples a corresponding names file at the same time
+
+              -q runs on a quality rather than sequences fasta file
+
+              -fastq runs on a fastq file rather than fasta file
+
+\n";
+#              -ro randomize the order of the output
+
+#######################################
+#
+# Definition statements
+#
+#######################################
+#Commandline parsing
+my $argNum = 2;
+#my $minargNum = 2;
+#my $maxargNum = 3;
+my $verbose = 0;
+my $debug = 0;
+
+#Runtime variables
+my $in_filename;
+my $outFilename;
+my $list_filename;
+my $list;
+my $names_filename;
+my $i;
+my $j;
+my $random=0;
+my $random_out=0;
+my $append=0;
+my $inList=0;
+my $count=0;
+my $isKeepSet=1;
+my $listOrder=0;
+my $giMatch=0;
+my $delim = " ";
+my $formatType = "fasta";
+
+#######################################
+#
+# Parse commandline arguments
+#
+#######################################
+
+if (! $ARGV[0] ) {
+	print $scripthelp;
+	print $usage;
+	exit -1;
+} 
+
+while  ((scalar @ARGV > 0) && ($ARGV[0] =~ /^-/))
+{
+	if ($ARGV[0] =~ /-h/) {
+		print $scripthelp;
+		print $usage;
+		exit 0;
+	} elsif ($ARGV[0] eq "-n") {
+		shift @ARGV;
+		$count = 1;
+		#my $args = $ARGV[0];
+		my $args = shift @ARGV;
+		$args =~ /([0-9]+),?([0-9\-]*)/;
+		$i = $1;
+		$j = $2;
+	} elsif ($ARGV[0] eq "-r") {
+		shift @ARGV;
+		$random = 1;
+		$i = shift @ARGV;
+	} elsif ($ARGV[0] eq "-l") {
+		shift @ARGV;
+		$inList = 1;
+		$list_filename = shift @ARGV;
+	} elsif ($ARGV[0] eq "-list") {
+	    shift @ARGV;
+	    $list = shift @ARGV;
+	    $inList = 1;
+	} elsif ($ARGV[0] eq "-g") {
+	    shift @ARGV;
+	    $giMatch = 1;
+	} elsif ($ARGV[0] eq "-lo") {
+		shift @ARGV;
+		$listOrder = 1;
+	} elsif ($ARGV[0] eq "-names") {
+		shift @ARGV;
+		$names_filename = shift @ARGV;
+	} elsif ($ARGV[0] eq "-delim") {
+		shift @ARGV;
+		$delim = shift @ARGV;
+	} elsif ($ARGV[0] eq "-a") {
+		$append = 1;
+		shift @ARGV;
+	} elsif ($ARGV[0] eq "-ro") {
+		$random_out = 1;
+		shift @ARGV;
+	} elsif ($ARGV[0] eq "-q") {
+        $formatType = "qual";
+		shift @ARGV;
+	} elsif ($ARGV[0] eq "-fastq") {
+		$formatType = "fastq";
+		shift @ARGV;
+	} elsif ($ARGV[0] eq "-v") {
+		$isKeepSet = 0;
+		shift @ARGV;
+    } elsif ($ARGV[0] =~ /^-/) { #unknown parameter, just get rid of it
+        print "Unknown commandline flag \"$ARGV[0]\".\n";
+        print $usage;
+        exit -1;
+    }
+}
+
+
+#######################################
+#
+# Test commandline arguments, ARGV
+#
+#######################################
+
+if (scalar @ARGV != $argNum) {
+#if ((scalar @ARGV < $minargNum) || (scalar @ARGV > $maxargNum)) {
+	print "\nIncorrect number of arguments.\n";
+    print "ARGNUM " . scalar @ARGV . "\n";
+	print "$usage\n";
+	exit;
+} 
+
+# Test for valid inFile
+$in_filename = $ARGV[0];
+if (! -f $in_filename) {
+	print "\nUnable to locate input fasta file: $in_filename.\n";
+	exit;
+}
+
+# Test for valid output file
+$outFilename = $ARGV[1];
+if ($random + $inList + $count != 1)
+{
+	print "\nMust specify one and only one of -n, -r or -l flags.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test that both fasta and list aren't stdin
+if ( ($in_filename eq "stdin") && ($list_filename eq "stdin") )
+{
+    print "Only one of the list and the fasta file can come from stdin.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+	
+# Test that a list file was found
+if ( ($list_filename) && (! -f $list_filename) && ($list_filename ne "stdin" ) )
+{
+	print "\nUnable to locate input list file: $list_filename.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test that a list file was found
+if ( $giMatch && (! $inList) ) 
+{
+	print "\nArguments Incomplete: -g argument requires -l <filename> argument.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test that both a list and a listfile aren't both specified
+if ( ($list_filename) && ($list) )
+{
+    print "Only specify a listfile (with -l) or a list of sequence names (-list), not both.\n";
+    print $usage;
+    exit 1;
+}
+
+# Test that listOrder uses a list
+if ( ($listOrder) && (! -f $list_filename) ) 
+{
+	print "\nCannot export in list order if a list has not been specified.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test for that a names file was found
+if ( $names_filename && (! -f $names_filename) ) 
+{
+	print "\nUnable to locate input names file: $names_filename.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test that a valid integer value was provided
+if (($random || $count) && ($i !~ /^[1-9][0-9]*/))
+{
+	print "\nFirst index, i=\"$i\", is not a valid integer value.  Please try again.\n";
+	print $usage;
+	exit 1;
+}
+
+# Test that the count values are in the correct order
+if ($count) 
+{
+	if ($j && ($j !~ /^[1-9][0-9]*/) && ($j ne "-") )
+	{
+		print "\nSecond index, j=\"$j\", is not a valid integer value.  Please try again.\n";
+		print $usage;
+		exit 1;
+	}
+	
+	# Set the count parameters if necessary
+	if ($j eq "-")
+	{
+		$j = `grep -c ">" $in_filename`;
+		chomp($j);
+	}
+	
+	if (! $j) 
+	{
+		$j = $i;
+	}
+	
+	if (($j ne "-") && ($j < $i))
+	{
+		print "\nSecond index value, $j, must be greater than the first, $i.  Please try again.\n";
+		print $usage;
+		exit 1;
+	}
+}
+#if ($verbose) {print "Running fastasampler on $in_filename writing to $outFilename, using options: $arg1\n"};
+#######################################
+#
+# Open the files
+#
+#######################################
+my $in;
+if ($in_filename eq "stdin")
+{
+    $in = Bio::SeqIO->new( '-fh'=> \*STDIN, '-format'=> "fasta") || die("Could not read input fasta file from STDIN.  Exiting...\n");
+} else {
+    $in = Bio::SeqIO->new( '-file'=> "<$in_filename", '-format'=> $formatType) || die("Could not read input $formatType file: $in_filename.  Exiting...\n");
+}
+
+my $out;
+if ($append) 
+{
+	$out = Bio::SeqIO->new( '-file'=> ">>$outFilename", '-format'=> $formatType) || die ("Unable to write to $outFilename.  Exiting...\n");
+} else {
+	$out = Bio::SeqIO->new( '-file'=> ">$outFilename", '-format'=> $formatType) || die ("Unable to write to $outFilename.  Exiting...\n");
+}
+
+my %namesfile_ids;
+#######################################
+#
+# If random grab out the correct number of sequences
+#
+#######################################
+if ($random) 
+{
+	#
+	# Check that you can select that many sequences
+	#
+	my $numSequences = `grep -c ">" $in_filename`;
+
+	if ($i > $numSequences) 
+	{
+		# Fasta too small, no can do
+		print "\nYou have requested to select more sequences ($i) than you have in $in_filename ($numSequences).\n";
+		exit;
+	} elsif ($i == $numSequences) {
+		# Fasta same size, just copy straight to output
+#		`cp $in_filename $outFilename`;
+		#print "\nYou have requested the same number of random sequences ($i) as there are in your $in_filename.  No sampling has been performed.\n";
+		warn "\nYou have requested the same number of random sequences ($i) as there are in your $in_filename.\n";
+		#exit;
+	}
+
+	#
+	# Really do it this time
+	#
+	my %randomIndices; # hash to hold the random numbers and if they have been used
+	my $k = 0; # how many sequences you have found
+
+	# Load up the random keys hash with values between 1 and $numSequences
+	until (scalar keys %randomIndices == $i) 
+	{
+		# See Programming Perl pg 201 for syntax
+		$randomIndices{int (rand $numSequences) + 1}++;
+	}
+	$debug && print "Debug: sequence count = " . (scalar keys %randomIndices) . "\n";
+
+	while (my $seqobj = $in->next_seq)
+	{
+		$k++;
+		if ( ( ($isKeepSet) && (exists $randomIndices{$k}) ) || ( (! $isKeepSet) && (! exists $randomIndices{$k}) ) )
+		{
+			#Write out sequence object to $outFilename
+			$out->write_seq($seqobj);
+
+            #if sampling namesfile too, then keep a tally of the reads kept
+            if ($names_filename) { $namesfile_ids{$seqobj->id}++; }
+		}
+	}
+}
+
+#######################################
+#
+# If using a list file, find them
+#
+#######################################
+elsif ($inList) 
+{
+    #Select sequences based on list
+    my %idHash;
+    my %giidHash;
+    my %checkHash;
+    my @listArray; # used only when returning in list order
+    my @giidArray; # an index for finding by 'gi' number only
+    my %seqHash;  # used only when returning in list order
+
+    if ($list_filename)
+    {
+	# Load up the list of sequences
+	if ($list_filename eq "stdin")
+	{
+	    open(LIST, "-") ;
+	} else {
+	    open(LIST, "<$list_filename") || die("Unable to read list file: $list_filename.  Exiting.\n");
+	}
+    
+	while (my $id = <LIST>)
+	{
+		chomp ($id);
+		$id =~ s/^>//;
+		if ($giMatch == 0) 
+		{
+		    $id =~ s/\s+//g; # remove all whitespace in the header line
+		} else {
+		    $id =~ s/ .*$//g; #strip everything after the first space to the end of line
+		}
+		$idHash{$id}++;
+		if ($listOrder) {push(@listArray, $id);}
+    
+	}
+    }
+    elsif ($list)
+    {
+	chomp $list;
+	my @data = split(/,/, $list);
+	while (my $id = <@data>)
+	{
+	    chomp ($id);
+	    $id =~ s/^>//;
+                if ($giMatch == 0)
+                {
+                    $id =~ s/\s+//g; # remove all whitespace in the header line
+                } else {
+                    $id =~ s/ .*$//g; #strip everything after the first space to the end of line 
+                }
+	    $idHash{$id}++;
+	    if ($listOrder) {push(@listArray, $id);}
+	}
+    }
+
+
+  # Step through the fasta file
+	while (my $seqobj = $in->next_seq)
+	{
+    # get the id
+		my $id = $seqobj->id;
+        my $giid = $id;
+        if ($delim eq " ") 
+        {
+    	    $id =~ s/\s+//g; # remove all whitespace in the header line
+        } else {
+    	    $id =~ s/$delim.*$//g; # remove everything after the delim
+        }
+
+        $giid =~ s/\|.*$//;
+    
+        $debug && print "DEBUG: Looking for \"$id\" in hashtable... ";
+    
+        my $doExport = 0; # set this flag to 1 to execute export block.
+    
+		if ($giMatch == 1) 
+        {
+			if ( ( ( $idHash{$giid} ) && ($isKeepSet) ) || ( (! $idHash{$giid}) && (! $isKeepSet) ) ) 
+            {
+				$doExport = 1;
+
+                $id = $giid;
+    	    }
+		} else {
+
+    		# if this id is in the list above, then export it
+    		if ( ( ( $idHash{$id} ) && ($isKeepSet) )    || ( (! $idHash{$id}) && (! $isKeepSet) ) ) 
+            {
+    			$doExport = 1;
+    		}
+
+		}
+
+		
+    
+        if ($doExport == 1)
+		{
+			$debug && print "Found";
+			$checkHash{$id} = 0;
+
+            if ($listOrder) 
+            {
+                # store the sequence and write it out after
+                $seqHash{$id} = $seqobj;
+
+            } else {
+			    # Write out sequence object to $outFilename
+    		    $out->write_seq($seqobj);
+    		    $checkHash{$id}++;
+            }
+                
+            #if sampling namesfile too, then keep a tally of the reads kept
+            if ($names_filename) { $namesfile_ids{$seqobj->id}++; }
+        }
+		$debug && print "\n";
+	}
+
+  # Print them out in list order
+  if ($listOrder)
+  {
+        foreach my $i (@listArray) 
+        {
+    	    $debug && print "Checking for the existence of \"$i\" in listArray... ";
+        	if (exists $seqHash{$i}) 
+            { 
+      	        $debug && print "Found";
+          	    $out->write_seq($seqHash{$i}); 
+        		$checkHash{$i}++;
+            }
+            $debug && print "\n";
+        }
+    }
+
+	foreach my $k (keys %checkHash)
+	{
+		if ($checkHash{$k} == 0)
+		{
+            if ($verbose) { print "Unable to locate $k from $list_filename in $in_filename.\n";}
+		}
+	}
+}
+
+#######################################
+#
+# Otherwise grab sequences i to j
+#
+#######################################
+else {
+	#Select from $i to $j sequences
+	my $k = 0;
+	while (my $seqobj = $in->next_seq)
+	{
+		$k++;
+		if ( ( ($isKeepSet) && ($k >= $i) && ($k <= $j) ) || ( (! $isKeepSet) && ( ($k< $i) || ($k > $j) ) ) )
+		{
+			#Write out sequence object to $outFilename
+			$out->write_seq($seqobj);
+
+            #if sampling namesfile too, then keep a tally of the reads kept
+            if ($names_filename) { $namesfile_ids{$seqobj->id}++; }
+		} elsif ($k > $j) {
+			exit;
+		}
+	}
+}
+
+#######################################
+#
+# Sample from the names file too
+#
+#######################################
+if ($names_filename)
+{
+	open(NAMES, "<$names_filename") || die ("Could not read names file: $names_filename.  Exiting...\n");
+    my $out_namesfile = $outFilename . ".names";
+	open(NAMES_OUT, ">$out_namesfile") || die ("Could not write to names file: $out_namesfile.  Exiting...\n");
+
+    while (my $line = <NAMES>) 
+    {
+        my @line_data = split("\t", $line);
+        if (exists $namesfile_ids{$line_data[0]}) {print NAMES_OUT $line;}
+    }
+}

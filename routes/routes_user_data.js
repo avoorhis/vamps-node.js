@@ -1332,7 +1332,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   console.log('2-req.body upload_data');
   console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-  
+  var fs_old   = require('fs');
   if(project === '' || req.body.project === undefined){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
@@ -1342,11 +1342,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		res.redirect("/user_data/import_data");
 		return;
   }else if(req.files[0].filename === undefined || req.files[0].size === 0){
-  	req.flash('failMessage', 'A fasta file is required.');
+  	    req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else if(req.files[1].filename === undefined || req.files[1].size === 0){
-  	req.flash('failMessage', 'A metadata csv file is required.');
+  	    req.flash('failMessage', 'A metadata csv file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else{
@@ -1372,8 +1372,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			var original_fastafile = path.join( process.env.PWD, 'tmp', req.files[0].filename);
-			var original_metafile  = path.join( process.env.PWD, 'tmp', req.files[1].filename);
+			var original_fastafile = path.join(process.env.PWD, 'tmp', req.files[0].filename);
+			var original_metafile  = path.join(process.env.PWD, 'tmp', req.files[1].filename);
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1389,6 +1389,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						              user    : req.user
 						        });
 			};
+			
 			fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
 		    	if (err) {
 						req.flash('failMessage', '1-File move failure  '+err);
@@ -1408,16 +1409,22 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 							return;
 						}
 
-
+                fs_old.chmod(data_repository, 0775, function (err) {
+			    if (err) {
+			        console.log(err)
+			        return;
+			    }
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
-						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
+						    env:{'LD_PYTHON_PATH':req.config.PATH, 'PATH':req.config.PATH},
+						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
 
 						load_trim_process.stdout.on('data', function (data) {
-						  //console.log('stdout: ' + data);
+						  console.log('stdout: ' + data);
 						  data = data.toString().replace(/^\s+|\s+$/g, '');
 						  output += data;
 						  var lines = data.split('\n');
@@ -1447,6 +1454,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 			  	}); // END move 2
 			}); // END move 1
+			});  // end mkdir
 
   }
   
