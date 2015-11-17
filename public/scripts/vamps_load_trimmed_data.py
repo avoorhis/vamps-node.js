@@ -42,7 +42,8 @@ def create_dirs(args):
     analysis_dir = os.path.join(outdir,'analysis')
     #gast_dir = os.path.join(outdir,'analysis/gast')
     if not os.path.exists(analysis_dir):
-        os.makedirs(analysis_dir)
+        os.makedirs(analysis_dir, mode=0755)
+
     #if os.path.exists(gast_dir):
     #    shutil.rmtree(gast_dir)
     #os.makedirs(gast_dir)
@@ -81,7 +82,7 @@ def write_seqfiles(args):
             datasets[ds] = 0
             ds_dir = os.path.join(analysis_dir,ds)
             if not os.path.exists(ds_dir):
-                os.makedirs(ds_dir)
+                os.makedirs(ds_dir, mode=0777)
             file = os.path.join(ds_dir,'seqfile.fa')
             fp = open(file,'w')
             files[ds] = fp
@@ -128,7 +129,7 @@ def write_seqfiles(args):
                         files[ds].write('>'+id+"\n"+f.seq+"\n")
                     else:
                         if not os.path.exists(ds_dir):
-                            os.makedirs(ds_dir)
+                            os.makedirs(ds_dir, mode=0777)
                         #os.makedirs(ds_dir)
                         fp = open(file,'w')
                         files[ds] = fp
@@ -185,7 +186,7 @@ def write_metafile(args,stats):
                         dataset_index = 0
                     else:
                         ds_in_headers = False
-                        print "No dataset column found in first column (allowed column names: "+','join(req_first_col);
+                        print "No dataset column found in first column (allowed column names: "+','.join(req_first_col);
                         sys.exit(1)
                 else:
                     if args.upload_type == 'multi':

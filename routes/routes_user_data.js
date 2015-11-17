@@ -11,7 +11,7 @@ var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
-var upload = multer(multer({ dest: path.join('user_data', NODE_DATABASE, 'tmp')}));
+var upload = multer(multer({ dest: path.join('tmp')}));
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 
@@ -1332,7 +1332,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   console.log('2-req.body upload_data');
   console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-
+  
   if(project === '' || req.body.project === undefined){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
@@ -1372,8 +1372,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			var original_fastafile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
-			var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
+			var original_fastafile = path.join( process.env.PWD, 'tmp', req.files[0].filename);
+			var original_metafile  = path.join( process.env.PWD, 'tmp', req.files[1].filename);
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1445,27 +1445,6 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 							 }
 						});
 
-
-				    // PythonShell.run('vamps_load_trimmed_data.py', options, function (err, output) {
-				    //   if (err) {
-							 //  req.flash('failMessage', 'Script Failure '+err);
-							 //  status_params = {'type':'update', 'user':req.user.username,
-								// 			'proj':project, 'status':'Script Failure',	'msg':'Script Failure'  }
-							 //  helpers.update_status(status_params);
-							 //  res.redirect("/user_data/import_data");  // for now we'll send errors to the browser
-							 //  return;
-						  // }
-						  // status_params = {'type':'update', 'user':req.user.username,
-								// 			'proj':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  }
-						  // helpers.update_status(status_params);
-						  // console.log('Finished loading '+project);
-
-
-				    // });
-
-
-
-
 			  	}); // END move 2
 			}); // END move 1
 
@@ -1511,11 +1490,11 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
-			var original_taxbyseqfile = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[0].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
+			var original_taxbyseqfile = path.join(process.env.PWD, 'tmp',req.files[0].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			console.log(original_taxbyseqfile);
 			var original_metafile  = '';
 			try{
-				original_metafile  = path.join(process.env.PWD,'user_data', NODE_DATABASE, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
+				original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
 			}
 			catch(err){
 				console.log(err);
