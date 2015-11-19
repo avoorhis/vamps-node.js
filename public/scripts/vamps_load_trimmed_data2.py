@@ -84,12 +84,10 @@ class FastaReader:
 def create_dirs(args):
     outdir = args.outdir
     analysis_dir = os.path.join(outdir,'analysis')
-    gast_dir = os.path.join(analysis_dir,'gast')
     #gast_dir = os.path.join(outdir,'analysis/gast')
     if not os.path.exists(analysis_dir):
         os.makedirs(analysis_dir, mode=0755)
-    if not os.path.exists(gast_dir):
-        os.makedirs(gast_dir, mode=0755)
+
     #if os.path.exists(gast_dir):
     #    shutil.rmtree(gast_dir)
     #os.makedirs(gast_dir)
@@ -101,7 +99,6 @@ def write_seqfiles(args):
     files = {}
     stats = {}
     analysis_dir = os.path.join(outdir,'analysis')
-    gast_dir = os.path.join(analysis_dir,'gast')
     #gast_dir = os.path.join(outdir,'analysis/gast')
     if args.config_only:
         config = ConfigParser.RawConfigParser()
@@ -127,7 +124,7 @@ def write_seqfiles(args):
         if args.upload_type == 'single':
             ds = args.dataset
             datasets[ds] = 0
-            ds_dir = os.path.join(gast_dir,ds)
+            ds_dir = os.path.join(analysis_dir,ds)
             if not os.path.exists(ds_dir):
                 os.makedirs(ds_dir, mode=0777)
             file = os.path.join(ds_dir,'seqfile.fa')
@@ -300,20 +297,19 @@ def write_config(args,stats):
     
 def unique_seqs(args,stats):
     fastaunique_cmd = script_path+'/fastaunique'
-    print fastaunique_cmd
     #fastaunique_cmd = 'fastaunique'
     print args
     try:
         for dataset in stats["datasets"]:
             print dataset
-            ds_dir = os.path.join(args.outdir, 'analysis','gast', dataset)
+            ds_dir = os.path.join(args.outdir, 'analysis',dataset)
             fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
             unique_file = os.path.join(ds_dir, 'unique.fa')
             names_file  = os.path.join(ds_dir, 'names')
             fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
             ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
     except:
-        print "Could not find fastaunique command"
+        print "Could not find/run fastaunique command"
         sys.exit(1)
         
 if __name__ == '__main__':
@@ -354,37 +350,37 @@ if __name__ == '__main__':
     
    
     parser.add_argument("-dir","--outdir",                   
-                required=True,  action="store",   dest = "outdir", 
-                help="""Directory to output ini and dir structure""")     
+    			required=True,  action="store",   dest = "outdir", 
+    			help="""Directory to output ini and dir structure""")     
     
     parser.add_argument("-d", "--dataset",        
-                required=False,  action='store', dest = "dataset",  default='',
-                help="Dataset Name")                                                  
+    			required=False,  action='store', dest = "dataset",  default='',
+    			help="Dataset Name")                                                  
     parser.add_argument("-t", "--upload_type",
-                required=True,  action='store', dest = "upload_type",  default='multi',
+    			required=True,  action='store', dest = "upload_type",  default='multi',
                 choices=['multi','single'], help="multi or single dataset")
 
     parser.add_argument("-co", "--config_only", 
-                required=False,  action='store_true', dest = "config_only",  default=False, 
-                help="")
+    			required=False,  action='store_true', dest = "config_only",  default=False, 
+    			help="")
     parser.add_argument("-reg", "--dna_region",    
-                required=False,  action='store', dest = "dna_region",  default='v6',
-                help="")
+    			required=False,  action='store', dest = "dna_region",  default='v6',
+    			help="")
     parser.add_argument("-dom", "--domain",        
-                required=False,  action='store', dest = "domain",  default='bacteria', 
-                help="")
+    			required=False,  action='store', dest = "domain",  default='bacteria', 
+    			help="")
     parser.add_argument("-env", "--env_source_id", 
-                required=False,  action='store', dest = "envid",  default='100', 
-                help="")
+    			required=False,  action='store', dest = "envid",  default='100', 
+    			help="")
     parser.add_argument("-pub", "--public",        
-                required=False,  action='store_true', dest = "public",  default=False, 
-                help="")
+    			required=False,  action='store_true', dest = "public",  default=False, 
+    			help="")
     parser.add_argument("-o", "--owner",        
-                required=True,  action='store', dest = "owner",  default=False, 
-                help="")
+    			required=True,  action='store', dest = "owner",  default=False, 
+    			help="")
     parser.add_argument("-p", "--project",        
-                required=True,  action='store', dest = "project",  default=False, 
-                help="")
+    			required=True,  action='store', dest = "project",  default=False, 
+    			help="")
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    

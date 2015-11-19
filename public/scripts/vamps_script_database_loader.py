@@ -32,6 +32,8 @@ import subprocess
 import MySQLdb
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+print 'sys.path'
+print sys.path
 """
 New Table:
 CREATE TABLE `summed_counts` (
@@ -121,54 +123,63 @@ def start(args):
    
     os.chdir(args.basedir)
     
-    
-    mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
-                          db = NODE_DATABASE,
-                          read_default_file="~/.my.cnf"  )
+    mysql_conn = MySQLdb.connect(db = NODE_DATABASE,  read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
     
     
     logging.info("running get_config_data")
+    print "running get_config_data"
     get_config_data(args.basedir)
     
     logging.info("checking user")
+    print "checking user"
     check_user()  ## script dies if user not in db
     
-    logging.info("checking user")
+    logging.info("checking project")
+    print "checking project"
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
+        print "ERROR res[0]"
         sys.exit(res[1])
     else:
         logging.info("recreating ranks")
+        print "recreating ranks"
         recreate_ranks()
     
         logging.info("env sources")
+        print "env sources"
         create_env_source()
     
         logging.info("classifier")
+        print "classifier"
         create_classifier()
     
         logging.info("starting taxonomy")
+        print "starting taxonomy"
         push_taxonomy(args)
     
         logging.info("starting sequences")
+        print "starting sequences"
         push_sequences(args)
     
         logging.info("projects")
+        print "projects"
         push_project()
     
         logging.info("datasets")
+        print "datasets"
         push_dataset()
     
         #push_summed_counts()
         logging.info("starting push_pdr_seqs")
+        print "starting push_pdr_seqs"
         push_pdr_seqs(args)
     
         #print SEQ_COLLECTOR
         #pp.pprint(CONFIG_ITEMS)
         logging.info("Finished "+os.path.basename(__file__))
-        
+        print "Finished "+os.path.basename(__file__)
         print CONFIG_ITEMS['project_id']
         return CONFIG_ITEMS['project_id']
     
@@ -332,7 +343,7 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            #print q
+            print q
             #print
             logging.info(q)
             try:
@@ -417,28 +428,29 @@ def push_taxonomy(args):
     global cur
     indir = args.basedir
     classifier = args.classifier
-    #gast_dir = os.path.join(indir,'analysis/gast') 
-    analysis_dir = os.path.join(indir,'analysis') 
-    #print  general_config_items
+    
+    gast_dir = os.path.join(indir,'analysis','gast') 
+    print  'gast_dir',gast_dir
     
     
     
-    for dir in os.listdir(analysis_dir): 
+    for dir in os.listdir(gast_dir): 
         ds = dir
         SEQ_COLLECTOR[ds] = {}
         if 'input_type' in args and args.input_type == 'tax_by_seq':
-            tax_file = os.path.join(analysis_dir, dir,'sequences_n_taxonomy.txt')
-            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
+            tax_file = os.path.join(gast_dir, dir,'sequences_n_taxonomy.txt')
+            unique_file = os.path.join(gast_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
                 run_tax_by_seq_file(args, ds, tax_file)
         elif classifier.upper() == 'GAST':
-            tax_file = os.path.join(analysis_dir, dir, 'gast', 'vamps_sequences_pipe.txt')
+            gast_dir = os.path.join(indir,'analysis','gast') 
+            tax_file = os.path.join(gast_dir, dir, 'vamps_sequences_pipe.txt')
             if os.path.exists(tax_file):
                 run_gast_tax_file(args, ds, tax_file)
         elif classifier.upper() == 'RDP':
-            tax_file = os.path.join(analysis_dir, dir, 'rdp', 'rdp_out.txt')
-            unique_file = os.path.join(analysis_dir, dir, 'unique.fa')
-            #seqs_file = os.path.join(analysis_dir, dir, 'seqfile.fa')
+            rdp_dir = os.path.join(indir,'analysis','rdp') 
+            tax_file = os.path.join(gast_dir, dir, 'rdp_out.txt')
+            unique_file = os.path.join(gast_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
                 run_rdp_tax_file(args, ds, tax_file, unique_file)
         else:
@@ -480,7 +492,7 @@ def run_gast_tax_file(args,ds,tax_file):
     tax_items = []
     with open(tax_file,'r') as fh:
         for line in fh:
-            
+            print line
             items = line.strip().split("\t")
             if items[0] == 'HEADER': continue
             seq = items[0]

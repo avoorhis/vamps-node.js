@@ -66,27 +66,7 @@ class RunConfig:
 
     	if type(config_info)==dict:
             config_dict = config_info
-                 
- #        elif self.args.platform == 'illumina':
-#             
-#             config_dict = v.create_dictionary_from_ini()
-#             config_dict['general'] = v.get_command_line_items(config_dict['general'])
-#             config_dict['general']['config_file'] = os.path.join(config_dict['general']['output_dir'], config_dict['general']['run']+'.ini')
-#             config_dict['general']['status_file'] = os.path.join(config_dict['general']['output_dir'], 'STATUS.txt')
-#             config_dict['general']['files_list'] = config_dict['general']['input_files'].split(',')
-#             #config_dict = v.check_for_input_files(config_dict) 
-#             
-#         elif self.args.platform == '454':
-#         
-#             config_dict = v.create_dictionary_from_ini()
-#             config_dict['general'] = v.get_command_line_items(config_dict['general'])
-#             config_dict['general']['config_file'] = os.path.join(config_dict['general']['output_dir'], config_dict['general']['run']+'.ini')
-#             config_dict['general']['status_file'] = os.path.join(config_dict['general']['output_dir'], 'STATUS.txt')
-#             #config_dict = v.check_for_input_files(config_dict)
-#             
-#         elif args.platform == 'ion_torrent':
-#             sys.exit("3-ConfigFile conversion to dictionary not written yet for platform ("+self.args.platform+") ")
-        
+                        
         
         else:
             sys.exit("Unknown platform for dictionary conversion")
@@ -225,31 +205,7 @@ class RunConfig:
                 self.use_full_length= False
             
         else:
-            if self.platform == 'illumina':
-                self.compressed     = general_config['compressed']                 
-                self.database_name  = general_config['database_name'] 
-                self.database_host  = general_config['database_host'] 
-                self.site           = general_config['site']
-                self.load_vamps_database = general_config['load_vamps_database']
-                if general_config.has_key("archaea"):
-                    self.archaea    = general_config['archaea'] 
-                if general_config.has_key("do_perfect"):
-                    self.do_perfect = general_config['do_perfect']
-                else:
-                    self.do_perfect = C.pipeline_run_items['illumina']['do_perfect']        
-                if general_config.has_key("lane_name"):
-                    self.lane_name = general_config['lane_name']
-                else:
-                    self.lane_name = C.pipeline_run_items['illumina']['lane_name']                                    
-                    
-            elif self.platform == '454':
-                self.compressed     = general_config['compressed'] 
-                self.database_name  = general_config['database_name'] 
-                self.database_host  = general_config['database_host'] 
-                self.site           = general_config['site']
-                self.load_vamps_database = general_config['load_vamps_database']
-            else:
-                pass
+            pass
         # added gast_input_source for vamps uploads
         # so when users want to gast at a later time they will
         # look in the database and not the files (which may be missing)
@@ -402,44 +358,7 @@ class RunConfig:
                 # a dictionary of samples
             	self.samples[key] = sample
             else:
-                if self.platform == 'illumina':
-                    # req specifically for illumina
-                    sample.data_owner           = lane_run_dict['data_owner']
-                    sample.first_name           = lane_run_dict['first_name']
-                    sample.last_name            = lane_run_dict['last_name']
-                    sample.email                = lane_run_dict['email']
-                    sample.institution          = lane_run_dict['institution']
-                    sample.funding              = lane_run_dict['funding']
-                    sample.barcode_index = lane_run_dict['barcode_index'] 
-                    sample.overlap = lane_run_dict['overlap'] 
-                    sample.read_length = lane_run_dict['read_length'] 
-#                    sample.file_prefix = lane_run_dict['file_prefix'] 
-                    sample.insert_size = lane_run_dict['insert_size']
-                    #sample.taxonomic_domain = lane_run_dict['domain']
-                    # concatenate: barcode_index and run_key and lane
-                    key = lane_run_dict['barcode_index'] +'_'+ lane_run_dict['run_key'] +'_'+ lane_run_dict['lane'] 
-                    #sample.key = key
-                    self.run_keys.append(key)  
-                    # a dictionary of samples
-                    self.samples[lane_run_key] = sample
-                    
-                elif self.platform == '454':
-                    # required for 454
-                    sample.direction            = lane_run_dict['direction'] 
-                    sample.data_owner           = lane_run_dict['data_owner']
-                    sample.first_name           = lane_run_dict['first_name']
-                    sample.last_name            = lane_run_dict['last_name']
-                    sample.email                = lane_run_dict['email']
-                    sample.institution          = lane_run_dict['institution']
-                    sample.funding              = lane_run_dict['funding']
-                    #sample.taxonomic_domain = lane_run_dict['domain']
-                    # a list of run_keys
-                    # convert: change ':' to '_'
-                    key = lane_run_key[:1]+'_'+lane_run_key[2:]
-                    #sample.key = key
-                    self.run_keys.append(key)
-                    # a dictionary of samples
-                    self.samples[lane_run_key] = sample
+                pass
                 
 
             	

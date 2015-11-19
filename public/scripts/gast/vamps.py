@@ -26,10 +26,6 @@ class Vamps:
        
             
         
-        
-        
-        
-        
         #self.basedir = self.runobj.output_dir
         #self.outdir  = os.path.join(self.runobj.output_dir,self.prefix)
         self.idx_keys = idx_keys
@@ -53,9 +49,10 @@ class Vamps:
         # 3) gast2tax
         
         
-        self.analysis_dir = os.path.join(dir_prefix,'analysis') 
-        if not os.path.exists(self.analysis_dir):  
-            sys.exit('Could not find analysis dir '+self.analysis_dir)
+        analysis_dir = os.path.join(dir_prefix,'analysis') 
+        self.gast_dir = os.path.join(analysis_dir,'gast') 
+        if not os.path.exists(self.gast_dir):  
+            sys.exit('Could not find gast dir '+self.gast_dir)
             
         
         
@@ -102,12 +99,12 @@ class Vamps:
     def gather_files_per_key(self, key):
     
         file_collector={}
-        output_dir  = os.path.join(self.analysis_dir, key)
-        out_gast_dir    = os.path.join(output_dir, 'gast')
+        output_dir  = os.path.join(self.gast_dir, key)
         
         
-        file_collector['gast_concat_file'] = os.path.join(out_gast_dir,'gast_concat')
-        file_collector['tagtax_file'] = os.path.join(out_gast_dir,'tagtax_terse')
+        
+        file_collector['gast_concat_file'] = os.path.join(output_dir,'gast_concat')
+        file_collector['tagtax_file'] = os.path.join(output_dir,'tagtax_terse')
         if not os.path.exists(file_collector['gast_concat_file']):
                 logging.warning("Could not find gast_concat_file file: "+file_collector['gast_concat_file'])
                  
@@ -138,16 +135,16 @@ class Vamps:
         print key,": Sequence Count", dataset_count
         
         # output files to be created:            
-        file_collector['taxes_file']                = os.path.join(out_gast_dir,'vamps_data_cube_uploads.txt')
-        file_collector['summed_taxes_file']         = os.path.join(out_gast_dir,'vamps_junk_data_cube_pipe.txt')
-        file_collector['distinct_taxes_file']       = os.path.join(out_gast_dir,'vamps_taxonomy_pipe.txt')
-        file_collector['sequences_file']            = os.path.join(out_gast_dir,'vamps_sequences_pipe.txt')
-        file_collector['export_file']               = os.path.join(out_gast_dir,'vamps_export_pipe.txt')
-        file_collector['projects_datasets_file']    = os.path.join(out_gast_dir,'vamps_projects_datasets_pipe.txt')
-        file_collector['project_info_file']         = os.path.join(out_gast_dir,'vamps_projects_info_pipe.txt')
+        file_collector['taxes_file']                = os.path.join(output_dir,'vamps_data_cube_uploads.txt')
+        file_collector['summed_taxes_file']         = os.path.join(output_dir,'vamps_junk_data_cube_pipe.txt')
+        file_collector['distinct_taxes_file']       = os.path.join(output_dir,'vamps_taxonomy_pipe.txt')
+        file_collector['sequences_file']            = os.path.join(output_dir,'vamps_sequences_pipe.txt')
+        file_collector['export_file']               = os.path.join(output_dir,'vamps_export_pipe.txt')
+        file_collector['projects_datasets_file']    = os.path.join(output_dir,'vamps_projects_datasets_pipe.txt')
+        file_collector['project_info_file']         = os.path.join(output_dir,'vamps_projects_info_pipe.txt')
     
     
-        return (file_collector, dataset_count, out_gast_dir)
+        return (file_collector, dataset_count, output_dir)
     
 
     

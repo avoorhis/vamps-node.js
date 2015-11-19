@@ -55,8 +55,9 @@ class Gast:
         
         #self.analysis_dir = dirs.check_dir(dirs.analysis_dir)
         self.analysis_dir = os.path.join(dir_prefix,'analysis') 
-        if not os.path.exists(self.analysis_dir):  
-            sys.exit('Could not find analysis dir '+self.analysis_dir)
+        self.gast_dir = os.path.join(dir_prefix,'analysis','gast') 
+        if not os.path.exists(self.gast_dir):  
+            sys.exit('Could not find analysis dir '+self.gast_dir)
         # dir structure is 
         # basedir/
         #   -analysis/
@@ -114,29 +115,32 @@ class Gast:
         gast_prefix = 'gast_'
         if self.use_cluster:
             logging.info("Using cluster for clustergast")
+            logging.info("Cluster nodes set to: "+str(cluster_nodes))
+            cluster_nodes  = C.cluster_nodes
         else:
-            logging.info("Not using cluster")            
+            logging.info("Not using cluster") 
+            cluster_nodes = False           
             
         key_counter    = 0
         gast_file_list = []
         qsub_id_list=[]
-        cluster_nodes  = C.cluster_nodes
+        
         num_keys = len(self.iterator)
-        logging.info("Cluster nodes set to: "+str(cluster_nodes))
+        
+
         for key in self.iterator:
             key_counter += 1
             logging.info( "\n\nEntering Directory "+ str(key_counter)+' - '+ key)
             logging.info( 'use_cluster: '+ str(self.use_cluster))
             
-            output_dir  = os.path.join(self.analysis_dir, key)
-            gast_dir    = os.path.join(output_dir, 'gast')
-            if not os.path.exists(gast_dir):  
-                os.makedirs(gast_dir)
-            fasta_file = os.path.join(output_dir, 'fasta.fa')                
+            output_dir  = os.path.join(self.gast_dir, key)
+            
+            if not os.path.exists(output_dir):  
+                os.makedirs(output_dir)
+            fasta_file = os.path.join(output_dir, 'seqfile.fa')                
             unique_file = os.path.join(output_dir, 'unique.fa')
             names_file  = os.path.join(output_dir, 'names')
-            #datasets_file = os.path.join(self.global_gast_dir, 'datasets')
-            #print 'gast_dir:', gast_dir
+            
             logging.info( 'unique_file:'+ unique_file)            
             
             if key_counter >= self.limit:
@@ -181,14 +185,14 @@ class Gast:
                         logging.info("\n\n>>>>>>>>> Dataset:"+str(key_counter)+'/'+str(num_keys)+" Sequence:"+str(i)+'/'+str(facount))
                         if i >= cluster_nodes:
                             continue
-                        script_filename      = os.path.join(gast_dir, qsub_prefix + str(i))
-                        gast_filename        = os.path.join(gast_dir, gast_prefix + str(i))
-                        fastasamp_filename   = os.path.join(gast_dir, 'samp_' + str(i))
+                        script_filename      = os.path.join(output_dir, qsub_prefix + str(i))
+                        gast_filename        = os.path.join(output_dir, gast_prefix + str(i))
+                        fastasamp_filename   = os.path.join(output_dir, 'samp_' + str(i))
                         "!!! output = 100"
-                        clustergast_filename = os.path.join(gast_dir, key+".gast_" + str(i))
+                        clustergast_filename = os.path.join(output_dir, key+".gast_" + str(i))
                         gast_file_list.append(clustergast_filename)
-                        usearch_filename     = os.path.join(gast_dir, "uc_" + str(i))
-                        log_file             = os.path.join(gast_dir, 'clustergast.log_' + str(i))
+                        usearch_filename     = os.path.join(output_dir, "uc_" + str(i))
+                        log_file             = os.path.join(output_dir, 'clustergast.log_' + str(i))
                         
                         data = line.split()
                         
@@ -226,7 +230,7 @@ class Gast:
                         #us_cmd = self.get_usearch_cmd(fastasamp_filename, refdb, usearch_filename, self.runobj.use64bit)
                         us_cmd = self.get_vsearch_cmd(fastasamp_filename, refdb, usearch_filename)
                         
-                        logging.debug("u(v)search command: "+us_cmd)
+                        logging.debug("vsearch command: "+us_cmd)
 
                         
                         if self.use_cluster:
@@ -276,12 +280,21 @@ class Gast:
                     """
                     #fastasamp_filename = os.path.join(gast_dir, 'samp')
                     # no nodes means that just one file will be run by clusterize
-                    usearch_filename= os.path.join(gast_dir, "uc")
-                    clustergast_filename_single   = os.path.join(gast_dir, "gast"+dna_region)
+                    usearch_filename= os.path.join(output_dir, "uc")
+                    fastasamp_filename   = os.path.join(output_dir, 'samp_all')
+                    fastaunique_cmd = 'fastaunique' +" -f  -o "+fastasamp_filename+' '+fasta_file
+                    logging.info( fastaunique_cmd)                    
+                    subprocess.call(fastaunique_cmd, shell=True)
+
+                    clustergast_filename_single   = os.path.join(output_dir, "gast"+dna_region)
                     gast_file_list = [clustergast_filename_single]
-                    logging.info( usearch_filename, clustergast_filename_single)
+                    logging.info( usearch_filename+' - '+clustergast_filename_single)
                     
                     #us_cmd = self.get_usearch_cmd(unique_file, refdb, usearch_filename, self.runobj.use64bit)
+                    
+                    #
+                    #
+                    # using unique file may inject 'frequency:1' errors into seqids in uc files
                     us_cmd = self.get_vsearch_cmd(fastasamp_filename, refdb, usearch_filename)
                     
                     logging.info( us_cmd)
@@ -305,18 +318,18 @@ class Gast:
 
         for key in self.iterator: 
             
-            output_dir  = os.path.join(self.analysis_dir, key)
-            gast_dir    = os.path.join(output_dir, 'gast')
+            output_dir  = os.path.join(self.gast_dir, key)
+            
       
             # now concatenate all the clustergast_files into one file (if they were split)
             if cluster_nodes:
                 # gast file
-                clustergast_filename_single   = os.path.join(gast_dir, "gast"+dna_region)
+                clustergast_filename_single   = os.path.join(output_dir, "gast"+dna_region)
                 clustergast_fh = open(clustergast_filename_single, 'w')
                 # have to turn off cluster above to be able to 'find' these files for concatenation
                 for n in range(1, C.cluster_nodes-1):
                     #cmd = "cat "+ gast_dir + key+".gast_" + str(n) + " >> " + gast_dir + key+".gast"
-                    file = os.path.join(gast_dir, key+".gast_" + str(n))
+                    file = os.path.join(output_dir, key+".gast_" + str(n))
                     if(os.path.exists(file)):                    
                         shutil.copyfileobj(open(file, 'rb'), clustergast_fh)
                     else:
@@ -330,16 +343,16 @@ class Gast:
             # remove tmp files
             for n in range(i+1):
                 #print "Trying to remove "+os.path.join(gast_dir, "uc_"+str(n))
-                if os.path.exists(os.path.join(gast_dir, "uc_"+str(n))):
-                    os.remove(os.path.join(gast_dir, "uc_"+str(n)))
+                if os.path.exists(os.path.join(output_dir, "uc_"+str(n))):
+                    os.remove(os.path.join(output_dir, "uc_"+str(n)))
                     pass
                 #print "Trying to remove "+os.path.join(gast_dir, "samp_"+str(n))
-                if os.path.exists(os.path.join(gast_dir, "samp_"+str(n))):    
-                    os.remove(os.path.join(gast_dir, "samp_"+str(n)))
+                if os.path.exists(os.path.join(output_dir, "samp_"+str(n))):    
+                    os.remove(os.path.join(output_dir, "samp_"+str(n)))
                     pass
                 #print "Trying to remove "+os.path.join(self.gast_dir, key+".gast_"+str(n))
-                if os.path.exists(os.path.join(gast_dir, key+".gast_"+str(n))):    
-                    os.remove(os.path.join(gast_dir, key+".gast_"+str(n)))
+                if os.path.exists(os.path.join(output_dir, key+".gast_"+str(n))):    
+                    os.remove(os.path.join(output_dir, key+".gast_"+str(n)))
                     pass
                     
                     
@@ -358,8 +371,8 @@ class Gast:
         for key in self.iterator:
             "UTIL: Dirs: create file names"
             
-            output_dir  = os.path.join(self.analysis_dir, key)
-            gast_dir    = os.path.join(output_dir, 'gast')
+            output_dir  = os.path.join(self.gast_dir, key)
+            
             names_file  = os.path.join(output_dir, 'names')   
                 
             if key in self.runobj.samples:
@@ -373,21 +386,20 @@ class Gast:
             # find gast_dir
             
             'Check in Dirs'            
-            if not os.path.exists(gast_dir):
-                logging.error("Could not find gast directory: "+gast_dir+" Exiting")
+            if not os.path.exists(output_dir):
+                logging.error("Could not find gast directory: "+output_dir+" Exiting")
                 sys.exit()
                 
             'create in Dirs'
-            clustergast_filename_single   = os.path.join(gast_dir, "gast"+dna_region)
+            clustergast_filename_single   = os.path.join(output_dir, "gast"+dna_region)
             try:
                 logging.debug('gast filesize:'+str(os.path.getsize(clustergast_filename_single)))
             except:
                 logging.debug('gast filesize: zero')
                 
-            gast_filename          = os.path.join(gast_dir, "gast")
-            gastconcat_filename    = os.path.join(gast_dir, "gast_concat")  
-            #dupes_filename    = os.path.join(gast_dir, "dupes") 
-            #nonhits_filename    = os.path.join(gast_dir, "nonhits")   
+            gast_filename          = os.path.join(output_dir, "gast")
+            gastconcat_filename    = os.path.join(output_dir, "gast_concat")  
+            
             copies  = {}
             nonhits = {}
             # open and read names file
@@ -542,8 +554,8 @@ class Gast:
             key_counter += 1
             'move to Dirs'
             
-            output_dir  = os.path.join(self.analysis_dir, key)
-            gast_dir    = os.path.join(output_dir, 'gast')
+            output_dir  = os.path.join(self.gast_dir, key)
+            
             names_file  = os.path.join(output_dir, 'names')
             
             'create dna_region in self'
@@ -563,10 +575,10 @@ class Gast:
             if self.use_cluster:
                 clusterize = C.clusterize_cmd
                 # create script - each file gets script
-                script_filename = os.path.join(gast_dir, qsub_prefix + str(key_counter))
+                script_filename = os.path.join(output_dir, qsub_prefix + str(key_counter))
                 fh = open(script_filename, 'w')
                 qstat_name = "gast2tax" + key + '_' + self.runobj.run + "_" + str(key_counter)
-                log_file = os.path.join(gast_dir, 'gast2tax.log_' + str(key_counter))
+                log_file = os.path.join(output_dir, 'gast2tax.log_' + str(key_counter))
                 fh.write("#!/bin/sh\n\n")
                 #fh.write("#$ -j y\n" )
                 #fh.write("#$ -o " + log_file + "\n")
@@ -581,7 +593,7 @@ class Gast:
                                 '-dna',dna_region,
                                 '-key',key,
                                 "-max",str(max_gast_distance),
-                                '-o', gast_dir,
+                                '-o', output_dir,
                                 '-n',names_file,
                                 '-site', self.runobj.site,
                                 '--vamps_user_upload',
@@ -626,15 +638,15 @@ class Gast:
                     
                     ref_taxa = self.load_reftaxa(taxdb)
             
-                    self.assign_taxonomy(key, gast_dir, dna_region, names_file, ref_taxa);
+                    self.assign_taxonomy(key, output_dir, dna_region, names_file, ref_taxa);
                     
                     
         if self.use_cluster:
             'check if clusterize is done'
             # wait here for tagtax files to finish
             temp_file_list = tax_files
-            tagtax_terse_filename     = os.path.join(gast_dir, "tagtax_terse")
-            tagtax_long_filename     = os.path.join(gast_dir, "tagtax_long")
+            tagtax_terse_filename     = os.path.join(output_dir, "tagtax_terse")
+            tagtax_long_filename     = os.path.join(output_dir, "tagtax_long")
             c = False
             maxwaittime = C.maxwaittime  # seconds
             sleeptime   = C.sleeptime    # seconds
@@ -647,20 +659,6 @@ class Gast:
 
             
             
-            
-#                 counter3 += 1
-#                 if counter3 >= maxwaittime / sleeptime:
-#                     raise Exception("Max wait time exceeded in gast.py: gast2tax")
-#                 
-#                 #print temp_file_list
-#                 if os.path.exists(tagtax_long_filename) and os.path.getsize(tagtax_long_filename) > 100:
-#                     # remove from tmp list
-#                     logging.debug("Found file: "+tagtax_long_filename+" - Continuing")
-#                     c = True
-#                 else:
-#                     logging.info("waiting for tagtax files to fill...")
-#                     logging.info("\ttime: "+str(counter3 * sleeptime))
-#                     time.sleep(sleeptime)
                     
                     
         logging.info( "Finished gast2tax" )
@@ -688,39 +686,7 @@ class Gast:
         refdb = os.path.join(self.refdb_dir, 'refseqs.fa.gz')
         taxdb = os.path.join(self.refdb_dir, 'taxonomy.tax')
         
-        # self.db_type='db'
-        # if C.use_full_length or dna_region == 'unknown' or dna_region not in C.refdbs:
-            
-        #     refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-        #     taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-        #     self.db_type='db'
-        # else:
-            
-        #     if dna_region in C.refdbs:
-        #         if os.path.exists(os.path.join(self.refdb_dir, C.refdbs[dna_region])):
-        #             refdb = os.path.join(self.refdb_dir, C.refdbs[dna_region])
-        #             taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
-        #             self.db_type='db'
-        #         else:
-        #             logging.info( 'could not find refdb '+os.path.join(self.refdb_dir, C.refdbs[dna_region])+".fa - Using full length")
-        #             refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-        #             taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-        #             self.db_type='db'
-        #     elif os.path.exists(os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa')):
-        #         refdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.fa.gz')
-        #         taxdb = os.path.join(self.refdb_dir, 'ref'+dna_region+'.tax')
-        #         self.db_type='db'
-            
-        #     elif os.path.exists(os.path.join(self.refdb_dir, 'refssu.fa.gz')):
-            
-        #         refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-        #         taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-        #         self.db_type='db'
-        #     else:
-        #         refdb = os.path.join(self.refdb_dir, 'refssu.fa.gz')
-        #         taxdb = os.path.join(self.refdb_dir, 'refssu.tax')
-        #         self.db_type='db'
-        #         logging.error("Could not find reference database in "+self.refdb_dir+" - Using full length")
+       
                 
             
                 
@@ -730,15 +696,17 @@ class Gast:
           
     def get_fastasampler_cmd(self, unique_file, fastasamp_filename, start, end):
         
-        fastasampler = self.py_pipeline_bin+'/fastasampler'
-        fastasampler_cmd = fastasampler
+        #fastasampler = self.py_pipeline_bin+'/fastasampler'
+        fastasampler_cmd = 'fastasampler'
         fastasampler_cmd += ' -n '+ str(start)+','+ str(end)
         fastasampler_cmd += ' ' + unique_file
-        fastasampler_cmd += ' ' + fastasamp_filename        
+        fastasampler_cmd += ' ' + fastasamp_filename    
+
         return fastasampler_cmd
         
     def get_vsearch_cmd(self, fastasamp_filename, refdb, usearch_filename ):
-        vsearch_cmd = self.py_pipeline_bin+'/vsearch'
+        #vsearch_cmd = self.py_pipeline_bin+'/vsearch'
+        vsearch_cmd = 'vsearch'
         vsearch_cmd += ' -usearch_global ' + fastasamp_filename
         vsearch_cmd += ' -gapopen 6I/1E'
         vsearch_cmd += ' -uc_allhits'
@@ -809,7 +777,7 @@ class Gast:
             n += 1
         return taxa
     
-    def assign_taxonomy(self, key, gast_dir, dna_region, names_file, ref_taxa):
+    def assign_taxonomy(self, key, output_dir, dna_region, names_file, ref_taxa):
     
         from taxonomy import Taxonomy, consensus
         #results = uc_results
@@ -822,12 +790,12 @@ class Gast:
         #test_read='FI1U8LC02GEF7N'
         # open gast_file to get results
         "to Dirs"
-        tagtax_terse_filename     = os.path.join(gast_dir, "tagtax_terse")
-        tagtax_long_filename     = os.path.join(gast_dir, "tagtax_long")
+        tagtax_terse_filename     = os.path.join(output_dir, "tagtax_terse")
+        tagtax_long_filename     = os.path.join(output_dir, "tagtax_long")
         tagtax_terse_fh = open(tagtax_terse_filename, 'w')
         tagtax_long_fh = open(tagtax_long_filename, 'w')
         tagtax_long_fh.write("\t".join(["read_id", "taxonomy", "distance", "rank", "refssu_count", "vote", "minrank", "taxa_counts", "max_pcts", "na_pcts", "refhvr_ids"])+"\n")
-        gast_file          = os.path.join(gast_dir, "gast"+dna_region)
+        gast_file          = os.path.join(output_dir, "gast"+dna_region)
         if not os.path.exists(gast_file):
             logging.info("gast:assign_taxonomy: Could not find gast file: "+gast_file+". Returning")
             return results

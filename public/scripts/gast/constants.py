@@ -264,6 +264,7 @@ filtered_suffix    = "MERGED-MAX-MISMATCH-3" #result of filter-merged-reads
 nonchimeric_suffix = "nonchimeric.fa"
 unique_suffix      = "unique"
 ############# defaults for GAST ################################################################
+vsearch_cmd   = '/groups/vampsweb/vampsdev/seqinfobin/vsearch'
 usearch_cmd        = '/bioware/usearch/5.2.236/x86/usearch'     #usearch5 32bit
 usearch6_cmd       = '/bioware/usearch/6.0.217/x86/usearch'     #usearch6 32bit
 #usearch64_cmd      = '/bioware/usearch/6.0.217/x86_64/usearch'  #usearch6 64bit, for non-parallel execution ONLY 

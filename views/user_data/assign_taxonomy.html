@@ -1,0 +1,49 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	<div class="container">
+
+	<div class="hero-unit">
+	       <h2>Assign Taxonomy: <%= project %></h2>    
+	</div>
+	<br>
+  <div class="row">  
+      <div class="col-lg-4">
+				<h4>1 - GAST vs RDP (are there others?)</h4> 
+			</div>
+			<div class="col-lg-4">
+				<h4>2 - </h4> 
+				<h4>if GAST: Choose full-length(refssu)(slow) or specific region(faster but primers may not mesh)</h4> 
+				<h4>if RDP: Choose Silva, Greengenes or ITS</h4>
+			</div>
+			<div class="col-lg-4">
+				<h4>3 There are two essential elements to VAMPS:</h4> 
+			</div>
+	</div>
+
+Region: v1,v3 v4 v5 v6  full-length(refssu)
+<br>
+Bacterial, Archaeal, Eukaryal, ITS
+<br>
+Silva, Greengenes
+<br>
+GAST vs RDP
+
+
+
+</div>
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

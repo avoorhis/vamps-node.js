@@ -17,14 +17,15 @@ config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
 // http://qiime.org/
 //config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
 config.PATH_TO_QIIME_BIN = '/usr/local/bin/';
-
+config.PATH_TO_VSEARCH = '/usr/local/bin/vsearch';  // not used IF vsearch in $PATH
 // paths to run python 
 //config.PATH = '/groups/vampsweb/vampsdev/seqinfobin:/opt/sge/bin/lx-amd64:/groups/vampsweb/vampsdev/seqinfobin/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/emperor/bin:/bioware/jre/bin:/usr/local/sge/bin/lx24-amd64:/sbin:/usr/sbin:/bin:/usr/bin:/bioware/mysql-5.5.13-linux2.6-x86_64/bin:/bioware/mpich2/bin/';
 //config.LD_LIBRARY_PATH = ''
 config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin';
 //config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin'
-config.LD_LIBRARY_PATH = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7:/Users/avoorhis/programming/vamps-node.js'
+config.LD_LIBRARY_PATH = '/Users/avoorhis/programming/vamps-node.js/public/scripts/:/Users/avoorhis/programming/vamps-node.js/user_data/vamps_js_dev_av/andy/project:dd46/analysis/gast/ds/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages'
 
+config.PERL5LIB = '/opt/local/lib/perl5/site_perl/5.16.3/darwin-thread-multi-2level/:/opt/local/lib/perl5/site_perl/5.16.3/:/opt/local/lib/perl5/vendor_perl/5.16.3/darwin-thread-multi-2level/:/opt/local/lib/perl5/vendor_perl/5.16.3/:/opt/local/lib/perl5/5.16.3/darwin-thread-multi-2level/:/opt/local/lib/perl5/5.16.3/:/opt/local/lib/perl5/site_perl/:/opt/local/lib/perl5/vendor_perl'
 
 
 module.exports = config;

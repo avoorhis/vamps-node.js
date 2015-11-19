@@ -586,7 +586,21 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 		}); // copies directory, even if it has subdirectories or files
 
 });
+router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
+		var project = req.params.project;
+		var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		var config_file = path.join(data_dir,'config.ini');
 
+		res.render('user_data/assign_taxonomy', {
+			project : project,
+			//pinfo   : JSON.stringify(config),
+			//mdata   : JSON.stringify(jsonArray),
+			title   : project,
+			message : req.flash('successMessage'),
+	    user: req.user, hostname: req.C.hostname
+     });
+
+});
 //
 // START_ASSIGNMENT
 //
@@ -622,7 +636,8 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
 
-	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir ],
+	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, 
+	      							'--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '--host', req.C.hostname ]
 
 
 	    };
@@ -632,8 +647,10 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
 
 
-		var gast_process = spawn( gast_options.scriptPath+'/vamps_script_assign_taxonomy.py', gast_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
+		var gast_process = spawn( gast_options.scriptPath+'/vamps_script_assign_taxonomy.py', gast_options.args, {
+		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
+		                    detached: true, stdio: [ 'ignore', null, log ]		                
+		                } );  // stdin, stdout, stderr
 
 
 		var output = '';
@@ -726,8 +743,10 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-
+		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {
+		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
+		                    detached: true, stdio: [ 'ignore', null, log ]		                
+		                } );  // stdin, stdout, stderr
 
 
 		var output = '';
@@ -1419,7 +1438,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
-						    env:{'LD_PYTHON_PATH':req.config.PATH, 'PATH':req.config.PATH},
+						    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
 

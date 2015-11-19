@@ -64,6 +64,8 @@ import subprocess
 #from pipelineprocessor import process
 #from pipeline.db_upload import MyConnection
 #from pipeline.utils import Dirs, PipelneUtils       
+
+
     
 
 def start_gast(args):
@@ -74,7 +76,7 @@ def start_gast(args):
     use_local_pipeline = False
     if hostname[:6] == 'bpcweb':
         #sys.path.append('/bioware/linux/seqinfo/bin/python_pipeline')
-        sys.path.append(os.path.join('/','groups','vampsweb'))
+        sys.path.append(os.path.join('groups','vampsweb')
         from py_mbl_sequencing_pipeline.pipeline.run import Run
         from py_mbl_sequencing_pipeline.pipelineprocessor import process
         from py_mbl_sequencing_pipeline.pipeline.db_upload import MyConnection
@@ -90,13 +92,11 @@ def start_gast(args):
     load_db         = True
     steps           = 'gast,vamps'
     fasta_file_from_cl  = '' #args.fasta_file
-    if args.hostname[:6] == 'bpcweb':
-        use_cluster     = True
-    else:
-        use_cluster     = False
+    use_cluster     = False
     mobedac         = False # True or False
     gast_input_source = 'file'
     seq_count   = 0
+    
     
     
     os.chdir(args.basedir)
@@ -127,10 +127,8 @@ def start_gast(args):
         sys.exit(args.basedir+' not found')
     
     analysis_dir = os.path.join(args.basedir,'analysis') 
-    gast_dir = os.path.join(analysis_dir,'gast') 
-    if not os.path.exists(analysis_dir) or not os.path.exists(gast_dir):  
-        print 'Could not find analysis or gast directory'
-        sys.exit(1)
+    if not os.path.exists(analysis_dir):  
+        os.makedirs(analysis_dir)
     #global_gast_dir = dirs.check_dir(dirs.gast_dir) 
     
     logging.debug(analysis_dir)
@@ -141,7 +139,6 @@ def start_gast(args):
     # this is a minimal run dictionary for the general stanza
     myRunDict['general'] = {'run_date':datetime,                 
                             'new_vamps_upload':   True,
-                            'vamps_user_upload':    True,
                             'use64bit':             True,
                             'mobedac':              mobedac,
                             'gast_input_source':    gast_input_source,
@@ -153,10 +150,10 @@ def start_gast(args):
                             'platform':             general_config_items['platform'],
                             'dna_region':           general_config_items['dna_region'],
                             'domain':               general_config_items['domain'],
-                            'env_source_id':        general_config_items['env_source_id'],
+                            'env_source_id':		general_config_items['env_source_id'],
                             'classifier':           args.classifier,
                             'user':                 general_config_items['owner'],
-                            'site':                 'new_vamps', 
+                            'site':                 'new vamps', 
                             'process_dir':          args.process_dir,
                             'ref_db_dir':           args.ref_db_dir,
                             'load_vamps_database':  load_db,
@@ -165,21 +162,9 @@ def start_gast(args):
                             'files_list':           [],
                             'output_dir':           general_config_items['baseoutputdir'],
                             'file_prefix':          file_prefix,
-                            'project':              general_config_items['project'],
-                            #new_vamps::
-                            'project_dir':          args.basedir,
-                            'node_db':              args.NODE_DATABASE,
-                            'process_dir':          args.process_dir,
-                            'hostname':             args.hostname,
-                            'ref_db_dir':           args.ref_db_dir,
-                            'config_file':          args.config
-                            
-                            
+                            'project':				general_config_items['project']
                         }
-    
-    
-    print myRunDict
-    
+    logging.info( myRunDict)
     #
     #
     #
@@ -225,13 +210,13 @@ def start_gast(args):
     total_uniques = 0
     datasets = {}
     for dataset in datasets_list:
-        logging.info( "\nlooking for unique file for "+dataset)
-        ds_dir = os.path.join(gast_dir, dataset)
+        logging.info( "\nUnique-ing "+dataset)
+        ds_dir = os.path.join(analysis_dir, dataset)
         fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
         unique_file = os.path.join(ds_dir, 'unique.fa')
         names_file  = os.path.join(ds_dir, 'names')
         if not os.path.exists(unique_file):  
-            logging.debug('Could not find unique file '+unique_file)
+            logging.debug('Could not find uniqe file '+unique_file)
         #fastcount_call = "grep '>' "+unique_file+" | wc -l"
         grep_cmd = ['grep', '-c', '>', unique_file]
         logging.debug( ' '.join(grep_cmd) )
@@ -251,7 +236,6 @@ def start_gast(args):
     # delete old config file:
     #os.remove(info_load_infile)
     #
-    #logging.debug('DATASETS '+';'.join(datasets_list))
     run.datasets = datasets_list
     
     

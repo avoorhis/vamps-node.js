@@ -32,9 +32,9 @@ import subprocess
 
 
 
-#sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
-script_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(script_path)
+sys.path.append(os.path.expanduser('~/programming/vamps-node.js/public/scripts/'))
+
+
 
 
 use_local_pipeline = False
@@ -76,11 +76,11 @@ if __name__ == '__main__':
     
     
     parser.add_argument("-c", "--config",             
-                required=True,  action="store",   dest = "config",
+    			required=True,  action="store",   dest = "config",
                 help="config file with path") 
     
     parser.add_argument('-db', '--NODE_DATABASE',         
-                required=True,   action="store",  dest = "NODE_DATABASE",            
+    			required=True,   action="store",  dest = "NODE_DATABASE",            
                 help = 'node database') 
     
     parser.add_argument('-ref_db_dir', '--reference_db_dir',         
@@ -88,11 +88,11 @@ if __name__ == '__main__':
                 help = 'ref database dir')                                           
     
     parser.add_argument('-class', '--classifier',         
-                required=True,   action="store",  dest = "classifier",              
+    			required=True,   action="store",  dest = "classifier",              
                 help = 'gast or rdp')  
     
     parser.add_argument("-ddir", "--data_dir",    
-                required=True,  action="store",   dest = "basedir", 
+    			required=True,  action="store",   dest = "basedir", 
                 help = '')         
     parser.add_argument("-script_dir", "--script_dir",    
                 required=False,  action="store",   dest = "rdp_script_dir", 
@@ -130,6 +130,7 @@ if __name__ == '__main__':
 #           --process_dir /Users/avoorhis/programming/vamps-node.js 
 #           --data_dir /Users/avoorhis/programming/vamps-node.js/user_data/vamps_js_dev_av/andy/project:142c 
 #           -db vamps_js_dev_av
+#           --host bpcweb7
 
     # 1-1-1-1-1-1
     if args.classifier.upper() == 'GAST' :
@@ -157,7 +158,7 @@ if __name__ == '__main__':
 
     # 2-2-2-2-2-2
     # load seq data from user_upload dir to database
-    # has sequences_file and now will load to db:
+	# has sequences_file and now will load to db:
 
 
     import vamps_script_database_loader as load_data

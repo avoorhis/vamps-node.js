@@ -43,7 +43,7 @@ REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
-
+req_first_col = ['#SampleID','sample_name','dataset_name']
 #test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
 #'408170','human gut metagenome','American Gut Project Stool sample')
 #test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
@@ -55,9 +55,9 @@ def start(args):
     logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
     print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
     NODE_DATABASE = args.NODE_DATABASE
-    mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
-                db = NODE_DATABASE,
-                read_default_file="~/.my.cnf"  )
+    mysql_conn = MySQLdb.connect(db = NODE_DATABASE,   read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+                
+                
     cur = mysql_conn.cursor()
     indir = args.basedir
     csv_infile =   os.path.join(indir,'metadata_clean.csv')
@@ -185,16 +185,16 @@ def get_metadata(indir,csv_infile):
     
     if CONFIG_ITEMS['fasta_type']=='multi':           
         for ds in CONFIG_ITEMS['datasets']:
-            print  TMP_METADATA_ITEMS['sample_name'].index(ds), ds 
-            try:
-                saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
-                dataset_header_name = 'sample_name'
-            except:
-                 try:
-                     saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
-                     dataset_header_name = 'dataset'
-                 except:
-                     sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
+            #print  TMP_METADATA_ITEMS['sample_name'].index(ds), ds 
+            found = False
+            for samp_head_name in req_first_col:
+                if samp_head_name in TMP_METADATA_ITEMS:
+                    found = True
+                    saved_indexes.append(TMP_METADATA_ITEMS[samp_head_name].index(ds))
+                    dataset_header_name = samp_head_name
+            if not found:
+                sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
+                                
     
     # now get the data from just the datasets we have in CONFIG.ini
     print 'TMP_METADATA_ITEMS',TMP_METADATA_ITEMS

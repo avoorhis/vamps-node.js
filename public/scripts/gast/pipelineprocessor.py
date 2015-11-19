@@ -280,138 +280,6 @@ def chimera(runobj):
     # def is in utils.py: appends
     #zip_up_directory(runobj.run_date, runobj.output_dir, 'a')
 
-def illumina_chimera(runobj):
-    utils = PipelneUtils()
-
-    start = time.time()
-    mychimera = Chimera(runobj)
-#     elapsed = (time.time() - start)
-#     print elapsed
-    logging.info( "Preparing input files (replacing \"frequency:\" with \";size=\" and capitalize reads)")
-
-#     start = time.time()
-#     mychimera.illumina_freq_to_size_in_chg()
-#     elapsed = (time.time() - start)
-#     print "1a) illumina_freq_to_size_in_chg time: %s" % elapsed
-    start = time.time()
-    mychimera.call_illumina_sed("from_frequency_to_size")
-    elapsed = (time.time() - start)
-    logging.info( "call_illumina_sed from_frequency_to_size time: %s" % elapsed)
-#     
-    print "START chimera checking"
-#     c_den = 
-    mychimera.chimera_checking("denovo")
-# #     print "c_den - check denovo res: %s" % c_den
-#     print c_den
-#     c_den = 
-    mychimera.chimera_checking("ref")
-#     print c_den
-#     todo: use run_until_done_on_cluster from utils
-    """run after cluster is done with it work:"""
-    start = time.time()  
-    time_before = utils.get_time_now()
-    print "time_before = %s" % time_before
-    print "Waiting for the cluster..."
-    while True:
-        if utils.is_local():
-            sleep(1)        
-        else:
-            sleep(120)        
-        cluster_done = mychimera.check_if_cluster_is_done(time_before)
-        print "cluster_done = %s" % cluster_done
-        if (cluster_done):
-            break
-    
-    elapsed = (time.time() - start)
-    print "Cluster is done with both chimera checkings in: %s" % elapsed     
-    
-    mychimera.illumina_rm_size_files()
-
-#     start = time.time()
-#     mychimera.illumina_size_to_freq_in_chimer()
-#     elapsed = (time.time() - start)
-#     print "2a) illumina_size_to_freq_in_chimer time: %s" % elapsed
-    start = time.time()
-    mychimera.call_illumina_sed("from_size_to_frequency")
-    elapsed = (time.time() - start)
-    print "call_illumina_sed from_size_to_frequency time: %s" % elapsed
-    
-#     start = time.time()
-#     print "Check chimeric statistics. If ref > 15% and ratio ref to de-novo > 2 use only de-novo"
-#     mychimera.check_chimeric_stats()
-#     elapsed = (time.time() - start)
-#     print "check_chimeric_stats time: %s" % elapsed
-    
-    start = time.time()
-    print "Creating nonchimeric files in %s" % mychimera.indir
-    mychimera.move_out_chimeric()
-    elapsed = (time.time() - start)
-    print "move_out_chimeric time: %s" % elapsed
-    
-    
-def illumina_chimera_after_cluster(runobj):  
-    mychimera = Chimera(runobj)
-
-    mychimera.illumina_rm_size_files()
-    start = time.time()
-    mychimera.illumina_size_to_freq_in_chimer()
-    elapsed = (time.time() - start)
-    print "illumina_size_to_freq_in_chimer time: %s" % elapsed
-    
-#     start = time.time()
-#     print "Check chimeric statistics. If ref > 15% and ratio ref to de-novo > 2 use only de-novo"
-#     mychimera.check_chimeric_stats()
-#     elapsed = (time.time() - start)
-#     print "check_chimeric_stats time: %s" % elapsed
-    
-    start = time.time()
-    print "Creating nonchimeric files in %s" % mychimera.indir
-    mychimera.move_out_chimeric()
-    elapsed = (time.time() - start)
-    print "move_out_chimeric time: %s" % elapsed
-    print "illumina_chimera_after_cluster time = %s" % str(elapsed)
-
-def illumina_chimera_only(runobj):  
-    start = time.time()
-    illumina_chimera(runobj)
-    elapsed = (time.time() - start)
-    print "illumina_chimera_only time = %s" % str(elapsed)
-
-def illumina_files_demultiplex_only(runobj):  
-    start = time.time()
-    illumina_files = IlluminaFiles(runobj)
-    illumina_files.open_dataset_files()
-    illumina_files.split_files(compressed = runobj.compressed)
-    elapsed = (time.time() - start)
-    print "illumina_files demultiplex only time = %s" % str(elapsed)
-
-def illumina_files(runobj):  
-    utils = PipelneUtils()
-    start = time.time()
-#     illumina_files_demultiplex_only(runobj)
-    illumina_files = IlluminaFiles(runobj)    
-    if runobj.do_perfect: 
-#         illumina_files.perfect_reads()
-        script_file_name = illumina_files.perfect_reads_cluster()
-        utils.run_until_done_on_cluster(script_file_name)
-    else:
-#         illumina_files.partial_overlap_reads()
-#         pass
-# TODO: test utils.run_until_done_on_cluster(illumina_files.partial_overlap_reads_cluster())
-        script_file_name = illumina_files.partial_overlap_reads_cluster()         
-        utils.run_until_done_on_cluster(script_file_name)
-        
-        script_file_name = illumina_files.filter_mismatches_cluster()
-        utils.run_until_done_on_cluster(script_file_name)
-        
-#         illumina_files.filter_mismatches()
-#     illumina_files.uniq_fa()
-    script_file_name = illumina_files.uniq_fa_cluster()
-    utils.run_until_done_on_cluster(script_file_name)
-#     illumina_chimera(runobj)
-    elapsed = (time.time() - start)
-    print "illumina_files time = %s" % str(elapsed)
-        
 
 
 
@@ -437,9 +305,11 @@ def gast(runobj):
         logging.error("uniques not found failed")
         sys.exit("uniques not found failed")
         if runobj.vamps_user_upload:
-            write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "uniques file not found - failed" )
+            #write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "uniques file not found - failed" )
+            pass
     elif runobj.vamps_user_upload:
-        write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        #write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        pass
         
     sleep(5)
     
@@ -450,9 +320,11 @@ def gast(runobj):
         logging.error("clutergast failed")
         sys.exit("clustergast failed")
         if runobj.vamps_user_upload:
-            write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "clustergast failed" )
+            #write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "clustergast failed" )
+            pass
     elif runobj.vamps_user_upload:
-        write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        #write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        pass
         
     sleep(5)
     
@@ -463,9 +335,11 @@ def gast(runobj):
         logging.error("gast_cleanup failed")        
         sys.exit("gast_cleanup failed")
         if runobj.vamps_user_upload:
-            write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "gast_cleanup failed" )
+            #write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "gast_cleanup failed" )
+            pass
     elif runobj.vamps_user_upload:
-        write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        #write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        pass
         
     sleep(5)
     
@@ -476,9 +350,11 @@ def gast(runobj):
         logging.error("gast2tax failed") 
         sys.exit("gast2tax failed")
         if runobj.vamps_user_upload:
-            write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "gast2tax failed" )
+            #write_status_to_vamps_db( runobj.site, runobj.run, "GAST ERROR", "gast2tax failed" )
+            pass
     elif runobj.vamps_user_upload:
-        write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        #write_status_to_vamps_db( runobj.site, runobj.run, result_code['status'], result_code['message'] )
+        pass
         # write has_tax=1 to INFO-TAX.config
             
 def cluster(runobj):
@@ -530,10 +406,12 @@ def vampsupload(runobj):
         logging.error("load_vamps_db failed") 
         sys.exit("load_vamps_db failed")
         if runobj.vamps_user_upload:
-            write_status_to_vamps_db( runobj.site, runobj.run, "GAST_ERROR", result_code )
+            #write_status_to_vamps_db( runobj.site, runobj.run, "GAST_ERROR", result_code )
+            pass
     elif runobj.vamps_user_upload:
         print "Finished loading VAMPS data",result_code
-        write_status_to_vamps_db( runobj.site, runobj.run, 'GAST_SUCCESS', 'Loading VAMPS Finished' )
+        #write_status_to_vamps_db( runobj.site, runobj.run, 'GAST_SUCCESS', 'Loading VAMPS Finished' )
+        pass
     # check here for completion of 
     # 1-file creation
     # 2-data appears in vamps

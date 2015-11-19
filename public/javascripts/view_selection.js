@@ -1113,7 +1113,7 @@ function create_viz(visual, ts) {
 // TAX TABLE
 //
 function create_counts_table() {
-      alert('here')
+      //alert('here')
       tax_table_created = true;
       var info_line = create_header('ftable', pi_local);
       document.getElementById('counts_table_title').innerHTML = info_line;
