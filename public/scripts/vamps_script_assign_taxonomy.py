@@ -126,7 +126,7 @@ if __name__ == '__main__':
 # THIS SCRIPT SAMPLE
 #    /Users/avoorhis/programming/vamps-node.js/public/scripts/vamps_script_assign_taxonomy.py 
 #           --classifier gast 
-#           --config /Users/avoorhis/programming/vamps-node.js/user_data/vamps_js_dev_av/andy/project:142c/config.ini 
+#           --config /Users/avoorhis/programming/vamps-node.js/user_data/vamps_js_dev_av/andy/project-142c/config.ini 
 #           --process_dir /Users/avoorhis/programming/vamps-node.js 
 #           --data_dir /Users/avoorhis/programming/vamps-node.js/user_data/vamps_js_dev_av/andy/project:142c 
 #           -db vamps_js_dev_av

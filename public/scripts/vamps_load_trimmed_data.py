@@ -286,7 +286,7 @@ def write_config(args,stats):
     f.write('project_sequence_count='+str(stats['seq_count'])+"\n")
     f.write('domain='+args.domain+"\n")
     f.write('number_of_datasets='+str(stats['ds_count'])+"\n")
-    f.write('sequence_counts=RAW'+"\n")
+    f.write('sequence_counts=TRIMMED'+"\n")
     f.write('env_source_id='+str(args.envid)+"\n")
     f.write('has_tax=0'+"\n")
     f.write("\n")

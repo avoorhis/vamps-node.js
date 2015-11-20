@@ -36,7 +36,15 @@ router.get('/your_data',  function(req,res){
 /* GET Export Data page. */
 router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 
-    var export_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+    
+    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var export_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var export_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+    }else{
+        var export_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+    }
+    
     var mtime = {};
     var size = {};
     var file_info = {};
@@ -183,7 +191,13 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
   console.log('import_data');
   console.log(JSON.stringify(req.url));
   var myurl = url.parse(req.url, true);
-  var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+  }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+  }else{
+        var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  }
   var my_projects = [];
   var import_type    = myurl.query.import_type;
 
@@ -324,7 +338,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
   console.log(req.params.id);
 	var project = req.params.id;
-  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
 	var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
 	console.log(config);
 	res.render('user_data/profile', {
@@ -342,7 +356,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) 
 	var async = require('async');
   console.log(req.params.id);
 	var project = req.params.id;
-  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
 	stats = fs.statSync(config_file);
 	if (stats.isFile()) {
 	   console.log('config found')
@@ -352,7 +366,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) 
 		 config = {'config file NOT AVAILABLE':1}
 	}
 	
-	var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'metadata_clean.csv');
+	var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'metadata_clean.csv');
 	var parser = parse({delimiter: '\t'}, function(err, data){
 	  	json_data = {}
 	  	console.log(data)
@@ -392,9 +406,9 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) 
 	// var converter = new Converter({delimiter:'\t'});
  //  console.log(req.params.id);
 	// var project = req.params.id;
- //  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'config.ini');
+ //  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
 	// var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
-	// var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project:'+project,'metadata_clean.csv');
+	// var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'metadata_clean.csv');
 	
 	// converter.on("end_parsed", function (jsonArray) {
  //   	console.log(jsonArray); //here is your result jsonarray 
@@ -522,8 +536,16 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
   		}
   		if(delete_kind == 'all'){
   				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
-					var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-					var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project'+timestamp+':'+project);
+					if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+                        var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+                        var deleted_data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'DELETED_project'+timestamp+':'+project);
+                    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+                        var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+                        var deleted_data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'DELETED_project'+timestamp+':'+project);
+                    }else{
+					    var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+					    var deleted_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'DELETED_project'+timestamp+':'+project);
+					}
 					fs.move(data_dir, deleted_data_dir, function(err){
 						if(err){
 							console.log(err);
@@ -549,8 +571,16 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 //
 router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res){
 		var project = req.params.project;
-		var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-		var new_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project+'_dupe');
+		if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+            var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+            var new_data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project+'_dupe');
+        }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+            var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+            var new_data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project+'_dupe');
+        }else{
+		    var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+		    var new_data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project+'_dupe');
+		}
 		try{
 			stats = fs.lstatSync(new_data_dir);
 			if (stats.isDirectory()) {
@@ -588,7 +618,13 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 });
 router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
 		var project = req.params.project;
-		var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+		if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+            var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+        }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+            var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+        }else{
+		    var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+		}
 		var config_file = path.join(data_dir,'config.ini');
 
 		res.render('user_data/assign_taxonomy', {
@@ -618,9 +654,14 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
 
 
-	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-
+	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+    }else{
+	    var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+    }
 	var data = '';
 
 	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
@@ -648,7 +689,11 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 
 		var gast_process = spawn( gast_options.scriptPath+'/vamps_script_assign_taxonomy.py', gast_options.args, {
-		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
+		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
+		                        'PATH':req.config.PATH, 
+		                        'PERL5LIB':req.config.PERL5LIB,
+		                        'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
+		                        },
 		                    detached: true, stdio: [ 'ignore', null, log ]		                
 		                } );  // stdin, stdout, stderr
 
@@ -830,8 +875,13 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 
-  var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-
+    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+    }else{
+        var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+    }
 	project_info = {};
 	pnames = [];
     fs.readdir(user_projects_base_dir, function(err, items){
@@ -920,8 +970,14 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 router.get('/edit_project/:project', helpers.isLoggedIn, function(req,res){
 	console.log('in edit project:GET');
 	var project_name = req.params.project;
-	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
-	var config_file = path.join(user_projects_base_dir,'project:'+project_name,'config.ini');
+	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+    }else{
+	    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	}
+	var config_file = path.join(user_projects_base_dir,'project-'+project_name,'config.ini');
 
 	//console.log(config_file);
 
@@ -1100,10 +1156,16 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 
 	var project_info = {};
 	var project_name = req.body.old_project_name;
-	var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var user_projects_base_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+    }else{
+	    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+	}
 	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name);
 	var config_file = path.join(project_dir,'config.ini');
-  var timestamp = +new Date();  // millisecs since the epoch!
+    var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
   	  	if (err){
@@ -1253,7 +1315,13 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   }
 
   var timestamp = +new Date();  // millisecs since the epoch!
-  var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
+  if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var data_repository = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+  }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var data_repository = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+  }else{
+        var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+  }
   //var new_metafile = path.join(data_repository,'metadata_'+timestamp+'.csv');
   // fs.move(original_metafile, new_metafile, function (err) {
 		//     	if (err) {
@@ -1369,8 +1437,14 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		res.redirect("/user_data/import_data");
 		return;
   }else{
-			var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project:'+project);
-		   console.log(data_repository);
+		    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+		        var data_repository = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+		    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+                var data_repository = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+		    }else{ 
+		        var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+		    }
+		    console.log(data_repository);
 			status_params = {'type':'new', 'user':req.user.username,
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
@@ -1673,12 +1747,24 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 		  res.setHeader('Content-Type', 'text');
 		  res.download(file); // Set disposition and send it.
 	}else if(req.query.fxn == 'download'){
-	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
+	      if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+            var file = path.join('/groups/vampsweb/vampsdev_user_data/',user,req.query.filename);
+          }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+            var file = path.join('/groups/vampsweb/vamps_user_data/',user,req.query.filename);
+          }else{
+	        var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
+	      }
 		  res.setHeader('Content-Type', 'text');
 		  res.download(file); // Set disposition and send it.
 	///// DELETE /////
 	}else if(req.query.fxn == 'delete'){
-	    var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
+	    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+            var file = path.join('/groups/vampsweb/vampsdev_user_data/',user,req.query.filename);
+        }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+            var file = path.join('/groups/vampsweb/vamps_user_data/',user,req.query.filename);
+        }else{
+	        var file = path.join(process.env.PWD,'user_data',NODE_DATABASE,user,req.query.filename);
+		}
 		if(req.query.type == 'datasets'){
 			fs.unlink(file, function(err){
 				if(err){
@@ -1720,8 +1806,13 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   qSelect += " JOIN project using (project_id)\n";
   var seq, seqid, seq_count, pjds;
   var timestamp = +new Date();  // millisecs since the epoch!
-
-  var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var user_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+  }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var user_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+  }else{
+        var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+  }
   helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
   helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
@@ -2074,8 +2165,13 @@ function create_fasta_file(req, pids){
 		qSelect += " JOIN project using (project_id)\n";
 		var seq, seqid, seq_count, pjds;
 		var timestamp = +new Date();  // millisecs since the epoch!
-
-		var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+        if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+            var user_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
+        }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+            var user_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username);
+        }else{
+		    var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
+		}
 		helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
 		helpers.mkdirSync(user_dir);  // create dir if not exists
 		var file_name;
