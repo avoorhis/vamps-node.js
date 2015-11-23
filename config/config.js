@@ -18,6 +18,7 @@ config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';
 //config.PATH_TO_QIIME_BIN = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/';
 config.PATH_TO_QIIME_BIN = '/usr/local/bin/';
 config.PATH_TO_VSEARCH = '/usr/local/bin/vsearch';  // not used IF vsearch in $PATH
+config.PATH_TO_CLASSIFIER = '/Users/avoorhis/programming/rdp_classifier/dist/';  // 
 // paths to run python 
 //config.PATH = '/groups/vampsweb/vampsdev/seqinfobin:/opt/sge/bin/lx-amd64:/groups/vampsweb/vampsdev/seqinfobin/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/emperor/bin:/bioware/jre/bin:/usr/local/sge/bin/lx24-amd64:/sbin:/usr/sbin:/bin:/usr/bin:/bioware/mysql-5.5.13-linux2.6-x86_64/bin:/bioware/mpich2/bin/';
 //config.LD_LIBRARY_PATH = ''

@@ -29,14 +29,6 @@ import datetime
 today = str(datetime.date.today())
 import subprocess
 import MySQLdb
-LOG_FILENAME = '/Users/avoorhis/programming/vamps-node.js/logs/script_utils.log'
-print LOG_FILENAME
-    
-    
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
-db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                         read_default_file="~/.my.cnf"  ) 
-cur = db.cursor()
 
 """
 
@@ -207,9 +199,19 @@ if __name__ == '__main__':
                 required=False,  action='store', dest = "project", default='',
                 help=" ")  
     parser.add_argument("-pdir", "--process_dir",          
-                required=False,  action='store', dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                required=False,  action='store', dest = "process_dir", default='/',
                 help=" ")                    
     args = parser.parse_args()    
+    
+    LOG_FILENAME = os.path.join(args.process_dir,'logs','script_utils.log')
+    print LOG_FILENAME
+    
+    logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)    
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                             read_default_file="~/.my.cnf"  ) 
+    cur = db.cursor()
+
+    
     
     (proj,dids,dsets) = get_data(args)  
     if args.action == 'delete_whole_project':

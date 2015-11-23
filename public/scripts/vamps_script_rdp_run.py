@@ -62,7 +62,7 @@ def start_rdp(args):
     file_prefix = 'testing-fp'
     dir_prefix  = general_config_items['baseoutputdir']
             
-    logging.warning(   'FROM INI-->'      )  
+    logging.warning(   'FROM config.INI-->'      )  
     logging.warning(   general_config_items) 
     logging.warning(   '<<--FROM INI'    )
     
@@ -71,24 +71,40 @@ def start_rdp(args):
     
     total_uniques = 0
     for dataset_item in config.items('DATASETS'):
-         dataset = dataset_item[0]
-         dscount = dataset_item[1]  # raw count
-         #print "\nUnique-ing",dataset
-         ds_dir = os.path.join(analysis_dir, dataset)
-         fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
-         unique_file = os.path.join(ds_dir, 'unique.fa')
-         names_file  = os.path.join(ds_dir, 'names')
-         rdp_dir = os.path.join(ds_dir, 'rdp')
-         if not os.path.exists(rdp_dir):
-             os.makedirs(rdp_dir)
-         rdp_out_file = os.path.join(rdp_dir, 'rdp_out.txt') # to be created
-         
-         logging.info("starting RDP")
-         print 'running rdp on',dataset
-         print 'uniques file',unique_file
-         print 'rdp_out file',rdp_out_file
-         print 'ref db dir', args.ref_db_dir
-         rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db_dir )
+            dataset = dataset_item[0]
+            dscount = dataset_item[1]  # raw count
+            #print "\nUnique-ing",dataset
+            rdp_dir = os.path.join(analysis_dir, 'rdp')
+            ds_dir = os.path.join(rdp_dir, dataset)
+            if not os.path.exists(rdp_dir):
+                os.makedirs(rdp_dir)
+            if not os.path.exists(ds_dir):
+                os.makedirs(ds_dir)
+        
+            fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
+            unique_file = os.path.join(ds_dir, 'unique.fa')
+            names_file  = os.path.join(ds_dir, 'names')
+
+            if not os.path.exists(unique_file):                
+                fasta_file_gast  = os.path.join(analysis_dir, 'gast', dataset, 'seqfile.fa')
+                unique_file_gast = os.path.join(analysis_dir, 'gast', dataset, 'unique.fa')
+                names_file_gast  = os.path.join(analysis_dir, 'gast', dataset, 'names')
+                try:
+                    shutil.copyfile(fasta_file_gast, fasta_file)
+                    shutil.copyfile(unique_file_gast, unique_file)
+                    shutil.copyfile(names_file_gast, names_file)
+                except:
+                    print "Could not find unique.fa file - ",ds_dir
+                    sys.exit(1)
+
+            rdp_out_file = os.path.join(ds_dir, 'rdp_out.txt') # to be created
+
+            logging.info("starting RDP")
+            print 'running rdp on',dataset
+            print 'uniques file',unique_file
+            print 'rdp_out file',rdp_out_file
+            print 'ref db dir', args.ref_db_dir
+            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db_dir )
     
 
             
@@ -127,7 +143,7 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "rdp_script_dir", 
                 help = '') 
     parser.add_argument("-pdir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                required=False,  action="store",   dest = "process_dir", default='/',
                 help = '')
     args = parser.parse_args() 
 

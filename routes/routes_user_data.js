@@ -212,7 +212,7 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 
 				}else{
 				  for (var d in items){
-		        var pts = items[d].split(':');
+		        var pts = items[d].split('_');
 		        if(pts[0] === 'project'){
 
 							var project_name = pts[1];
@@ -336,9 +336,15 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 // USER PROJECT INFO:ID
 //
 router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
-  console.log(req.params.id);
+    console.log(req.params.id);
 	var project = req.params.id;
-  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
+    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var config_file = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project,'config.ini');
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var config_file = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project,'config.ini');
+    }else{
+        var config_file = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
+	}
 	var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
 	console.log(config);
 	res.render('user_data/profile', {
@@ -352,11 +358,17 @@ router.get('/user_project_info/:id', helpers.isLoggedIn, function(req, res) {
 // USER PROJECT METADATA:ID
 //
 router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) {
-  var parse = require('csv-parse');
+    var parse = require('csv-parse');
 	var async = require('async');
-  console.log(req.params.id);
+    console.log(req.params.id);
 	var project = req.params.id;
-  var config_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
+    if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var config_file = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project,'config.ini');
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var config_file = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project,'config.ini');
+    }else{
+        var config_file = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project,'config.ini');
+	}
 	stats = fs.statSync(config_file);
 	if (stats.isFile()) {
 	   console.log('config found')
@@ -365,8 +377,13 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) 
 		console.log('config NOT found')
 		 config = {'config file NOT AVAILABLE':1}
 	}
-	
-	var metadata_file = path.join('user_data',NODE_DATABASE,req.user.username,'project-'+project,'metadata_clean.csv');
+	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+        var metadata_file = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project,'metadata_clean.csv');
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var metadata_file = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project,'metadata_clean.csv');
+    }else{
+	    var metadata_file = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project,'metadata_clean.csv');
+	}
 	var parser = parse({delimiter: '\t'}, function(err, data){
 	  	json_data = {}
 	  	console.log(data)
@@ -676,11 +693,8 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
-
-	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, 
+	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir', process.env.PWD, 
 	      							'--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '--host', req.C.hostname ]
-
-
 	    };
 	    console.log('CMD> '+gast_options.scriptPath+'/vamps_script_assign_taxonomy.py '+gast_options.args.join(' '));
 
@@ -768,7 +782,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	  
 		// called imediately
 		req.flash('successMessage', "GAST has been started for project: '"+project+"'");
-      	res.redirect("/user_data/your_projects");
+     res.redirect("/user_data/your_projects");
 
 
 
@@ -780,7 +794,10 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir',process.env.PWD, '--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-script_dir', req.C.PATH_TO_RDP ],
+	      args :       [ '--classifier',classifier, '--config', config_file, 
+	      							'--process_dir',process.env.PWD, '--data_dir', data_dir, 
+	      							'-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,
+	      							'-script_dir', req.config.PATH_TO_CLASSIFIER ],
 	    };
 
 
@@ -874,7 +891,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 // YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
-
+		console.log(PROJECT_INFORMATION_BY_PNAME);
     if(req.C.hostname.substring(0,7) == 'bpcweb7'){
         var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
     }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
@@ -894,9 +911,9 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 
 
 		}else{
-		  for (var d in items){
-        var pts = items[d].split(':');
-        if(pts[0] === 'project'){
+		    for (var d in items){
+                var pts = items[d].split('-');
+                if(pts[0] === 'project'){
 
 					var project_name = pts[1];
 					var stat_dir = fs.statSync(path.join(user_projects_base_dir,items[d]));
@@ -920,7 +937,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
 
   				  	//new_status = helpers.get_status(req.user.username,project_name);
   				  	//console.log(new_status); // Async only -- doesn't work
-              console.log(ALL_CLASSIFIERS_BY_PID);
+              //console.log(ALL_CLASSIFIERS_BY_PID);
 				 			// console.log('2 ',config_file)
 							if(project_name in PROJECT_INFORMATION_BY_PNAME){
 								project_info[project_name].pid = PROJECT_INFORMATION_BY_PNAME[project_name].pid;
@@ -1163,7 +1180,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     }else{
 	    var user_projects_base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 	}
-	var project_dir = path.join(user_projects_base_dir,'project\:'+project_name);
+	var project_dir = path.join(user_projects_base_dir,'project-'+project_name);
 	var config_file = path.join(project_dir,'config.ini');
     var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
@@ -1196,7 +1213,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		var new_project_name = req.body.new_project_name.replace(/[\s+,;:]/g,'_');
 		config_info.project = new_project_name;
 		project_info.config.GENERAL.project=new_project_name;
-		new_base_dir = path.join(user_projects_base_dir,'project\:'+new_project_name);
+		new_base_dir = path.join(user_projects_base_dir,'project-'+new_project_name);
 		new_config_file = path.join(new_base_dir,'config.ini');
 		new_fasta_file = path.join(new_base_dir,'fasta.fa');
 		config_info.baseoutputdir = new_base_dir;
@@ -1411,7 +1428,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function(req,res){
 
-  var project = req.body.project;
+  var project = helpers.clean_string(req.body.project);
   var username = req.user.username;
   console.log('1-req.body upload_data');
   console.log(req.body);

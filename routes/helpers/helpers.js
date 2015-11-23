@@ -287,7 +287,7 @@ module.exports.run_select_datasets_query = function(rows){
         module.exports.run_permissions_query(rows);          
       }
       
-      console.log(' UPDATING PERMISSIONS');
+      console.log(' UPDATING PERMISSIONS: '+queries.get_project_permissions());
     });
 	
 
@@ -321,7 +321,7 @@ module.exports.run_ranks_query = function(rank,rows){
         }
 };
 module.exports.run_permissions_query = function(rows){
-        //
+        
         //console.log(PROJECT_INFORMATION_BY_PID)
         for (var i=0; i < rows.length; i++) {
           var pid = rows[i].project_id;
@@ -497,7 +497,10 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
 module.exports.reverse = function (str) {
   return str.split("").reverse().join("");
 };
-
+module.exports.clean_string = function (str) {
+  // this replaces everything that is not letter,number or underscore (\w) with underscore 
+  return str.replace(/[^\w]/gi, '_');
+};
 module.exports.update_metadata_from_file = function (){
     var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
     try {

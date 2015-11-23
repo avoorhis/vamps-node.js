@@ -50,8 +50,9 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
     # the classifier must be kept with its directory structure
 
 
-    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
+    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
     logging.debug('RDPCMD: '+rdp_cmd)
+    print rdp_cmd
 
 
     subprocess.call(rdp_cmd, shell=True)
@@ -98,12 +99,12 @@ if __name__ == '__main__':
                  help = 'gast or rdp')
     parser.add_argument('-script_dir', '--script_dir',
                 required=True,   action="store",  dest = "rdp_script_dir",
-                 help = 'gast or rdp')
+                 help = 'classifier.jar')
     # parser.add_argument("-ddir", "--data_dir",
     # 			required=True,  action="store",   dest = "baseoutputdir",
     #             help = '')
     parser.add_argument("-pdir", "--process_dir",
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                required=False,  action="store",   dest = "process_dir", default='/',
                 help = '')
     args = parser.parse_args() 
 

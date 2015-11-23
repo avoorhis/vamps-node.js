@@ -449,8 +449,8 @@ def push_taxonomy(args):
                 run_gast_tax_file(args, ds, tax_file)
         elif classifier.upper() == 'RDP':
             rdp_dir = os.path.join(indir,'analysis','rdp') 
-            tax_file = os.path.join(gast_dir, dir, 'rdp_out.txt')
-            unique_file = os.path.join(gast_dir, dir, 'unique.fa')
+            tax_file = os.path.join(rdp_dir, dir, 'rdp_out.txt')
+            unique_file = os.path.join(rdp_dir, dir, 'unique.fa')
             if os.path.exists(tax_file):
                 run_rdp_tax_file(args, ds, tax_file, unique_file)
         else:
@@ -516,13 +516,13 @@ def run_gast_tax_file(args,ds,tax_file):
 #                
 def run_rdp_tax_file(args,ds, tax_file, seq_file): 
     minboot = 80
-    
+    print 'reading seqfile',seq_file
     f = fastalib.SequenceSource(seq_file)
     tmp_seqs = {}
     #print tax_file
     #print seq_file
     while f.next():
-        id = f.id.split('|')[0]
+        id = f.id.split('|')[0]  # may have |frequency
         #print 'id1',id
         tmp_seqs[id]= f.seq
     f.close()
@@ -540,9 +540,9 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
             seq_count = tmp[1].split(':')[1]
             #seq_count =1
             tax_line = items[2:]
-            #print 'id',seq_id
-            #print 'cnt',seq_count
-            #print tax_line
+            print 'id',seq_id
+            print 'cnt',seq_count
+            print tax_line
             for i in range(0,len(tax_line),3):
                   #print i,tax_line[i]
                   tax_name = tax_line[i].strip('"').strip("'")
