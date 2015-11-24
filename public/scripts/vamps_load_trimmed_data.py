@@ -93,7 +93,10 @@ def create_dirs(args):
     #if os.path.exists(gast_dir):
     #    shutil.rmtree(gast_dir)
     #os.makedirs(gast_dir)
-    
+
+def update_permissions(args):
+    os.system('chgrp -R '+ args.site_grp +' '+args.outdir)
+            
 def write_seqfiles(args):
     outdir = args.outdir
     
@@ -315,6 +318,7 @@ def unique_seqs(args,stats):
     except:
         print "Could not find fastaunique command"
         sys.exit(1)
+def update_permissions(args):
         
 if __name__ == '__main__':
     import argparse
@@ -385,6 +389,9 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project",  default=False, 
                 help="")
+    parser.add_argument("-site", "--site",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+                help="")
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -397,7 +404,12 @@ if __name__ == '__main__':
     fafile = os.path.join(args.outdir,'fasta.fa')
     mdfile = os.path.join(args.outdir,'meta_original.csv') 
     mdfile_clean = os.path.join(args.outdir,'metadata_clean.csv')
-    
+    if args.site == 'vamps':
+        args.site_grp = 'vampshttpd'
+    elif args.site == 'vampsdev'
+        args.site_grp = 'vampsdevhttpd'
+    else:
+        args.site_grp = 'staff'
     
     create_dirs(args)    
     stats = write_seqfiles(args)
@@ -405,4 +417,5 @@ if __name__ == '__main__':
     unique_seqs(args,stats)
     write_metafile(args,stats)
     write_config(args,stats)
+    update_permissions(args)
         

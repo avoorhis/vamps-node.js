@@ -18,7 +18,7 @@ from stat import * # ST_SIZE etc
 import re
 import sys
 import math
-import shutil
+import pwd, shutil
 import gzip
 import types
 import time
@@ -72,13 +72,19 @@ def create_dirs(args, projects):
             sys.exit()
         else:
             os.makedirs(proj_dir)
-
+        
         analysis_dir = os.path.join(proj_dir,'analysis')
         gast_dir = os.path.join(analysis_dir,'gast')
         if not os.path.exists(analysis_dir):
             os.makedirs(analysis_dir)
         if not os.path.exists(gast_dir):
             os.makedirs(gast_dir)
+        
+        
+def update_permissions(args,projects):
+    for pj in projects:
+        proj_dir = os.path.join(args.outdir_base,'project-'+pj)
+        os.system('chgrp -R '+ args.site_grp +' '+proj_dir)
         
 def write_seqfiles(args, projects):
     in_seqs_file = args.fastafile
@@ -333,7 +339,8 @@ def go(args,projects):
     unique_seqs(args,projects,stats)
     write_metafile(args,projects,stats)
     write_config(args,projects,stats)
-
+    update_permissions(args,projects)
+    
 
 if __name__ == '__main__':
     import argparse
@@ -377,25 +384,27 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "metafile", 
                 help="""MBE Directory to output ini and dir structure""")
      
-    
+    parser.add_argument("-site", "--site",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+                help="")
     parser.add_argument("-reg", "--dna_region",    
-     			required=False,  action='store', dest = "dna_region",  default='v6',
-     			help="")
+                required=False,  action='store', dest = "dna_region",  default='v6',
+                help="")
     parser.add_argument("-dom", "--domain",        
-     			required=False,  action='store', dest = "domain",  default='unknown', 
-     			help="")
+                required=False,  action='store', dest = "domain",  default='unknown', 
+                help="")
     parser.add_argument("-env", "--env_source_id", 
-     			required=False,  action='store', dest = "envid",  default='100', 
-     			help="")
+                required=False,  action='store', dest = "envid",  default='100', 
+                help="")
     parser.add_argument("-private", "--private",      
-     			required=False,  action='store_true', dest = "private",  default=False, 
-     			help="")
+                required=False,  action='store_true', dest = "private",  default=False, 
+                help="")
     parser.add_argument("-owner", "--owner",        
-     			required=False,  action='store', dest = "owner",  default='admin', 
-     			help="")
+                required=False,  action='store', dest = "owner",  default='admin', 
+                help="")
     parser.add_argument("-project", "--project",        
-     			required=True,  action='store', dest = "project",  default=False, 
-     			help="")
+                required=True,  action='store', dest = "project",  default=False, 
+                help="")
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -423,7 +432,15 @@ if __name__ == '__main__':
     else:
         sys.exit("unrecognized number -- Exiting")
 
-    args.outdir_base = os.path.join('../../user_data',NODE_DATABASE,args.owner)
+    if args.site == 'vamps':
+        args.outdir_base = os.path.join('/','groups','vampsweb','vamps_user_data',args.owner)
+        args.site_grp = 'vampshttpd'
+    elif args.site == 'vampsdev':
+        args.outdir_base = os.path.join('/','groups','vampsweb','vampsdev_user_data',args.owner)
+        args.site_grp = 'vampsdevhttpd'
+    else:
+        args.outdir_base = os.path.join('../../user_data',NODE_DATABASE,args.owner)
+        args.site_grp = 'staff'
     
     ans1 = raw_input("\nI found "+str(dscount)+" datasets -- do you want to split up this project? (y/N) ")
     
