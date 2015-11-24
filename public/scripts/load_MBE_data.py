@@ -28,12 +28,13 @@ from time import sleep
 import ConfigParser
 import MySQLdb
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-py_pipeline_path = os.path.expanduser('~/programming/py_mbl_sequencing_pipeline')
+script_path = './'
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
 import subprocess
 
+dataset_name_fields = ['#SampleID','sample_name','dataset']
 """
 
 """
@@ -65,7 +66,7 @@ def create_dirs(args, projects):
     if not os.path.exists(args.outdir_base):
             os.makedirs(args.outdir_base)
     for pj in projects:
-        proj_dir = os.path.join(args.outdir_base,'project:'+pj)
+        proj_dir = os.path.join(args.outdir_base,'project-'+pj)
         if os.path.exists(proj_dir):
             print "Path Exists: "+proj_dir
             sys.exit()
@@ -73,15 +74,14 @@ def create_dirs(args, projects):
             os.makedirs(proj_dir)
 
         analysis_dir = os.path.join(proj_dir,'analysis')
-        #gast_dir = os.path.join(outdir,'analysis/gast')
+        gast_dir = os.path.join(analysis_dir,'gast')
         if not os.path.exists(analysis_dir):
             os.makedirs(analysis_dir)
-        #if os.path.exists(gast_dir):
-        #    shutil.rmtree(gast_dir)
-        #os.makedirs(gast_dir)
+        if not os.path.exists(gast_dir):
+            os.makedirs(gast_dir)
         
 def write_seqfiles(args, projects):
-    in_seqs_file = os.path.join(args.indir,args.file_prefix+'_split_library_seqs.fna')
+    in_seqs_file = args.fastafile
     files = {}
     seqs = {}
     if not os.path.exists(args.outdir_base):
@@ -114,12 +114,12 @@ def write_seqfiles(args, projects):
     for pj in seqs:
         stats = {}
         stats[pj] = {}
-        proj_dir = os.path.join(args.outdir_base,'project:'+pj)
-        analysis_dir  = os.path.join(proj_dir,'analysis')
+        proj_dir = os.path.join(args.outdir_base,'project-'+pj)
+        gast_dir  = os.path.join(proj_dir,'analysis','gast')
         pj_seq_count = 0
         for ds in seqs[pj]:                
             stats[pj][ds]={}
-            ds_dir = os.path.join(analysis_dir,ds)
+            ds_dir = os.path.join(gast_dir,ds)
             if not os.path.exists(ds_dir):
                 os.makedirs(ds_dir)
             seqsfile = os.path.join(ds_dir,'seqfile.fa')
@@ -148,8 +148,8 @@ def write_metafile(args,projects,stats):
     print "STARTing Metadata"
     #mdfile = os.path.join(args.outdir,'meta_original.csv') 
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
-    req_for_multi = ['#SampleID','sample_name','dataset']
-    in_md_file = os.path.join(args.indir,args.file_prefix+'_mapping_file.txt')
+    #req_for_multi = ['#SampleID','sample_name','dataset']
+    in_md_file = args.metafile
     metadata = {}
     with open(in_md_file, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter
@@ -158,8 +158,8 @@ def write_metafile(args,projects,stats):
                 headers = items
                 continue
             header_count = len(headers)
-            if req_for_multi[0] in headers:
-                dataset_index = headers.index(req_for_multi[0])
+            if dataset_name_fields[0] in headers:
+                dataset_index = headers.index(dataset_name_fields[0])
             else:
                 print "Didn't find '#SampleID' in metafile"
                 sys.exit()
@@ -197,7 +197,7 @@ def write_metafile(args,projects,stats):
     #print metadata
     
     for pj in projects:
-        mdfile = os.path.join(args.outdir_base,'project:'+pj,'metadata_clean.csv')
+        mdfile = os.path.join(args.outdir_base,'project-'+pj,'metadata_clean.csv')
         with open(mdfile, mode='w') as outfile:
             outfile.write('\t'.join(headers)+"\n")
             for ds in projects[pj]:
@@ -210,7 +210,7 @@ def write_metafile(args,projects,stats):
 def write_config(args,projects,stats):
     for pj in projects:
 
-        ini_file = os.path.join(args.outdir_base,'project:'+pj,'config.ini')
+        ini_file = os.path.join(args.outdir_base,'project-'+pj,'config.ini')
         print 'Writing config.ini file:',ini_file  
         f = open(ini_file, 'w')
         f.write('[GENERAL]'+"\n")
@@ -244,15 +244,15 @@ def write_config(args,projects,stats):
         f.close()
     
 def unique_seqs(args,projects,stats):
-    fastaunique_cmd = py_pipeline_path+'/pipeline/bin/fastaunique'
+    fastaunique_cmd = 'fastaunique'
     print args
     if not os.path.exists(fastaunique_cmd):
         fastaunique_cmd = '/groups/vampsweb/vampsdev/seqinfobin/fastaunique'
     for pj in projects:
         for dataset in stats[pj]["datasets"]:
             print dataset
-            proj_dir = os.path.join(args.outdir_base,'project:'+pj)
-            ds_dir = os.path.join(proj_dir, 'analysis', dataset)
+            proj_dir = os.path.join(args.outdir_base,'project-'+pj)
+            ds_dir = os.path.join(proj_dir, 'analysis','gast', dataset)
             fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
             unique_file = os.path.join(ds_dir, 'unique.fa')
             names_file  = os.path.join(ds_dir, 'names')
@@ -306,7 +306,8 @@ def split_data_into_projects(args,dscount):
         return ('N',{})
 
 def get_datasets(args):
-    log_file = os.path.join(args.indir,args.file_prefix+'_split_library_log.txt')
+    log_file = args.metafile
+    
     fh = open(log_file,'r')
     datasets = {}
     counter = 0
@@ -316,14 +317,11 @@ def get_datasets(args):
         if not line:
             continue
         items = line.split()        
-        if items[0] == 'Num' and items[1] == 'Samples': 
+        if items[0] in dataset_name_fields: 
             continue        
-        if items[0] == 'Sample':
-            continue
-        if items[0] == 'Total' and items[1] == 'number': 
-            continue
+        
         print items[0]
-        datasets[items[0]]= items[1]
+        datasets[items[0]]= 1
         counter += 1
     print len(datasets)
     return [counter,datasets]
@@ -372,13 +370,13 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-    parser.add_argument("-indir","--indir",                   
-                required=True,  action="store",   dest = "indir", 
+    parser.add_argument("-fasta","--fastafile",                   
+                required=True,  action="store",   dest = "fastafile", 
                 help="""MBE Directory to output ini and dir structure""")    
-    
-    parser.add_argument("-prefix","--prefix",                   
-               required=False,  action="store",   dest = "file_prefix", default='',
-               help="""Directory to output ini and dir structure""")  
+    parser.add_argument("-meta","--metafile",                   
+                required=True,  action="store",   dest = "metafile", 
+                help="""MBE Directory to output ini and dir structure""")
+     
     
     parser.add_argument("-reg", "--dna_region",    
      			required=False,  action='store', dest = "dna_region",  default='v6',

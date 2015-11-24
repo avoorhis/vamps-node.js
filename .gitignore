@@ -8,11 +8,15 @@ public/scripts/*.pyc
 !db_config.sql.gz
 !db_schema_w_test_data.sql
 !db_schema_w_test_data.sql.gz
+
 config/db-connection*
-config/config.js
-*config.js
+config/config*
+
 config/db_vamps_node.sql.gz
 config/old/*
+
+
+
 node_modules/
 colony/
 

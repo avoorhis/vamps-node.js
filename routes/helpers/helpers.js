@@ -349,11 +349,11 @@ module.exports.update_global_variables = function(pid,type){
 		dataset_objs = [];
         for(var i in ALL_DATASETS.projects){
 			item = ALL_DATASETS.projects[i];
-			console.log('item'+item);
-            // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
+			//console.log('item'+item);
+      // {"name":"142","pid":105,"title":"Title","datasets":[{"did":496,"dname":"142_ds","ddesc":"142_ds_description"}]
 			if(item.pid == pid){
                 dataset_objs = item.datasets;
-				console.log('SPLICING '+pid);
+				        //console.log('SPLICING '+pid);
                 ALL_DATASETS.projects.splice(i,1);
 				break;
 			}
@@ -467,18 +467,18 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
         console.log('query ok1 '+JSON.stringify(rows1));   // queries.get_select_datasets_queryPID
         console.log('query ok2 '+JSON.stringify(rows2));	// queries.get_select_sequences_queryPID	           
         this.run_select_datasets_query(rows1);
-        console.log(' UPDATED ALL_DATASETS');
-        console.log(' UPDATED PROJECT_ID_BY_DID');
-        console.log(' UPDATED PROJECT_INFORMATION_BY_PID');
-        console.log(' UPDATED PROJECT_INFORMATION_BY_PNAME');
-        console.log(' UPDATED DATASET_IDS_BY_PID');
-        console.log(' UPDATED DATASET_NAME_BY_DID');
-        console.log(' UPDATED AllMetadataNames');
-        console.log(' UPDATED DatasetsWithLatLong');
+        console.log(' UPDATING ALL_DATASETS');
+        console.log(' UPDATING PROJECT_ID_BY_DID');
+        console.log(' UPDATING PROJECT_INFORMATION_BY_PID');
+        console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
+        console.log(' UPDATING DATASET_IDS_BY_PID');
+        console.log(' UPDATING DATASET_NAME_BY_DID');
+        console.log(' UPDATING AllMetadataNames');
+        console.log(' UPDATING DatasetsWithLatLong');
         this.run_select_sequences_query(rows2);
-        console.log(' UPDATED ALL_DCOUNTS_BY_DID');
-        console.log(' UPDATED ALL_PCOUNTS_BY_PID '+JSON.stringify(ALL_PCOUNTS_BY_PID));
-        console.log(' UPDATED ALL_CLASSIFIERS_BY_PID');
+        console.log(' UPDATING ALL_DCOUNTS_BY_DID');
+        console.log(' UPDATING ALL_PCOUNTS_BY_PID ');
+        console.log(' UPDATING ALL_CLASSIFIERS_BY_PID');
         // re-run re-create new_taxonomy (see app.js)
         var silvaTaxonomy = require('../../models/silva_taxonomy');
         var all_silva_taxonomy = new silvaTaxonomy();
