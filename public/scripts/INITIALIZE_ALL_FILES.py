@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """ 
-	create_counts_lookup.py
+    create_counts_lookup.py
 
 
 """
@@ -11,6 +11,9 @@ import argparse
 import MySQLdb
 import json
 import logging
+import datetime
+
+today     = str(datetime.date.today())
 
 
 parser = argparse.ArgumentParser(description="") 
@@ -58,14 +61,14 @@ cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
 ranks = ['domain','phylum','klass','order','family','genus','species','strain']
 queries = [{"rank":"domain","query":domain_query},
-		   {"rank":"phylum","query":phylum_query},
+           {"rank":"phylum","query":phylum_query},
            {"rank":"klass","query":class_query},
            {"rank":"order","query":order_query},
            {"rank":"family","query":family_query},
            {"rank":"genus","query":genus_query},
            {"rank":"species","query":species_query},
            {"rank":"strain","query":strain_query}
-		   ]
+           ]
 
 LOG_FILENAME = os.path.join('.','initialize_all_files.log')
 logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
@@ -73,16 +76,16 @@ logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
 
 def go(args):
     """
-		count_lookup_per_dsid[dsid][tax_id_str] = count		
-		
+        count_lookup_per_dsid[dsid][tax_id_str] = count     
+        
 
     """
     counts_lookup = {}
     
     try:
         shutil.rmtree(args.files_prefix)
-        shutil.move(args.taxcounts_file,os.path.join(args.json_dir,NODE_DATABASE+'--taxcountsBU.json'))
-        shutil.move(args.metadata_file, os.path.join(args.json_dir,NODE_DATABASE+'--metadataBU.json'))
+        shutil.move(args.taxcounts_file, os.path.join(args.json_dir, NODE_DATABASE+'--taxcounts'+today+'.json'))
+        shutil.move(args.metadata_file,  os.path.join(args.json_dir, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
     except:
         pass
@@ -162,7 +165,7 @@ def write_data_to_files(args, metadata_lookup, counts_lookup):
 def write_all_metadata_file(args, metadata_lookup):
    
     #print md_file
-    json_str = json.dumps(metadata_lookup, encoding='latin1')		
+    json_str = json.dumps(metadata_lookup, encoding='latin1')       
     #print(json_str)
     f = open(args.metadata_file,'w')
     f.write(json_str+"\n")
@@ -171,7 +174,7 @@ def write_all_metadata_file(args, metadata_lookup):
 def write_all_taxcounts_file(args, counts_lookup):
     
     #print tc_file
-    json_str = json.dumps(counts_lookup)		
+    json_str = json.dumps(counts_lookup)        
     #print(json_str)
     f = open(args.taxcounts_file,'w')
     f.write(json_str+"\n")
@@ -179,28 +182,28 @@ def write_all_taxcounts_file(args, counts_lookup):
         
 def go_metadata():
     """
-    	metadata_lookup_per_dsid[dsid][metadataName] = value			
+        metadata_lookup_per_dsid[dsid][metadataName] = value            
 
     """
-	
+    
     metadata_lookup = {}
 
     logging.debug("running mysql for required metadata")
     cur.execute(req_pquery)
     for row in cur.fetchall():
-    	did = row[0]
-    	for i,name in enumerate(required_metadata_fields):
+        did = row[0]
+        for i,name in enumerate(required_metadata_fields):
             #print i,did,name,row[i+1]
             value = row[i+1]
             if value == '':
                 warnings.append('WARNING -- dataset '+str(did)+' is missing a value for REQUIRED field "'+name+'"')
 
-            if did in metadata_lookup:				
-            		metadata_lookup[did][name] = str(value)
+            if did in metadata_lookup:              
+                    metadata_lookup[did][name] = str(value)
             else:
-            	metadata_lookup[did] = {}
-            	metadata_lookup[did][name] = str(value)
-			
+                metadata_lookup[did] = {}
+                metadata_lookup[did][name] = str(value)
+            
 
 
     pid_collection = {}
@@ -210,23 +213,23 @@ def go_metadata():
     cur.execute(cust_pquery)
     cust_metadata_lookup = {}
     for row in cur.fetchall():
-		
-    	pid = str(row[0])
-    	field = row[1]
-    	table = 'custom_metadata_'+ pid
-    	if pid in pid_collection:
-    		pid_collection[pid].append(field)
-    	else:
-    		pid_collection[pid] = [field]
+        
+        pid = str(row[0])
+        field = row[1]
+        table = 'custom_metadata_'+ pid
+        if pid in pid_collection:
+            pid_collection[pid].append(field)
+        else:
+            pid_collection[pid] = [field]
     print
     for pid in pid_collection:
-    	table = 'custom_metadata_'+ pid
-    	fields = ['dataset_id']+pid_collection[pid]
+        table = 'custom_metadata_'+ pid
+        fields = ['dataset_id']+pid_collection[pid]
 
         cust_dquery = "SELECT `" + '`,`'.join(fields) + "` from " + table
-    	print 'running other cust',cust_dquery
+        print 'running other cust',cust_dquery
         logging.debug('running other cust: ' +cust_dquery)
-    	#try:
+        #try:
         cur.execute(cust_dquery)
 
         print
@@ -241,11 +244,11 @@ def go_metadata():
                 if value == '':
                     warnings.append('WARNING -- dataset'+str(did)+'is missing value for metadata CUSTOM field "'+name+'"')
 
-                if did in metadata_lookup:				
-                 	metadata_lookup[did][name] = value
+                if did in metadata_lookup:              
+                    metadata_lookup[did][name] = value
                 else:
-                	metadata_lookup[did] = {}
-                	metadata_lookup[did][name] = value
+                    metadata_lookup[did] = {}
+                    metadata_lookup[did][name] = value
                 n += 1
         #except:
         #    warnings.append('could not find/read CUSTOM table: "'+table+'" Skipping')
@@ -259,7 +262,7 @@ def go_metadata():
 if __name__ == '__main__':
 
     myusage = """
-		./INITIALIZE_ALL_FILES.py  (
+        ./INITIALIZE_ALL_FILES.py  (
         
         Will ask you to input which database.
         Output will be files ../json/NODE_DATABASE/<dataset>.json
@@ -304,7 +307,8 @@ if __name__ == '__main__':
     
     out_file = "tax_counts--"+NODE_DATABASE+".json"
     
-    print 'DATABASE:',NODE_DATABASE 	
+    print 'DATABASE:',NODE_DATABASE 
+    print "This may take awhile...."    
     args = parser.parse_args()
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True

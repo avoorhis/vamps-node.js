@@ -10,6 +10,10 @@ import sys,os,io
 import argparse
 import MySQLdb
 import json
+import shutil
+import datetime
+
+today     = str(datetime.date.today())
 
 
 """
@@ -87,14 +91,14 @@ cust_pquery = "SELECT project_id,field_name from custom_metadata_fields WHERE pr
 
 #queries = [domain_query,phylum_query,class_query,order_query,family_query,genus_query,species_query,strain_query]
 queries = [{"rank":"domain","query":domain_query},
-		   {"rank":"phylum","query":phylum_query},
+           {"rank":"phylum","query":phylum_query},
            {"rank":"klass","query":class_query},
            {"rank":"order","query":order_query},
            {"rank":"family","query":family_query},
            {"rank":"genus","query":genus_query},
            {"rank":"species","query":species_query},
            {"rank":"strain","query":strain_query}
-		   ]
+           ]
 
 def go_list(args):
     counts_lookup = read_original_taxcounts(NODE_DATABASE)
@@ -201,23 +205,27 @@ def go_add(NODE_DATABASE, pid):
 def write_all_metadata_file(metadata_lookup):
     original_metadata_lookup = read_original_metadata()
     md_file = "../json/"+NODE_DATABASE+"--metadata.json"
+    bu_file = "../json/"+NODE_DATABASE+"--metadata"+today+".json"
+    shutil.copy(md_file, bu_file)
     #print md_file
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
-    json_str = json.dumps(original_metadata_lookup, ensure_ascii=False)		
-    #print(json_str)
+    json_str = json.dumps(original_metadata_lookup, ensure_ascii=False)     
+    print(json_str)
     f = open(md_file,'w')
-    f.write(json_str+"\n")
+    f.write(json_str.encode('utf-8').strip()+"\n")
     f.close() 
     
 def write_all_taxcounts_file(counts_lookup):
     original_counts_lookup = read_original_taxcounts()
     tc_file = "../json/"+NODE_DATABASE+"--taxcounts.json"
+    bu_file = "../json/"+NODE_DATABASE+"--taxcounts"+today+".json"
+    shutil.copy(tc_file, bu_file)
     for did in counts_lookup:
         original_counts_lookup[did] = counts_lookup[did]
-    json_str = json.dumps(original_counts_lookup)		
+    json_str = json.dumps(original_counts_lookup)       
     #print(json_str)
-    f = open(tc_file,'w')
+    f = open(tc_file,'w')  # this will delete taxcounts file!
     f.write(json_str+"\n")
     f.close()
       
@@ -249,33 +257,33 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
          f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
          f.close()   
 def go_required_metadata(did_sql):
-	"""
-		metadata_lookup_per_dsid[dsid][metadataName] = value			
+    """
+        metadata_lookup_per_dsid[dsid][metadataName] = value            
 
-	"""
-	
-	req_metadata_lookup = {}
-	query = req_query % (did_sql)
-	cur.execute(query)
-	for row in cur.fetchall():
-		did = str(row[0])
-		for i,f in enumerate(required_metadata_fields):
-			#print i,did,name,row[i+1]
-			value = row[i+1]
-			
-			if did in req_metadata_lookup:				
-					req_metadata_lookup[did][f] = str(value)
-			else:
-				req_metadata_lookup[did] = {}
-				req_metadata_lookup[did][f] = str(value)
-				
-	
-	return req_metadata_lookup
+    """
+    
+    req_metadata_lookup = {}
+    query = req_query % (did_sql)
+    cur.execute(query)
+    for row in cur.fetchall():
+        did = str(row[0])
+        for i,f in enumerate(required_metadata_fields):
+            #print i,did,name,row[i+1]
+            value = row[i+1]
+            
+            if did in req_metadata_lookup:              
+                    req_metadata_lookup[did][f] = str(value)
+            else:
+                req_metadata_lookup[did] = {}
+                req_metadata_lookup[did][f] = str(value)
+                
+    
+    return req_metadata_lookup
 
-	
-	
+    
+    
 def go_custom_metadata(did_list,pid,metadata_lookup):
-	
+    
     
     field_collection = ['dataset_id']
     query = cust_pquery % (pid)
@@ -283,17 +291,17 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     cust_metadata_lookup = {}
     table = 'custom_metadata_'+ pid
     for row in cur.fetchall():
-			
-    	pid = str(row[0])
-    	field = row[1]
-    	if field != 'dataset_id':
+            
+        pid = str(row[0])
+        field = row[1]
+        if field != 'dataset_id':
             field_collection.append(field)
-    	
+        
     
     print 'did_list',did_list
     print 'field_collection',field_collection
 
-    cust_dquery = "SELECT " + ','.join(field_collection) + " from " + table
+    cust_dquery = "SELECT `" + '`,`'.join(field_collection) + "` from " + table
     print cust_dquery
     #try:
     cur.execute(cust_dquery)
@@ -315,11 +323,11 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
                         value = None
                     #print 'XXX',did,i,f,value
 
-                    if did in metadata_lookup:				
-                     	metadata_lookup[did][f] = value
+                    if did in metadata_lookup:              
+                        metadata_lookup[did][f] = value
                     else:
-                    	metadata_lookup[did] = {}
-                    	metadata_lookup[did][f] = value
+                        metadata_lookup[did] = {}
+                        metadata_lookup[did][f] = value
                 
         #except:
         #    print 'could not find or read',table,'Skipping'
@@ -329,32 +337,25 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     return metadata_lookup
     
 def read_original_taxcounts():
-    
     file_path = os.path.join('../json',NODE_DATABASE+'--taxcounts.json')
-    if os.path.exists(file_path):
+    try:
         with open(file_path) as data_file:    
-            data = json.load(data_file)
-    else:
-        data = {}
-    return data  
-def read_original_metadata():
-    
-    file_path = os.path.join('../json',NODE_DATABASE+'--metadata.json')
-    print file_path
-    if os.path.exists(file_path):
-        with open(file_path) as data_file:    
-            data = json.load(data_file)
-    else:
-        data = {}        
+            data = json.load(data_file) 
+    except:
+        print "could not read json file",file_path,'-Exiting'
+        sys.exit(1)
     return data 
-# def read_original_taxcounts(infile):
-#     counts_lookup = {}
-#     try:
-#         with open(infile) as data_file:
-#             counts_lookup = json.load(data_file)
-#     except:
-#         sys.exit("Could not find taxcounts file: "+infile)
-#     return counts_lookup
+     
+def read_original_metadata():    
+    file_path = os.path.join('../json',NODE_DATABASE+'--metadata.json')
+    try:
+        with open(file_path) as data_file:    
+            data = json.load(data_file)
+    except:
+        print "could not read json file",file_path,'-Exiting'
+        sys.exit(1)
+    return data 
+
     
 def get_dataset_ids(pid):
     q = "SELECT dataset_id from dataset where project_id='"+str(pid)+"'"  

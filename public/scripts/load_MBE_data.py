@@ -351,6 +351,7 @@ if __name__ == '__main__':
          Start of VAMPS upload process:
          Creates config.ini file
          THIS REPLACES the gast directory!!!!
+         BETTER to use convert_old_vamps.py script
          where
             
             -f/--fastafile          REQUIRED  fasta file

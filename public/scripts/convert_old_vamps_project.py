@@ -29,6 +29,7 @@ import logging
 today = str(datetime.date.today())
 import subprocess
 import MySQLdb
+import unicodedata
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -596,17 +597,7 @@ def get_metadata(args):
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
     else:
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
-    # try:
-#         csv_infile =   os.path.join(indir,'meta_clean.csv')
-#         print csv_infile
-#         lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-#     except:
-#
-#         csv_infile =   os.path.join(indir,'meta.csv')
-#         print csv_infile
-#         lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
-#     else:
-#         sys.exit("FAILED TO READ METAFILE")
+ 
     TMP_METADATA_ITEMS = {}
     for line in lines:
         #print line
@@ -620,7 +611,7 @@ def get_metadata(args):
                 key='latitude'
             if key == 'lon' or key == 'long':
                 key='longitude'
-            parameterValue = line[2]
+            parameterValue = remove_accents(line[2])
             dset = line[0]
             pj = line[5]
             if dset in TMP_METADATA_ITEMS:
@@ -629,71 +620,6 @@ def get_metadata(args):
                 TMP_METADATA_ITEMS[dset] = {}
                 TMP_METADATA_ITEMS[dset][key] = parameterValue
 
-
-
-    
-    # logging.debug('csv '+str(args.metadata_file))
-    # if args.delim == 'comma':
-    #     lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
-    # else:
-    #     lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
-  
-    # TMP_METADATA_ITEMS = {}
-    
-    # headers = lines[0]
-    # print headers
-    # col_count = len(headers)
-    # if "sample_name" in headers:
-    #     dataset_index = headers.index("sample_name")
-    # elif "dataset" in headers:
-    #     dataset_index = headers.index("dataset")
-    # elif "#SampleID" in headers:
-    #     dataset_index = headers.index("#SampleID")
-    # else:
-    #     print "couldn't find 'sample_name' or 'dataset' or '#SampleID' -- Exiting"
-    #     sys.exit()
-    
-    # for i in range(1,len(lines)):
-    # #for line in lines:
-    #     print lines[i]
-    #     if(len(lines[i]) != col_count):
-    #         print "Line ",i,"doesn't have the correct count - Exiting"
-    #         sys.exit()
-    #     dset = lines[i][dataset_index]
-    #     for n,val in enumerate(lines[i]):
-    #         key = headers[n].replace(' ','_').replace('/','_').replace('+','').replace('(','').replace(')','').replace(',','_').replace('-','_').replace("'",'').replace('"','').replace('<','&lt;').replace('>','&gt;')   # structured comment name
-
-    #         if key == 'lat':
-    #             key='latitude'
-    #         if key == 'lon' or key == 'long':
-    #             key='longitude'
-            
-    #         print dset,key,val
-    #         #pj = line[5]
-    #         if dset in TMP_METADATA_ITEMS:
-    #             TMP_METADATA_ITEMS[dset][key] = val
-    #         else:
-    #             TMP_METADATA_ITEMS[dset] = {}
-    #             TMP_METADATA_ITEMS[dset][key] = val
-            
-    # print TMP_METADATA_ITEMS
-    # print 'done' 
-         
-    # for i,key in enumerate(keys):
-    #     TMP_METADATA_ITEMS[key] = []
-    #     for line in lol[1:]:
-    #         TMP_METADATA_ITEMS[key].append(line[i])
-    # saved_indexes = []
-    # for ds in CONFIG_ITEMS['datasets']:
-   #      #print  TMP_METADATA_ITEMS['sample_name'].index(ds) , ds
-   #      try:
-   #          saved_indexes.append(TMP_METADATA_ITEMS['sample_name'].index(ds))
-   #          dataset_header_name = 'sample_name'
-   #      except:
-   #          saved_indexes.append(TMP_METADATA_ITEMS['dataset'].index(ds))
-   #          dataset_header_name = 'dataset'
-   #      else:
-   #          sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
 
     # now get the data from just the datasets we have in CONFIG.ini
     for ds in CONFIG_ITEMS['datasets']:
@@ -709,14 +635,7 @@ def get_metadata(args):
                     else:
                         REQ_METADATA_ITEMS[did]= {}
                         REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
-                    # #REQ_METADATA_ITEMS['dataset_id'] = []
-                    # for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-                    #     if j in saved_indexes:
-                    #         if key in required_metadata_fields:
-                    #             REQ_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-                    #         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
-                    #         did = DATASET_ID_BY_NAME[ds]
-                    #         REQ_METADATA_ITEMS['dataset_id'].append(did)
+  
                 else:
                 
                     if did in CUST_METADATA_ITEMS:
@@ -727,25 +646,14 @@ def get_metadata(args):
                 
                 
                 
-                # CUST_METADATA_ITEMS['dataset_id'] = []
-#
-#                 for j,value in enumerate(TMP_METADATA_ITEMS[key]):
-#
-#                     if j in saved_indexes:
-#
-#                         if key not in required_metadata_fields:
-#
-#                             CUST_METADATA_ITEMS[key].append(TMP_METADATA_ITEMS[key][j])
-#                         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
-#                         did = DATASET_ID_BY_NAME[ds]
-#                         CUST_METADATA_ITEMS['dataset_id'].append(did)
-
-    # if not 'dataset_id' in REQ_METADATA_ITEMS:
-    #     REQ_METADATA_ITEMS['dataset_id'] = []
-    # if 'dataset_id' not in CUST_METADATA_ITEMS:
-    #     CUST_METADATA_ITEMS['dataset_id'] = []
 
 
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', unicode(input_str.strip(), 'utf8'))
+    res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+    print res
+    return res
+    
 if __name__ == '__main__':
     import argparse
     myusage = """
