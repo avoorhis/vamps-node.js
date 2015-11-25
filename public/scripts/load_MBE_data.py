@@ -81,11 +81,12 @@ def create_dirs(args, projects):
             os.makedirs(gast_dir)
         
         
-def update_permissions(args,projects):
+def update_dir_permissions(args,projects):
     for pj in projects:
         proj_dir = os.path.join(args.outdir_base,'project-'+pj)
         os.system('chgrp -R '+ args.site_grp +' '+proj_dir)
-        
+        os.system('chmod -R ug+rw '+proj_dir)
+
 def write_seqfiles(args, projects):
     in_seqs_file = args.fastafile
     files = {}
@@ -144,8 +145,6 @@ def write_seqfiles(args, projects):
         stats[pj]['pj_seq_count'] = pj_seq_count
         stats[pj]['ds_count'] =  len(projects[pj])
         stats[pj]['datasets'] =  projects[pj]
-       
-        
     
     return stats
     
@@ -265,7 +264,7 @@ def unique_seqs(args,projects,stats):
             fastaunique_call = fastaunique_cmd + " -o "+unique_file+" -n "+names_file +" "+fasta_file
             ds_unique_seq_count = subprocess.check_output(fastaunique_call, shell=True)
 
-def split_data_into_projects(args,dscount):
+def split_datasets_into_projects(args,dscount):
     num_projects = raw_input("\nGot it -- how many projects do you want to create? ") 
     print num_projects
     try:
@@ -275,7 +274,7 @@ def split_data_into_projects(args,dscount):
         sys.exit()
     print "Okay making "+num_projects+" projects"
     projects = {}
-    alpha = ['A','B','C','D','E','F','G','H','I','J','K','L']
+    alpha = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P']
     project_order = []
     keys = sorted(datasets.keys())
     fl = int(math.floor(dscount/int(num_projects)))
@@ -296,14 +295,15 @@ def split_data_into_projects(args,dscount):
     remainder_count = int(dscount) - (int(num_projects)*fl)
     print 'remainder '+str(remainder_count)
     # add the remainder to the last project
-    lastp = project_order[-1]
-    lastd = keys[-remainder_count:]
-    projects[lastp] = projects[lastp] + lastd
-    for pj in project_order:
-        print pj, len(projects[pj]),'datasets'
+    if remainder_count > 0:
+        lastp = project_order[-1]
+        lastd = keys[-remainder_count:]
+        projects[lastp] = projects[lastp] + lastd
+    for i,pj in enumerate(project_order):
+        print i+1,pj, len(projects[pj]),'datasets'
         print projects[pj]
         print
-    ans4 = raw_input('Are you satisfied with these '+num_projects+' projects? (Y/n) ')
+    ans4 = raw_input('Are you satisfied with these '+num_projects+' projects? (y/N) ')
     if ans4 == 'y' or ans4 == 'Y':
         print "yes continuing"
         return ('Y',projects)
@@ -339,7 +339,7 @@ def go(args,projects):
     unique_seqs(args,projects,stats)
     write_metafile(args,projects,stats)
     write_config(args,projects,stats)
-    update_permissions(args,projects)
+    update_dir_permissions(args,projects)
     
 
 if __name__ == '__main__':
@@ -351,40 +351,34 @@ if __name__ == '__main__':
          Start of VAMPS upload process:
          Creates config.ini file
          THIS REPLACES the gast directory!!!!
-         Takes fasta file and directory as input
          where
             
-           
+            -f/--fastafile          REQUIRED  fasta file
+            -m/--metafile           REQUIRED metadata file
+            -p/--project            REQUIRED project name (if split will append A,B,C...)
             
-            -dir/--outdir         REQUIRED  path for creating dir structure
+            -s/--site                Choices: 'vamps','vampsdev','local' DEFAULT: local
+            -u/--owner               defaults to 'admin' (most MBE projects)
             
-          
-            
-            -t/--upload_type    REQUIRED defaults to 'multi' [single or multi] (Most MBE projects are multi)
-            
-            -d/--dataset          REQUIRED IF: source file type is single
-            
-            -co/--config_only       DON'T delete and re-create the analysis/gast directory 
-                                    The gast file (vamps_sequences_pipe) must already be present
             Optional:
-            -reg/--dna_region     defaults to v6            
-            -dom/--domain         defaults to bacteria
-            -env/--env_source_id  defaults to 100 (unknown)
-            -pub/--public         defaults to False
+            -reg/--dna_region           defaults to v6            
+            -dom/--domain               defaults to bacteria
+            -env/--env_source_id        defaults to 100 (unknown)
+            -private/--private          defaults to False
             
     
     
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-    parser.add_argument("-fasta","--fastafile",                   
+    parser.add_argument("-f","--fastafile",                   
                 required=True,  action="store",   dest = "fastafile", 
                 help="""MBE Directory to output ini and dir structure""")    
-    parser.add_argument("-meta","--metafile",                   
+    parser.add_argument("-m","--metafile",                   
                 required=True,  action="store",   dest = "metafile", 
                 help="""MBE Directory to output ini and dir structure""")
      
-    parser.add_argument("-site", "--site",    
+    parser.add_argument("-s", "--site",    
                 required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
                 help="")
     parser.add_argument("-reg", "--dna_region",    
@@ -399,10 +393,10 @@ if __name__ == '__main__':
     parser.add_argument("-private", "--private",      
                 required=False,  action='store_true', dest = "private",  default=False, 
                 help="")
-    parser.add_argument("-owner", "--owner",        
+    parser.add_argument("-u", "--owner",        
                 required=False,  action='store', dest = "owner",  default='admin', 
                 help="")
-    parser.add_argument("-project", "--project",        
+    parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project",  default=False, 
                 help="")
     args = parser.parse_args()    
@@ -424,7 +418,7 @@ if __name__ == '__main__':
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '
-    print(db_str)
+    print(db_str,' On HOST: ',args.site)
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]
@@ -449,7 +443,7 @@ if __name__ == '__main__':
         print 'you ansewed Y'
         split_project = True
         while split_project == True:
-            (ans2,projects) = split_data_into_projects(args, dscount) 
+            (ans2,projects) = split_datasets_into_projects(args, dscount) 
             if ans2 == 'y' or ans2 == 'Y':
                 split_project = False
                 print 'Done splitting'
@@ -461,7 +455,7 @@ if __name__ == '__main__':
     else:
         print 'you ansewed N'
         ans3 = raw_input("\nContinue? Ctl-C to exit (y/N) ") 
-        if ans3 == 'y' or ans2 == 'Y':
+        if ans3 == 'y' or ans3 == 'Y':
             projects = {}
             projects[args.project] = datasets
             print 'No splitting'            

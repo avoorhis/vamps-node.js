@@ -169,7 +169,7 @@ def write_seqfiles(args):
                         #print defline
                         ds = tmp[0]
                         id = tmp[1]
-                    ds_dir = os.path.join(analysis_dir,ds)
+                    ds_dir = os.path.join(gast_dir,ds)
                     
                     file = os.path.join(ds_dir,'seqfile.fa')
                     if ds in datasets:
@@ -318,8 +318,10 @@ def unique_seqs(args,stats):
     except:
         print "Could not find fastaunique command"
         sys.exit(1)
-def update_permissions(args):
-        
+
+def update_dir_permissions(args):
+        os.system('chgrp -R '+ args.site_grp +' '+args.outdir)
+        os.system('chmod -R ug+rw '+args.outdir)
 if __name__ == '__main__':
     import argparse
     
@@ -406,7 +408,7 @@ if __name__ == '__main__':
     mdfile_clean = os.path.join(args.outdir,'metadata_clean.csv')
     if args.site == 'vamps':
         args.site_grp = 'vampshttpd'
-    elif args.site == 'vampsdev'
+    elif args.site == 'vampsdev':
         args.site_grp = 'vampsdevhttpd'
     else:
         args.site_grp = 'staff'
@@ -417,5 +419,5 @@ if __name__ == '__main__':
     unique_seqs(args,stats)
     write_metafile(args,stats)
     write_config(args,stats)
-    update_permissions(args)
+    update_dir_permissions(args)
         
