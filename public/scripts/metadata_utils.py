@@ -464,7 +464,7 @@ if __name__ == '__main__':
                 required=False,   action="store_true",  dest = "has_tax",            
                 help = '') 
     parser.add_argument("-pdir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+                required=False,  action="store",   dest = "process_dir", default='',
                 help = '')
     args = parser.parse_args()    
    

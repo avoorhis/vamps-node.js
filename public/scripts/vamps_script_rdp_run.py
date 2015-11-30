@@ -40,8 +40,8 @@ def start_rdp(args):
     sys.path.append(os.path.join(args.process_dir,'public','scripts'))
 
     import rdp.rdp as rdp
-    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db_dir)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -ddir '+args.basedir+' -pdir '+args.process_dir+' -script_dir '+args.rdp_script_dir+' -ref_db '+args.ref_db_dir)
+    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -project_dir '+args.project_dir+' -process_dir '+args.process_dir+' -path_to_classifier '+args.path_to_classifier+' -ref_db '+args.ref_db_dir)
+    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -project_dir '+args.project_dir+' -pdir '+args.process_dir+' -path_to_classifier '+args.path_to_classifier+' -ref_db '+args.ref_db_dir)
     logging.debug(args)
     datasets = {}
     info_load_infile = args.config
@@ -67,7 +67,7 @@ def start_rdp(args):
     logging.warning(   '<<--FROM INI'    )
     
     #global_gast_dir = os.path.join(args.basedir,'analysis','gast')
-    analysis_dir = os.path.join(args.basedir,'analysis')
+    analysis_dir = os.path.join(args.project_dir,'analysis')
     
     total_uniques = 0
     for dataset_item in config.items('DATASETS'):
@@ -104,7 +104,7 @@ def start_rdp(args):
             print 'uniques file',unique_file
             print 'rdp_out file',rdp_out_file
             print 'ref db dir', args.ref_db_dir
-            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.rdp_script_dir, args.ref_db_dir )
+            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.path_to_classifier, args.ref_db_dir )
     
 
             
@@ -133,16 +133,16 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--config",             
                 required=True,  action="store",   dest = "config",
                 help="config file with path")
-    parser.add_argument("-ddir", "--data_dir",    
-                required=True,  action="store",   dest = "basedir", 
+    parser.add_argument("-project_dir", "--project_dir",    
+                required=True,  action="store",   dest = "project_dir", 
                 help = '') 
     parser.add_argument("-ref_db", "--reference_db",    
                 required=True,  action="store",   dest = "ref_db", 
                 help = '') 
-    parser.add_argument("-script_dir", "--script_dir",    
-                required=True,  action="store",   dest = "rdp_script_dir", 
+    parser.add_argument("-path_to_classifier", "--path_to_classifier",    
+                required=True,  action="store",   dest = "path_to_classifier", 
                 help = '') 
-    parser.add_argument("-pdir", "--process_dir",    
+    parser.add_argument("-process_dir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='/',
                 help = '')
     args = parser.parse_args() 

@@ -50,16 +50,16 @@ req_first_col = ['#SampleID','sample_name','dataset_name']
 
 
 
-def start(args):
+def start_pipeline_load(args):
     global mysql_conn, cur
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir)
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir)
     NODE_DATABASE = args.NODE_DATABASE
     mysql_conn = MySQLdb.connect(db = NODE_DATABASE,   read_default_file=os.path.expanduser("~/.my.cnf_node")  )
                 
                 
     cur = mysql_conn.cursor()
-    indir = args.basedir
+    indir = args.project_dir
     csv_infile =   os.path.join(indir,'metadata_clean.csv')
     if os.path.isfile(csv_infile):
         cur.execute("USE "+NODE_DATABASE)    
@@ -73,7 +73,10 @@ def start(args):
     print REQ_METADATA_ITEMS
     print
     print CUST_METADATA_ITEMS
-    
+
+def start_additional_upload(args):
+
+
 def put_required_metadata():
     global mysql_conn, cur
     q = "INSERT IGNORE into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
@@ -350,41 +353,37 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-         
+    parser.add_argument('-load_type', '--load_type',         
+                required=False,   action="store",  dest = "load_type",   default='normal_vamps_pipeline_load',         
+                choices=['normal_vamps_pipeline_load','additional_upload_to_db'], help = 'node database')      
     
     parser.add_argument('-db', '--NODE_DATABASE',         
                 required=True,   action="store",  dest = "NODE_DATABASE",            
                 help = 'node database') 
 
-    parser.add_argument("-comb", "--combine",          
-                required=False,  action='store_true', dest = "combine",  default=False,
-                help="combine 2 MoBE metadata files") 
-                            
-    parser.add_argument("-other", "--other_file",          
-                required=False,  action='store', dest = "other_file",  default=False,
-                help="")
-    parser.add_argument("-ddir", "--data_dir",    
-                required=True,  action="store",   dest = "basedir", 
+    
+    parser.add_argument("-project_dir", "--project_dir",    
+                required=True,  action="store",   dest = "project_dir", 
                 help = '')         
     
-    parser.add_argument("-pdir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
-                help = '')                           
+    parser.add_argument("-process_dir", "--process_dir",    
+                required=False,  action="store",   dest = "process_dir", default='',
+                help = '') 
+    
+    parser.add_argument("-infile", "--infile",    
+                required=False,  action="store",   dest = "infile", default='',
+                help = '') 
+
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
     
     
-    
-    if args.combine:
-        combine(args)
+    if args.load_type == 'normal_vamps_pipeline_load':
+        start_pipeline_load(args)
     else:
-        if args.basedir and args.process_dir:
-            start(args)
-        else:
-            print myusage
-            print 'requires directory and file input'
-            print 'DATABASE:',NODE_DATABASE
-            
+        start_additional_upload(args)
+    
+        
     
         

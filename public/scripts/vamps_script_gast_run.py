@@ -70,19 +70,21 @@ def start_gast(args):
     """
       Doc string
     """
-    hostname        = args.hostname
+    
     use_local_pipeline = False
-    if hostname[:6] == 'bpcweb':
+    if args.site == 'vamps' or args.site == 'vampsdev':
         #sys.path.append('/bioware/linux/seqinfo/bin/python_pipeline')
         sys.path.append(os.path.join('/','groups','vampsweb'))
         from py_mbl_sequencing_pipeline.pipeline.run import Run
         from py_mbl_sequencing_pipeline.pipelineprocessor import process
         from py_mbl_sequencing_pipeline.pipeline.db_upload import MyConnection
         from py_mbl_sequencing_pipeline.pipeline.utils import Dirs, PipelneUtils
+        use_cluster     = True
     else:
         sys.path.append(os.path.join(args.process_dir,'public','scripts'))
         from gast.run import Run
         from gast.pipelineprocessor import process
+        use_cluster     = False
     
     platform        = 'new_vamps'
     runcode         = 'NONE'
@@ -90,16 +92,13 @@ def start_gast(args):
     load_db         = True
     steps           = 'gast,vamps'
     fasta_file_from_cl  = '' #args.fasta_file
-    if args.hostname[:6] == 'bpcweb':
-        use_cluster     = True
-    else:
-        use_cluster     = False
+    
     mobedac         = False # True or False
     gast_input_source = 'file'
     seq_count   = 0
     
     
-    os.chdir(args.basedir)
+    os.chdir(args.project_dir)
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):
         logging.info( "Could not find config file ("+info_load_infile+") **Exiting**")
@@ -123,10 +122,10 @@ def start_gast(args):
     logging.info(   '<<--FROM INI'    )
     #in utils.py: def __init__(self, is_user_upload, dir_prefix, platform, lane_name = '', site = ''):
     #dirs = Dirs(True, dir_prefix, platform, site = site) 
-    if not os.path.exists(args.basedir):
-        sys.exit(args.basedir+' not found')
+    if not os.path.exists(args.project_dir):
+        sys.exit(args.project_dir+' not found')
     
-    analysis_dir = os.path.join(args.basedir,'analysis') 
+    analysis_dir = os.path.join(args.project_dir,'analysis') 
     gast_dir = os.path.join(analysis_dir,'gast') 
     if not os.path.exists(analysis_dir) or not os.path.exists(gast_dir):  
         print 'Could not find analysis or gast directory'
@@ -156,7 +155,7 @@ def start_gast(args):
                             'env_source_id':        general_config_items['env_source_id'],
                             'classifier':           args.classifier,
                             'user':                 general_config_items['owner'],
-                            'site':                 'new_vamps', 
+                            'site':                 args.site, 
                             'load_vamps_database':  load_db,
                             'use_full_length':      True,
                             'input_files':          None,
@@ -165,10 +164,10 @@ def start_gast(args):
                             'file_prefix':          file_prefix,
                             'project':              general_config_items['project'],
                             #new_vamps::
-                            'project_dir':          args.basedir,
+                            'project_dir':          args.project_dir,
                             'node_db':              args.NODE_DATABASE,
                             'process_dir':          args.process_dir,
-                            'hostname':             args.hostname,
+                            
                             'ref_db_dir':           args.ref_db_dir,
                             'config_file':          args.config
                             

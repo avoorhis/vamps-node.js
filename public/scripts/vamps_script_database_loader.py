@@ -107,8 +107,8 @@ def start(args):
     RANK_COLLECTOR={}
     TAX_ID_BY_RANKID_N_TAX = {}
     SUMMED_TAX_COLLECTOR = {} 
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -ddir '+args.basedir+' --process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
+    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir+' -process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
+    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -class '+args.classifier+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir+' -process_dir '+args.process_dir+' -ref_db_dir '+args.ref_db_dir)
     print args
     NODE_DATABASE = args.NODE_DATABASE
 
@@ -121,7 +121,7 @@ def start(args):
     
     
    
-    os.chdir(args.basedir)
+    os.chdir(args.project_dir)
     
     mysql_conn = MySQLdb.connect(db = NODE_DATABASE,  read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
@@ -129,7 +129,7 @@ def start(args):
     
     logging.info("running get_config_data")
     print "running get_config_data"
-    get_config_data(args.basedir)
+    get_config_data(args.project_dir)
     
     logging.info("checking user")
     print "checking user"
@@ -426,7 +426,7 @@ def push_taxonomy(args):
     global SUMMED_TAX_COLLECTOR
     global mysql_conn
     global cur
-    indir = args.basedir
+    indir = args.project_dir
     classifier = args.classifier
     
     gast_dir = os.path.join(indir,'analysis','gast') 
@@ -782,12 +782,12 @@ if __name__ == '__main__':
                 required=False,   action="store",  dest = "classifier",  default='unknown',            
                 help = 'GAST or RDP')  
     
-    parser.add_argument("-ddir", "--data_dir",    
-                required=True,  action="store",   dest = "basedir", 
+    parser.add_argument("-project_dir", "--project_dir",    
+                required=True,  action="store",   dest = "project_dir", 
                 help = '')         
     
-    parser.add_argument("-pdir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+    parser.add_argument("-process_dir", "--process_dir",    
+                required=False,  action="store",   dest = "process_dir", default='',
                 help = '')
     args = parser.parse_args() 
     start(args)

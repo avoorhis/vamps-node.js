@@ -80,9 +80,30 @@ class FastaReader:
     #def close(self):
     #    self.close()
     
+def start_upload(args):
+    if args.upload_type == 'single' and not args.dataset:
+        print 'Requires dataset for single mode'
+        sys.exit(1)
+    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+    args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
+    if args.site == 'vamps':
+        args.site_grp = 'vampshttpd'
+    elif args.site == 'vampsdev':
+        args.site_grp = 'vampsdevhttpd'
+    else:
+        args.site_grp = 'staff'
     
+    create_dirs(args)    
+    stats = write_seqfiles(args)
+    print stats
+    unique_seqs(args,stats)
+    write_metafile(args,stats)
+    write_config(args,stats)
+    update_dir_permissions(args)
+
 def create_dirs(args):
-    outdir = args.outdir
+    outdir = args.project_dir
     analysis_dir = os.path.join(outdir,'analysis')
     gast_dir = os.path.join(analysis_dir,'gast')
     #gast_dir = os.path.join(outdir,'analysis/gast')
@@ -95,10 +116,10 @@ def create_dirs(args):
     #os.makedirs(gast_dir)
 
 def update_permissions(args):
-    os.system('chgrp -R '+ args.site_grp +' '+args.outdir)
+    os.system('chgrp -R '+ args.site_grp +' '+args.project_dir)
             
 def write_seqfiles(args):
-    outdir = args.outdir
+    outdir = args.project_dir
     
     datasets = {}
     files = {}
@@ -106,96 +127,76 @@ def write_seqfiles(args):
     analysis_dir = os.path.join(outdir,'analysis')
     gast_dir = os.path.join(analysis_dir,'gast')
     #gast_dir = os.path.join(outdir,'analysis/gast')
-    if args.config_only:
-        config = ConfigParser.RawConfigParser()
+    
+    if args.upload_type == 'single':
+        ds = args.dataset
+        datasets[ds] = 0
+        ds_dir = os.path.join(gast_dir,ds)
+        if not os.path.exists(ds_dir):
+            os.makedirs(ds_dir, mode=0777)
+        file = os.path.join(ds_dir,'seqfile.fa')
+        fp = open(file,'w')
+        files[ds] = fp
+    seq_count = 0
+    ds_count = 0
+    
+    f = fastalib.SequenceSource(args.fafile)
+    #f = FastaReader(fafile)
+    while f.next():
+        defline = f.id
         
-        info_file = os.path.join(outdir,'INFO-TAX.config')
-        if os.path.isfile(info_file):
-            print '1found file'
-        else:
-            info_file = os.path.join(outdir,'INFO_CONFIG.ini')
-            if os.path.isfile(info_file):
-                print '2found file'
-        
-        config.read(info_file)
-        #ds = config.get("DATASETS") 
-        seq_count = config.get("GENERAL",'project_total_sequence_count')
-        
-        ds_count = config.get("GENERAL",'number_of_datasets')
-        datasets = dict(config.items('DATASETS'))
-        
-        
-            
-    else:    
         if args.upload_type == 'single':
             ds = args.dataset
-            datasets[ds] = 0
-            ds_dir = os.path.join(gast_dir,ds)
-            if not os.path.exists(ds_dir):
-                os.makedirs(ds_dir, mode=0777)
-            file = os.path.join(ds_dir,'seqfile.fa')
-            fp = open(file,'w')
-            files[ds] = fp
-        seq_count = 0
-        ds_count = 0
+            # should split on pipe and space
+            #id = defline.split('|')[0].split('_')[0]
+            id = defline.replace(' ','|').split('|')[0]
+            datasets[ds] += 1                
+            fp.write('>'+id+"\n"+f.seq+"\n")
+        else:    
         
-        f = fastalib.SequenceSource(fafile)
-        #f = FastaReader(fafile)
-        while f.next():
-            defline = f.id
-            
-            if args.upload_type == 'single':
-                ds = args.dataset
-                # should split on pipe and space
-                #id = defline.split('|')[0].split('_')[0]
-                id = defline.replace(' ','|').split('|')[0]
-                datasets[ds] += 1                
-                fp.write('>'+id+"\n"+f.seq+"\n")
-            else:    
-            
-                try:
-                    #id = defline.replace(' ','|')
-                    # mobe  defline='>10056.000010538_2 HWI-M00888:59:000000000-A62ET:1:1101:15096:1532 1:N:0:GACCGTAAACTC orig_bc=GACCGTAAACTC new_bc=GACCGTAAACTC bc_diffs=0'
-                    if 'orig_bc' in defline and 'new_bc' in defline:
-                        #if there are orig_bc and new_bc in defline then assume mobe/qiime file
-                        #and break up like this:
-                        #print 'found mobe defline'
-                        tmp = defline.replace(' ','|').split('|')
-                        ds = tmp[0].split('_')[0]
-                        #id = tmp[1]
-                        id = tmp[0].split('_')[1]  
-                    else:
-                        tmp = defline.replace(' ','|').split('|')
-                        #print defline
-                        ds = tmp[0]
-                        id = tmp[1]
-                    ds_dir = os.path.join(gast_dir,ds)
-                    
-                    file = os.path.join(ds_dir,'seqfile.fa')
-                    if ds in datasets:
-                        datasets[ds] +=1
-                    else:
-                        datasets[ds] = 1
-                    if ds in files:
-                        files[ds].write('>'+id+"\n"+f.seq+"\n")
-                    else:
-                        if not os.path.exists(ds_dir):
-                            os.makedirs(ds_dir, mode=0777)
-                        #os.makedirs(ds_dir)
-                        fp = open(file,'w')
-                        files[ds] = fp
-                        fp.write('>'+id+"\n"+f.seq+"\n")
-                except:
-                    print "Please check the multi-dataset format: ( defline='>" + defline+"' )"
-                    sys.exit(1)
-            
-            seq_count += 1
-        ds_count = len(datasets)
-        f.close()
-        #print datasets
-    
-        for ds in files:
-            files[ds].close()
+            try:
+                #id = defline.replace(' ','|')
+                # mobe  defline='>10056.000010538_2 HWI-M00888:59:000000000-A62ET:1:1101:15096:1532 1:N:0:GACCGTAAACTC orig_bc=GACCGTAAACTC new_bc=GACCGTAAACTC bc_diffs=0'
+                if 'orig_bc' in defline and 'new_bc' in defline:
+                    #if there are orig_bc and new_bc in defline then assume mobe/qiime file
+                    #and break up like this:
+                    #print 'found mobe defline'
+                    tmp = defline.replace(' ','|').split('|')
+                    ds = tmp[0].split('_')[0]
+                    #id = tmp[1]
+                    id = tmp[0].split('_')[1]  
+                else:
+                    tmp = defline.replace(' ','|').split('|')
+                    #print defline
+                    ds = tmp[0]
+                    id = tmp[1]
+                ds_dir = os.path.join(gast_dir,ds)
+                
+                file = os.path.join(ds_dir,'seqfile.fa')
+                if ds in datasets:
+                    datasets[ds] +=1
+                else:
+                    datasets[ds] = 1
+                if ds in files:
+                    files[ds].write('>'+id+"\n"+f.seq+"\n")
+                else:
+                    if not os.path.exists(ds_dir):
+                        os.makedirs(ds_dir, mode=0777)
+                    #os.makedirs(ds_dir)
+                    fp = open(file,'w')
+                    files[ds] = fp
+                    fp.write('>'+id+"\n"+f.seq+"\n")
+            except:
+                print "Please check the multi-dataset format: ( defline='>" + defline+"' )"
+                sys.exit(1)
+        
+        seq_count += 1
+    ds_count = len(datasets)
+    f.close()
+    #print datasets
+
+    for ds in files:
+        files[ds].close()
     stats['seq_count'] = seq_count
     stats['ds_count'] = ds_count
     stats['datasets'] = datasets
@@ -205,13 +206,13 @@ def write_seqfiles(args):
         
 def write_metafile(args,stats):
     
-    f = open(mdfile_clean, 'wt')
+    #f = open(args.mdfile_clean, 'wt')
     
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
     req_first_col = ['#SampleID','sample_name','dataset_name']
-    with open(mdfile, mode='r') as infile:
+    with open(args.mdfile, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter
-        with open(mdfile_clean, mode='w') as outfile:
+        with open(args.mdfile_clean, mode='w') as outfile:
             writer = csv.writer(outfile, delimiter='\t')  # TAB Only delimiter
         
             md_datasets = []
@@ -254,7 +255,7 @@ def write_metafile(args,stats):
                         print '1-Missing Data: '+','.join(items)
                         sys.exit(1)
                     
-                    print "writing clean metadata file "+mdfile_clean
+                    print "writing clean metadata file "+args.mdfile_clean
                     writer.writerow(items)
             if args.upload_type == 'multi':
             # check for datasets column in metadata -- needed to assign metadata to datasets
@@ -270,16 +271,16 @@ def write_metafile(args,stats):
     infile.close()
             
 def write_config(args,stats):
-    ini_file = os.path.join(args.outdir,'config.ini') 
+    ini_file = os.path.join(args.project_dir,'config.ini') 
     print 'Writing config.ini file:',ini_file  
     f = open(ini_file, 'w')
     f.write('[GENERAL]'+"\n")
     f.write('project='+args.project+"\n")
     f.write("project_title=\n")
     f.write("project_description=\n")
-    f.write('baseoutputdir='+args.outdir+"\n")
+    f.write('baseoutputdir='+args.project_dir+"\n")
     f.write('configPath='+ini_file+"\n")
-    f.write('fasta_file='+fafile+"\n")
+    f.write('fasta_file='+args.fafile+"\n")
     f.write('platform=new_vamps'+"\n")
     f.write('owner='+args.owner+"\n")
     f.write('config_file_type=ini'+"\n")
@@ -309,7 +310,7 @@ def unique_seqs(args,stats):
     try:
         for dataset in stats["datasets"]:
             print dataset
-            ds_dir = os.path.join(args.outdir, 'analysis','gast', dataset)
+            ds_dir = os.path.join(args.project_dir, 'analysis','gast', dataset)
             fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
             unique_file = os.path.join(ds_dir, 'unique.fa')
             names_file  = os.path.join(ds_dir, 'names')
@@ -320,8 +321,8 @@ def unique_seqs(args,stats):
         sys.exit(1)
 
 def update_dir_permissions(args):
-        os.system('chgrp -R '+ args.site_grp +' '+args.outdir)
-        os.system('chmod -R ug+rw '+args.outdir)
+        os.system('chgrp -R '+ args.site_grp +' '+args.project_dir)
+        os.system('chmod -R ug+rw '+args.project_dir)
 if __name__ == '__main__':
     import argparse
     
@@ -344,8 +345,7 @@ if __name__ == '__main__':
             
             -d/--dataset          REQUIRED IF: source file type is single
             
-            -co/--config_only       DON'T delete and re-create the analysis/gast directory 
-                                    The gast file (vamps_sequences_pipe) must already be present
+           
             Optional:
             -reg/--dna_region     defaults to v6            
             -dom/--domain         defaults to bacteria
@@ -359,33 +359,31 @@ if __name__ == '__main__':
     
     
    
-    parser.add_argument("-dir","--outdir",                   
-                required=True,  action="store",   dest = "outdir", 
+    parser.add_argument("-project_dir","--project_dir",                   
+                required=True,  action="store",   dest = "project_dir", 
                 help="""Directory to output ini and dir structure""")     
     
     parser.add_argument("-d", "--dataset",        
                 required=False,  action='store', dest = "dataset",  default='',
                 help="Dataset Name")                                                  
-    parser.add_argument("-t", "--upload_type",
+    parser.add_argument("-upload_type", "--upload_type",
                 required=True,  action='store', dest = "upload_type",  default='multi',
                 choices=['multi','single'], help="multi or single dataset")
 
-    parser.add_argument("-co", "--config_only", 
-                required=False,  action='store_true', dest = "config_only",  default=False, 
-                help="")
-    parser.add_argument("-reg", "--dna_region",    
+    
+    parser.add_argument("-dna_region", "--dna_region",    
                 required=False,  action='store', dest = "dna_region",  default='v6',
                 help="")
-    parser.add_argument("-dom", "--domain",        
+    parser.add_argument("-domain", "--domain",        
                 required=False,  action='store', dest = "domain",  default='bacteria', 
                 help="")
-    parser.add_argument("-env", "--env_source_id", 
+    parser.add_argument("-envid", "--env_source_id", 
                 required=False,  action='store', dest = "envid",  default='100', 
                 help="")
-    parser.add_argument("-pub", "--public",        
+    parser.add_argument("-public", "--public",        
                 required=False,  action='store_true', dest = "public",  default=False, 
                 help="")
-    parser.add_argument("-o", "--owner",        
+    parser.add_argument("-owner", "--owner",        
                 required=True,  action='store', dest = "owner",  default=False, 
                 help="")
     parser.add_argument("-p", "--project",        
@@ -403,9 +401,9 @@ if __name__ == '__main__':
     if args.upload_type == 'single' and not args.dataset:
         print 'Requires dataset for single mode'
         sys.exit(1)
-    fafile = os.path.join(args.outdir,'fasta.fa')
-    mdfile = os.path.join(args.outdir,'meta_original.csv') 
-    mdfile_clean = os.path.join(args.outdir,'metadata_clean.csv')
+    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+    args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
     if args.site == 'vamps':
         args.site_grp = 'vampshttpd'
     elif args.site == 'vampsdev':

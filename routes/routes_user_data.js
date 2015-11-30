@@ -693,16 +693,16 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		var gast_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
 
-	      args :       [ '--classifier',classifier, '--config', config_file, '--process_dir', process.env.PWD, 
-	      							'--data_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '--host', req.C.hostname ]
+	      args :       [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
+	      							'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ]
 	    };
-	    console.log('CMD> '+gast_options.scriptPath+'/vamps_script_assign_taxonomy.py '+gast_options.args.join(' '));
+	    console.log('CMD> '+gast_options.scriptPath+'/vamps_data_script.py '+gast_options.args.join(' '));
 
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
 
 
-		var gast_process = spawn( gast_options.scriptPath+'/vamps_script_assign_taxonomy.py', gast_options.args, {
+		var gast_process = spawn( gast_options.scriptPath+'/vamps_data_script.py', gast_options.args, {
 		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
 		                        'PATH':req.config.PATH, 
 		                        'PERL5LIB':req.config.PERL5LIB,
@@ -794,18 +794,18 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 		var rdp_options = {
 	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '--classifier',classifier, '--config', config_file, 
-	      							'--process_dir',process.env.PWD, '--data_dir', data_dir, 
+	      args :       [ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project,
+	      							'-process_dir',process.env.PWD, '-project_dir', data_dir, 
 	      							'-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,
-	      							'-script_dir', req.config.PATH_TO_CLASSIFIER ],
+	      							'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],
 	    };
 
 
-	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py '+rdp_options.args.join(' '));
+	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_data_script.py '+rdp_options.args.join(' '));
 
 		var spawn = require('child_process').spawn;
 		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_script_assign_taxonomy.py', rdp_options.args, {
+		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_data_script.py', rdp_options.args, {
 		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
 		                    detached: true, stdio: [ 'ignore', null, log ]		                
 		                } );  // stdin, stdout, stderr
@@ -1466,7 +1466,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args :       [ '-dir', data_repository, '-o', username, '-p', project]
+		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project]
 		    			};
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){
@@ -1474,9 +1474,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				  	res.redirect("/user_data/import_data");
 				  	return;
 					}
-					options.args = options.args.concat(['-t', 'single', '-d', req.body.dataset ]);
+					options.args = options.args.concat(['-upload_type', 'single', '-d', req.body.dataset ]);
 		  }else if(req.body.type == 'multi_fasta') {
-					options.args = options.args.concat(['-t', 'multi' ]);
+					options.args = options.args.concat(['-upload_type', 'multi' ]);
 		  }else{
 					req.flash('failMessage', 'No file type info found');
 					res.redirect("/user_data/import_data");
@@ -1524,11 +1524,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			        console.log(err)
 			        return;
 			    }
-				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
+				    console.log(options.scriptPath+'/vamps_data_script.py '+options.args.join(' '));
 
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
-						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
+						var load_trim_process = spawn( options.scriptPath+'/vamps_data_script.py', options.args, {
 						    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
@@ -1538,7 +1538,6 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						  data = data.toString().replace(/^\s+|\s+$/g, '');
 						  output += data;
 						  var lines = data.split('\n');
-
 						});
 						
 						load_trim_process.on('close', function (code) {

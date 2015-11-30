@@ -4,7 +4,7 @@
 //   else
 //   { return false; }
 // };
-
+var ds_count = 0;
 var clear_filters_btn_id = document.getElementById('clear_filters_btn_id');
 if (typeof clear_filters_btn_id !== 'undefined') {
   clear_filters_btn_id.addEventListener('click', function () {
@@ -31,6 +31,7 @@ var toggle_checking_all = function(clicked) {
   
   $(clicked.parentNode.parentNode).find('input').prop('checked',
      function(idx, oldProp) {
+
 	   return !oldProp;
      });
   return false;
@@ -42,21 +43,26 @@ var toggle_checking_datasets_by_pr = function(pr_checkbox, datasets_per_pr) {
   }
   else {
    datasets_per_pr.find('input').prop('checked', false);
+
   }
 };
 
 var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
+   
   if (datasets_per_pr.find('input').prop('checked')) {
-    datasets_per_pr.find('input').prop('checked', false);    
+    datasets_per_pr.find('input').prop('checked', false);  
   }
   else {
     datasets_per_pr.find('input').prop('checked', true);
   }
+  count_checked_datasets()
 };
 
 
 var toggle_datasets = function(clicked) {
   $(clicked.parentNode.parentNode).find('.datasets_per_pr').toggle();
+  //alert('h')
+  count_checked_datasets()
   return false;
 };
 
@@ -76,16 +82,23 @@ var toggle_plus_img = function(clicked) {
   
   if ($(clicked.parentNode.parentNode).find('.datasets_per_pr').is(":visible")) {
     minus_img(my_img);
+
   }  
   else {
     plus_img(my_img);
+    
   }
+
   return false;
 };
 
 var checkme = function(){
-  //var dataset_ids = document.getElementsByName('dataset_ids');
-  //alert('dataset_ids[0].value')
+//alert('o')
+  //var dataset_ids = document.getElementsByName('dataset_ids[]');
+  //alert(dataset_ids.length)
+   //ds_count += datasets_per_pr.find('input').prop('checked', true).length
+    //document.getElementById('selected_ds_count_id').innerHTML = ds_count
+  count_checked_datasets()
 };
 
 var uncheck_closed = function(parent_place) {
@@ -95,19 +108,32 @@ var uncheck_closed = function(parent_place) {
   if (parent_place.find('.datasets_per_pr').is(":hidden")) {
     parent_place.find('input').prop('checked', false);
   }
-};
+  count_checked_datasets()
 
+};
+var count_checked_datasets = function() {
+  var all_dataset_ids = document.getElementsByName('dataset_ids[]');
+  ds_count = 0
+  for(i in all_dataset_ids){
+    //alert(dataset_ids[i].checked)
+    if(all_dataset_ids[i].checked === true){
+      ds_count += 1
+    }
+
+  }
+  document.getElementById('selected_ds_count_id').innerHTML = ds_count
+
+};
 $(document).ready(function () {
       
       onPageLoad();
       clear_filters();
       
 });
+
 function onPageLoad(){
   // All commands here in separate file so I can run them after changing project list
     // by default everything is visible, in case there is no js
-  
-  //alert(substring_filter)
   $('.datasets_per_pr').addClass( "display_none" );
   
   // the minus sign should always close the tree AND uncheck all the ds cbs 
@@ -183,7 +209,6 @@ function filter_by_env() {
       onPageLoad();      
     }
   }
- 
   xmlhttp.send();
 }
 //
@@ -203,7 +228,6 @@ function filter_by_target() {
       onPageLoad();      
     }
   }
- 
   xmlhttp.send();
 }
 //
@@ -226,7 +250,6 @@ function showLiveProjectNames(str) {
       onPageLoad();      
     }
   }
- 
   xmlhttp.send();
 }
 
