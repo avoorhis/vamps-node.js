@@ -75,7 +75,7 @@ def start_pipeline_load(args):
     print CUST_METADATA_ITEMS
 
 def start_additional_upload(args):
-
+    pass
 
 def put_required_metadata():
     global mysql_conn, cur
@@ -369,7 +369,7 @@ if __name__ == '__main__':
     parser.add_argument("-process_dir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='',
                 help = '') 
-    
+
     parser.add_argument("-infile", "--infile",    
                 required=False,  action="store",   dest = "infile", default='',
                 help = '') 

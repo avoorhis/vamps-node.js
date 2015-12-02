@@ -57,7 +57,7 @@ sequence_pattern = re.compile('[^AGTC]', re.IGNORECASE)
 #
 #  Illumina-seqid sample:  HWI-M00888:59:000000000-A62ET:1:1101:9364:6850 1:N:0:GACCGTAAACTC
 #                           @M10_68:1:1:28680:29475#0/1
-id_pattern = re.compile('[^0-9A-Z_.:-#@]', re.IGNORECASE)  
+id_pattern = re.compile(r"[^0-9A-Z_.:\-\#\@]", re.IGNORECASE)  
 errors = ['ERROR']
 notes = ['OK']
 
@@ -143,7 +143,7 @@ def start_fasta_multi(infile):
     #print all_seq_count
     #print len(datasets_hash)
     if all_seq_count == len(datasets_hash):
-        errors.append('ERROR: Looks like the number of datasets equals the number of sequences -- that cant be right. Maybe this is a single-dataset style fasta file?')    
+        errors.append("ERROR: Looks like the number of datasets equals the number of sequences -- that can't be right. Maybe this is a single-dataset style fasta file?")    
     else:
         notes.append('Good: dataset count is: '+str(len(datasets_hash)))
         notes.append('Good: sequence count is: '+str(all_seq_count))
@@ -342,7 +342,7 @@ if __name__ == '__main__':
     
                                         
     parser.add_argument("-i", "--infile",          
-                required=True,  action='store', dest = "infile",  default='',
+                required=True,  action='store', dest = "infile", 
                 help="") 
                             
     parser.add_argument("-ft", "--file_type",          
@@ -353,8 +353,8 @@ if __name__ == '__main__':
                 required=True,   action="store",  dest = "style",            
                 help = 'vamps or qiime OR single or multi') 
 
-    parser.add_argument("-pdir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+    parser.add_argument("-process_dir", "--process_dir",    
+                required=False,  action="store",   dest = "process_dir", default='',
                 help = '')
 
     args = parser.parse_args()    
@@ -367,7 +367,7 @@ if __name__ == '__main__':
             print('style must be single or multi for fasta files')
             sys.exit(-202)
     if args.file_type == 'metadata':
-        if args.style != 'vamps' and args.style != 'qiime':
+        if args.style != 'qiime':
             print('style must be vamps or qiime for metadata files')
             sys.exit(-203)
 
@@ -379,8 +379,8 @@ if __name__ == '__main__':
         result = start_fasta_single(args.infile)
     elif args.file_type == 'fasta' and args.style == 'multi':
         result = start_fasta_multi(args.infile)
-    elif args.file_type == 'metadata' and args.style == 'vamps':
-        result = start_metadata_vamps(args.infile)
+    #elif args.file_type == 'metadata' and args.style == 'vamps':
+    #    result = start_metadata_vamps(args.infile)
     elif args.file_type == 'metadata' and args.style == 'qiime':
         result = start_metadata_qiime(args.infile)
     else:

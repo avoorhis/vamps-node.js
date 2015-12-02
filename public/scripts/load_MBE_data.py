@@ -312,26 +312,31 @@ def split_datasets_into_projects(args,dscount):
         return ('N',{})
 
 def get_datasets(args):
-    log_file = args.metafile
-    
-    fh = open(log_file,'r')
     datasets = {}
-    counter = 0
-    for line in fh:
-        #print line
-        line = line.strip()
-        if not line:
-            continue
-        items = line.split()        
-        if items[0] in dataset_name_fields: 
-            continue        
+    if args.datasetfile:
+        print "Using Log file for datasets:",args.datasetfile
+        fh = open(args.datasetfile,'r')
         
-        print items[0]
-        datasets[items[0]]= 1
-        counter += 1
-    print len(datasets)
-    return [counter,datasets]
-
+        counter = 0
+        for line in fh:
+            #print line
+            line = line.strip()
+            if not line:
+                continue
+            items = line.split()        
+            if items[0] in ['Num','Sample','Total']: 
+                continue        
+        
+            print items[0]
+            datasets[items[0]]= 1
+            counter += 1
+    else:
+        (counter,datasets) = get_datasets_from_fafile(args)
+                
+    print 'ds count:',counter
+    
+    return (counter,datasets)
+    
 def go(args,projects):
     create_dirs(args,projects)    
     stats = write_seqfiles(args,projects)
@@ -341,7 +346,22 @@ def go(args,projects):
     write_config(args,projects,stats)
     update_dir_permissions(args,projects)
     
-
+def get_datasets_from_fafile(args):
+    print "Using Seqs file for datasets",args.fastafile
+    f = fastalib.SequenceSource(args.fastafile)
+    datasets = {}
+    while f.next():
+        id_items = f.id.split()
+        ds = id_items[0].split('_')[0]
+        if ds in datasets:
+            datasets[ds] += 1
+        else:
+            datasets[ds] = 1
+         
+    for ds in datasets:
+        print ds
+    
+    return (len(datasets),datasets)
 if __name__ == '__main__':
     import argparse
     
@@ -374,32 +394,44 @@ if __name__ == '__main__':
     
     parser.add_argument("-f","--fastafile",                   
                 required=True,  action="store",   dest = "fastafile", 
-                help="""MBE Directory to output ini and dir structure""")    
+                help="""fa file""")
+                    
     parser.add_argument("-m","--metafile",                   
                 required=True,  action="store",   dest = "metafile", 
-                help="""MBE Directory to output ini and dir structure""")
-     
+                help="""metafile""")
+                
+    parser.add_argument("-d","--datasetfile",                   
+                required=False,  action="store",   dest = "datasetfile", default='',
+                help="""datasetfile""") 
+                
     parser.add_argument("-s", "--site",    
                 required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
                 help="")
+                
     parser.add_argument("-reg", "--dna_region",    
                 required=False,  action='store', dest = "dna_region",  default='v6',
                 help="")
+                
     parser.add_argument("-dom", "--domain",        
                 required=False,  action='store', dest = "domain",  default='unknown', 
                 help="")
+                
     parser.add_argument("-env", "--env_source_id", 
                 required=False,  action='store', dest = "envid",  default='100', 
                 help="")
+                
     parser.add_argument("-private", "--private",      
                 required=False,  action='store_true', dest = "private",  default=False, 
                 help="")
+                
     parser.add_argument("-u", "--owner",        
                 required=False,  action='store', dest = "owner",  default='admin', 
                 help="")
+                
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project",  default=False, 
                 help="")
+                
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -416,6 +448,7 @@ if __name__ == '__main__':
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
     db_str = ''
+    print "For large MBE projects that are already on old vamps use convert_old_vamps_project.py instead!"
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '

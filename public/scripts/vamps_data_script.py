@@ -75,7 +75,7 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "path_to_classifier", default='./',
                 help = '') 
     parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='',
+                required=False,  action="store",   dest = "process_dir", default='./',
                 help = '')
     parser.add_argument("-d", "--dataset",        
                 required=False,  action='store', dest = "dataset",  default='',
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     parser.add_argument("-envid", "--env_source_id", 
                 required=False,  action='store', dest = "envid",  default='100', 
                 help="")
-    parser.add_argument("-public", "--public",        
-                required=False,  action='store_true', dest = "public",  default=False, 
+    parser.add_argument("-private", "--private",        
+                required=False,  action='store_false', dest = "public",  default=True, 
                 help="")
     parser.add_argument("-site", "--site",    
                 required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',

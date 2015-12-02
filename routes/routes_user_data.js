@@ -11,10 +11,21 @@ var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
-var upload = multer(multer({ dest: path.join('tmp')}));
+var upload = multer({ dest: 'tmp'});
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
-
+// router.use(multer({ dest: 'tmp',
+//  rename: function (fieldname, filename) {
+//     return filename+Date.now();
+//   },
+// onFileUploadStart: function (file) {
+//   console.log(file.originalname + ' is starting ...')
+// },
+// onFileUploadComplete: function (file) {
+//   console.log(file.fieldname + ' uploaded to  ' + file.path)
+//   done=true;
+// }
+// }));
 
 //
 // YOUR DATA
@@ -189,7 +200,7 @@ router.get('/import_choices', helpers.isLoggedIn, function(req, res) {
 /* GET Import Data page. */
 router.get('/import_data', helpers.isLoggedIn, function(req, res) {
   console.log('import_data');
-  console.log(JSON.stringify(req.url));
+  console.log(req.url);
   var myurl = url.parse(req.url, true);
   if(req.C.hostname.substring(0,7) == 'bpcweb7'){
         var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
@@ -211,8 +222,9 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 
 
 				}else{
+				  console.log(user_projects_base_dir);
 				  for (var d in items){
-		        var pts = items[d].split('_');
+		        var pts = items[d].split('-');
 		        if(pts[0] === 'project'){
 
 							var project_name = pts[1];
@@ -226,8 +238,9 @@ router.get('/import_data', helpers.isLoggedIn, function(req, res) {
 			  		message: req.flash('successMessage'),
 				    failmessage: req.flash('failMessage'),
 			      import_type: import_type,
-			      my_projects:my_projects,
-			      user: req.user, hostname: req.C.hostname
+			      my_projects: my_projects,
+			      user: req.user, 
+			      hostname: req.C.hostname
 			    });
 
 				} // end else
@@ -259,7 +272,13 @@ router.get('/validate_format', helpers.isLoggedIn, function(req, res) {
 //  VALIDATE FILE
 //
 router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 12)], function(req, res) {
-  console.log('POST validate_file');
+  	console.log('POST validate_file');
+  	// upload(req,res,function(err) {
+   //      if(err) {
+   //          return res.end("Error uploading file.");
+   //      }
+   //      res.end("File is uploaded");
+   //  });
     //console.log(JSON.stringify(req.url))
     //var myurl = url.parse(req.url, true);
     console.log(req.body);
@@ -272,7 +291,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     console.log('file_path '+ file_path);
 
 		var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args : [ '-i', file_path, '-ft',file_type,'-s', file_style,'-pdir',process.env.PWD,]
+		        			args : [ '-i', file_path, '-ft',file_type,'-s', file_style,'-process_dir',process.env.PWD,]
 		    			};
 
 		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
@@ -1466,7 +1485,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.C.PATH_TO_SCRIPTS,
-		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project]
+		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.config.site]
 		    			};
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){

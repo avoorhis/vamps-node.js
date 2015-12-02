@@ -90,7 +90,7 @@ def start_gast(args):
     runcode         = 'NONE'
     site            = 'new_vamps'
     load_db         = True
-    steps           = 'gast,vamps'
+    steps           = 'gast,new_vamps'
     fasta_file_from_cl  = '' #args.fasta_file
     
     mobedac         = False # True or False
@@ -149,7 +149,7 @@ def start_gast(args):
                             'input_file_formats':   'fasta',
                             'run':                  runcode,
                             'use_cluster':          use_cluster,
-                            'platform':             general_config_items['platform'],
+                            'platform':             'new_vamps',
                             'dna_region':           general_config_items['dna_region'],
                             'domain':               general_config_items['domain'],
                             'env_source_id':        general_config_items['env_source_id'],

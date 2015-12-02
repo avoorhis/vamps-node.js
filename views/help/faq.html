@@ -306,15 +306,16 @@ or
 
 						<p class='standard'><strong>FASTA File</strong></p> 
 						<p class='standard'><strong>Metadata File</strong></p> 
-						There are two metadata file formats:<br>
+						There is one metadata file format:<br>
 						<ul>
-						<li>QIIME style mapping file: This file MUST have a header named 'sample_name', '#SampleID' or 'dataset_name'
+						<li>QIIME style mapping file: This file MUST have a header named '#SampleID', 'sample_name'  or 'dataset_name' as the first column name.
 							<ul>
-								<li> Header line is required</li>
+								<li>The Header line is required</li>
+								<li>The columns must be tab delimited</li>
 								<li>There must be one row for each dataset</li>
 							</ul>
 						</li>
-						<li>VAMPS style (downloaded from old VAMPS site.) -- Not accepted anymore
+						
 						</ul>
 						<br>
 						<p class='standard'><strong>TaxBySeq File</strong></p> 

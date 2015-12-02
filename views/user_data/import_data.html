@@ -133,14 +133,17 @@
   	</div>
     
     <div class="form-group">
-        <label class="control-label col-sm-3" for="meta">CSV File Format:</label>
-        <div class="col-sm-4 btn"> 
-          <input type='radio' name='metadata_file_format' disabled value='vamps'> VAMPS Style -- Not Accepted Anymore 
-          <small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template</a>)</small>
-          <br><input type='radio' checked='checked' name='metadata_file_format' value='qiime'> QIIME Style Mapping File
+        <label class="control-label col-sm-3" for="meta">Metadata File Format:</label>
+        <div class="col-sm-2 btn"> 
+           QIIME Style Mapping File
           <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
         </div>
-        
+    </div>
+    <div class="form-group">
+        <label class="control-label col-sm-3" for="meta">Metadata File:</label>
+        <div class="col-sm-2 btn">          
+          <input type="file" name='upload_file' class="" id="meta" >
+        </div>
     </div>
     <div class="form-group">
         <label class="control-label col-sm-3" for="meta">Replace or Add To<br>Existing Metadata:</label>
@@ -151,12 +154,7 @@
         </div>
         
     </div>
-    <div class="form-group">
-        <label class="control-label col-sm-3" for="meta">Metadata File:</label>
-        <div class="col-sm-2 btn">          
-          <input type="file" name='upload_file' class="" id="meta" >
-        </div>
-    </div>
+    
 	 
   	
     <div class="form-group">        
