@@ -731,13 +731,15 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 			options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
 		]
 		
-		var scriptlog = fs.openSync(path.join(data_dir,'script.log'), 'a');
 		if(req.C.hostname.substring(0,7) == 'bpcweb7'){
-	      var script_text = get_qsub_script_text(scriptlog, 'vampsdev', classifier, cmd_list)
+	    	var scriptlog = path.join(data_dir,'cluster.log');
+        var script_text = get_qsub_script_text(scriptlog, 'vampsdev', classifier, cmd_list)
     }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var scriptlog = path.join(data_dir,'cluster.log');
         var script_text = get_qsub_script_text(scriptlog, 'vamps', classifier, cmd_list)
     }else{
-	    	var script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
+        var scriptlog = path.join(data_dir,'script.log');
+        var script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
     }
 		
 		script_path = path.join(data_dir, script_name);
@@ -759,7 +761,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		                    //     'PERL5LIB':req.config.PERL5LIB,
 		                    //     'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
 		                    //     },
-		                    detached: true, stdio: [ 'ignore', null, log ]		                
+		                    detached: true, stdio: [ 'ignore', null, nodelog ]		                
 		                } );  // stdin, s
 			    		var output = '';
 			    		run_process.stdout.on('data', function (data) {
@@ -784,7 +786,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 								   var ll = last_line.split('=');
 								   var pid = ll[1];
 								   console.log('NEW PID=: '+pid);
-								   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+								   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
 								   if(helpers.isInt(pid)){
 
 					            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
@@ -1037,7 +1039,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 // YOUR PROJECTS
 //
 router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
-		console.log(PROJECT_INFORMATION_BY_PNAME);
+		//console.log(PROJECT_INFORMATION_BY_PNAME);
     if(req.C.hostname.substring(0,7) == 'bpcweb7'){
         var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username);
     }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
@@ -2424,7 +2426,7 @@ function get_qsub_script_text(log, site, code, cmd_list){
     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
     script_text += "# Loading Module didn't work when testing:\n"; 
     //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
-    script_text = "# . /usr/share/Modules/init/sh\n";
+    script_text += "# . /usr/share/Modules/init/sh\n";
     script_text += "# export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
     script_text += "# module load clusters/vamps\n\n";
     script_text += "cd /groups/vampsweb/tmp\n\n";

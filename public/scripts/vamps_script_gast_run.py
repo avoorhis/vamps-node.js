@@ -73,12 +73,11 @@ def start_gast(args):
     
     use_local_pipeline = False
     if args.site == 'vamps' or args.site == 'vampsdev':
-        #sys.path.append('/bioware/linux/seqinfo/bin/python_pipeline')
-        sys.path.append(os.path.join('/','groups','vampsweb'))
-        from py_mbl_sequencing_pipeline.pipeline.run import Run
-        from py_mbl_sequencing_pipeline.pipelineprocessor import process
-        from py_mbl_sequencing_pipeline.pipeline.db_upload import MyConnection
-        from py_mbl_sequencing_pipeline.pipeline.utils import Dirs, PipelneUtils
+        sys.path.append(os.path.join('/','groups','vampsweb','py_mbl_sequencing_pipeline'))
+        from pipeline.run import Run
+        from pipelineprocessor import process
+        from pipeline.db_upload import MyConnection
+        from pipeline.utils import Dirs, PipelneUtils
         use_cluster     = True
     else:
         sys.path.append(os.path.join(args.process_dir,'public','scripts'))
@@ -268,7 +267,7 @@ if __name__ == '__main__':
    
     
     myusage = """
-    
+
             usage: vamps_script_gast_run.py  [options]
          
          This is will start the (customized) python_pipeline
