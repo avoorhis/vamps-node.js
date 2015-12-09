@@ -267,7 +267,9 @@ if __name__ == '__main__':
     
    
     
-    myusage = """usage: gast.py  [options]
+    myusage = """
+    
+            usage: vamps_script_gast_run.py  [options]
          
          This is will start the (customized) python_pipeline
          for the GAST process, creating the vamps_* files

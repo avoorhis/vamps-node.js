@@ -110,8 +110,8 @@ queries = [{"rank":"domain","query":domain_query},
 
 def go_add(args):
     
-    logging.info('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -pdir '+args.process_dir)
+    logging.info('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -process_dir '+args.process_dir)
+    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -process_dir '+args.process_dir)
     print args
 
 
@@ -369,7 +369,8 @@ def get_dataset_ids(pid):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="") 
-    usage = """
+    usage = """usage: vamps_script_create_json_dataset_files.py  [options]
+
         -pid/--project_id  ID  Must be combined with --add or --delete
         
         This script only add/deletes to taxcounts files NOT MySQL
@@ -395,30 +396,35 @@ if __name__ == '__main__':
                required=False,  action="store",   dest = "pid", default='0',
                help="""ProjectID""") 
    
-    parser.add_argument("-del","--del",                   
-               required=False,  action="store_true",   dest = "delete", default='',
-               help="""ProjectID""") 
+    # parser.add_argument("-del","--del",                   
+    #            required=False,  action="store_true",   dest = "delete", default='',
+    #            help="""ProjectID""") 
                
     parser.add_argument("-add","--add",                   
                required=False,  action="store_true",   dest = "add", default='',
                help="""ProjectID""")
                
-    parser.add_argument("-list","--list",                   
-               required=False,  action="store_true",   dest = "list", default='',
-               help="""ProjectID""") 
+    # parser.add_argument("-list","--list",                   
+    #            required=False,  action="store_true",   dest = "list", default='',
+    #            help="""ProjectID""") 
     parser.add_argument("-db","--database",                   
                required=True,  action="store",   dest = "NODE_DATABASE", default='',
                help="""ProjectID""")  
-    parser.add_argument("-pdir", "--process_dir",                   
-               required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+    parser.add_argument("-process_dir", "--process_dir",                   
+               required=False,  action="store",   dest = "process_dir", default='/',
                help="""ProjectID""")          
     args = parser.parse_args()
    
-           
-
-
     
     go_add(args)
+
+    logging.info("DONE")
+    print "DONE"
+    #
+    # THIS MUST BE THE LAST PRINT!!!!
+    print "PID="+str(args.pid)
+    ##
+    logging.info("ALL DONE: (PID="+str(args.pid)+')')
     
 
         

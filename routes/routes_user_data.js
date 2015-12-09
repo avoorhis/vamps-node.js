@@ -678,8 +678,8 @@ router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
 //
 router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
 
-
-
+	var spawn = require('child_process').spawn;
+	var exec = require('child_process').exec;
 
 	console.log(req.params.project);
 	var project = req.params.project;
@@ -688,221 +688,348 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	var classifier = req.params.classifier;
 	var ref_db_dir = req.params.ref_db;
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
-
-
-	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+	status_params = {'type':'update', 'user':req.user.username, 'project':project, 'status':'',	'msg':'' };
 	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
-        var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+	      var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
+	      var py_script_path = '/groups/vampsweb/seqinfobin/new_vamps_scripts/';
     }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
         var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
+        var py_script_path = '/groups/vampsweb/seqinfobin/new_vamps_scripts/';
     }else{
-	    var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+	    	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+	    	var py_script_path = req.C.PATH_TO_SCRIPTS;
     }
-	var data = '';
-
-	//console.log('PROJECT_INFORMATION_BY_PID0: '+JSON.stringify(PROJECT_INFORMATION_BY_PID));
-
-	var config_file = path.join(data_dir,'config.ini');
-
-
-	if(classifier == 'GAST' || classifier == 'gast'){
-		status_params = {'type':'update', 'user':req.user.username,
-                                'project':project, 'status':'OK-GAST',	'msg':'Starting GAST' };
-		helpers.update_status(status_params);
-		var gast_options = {
-	      scriptPath : req.C.PATH_TO_SCRIPTS,
-
-	      args :       [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
-	      							'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ]
-	    };
-	    console.log('CMD> '+gast_options.scriptPath+'/vamps_data_script.py '+gast_options.args.join(' '));
-
-		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-
-
-		var gast_process = spawn( gast_options.scriptPath+'/vamps_data_script.py', gast_options.args, {
-		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
-		                        'PATH':req.config.PATH, 
-		                        'PERL5LIB':req.config.PERL5LIB,
-		                        'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
-		                        },
+    var config_file = path.join(data_dir,'config.ini');
+	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
+		 var options = {
+		       scriptPath : py_script_path,
+		       gast_run_args :        [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
+		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ],
+		       rdp_run_args :        	[ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project, '-process_dir',process.env.PWD, 
+		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],		       													
+		       database_loader_args : [ '-class',classifier, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
+		       upload_metadata_args : [ '-project_dir', data_dir, '-db', NODE_DATABASE ],
+		       create_json_args :     [ '-process_dir', process.env.PWD, '-db', NODE_DATABASE, '-pid', '$pid' ]
+		     };
+		 
+		 if(classifier.toUpperCase() == 'GAST'){
+		 		run_cmd = options.scriptPath + '/vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
+		 		script_name = 'gast_script.sh';
+		 		status_params.statusOK = 'OK-GAST';status_params.statusSUCCESS = 'GAST-SUCCESS';
+		 		status_params.msgOK = 'Finished GAST';status_params.msgSUCCESS = 'GAST -Tax assignments';
+		 }else if(classifier.toUpperCase() == 'RDP' ){
+		 		run_cmd = options.scriptPath + '/vamps_script_rdp_run.py ' + options.rdp_run_args.join(' '),
+		 		script_name = 'rdp_script.sh';
+		 		status_params.statusOK = 'OK-RDP';status_params.statusSUCCESS = 'RDP-SUCCESS';
+		 		status_params.msgOK = 'Finished RDP';status_params.msgSUCCESS = 'RDP -Tax assignments';
+		 }
+		 var cmd_list = [
+			run_cmd,
+			options.scriptPath + '/vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
+			"pid=$(head -n 1 "+data_dir+"/pid.txt)",   // pid is in a file pid.txt written by database loader
+			options.scriptPath + '/vamps_script_upload_metadata.py ' + options.upload_metadata_args.join(' '),
+			options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
+		]
+		
+		var scriptlog = fs.openSync(path.join(data_dir,'script.log'), 'a');
+		if(req.C.hostname.substring(0,7) == 'bpcweb7'){
+	      var script_text = get_qsub_script_text(scriptlog, 'vampsdev', classifier, cmd_list)
+    }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
+        var script_text = get_qsub_script_text(scriptlog, 'vamps', classifier, cmd_list)
+    }else{
+	    	var script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
+    }
+		
+		script_path = path.join(data_dir, script_name);
+		fs.writeFile(script_path, script_text, function (err) {
+		  if (err) return console.log(err);
+		  // Make script executable
+		  child = exec( 'chmod ug+rwx '+script_path, 
+		  	function (error, stdout, stderr) {
+			    console.log('1stdout: ' + stdout);
+			    console.log('1stderr: ' + stderr);
+			    if (error !== null) {
+			      console.log('1exec error: ' + error);
+			    }else{
+			    		// run script
+			    		var nodelog = fs.openSync(path.join(data_dir,'node.log'), 'a');
+			    		var run_process = spawn( script_path, [], {
+		                    // env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
+		                    //     'PATH':req.config.PATH, 
+		                    //     'PERL5LIB':req.config.PERL5LIB,
+		                    //     'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
+		                    //     },
 		                    detached: true, stdio: [ 'ignore', null, log ]		                
-		                } );  // stdin, stdout, stderr
+		                } );  // stdin, s
+			    		var output = '';
+			    		run_process.stdout.on('data', function (data) {
+								  //console.log('stdout: ' + data);
+								  data = data.toString().replace(/^\s+|\s+$/g, '');
+								  output += data;
+								  var lines = data.split('\n');
+								  for(var n in lines){
+								  	//console.log('line: ' + lines[n]);
+										if(lines[n].substring(0,4) == 'PID='){
+											console.log('pid line '+lines[n]);
+										}
+								  }
+							});
+			    		run_process.on('close', function (code) {
+							   console.log('gast_process process exited with code ' + code);
+							   var ary = output.split("\n");
+							   var last_line = ary[ary.length - 1];
+							   if(code === 0){
+								   console.log('GAST Success');
+								   //console.log('PID last line: '+last_line)
+								   var ll = last_line.split('=');
+								   var pid = ll[1];
+								   console.log('NEW PID=: '+pid);
+								   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+								   if(helpers.isInt(pid)){
 
+					            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
+										    if (err)  {
+									 		  	console.log('1-GAST-Query error: ' + err);				 		  			 
+									      } else {
+					        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
+					        				   		if (err)  {
+					        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  
+					        				    	} else {
+					                    													   
+																	helpers.assignment_finish_request(res,rows1,rows2,status_params);
+																	status_params.status = status_params.statusOK;
+																	status_params.msg    = status_params.msgOK;
+																	helpers.update_status(status_params);
 
-		var output = '';
-		// communicating with an external python process
-		// all the print statements in the py script are printed to stdout
-		// so you can grab the projectID here at the end of the process.
-		// use looging in the script to log to a file.
-		gast_process.stdout.on('data', function (data) {
-		  //console.log('stdout: ' + data);
-		  data = data.toString().replace(/^\s+|\s+$/g, '');
-		  output += data;
-		  var lines = data.split('\n');
-		  for(var n in lines){
-		  	//console.log('line: ' + lines[n]);
-			if(lines[n].substring(0,4) == 'PID='){
-				console.log('pid line '+lines[n]);
-			}
-		  }
+																	ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
+					        				    	}
+
+					        				   	});
+										   	} // end else
+
+									   });
+
+						           }else{ // end if int
+					                   console.log('ERROR pid is not an integer: '+pid.toString());
+								   }
+							   }else{
+							   		// ERROR
+								   console.log('ERROR last line: '+last_line);
+						   	  		//req.flash('message', 'Script Error');
+						         	//res.redirect("/user_data/your_projects");
+							   }
+							});  // end gast_process ON Close
+			    		
+			    }
+			});
+
 		});
+		
+	status_params.status = status_params.statusSUCCESS;
+	status_params.msg    = status_params.msgSUCCESS;
+	helpers.update_status(status_params);
+	req.flash('successMessage', classifier+" has been started for project: '"+project+"'");
+  res.redirect("/user_data/your_projects");
+	
+////////////////////////////////////////////////////////////
+	// if(classifier == 'GAST' || classifier == 'gast'){
+		
+	// 	// var gast_options = {
+	//  //      scriptPath : req.C.PATH_TO_SCRIPTS,
 
-		gast_process.on('close', function (code) {
-		   console.log('gast_process process exited with code ' + code);
-		   var ary = output.split("\n");
-		   var last_line = ary[ary.length - 1];
-		   if(code === 0){
-			   console.log('GAST Success');
-			   //console.log('PID last line: '+last_line)
-			   var ll = last_line.split('=');
-			   var pid = ll[1];
-			   console.log('NEW PID=: '+pid);
-			   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-			   if(helpers.isInt(pid)){
+	//  //      args :       [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
+	//  //      							'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ]
+	//  //    };
+	//     console.log('CMD> '+gast_options.scriptPath+'/vamps_data_script.py '+gast_options.args.join(' '));
 
-            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
-					    if (err)  {
-				 		  	console.log('1-GAST-Query error: ' + err);				 		  			 
-				      } else {
-        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
-        				   		if (err)  {
-        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  
-        				    	} else {
-                      	status_params = {'type':'update',  'user':req.user.username,
-                                        'project':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' };
+		
+		
+
+		
+
+	// 	return;
+	// 	var gast_process = spawn( gast_options.scriptPath+'/vamps_data_script.py', gast_options.args, {
+	// 	                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
+	// 	                        'PATH':req.config.PATH, 
+	// 	                        'PERL5LIB':req.config.PERL5LIB,
+	// 	                        'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
+	// 	                        },
+	// 	                    detached: true, stdio: [ 'ignore', null, log ]		                
+	// 	                } );  // stdin, stdout, stderr
+
+
+	// 	var output = '';
+	// 	// communicating with an external python process
+	// 	// all the print statements in the py script are printed to stdout
+	// 	// so you can grab the projectID here at the end of the process.
+	// 	// use looging in the script to log to a file.
+	// 	gast_process.stdout.on('data', function (data) {
+	// 	  //console.log('stdout: ' + data);
+	// 	  data = data.toString().replace(/^\s+|\s+$/g, '');
+	// 	  output += data;
+	// 	  var lines = data.split('\n');
+	// 	  for(var n in lines){
+	// 	  	//console.log('line: ' + lines[n]);
+	// 		if(lines[n].substring(0,4) == 'PID='){
+	// 			console.log('pid line '+lines[n]);
+	// 		}
+	// 	  }
+	// 	});
+
+	// 	gast_process.on('close', function (code) {
+	// 	   console.log('gast_process process exited with code ' + code);
+	// 	   var ary = output.split("\n");
+	// 	   var last_line = ary[ary.length - 1];
+	// 	   if(code === 0){
+	// 		   console.log('GAST Success');
+	// 		   //console.log('PID last line: '+last_line)
+	// 		   var ll = last_line.split('=');
+	// 		   var pid = ll[1];
+	// 		   console.log('NEW PID=: '+pid);
+	// 		   console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+	// 		   if(helpers.isInt(pid)){
+
+ //            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
+	// 				    if (err)  {
+	// 			 		  	console.log('1-GAST-Query error: ' + err);				 		  			 
+	// 			      } else {
+ //        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
+ //        				   		if (err)  {
+ //        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  
+ //        				    	} else {
+ //                      	status_params = {'type':'update',  'user':req.user.username,
+ //                                        'project':project, 'status':'GAST-SUCCESS','msg':'GAST -Tax assignments' };
 								   
-												helpers.assignment_finish_request(res,rows1,rows2,status_params);
-												helpers.update_status(status_params);
+	// 											helpers.assignment_finish_request(res,rows1,rows2,status_params);
+	// 											helpers.update_status(status_params);
 
-												ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
+	// 											ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
 
 
-        				    	}
+ //        				    	}
 
-        				   	});
-					   	} // end else
+ //        				   	});
+	// 				   	} // end else
 
-				   });
+	// 			   });
 
-	           }else{ // end if int
-                   console.log('ERROR pid is not an integer: '+pid.toString());
-			   }
-		   }else{
-		   		// ERROR
-			   console.log('ERROR last line: '+last_line);
-	   	  		//req.flash('message', 'Script Error');
-	         	//res.redirect("/user_data/your_projects");
-		   }
-		});  // end gast_process ON Close
+	//            }else{ // end if int
+ //                   console.log('ERROR pid is not an integer: '+pid.toString());
+	// 		   }
+	// 	   }else{
+	// 	   		// ERROR
+	// 		   console.log('ERROR last line: '+last_line);
+	//    	  		//req.flash('message', 'Script Error');
+	//          	//res.redirect("/user_data/your_projects");
+	// 	   }
+	// 	});  // end gast_process ON Close
 
 
 	  
-		// called imediately
-		req.flash('successMessage', "GAST has been started for project: '"+project+"'");
-     res.redirect("/user_data/your_projects");
+	// 	// called imediately
+	// 	req.flash('successMessage', "GAST has been started for project: '"+project+"'");
+ //     res.redirect("/user_data/your_projects");
 
 
 
 
-	}else if(classifier == 'RDP' || classifier == 'rdp'){
-		status_params = {'type':'update', 'user':req.user.username,
-                     'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' };
-		helpers.update_status(status_params);
+	// }else if(classifier == 'RDP' || classifier == 'rdp'){
+	// 	status_params = {'type':'update', 'user':req.user.username,
+ //                     'project':project,     'status':'OK-RDP',	'msg':'Starting RDP' };
+	// 	helpers.update_status(status_params);
 
-		var rdp_options = {
-	      scriptPath : req.C.PATH_TO_SCRIPTS,
-	      args :       [ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project,
-	      							'-process_dir',process.env.PWD, '-project_dir', data_dir, 
-	      							'-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,
-	      							'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],
-	    };
-
-
-	  console.log('CMD> '+rdp_options.scriptPath+'/vamps_data_script.py '+rdp_options.args.join(' '));
-
-		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
-		var rdp_process = spawn( rdp_options.scriptPath+'/vamps_data_script.py', rdp_options.args, {
-		                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
-		                    detached: true, stdio: [ 'ignore', null, log ]		                
-		                } );  // stdin, stdout, stderr
+	// 	var rdp_options = {
+	//       scriptPath : req.C.PATH_TO_SCRIPTS,
+	//       args :       [ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project,
+	//       							'-process_dir',process.env.PWD, '-project_dir', data_dir, 
+	//       							'-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,
+	//       							'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],
+	//     };
 
 
-		var output = '';
-		// communicating with an external python process
-		// all the print statements in the py script are printed to stdout
-		// so you can grab the projectID here at the end of the process.
-		// use looging in the script to log to a file.
-		rdp_process.stdout.on('data', function (data) {
-		  //console.log('stdout: ' + data);
-		  data = data.toString().replace(/^\s+|\s+$/g, '');
-		  output += data;
-		  var lines = data.split('\n');
-		  for(var n in lines){
-		  	console.log('line: ' + lines[n]);
-			if(lines[n].substring(0,4) == 'PID='){
-				console.log('pid line '+lines[n]);
-			}
-		  }
-		});
+	//   console.log('CMD> '+rdp_options.scriptPath+'/vamps_data_script.py '+rdp_options.args.join(' '));
 
-		rdp_process.on('close', function (code) {
-		   console.log('rdp_process process exited with code ' + code);
-		   var ary = output.split("\n");
-		   var last_line = ary[ary.length - 1];
-		   if(code === 0){
-			   console.log('RDP Success');
-			   //console.log('PID last line: '+last_line)
-			   var ll = last_line.split('=');
-			   var pid = ll[1];
-			   console.log('NEW PID=: '+pid);
-			   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-			   if(helpers.isInt(pid)){
-
-           connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){
-					   if (err)  {
-				 		  console.log('1-RDP-Query error: ' + err);				 		  				 
-				       } else {
-        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  
-        				      if (err)  {
-        				 		  		console.log('2-RDP-Query error: ' + err);        				 		  
-        				      } else {
-													status_params = {'type':'update', 'user':req.user.username,
-													               'project':project, 'status':'OK-RDP',	'msg':'Finished RDP'  };
-
-													helpers.assignment_finish_request(res,rows1,rows2,status_params);
-													helpers.update_status(status_params);
-
-													ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
-
-											}
-
-        				   });
-
-					   } // end else
-
-				   });
-
-	           }else{ // end if int
-                   console.log('ERROR pid is not an integer: '+pid.toString());
-			   }
-		   }else{
-		   		// ERROR
-			   console.log('ERROR last line: '+last_line);
-	   	  		//req.flash('message', 'Script Error');
-	         	//res.redirect("/user_data/your_projects");
-		   }
-		});  // end gast_process ON Close
+	// 	var spawn = require('child_process').spawn;
+	// 	var log = fs.openSync(path.join(data_dir,'node.log'), 'a');
+	// 	var rdp_process = spawn( rdp_options.scriptPath+'/vamps_data_script.py', rdp_options.args, {
+	// 	                    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH, 'PERL5LIB':req.config.PERL5LIB},
+	// 	                    detached: true, stdio: [ 'ignore', null, log ]		                
+	// 	                } );  // stdin, stdout, stderr
 
 
-		req.flash('successMessage', "RDP has been started for project: '"+project+"'");
-		res.redirect("/user_data/your_projects");
+	// 	var output = '';
+	// 	// communicating with an external python process
+	// 	// all the print statements in the py script are printed to stdout
+	// 	// so you can grab the projectID here at the end of the process.
+	// 	// use looging in the script to log to a file.
+	// 	rdp_process.stdout.on('data', function (data) {
+	// 	  //console.log('stdout: ' + data);
+	// 	  data = data.toString().replace(/^\s+|\s+$/g, '');
+	// 	  output += data;
+	// 	  var lines = data.split('\n');
+	// 	  for(var n in lines){
+	// 	  	console.log('line: ' + lines[n]);
+	// 		if(lines[n].substring(0,4) == 'PID='){
+	// 			console.log('pid line '+lines[n]);
+	// 		}
+	// 	  }
+	// 	});
 
-	}else{
+	// 	rdp_process.on('close', function (code) {
+	// 	   console.log('rdp_process process exited with code ' + code);
+	// 	   var ary = output.split("\n");
+	// 	   var last_line = ary[ary.length - 1];
+	// 	   if(code === 0){
+	// 		   console.log('RDP Success');
+	// 		   //console.log('PID last line: '+last_line)
+	// 		   var ll = last_line.split('=');
+	// 		   var pid = ll[1];
+	// 		   console.log('NEW PID=: '+pid);
+	// 		   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+	// 		   if(helpers.isInt(pid)){
 
-	}
+ //           connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1){
+	// 				   if (err)  {
+	// 			 		  console.log('1-RDP-Query error: ' + err);				 		  				 
+	// 			       } else {
+ //        				   connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2){  
+ //        				      if (err)  {
+ //        				 		  		console.log('2-RDP-Query error: ' + err);        				 		  
+ //        				      } else {
+	// 												status_params = {'type':'update', 'user':req.user.username,
+	// 												               'project':project, 'status':'OK-RDP',	'msg':'Finished RDP'  };
+
+	// 												helpers.assignment_finish_request(res,rows1,rows2,status_params);
+	// 												helpers.update_status(status_params);
+
+	// 												ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
+
+	// 										}
+
+ //        				   });
+
+	// 				   } // end else
+
+	// 			   });
+
+	//            }else{ // end if int
+ //                   console.log('ERROR pid is not an integer: '+pid.toString());
+	// 		   }
+	// 	   }else{
+	// 	   		// ERROR
+	// 		   console.log('ERROR last line: '+last_line);
+	//    	  		//req.flash('message', 'Script Error');
+	//          	//res.redirect("/user_data/your_projects");
+	// 	   }
+	// 	});  // end gast_process ON Close
+
+
+	// 	req.flash('successMessage', "RDP has been started for project: '"+project+"'");
+	// 	res.redirect("/user_data/your_projects");
+
+	// }else{
+
+	// }
 
 
 });
@@ -2263,6 +2390,74 @@ function create_fasta_file(req, pids){
 		res.send(file_name);
 
 }
+function get_local_script_text(log, site, code, cmd_list) {
+	    //### Create Cluster Script
+    script_text = "#!/bin/sh\n\n";
+    script_text += "# CODE:\t$code\n\n";
+    //script_text += "# source environment:\n";  
+    //script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";    
+    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+           
+    script_text += 'echo -n "Hostname: "'+"\n";
+    script_text += "hostname\n";
+    script_text += 'echo -n "Current working directory: "'+"\n";
+    script_text += "pwd\n\n";
+    for(i in cmd_list){
+        script_text += cmd_list[i]+"\n"; 
+    }
+    //script_text += "chmod 666 "+log+"\n";
 
+    //##### END  create command
+    
+    return script_text;
+}
+//
+//
+//
+function get_qsub_script_text(log, site, code, cmd_list){
+    
+    //### Create Cluster Script
+    script_text = "#!/bin/sh\n\n";
+    script_text += "# CODE:\t$code\n\n";
+    script_text += "# source environment:\n";  
+    script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";    
+    script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
+    script_text += "# Loading Module didn't work when testing:\n"; 
+    //$script_text .= "LOGNAME=test-output-$TSTAMP.log\n";
+    script_text = "# . /usr/share/Modules/init/sh\n";
+    script_text += "# export MODULEPATH=/usr/local/www/vamps/software/modulefiles\n";
+    script_text += "# module load clusters/vamps\n\n";
+    script_text += "cd /groups/vampsweb/tmp\n\n";
+    script_text += "function status() {\n";
+    script_text += "   qstat -f\n";
+    script_text += "}\n\n";
+    script_text += "function submit_job() {\n";
+    script_text += "cat<<END | qsub\n";
+    script_text += "#!/bin/bash\n";
+    script_text += "#$ -j y\n";
+    script_text += "#$ -o "+log+"\n";
+    script_text += "#$ -e "+log+"\n";
+    script_text += "#$ -N vp"+code+"\n";
+    script_text += "#$ -cwd\n";
+    script_text += "#$ -V\n";
+    script_text += 'echo -n "Hostname: "'+"\n";
+    script_text += "hostname\n";
+    script_text += 'echo -n "Current working directory: "'+"\n";
+    script_text += "pwd\n\n";
+    script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";
+    for(i in cmd_list){
+        script_text += cmd_list[i]+"\n"; 
+    }
+    script_text += "chmod 666 "+log+"\n";
+    //$script_text .= "sleep 120\n";   # for testing
+    script_text += "END\n";
+    script_text += "}\n";
+    script_text += "status\n";  //#  status will show up in export.out
+    script_text += "submit_job\n";
+    //##### END  create command
+    
+    return script_text;
+    
+}
 
 module.exports = router;

@@ -333,7 +333,7 @@ if __name__ == '__main__':
     import argparse
     
     
-    myusage = """usage: upload_metadata_to_database.py  [options]
+    myusage = """usage: vamps_script_upload_metadata.py  [options]
          
          
          where

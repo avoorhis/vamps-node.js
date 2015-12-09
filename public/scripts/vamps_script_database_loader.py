@@ -140,7 +140,7 @@ def start(args):
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
-        print "ERROR res[0]"
+        print "ERROR res[0] -- Exiting (project name already taken)"
         sys.exit(res[1])
     else:
         logging.info("recreating ranks")
@@ -181,7 +181,13 @@ def start(args):
         logging.info("Finished "+os.path.basename(__file__))
         print "Finished "+os.path.basename(__file__)
         print CONFIG_ITEMS['project_id']
+        print 'Writing pid to pid.txt'
+        fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
+        fp.write(str(CONFIG_ITEMS['project_id']))
+        fp.close()
+
         return CONFIG_ITEMS['project_id']
+        
     
 def check_user():
     """
@@ -740,7 +746,7 @@ if __name__ == '__main__':
     import argparse
     
     
-    myusage = """usage: upload_project_to_database.py  [options]
+    myusage = """usage: vamps_script_database_loader.py  [options]
          
        uploads to new vamps  
          where
