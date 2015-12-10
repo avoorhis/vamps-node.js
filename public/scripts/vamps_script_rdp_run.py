@@ -40,9 +40,9 @@ def start_rdp(args):
     sys.path.append(os.path.join(args.process_dir,'public','scripts'))
 
     import rdp.rdp as rdp
-    logging.debug('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -project_dir '+args.project_dir+' -process_dir '+args.process_dir+' -path_to_classifier '+args.path_to_classifier+' -ref_db '+args.ref_db_dir)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' --config '+args.config+' -project_dir '+args.project_dir+' -pdir '+args.process_dir+' -path_to_classifier '+args.path_to_classifier+' -ref_db '+args.ref_db_dir)
-    logging.debug(args)
+    logging.info('CMD> '+' '.join(sys.argv))
+    print 'CMD> ',sys.argv
+    
     datasets = {}
     info_load_infile = args.config
     if not os.path.isfile(info_load_infile):

@@ -70,7 +70,8 @@ def start_gast(args):
     """
       Doc string
     """
-    
+    logging.info('CMD> '+' '.join(sys.argv))
+    print 'CMD> ',sys.argv
     use_local_pipeline = False
     if args.site == 'vamps' or args.site == 'vampsdev':
         sys.path.append(os.path.join('/','groups','vampsweb','py_mbl_sequencing_pipeline'))

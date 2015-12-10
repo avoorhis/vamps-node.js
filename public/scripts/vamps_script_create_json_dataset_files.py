@@ -110,8 +110,9 @@ queries = [{"rank":"domain","query":domain_query},
 
 def go_add(args):
     
-    logging.info('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -process_dir '+args.process_dir)
-    print('CMD> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -pid '+str(args.pid)+' -process_dir '+args.process_dir)
+    logging.info('CMD> '+' '.join(sys.argv))
+    print 'CMD> ',sys.argv
+    
     print args
 
 

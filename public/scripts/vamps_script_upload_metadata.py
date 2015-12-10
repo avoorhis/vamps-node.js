@@ -52,8 +52,8 @@ req_first_col = ['#SampleID','sample_name','dataset_name']
 
 def start_pipeline_load(args):
     global mysql_conn, cur
-    logging.debug('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir)
-    print('CMD:> '+args.process_dir+'/public/scripts/'+os.path.basename(__file__)+' -db '+args.NODE_DATABASE+' -project_dir '+args.project_dir)
+    logging.info('CMD> '+' '.join(sys.argv))
+    print 'CMD> ',sys.argv
     NODE_DATABASE = args.NODE_DATABASE
     mysql_conn = MySQLdb.connect(db = NODE_DATABASE,   read_default_file=os.path.expanduser("~/.my.cnf_node")  )
                 
