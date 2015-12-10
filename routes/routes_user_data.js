@@ -692,12 +692,15 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	if(req.C.hostname.substring(0,7) == 'bpcweb7'){
 	      var data_dir = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
 	      var py_script_path = '/groups/vampsweb/seqinfobin/new_vamps_scripts/';
+	      var host = 'vampsdev';
     }else if(req.C.hostname.substring(0,7) == 'bpcweb8'){
         var data_dir = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
         var py_script_path = '/groups/vampsweb/seqinfobin/new_vamps_scripts/';
+        var host = 'vamps';
     }else{
 	    	var data_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
 	    	var py_script_path = req.C.PATH_TO_SCRIPTS;
+	    	var host = 'localhost';
     }
     var config_file = path.join(data_dir,'config.ini');
 	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
@@ -707,9 +710,9 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ],
 		       rdp_run_args :        	[ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project, '-process_dir',process.env.PWD, 
 		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],		       													
-		       database_loader_args : [ '-class',classifier, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
-		       upload_metadata_args : [ '-project_dir', data_dir, '-db', NODE_DATABASE ],
-		       create_json_args :     [ '-process_dir', process.env.PWD, '-db', NODE_DATABASE, '-pid', '$pid' ]
+		       database_loader_args : [ '-class',classifier, '-host', host, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
+		       upload_metadata_args : [ '-project_dir', data_dir, '-host', host, '-db', NODE_DATABASE ],
+		       create_json_args :     [ '-process_dir', process.env.PWD, '-host', host, '-db', NODE_DATABASE, '-pid', '$pid' ]
 		     };
 		 
 		 if(classifier.toUpperCase() == 'GAST'){

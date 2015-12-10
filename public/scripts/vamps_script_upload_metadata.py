@@ -55,9 +55,9 @@ def start_pipeline_load(args):
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
     NODE_DATABASE = args.NODE_DATABASE
-    mysql_conn = MySQLdb.connect(db = NODE_DATABASE,   read_default_file=os.path.expanduser("~/.my.cnf_node")  )
-                
-                
+    
+    
+    mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
     indir = args.project_dir
     csv_infile =   os.path.join(indir,'metadata_clean.csv')
@@ -373,7 +373,9 @@ if __name__ == '__main__':
     parser.add_argument("-infile", "--infile",    
                 required=False,  action="store",   dest = "infile", default='',
                 help = '') 
-
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "hostname", default='localhost',
+                help = '')
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    

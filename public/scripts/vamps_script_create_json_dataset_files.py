@@ -36,8 +36,7 @@ GROUP BY dataset_id, domain_id, phylum_id
 """
 
 
-db = MySQLdb.connect( read_default_file=os.path.expanduser("~/.my.cnf_node")  ) 
-cur = db.cursor()
+
 
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
@@ -112,14 +111,16 @@ def go_add(args):
     
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
-    
-    print args
-
-
     NODE_DATABASE = args.NODE_DATABASE
+    global mysql_conn, cur
+    
+    mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    cur = mysql_conn.cursor()
+
+    
     pid = args.pid
     process_dir = args.process_dir
-    cur.execute("USE "+NODE_DATABASE)
+    
     counts_lookup = {}
     prefix = os.path.join(args.process_dir,'public','json',NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
@@ -242,7 +243,7 @@ def go_required_metadata(did_sql):
 		metadata_lookup_per_dsid[dsid][metadataName] = value			
 
 	"""
-	
+	global mysql_conn, cur
 	req_metadata_lookup = {}
 	query = req_query % (did_sql)
 	cur.execute(query)
@@ -265,7 +266,7 @@ def go_required_metadata(did_sql):
 	
 def go_custom_metadata(did_list,pid,metadata_lookup):
 	
-    
+    global mysql_conn, cur
     field_collection = ['dataset_id']
     query = cust_pquery % (pid)
     cur.execute(query)
@@ -346,16 +347,16 @@ def read_original_metadata(args):
 #     return counts_lookup
     
 def get_dataset_ids(pid):
-    print str(db)
-    print str(cur)
-    cur.execute('SELECT DATABASE()')
-    dbase= cur.fetchone()
-    print 'dbase',dbase[0]
-    
+    # print str(db)
+    # print str(cur)
+    # cur.execute('SELECT DATABASE()')
+    # dbase= cur.fetchone()
+    # print 'dbase',dbase[0]
+    global mysql_conn, cur
     q = "SELECT dataset_id from dataset where project_id='%s'"  % (pid) 
     print q
     cur.execute(q)
-    db.commit()
+    mysql_conn.commit()
     dids = []
     numrows = cur.rowcount
     if numrows == 0:
@@ -405,9 +406,9 @@ if __name__ == '__main__':
                required=False,  action="store_true",   dest = "add", default='',
                help="""ProjectID""")
                
-    # parser.add_argument("-list","--list",                   
-    #            required=False,  action="store_true",   dest = "list", default='',
-    #            help="""ProjectID""") 
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "hostname", default='localhost',
+                help = '')
     parser.add_argument("-db","--database",                   
                required=True,  action="store",   dest = "NODE_DATABASE", default='',
                help="""ProjectID""")  

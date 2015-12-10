@@ -109,21 +109,19 @@ def start(args):
     SUMMED_TAX_COLLECTOR = {} 
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
-    
+
     NODE_DATABASE = args.NODE_DATABASE
 
     
     process_dir = args.process_dir
     classifier = args.classifier
     
-    global mysql_conn
-    global cur
-    
-    
+    global mysql_conn, cur    
    
     os.chdir(args.project_dir)
     
     mysql_conn = MySQLdb.connect(db = NODE_DATABASE,  read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    # socket=/tmp/mysql.sock
     cur = mysql_conn.cursor()
     
     
@@ -195,8 +193,7 @@ def check_user():
       the owner/user (from config file) must be present in 'user' table for script to continue
     """
     global CONFIG_ITEMS
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     q = "select user_id from user where username='"+CONFIG_ITEMS['owner']+"'"
     cur.execute(q)
     numrows = int(cur.rowcount)
@@ -211,8 +208,7 @@ def check_project():
       the owner/user (from config file) must be present in 'user' table for script to continue
     """
     global CONFIG_ITEMS
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     proj = CONFIG_ITEMS['project']
     q = "SELECT project from project WHERE project='%s'" % (proj)
     cur.execute(q)
@@ -221,15 +217,13 @@ def check_project():
     return ('OK','')
            
 def create_env_source():
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
     cur.execute(q)
     mysql_conn.commit()
 
 def create_classifier():
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     q = "INSERT IGNORE INTO classifier VALUES" # (1,'GAST','ITS1'),(2,'GAST','SILVA108_FULL_LENGTH'),(3,'GAST','GG_FEB2011'),(4,'GAST','GG_MAY2013'),"
     for classifier in classifiers:
         for db in classifiers[classifier]:
@@ -243,8 +237,7 @@ def create_classifier():
 def recreate_ranks():
     
     global RANK_COLLECTOR
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     for i,rank in enumerate(ranks):
         
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('%s','%s')" % (rank,str(i))
@@ -263,8 +256,7 @@ def recreate_ranks():
 
 def push_project():
     global CONFIG_ITEMS
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     desc = "Project Description"
     title = "Title"
     proj = CONFIG_ITEMS['project']
@@ -295,8 +287,7 @@ def push_project():
 def push_dataset():
     global CONFIG_ITEMS    
     global DATASET_ID_BY_NAME
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s')"
@@ -328,8 +319,7 @@ def push_pdr_seqs(args):
 
     global SEQ_COLLECTOR
     global DATASET_ID_BY_NAME
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             did = DATASET_ID_BY_NAME[ds]
@@ -366,8 +356,7 @@ def push_sequences(args):
     #print
     
     global SEQ_COLLECTOR
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     for ds in SEQ_COLLECTOR:
         for seq in SEQ_COLLECTOR[ds]:
             q = "INSERT ignore into sequence (sequence_comp) VALUES (COMPRESS('%s'))" % (seq)
@@ -430,8 +419,7 @@ def push_sequences(args):
 def push_taxonomy(args):
     
     global SUMMED_TAX_COLLECTOR
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     indir = args.project_dir
     classifier = args.classifier
     
@@ -581,8 +569,7 @@ def finish_tax(ds,refhvr_ids, rank, distance, seq, seq_count, tax_items):
     global RANK_COLLECTOR
     global TAX_ID_BY_RANKID_N_TAX
     global SUMMED_TAX_COLLECTOR
-    global mysql_conn
-    global cur
+    global mysql_conn, cur
     tax_string = ';'.join(tax_items)       
     if ds not in SUMMED_TAX_COLLECTOR:
         SUMMED_TAX_COLLECTOR[ds]={}
@@ -791,7 +778,9 @@ if __name__ == '__main__':
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
                 help = '')         
-    
+    parser.add_argument("-host", "--host",    
+                required=False,  action="store",   dest = "hostname", default='localhost',
+                help = '')
     parser.add_argument("-process_dir", "--process_dir",    
                 required=False,  action="store",   dest = "process_dir", default='',
                 help = '')
