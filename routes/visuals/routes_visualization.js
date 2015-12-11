@@ -160,11 +160,13 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  TAXCOUNTS = {};
 	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
-	  if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
-      var file_prefix = path.join('/','groups','vampsweb','vampsdev_user_data',"VAMPS--datasets");
-    }else{
-      var file_prefix = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets");
-    }
+	  var file_prefix = path.join(req.CONFIG.USER_FILES_BASE,"VAMPS--datasets");
+    
+    // if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+    //   var file_prefix = path.join('/','groups','vampsweb','vampsdev_user_data',"VAMPS--datasets");
+    // }else{
+    //   var file_prefix = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets");
+    // }
     for(var i in dataset_ids){
       var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
      try{
