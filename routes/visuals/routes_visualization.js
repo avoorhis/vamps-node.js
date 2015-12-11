@@ -114,7 +114,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 metadata  :           JSON.stringify(metadata),
                                 constants :           JSON.stringify(req.CONSTS),
                                 post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,hostname: req.CONFIG.hostname,
+                                user      :           req.user,
+                                hostname  : req.CONFIG.hostname,
 	                          //locals: {flash: req.flash('infomessage')},
                                 message   : req.flash('message')
                  });
