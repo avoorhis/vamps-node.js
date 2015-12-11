@@ -279,9 +279,19 @@ if __name__ == '__main__':
           in searches
         
     """
+    parser = argparse.ArgumentParser(description="" ,usage=myusage)   
+    parser.add_argument("-file_path", "--file_path",        
+                required=False,  action='store', dest = "file_path",  default='../', 
+                help="")
+    parser.add_argument("-host", "--host",    
+                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                help="")
+    args = parser.parse_args() 
     warnings = []
-    db = MySQLdb.connect( host="localhost", # your host, usually localhost
-             read_default_file="~/.my.cnf" # you can use another ini file, for example .my.cnf_node
+    
+
+    db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
+             read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
            )
     cur = db.cursor()
     cur.execute("SHOW databases")
@@ -308,12 +318,21 @@ if __name__ == '__main__':
     out_file = "tax_counts--"+NODE_DATABASE+".json"
     
     print 'DATABASE:',NODE_DATABASE 
-    print "This may take awhile...."    
+       
     args = parser.parse_args()
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
-    args.json_dir = os.path.join("../","json")
+    args.json_dir = os.path.join(args.file_path,'json')
+    if not os.path.exists(args.json_dir):
+        print "Could not find json directory: '",args.json_dir,"'-Exiting"
+        sys.exit(-1)
+    print "This may take awhile...." 
+    #args.json_dir = os.path.join("../","json")
     args.files_prefix   = os.path.join(args.json_dir,NODE_DATABASE+"--datasets")
     args.taxcounts_file = os.path.join(args.json_dir,NODE_DATABASE+"--taxcounts.json")
     args.metadata_file  = os.path.join(args.json_dir,NODE_DATABASE+"--metadata.json")
+    print args.files_prefix , args.taxcounts_file,args.metadata_file
     go(args)
+
+
+

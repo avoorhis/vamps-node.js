@@ -22,7 +22,6 @@ import time
 import random
 import csv
 import ConfigParser
-#sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
 from IlluminaUtils.lib import fastalib
 import datetime
 today = str(datetime.date.today())
@@ -59,7 +58,7 @@ def clean(args):
         did = str(row[0])
         dids.append(did)
         pid = row[1]
-        did_file = os.path.join(args.process_dir,'public','json', NODE_DATABASE+'--datasets', did+'.json')
+        did_file = os.path.join(args.file_base, did+'.json')
         print did_file
         try:
             os.remove(did_file)
@@ -188,7 +187,7 @@ if __name__ == '__main__':
             
            -pid/--project_id        clean this pid only
            -p/--project_name        clean this name only
-           
+           -host/--host
            -all/--all               Remove ALL Data for fresh install
                                     Be Careful -- will remove ALL data from db
             
@@ -207,12 +206,16 @@ if __name__ == '__main__':
                 required=False,  action='store', dest = "project",  default='',
                 help="Project name") 
     
-    
     parser.add_argument("-all", "--all",          
                 required=False,  action='store_true', dest = "all",  default=False,
                 help=" ") 
-    parser.add_argument("-pdir", "--process_dir",                   
-               required=False,  action="store",   dest = "process_dir", default='/Users/avoorhis/programming/vamps-node.js/',
+    
+    parser.add_argument("-host", "--host",    
+                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                help="")
+    
+    parser.add_argument("-process_dir", "--process_dir",                   
+               required=False,  action="store",   dest = "process_dir", default='/',
                help="""ProjectID""")            
        
                           
@@ -223,8 +226,8 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today())    
     
     
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf"  )
+    db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
+                             read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
@@ -241,11 +244,21 @@ if __name__ == '__main__':
         
     print
     cur.execute("USE "+NODE_DATABASE)
+    if args.host == 'vampsdev':
+        args.file_base = os.path.join('/','groups','vampsweb','vampsdev_node_data','json', NODE_DATABASE+'--datasets')
+    else:
+        args.file_base = os.path.join('../json', NODE_DATABASE+'--datasets')
+    if not os.path.exists(args.file_base):
+        print "Could not find datasets directory: '",args.file_base,"'-Exiting"
+        sys.exit(-1)
     if args.all:
-        if NODE_DATABASE == 'vamps_js_development':
-            sys.exit('You cannot delete all from '+NODE_DATABASE)
-        else:
+        all_really = input("\nDo you REALLY want to delete all??? from: "+NODE_DATABASE+ ' (y/N)')
+        if all_really == 'y' or all_really == 'y':
             clean_all(args)
+        else:
+            print 'No Delete --Exiting' 
+            sys.exit(-1) 
+            
     else:
         print 'Database:',NODE_DATABASE
         if not args.pid and not args.project:
