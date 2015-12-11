@@ -291,7 +291,7 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // when 'toggle open button is activated'
     fxn = req.body.fxn;
   //console.log('XX'+JSON.stringify(req.body));
-  var file_path = path.join('user_data',NODE_DATABASE,req.body.user,req.body.filename);
+  var file_path = path.join(req.CONFIG.USER_FILES_BASE,req.body.user,req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
   fs.readFile(file_path, 'utf8',function(err,data) {
@@ -1387,9 +1387,9 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
   console.log(req.body);
   console.log('req.body: save_datasets');
 	
-	var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,req.body.filename);
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
-	helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username)); // create dir if not present
+	var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,req.body.filename);
+	helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
+	helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
 	//console.log(filename);
 	helpers.write_to_file(filename_path,req.body.datasets);
 		
@@ -1409,7 +1409,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
-      var saved_datasets_dir = path.join('user_data',NODE_DATABASE,req.user.username);
+      var saved_datasets_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
       file_info = {};
       modify_times = [];

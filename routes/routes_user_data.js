@@ -1778,7 +1778,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
-			var original_taxbyseqfile = path.join(process.env.PWD, 'tmp',req.files[0].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
+			var original_taxbyseqfile = path.join(process.env.PWD, 'tmp',req.files[0].filename); 
 			console.log(original_taxbyseqfile);
 			var original_metafile  = '';
 			try{
@@ -2003,7 +2003,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   // }else{
   //       var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
   // }
-  helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+  helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); 
   helpers.mkdirSync(user_dir);  // create dir if not exists
   var file_name;
   var out_file_path;
@@ -2101,8 +2101,8 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
   var timestamp = +new Date();  // millisecs since the epoch!
 
 
-var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
-helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+helpers.mkdirSync(req.CONFIG.USER_FILES_BASE));
 helpers.mkdirSync(user_dir);  // create dir if not exists
 var dids;
 var project;
@@ -2364,7 +2364,7 @@ function create_fasta_file(req, pids){
   //       }else{
 		//     var user_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username);
 		// }
-		helpers.mkdirSync(path.join('user_data',NODE_DATABASE));
+		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
 		helpers.mkdirSync(user_dir);  // create dir if not exists
 		var file_name;
 		var out_file_path;
