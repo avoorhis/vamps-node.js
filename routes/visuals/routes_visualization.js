@@ -160,8 +160,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  TAXCOUNTS = {};
 	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
-	  var file_prefix = path.join(req.CONFIG.USER_FILES_BASE,"VAMPS--datasets");
-    
+	  var file_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+
     // if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
     //   var file_prefix = path.join('/','groups','vampsweb','vampsdev_user_data',"VAMPS--datasets");
     // }else{
