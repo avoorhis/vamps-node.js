@@ -1,4 +1,4 @@
-var constants = require(app_root + '/public/constants');
+var CONSTS = require(app_root + '/public/constants');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
@@ -79,7 +79,7 @@ module.exports.elapsed_time = function(note){
     console.log(process.hrtime(module.exports.start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 };
 
-var ranks = constants.RANKS;
+var ranks = CONSTS.RANKS;
 
 // todo: use in file instead of those in the class
 module.exports.check_if_rank = function(field_name)

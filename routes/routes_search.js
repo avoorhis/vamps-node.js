@@ -119,9 +119,9 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
       console.log(datasets);
       var timestamp = +new Date();  // millisecs since the epoch!
       var filename = 'datasets:'+timestamp+'.json';
-      var filename_path = path.join('user_data',NODE_DATABASE,req.user.username,filename);
-      helpers.mkdirSync(path.join('user_data',NODE_DATABASE));  // create dir if not present
-      helpers.mkdirSync(path.join('user_data',NODE_DATABASE,req.user.username)); // create dir if not present
+      var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
+      helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);  // create dir if not present
+      helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
       //console.log(filename);
       helpers.write_to_file(filename_path,JSON.stringify(datasets));
       msg = "<a href='/visuals/saved_datasets'>"+filename+"</a>";

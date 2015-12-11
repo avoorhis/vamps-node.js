@@ -4,17 +4,17 @@
 
 /*jshint multistr: true */
 
-var constants = require(app_root + '/public/constants');
+var CONSTS = require(app_root + '/public/constants');
 var helpers = require('./helpers');
 var fs = require('fs');
 
 // Private
 var taxon_name_id = 1;
-var ranks = constants.RANKS;
+var ranks = CONSTS.RANKS;
 
 function make_dictMap_by_rank(tags) {
   var dictMap_by_rank = {};
-  // var ranks = constants.RANKS;
+  // var ranks = CONSTS.RANKS;
   ranks.forEach(function(rank) {
     dictMap_by_rank[rank] = [];
   });

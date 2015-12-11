@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var extend = require('util')._extend;
 //var COMMON  = require('./routes_common');
-var C = require('../../public/constants');
+var CONSTS = require('../../public/constants');
 //var HMAP    = require('./routes_distance_heatmap');
 //var DEND    = require('./routes_dendrogram');
 //var PCOA    = require('./routes_pcoa');
@@ -51,9 +51,9 @@ module.exports = {
     //  user: req.user
     html += "<form name='' method='GET'>";
     if( visual === 'heatmap' || visual === 'dendrogram' || visual === 'pcoa' ) {
-      //console.log(C.DISTANCECHOICES)
+      //console.log(CONSTS.DISTANCECHOICES)
       var viz_page = 'selected_distance';
-      var distrows = C.DISTANCECHOICES.choices;
+      var distrows = CONSTS.DISTANCECHOICES.choices;
       html += '<li>Change Distance Metric: ';
       html += "<select name='selected_distance' class='small_font'>";
       for (var d in distrows ) {
@@ -98,22 +98,22 @@ module.exports = {
     html += '<li>Limit view based on count percentage: &nbsp;&nbsp;&nbsp;';
      
      html += "MIN <select name='min_range' class='small_font'>";
-     for( var n=0;n < C.PCT_RANGE.length-1;n++ ) {
-       if(obj.min_range.toString() === C.PCT_RANGE[n].toString()) {
-         html += "<option value='"+C.PCT_RANGE[n]+"' selected='selected'>"+C.PCT_RANGE[n]+" %</option>";
+     for( var n=0;n < CONSTS.PCT_RANGE.length-1;n++ ) {
+       if(obj.min_range.toString() === CONSTS.PCT_RANGE[n].toString()) {
+         html += "<option value='"+CONSTS.PCT_RANGE[n]+"' selected='selected'>"+CONSTS.PCT_RANGE[n]+" %</option>";
        }else{
-         html += "<option value='"+C.PCT_RANGE[n]+"'>"+C.PCT_RANGE[n]+" %</option>";
+         html += "<option value='"+CONSTS.PCT_RANGE[n]+"'>"+CONSTS.PCT_RANGE[n]+" %</option>";
        }       
      }
     html += "</select>";
     html += "&nbsp;&nbsp;&nbsp; MAX <select name='max_range' class='small_font'>";
     // TODO: "'n' is already defined."
-     for (var n1=1; n1 < C.PCT_RANGE.length; n1++ ) {
+     for (var n1=1; n1 < CONSTS.PCT_RANGE.length; n1++ ) {
        
-       if(obj.max_range.toString() === C.PCT_RANGE[n1].toString()) {
-         html += "<option value='"+C.PCT_RANGE[n1]+"' selected='selected'>"+C.PCT_RANGE[n1]+" %</option>";
+       if(obj.max_range.toString() === CONSTS.PCT_RANGE[n1].toString()) {
+         html += "<option value='"+CONSTS.PCT_RANGE[n1]+"' selected='selected'>"+CONSTS.PCT_RANGE[n1]+" %</option>";
        }else{
-         html += "<option value='"+C.PCT_RANGE[n1]+"'>"+C.PCT_RANGE[n1]+" %</option>";
+         html += "<option value='"+CONSTS.PCT_RANGE[n1]+"'>"+CONSTS.PCT_RANGE[n1]+" %</option>";
        }
      }
     html += "</select></li>";
@@ -205,7 +205,7 @@ module.exports = {
     
     var header = "\tDomain"
     for(r = 1; r <= rank_num; r++){  
-      rank = C.RANKS[r]
+      rank = CONSTS.RANKS[r]
       if(rank == 'klass'){ rank = 'Class'}
       rank = rank[0].toUpperCase() + rank.slice(1)
       header += "\t"+rank;
@@ -386,7 +386,7 @@ create_new_chosen_id_name_hash: function(dataset_list) {
 //
 
 get_metadata_selection: function(dataset_ids, metadata, type) {
-    req_metadata = C.REQ_METADATA_FIELDS;
+    req_metadata = CONSTS.REQ_METADATA_FIELDS;
     //console.log('req_metadata '+req_metadata)
     fields_lookup = {};
     for (var i in dataset_ids) {      
