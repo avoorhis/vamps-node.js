@@ -720,7 +720,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
-                             read_default_file="~/.my.cnf"  )
+                             read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")
     dbs = []
@@ -749,10 +749,10 @@ if __name__ == '__main__':
     if args.project and args.seqs_file and args.metadata_file:
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
-        print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'"
+        print "Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add' (-json_file_path; -host)"
         print "And re-start the server"
         logging.debug("Finished database_importer.py")
-        logging.debug("Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add'")
+        logging.debug("Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add' (-json_file_path; -host)")
         logging.debug("And re-start the server")
     else:
         print myusage 

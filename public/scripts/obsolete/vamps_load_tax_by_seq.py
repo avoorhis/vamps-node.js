@@ -328,17 +328,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
     
-    # parser.add_argument("-fa", "--fastafile",
-    #             required=True,  action='store', dest = "fastafile",  default='',
-    #             help="")
-    # parser.add_argument("-md", "--metafile",
-    #             required=True,  action='store', dest = "metafile",  default='',
-    #             help="")   
-    # parser.add_argument("-dir","--basedir",                   
-    # 			required=True,  action="store",   dest = "basedir", 
-    # 			help="""Directory to output ini and dir structure""")  
     
-   
                                                    
     parser.add_argument("-t", "--upload_type",
     			required=False,  action='store', dest = "upload_type",  default='',
@@ -382,6 +372,7 @@ if __name__ == '__main__':
     parser.add_argument('-use_tax', '--use_tax',         
                 required=False,   action="store_true",  dest = "use_tax",         
                 help = '')
+
     args = parser.parse_args() 
     args.ref_db_dir = 'none'   
     args.classifier = 'unknown' 
@@ -451,3 +442,4 @@ if __name__ == '__main__':
         
     if args.metadata_file:
         run_metadata(args)
+

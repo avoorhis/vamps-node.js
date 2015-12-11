@@ -46,6 +46,8 @@ required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date",
 test = ('434','0','y','1/27/14','0','GAZ:Canada','167.5926056','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y',
 '408170','human gut metagenome','American Gut Project Stool sample')
 test7 = ('434','ENVO:urban biome','ENVO:human-associated habitat','ENVO:feces','43.119339','-79.2458198','y')
+
+
 def start(args):
     get_config_data(args)
     get_metadata(args)
@@ -256,6 +258,7 @@ def combine(args):
         
     print outfile,'has been written'
     fp.close()
+
 if __name__ == '__main__':
     import argparse
     

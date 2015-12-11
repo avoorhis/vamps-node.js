@@ -116,9 +116,11 @@ def write_file(metadata_lookup, out_file):
 if __name__ == '__main__':
 
     usage = """
-		This script will re-create the metadata lookup file in /public/json/
+            create_metadata_lookup.py
+
+		This script will re-create the metadata lookup file in ../json/
         named <NODE_DATABASE>--metadata.json
-        The file is required for new vamps to return
+        The file is required for new vamps to work
     """
 	
 

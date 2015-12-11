@@ -197,6 +197,11 @@ app.use(function(err, req, res, next) {
 var os = require("os");
 console.log('HOSTNAME: '+os.hostname())
 
+fs.ensureDir(config.USER_FILES_BASE, function (err) {
+            console.log(err) // => null
+            // dir has now been created, including the directory it is to be placed in
+})
+
 /**
 * Create global objects once upon server startup
 */

@@ -278,8 +278,8 @@ if __name__ == '__main__':
           These files contain ALL the taxcounts and metadata for use
           in searches
         
-        -file_path/--file_path   
-        -host/--host 
+        -json_file_path/--json_file_path   json files path Default: ../json
+        -host/--host            dbhost:  Default: localhost
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)   
     parser.add_argument("-json_file_path", "--json_file_path",        
@@ -290,7 +290,13 @@ if __name__ == '__main__':
                 help="")
     args = parser.parse_args() 
     warnings = []
-    
+    print "ARGS: json_dir=",args.json_file_path
+    print "ARGS: dbhost  =",args.dbhost
+    if not os.path.exists(args.json_file_path):
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        sys.exit(-1)
+    else:
+        print 'Validated: json file path'
 
     db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
              read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
@@ -308,6 +314,7 @@ if __name__ == '__main__':
             print str(i)+' - '+row[0]+';  '
             i += 1
     #print db_str
+    
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]
@@ -333,7 +340,7 @@ if __name__ == '__main__':
     args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets")
     args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
     args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
-    print args.files_prefix , args.taxcounts_file,args.metadata_file
+    #print args.files_prefix , args.taxcounts_file,args.metadata_file
     go(args)
 
 

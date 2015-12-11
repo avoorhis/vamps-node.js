@@ -330,7 +330,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
     
     var options = {
-     scriptPath : 'public/scripts',
+     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
        args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
      };
         
@@ -412,7 +412,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   //COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
   var options = {
-     scriptPath : 'public/scripts',
+     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
        args :       [  biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts],
   };
   // RScript --no-restore --no-save /usr/local/www/vampsdev/projects/vamps-node.js/public/scripts/fheatmap.R 
@@ -503,7 +503,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     
 
     var options = {
-      scriptPath : 'public/scripts',
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
     };
    
@@ -590,11 +590,11 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     md2 = req.body.md2 || "Description";
         
       // var options = {
-      //   scriptPath : 'public/scripts',
+      //   scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       //   args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_2d', '--site_base', process.env.PWD, '--prefix', ts],
       // };
       var options2 = {
-        scriptPath : 'public/scripts',
+        scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
         args :       [ tmp_path, ts, metric, md1, md2, image_file],
       };
       console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
@@ -669,12 +669,12 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
-    scriptPath : 'public/scripts',
+    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
     args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
   };
   var options2 = {
       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
-      scriptPath : 'public/scripts',
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
   };
   console.log('outdir: '+dir_path);
@@ -895,7 +895,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     //var distmtx_file = path.join(process.env.PWD,'tmp',distmtx_file_name);
    
     var options = {
-      scriptPath : 'public/scripts/',
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '--site_base', process.env.PWD, '--prefix', ts],
     };
 
@@ -958,7 +958,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var html = '';
     //console.log(biom_file)
     var options = {
-      scriptPath : 'public/scripts/',
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ tmp_path, ts ],
     };
     if(plot_type == 'bar'){
@@ -1545,7 +1545,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     console.log(req.body)
     var options = {
-      scriptPath : 'public/scripts',
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--site_base', process.env.PWD, '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));

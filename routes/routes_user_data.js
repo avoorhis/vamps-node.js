@@ -274,7 +274,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
     var file_path = path.join(process.env.PWD,req.file.path);
     console.log('file_path '+ file_path);
 
-		var options = { scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
+		var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args : [ '-i', file_path, '-ft',file_type,'-s', file_style,'-process_dir',process.env.PWD,]
 		    			};
 
@@ -432,7 +432,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 
     console.log('in delete_project2: '+project+' - '+pid);
 		var options = {
-	      scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
+	      scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 	      args :       [ '-pid', pid, '-db', NODE_DATABASE, '--user',req.user.username,'--project',project,'-pdir',process.env.PWD ],
         };
 		if(delete_kind == 'all'){
@@ -603,7 +603,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
 	status_params = {'type':'update', 'user':req.user.username, 'project':project, 'status':'',	'msg':'' };
 	var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
-	var qsub_script_path = req.CONFIG.PATH_TO_QSUB_SCRIPTS;
+	var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 	
 	
     var config_file = path.join(data_dir,'config.ini');
@@ -1179,7 +1179,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   var timestamp = +new Date();  // millisecs since the epoch!
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
   
-					var options = { scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
+					var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
 		    			};
 					if(has_tax){
@@ -1296,7 +1296,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			status_params = {'type':'new', 'user':req.user.username,
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
-			var options = { scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
+			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site]
 		    			};
 			if(req.body.type == 'simple_fasta'){
@@ -1451,7 +1451,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			console.log(original_metafile);
 
 
-			var options = { scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
+			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args :       [ '-file', original_taxbyseqfile, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
 		    			};
 			if(original_metafile){

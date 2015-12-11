@@ -15,8 +15,8 @@ config.JSON_FILES_BASE = '/Users/avoorhis/programming/vamps-node.js/public/json/
 // on your system and provide the path to classifier.jar file here.
 // You will also need java on your system to run this.
 //config.PATH_TO_RDP = '/Users/avoorhis/programming/rdp_classifier/dist/';
-config.PATH_TO_SCRIPTS = path.join(process.env.PWD,'public','scripts');
-config.PATH_TO_QSUB_SCRIPTS = path.join(process.env.PWD,'public','scripts');
+config.PATH_TO_NODE_SCRIPTS = path.join(process.env.PWD,'public','scripts','node_process_scripts');
+config.PATH_TO_VIZ_SCRIPTS = path.join(process.env.PWD,'public','scripts','visualization_scripts/');
 //
 // http://www.ncbi.nlm.nih.gov/books/NBK279671/
 config.PATH_TO_BLAST = '/usr/local/ncbi/blast/bin/';

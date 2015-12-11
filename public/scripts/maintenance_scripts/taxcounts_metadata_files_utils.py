@@ -385,7 +385,10 @@ if __name__ == '__main__':
         -del/--delete       Delete all dids (whole project) from dir  (requires pid) ()
         
         -l/  --list         List: list all projects in taxcounts files [default]
-    
+        
+        -json_file_path/--json_file_path   json files path Default: ../json
+        -host/--host            dbhost:  Default: localhost
+
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
     This script will add a project to ../json/<NODE-DATABASE>/<DATASET-NAME>.json JSON object
@@ -422,7 +425,13 @@ if __name__ == '__main__':
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")            
     args = parser.parse_args()
-    
+    print "ARGS: json_dir=",args.json_file_path
+    print "ARGS: dbhost  =",args.dbhost
+    if not os.path.exists(args.json_file_path):
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        sys.exit(-1)
+    else:
+        print 'Validated: json file path'
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
@@ -463,9 +472,7 @@ if __name__ == '__main__':
     if args.delete and args.add:
         print usage        
         sys.exit('cannot add AND delete')
-    if not os.path.exists(args.json_file_path):
-        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
-        sys.exit(-1)        
+         
     if args.list:
         go_list(args)
     elif args.delete and args.pid:

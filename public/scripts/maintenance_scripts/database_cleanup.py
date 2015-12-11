@@ -190,7 +190,8 @@ if __name__ == '__main__':
            -host/--host
            -all/--all               Remove ALL Data for fresh install
                                     Be Careful -- will remove ALL data from db
-            
+            -json_file_path/--json_file_path   json files path Default: ../json
+            -host/--host            dbhost:  Default: localhost
 
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
@@ -213,10 +214,7 @@ if __name__ == '__main__':
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
-    
-    parser.add_argument("-process_dir", "--process_dir",                   
-               required=False,  action="store",   dest = "process_dir", default='/',
-               help="""ProjectID""")            
+               
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../json', 
                 help="")   
@@ -226,7 +224,13 @@ if __name__ == '__main__':
         print myusage
         sys.exit()
     args.datetime     = str(datetime.date.today())    
-    
+    print "ARGS: json_dir=",args.json_file_path
+    print "ARGS: dbhost  =",args.dbhost
+    if not os.path.exists(args.json_file_path):
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        sys.exit(-1)
+    else:
+        print 'Validated: json file path'
     
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
@@ -250,9 +254,7 @@ if __name__ == '__main__':
     #     args.file_base = os.path.join('/','groups','vampsweb','vampsdev_node_data','json', NODE_DATABASE+'--datasets')
     # else:
     #     args.file_base = os.path.join('../json', NODE_DATABASE+'--datasets')
-    if not os.path.exists(args.json_file_path):
-        print "Could not find datasets directory: '",args.json_file_path,"'-Exiting"
-        sys.exit(-1)
+    
     if args.all:
         all_really = input("\nDo you REALLY want to delete all??? from: "+NODE_DATABASE+ ' (y/N)')
         if all_really == 'y' or all_really == 'y':

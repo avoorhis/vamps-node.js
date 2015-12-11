@@ -296,7 +296,7 @@ if __name__ == '__main__':
     import argparse
     
     
-    myusage = """usage: load_tax_by_seq.py  [options]
+    myusage = """usage: assign_permissions.py  [options]
          
          Start of VAMPS upload process:
          Creates config.ini file
@@ -305,22 +305,6 @@ if __name__ == '__main__':
          where
             
            
-            
-            -dir/--basedir         REQUIRED  path for creating dir structure
-            
-          
-            
-            -t/--upload_type    REQUIRED defaults to 'multi' [single or multi] (Most MBE projects are multi)
-            
-            -d/--dataset          REQUIRED IF: source file type is single
-            
-            -co/--config_only       DON'T delete and re-create the analysis/gast directory 
-                                    The gast file (vamps_sequences_pipe) must already be present
-            Optional:
-            -reg/--dna_region     defaults to v6            
-            -dom/--domain         defaults to bacteria
-            -env/--env_source_id  defaults to 100 (unknown)
-            -pub/--public         defaults to False
             
     
     
