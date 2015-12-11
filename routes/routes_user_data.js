@@ -723,9 +723,9 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		 var options = {
 		       scriptPath : qsub_script_path,
 		       gast_run_args :        [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
-		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.config.site ],
+		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.CONFIG.site ],
 		       rdp_run_args :        	[ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project, '-process_dir',process.env.PWD, 
-		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-path_to_classifier', req.config.PATH_TO_CLASSIFIER ],		       													
+		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],		       													
 		       database_loader_args : [ '-class',classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
 		       upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
 		       create_json_args :     [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE, '-pid', '$pid' ]
@@ -1637,7 +1637,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.CONFIG.PATH_TO_SCRIPTS,
-		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.config.site]
+		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site]
 		    			};
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){
@@ -1700,7 +1700,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_data_script.py', options.args, {
-						    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.config.PATH},
+						    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
 

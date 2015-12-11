@@ -316,7 +316,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     var ts = req.body.ts;
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
-    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var biom_file = path.join(pwd,'tmp', biom_file_name);
     //console.log('mtx1')
    
@@ -337,7 +337,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true, 
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
             stdio: 'pipe' // stdin, stdout, stderr
@@ -395,7 +395,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   var metric = req.body.metric;
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(process.env.PWD, 'tmp',biom_file_name);
-  var pwd = process.env.PWD || req.config.PROCESS_DIR;
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var html = '';
   var title = 'VAMPS';
 
@@ -420,7 +420,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   
   console.log(options.scriptPath+'/fheatmap.R '+options.args.join(' '));
   var fheatmap_process = spawn( options.scriptPath+'/fheatmap.R', options.args, {
-          env:{'PATH':req.config.PATH},
+          env:{'PATH':req.CONFIG.PATH},
           detached: true, 
           //stdio: [ 'ignore', null, log ]
           stdio: 'pipe'  // stdin, stdout, stderr
@@ -485,7 +485,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var metric = req.body.metric;
     var script = req.body.script; // python, phylogram or phylonator
     var image_type = req.body.image_type;  // png(python script) or svg
-    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     //console.log('image_type '+image_type);
     // see:  http://bl.ocks.org/timelyportfolio/59acc3853b02e47e0dfc
   
@@ -507,7 +507,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true, 
             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
             stdio: 'pipe'  // stdin, stdout, stderr
@@ -579,7 +579,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
-    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var tmp_path = path.join(process.env.PWD,'tmp');
     var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
     
@@ -597,7 +597,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
       console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
       //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
       var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
-          env:{'PATH':req.config.PATH},
+          env:{'PATH':req.CONFIG.PATH},
           detached: true, 
           stdio: [ 'ignore', null, log ]
           //stdio: 'pipe' // stdin, stdout, stderr
@@ -636,7 +636,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 // POST is for PC file link
 router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         var ts = visual_post_items.ts; 
-        var pwd = process.env.PWD || req.config.PROCESS_DIR;
+        var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
         var pc_file_name = ts+'.pc';
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
         var txt = "Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
@@ -650,7 +650,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var ts = visual_post_items.ts;    
   var metric = visual_post_items.selected_distance;
   
-  var pwd = process.env.PWD || req.config.PROCESS_DIR;
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(pwd,'tmp', biom_file_name);
   
@@ -670,7 +670,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
     args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
   };
   var options2 = {
-      //scriptPath : req.config.PATH_TO_QIIME_BIN,
+      //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
       scriptPath : 'public/scripts',
       args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
   };
@@ -678,7 +678,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
   
   var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
-      env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
+      env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
       detached: true, 
       stdio:['pipe', 'pipe', 'pipe']
       //stdio: [ 'ignore', null, log ]
@@ -696,7 +696,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                 if(code1 === 0){    // SUCCESS       
                     console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
                     var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
-                            env:{ 'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH },
+                            env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
                             detached: true, 
                             stdio:'pipe' // stdin, stdout, stderr
                             //stdio: [ 'ignore', null, log ]
@@ -901,7 +901,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
-                env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+                env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                 detached: true, 
                 //stdio: [ 'ignore', null, log ]
                 stdio: 'pipe'  // stdin, stdout, stderr
@@ -946,7 +946,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     var image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
     var phy,md1,md2,ordtype,maxdist,script
     
-    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var fill = visual_post_items.tax_depth.charAt(0).toUpperCase() + visual_post_items.tax_depth.slice(1);
     if(fill === 'Klass'){
         fill = 'Class';
@@ -992,7 +992,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     
     console.log(options.scriptPath+script+' '+options.args.join(' '));
     var phyloseq_process = spawn( options.scriptPath+script, options.args, {
-            env:{'PATH':req.config.PATH},
+            env:{'PATH':req.CONFIG.PATH},
             detached: true, 
             //stdio: [ 'ignore', null, log ]
             stdio: 'pipe'  // stdin, stdout, stderr
@@ -1539,7 +1539,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     var metric = req.body.metric;
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp',biom_file_name);
-    var pwd = process.env.PWD || req.config.PROCESS_DIR;
+    var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     console.log(req.body)
     var options = {
       scriptPath : 'public/scripts',
@@ -1552,7 +1552,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     
     var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
-            env:{'PATH':req.config.PATH,'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH},
+            env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
             detached: true, 
             stdio: [ 'ignore', null, log ]
         });  // stdin, stdout, stderr
