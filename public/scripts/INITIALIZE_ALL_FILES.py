@@ -84,8 +84,8 @@ def go(args):
     
     try:
         shutil.rmtree(args.files_prefix)
-        shutil.move(args.taxcounts_file, os.path.join(args.json_dir, NODE_DATABASE+'--taxcounts'+today+'.json'))
-        shutil.move(args.metadata_file,  os.path.join(args.json_dir, NODE_DATABASE+'--metadata'+ today+'.json'))
+        shutil.move(args.taxcounts_file, os.path.join(args.json_file_path, NODE_DATABASE+'--taxcounts'+today+'.json'))
+        shutil.move(args.metadata_file,  os.path.join(args.json_file_path, NODE_DATABASE+'--metadata'+ today+'.json'))
         logging.debug('Backed up old taxcounts and metadata files')
     except:
         pass
@@ -278,10 +278,12 @@ if __name__ == '__main__':
           These files contain ALL the taxcounts and metadata for use
           in searches
         
+        -file_path/--file_path   
+        -host/--host 
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)   
-    parser.add_argument("-file_path", "--file_path",        
-                required=False,  action='store', dest = "file_path",  default='../', 
+    parser.add_argument("-json_file_path", "--json_file_path",        
+                required=False,  action='store', dest = "json_file_path",  default='../json', 
                 help="")
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
@@ -322,15 +324,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
-    args.json_dir = os.path.join(args.file_path,'json')
-    if not os.path.exists(args.json_dir):
-        print "Could not find json directory: '",args.json_dir,"'-Exiting"
+    
+    if not os.path.exists(args.json_file_path):
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     print "This may take awhile...." 
     #args.json_dir = os.path.join("../","json")
-    args.files_prefix   = os.path.join(args.json_dir,NODE_DATABASE+"--datasets")
-    args.taxcounts_file = os.path.join(args.json_dir,NODE_DATABASE+"--taxcounts.json")
-    args.metadata_file  = os.path.join(args.json_dir,NODE_DATABASE+"--metadata.json")
+    args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets")
+    args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
+    args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
     print args.files_prefix , args.taxcounts_file,args.metadata_file
     go(args)
 

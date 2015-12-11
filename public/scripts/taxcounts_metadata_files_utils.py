@@ -127,7 +127,7 @@ def go_delete(args):
     dids = get_dataset_ids(args.pid)  
     print dids  
     # just delete files 
-    prefix = os.path.join(args.json_dir,NODE_DATABASE+'--taxcounts')
+    prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts')
     print prefix
     #files = os.listdir(base)
     #for infile in files:
@@ -144,7 +144,7 @@ def go_delete(args):
 def go_add(NODE_DATABASE, pid):
     
     counts_lookup = {}
-    prefix = os.path.join(args.json_dir,NODE_DATABASE+'--datasets')
+    prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
         os.makedirs(prefix)
     print prefix
@@ -204,8 +204,8 @@ def go_add(NODE_DATABASE, pid):
 
 def write_all_metadata_file(metadata_lookup):
     original_metadata_lookup = read_original_metadata()
-    md_file = os.path.join(args.json_dir,NODE_DATABASE+"--metadata.json")
-    bu_file = os.path.join(args.json_dir,NODE_DATABASE+"--metadata"+today+".json")
+    md_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
+    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata"+today+".json")
     shutil.copy(md_file, bu_file)
     #print md_file
     for did in metadata_lookup:
@@ -218,8 +218,8 @@ def write_all_metadata_file(metadata_lookup):
     
 def write_all_taxcounts_file(counts_lookup):
     original_counts_lookup = read_original_taxcounts()
-    tc_file = os.path.join(args.json_dir,NODE_DATABASE+"--taxcounts.json")
-    bu_file = os.path.join(args.json_dir,NODE_DATABASE+"--taxcounts"+today+".json")
+    tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
+    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts"+today+".json")
     shutil.copy(tc_file, bu_file)
     for did in counts_lookup:
         original_counts_lookup[did] = counts_lookup[did]
@@ -337,7 +337,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     return metadata_lookup
     
 def read_original_taxcounts():
-    file_path = os.path.join(args.json_dir,NODE_DATABASE+'--taxcounts.json')
+    file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts.json')
     try:
         with open(file_path) as data_file:    
             data = json.load(data_file) 
@@ -347,7 +347,7 @@ def read_original_taxcounts():
     return data 
      
 def read_original_metadata():    
-    file_path = os.path.join(args.json_dir,NODE_DATABASE+'--metadata.json')
+    file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--metadata.json')
     try:
         with open(file_path) as data_file:    
             data = json.load(data_file)
@@ -414,10 +414,10 @@ if __name__ == '__main__':
                 required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""")
 
-    parser.add_argument("-file_path", "--file_path",        
-                required=False,  action='store', dest = "file_path",  default='../', 
+    parser.add_argument("-json_file_path", "--json_file_path",        
+                required=False,  action='store', dest = "json_file_path",  default='../json', 
                 help="")
-    
+
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")            
@@ -463,9 +463,8 @@ if __name__ == '__main__':
     if args.delete and args.add:
         print usage        
         sys.exit('cannot add AND delete')
-    args.json_dir = os.path.join(args.file_path,'json')
-    if not os.path.exists(args.json_dir):
-        print "Could not find json directory: '",args.json_dir,"'-Exiting"
+    if not os.path.exists(args.json_file_path):
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)        
     if args.list:
         go_list(args)

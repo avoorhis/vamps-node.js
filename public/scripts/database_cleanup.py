@@ -58,7 +58,7 @@ def clean(args):
         did = str(row[0])
         dids.append(did)
         pid = row[1]
-        did_file = os.path.join(args.file_base, did+'.json')
+        did_file = os.path.join(args.json_file_path, NODE_DATABASE+'--datasets',did+'.json')
         print did_file
         try:
             os.remove(did_file)
@@ -217,7 +217,9 @@ if __name__ == '__main__':
     parser.add_argument("-process_dir", "--process_dir",                   
                required=False,  action="store",   dest = "process_dir", default='/',
                help="""ProjectID""")            
-       
+    parser.add_argument("-json_file_path", "--json_file_path",        
+                required=False,  action='store', dest = "json_file_path",  default='../json', 
+                help="")   
                           
     args = parser.parse_args()    
     if not args.pid and not args.project and not args.all:
@@ -244,12 +246,12 @@ if __name__ == '__main__':
         
     print
     cur.execute("USE "+NODE_DATABASE)
-    if args.host == 'vampsdev':
-        args.file_base = os.path.join('/','groups','vampsweb','vampsdev_node_data','json', NODE_DATABASE+'--datasets')
-    else:
-        args.file_base = os.path.join('../json', NODE_DATABASE+'--datasets')
-    if not os.path.exists(args.file_base):
-        print "Could not find datasets directory: '",args.file_base,"'-Exiting"
+    # if args.host == 'vampsdev':
+    #     args.file_base = os.path.join('/','groups','vampsweb','vampsdev_node_data','json', NODE_DATABASE+'--datasets')
+    # else:
+    #     args.file_base = os.path.join('../json', NODE_DATABASE+'--datasets')
+    if not os.path.exists(args.json_file_path):
+        print "Could not find datasets directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     if args.all:
         all_really = input("\nDo you REALLY want to delete all??? from: "+NODE_DATABASE+ ' (y/N)')
