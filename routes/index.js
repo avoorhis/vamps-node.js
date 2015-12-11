@@ -16,7 +16,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
             title: 'VAMPS:Home',
             message: req.flash('fail'),
             user: req.user, 
-            hostname: req.C.hostname });
+            hostname: req.CONFIG.hostname });
   });
 
 
@@ -30,7 +30,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   router.get('/saved_data', helpers.isLoggedIn, function(req, res) {
       res.render('saved_data', { title: 'VAMPS:Saved Data',
                 user: req.user, 
-                hostname: req.C.hostname,
+                hostname: req.CONFIG.hostname,
 	               message:'',
                             });
   });
@@ -51,7 +51,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 	  
 	  res.render('geodistribution', { title: 'VAMPS:Geo_Distribution',
       user: req.user, 
-      hostname: req.C.hostname,
+      hostname: req.CONFIG.hostname,
 	    geodata: JSON.stringify(DatasetsWithLatLong),
 	    message:'',
               });
@@ -97,29 +97,6 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
 
 });
 
-
-
-// transporter.sendMail(mailOptions, function (error, info) {
-//                 if (error) {
-//                     console.log(error);
-//                 } else {
-//                     console.log('Message sent: ' + info.response);
-//                 }
-//             });
-
-  // function IsNumeric(n) {
-  //   return !isNaN(parseFloat(n)) && isFinite(n);
-  // }
-  // function onlyUnique(value, index, self) {
-  //   return self.indexOf(value) === index;
-  // }
-  // var mkdirSync = function (path) {
-  //   try {
-  //     fs.mkdirSync(path);
-  //   } catch(e) {
-  //     if ( e.code != 'EEXIST' ) throw e;
-  //   }
-  // }
 
 });
 

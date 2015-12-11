@@ -112,9 +112,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                 matrix    :           JSON.stringify(biom_matrix),
                                 metadata  :           JSON.stringify(metadata),
-                                constants :           JSON.stringify(req.C),
+                                constants :           JSON.stringify(req.CONSTS),
                                 post_items:           JSON.stringify(visual_post_items),
-                                user      :           req.user,hostname: req.C.hostname,
+                                user      :           req.user,hostname: req.CONFIG.hostname,
 	                          //locals: {flash: req.flash('infomessage')},
                                 message   : req.flash('message')
                  });
@@ -160,9 +160,14 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  TAXCOUNTS = {};
 	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
-	  for(var i in dataset_ids){
-	    var path_to_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets", dataset_ids[i] +'.json');
-		  try{
+	  if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+      var file_prefix = path.join('/','groups','vampsweb','vampsdev_user_data',"VAMPS--datasets");
+    }else{
+      var file_prefix = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets");
+    }
+    for(var i in dataset_ids){
+      var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
+     try{
         var jsonfile = require(path_to_file);
       }
       catch(err){
@@ -180,7 +185,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
     //console.log('METADATA= '+JSON.stringify(METADATA));
-	  var available_units = req.C.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
+	  var available_units = req.CONSTS.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
 
 	  // GLOBAL Variable
 	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
@@ -215,11 +220,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    title: 'VAMPS: Units Selection',
                       referer: 'visuals_index',
 	                    chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-	                    constants    : JSON.stringify(req.C),
+	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
 		  				        message      : req.flash(),
-	                    user         : req.user,hostname: req.C.hostname,
+	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
     // benchmarking
@@ -252,11 +257,11 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 title      : 'VAMPS: Select Datasets',
                                 //rows     : JSON.stringify(ALL_DATASETS),
                                 proj_info  : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants  : JSON.stringify(req.C),
+                                constants  : JSON.stringify(req.CONSTS),
                                 filtering  : 0,
                                 //portal_name: 'none',
 	  							              message    : req.flash('nodataMessage'),
-                                user       : req.user,hostname: req.C.hostname,
+                                user       : req.user,hostname: req.CONFIG.hostname,
                             });
 });
 
@@ -269,10 +274,10 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
     res.render('visuals/reorder_datasets', {
                                 title   : 'VAMPS: Reorder Datasets',
                                 chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-                                constants    : JSON.stringify(req.C),
+                                constants    : JSON.stringify(req.CONSTS),
 								                referer: req.body.referer,
                                 ts : ts,
-                                user: req.user, hostname: req.C.hostname,
+                                user: req.user, hostname: req.CONFIG.hostname,
                             });
   //console.log(chosen_id_name_hash)
 });
@@ -368,7 +373,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
             res.render('visuals/partials/load_distance',{
                   dm        : distance_matrix,
                   hash      : JSON.stringify(chosen_id_name_hash),                      
-                  constants : JSON.stringify(req.C),
+                  constants : JSON.stringify(req.CONSTS),
               }); 
 
         }else{
@@ -400,7 +405,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   var fheatmap_script_file = path.resolve(pwd, 'public','scripts','fheatmap.R');
 
-  shell_command = [req.C.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
+  shell_command = [req.CONSTS.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
 
   //COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
   var options = {
@@ -1052,7 +1057,7 @@ function get_sumator(req){
         //console.log(tax_items);
         for(t in tax_items){
            var taxa = tax_items[t];
-           var rank = req.C.RANKS[t];
+           var rank = req.CONSTS.RANKS[t];
            if(rank=='domain'){
                d = tax_items[t]
                for(i in chosen_id_name_hash.ids){
@@ -1264,7 +1269,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
   		  post_items:           JSON.stringify(visual_post_items),
   		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
         html: html,
-        user: req.user, hostname: req.C.hostname,
+        user: req.user, hostname: req.CONFIG.hostname,
     });
 
 });
@@ -1295,8 +1300,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       				rows[s].seq = rows[s].seq.toString('utf8')
       				rows[s].tax = ''
 
-      				for(i in req.C.RANKS){
-      					id_n_rank = rows[s][req.C.RANKS[i]+'_id']+'_'+req.C.RANKS[i];
+      				for(i in req.CONSTS.RANKS){
+      					id_n_rank = rows[s][req.CONSTS.RANKS[i]+'_id']+'_'+req.CONSTS.RANKS[i];
       					//console.log(id_n_rank);
       					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
       					if(taxname.substr(-3) != '_NA'){
@@ -1312,7 +1317,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
     		            ds : pjds,
     		            tax : tax,
     				        rows : JSON.stringify(rows),
-    		            user: req.user, hostname: req.C.hostname,
+    		            user: req.user, hostname: req.CONFIG.hostname,
     		    });
 
 	      }
@@ -1330,7 +1335,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 */
 router.get('/partials/tax_silva108_simple', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_silva108_simple', {
-        doms: req.C.DOMAINS
+        doms: req.CONSTS.DOMAINS
     });
 });
 //
@@ -1435,7 +1440,7 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
       		      finfo: JSON.stringify(file_info),
       		      times: modify_times,
       		  	  message: req.flash('message'),
-      		      user: req.user, hostname: req.C.hostname,
+      		      user: req.user, hostname: req.CONFIG.hostname,
       		}); 		
 	
       });

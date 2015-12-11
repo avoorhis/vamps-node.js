@@ -46,7 +46,7 @@ var metadata   = require('./routes/routes_metadata');
 console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
 console.log('test2')
-var constants = require('./public/constants');
+var consts = require('./public/constants');
 var config = require('./config/config');
 var app = express();
 app.set('appName', 'VAMPS');
@@ -106,8 +106,8 @@ app.use(function(req, res, next){
 	   return;
 	 }else{
 	    req.db = connection;
-	    req.C = constants;
-        req.config = config;
+	    req.CONSTS = consts;
+        req.CONFIG = config;
 	    return next();
 	}
 });
@@ -223,27 +223,34 @@ var TreeModel = require('tree-model');;
 // 	.on('end', function() {
 // 		    console.log('Finished reading TAXCOUNTS');
 // 	});
-var taxcounts_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--taxcounts.json');
+var taxcounts_file = path.join(config.JSON_FILES_BASE,'VAMPS--taxcounts.json');
+var meta_file      = path.join(config.JSON_FILES_BASE,'VAMPS--metadata.json');
+// if(consts.hostname.substring(0,6) == 'bpcweb'){
+//     var taxcounts_file = path.join('/','groups','vampsweb','vampsdev_user_data','VAMPS--taxcounts.json');
+//     var meta_file      = path.join('/','groups','vampsweb','vampsdev_user_data','VAMPS--metadata.json');
+// }else{
+//     var taxcounts_file = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--taxcounts.json');
+//     var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
+// }
+
+
 try {
-	AllTaxCounts   = require(taxcounts_file);
+    AllTaxCounts   = require(taxcounts_file);
 }
 catch (e) {
   console.log(e);
   AllTaxCounts = {}
 }
 console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
+
 try {
-	AllMetadata        = require(meta_file);
+    AllMetadata        = require(meta_file);
 }
 catch (e) {
   console.log(e);
   AllMetadata = {}
 }
-
-
 console.log('Loading METADATA as AllMetadata from: '+meta_file);
-
 
 
 //see file models/silva_taxonomy.js

@@ -41,7 +41,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(metadata_fields)
     metadata_fields_array.sort();
-    var blast_db = req.C.blast_db;
+    var blast_db = req.CONSTS.blast_db;
     // check if blast database exists:
     var blast_nin = path.join('public','blast', NODE_DATABASE, blast_db+'.nin');
     console.log(blast_nin);
@@ -64,7 +64,7 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
         tax_message:     req.flash('tax_message'),
         mkeys:           metadata_fields_array,
         blast_db_path:   blast_db_path,
-        user:            req.user,hostname: req.C.hostname,
+        user:            req.user,hostname: req.CONFIG.hostname,
     		});
 });
 //
@@ -94,7 +94,7 @@ router.post('/taxonomy_search_for_datasets', helpers.isLoggedIn, function(req, r
 	qSelect += " JOIN silva_taxonomy using (silva_taxonomy_id)\n";
 	add_where = ' WHERE ';
 	for(var n in tax_items){
-		rank = req.C.RANKS[n];
+		rank = req.CONSTS.RANKS[n];
 		qSelect += ' JOIN `'+rank+ '` using ('+rank+'_id)\n';
 		add_where += '`'+rank+"`='"+tax_items[n]+"' and " ;
 	}
@@ -249,7 +249,7 @@ router.post('/metadata_search_result', helpers.isLoggedIn, function(req, res) {
                     filtered : JSON.stringify(filtered),
                     searches : JSON.stringify(searches),
                     join_type: join_type,
-                    user     : req.user,hostname: req.C.hostname,
+                    user     : req.user,hostname: req.CONFIG.hostname,
           });  //
    }
 
@@ -563,7 +563,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
                     title    : 'VAMPS: BLAST Result',
                     data     : data,
                     show     : 'blast_result',
-                    user     : req.user,hostname: req.C.hostname,
+                    user     : req.user,hostname: req.CONFIG.hostname,
                 });  //
 
               }
@@ -634,7 +634,7 @@ router.get('/seqs/:id', helpers.isLoggedIn, function(req, res) {
                     show     : 'datasets',
                     seqid    : seqid,
                     obj      : JSON.stringify(obj),
-                    user     : req.user,hostname: req.C.hostname,
+                    user     : req.user,hostname: req.CONFIG.hostname,
                 });  //
       }
   });

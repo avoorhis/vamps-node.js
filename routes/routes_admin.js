@@ -10,7 +10,7 @@ router.get('/admin_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
               user: req.user,
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -26,7 +26,7 @@ router.get('/assign_permissions', [helpers.isLoggedIn, helpers.isAdmin], functio
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -45,7 +45,7 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -60,7 +60,7 @@ router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) 
               user: req.user,
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -160,7 +160,7 @@ router.get('/alter_datasets', [helpers.isLoggedIn, helpers.isAdmin], function(re
               //constants.ENV_SOURCE
               project_info: JSON.stringify(myjson),
               project: PROJECT_INFORMATION_BY_PID[pid].project,
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             }); 
 
 });
@@ -186,10 +186,10 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
               message   : req.flash('message'),
               user: req.user,
               pid_to_open:pid,
-              env: JSON.stringify(req.C.ENV_SOURCE),
+              env: JSON.stringify(req.CONSTS.ENV_SOURCE),
               project_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
               user_info: JSON.stringify(ALL_USERS_BY_UID),
-              hostname: req.C.hostname, // get the user out of session and pass to template
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
             });
 
 });
@@ -271,12 +271,12 @@ router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], functio
       html += "<td>Environmental Source</td><td>"+ info.env_source_name+"</td>";
       html += "<td>";
       html += " <select id='new_eid' name='new_eid' width='200' style='width: 200px'> ";   
-      for(eid in req.C.ENV_SOURCE) {                        
-          if(req.C.ENV_SOURCE[eid] === info.env_source_name){
-              html += "<option selected value='"+ eid+"'>"+ req.C.ENV_SOURCE[eid];
+      for(eid in req.CONSTS.ENV_SOURCE) {                        
+          if(req.CONSTS.ENV_SOURCE[eid] === info.env_source_name){
+              html += "<option selected value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
               html += " <small>("+ eid +")</small></option>";
           }else{
-              html += "<option value='"+ eid+"'>"+ req.C.ENV_SOURCE[eid];
+              html += "<option value='"+ eid+"'>"+ req.CONSTS.ENV_SOURCE[eid];
               html += " <small>("+ eid +")</small></option>";
           }                           
       }  

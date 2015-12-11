@@ -7,7 +7,7 @@ var path  = require('path');
 router.get('/portals_index', function(req, res) {
     res.render('portals/portals_index', { 
     		title: 'VAMPS:Portals',
-            user: req.user,hostname: req.C.hostname,
+            user: req.user,hostname: req.CONFIG.hostname,
     		message:'',
                           });
 });
@@ -32,10 +32,10 @@ router.get('/visuals_index/:portal', function(req, res) {
             title     : 'VAMPS:Portals_Index',
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            constants : JSON.stringify(req.C),
+            constants : JSON.stringify(req.CONSTS),
             filtering : 0,
             //portal_name: portal,
-            user      : req.user,hostname: req.C.hostname,
+            user      : req.user,hostname: req.CONFIG.hostname,
             message   :'',
                           });
 });
@@ -54,7 +54,7 @@ router.get('/projects/:portal', function(req, res) {
     console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
-            user      : req.user,hostname: req.C.hostname,
+            user      : req.user,hostname: req.CONFIG.hostname,
             portal    : portal,
             pinfo : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             data      : some_datasets,
@@ -69,7 +69,7 @@ router.get('/metadata/:portal', function(req, res) {
 
     res.render('portals/metadata', { 
             title: 'VAMPS:'+portal+' Portal Metadata',
-            user: req.user,hostname: req.C.hostname,
+            user: req.user,hostname: req.CONFIG.hostname,
             portal:portal,
             message:'',
                           });
@@ -80,7 +80,7 @@ router.get('/metadata/:portal', function(req, res) {
 router.get('/mobe/mobe_index', function(req, res) {
     res.render('portals/mobe/mobe_index', { 
     		title: 'VAMPS:Microbiology Of the Built Environment Portal',
-            user: req.user,hostname: req.C.hostname,
+            user: req.user,hostname: req.CONFIG.hostname,
     		message:'',
         });
 });
@@ -90,7 +90,7 @@ router.get('/mobe/mobe_index', function(req, res) {
 router.get('/icomm/icomm_index', function(req, res) {
     res.render('portals/icomm/icomm_index', { 
         title: 'VAMPS:International Census of Marine Microbes Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -100,7 +100,7 @@ router.get('/icomm/icomm_index', function(req, res) {
 router.get('/hmp/hmp_index', function(req, res) {
     res.render('portals/hmp/hmp_index', { 
         title: 'VAMPS:Human Microbiome Project Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -110,7 +110,7 @@ router.get('/hmp/hmp_index', function(req, res) {
 router.get('/codl/codl_index', function(req, res) {
     res.render('portals/codl/codl_index', { 
         title: 'VAMPS:Census of Deep Life Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -120,7 +120,7 @@ router.get('/codl/codl_index', function(req, res) {
 router.get('/uc/uc_index', function(req, res) {
     res.render('portals/uc/uc_index', { 
         title: 'VAMPS:Ulcerative Colitis Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -130,7 +130,7 @@ router.get('/uc/uc_index', function(req, res) {
 router.get('/rare/rare_index', function(req, res) {
     res.render('portals/rare/rare_index', { 
         title: 'VAMPS:The Rare Biosphere Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -140,7 +140,7 @@ router.get('/rare/rare_index', function(req, res) {
 router.get('/cmp/cmp_index', function(req, res) {
     res.render('portals/cmp/cmp_index', { 
         title: 'VAMPS:Coral Microbe Project Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });
@@ -150,7 +150,7 @@ router.get('/cmp/cmp_index', function(req, res) {
 router.get('/mirada/mirada_index', function(req, res) {
     res.render('portals/mirada/mirada_index', { 
         title: 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal',
-        user: req.user,hostname: req.C.hostname,
+        user: req.user,hostname: req.CONFIG.hostname,
         message:'',
         });
 });

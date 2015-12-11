@@ -22,7 +22,7 @@ router.get('/projects_index', function(req, res) {
                         title          : 'VAMPS Projects',
                         projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                         //data: JSON.stringify(info),
-                        user: req.user,hostname: req.C.hostname,
+                        user: req.user,hostname: req.CONFIG.hostname,
                 });
     
 
@@ -77,7 +77,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
                                           pcount: project_count,
                                           message: '',
                                           abstract:abstract,
-                                          user   : req.user,hostname: req.C.hostname,
+                                          user   : req.user,hostname: req.CONFIG.hostname,
                                         });
 
       });

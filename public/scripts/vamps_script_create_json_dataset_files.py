@@ -412,6 +412,9 @@ if __name__ == '__main__':
     parser.add_argument("-db","--database",                   
                required=True,  action="store",   dest = "NODE_DATABASE", default='',
                help="""ProjectID""")  
+    parser.add_argument("-project_dir", "--project_dir",    
+                required=True,  action="store",   dest = "project_dir", 
+                help = '')
     parser.add_argument("-process_dir", "--process_dir",                   
                required=False,  action="store",   dest = "process_dir", default='/',
                help="""ProjectID""")          
@@ -422,6 +425,12 @@ if __name__ == '__main__':
 
     logging.info("DONE")
     print "DONE"
+    fp = open(os.path.join(args.project_dir,'ASSIGNMENT_COMPLETE.txt'),'w')
+    try:
+        fp.write(str(args.pid))
+    except:
+        fp.write('ERROR')
+    fp.close()
     #
     # THIS MUST BE THE LAST PRINT!!!!
     print "PID="+str(args.pid)

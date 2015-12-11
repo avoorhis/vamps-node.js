@@ -120,7 +120,7 @@ def start(args):
    
     os.chdir(args.project_dir)
     
-    mysql_conn = MySQLdb.connect(db = NODE_DATABASE,  read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     # socket=/tmp/mysql.sock
     cur = mysql_conn.cursor()
     
