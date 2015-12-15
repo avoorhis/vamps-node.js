@@ -219,27 +219,23 @@ function onPageLoad(){
 function clear_filters() {
   filtering = 0; 
   datasets_local = {}; 
-  alert('444')
+  
   document.getElementById('target_select').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('tax_search_id').value='';
   
-  var f = document.createElement("form");
-  f.setAttribute('method',"POST");
-  f.setAttribute('action',"/visuals/visuals_index");
-  
-  var s = document.createElement("input"); //input element, Submit button
-  s.setAttribute('type',"submit");
-  s.setAttribute('value',"Submit");
-  
-  f.appendChild(s);
-  
-  f.submit();
-  // var xmlhttp = new XMLHttpRequest();  
-  // xmlhttp.open("POST", "/visuals/visuals_index", false);
-  // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  
-  // xmlhttp.send('');
+  var xmlhttp = new XMLHttpRequest();  
+  xmlhttp.open("GET", "/visuals/clear_filters", true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      onPageLoad();
+      
+
+    }
+  }
+  xmlhttp.send();
 }
 //
 //
