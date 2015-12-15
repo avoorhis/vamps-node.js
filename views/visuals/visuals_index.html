@@ -3,10 +3,15 @@
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
+
 <% if(filtering == undefined){ %>
 <%  filtering = 0 %>
 <% } %>
+<script>
 
+  var datasets_local  = JSON.parse('<%- data_to_open %>');
+  
+</script>
 
 <div class='title'>Community Visualization</div>
 
@@ -20,7 +25,13 @@
 
       <table class='table table-bordered'>
         <tr>
-        <td></td>
+        <td>
+           <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Tree</a> 
+
+           <!-- <form id='myid' name='myform' method='POST' action='/visuals/visuals_index'>
+            <input type='submit' id='' class='btn btn-xs btn-primary' value='Clear Filters/Reset Tree'>
+          </form>   -->
+        </td>
         <td>
              
               <a href='/visuals/saved_datasets' type="button" class="btn btn-xs btn-primary pull-right"  id="">View Saved Datasets</a>
@@ -73,7 +84,7 @@
               </tr>
               
             </table>
-            <button id='clear_filters_btn_id' type='button' value='' class='btn btn-xs'>Clear Filters</button>
+            
           </div>
         </td>
         <td>
@@ -108,6 +119,7 @@
 <script type="text/javascript" src="/javascripts/global.js"></script>
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
 <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
+
 <script>
 
     // code for tooltips

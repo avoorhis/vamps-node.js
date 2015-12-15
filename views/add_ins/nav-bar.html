@@ -28,7 +28,13 @@
 
 
 			      <li><a href="/help/overview">Overview</a></li>
-			      <li><a href="/visuals/visuals_index">Visualizations</a></li>
+
+			      <li>
+              <!-- <a href="/visuals/visuals_index">Visualizations</a> -->
+              <form action="/visuals/visuals_index" method="POST">
+                <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding-top:14px;'>Visualizations</button>
+              </form>
+            </li>
 			      
             <li><a href="/user_data/your_data">Your Data</a></li>
             <li><a href="/search/search_index">Search</a></li>
@@ -56,7 +62,12 @@
                 <% //if(hostname.substring(0,6) === 'bpcweb'){ %>
                   <li><a href='/portals/portals_index'>Portals</a></li>
                 <% //} %>
-				        <li><a href='/user_data/export_data'>Export Data</a></li>
+				        
+                <li>
+                <form action="/user_data/export_data" method="POST">
+                  <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Export Data2</button>
+                </form>
+                </li>
                 <li class="divider"></li>
 
 

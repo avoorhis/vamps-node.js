@@ -1,10 +1,29 @@
-download_project_fasta_form_id
-download_project_metadata_form_id
 
+// viz_select_form_btn = document.getElementById('viz_select_form_btn') || null;
+// if (viz_select_form_btn !== null) {
+//   viz_select_form_btn.addEventListener('click', function () {
+//       form = document.getElementById('viz_select_form_id');
+//       pid = form.project_id.value;
+//       project = form.project.value;
+//       //alert(project)
+//       load_selected_datasets('visuals', pid, project);
+//       return;
+//       //download_data('fasta', pid, project, download_type);
+//   });
+// }
+// export_select_form_btn = document.getElementById('export_select_form_btn') || null;
+// if (export_select_form_btn !== null) {
+//   export_select_form_btn.addEventListener('click', function () {
+//       form = document.getElementById('export_select_form_id');
+//       pid = form.project_id.value;
+//       project = form.project.value;
+//             alert(project)
+//       //download_data('fasta', pid, project, download_type);
+//   });
+// }
 
-
-download_project_fasta_form_btn = document.getElementById('download_project_fasta_form_btn');
-if (typeof download_project_fasta_form_btn !=="undefined") {
+download_project_fasta_form_btn = document.getElementById('download_project_fasta_form_id') || null;
+if (download_project_fasta_form_btn !== null) {
   download_project_fasta_form_btn.addEventListener('click', function () {
       form = document.getElementById('download_project_fasta_form_id');
       pid = form.project_id.value;
@@ -13,8 +32,8 @@ if (typeof download_project_fasta_form_btn !=="undefined") {
       download_data('fasta', pid, project, download_type);
   });
 }
-download_project_metadata_form_btn = document.getElementById('download_project_metadata_form_btn');
-if (typeof download_project_metadata_form_btn !=="undefined") {
+download_project_metadata_form_btn = document.getElementById('download_project_metadata_form_id') || null;
+if (download_project_metadata_form_btn !== null) {
   download_project_metadata_form_btn.addEventListener('click', function () {
       form = document.getElementById('download_project_metadata_form_id');
       pid = form.project_id.value;
@@ -56,7 +75,25 @@ function download_data(type, pid, project, download_type) {
 // var download_data = function(type)
 // {
 	
-	
+// function load_selected_datasets(page, pid, project) {
+//     var html = '';
+//     var args =  "pid="+pid;
+//     args += "&project="+project;
+//     //alert(args)    
+//     var xmlhttp = new XMLHttpRequest(); 
+//     if(page == 'visuals'){
+//       target = '/visuals/visuals_index';      
+//     } else{
+//       target = '/user_data/export_data'
+//     }
+//     xmlhttp.open("POST", target, false);
+//     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//     // xmlhttp.onreadystatechange = function() {
+      
+//     // };
+//     xmlhttp.send(args);  
+//     return; 
+// }	
 
 
 // 	if(type == 'fasta'){

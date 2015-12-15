@@ -239,7 +239,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 /*
  * GET visualization page.
  */
-router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
+router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
   // TESTING:
@@ -251,20 +251,42 @@ router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   //console.log(PROJECT_INFORMATION_BY_PID);
+  console.log('req.body index')
+  //console.log(req.body)
+
+
+
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  console.log(ALL_DATASETS);
+  //console.log(ALL_DATASETS);
   // GLOBAL
   SHOW_DATA = ALL_DATASETS;
+  var data_to_open = {};
+  if(req.body.data_to_open){
+    // open many projects
+    data_to_open = JSON.parse(req.body.data_to_open);
+    //console.log('got data to open '+data_to_open)
+  }else if(req.body.project){
+    // open whole project
+    // data_to_open = new Object();
+     //data_to_open['HMP_PT_Bv1v3'] = ['2019','2020']
+    // data_to_open.RARE = ['EFF_20090209']
+    data_to_open[req.body.project] = DATASET_IDS_BY_PID[req.body.project_id];
+  }
+  console.log('data_to_open');
+  console.log(data_to_open);
+  
+  
   res.render('visuals/visuals_index', {
-                                title      : 'VAMPS: Select Datasets',
-                                //rows     : JSON.stringify(ALL_DATASETS),
-                                proj_info  : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-                                constants  : JSON.stringify(req.CONSTS),
-                                filtering  : 0,
+                                title       : 'VAMPS: Select Datasets',
+                                //rows      : JSON.stringify(ALL_DATASETS),
+                                proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                constants   : JSON.stringify(req.CONSTS),
+                                filtering   : 0,
+                                data_to_open: JSON.stringify(data_to_open),
                                 //portal_name: 'none',
-	  							              message    : req.flash('nodataMessage'),
-                                user       : req.user,hostname: req.CONFIG.hostname,
+	  							              message     : req.flash('nodataMessage'),
+                                user        : req.user,hostname: req.CONFIG.hostname,
                             });
 });
 
@@ -299,9 +321,32 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
     if (err) {
       msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
+    }else{    
+      console.log(data)
+      res.send(data);
+    }
+      
+  });
+  
+});
+router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
+  // this fxn is required for viewing list of saved datasets
+  // when 'toggle open button is activated'
+    console.log(req.body.filename)
+  //console.log('XX'+JSON.stringify(req.body));
+  var file_path = path.join(req.CONFIG.USER_FILES_BASE,req.body.user,req.body.filename);
+
+  console.log(file_path);
+  var dataset_ids = [];
+  fs.readFile(file_path, 'utf8',function(err,data) {
+    if (err) {
+      msg = 'ERROR Message '+err;
+        helpers.render_error_page(req,res,msg);
     
     }else{    
-      res.send(data);
+      
+      res.redirect('unit_selection');
+      
     }
       
   });
@@ -1650,7 +1695,7 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
 //
 //
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
-
+    SHOW_DATA = ALL_DATASETS;
     html = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     res.send(html);
 });

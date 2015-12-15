@@ -55,8 +55,9 @@ var toggle_checking_datasets = function(pr_checkbox, datasets_per_pr) {
   else {
     datasets_per_pr.find('input').prop('checked', true);
   }
-  count_checked_datasets()
+  count_checked_datasets();
 };
+
 
 
 var toggle_datasets = function(clicked) {
@@ -126,8 +127,25 @@ var count_checked_datasets = function() {
 };
 $(document).ready(function () {
       
-      onPageLoad();
-      clear_filters();
+      //onPageLoad({});
+      //dsets = <%= datasets %>
+      //clear_filters();
+      filtering = 0;  
+      document.getElementById('target_select').value='.....';
+      document.getElementById('env_source_select').value='.....';
+      document.getElementById('tax_search_id').value='';
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("GET", "/visuals/clear_filters", true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4 ) {
+          document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+          onPageLoad();
+          
+
+        }
+      }
+      xmlhttp.send();
       
 });
 
@@ -168,33 +186,67 @@ function onPageLoad(){
     }
     toggle_checking_datasets(checkbox, datasets_per_pr);
   });
+  
+  // now load and check any datasets from 'data_to_open'
+  if(datasets_local){
+      
+      $('input.project_toggle').each(function(){
+        //alert($(this).prop('value'))
+        var checkbox = $(this);
+        var project = checkbox.prop('value')
+        //alert(project)
+        var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
+        if( datasets_local.hasOwnProperty(project) ){
+          //input.prop('checked', true)
+          if (datasets_per_pr.is(":hidden")) {
+            
+            datasets_per_pr.show();
+            minus_img(checkbox.siblings('a').find('img'));
+          }
+          check_selected_datasets(checkbox, datasets_per_pr, project, datasets_local[project]);
+        }
+      });
+  }
+  
 }
 
 //
 //
 //
 
+//test_to_open_project = [];
+
 function clear_filters() {
-  filtering = 0;  
+  filtering = 0; 
+  datasets_local = {}; 
+  alert('444')
   document.getElementById('target_select').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('tax_search_id').value='';
-  var xmlhttp = new XMLHttpRequest();  
-  xmlhttp.open("GET", "/visuals/clear_filters", true);
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-  xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
-      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
-      onPageLoad();
-    }
-  }
-  xmlhttp.send();
+  
+  var f = document.createElement("form");
+  f.setAttribute('method',"POST");
+  f.setAttribute('action',"/visuals/visuals_index");
+  
+  var s = document.createElement("input"); //input element, Submit button
+  s.setAttribute('type',"submit");
+  s.setAttribute('value',"Submit");
+  
+  f.appendChild(s);
+  
+  f.submit();
+  // var xmlhttp = new XMLHttpRequest();  
+  // xmlhttp.open("POST", "/visuals/visuals_index", false);
+  // xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  
+  // xmlhttp.send('');
 }
 //
 //
 //
 function filter_by_env() {
   filtering = 1;
+  datasets_local = {};
   var xmlhttp = new XMLHttpRequest();  
   
   var env_source_id =  document.getElementById('env_source_select').value;
@@ -216,6 +268,7 @@ function filter_by_env() {
 //
 function filter_by_target() {
   filtering = 1;
+  datasets_local = {};
   var xmlhttp = new XMLHttpRequest(); 
   var target =   document.getElementById('target_select').value;
   document.getElementById('env_source_select').value='.....';
@@ -234,7 +287,8 @@ function filter_by_target() {
 //  SHOW  RESULTS for project Search
 //
 function showLiveProjectNames(str) {
-  filtering = 1
+  filtering = 1;
+  datasets_local = {};
   if (str.length==0) {
     str = '----';  // cannot be empty string : (hopefully no-one will search for this)
   }
@@ -252,4 +306,28 @@ function showLiveProjectNames(str) {
   }
   xmlhttp.send();
 }
+//
+//
+//
+function check_selected_datasets(pr_checkbox, datasets_per_pr, project, dids) {
+   //alert(datasets_per_pr.find('input').length)
+  //alert(dids)
+  //1740,1739,1745,1744,1741,1742,1751,1750,1752,1753,1746,1738,1748,1749,1747,1743
 
+  datasets_per_pr.find('input').each( function(){
+    var checkbox = $(this);
+    var did = parseInt(checkbox.prop('value'));
+    //alert(typeof did)
+    //alert(did)
+    //var pd= checkbox.prop('id')
+    //ds = pd.split('--')[1]
+    
+    if(dids.indexOf(did) > -1){
+      //alert(did)
+      checkbox.prop('checked', true);
+    }
+    //alert(id)
+  })
+  
+  count_checked_datasets()
+};

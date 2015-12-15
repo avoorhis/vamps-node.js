@@ -4,6 +4,7 @@
 <% project_info  = JSON.parse(info) %>
 <% metadata  = JSON.parse(mdata)    %>
 <% abstract  = JSON.parse(abstract) %>
+
 <img src='/images/dna01.jpg' alt="Helix Cartoon"  height='80' >
 
 <div role="tabpanel" >
@@ -19,21 +20,34 @@
 		<li role="presentation" >              <a href="#metadata" aria-controls="metadata" role="tab" data-toggle="tab">Metadata</a></li>
 	
 	<li role="presentation" class="dropdown" >	    
-		<a  class="dropdown-toggle" data-toggle="dropdown" href="#">Download<span class="caret"></span></a>
+		<a  class="dropdown-toggle" data-toggle="dropdown" href="#">Options<span class="caret"></span></a>
 		<ul class="dropdown-menu">
-	      
+	    <li>
+				<form id='viz_select_form_id' method='POST' action='/visuals/visuals_index'>
+		  	  <button id='viz_select_form_btn' class='btn btn-sm btn-link' >Select in Visualizations</button>
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />	
+
+		    </form>		  
+	    </li>
+	    <li>
+	    	<form id='export_select_form_id' method='POST' action='/user_data/export_data'>
+		  	  <button id='export_select_form_btn' class='btn btn-sm btn-link' >Select in Exports</button>
+		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
+		  	  <input type='hidden' name='project' value='<%= data.project %>' />			  
+		    </form>
+	    </li>
 		  <li>
 		    <form id='download_project_fasta_form_id' method='POST' action=''>
 		  	  <!-- This form should run in the background and place the seqs file 
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <button type='button' id='download_project_fasta_form_btn' >Fasta File</button>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_fasta_form_id' >Download Fasta File</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  <input type='hidden' name='referer' value='/projects/project_profile' />
-			  
+			  	<input type='hidden' name='referer' value='/projects/project_profile' />
 		    </form>		  
 		  </li>
 	    <% if(Object.getOwnPropertyNames(metadata).length > 0){ %>  
@@ -43,11 +57,11 @@
 		  	  			in a 'downloads' directory where it can be retrieved.
 		  	  			The user should get an email when its ready.
 		  	   -->
-		  	  <button type='button'  id='download_project_metadata_form_btn' >Metadata File</button>
+		  	  <button type='button' class='btn btn-sm btn-link' id='download_project_metadata_form_id' >Download Metadata File</button>
 		  	  <input type='hidden' name='download_type' value='whole_project' />
 		  	  <input type='hidden' name='project_id' value='<%= pid %>' />
 		  	  <input type='hidden' name='project' value='<%= data.project %>' />
-			  <input type='hidden' name='referer' value='/projects/project_profile' />			  
+			  	<input type='hidden' name='referer' value='/projects/project_profile' />			  
 		    </form>		  
 		  </li>
 		  <% } %>
@@ -80,7 +94,6 @@
 		  <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
 		  </table>
   	</div> <!-- End project div -->
-	
 	
 		<div role="tabpanel" class="tab-pane" id="abstract">
 		    <table class="table">

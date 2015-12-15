@@ -161,11 +161,27 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
 //
 //  EXPORT DATA
 //
-router.get('/export_data', helpers.isLoggedIn, function(req, res) {
+router.post('/export_data', helpers.isLoggedIn, function(req, res) {
+  var data_to_open = {};
+  if(req.body.data_to_open){
+    // open many projects
+    data_to_open = JSON.parse(req.body.data_to_open);
+    //console.log('got data to open '+data_to_open)
+  }else if(req.body.project){
+    // open whole project
+    // data_to_open = new Object();
+     //data_to_open['HMP_PT_Bv1v3'] = ['2019','2020']
+    // data_to_open.RARE = ['EFF_20090209']
+    data_to_open[req.body.project] = DATASET_IDS_BY_PID[req.body.project_id];
+  }
+  console.log('data_to_open-exports');
+  console.log(data_to_open);
+
     res.render('user_data/export_data', { title: 'VAMPS:Import Data',
                 rows     : JSON.stringify(ALL_DATASETS),
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.CONSTS),
+                data_to_open: JSON.stringify(data_to_open),
 								message  : req.flash('nodataMessage'),
                 user: req.user, hostname: req.CONFIG.hostname
           });

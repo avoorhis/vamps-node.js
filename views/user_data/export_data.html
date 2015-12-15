@@ -5,7 +5,8 @@
 <% filtering = 0 %>
 
 <script>
- var filtering  =  <%= filtering  %> 
+  var filtering  =  <%= filtering  %> 
+  var datasets_local  = JSON.parse('<%- data_to_open %>');
 </script>
 <div class='title'>Export Data</div>
 
