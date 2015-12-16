@@ -54,7 +54,7 @@ def format_pcoa_to_js(header, coords, eigvals, pct_var, custom_axes=[],
 
     Output:
     string: javascript representation of the PCoA data inputed, contains a list
-    of spheres, list of ellipses (if coords_low and coords_high are present) andpng
+    of spheres, list of ellipses (if coords_low and coords_high are present) and
     several setup variables.
 
     Formats the output of qiime.parse.parse_coords_file into javascript variable
@@ -586,7 +586,7 @@ document.getElementById("logotable").style.display = 'none';
 
 <div id="overlay">
     <div>
-     <img src="emperor_required_resources/img/emperor.png" alt="Emperor" id="small-logo"/>
+    <img src="emperor_required_resources/img/emperor.png" alt="Emperor" id="small-logo"/>
         <h1>WebGL is not enabled!</h1>
         <p>Emperor's visualization framework is WebGL based, it seems that your system doesn't have this resource available. Here is what you can do:</p>
         <p id="explanation"><strong>Chrome:</strong> Type "chrome://flags/" into the address bar, then search for "Disable WebGL". Disable this option if you haven't already. <em>Note:</em> If you follow these steps and still don't see an image, go to "chrome://flags/" and then search for "Override software rendering list" and enable this option.</p>
