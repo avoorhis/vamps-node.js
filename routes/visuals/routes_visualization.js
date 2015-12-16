@@ -754,14 +754,18 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     cmd = options2.scriptPath+'/make_emperor_custom.py'
                     cmdline =  cmd+' '+options2.args.join(' ')
                     console.log(cmdline);
-                    
-                    var env = process.env, envDup = {};
-                    for (someVar in env) {
-                        envDup[someVar] = env[someVar];
+                    if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+                      var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
+                    }else{
+                      var env = process.env;
                     }
+                    // var env = process.env, envDup = {};
+                    // for (someVar in env) {
+                    //     envDup[someVar] = env[someVar];
+                    // }
                     child = exec(cmdline, {
                               //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-                              env:process.env                            
+                              env : env                            
                             }, function (error, stdout, stderr) {
 
                       console.log('stdout: ' + stdout);

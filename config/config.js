@@ -29,10 +29,11 @@ config.PATH_TO_CLASSIFIER = '/Users/avoorhis/programming/rdp_classifier/dist/'; 
 // paths to run python 
 //config.PATH = '/groups/vampsweb/vampsdev/seqinfobin:/opt/sge/bin/lx-amd64:/groups/vampsweb/vampsdev/seqinfobin/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/bin:/groups/vampsweb/vampsdev/qiime-1.7.0/emperor/bin:/bioware/jre/bin:/usr/local/sge/bin/lx24-amd64:/sbin:/usr/sbin:/bin:/usr/bin:/bioware/mysql-5.5.13-linux2.6-x86_64/bin:/bioware/mpich2/bin/';
 //config.LD_LIBRARY_PATH = ''
-config.PATH = '/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin';
+config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:';
 //config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin'
 config.LD_LIBRARY_PATH = '/Users/avoorhis/programming/vamps-node.js/public/scripts:/analysis/gast/ds/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages'
 config.PYTHONPATH = '/usr/local/lib/';
+config.LAPACK = ''
 
 config.PATH2 = '/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
 //config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin'
