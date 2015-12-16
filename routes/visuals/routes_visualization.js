@@ -154,7 +154,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   if (dataset_ids === undefined || dataset_ids.length === 0){
       console.log('redirecting back -- no data selected');
    	 req.flash('nodataMessage', 'Select Some Datasets');
-   	 res.redirect('visuals_index');
+   	 //res.redirect('visuals_index');
      return;
   }else{
 	  // Global TAXCOUNTS, METADATA
@@ -177,8 +177,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         console.log('no file '+err.toString()+' Exiting');
         req.flash('nodataMessage', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' (run INITIALIZE_ALL_FILES.py in the public/scripts directory)");
-        res.redirect('visuals_index');
-        return;
+          //res.redirect('visuals_index');
+          return;
       }
 		  TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
 		  METADATA[dataset_ids[i]]  = jsonfile['metadata'];
