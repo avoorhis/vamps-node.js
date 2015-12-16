@@ -43,9 +43,9 @@ var admin     = require('./routes/routes_admin');
 
 var portals   = require('./routes/routes_portals');
 var metadata   = require('./routes/routes_metadata');
-console.log('test')
+//console.log('test')
 var visuals = require('./routes/visuals/routes_visualization');
-console.log('test2')
+//console.log('test2')
 var consts = require('./public/constants');
 var config = require('./config/config');
 var app = express();

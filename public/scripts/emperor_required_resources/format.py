@@ -475,55 +475,55 @@ EMPEROR_HEADER_HTML_STRING =\
 <head>
     <title>Emperor</title>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="/emperor_required_resources/img/favicon.ico" />
+    <link rel="shortcut icon" href="emperor_required_resources/img/favicon.ico" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <!-- Style files -->
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/emperor/css/emperor.css">
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/css/jquery-ui2.css">
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/css/colorPicker.css">
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/css/spectrum.css">
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/css/d3.parcoords.css">
-    <link rel="stylesheet" type="text/css" href="/emperor_required_resources/css/chosen.min.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/emperor/css/emperor.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/css/jquery-ui2.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/css/colorPicker.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/css/spectrum.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/css/d3.parcoords.css">
+    <link rel="stylesheet" type="text/css" href="emperor_required_resources/css/chosen.min.css">
 
     <!-- Emperor logo for the splash window -->
     <table id="logotable" style="vertical-align:middle;text-align:center;height:100%;width:100%;margin:0;padding:0;border:0;">
-        <tr><td><img src="/emperor_required_resources/img/emperor.png" alt="Emperor" id="logo"/></td></tr>
+        <tr><td><img src="emperor_required_resources/img/emperor.png" alt="Emperor" id="logo"/></td></tr>
     </table>
 
     <!-- JavaScript code -->
 
     <!-- jQuery and other plugins -->
-    <script type="text/javascript" src="/emperor_required_resources/js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/jquery-ui-1.8.17.custom.min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/jquery.colorPicker.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/spectrum.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/jquery.colorPicker.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/spectrum.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/chosen.jquery.min.js"></script>
 
     <!-- D3.js for the parallel coordinates plugin -->
-    <script type="text/javascript" src="/emperor_required_resources/js/d3.v3.min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/d3.parcoords.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/d3.parcoords.js"></script>
 
     <!-- THREE.js and plugins for screenshots -->
-    <script type="text/javascript" src="/emperor_required_resources/js/three.min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/js/Detector.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/js/OrbitControls.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/js/ColorConverter.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/js/SVGRenderer.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/THREEx.screenshot.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/three.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/js/Detector.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/js/OrbitControls.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/js/ColorConverter.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/js/SVGRenderer.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/THREEx.screenshot.js"></script>
 
     <!-- General utilities (underscore.js and FileSaver.js) -->
-    <script type="text/javascript" src="/emperor_required_resources/js/underscore-min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/chroma.min.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/js/FileSaver.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/underscore-min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/chroma.min.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/js/FileSaver.min.js"></script>
 
     <!-- Emperor library code -->
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/animate.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/draw.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/emperor.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/trajectory.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/ui.js"></script>
-    <script type="text/javascript" src="/emperor_required_resources/emperor/js/util.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/animate.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/draw.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/emperor.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/trajectory.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/ui.js"></script>
+    <script type="text/javascript" src="emperor_required_resources/emperor/js/util.js"></script>
 
     <script type="text/javascript">
 
@@ -586,7 +586,7 @@ document.getElementById("logotable").style.display = 'none';
 
 <div id="overlay">
     <div>
-     <img src="/emperor_required_resources/img/emperor.png" alt="Emperor" id="small-logo"/>
+     <img src="emperor_required_resources/img/emperor.png" alt="Emperor" id="small-logo"/>
         <h1>WebGL is not enabled!</h1>
         <p>Emperor's visualization framework is WebGL based, it seems that your system doesn't have this resource available. Here is what you can do:</p>
         <p id="explanation"><strong>Chrome:</strong> Type "chrome://flags/" into the address bar, then search for "Disable WebGL". Disable this option if you haven't already. <em>Note:</em> If you follow these steps and still don't see an image, go to "chrome://flags/" and then search for "Override software rendering list" and enable this option.</p>
@@ -745,9 +745,9 @@ document.getElementById("logotable").style.display = 'none';
             <table class="emperor-tab-table-with-sliders">
                 <tr>
                     <td>
-                        <a id="reset-button" class="media-button" href="javascript:void(0);" onclick="javascript:resetAnimation()"><img src="/emperor_required_resources/img/reset.png" ></img></a>
-                        <a id="play-button" class="media-button" href="javascript:void(0);" onclick="javascript:playAnimation()"><img src="/emperor_required_resources/img/play.png"></img></a>
-                        <a id="pause-button" class="media-button" href="javascript:void(0);" onclick="javascript:pauseAnimation()"><img src="/emperor_required_resources/img/pause.png"></img></a>
+                        <a id="reset-button" class="media-button" href="javascript:void(0);" onclick="javascript:resetAnimation()"><img src="emperor_required_resources/img/reset.png" ></img></a>
+                        <a id="play-button" class="media-button" href="javascript:void(0);" onclick="javascript:playAnimation()"><img src="emperor_required_resources/img/play.png"></img></a>
+                        <a id="pause-button" class="media-button" href="javascript:void(0);" onclick="javascript:pauseAnimation()"><img src="emperor_required_resources/img/pause.png"></img></a>
                     </td>
                 </tr>
                 <tr>

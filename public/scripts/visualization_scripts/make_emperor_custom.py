@@ -17,7 +17,8 @@ __status__ = "Release"
 import sys,os
 from os import listdir, makedirs
 from os.path import join, exists, isdir, abspath
-
+sys.path = [os.path.dirname(os.path.realpath(__file__))+"/emperor_required_resources"] + sys.path
+sys.path = [os.path.dirname(os.path.realpath(__file__))+"/../emperor_required_resources"] + sys.path
 from emperor.qiime_backports.filter import filter_mapping_file
 from emperor.qiime_backports.parse import (parse_mapping_file,
     mapping_file_to_dict, parse_otu_table, QiimeParseError)
@@ -34,7 +35,7 @@ from emperor.util import (copy_support_files, preprocess_mapping_file,
 #/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/emperor
 #sys.path.append(os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources"))
 #sys.path = [os.path.expanduser("~/programming/vamps-node.js/public/emperor_required_resources")] + sys.path
-sys.path = [os.path.dirname(os.path.realpath(__file__))+"/../emperor_required_resources"] + sys.path
+
 #print sys.path
 from format import (format_pcoa_to_js, format_mapping_file_to_js,
     format_taxa_to_js, format_vectors_to_js, format_emperor_html_footer_string,

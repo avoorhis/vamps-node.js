@@ -1351,7 +1351,7 @@ function create_pcoa(ts,image_type) {
         address = '/visuals/pcoa';
         args += "&md1="+md1+"&md2="+md2;
     }else if(image_type === '3d'){
-        alert('3d')
+        //alert('3d')
         pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_3d_div');        
         info_line = create_header('pcoa_3d', pi_local);        

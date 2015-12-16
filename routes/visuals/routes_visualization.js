@@ -742,37 +742,78 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                 console.log('pcoa_process1 process exited with code ' + code1);
                 
                 if(code1 === 0){    // SUCCESS       
-                    console.log(options2.scriptPath+'/make_emperor_custom.py '+options2.args.join(' '));
-                    var emperor_process = spawn( options2.scriptPath+'/make_emperor_custom.py', options2.args, {
-                            env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
-                            detached: true, 
-                            stdio:'pipe' // stdin, stdout, stderr
-                            //stdio: [ 'ignore', null, log ]
-                    });  
+                    //console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
                     
-                    emperor_process.stdout.on('data', function (data) { console.log('2stdout: ' + data);  });
-                    stderr2='';
-                    emperor_process.stderr.on('data', function (data) {
-                            console.log('2stderr: ' + data);
-                            stderr2 += data;                       
-                    });
-                    emperor_process.on('close', function (code2) {
-                          console.log('emperor_process process exited with code ' + code2);
-                          
-                          if(code2 === 0){           
-                              
-                              console.log('opening file:///'+html_path);
-                              //res.send();
-                              res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
+                    //console.log(req.CONFIG.PATH)
+                    //console.log(req.CONFIG.LD_LIBRARY_PATH)
+                    //console.log(req.CONFIG.PYTHONPATH)
+                    console.log(path.join(pwd,'logs','node.log'))
+                    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+                    //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
+                    var exec = require('child_process').exec;
+                    cmd = options2.scriptPath+'/make_emperor_custom.py'
+                    cmdline =  cmd+' '+options2.args.join(' ')
+                    console.log(cmdline);
+                    
+                    var env = process.env, envDup = {};
+                    for (someVar in env) {
+                        envDup[someVar] = env[someVar];
+                    }
+                    child = exec(cmdline, {
+                              //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+                              env:process.env                            
+                            }, function (error, stdout, stderr) {
 
-                              //open('file://'+html_path);
-                              //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
-                          }else{
-                            // python script error
-                            //console.log('make_emperor script error:' + errdata2);
-                            res.send('make_emperor2 SCRIPT error '+stderr2);
-                          }      
-                    });                      
+                      console.log('stdout: ' + stdout);
+
+                      console.log('stderr: ' + stderr);
+
+                      if (error !== null) {
+
+                        console.log('exec error: ' + error);
+                        
+
+                      }else{
+                        //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
+                        open('file://'+html_path);
+                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                      }
+
+                    });
+
+                    // var emperor_process = exec( 'make_emperor.py', options2.args, {
+                    //         env:{ 'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PYTHONPATH':req.CONFIG.PYTHONPATH},
+                    //         //detached: true, 
+                    //         detached: false,
+                    //         stdio:'pipe' // stdin, stdout, stderr
+                    //         //stdio: [ 'ignore', log, log ]
+                    // });  
+                    
+                    // emperor_process.stdout.on('data', function (data) { 
+                    //   console.log('2stdout: ' + data);  
+                    // });
+                    // stderr2='';
+                    // emperor_process.stderr.on('data', function (data) {
+                    //         console.log('2stderr: ' + data);
+                    //         stderr2 += data;                       
+                    // });
+                    // emperor_process.on('close', function (code2) {
+                    //       console.log('emperor_process process exited with code ' + code2);
+                          
+                    //       if(code2 === 0){           
+                              
+                    //           console.log('opening file:///'+html_path);
+                    //           //res.send();
+                    //           res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
+
+                    //           //open('file://'+html_path);
+                    //           //res.send(ok_form+"Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                    //       }else{
+                    //         // python script error
+                    //         //console.log('make_emperor script error:' + errdata2);
+                    //         res.send('make_emperor2 SCRIPT error '+stderr2);
+                    //       }      
+                    // });                      
                 }else{
                     //console.log('ERROR');
                     res.send('Python Script Error: '+stderr1);
