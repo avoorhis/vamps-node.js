@@ -30,6 +30,8 @@ logs/*
 !logs/.gitignore
 tmp/*
 !tmp/.gitignore
+views/tmp/*
+!views/tmp/.gitignore
 user_data/*
 !user_dir/.gitignore
 !user_dir/read.me
