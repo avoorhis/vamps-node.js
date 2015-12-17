@@ -34,6 +34,7 @@ connection = require('./config/database').pool;
 
 var routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
 var users     = require('./routes/routes_users');
+var tmp     = require('./routes/routes_tmp');
 var user_data = require('./routes/routes_user_data');
 var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
@@ -57,7 +58,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-app.set(express.static(__dirname + '/tmp'));
+app.set(express.static(__dirname + 'tmp'));
 // MIDDLEWARE  <-- must be in correct order:
 app.use(favicon( path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -130,6 +131,7 @@ app.use(function(req, res, next){
 // ROUTES:
 app.use('/', routes);
 app.use('/help', help);
+app.use('/tmp', tmp);
 app.use('/admin', admin);
 app.use('/users', users);
 app.use('/projects', projects);

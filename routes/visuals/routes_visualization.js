@@ -683,16 +683,12 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
 //  EMPEROR....
 // POST is for PC file link
 router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+        
         var ts = visual_post_items.ts; 
         var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
         var pc_file_name = ts+'.pc';
         //var pc_file = path.join(pwd,'tmp', pc_file_name);
-        var txt = "Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-        res.send(txt);
-});
-// GET is to create and open EMPEROR
-router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
-        
+        ///////////////////////////////////////////////////
   console.log('in 3D');
   console.log(visual_post_items);
   var ts = visual_post_items.ts;    
@@ -708,9 +704,13 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
   var pc_file_name = ts+'.pc';
   var pc_file = path.join(pwd,'tmp', pc_file_name);
-  
+  var tax_file_name = ts+'_taxonomy.txt';
+  var tax_file = path.join(pwd,'tmp', tax_file_name);
+  var dist_file_name = ts+'_distance.csv';
+  var dist_file = path.join(pwd,'tmp', dist_file_name);
+
   var dir_name = ts+'_pcoa_3d';
-  var dir_path = path.join(pwd,'tmp', dir_name);        
+  var dir_path = path.join(pwd,'views/tmp', dir_name);        
   var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
@@ -779,8 +779,134 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                       }else{
                         //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
-                        open('file://'+html_path);
-                        res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                        //open('file://'+html_path);
+                        //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                        //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                        //html = "<a href='../tmp/andy_1450362333240_pcoa_3d/index' target='_blank'>Emperor1</a>"
+                        var html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> (in another window)"
+
+                        html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+                        html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";
+                        html += "<br>Count Matrix Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+                        html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                        html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+                        //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
+
+                        res.send(html); 
+
+                      }
+
+                    });
+
+                     
+                }else{
+                    //console.log('ERROR');
+                    res.send('Python Script Error: '+stderr1);
+                }      
+        });   
+        /////////////////////////////////////////////////
+
+
+
+});
+// GET is to create and open EMPEROR
+router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
+        
+  console.log('in 3D');
+  console.log(visual_post_items);
+  var ts = visual_post_items.ts;    
+  var metric = visual_post_items.selected_distance;
+  
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var biom_file_name = ts+'_count_matrix.biom';
+  var biom_file = path.join(pwd,'tmp', biom_file_name);
+  
+  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+
+  var mapping_file_name = ts+'_metadata.txt';
+  var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
+  var pc_file_name = ts+'.pc';
+  var pc_file = path.join(pwd,'tmp', pc_file_name);
+  
+  var dir_name = ts+'_pcoa_3d';
+  var dir_path = path.join(pwd,'views/tmp', dir_name);        
+  var html_path = path.join(dir_path, 'index.html');  // file to be created by make_emperor.py script
+  //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
+  var options1 = {
+    scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+  };
+  var options2 = {
+      //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
+      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+      args :       [ '-i', pc_file, '-m', mapping_file, '-o', dir_path],
+  };
+  console.log('outdir: '+dir_path);
+  console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
+  
+  var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
+      env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+      detached: true, 
+      stdio:['pipe', 'pipe', 'pipe']
+      //stdio: [ 'ignore', null, log ]
+        });  // stdin, stdout, stderr    
+       
+        pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
+        stderr1='';
+        pcoa_process.stderr.on('data', function (data) {
+                console.log('1stderr: ' + data);
+                stderr += data;               
+        });
+        pcoa_process.on('close', function (code1) {
+                console.log('pcoa_process1 process exited with code ' + code1);
+                
+                if(code1 === 0){    // SUCCESS       
+                    //console.log(options2.scriptPath+'/make_emperor.py '+options2.args.join(' '));
+                    
+                    //console.log(req.CONFIG.PATH)
+                    //console.log(req.CONFIG.LD_LIBRARY_PATH)
+                    //console.log(req.CONFIG.PYTHONPATH)
+                    console.log(path.join(pwd,'logs','node.log'))
+                    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+                    //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
+                    var exec = require('child_process').exec;
+                    cmd = options2.scriptPath+'/make_emperor_custom.py'
+                    cmdline =  cmd+' '+options2.args.join(' ')
+                    console.log(cmdline);
+                    if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
+                      var env = {'PATH':req.CONFIG.PATH, 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'LAPACK':req.CONFIG.LAPACK};
+                    }else{
+                      var env = process.env;
+                    }
+                    // var env = process.env, envDup = {};
+                    // for (someVar in env) {
+                    //     envDup[someVar] = env[someVar];
+                    // }
+                    child = exec(cmdline, {
+                              //cwd: req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+                              env : env                            
+                            }, function (error, stdout, stderr) {
+
+                      console.log('stdout: ' + stdout);
+
+                      console.log('stderr: ' + stderr);
+
+                      if (error !== null) {
+
+                        console.log('exec error: ' + error);
+                        
+
+                      }else{
+                        //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
+                        //open('file://'+html_path);
+                        //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                        //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser."); 
+                        //html = "<a href='../tmp/andy_1450362333240_pcoa_3d/index' target='_blank'>Emperor1</a>"
+                        html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Emperor</a>"
+                        //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
+
+                        res.send(html); 
+
                       }
 
                     });
