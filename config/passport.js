@@ -217,11 +217,19 @@ var checkUserName = function(username){
 var delete_previous_tmp_files = function(username){
     var path = require('path');
     var fs   = require('fs-extra');
-    var temp_dir_path = path.join(process.env.PWD,'tmp');
-    fs.readdirSync(temp_dir_path).forEach(function(file,index){
+    // dirs to delete from on login::
+    var temp_dir_path1 = path.join(process.env.PWD,'tmp');
+    var temp_dir_path2 = path.join(process.env.PWD,'views','tmp');
+    fs.readdirSync(temp_dir_path1).forEach(function(file,index){
         if(file.substring(0,username.length) === username){
-            var curPath = temp_dir_path + "/" + file;
+            var curPath = temp_dir_path1 + "/" + file;
             deleteFolderRecursive(curPath);
+            fs.readdirSync(temp_dir_path2).forEach(function(file,index){
+                if(file.substring(0,username.length) === username){
+                    var curPath = temp_dir_path2 + "/" + file;
+                    deleteFolderRecursive(curPath);
+                }
+            });
         }
     });
 };
