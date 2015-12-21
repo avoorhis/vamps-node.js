@@ -288,6 +288,9 @@ if __name__ == '__main__':
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
+    parser.add_argument("-db", "--db",    
+                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "NODE_DATABASE",  default='',
+                help="")
     args = parser.parse_args() 
     warnings = []
     print "ARGS: json_dir=",args.json_file_path
@@ -314,12 +317,14 @@ if __name__ == '__main__':
             print str(i)+' - '+row[0]+';  '
             i += 1
     #print db_str
-    
-    db_no = input("\nchoose database number: ")
-    if int(db_no) < len(dbs):
-        NODE_DATABASE = dbs[db_no]
+    if args.NODE_DATABASE:
+        NODE_DATABASE = args.NODE_DATABASE
     else:
-        sys.exit("unrecognized number -- Exiting")
+        db_no = input("\nchoose database number: ")
+        if int(db_no) < len(dbs):
+            NODE_DATABASE = dbs[db_no]
+        else:
+            sys.exit("unrecognized number -- Exiting")
         
     print
     cur.execute("USE "+NODE_DATABASE)
