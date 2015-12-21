@@ -283,7 +283,7 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)   
     parser.add_argument("-json_file_path", "--json_file_path",        
-                required=False,  action='store', dest = "json_file_path",  default='../json', 
+                required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
