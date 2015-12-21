@@ -291,8 +291,14 @@ if __name__ == '__main__':
     parser.add_argument("-db", "--db",    
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="")
+    parser.add_argument("-dbuser", "--dbuser",    
+                required=False,  action='store', dest = "dbuser",  default='',
+                help="")
+    parser.add_argument("-dbpass", "--dbpass",    
+                required=False,  action='store', dest = "dbpass",  default='',
+                help="")
     args = parser.parse_args() 
-    
+
     warnings = []
     if not args.json_file_path:
         #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
@@ -304,8 +310,10 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         print 'Validated: json file path'
-
-    db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
+    if args.dbpass and args.dbuser:
+         db = MySQLdb.connect( host=args.dbhost, user=args.dbuser,passwd=args.dbpass )
+    else:
+        db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
              read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
            )
     cur = db.cursor()
