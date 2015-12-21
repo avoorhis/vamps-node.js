@@ -289,7 +289,7 @@ if __name__ == '__main__':
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
     parser.add_argument("-db", "--db",    
-                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "NODE_DATABASE",  default='',
+                required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="")
     args = parser.parse_args() 
     warnings = []
