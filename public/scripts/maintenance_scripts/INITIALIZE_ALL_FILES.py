@@ -283,7 +283,7 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)   
     parser.add_argument("-json_file_path", "--json_file_path",        
-                required=False,  action='store', dest = "json_file_path",  default='../../json', 
+                required=False,  action='store', dest = "json_file_path",  default='', 
                 help="")
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
@@ -292,7 +292,11 @@ if __name__ == '__main__':
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="")
     args = parser.parse_args() 
+    
     warnings = []
+    if not args.json_file_path:
+        #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
+        args.json_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','../','json')
     print "ARGS: json_dir=",args.json_file_path
     print "ARGS: dbhost  =",args.dbhost
     if not os.path.exists(args.json_file_path):
@@ -333,7 +337,7 @@ if __name__ == '__main__':
     
     print 'DATABASE:',NODE_DATABASE 
        
-    args = parser.parse_args()
+    
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
     
