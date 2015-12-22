@@ -7,7 +7,6 @@
   "author": "",
   "license": "",
   "scripts": {
-    "preinstall": "npm install -g node-gyp;npm install -g forever",
     "start": "node ./bin/www",
     "test": "mocha"
   },
