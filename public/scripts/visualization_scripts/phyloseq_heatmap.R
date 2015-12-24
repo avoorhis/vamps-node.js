@@ -76,8 +76,9 @@ h_png = rows*5
 	unlink(out_file)
 	#print(physeq)
 	#pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-	#png(out_file, width=w_png, height=h_png)
-	svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
+	png(out_file, width=w_png, height=h_png)
+	#svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
+	#png(out_file, width=w_svg, height=h_svg)
 	gpac <- subset_taxa(physeq, Phylum==phy)
 	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
 

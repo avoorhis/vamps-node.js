@@ -21,6 +21,8 @@
   <small>
     Taxonomic Depth: <%= pi.tax_depth %> --- 
     Included Domains: <%= pi.domains %>
+  
+  <a href='' style='float:right;' class=''>Save State</a>
   </small>
 </div>
 
@@ -37,7 +39,7 @@
 			<input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
 </form>
 </td><td>
-<form class='pull-right' id='reload_form_id' name='' method='POST' action='view_selection'>
+<form class='' id='reload_form_id' name='' method='POST' action='view_selection'>
   <button class='btn btn-xs btn-primary' type='submit'>Reload Page</button>
   <input type='hidden' name='domains' value='<%= pi.domains %>'>
   <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>

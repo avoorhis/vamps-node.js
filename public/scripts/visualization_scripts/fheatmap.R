@@ -9,7 +9,7 @@ depth <- args[3]
 prefix <- args[4]
 #pdf_file = paste("/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/",prefix,"_heatmap.pdf",sep='')
 #pdf_file = paste("public/tmp_images/",prefix,"_heatmap.pdf",sep='')
-out_file = paste("tmp/",prefix,"_heatmap.svg",sep='')
+out_file = paste("tmp/",prefix,"_heatmap.pdf",sep='')
 
 # /groups/vampsweb/vamps/seqinfobin/bin/Rscript --no-save --slave --no-restore 
 # fheatmap.R /usr/local/www/vamps/docs/tmp/avoorhis_1784983_normalized.mtx avoorhis_1784983 Phylum horn yes
@@ -148,9 +148,10 @@ pdf_title="VAMPS Frequency Heatmap"
 #print(pdf_file)
 #print(h)
 #print(w)
-#pdf(pdf_file, width=w, height=h, title=pdf_title)
-#pdf(pdf_file, width=w, height=h, title=pdf_title)
-svg(out_file)
+#pdf(out_file, width=w, height=h, title=pdf_title)
+pdf(out_file, width=w, height=h, title=pdf_title)
+#pdf(out_file)
+#svg(out_file)
 
 if(depth=="genus" || depth=="species" || depth=="strain"){
     r_margin=45

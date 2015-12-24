@@ -491,9 +491,21 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
         //distance_matrix = JSON.parse(output);
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS       
-              image_file = ts+'_heatmap.svg';
-              //image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.svg');
-              res.send("<img src='/"+image_file+"'>");
+              //image_file = ts+'_heatmap.pdf';
+              //image_file = path.join(process.env.PWD,'tmp', ts+'_heatmap.pdf');
+              //res.send("<img src='/"+image_file+"'>");
+              
+              //var viz_width = 1200;
+              //var viz_height = (visual_post_items.no_of_datasets*12)+100;
+              var image = '/'+ts+'_heatmap.pdf';
+              //console.log(image)
+              html = "<div id='pdf'>";
+              html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+              html += " <p>ERROR in loading pdf file</p>";
+              html += "</object></div>";
+              res.send(html);
+
+              return;
               // fs.readFile(image_file, 'utf8', function (err,data) {
               //   if (err) {
               //      console.log(err);
@@ -1183,7 +1195,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       options.args = options.args.concat([image_file, phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
-      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.svg';
+      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
@@ -1237,13 +1249,24 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                     html = lastline;                   
             }else{                  
                 
-                 //if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-                 // html = "<object type='image/svg+xml' data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0'>Your browser does not support SVG</object>";
-                //       html = "<div id='pdf'>";
-                //       html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='1100' height='900' />";
-                //       html += " <p>ERROR in loading pdf file</p>";
-                //       html += "</object></div>"; 
-                 //}else{
+              //   var image = '/'+ts+'_heatmap.pdf';
+              // //console.log(image)
+              // html = "<div id='pdf'>";
+              // html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+              // html += " <p>ERROR in loading pdf file</p>";
+              // html += "</object></div>";
+              // res.send(html);
+
+              // return;
+
+                 
+                 // if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 // //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
+                 //      html = "<div id='pdf'>";
+                 //      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+                 //      html += " <p>ERROR in loading pdf file</p>";
+                 //      html += "</object></div>"; 
+                 // }else{
                       html = "<img src='/"+image_file+"'>";                    
                 //}              
             }
