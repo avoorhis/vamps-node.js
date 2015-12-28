@@ -166,6 +166,9 @@ td.left_justify {
 .alert_flash_message {
 	font: bold 12px Arial;
 	color:orange;
+  position:absolute;
+  left:30px;
+  top:25px;
 }
 #project_profile_div ul{
   list-style-type: none;
