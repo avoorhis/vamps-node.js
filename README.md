@@ -3,8 +3,10 @@ VAMPS rendition using Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
-INSTALL (Optional method using VirtualBox and Vagrant -see below)
+INSTALL
 --------------
+
+**(Optional install method using VirtualBox and Vagrant -see below)**
 
 **Requirements**
  * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
