@@ -813,7 +813,14 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                       if (error !== null) {
 
                         console.log('exec error: ' + error);
-                        
+                        var html = stderr
+
+                        html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
+                        html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";
+                        html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+                        html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                        html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
+                        res.send(html); 
 
                       }else{
                         //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
@@ -825,7 +832,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
                         html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";
-                        html += "<br>Count Matrix Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
+                        html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
                         html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
