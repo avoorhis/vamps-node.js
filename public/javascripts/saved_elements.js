@@ -88,7 +88,23 @@ function get_data_for_tree(file_json) {
 	return projects;
 
 }
+function load_configuration(filename) {
+		var args  = 'filename='+filename;
+		//args += '&user='+user;
+		args += '&from_configuration_file=1';
+		var xmlhttp = new XMLHttpRequest();
+		//var btn = document.getElementById(filename+'_open_btn_id')
+		//value = btn.value
+    xmlhttp.open("POST", "/visuals/view_selection", true);
+	  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  //   xmlhttp.onreadystatechange = function() {
 
+		//     if (xmlhttp.readyState == 4 ) {
+		// 			//var data = xmlhttp.responseText;
+		// 		}
+		// };
+		xmlhttp.send(args);
+}
 // function view_datasets_ajax2( filename, user, fxn ){
 	
         

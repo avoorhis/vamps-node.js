@@ -1618,13 +1618,13 @@ router.get('/file_utils', helpers.isLoggedIn, function(req, res){
 	}else if(req.query.fxn == 'delete'){
 	    var file = path.join(req.CONFIG.USER_FILES_BASE,user,req.query.filename);
 	 
-		if(req.query.type == 'datasets'){
+		if(req.query.type == 'elements'){
 			fs.unlink(file, function(err){
 				if(err){
 					console.log(err);
 				}else{
 					req.flash('message', 'Deleted: '+req.query.filename);
-					res.redirect("/visuals/saved_datasets");
+					res.redirect("/visuals/saved_elements");
 				}
 			}); //
 		}else{

@@ -61,21 +61,53 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: view_selection-->>');
   console.log(req.body);
   console.log('req.body: view_selection');
-  //console.log('chosen_id_name_hash:>>');
   
+  helpers.start = process.hrtime();
   
   if(req.body.resorted === '1'){
     req.flash('message','The dataset order has been updated.');
     dataset_ids = req.body.ds_order;
     chosen_id_name_hash  = COMMON.create_chosen_id_name_hash(dataset_ids);	
-  } 
-  // GLOBAL Variable
-  visual_post_items = COMMON.save_post_items(req);
+  }else if(req.body.from_configuration_file === '1'){
+    req.flash('message', 'Using data from configuration file.');
+    TAXCOUNTS = {};
+    METADATA  = {}; 
+    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+    var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
+    var file_data = JSON.parse(fs.readFileSync(file_path, 'utf8'))
+    console.log(file_data)
+    visual_post_items = file_data.post_items;
+    chosen_id_name_hash = file_data.id_name_hash;
+    dataset_ids = chosen_id_name_hash.ids;
+    for(var i in dataset_ids){
+      var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+      try{
+        var jsonfile = require(path_to_file);
+      }
+      catch(err){
+        console.log('no file '+err.toString()+' Exiting');
+        req.flash('nodataMessage', "ERROR \
+          Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
+          //res.redirect('visuals_index');
+          return;
+      }
+      TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+      METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+    }
+  }else{
+    // GLOBAL Variable
+    visual_post_items = COMMON.save_post_items(req);
 
+  }
   
-  helpers.start = process.hrtime();
-  
-  
+
+  console.log('chosen_id_name_hash:>>');
+  console.log(chosen_id_name_hash);
+  console.log('<<chosen_id_name_hash');
+    
+  console.log('TAXCOUNTS:>>');
+  console.log(TAXCOUNTS);
+  console.log('<<TAXCOUNTS');
   // GLOBAL
   var timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
@@ -83,6 +115,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   distance_matrix = {};
   BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
+  
+
   console.log('visual_post_items:>>');
   console.log(visual_post_items);
   console.log('<<visual_post_items:');
@@ -108,16 +142,16 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   res.render('visuals/view_selection', {
                                 title     :           'VAMPS: Visuals Select',
-                                referer   : 'unit_selection',
+                                referer   :           'unit_selection',
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
                                 matrix    :           JSON.stringify(BIOM_MATRIX),
                                 metadata  :           JSON.stringify(metadata),
                                 constants :           JSON.stringify(req.CONSTS),
                                 post_items:           JSON.stringify(visual_post_items),
                                 user      :           req.user,
-                                hostname  : req.CONFIG.hostname,
+                                hostname  :           req.CONFIG.hostname,
 	                          //locals: {flash: req.flash('infomessage')},
-                                message   : req.flash('message')
+                                message   :           req.flash('message')
                  });
 
 });
@@ -170,7 +204,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     // }
     for(var i in dataset_ids){
       var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
-     try{
+      try{
         var jsonfile = require(path_to_file);
       }
       catch(err){
@@ -312,9 +346,9 @@ router.post('/reorder_datasets', helpers.isLoggedIn, function(req, res) {
 router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
-    fxn = req.body.fxn;
+  fxn = req.body.fxn;
   //console.log('XX'+JSON.stringify(req.body));
-  var file_path = path.join(req.CONFIG.USER_FILES_BASE,req.body.user,req.body.filename);
+  var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
   fs.readFile(file_path, 'utf8',function(err,data) {
@@ -325,32 +359,24 @@ router.post('/view_saved_datasets', helpers.isLoggedIn, function(req, res) {
       console.log(data)
       res.send(data);
     }
-      
   });
-  
 });
 router.post('/get_saved_datasets', helpers.isLoggedIn, function(req, res) {
   // this fxn is required for viewing list of saved datasets
   // when 'toggle open button is activated'
-    console.log(req.body.filename)
+  console.log(req.body.filename)
   //console.log('XX'+JSON.stringify(req.body));
-  var file_path = path.join(req.CONFIG.USER_FILES_BASE,req.body.user,req.body.filename);
-
+  var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.body.user, req.body.filename);
   console.log(file_path);
   var dataset_ids = [];
   fs.readFile(file_path, 'utf8',function(err,data) {
     if (err) {
       msg = 'ERROR Message '+err;
         helpers.render_error_page(req,res,msg);
-    
     }else{    
-      
       res.redirect('unit_selection');
-      
     }
-      
   });
-  
 });
 //
 //
@@ -1633,9 +1659,9 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   //console.log(METADATA)
   //console.log(chosen_id_name_hash)
   var save_object = {}
-  save_object = visual_post_items
-  save_object.metadata = METADATA
-  save_object.dids = chosen_id_name_hash.ids
+  save_object.post_items = visual_post_items
+  save_object.post_items.metadata = METADATA
+  save_object.id_name_hash = chosen_id_name_hash
   console.log(save_object)
 
   var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
@@ -1725,12 +1751,12 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets-->>');
       //console.log(req.body);
       //console.log('req.body: show_saved_datasets');
-      var saved_datasets_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+      var saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
       file_info = {};
       modify_times = [];
-      helpers.mkdirSync(saved_datasets_dir);
-      fs.readdir(saved_datasets_dir, function(err, files){
+      helpers.mkdirSync(saved_elements_dir);
+      fs.readdir(saved_elements_dir, function(err, files){
           if(err){
       			
     				msg = 'ERROR Message '+err;
@@ -1742,8 +1768,8 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       	        var pts = files[f].split('-');
       	        if(pts[0] === 'datasets' || pts[0] === 'configuration'){
       	          //file_info.files.push(files[f]);
-      	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
-      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+      	          stat = fs.statSync(path.join(saved_elements_dir,files[f]));
+      			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
       			       modify_times.push(stat.mtime.getTime());
       			  
       	        }
@@ -1752,8 +1778,8 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       		  //console.log(JSON.stringify(file_info));
       		} 
     		  
-      		res.render('visuals/saved_datasets',
-      		    { title: 'saved_datasets',
+      		res.render('visuals/saved_elements',
+      		    { title: 'saved_elements',
       		     
       		      finfo: JSON.stringify(file_info),
       		      times: modify_times,

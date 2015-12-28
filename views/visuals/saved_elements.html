@@ -7,12 +7,12 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 <div class='left_justify'>
-<br><strong>Your saved datasets:</strong>
+<br>
 <br>
 <table class='table sortable'>
 	<thead>
 	<tr><th></th>
-		<th>file</th>
+		<th>Your saved files:</th>
 		<th data-defaultsort='disabled'></th>
 		<th data-defaultsort='disabled'></th>
 		<th>size</th>
@@ -23,6 +23,7 @@
   <tbody>
 <% for(t in times){ %>
 	<% var filename = file_info[times[t]].filename %>
+	<% var datatype = filename.split('-')[0] %>
 	<% var fileSizeInBytes = file_info[times[t]].size %>
 	<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 	<% var sizer = 'Bytes' %>
@@ -48,22 +49,29 @@
 		<td>
 			<%= filename %>
 		</td>
-			<td>						
-	<!-- <button id='<%= filename %>_open_btn_id' class='btn btn-xs btn-success' onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed" >view / open</button>
-		-->
-		<div class="dropdown">
-		  <button class="btn btn-xs btn-success dropdown-toggle" type="button" id='<%= filename %>_open_btn_id' data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"  onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed">
-		    toggle open <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu dropdown-menu-your-datasets" aria-labelledby="dropdownMenu1">
-		    <div id='<%= filename %>_div'></div>
-		  </ul>
-		</div>
+		<td>						
+			<% if(datatype == 'configuration'){ %>
+				<form id='' method='POST' action='view_selection'>
+					<input type='submit' class='btn btn-xs btn-link' value='Visualizations' />
+					<input type='hidden'  name='from_configuration_file' value='1' />
+					<input type='hidden'  name='filename' value='<%= filename %>' />
+				</form>
+				<!-- <a href='#' onclick="load_configuration('<%= filename %>','<%= user.username %>')">Visualizations</a> -->
+			<% }else{ %>
+				<div class="dropdown">
+				  <button class="btn btn-xs btn-success dropdown-toggle" type="button" id='<%= filename %>_open_btn_id' data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"  onClick="view_datasets_ajax('<%= filename %>','<%= user.username %>','view')" value="closed">
+				    toggle open <span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu dropdown-menu-your-datasets" aria-labelledby="dropdownMenu1">
+				    <div id='<%= filename %>_div'></div>
+				  </ul>
+				</div>
+			<% } %>
 		
 		</td>
 		
 		<td>
-		<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=datasets&filename=<%= filename %>' >delete</a>
+		<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=elements&filename=<%= filename %>' >delete</a>
 		</td>
 		
 		<td>		

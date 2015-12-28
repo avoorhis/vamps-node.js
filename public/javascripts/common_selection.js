@@ -51,7 +51,7 @@ var save_datasets_list = function(ds_local, user)
          var response = xmlhttp.responseText;
 		 //alert(string);
 		 if(response == 'OK'){
-		 	document.getElementById('save_ds_result').innerHTML = "Saved as: <a href='/visuals/saved_datasets'>"+ filename+ "</a>"
+		 	document.getElementById('save_ds_result').innerHTML = "Saved as: <a href='/visuals/saved_elements'>"+ filename+ "</a>"
 		 }else{
 		 	document.getElementById('save_ds_result').innerHTML = 'Problem: Not Saved'
 		 }
