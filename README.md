@@ -3,16 +3,16 @@ VAMPS rendition using Node.js (javascript)
 Visualization and Analysis of Microbial Population Structures
 -----------------
 
-INSTALL
-(Optional method using VirtualBox and Vagrant -see below)
+INSTALL (Optional method using VirtualBox and Vagrant -see below)
 --------------
 
 **Requirements**
  * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
  * Node.js (http://nodejs.org/)
  * Python (https://www.python.org/) 
+  (required python modules: numpy,scikit-bio,qiime,cogent,illumina-utils)
  * 'git' (https://help.github.com/articles/set-up-git/)
- (required python modules: numpy,scikit-bio,qiime,cogent,illumina-utils)
+
  
  For some additional functionality:
  * R (http://cran.r-project.org/doc/manuals/r-release/R-admin.html) 
@@ -94,13 +94,16 @@ Optional: Install 'forever' which should re-start the server after a fatal crash
 
 * run both 'nodemon' and 'forever': 'forever -c nodemon bin/www'
 
-OPTIONAL METHOD USING VirtualBox and Vagrant
+OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 ---------------
 
 **Download and Install VirtualBox (https://www.virtualbox.org/)**
+
 **Download and Install Vagrant (https://www.vagrantup.com/)**
-**Install the source code**
- * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
+
+Install the source code:
+* run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
+
 Which will create the directory 'vamps-node.js'.
 * Move into the vamps-node.js directory ('cd vamps-node.js')
 * Run the command 'vagrant up'
