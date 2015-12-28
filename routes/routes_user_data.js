@@ -676,10 +676,10 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 			    		// run script
 			    		var nodelog = fs.openSync(path.join(data_dir,'node.log'), 'a');
 			    		var run_process = spawn( script_path, [], {
-		                    // env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 
-		                    //     'PATH':req.config.PATH, 
-		                    //     'PERL5LIB':req.config.PERL5LIB,
-		                    //     'SGE_ROOT':req.config.SGE_ROOT, 'SGE_CELL':req.config.SGE_CELL, 'SGE_ARCH':req.config.SGE_ARCH 
+		                    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 
+		                    //     'PATH':req.CONFIG.PATH, 
+		                    //     'PERL5LIB':req.CONFIG.PERL5LIB,
+		                    //     'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH 
 		                    //     },
 		                    detached: true, stdio: [ 'ignore', null, nodelog ]		                
 		                } );  // stdin, s
@@ -1376,7 +1376,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_data_script.py', options.args, {
-						    env:{'LD_LIBRARY_PATH':req.config.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
+						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
 

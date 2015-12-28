@@ -14,14 +14,17 @@ router.get('/projects_index', function(req, res) {
     var db = req.db;
     
     //console.log(ALL_DATASETS);
-	console.log(PROJECT_INFORMATION_BY_PID)
+	console.log(PROJECT_INFORMATION_BY_PNAME)
   	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
+    var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
+    keys.sort();
     res.render('projects/projects_index', { 
                         title          : 'VAMPS Projects',
-                        projects    : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                        projects    : JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
                         //data: JSON.stringify(info),
+                        sorted_keys : keys,
                         user: req.user,hostname: req.CONFIG.hostname,
                 });
     

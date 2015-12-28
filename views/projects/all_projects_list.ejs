@@ -19,23 +19,25 @@ Or should this page JUST show public projects?
 </thead>
 <tbody>
 <% cnt = 1 %>
-<% for (pid in proj) { %>
-	<% var public = proj[pid].public; %>
+<% //for (pid in proj) { %>
+<% for (n in sorted_keys){ %>
+	<% var pname = sorted_keys[n]; %>
+	<% var public = proj[pname].public; %>
 	
 	<% if(public == 1) { %>
 	    <tr>
 	    <td><%= cnt %></td>
-	    <td><%= pid %></td>
-	    <td><a data-toggle="tooltip" data-placement="right" data-html="true" title='<%= proj[pid].description %>' href='/projects/<%= pid %>'><%= proj[pid].project %></a></td>
-	    <td><%= proj[pid].title %></td>
-	    <% if(proj[pid].username == 'guest') { %>
+	    <td><%= proj[pname].pid %></td>
+	    <td><a data-toggle="tooltip" data-placement="right" data-html="true" title='<%= proj[pname].description %>' href='/projects/<%= proj[pname].pid %>'><%= proj[pname].project %></a></td>
+	    <td><%= proj[pname].title %></td>
+	    <% if(proj[pname].username == 'guest') { %>
 	    	<td>public (guest)</td>
 	    	<td>vamps@mbl.edu</td>
 	    	<td>MBL</td>
 	    <% }else{ %>
-	    	<td><%= proj[pid].last %>, <%= proj[pid].first %> (<%= proj[pid].username %>)</td>
-	    	<td><%= proj[pid].email %></td>
-	    	<td><%= proj[pid].institution %></td>
+	    	<td><%= proj[pname].last %>, <%= proj[pname].first %> (<%= proj[pname].username %>)</td>
+	    	<td><%= proj[pname].email %></td>
+	    	<td><%= proj[pname].institution %></td>
 	    <% } %>
 	    </tr>
 	    <% cnt += 1 %>
