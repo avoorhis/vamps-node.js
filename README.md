@@ -104,13 +104,20 @@ OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 
 **Download and Install Vagrant (https://www.vagrantup.com/)**
 
-Install the source code:
+Install the vamps source code (assumes git is installed):
 * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
 
 Which will create the directory 'vamps-node.js'.
 * Move into the vamps-node.js directory ('cd vamps-node.js')
 * Run the command 'vagrant up'
+Wait for the Ubuntu VirtualBox server to be created and all of the files 
+and libraries to be installed. When finished vamps will be available 
+in your browser at:  http://localhost:4568/
+For more information see the help files at https://docs.vagrantup.com/v2/getting-started/index.html
+and examine the Vagrantboot4568.sh and Vagrantfile in the vamps main directory.
 
+
+----------------
 UPDATE
 ---------------
 To update modules:
