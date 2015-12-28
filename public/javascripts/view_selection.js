@@ -178,10 +178,18 @@ $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function
               
 });              
 var showDots='';
+
+// Save Confiuration
+save_config = document.getElementById('save_config_id') || null;
+if (save_config !== null) {
+  save_config.addEventListener('click', function () {
+      save_configuration(ds_local,user_local);
+  });
+}
+
 // download fasta
-if (document.getElementById('download_fasta_btn') !== null) {
-download_fasta_btn = document.getElementById('download_fasta_btn');
-if (typeof download_fasta_btn !== "undefined") {
+download_fasta_btn = document.getElementById('download_fasta_btn') || null;
+if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_fasta_form_id');
@@ -191,11 +199,10 @@ if (typeof download_fasta_btn !== "undefined") {
       download_data('fasta', datasets, download_type, ts);
   });
 }
-}
+
 // download metadata
-if (document.getElementById('download_metadata_btn') !== null) {
-download_metadata_btn = document.getElementById('download_metadata_btn');
-if (typeof download_metadata_btn !== "undefined") {
+download_metadata_btn = document.getElementById('download_metadata_btn') || null;
+if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_metadata_form_id');
@@ -205,11 +212,8 @@ if (typeof download_metadata_btn !== "undefined") {
       download_data('metadata', datasets, download_type, ts);
   });
 }
-}
 
-if (document.getElementById('download_matrix_btn') !== null) {
-
-download_matrix_btn = document.getElementById('download_matrix_btn');
+download_matrix_btn = document.getElementById('download_matrix_btn') || null;
 if (typeof download_matrix_btn !== "undefined") {
   download_matrix_btn.addEventListener('click', function () {
       
@@ -220,7 +224,7 @@ if (typeof download_matrix_btn !== "undefined") {
       download_data('matrix', datasets, download_type, ts);
   });
 }
-}
+
 
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
@@ -1995,4 +1999,29 @@ function download_data(type, datasets, download_type, ts) {
     };
     xmlhttp.send(args);   
 }
+
+//
+//
+//
+function save_configuration(ds_local, user){
+  
+  if(user=='guest'){
+      alert("The 'guest' user is not permitted to save datasets.");
+      return;
+    }
+  args=''
+  var xmlhttp = new XMLHttpRequest(); 
+  xmlhttp.open("POST", '/visuals/save_config', true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var response = xmlhttp.responseText; 
+         
+      }
+    };
+    xmlhttp.send(args);   
+}
+
+
+
 

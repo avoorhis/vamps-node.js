@@ -81,8 +81,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   timestamp = req.user.username + '_' + timestamp;
   visual_post_items.ts = timestamp;
   distance_matrix = {};
-  biom_matrix = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
-  visual_post_items.max_ds_count = biom_matrix.max_dataset_count;
+  BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+  visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
   console.log('visual_post_items:>>');
   console.log(visual_post_items);
   console.log('<<visual_post_items:');
@@ -91,7 +91,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   // GLOBAL
   //console.log('metadata>>');
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
-  metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+  var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //metadata = JSON.parse(metadata);
   //console.log(metadata);
   //console.log('<<metadata');
@@ -103,14 +103,14 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //uid_matrix = MTX.fill_in_counts_matrix( selection_obj, unit_field );  // just ids, but filled in zeros
   // {unit_id:[cnt1,cnt2...] // counts are in ds order
   
-  //console.log(biom_matrix);
+  //console.log(BIOM_MATRIX);
 
 
   res.render('visuals/view_selection', {
                                 title     :           'VAMPS: Visuals Select',
                                 referer   : 'unit_selection',
                                 chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-                                matrix    :           JSON.stringify(biom_matrix),
+                                matrix    :           JSON.stringify(BIOM_MATRIX),
                                 metadata  :           JSON.stringify(metadata),
                                 constants :           JSON.stringify(req.CONSTS),
                                 post_items:           JSON.stringify(visual_post_items),
@@ -971,10 +971,10 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
     var ts = visual_post_items.ts;
     console.log('in dbrowser');
-    //console.log(JSON.stringify(biom_matrix,null,2));
+    //console.log(JSON.stringify(BIOM_MATRIX,null,2));
     var html='';
-    var max_total_count = Math.max.apply(null, biom_matrix.column_totals);
-    //console.log('column_totals '+biom_matrix.column_totals);
+    var max_total_count = Math.max.apply(null, BIOM_MATRIX.column_totals);
+    //console.log('column_totals '+BIOM_MATRIX.column_totals);
     //console.log('max_total_count '+max_total_count.toString());
 
     // sum counts
@@ -1098,7 +1098,7 @@ router.get('/dbrowser', helpers.isLoggedIn, function(req, res) {
       user:                req.user,
       html:                html,
       max_total_count:     max_total_count,
-      matrix:              JSON.stringify(biom_matrix),
+      matrix:              JSON.stringify(BIOM_MATRIX),
       chosen_id_name_hash: JSON.stringify(chosen_id_name_hash)            
 
     });
@@ -1292,8 +1292,8 @@ function get_sumator(req){
     var did = chosen_id_name_hash.ids[i];
     var dname = chosen_id_name_hash.names[i];
     
-    for(r in biom_matrix.rows){
-        tax_string = biom_matrix.rows[r].id;
+    for(r in BIOM_MATRIX.rows){
+        tax_string = BIOM_MATRIX.rows[r].id;
         tax_items = tax_string.split(';');
         key = tax_items[0];
         //console.log(tax_items);
@@ -1305,15 +1305,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){
                    if(d in sumator['domain']){
                        if(i in sumator['domain'][d]['knt']){
-                           sumator['domain'][d]['knt'][i] += parseInt(biom_matrix.data[r][i]); 
+                           sumator['domain'][d]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]); 
                        }else{
-                           sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                           sumator['domain'][d]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                        } 
                    }else{
                        sumator['domain'][d]={};
                        sumator['domain'][d]['phylum']={}
                        sumator['domain'][d]['knt']=[] 
-                       sumator['domain'][d]['knt'][i] = parseInt(biom_matrix.data[r][i]);  
+                       sumator['domain'][d]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);  
                    }
                }
            }
@@ -1322,15 +1322,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){
                    if(p in sumator['domain'][d]['phylum']){
                        if(i in sumator['domain'][d]['phylum'][p]['knt']){
-                           sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]={};
                        sumator['domain'][d]['phylum'][p]['klass']={};
                        sumator['domain'][d]['phylum'][p]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1339,15 +1339,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){
                    if(k in sumator['domain'][d]['phylum'][p]['klass']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1356,15 +1356,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){
                    if(o in sumator['domain'][d]['phylum'][p]['klass'][k]['order']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1373,15 +1373,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){
                    if(f in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1390,15 +1390,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){                   
                    if(g in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1408,16 +1408,16 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){                   
                    if(s in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]={};
 
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1426,15 +1426,15 @@ function get_sumator(req){
                for(i in chosen_id_name_hash.ids){                   
                    if(st in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']){
                        if(i in sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']){
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] += parseInt(BIOM_MATRIX.data[r][i]);
                        }else{
-                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]);
+                           sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]);
                        }
                    }else{
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]={};
                        //sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain']={};
                        sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt']=[];
-                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(biom_matrix.data[r][i]); 
+                       sumator['domain'][d]['phylum'][p]['klass'][k]['order'][o]['family'][f]['genus'][g]['species'][s]['strain'][st]['knt'][i] = parseInt(BIOM_MATRIX.data[r][i]); 
                    }
                }
            }
@@ -1472,7 +1472,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
 
     var new_matrix={}
-    new_matrix.rows = biom_matrix.rows;
+    new_matrix.rows = BIOM_MATRIX.rows;
     new_matrix.columns =[];
     new_matrix.dataset = pjds;
     new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
@@ -1482,25 +1482,25 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //console.log(new_matrix.did ); 
     new_matrix.data = []
     new_matrix.total = 0
-    new_matrix.shape = [biom_matrix.shape[0],1]
+    new_matrix.shape = [BIOM_MATRIX.shape[0],1]
     var idx = -1;
 
-    for(d in biom_matrix.columns){
-      if(biom_matrix.columns[d].id == pjds){
-      	//console.log('found idx '+biom_matrix.columns[d].name)
+    for(d in BIOM_MATRIX.columns){
+      if(BIOM_MATRIX.columns[d].id == pjds){
+      	//console.log('found idx '+BIOM_MATRIX.columns[d].name)
       	idx = d;
-      	new_matrix.columns.push(biom_matrix.columns[d]);
+      	new_matrix.columns.push(BIOM_MATRIX.columns[d]);
       	//new_matrix.columns.push({"name":ds_name,"did":did});
       	break;
       }
     }
 
 
-    for(n in biom_matrix.data){
-      //new_matrix.rows.push(biom_matrix.rows[n].name)
-      //new_matrix.data.push(biom_matrix.data[n][d])
-      new_matrix.data.push([biom_matrix.data[n][d]])
-      new_matrix.total += biom_matrix.data[n][d]
+    for(n in BIOM_MATRIX.data){
+      //new_matrix.rows.push(BIOM_MATRIX.rows[n].name)
+      //new_matrix.data.push(BIOM_MATRIX.data[n][d])
+      new_matrix.data.push([BIOM_MATRIX.data[n][d]])
+      new_matrix.total += BIOM_MATRIX.data[n][d]
     }
     console.log(JSON.stringify(new_matrix))
 	
@@ -1618,9 +1618,85 @@ router.get('/partials/otus', helpers.isLoggedIn,  function(req, res) {
 router.get('/partials/med_nodes', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/med_nodes',{});
 });
+//
+// SAVE CONFIG
+//
+router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
 
+  console.log('req.body: save_config-->>');
+  console.log(req.body);
+  console.log('req.body: save_config');
+  var timestamp = +new Date();  // millisecs since the epoch!  
+  var filename = 'configuration-' + timestamp + '.json';
+  // datasets/metadata...
+  // metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+  //console.log(METADATA)
+  //console.log(chosen_id_name_hash)
+  var save_object = {}
+  save_object = visual_post_items
+  save_object.metadata = METADATA
+  save_object.dids = chosen_id_name_hash.ids
+  console.log(save_object)
 
+  var filename_path = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,filename);
+  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE));  // create dir if not present
+  helpers.mkdirSync(path.join(req.CONFIG.USER_FILES_BASE,req.user.username)); // create dir if not present
+  //console.log(filename);
+  helpers.write_to_file(filename_path, JSON.stringify(save_object));
+    
+  res.send('OK');
+  
+  
+});
+// router.get('/saved_states', helpers.isLoggedIn,  function(req, res) {
+//     console.log('in show_saved_configs');
+//     if(req.user.username == 'guest'){
+//       req.flash('message', "The 'guest' user has no saved configs");
+//       res.redirect('/user_data/your_data');
+//     }else{
+//       //console.log('req.body: show_saved_datasets-->>');
+//       //console.log(req.body);
+//       //console.log('req.body: show_saved_datasets');
+//       var saved_configs_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
+//       file_info = {};
+//       modify_times = [];
+//       helpers.mkdirSync(saved_configs_dir);
+//       fs.readdir(saved_configs_dir, function(err, files){
+//           if(err){
+            
+//             msg = 'ERROR Message '+err;
+//             helpers.render_error_page(req,res,msg);
+          
+          
+//           }else{
+//             for (var f in files){
+//                 var pts = files[f].split('-');
+//                 if(pts[0] === 'configuration'){
+//                   //file_info.files.push(files[f]);
+//                   stat = fs.statSync(path.join(saved_configs_dir,files[f]));
+//                    file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }
+//                    modify_times.push(stat.mtime.getTime());
+              
+//                 }
+//             }   
+//             modify_times.sort().reverse();
+//             //console.log(JSON.stringify(file_info));
+//           } 
+          
+//           res.render('visuals/saved_states',
+//               { title: 'saved_configs',
+               
+//                 finfo: JSON.stringify(file_info),
+//                 times: modify_times,
+//                 message: req.flash('message'),
+//                 user: req.user, hostname: req.CONFIG.hostname,
+//           });     
+  
+//       });
+//     }
+  
+// });
 router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 
   console.log('req.body: save_datasets-->>');
@@ -1640,7 +1716,7 @@ router.post('/save_datasets', helpers.isLoggedIn,  function(req, res) {
 //
 //
 //
-router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
+router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
     console.log('in show_saved_datasets');
     if(req.user.username == 'guest'){
       req.flash('message', "The 'guest' user has no saved datasets");
@@ -1663,8 +1739,8 @@ router.get('/saved_datasets', helpers.isLoggedIn,  function(req, res) {
     			
     		  }else{
       		  for (var f in files){
-      	        var pts = files[f].split(':');
-      	        if(pts[0] === 'datasets'){
+      	        var pts = files[f].split('-');
+      	        if(pts[0] === 'datasets' || pts[0] === 'configuration'){
       	          //file_info.files.push(files[f]);
       	          stat = fs.statSync(path.join(saved_datasets_dir,files[f]));
       			       file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime }

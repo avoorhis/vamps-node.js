@@ -1,7 +1,7 @@
 <% include ../add_ins/begin.ejs %>
 <% var file_info = JSON.parse(finfo) %>
 
-  <div class='title'>Saved Datasets</div>
+  <div class='title'>Saved Elements</div>
   <div class='subtitle'></div>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -89,7 +89,7 @@
 
 <% include ../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/saved_datasets.js"></script>
+<script type="text/javascript" src="/javascripts/saved_elements.js"></script>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
 </body>
 </html>
