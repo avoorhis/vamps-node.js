@@ -1,4 +1,4 @@
-VAMPS rendition using Node.js (javascript)
+VAMPS -- Node.js (javascript)
 =========
 Visualization and Analysis of Microbial Population Structures
 -----------------
@@ -109,7 +109,7 @@ Install the vamps source code (assumes git is installed):
 
 Which will create the directory 'vamps-node.js'.
 * Move into the vamps-node.js directory ('cd vamps-node.js')
-* Run the command 'vagrant up'
+* Run the command 'vagrant up'.
 Wait for the Ubuntu VirtualBox server to be created and all of the files 
 and libraries to be installed. When finished vamps will be available 
 in your browser at:  http://localhost:4568/
@@ -117,7 +117,7 @@ For more information see the help files at https://docs.vagrantup.com/v2/getting
 and examine the Vagrantboot4568.sh and Vagrantfile in the vamps main directory.
 
 
-----------------
+---------------
 UPDATE
 ---------------
 To update modules:
@@ -136,7 +136,7 @@ the server is already running
   sudo npm install depcheck -g
   depcheck
 
-
+-------------
 TESTS
 -------------
 
@@ -150,6 +150,7 @@ To check code quality:
 
 Then see file vamps-node.js/reports/index.html in a browser.
 
+---------------
 DB
 ---------------
 
@@ -247,9 +248,12 @@ routes - server side logic
 views - html/ejs
 models - data retrieval (db for now, hdf5 in the future) 
 public - client side, cached with an expiration time
+public/scripts  - various external scripts
+public/json  - files for dataset counts and metadata
 sbin - additional scripts
 downloads - will contain user downloaded files for retrieval
-
+user_data - will hold projects,saved_datasets & configurations
+tmp - temporary files prefixed with username (deleted by username on each login)
 
 TODO
 ---------------
@@ -259,5 +263,5 @@ TODO
   * DONE:   user login and auth
   * 2015-05-11 Fix select-all-datasets when select project checkbox on visuals_index (community visualization) page
   * 2015-05-11 fix formating/style on search result page http://localhost:3000/search/search_result
-
+  * This list is out of date
 

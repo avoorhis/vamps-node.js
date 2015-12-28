@@ -2016,6 +2016,7 @@ function save_configuration(ds_local, user){
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
          var response = xmlhttp.responseText; 
+         document.getElementById('save_config_confirmation').innerHTML = response
          
       }
     };

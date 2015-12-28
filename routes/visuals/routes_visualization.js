@@ -1660,7 +1660,6 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   //console.log(chosen_id_name_hash)
   var save_object = {}
   save_object.post_items = visual_post_items
-  save_object.post_items.metadata = METADATA
   save_object.id_name_hash = chosen_id_name_hash
   console.log(save_object)
 
@@ -1670,7 +1669,7 @@ router.post('/save_config', helpers.isLoggedIn,  function(req, res) {
   //console.log(filename);
   helpers.write_to_file(filename_path, JSON.stringify(save_object));
     
-  res.send('OK');
+  res.send("Saved as: <a href='saved_elements'>"+filename+"</a>");
   
   
 });
