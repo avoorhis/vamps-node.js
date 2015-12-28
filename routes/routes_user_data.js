@@ -1313,7 +1313,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-		        			args :       [ '-work','UPLOAD', '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site]
+		        			args :       [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site]
 		    			};
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){
@@ -1371,11 +1371,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			        console.log(err)
 			        return;
 			    }
-				    console.log(options.scriptPath+'/vamps_data_script.py '+options.args.join(' '));
+				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
-						var load_trim_process = spawn( options.scriptPath+'/vamps_data_script.py', options.args, {
+						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
 						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';

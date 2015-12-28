@@ -128,6 +128,9 @@ function load_python_libraries () {
     echo "COMMENT===>Installing Python SciPy...."
     sudo pip install scipy
 
+    echo "COMMENT===>Installing illumina-utils...."
+    sudo pip install illumina-utils
+    
     echo "COMMENT===>Installing Python SciKit-Bio Prerequisites...."
     sudo easy_install -U distribute
     sudo apt-get install -qq pkg-config libcairo2-dev libpng-dev libfreetype6-dev libjpeg-dev
@@ -207,6 +210,7 @@ create_n_load_mysql_database
 
 echo "COMMENT===>Running INITIALIZE_ALL_FILES Script...."
 public/scripts/maintenance_scripts/INITIALIZE_ALL_FILES.py -dbuser $vampsdbuser -dbpass $vampsdbpass -db $vampsdb
+
 
 # Uncomment these lines to auto-start the vamps.js server when provisioning
 echo "COMMENT===>Starting VAMPS-Node.js Server"
