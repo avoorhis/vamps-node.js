@@ -1343,7 +1343,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					res.render('success', {  title   : 'VAMPS: Import Success',
 								          message : req.flash('successMessage'),
 					                display : "Import_Success",
-						              user    : req.user
+						              user    : req.user, hostname: req.CONFIG.hostname
 						        });
 			};
 			

@@ -25,7 +25,7 @@ import csv
 from time import sleep
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-script_path = os.path.dirname(os.path.realpath(__file__))
+script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','bin')
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
