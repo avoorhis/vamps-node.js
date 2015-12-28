@@ -95,7 +95,7 @@ Optional: Install 'forever' which should re-start the server after a fatal crash
 * Then run as: 'forever bin/www'
 
 * run both 'nodemon' and 'forever': 'forever -c nodemon bin/www'
-
+----------------
 OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 ---------------
 
