@@ -366,13 +366,13 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "project_dir", 
                 help = '')         
     
-    parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='',
-                help = '') 
+    # parser.add_argument("-process_dir", "--process_dir",    
+    #             required=False,  action="store",   dest = "process_dir", default='',
+    #             help = '') 
 
-    parser.add_argument("-infile", "--infile",    
-                required=False,  action="store",   dest = "infile", default='',
-                help = '') 
+    # parser.add_argument("-infile", "--infile",    
+    #             required=False,  action="store",   dest = "infile", default='',
+    #             help = '') 
     parser.add_argument("-host", "--host",    
                 required=False,  action="store",   dest = "hostname", default='localhost',
                 help = '')

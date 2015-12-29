@@ -626,13 +626,15 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 	//var base_dir = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
 		 var options = {
 		       scriptPath : qsub_script_path,
-		       gast_run_args :        [ '-work','GAST', '-c', config_file, '-process_dir', process.env.PWD, '-owner',req.user.username,'-p',project,
+		       gast_run_args :        [  '-c', config_file, '-process_dir', process.env.PWD, 
 		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.CONFIG.site ],
-		       rdp_run_args :        	[ '-work','RDP', '-c', config_file, '-owner',req.user.username,'-p',project, '-process_dir',process.env.PWD, 
-		       													'-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir,'-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],		       													
+		       
+		       rdp_run_args :        	[  '-c', config_file, '-process_dir',process.env.PWD, '-site', req.CONFIG.site,
+		       													'-project_dir', data_dir, '-ref_db', ref_db_dir,'-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],		       													
+		       
 		       database_loader_args : [ '-class',classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
 		       upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
-		       create_json_args :     [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE, '-pid', '$pid' ]
+		       create_json_args :     [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
 		     };
 		 
 		 if(classifier.toUpperCase() == 'GAST'){
@@ -649,7 +651,7 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 		 var cmd_list = [
 			run_cmd,
 			options.scriptPath + '/vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
-			"pid=$(head -n 1 "+data_dir+"/pid.txt)",   // pid is in a file pid.txt written by database loader
+//			"pid=$(head -n 1 "+data_dir+"/pid.txt)",   // pid is in a file pid.txt written by database loader
 			options.scriptPath + '/vamps_script_upload_metadata.py ' + options.upload_metadata_args.join(' '),
 			options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
 		]
@@ -675,6 +677,8 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 			    }else{
 			    		// run script
 			    		var nodelog = fs.openSync(path.join(data_dir,'node.log'), 'a');
+			    		
+			    		console.log('RUNNING: '+script_path)
 			    		var run_process = spawn( script_path, [], {
 		                    // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 
 		                    //     'PATH':req.CONFIG.PATH, 
