@@ -48,14 +48,22 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
     #$PATH_2_JAVA -Xmx2400m -jar $PATH_2_HERE/rdp_classifier_2.6/dist/classifier.jar -q $1 -o $2 -t $PATH_2_HERE/rdp_classifier_2.6/rRNAClassifier.properties -f fixrank
 
     # the classifier must be kept with its directory structure
+    if os.path.exists(os.path.join(rdp_script_dir,'classifier.jar')):
+        classifier_cmd = os.path.join(rdp_script_dir,'classifier.jar')
+    else:
+        classifier_cmd = os.path.join(rdp_script_dir,'rdp_classifier_2.2.jar')
+    
+    try:
+        rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
+        
+        logging.debug('RDPCMD: '+rdp_cmd)
+        print rdp_cmd
 
+        subprocess.call(rdp_cmd, shell=True)
 
-    rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+rdp_script_dir+"/classifier.jar -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
-    logging.debug('RDPCMD: '+rdp_cmd)
-    print rdp_cmd
-
-
-    subprocess.call(rdp_cmd, shell=True)
+    except:
+        print "ERROR in RDP:  java - classifier: "+rdp_cmd
+        sys.exit(-23)
 
 
 if __name__ == '__main__':
