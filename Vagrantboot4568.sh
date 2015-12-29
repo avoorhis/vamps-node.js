@@ -187,13 +187,14 @@ create_mysql_mycnf_file
 load_python_libraries
 load_r_and_libraries
 
+echo "COMMENT===>Installing JAVA...."
+sudo apt-get install -qq default-jre
+
 echo "COMMENT===>Getting RDP_Classifier from SourceForge...."
 curl -L0k http://skylineservers.dl.sourceforge.net/project/rdp-classifier/rdp-classifier/rdp_classifier_2.2.zip > rdp_classifier.zip
 unzip rdp_classifier.zip
 ln -s rdp_classifier_2.2 rdp_classifier
 
-echo "COMMENT===>Installing JAVA...."
-sudo apt-get install -qq default-jre
 
 echo "COMMENT===>Cloning into vamps-node.js repository from github.com...."
 git clone https://github.com/avoorhis/vamps-node.js.git
