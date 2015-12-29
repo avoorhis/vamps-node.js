@@ -58,11 +58,11 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     file_info.files = [];
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
-        var pts = files[f].split(':');
+        var pts = files[f].split('-');
         if(pts[0] === 'metadata' || pts[0] === 'fasta' || pts[0] === 'matrix'){
           file_info.files.push(files[f]);
           stat = fs.statSync(export_dir+'/'+files[f]);
-          file_info.mtime[files[f]] = stat.mtime;  // modify time
+          file_info.mtime[files[f]] = stat.mtime.toString();  // modify time
           file_info.size[files[f]] = stat.size;
         }
       }
@@ -661,8 +661,8 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
         var scriptlog = path.join(data_dir,'script.log');
         var script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
     }
-		
 		script_path = path.join(data_dir, script_name);
+
 		fs.writeFile(script_path, script_text, function (err) {
 		  if (err) return console.log(err);
 		  // Make script executable
@@ -697,11 +697,11 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 								  }
 							});
 			    		run_process.on('close', function (code) {
-							   console.log('gast_process process exited with code ' + code);
+							   console.log('run_process process exited with code ' + code);
 							   var ary = output.split("\n");
 							   var last_line = ary[ary.length - 1];
 							   if(code === 0){
-								   console.log('GAST Success');
+								   console.log(classifier.toUpperCase()+' Success');
 								   //console.log('PID last line: '+last_line)
 								   var ll = last_line.split('=');
 								   var pid = ll[1];
@@ -711,11 +711,11 @@ router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,
 
 					            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
 										    if (err)  {
-									 		  	console.log('1-GAST-Query error: ' + err);				 		  			 
+									 		  	console.log('1-GAST/RDP-Query error: ' + err);				 		  			 
 									      } else {
 					        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
 					        				   		if (err)  {
-					        				 		  	console.log('2-GAST-Query error: ' + err);        				 		  
+					        				 		  	console.log('2-GAST/RDP-Query error: ' + err);        				 		  
 					        				    	} else {
 					                    													   
 																	helpers.assignment_finish_request(res,rows1,rows2,status_params);
@@ -1676,14 +1676,14 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
 
 		var pid = req.body.project_id;
 		var project = req.body.project;
-		file_name = 'fasta:'+timestamp+'_'+project+'.fa.gz';
+		file_name = 'fasta-'+timestamp+'_'+project+'.fa.gz';
   	out_file_path = path.join(user_dir,file_name);
   	qSelect += " where project_id = '"+pid+"'";
 
   }else if(req.body.download_type == 'partial_project'){
 
     var pids = JSON.parse(req.body.datasets).ids;
-		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
+		file_name = 'fasta-'+timestamp+'_'+'_custom.fa.gz';
     out_file_path = path.join(user_dir,file_name);
     qSelect += " where dataset_id in ("+pids+")";
     console.log(pids);
@@ -1691,7 +1691,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   }else if(req.body.download_type == 'custom_taxonomy'){
 			console.log('in DOWNLOAD SEQS');
 			req.flash('tax_message', 'Fasta being created');
-			file_name = 'fasta:'+timestamp+'_custom_taxonomy.fa.gz';
+			file_name = 'fasta-'+timestamp+'_custom_taxonomy.fa.gz';
   		out_file_path = path.join(user_dir,file_name);
 			var tax_string = req.body.tax_string;
 			tax_items = tax_string.split(';');
@@ -1777,11 +1777,11 @@ if(req.body.download_type == 'whole_project'){
   var pid  = req.body.project_id;
   dids = DATASET_IDS_BY_PID[pid];
   project = req.body.project;
-  file_name = 'metadata:'+timestamp+'_'+project+'.csv.gz';
+  file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
   out_file_path = path.join(user_dir,file_name);
 }else{
   dids = JSON.parse(req.body.datasets).ids;
-  file_name = 'metadata:'+timestamp+'.csv.gz';
+  file_name = 'metadata-'+timestamp+'.csv.gz';
   out_file_path = path.join(user_dir, file_name);
 }
   console.log('dids');
@@ -1880,8 +1880,8 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 
 
 		dids = JSON.parse(req.body.datasets).ids;
-		var timestamp = req.body.ts;
-		var file_name = 'matrix:'+timestamp+'.csv';
+		var timestamp = +new Date();
+		var file_name = 'matrix-'+timestamp+'.csv';
 		//out_file_path = path.join(user_dir, file_name);
 
 
