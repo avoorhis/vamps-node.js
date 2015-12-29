@@ -238,7 +238,7 @@ def write_metafile(args,stats):
                         dataset_index = 0
                     else:
                         ds_in_headers = False
-                        print "No dataset column found in first column (allowed column names: "+','.join(req_first_col);
+                        print "METADATA: No dataset column found in first column (allowed column names: "+','.join(req_first_col);
                         sys.exit(1)
                 else:
                     if args.upload_type == 'multi':

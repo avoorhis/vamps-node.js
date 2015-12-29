@@ -1300,7 +1300,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		res.redirect("/user_data/import_data");
 		return;
   }else{
-		    var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
+		  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
 		    // if(req.CONFIG.hostname.substring(0,7) == 'bpcweb7'){
 		    //     var data_repository = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
 		    // }else if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
@@ -1308,7 +1308,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		    // }else{ 
 		    //     var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
 		    // }
-		    console.log(data_repository);
+		  console.log(data_repository);
 			status_params = {'type':'new', 'user':req.user.username,
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
@@ -1399,12 +1399,17 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						   		console.log('Finished loading '+project);
 						   		LoadDataFinishRequest();
 							 }else{
-								 	req.flash('failMessage', 'Script Failure: '+last_line);
-								  status_params = {'type':'update', 'user':req.user.username,
-												'project':project, 'status':'Script Failure',	'msg':'Script Failure'  };
-								  helpers.update_status(status_params);
-								  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-								  return;
+								 	fs.move(data_repository,  path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'FAILED-project-'+project), function (err) {
+			    					if (err) { console.log(err);  }
+			    					else{
+											 	req.flash('failMessage', 'Script Failure: '+last_line);
+											  status_params = {'type':'update', 'user':req.user.username,
+															'project':project, 'status':'Script Failure',	'msg':'Script Failure'  };
+											  helpers.update_status(status_params);
+											  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+											  return;
+										}
+									});
 							 }
 						});
 
