@@ -38,7 +38,7 @@ function create_vamps_node_config_file () {
     echo "config.PATH_TO_BLAST = '';" >> config/config.js
     echo "config.PATH_TO_QIIME_BIN = '';" >> config/config.js
     echo "config.PATH_TO_VSEARCH = '';" >> config/config.js
-    echo "config.PATH_TO_CLASSIFIER = '';" >> config/config.js   
+    echo "config.PATH_TO_CLASSIFIER = '/home/vagrant/rdp_classifier/';" >> config/config.js   
     echo "config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/local/bin:/usr/local/mysql/bin'" >> config/config.js
     echo "config.LD_LIBRARY_PATH = '/home/vagrant/vamps-node.js/public/scripts'" >> config/config.js
     echo "config.PYTHONPATH = '/usr/local/lib/';" >> config/config.js
@@ -191,6 +191,9 @@ echo "COMMENT===>Getting RDP_Classifier from SourceForge...."
 curl -L0k http://skylineservers.dl.sourceforge.net/project/rdp-classifier/rdp-classifier/rdp_classifier_2.2.zip > rdp_classifier.zip
 unzip rdp_classifier.zip
 ln -s rdp_classifier_2.2 rdp_classifier
+
+echo "COMMENT===>Installing JAVA...."
+sudo apt-get install -qq default-jre
 
 echo "COMMENT===>Cloning into vamps-node.js repository from github.com...."
 git clone https://github.com/avoorhis/vamps-node.js.git

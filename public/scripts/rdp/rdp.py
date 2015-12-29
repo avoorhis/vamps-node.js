@@ -51,7 +51,7 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
     if os.path.exists(os.path.join(rdp_script_dir,'classifier.jar')):
         classifier_cmd = os.path.join(rdp_script_dir,'classifier.jar')
     else:
-        classifier_cmd = os.path.join(rdp_script_dir,'rdp_classifier_2.2.jar')
+        classifier_cmd = os.path.join(rdp_script_dir,'rdp_classifier-2.2.jar')
     
     try:
         rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -t "+PATH_2_DB+"/rRNAClassifier.properties -f fixrank"
