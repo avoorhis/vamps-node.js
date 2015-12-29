@@ -39,7 +39,7 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
     
     #PATH_2_DB  = os.path.join(process_dir,"public","databases","RDP",ref_db_dir)  # soft link to rdp_classifier
     try_file = os.path.join(process_dir,"public","databases","RDP",ref_db_dir,"rRNAClassifier.properties")
-    if os.path.exists(properties_file):
+    if os.path.exists(try_file):
         # for 'local' installation
         properties_file = os.path.join(process_dir,"public","databases","RDP",ref_db_dir,"rRNAClassifier.properties")
     else:
