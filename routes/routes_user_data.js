@@ -957,8 +957,8 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	}
 
 
-	// UPDATE DB if TAX ASSIGNMENTS PRESENT
-	if(req.body.project_pid !== 0){
+	// UPDATE DB ONLY if TAX ASSIGNMENTS PRESENT
+	if(req.body.project_pid !== 0 && req.body.project_pid !== '0'){
 		//sql call to projects, datasets
 		var p_sql = "UPDATE project set project='"+req.body.new_project_name+"',\n";
 		p_sql += " title='"+helpers.mysql_real_escape_string(req.body.new_project_title)+"',\n";
@@ -982,7 +982,6 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
     // TODO  needed updates to data objects:
     //1- PROJECT_INFORMATION_BY_PNAME
     //console.log('PROJECT_INFORMATION_BY_PNAME')
-    //console.log(PROJECT_INFORMATION_BY_PNAME);
     var tmp = PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
     delete PROJECT_INFORMATION_BY_PNAME[req.body.old_project_name];
     PROJECT_INFORMATION_BY_PNAME[req.body.new_project_name] = tmp;
@@ -990,7 +989,8 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 
     //2- PROJECT_INFORMATION_BY_PID
     //console.log('PROJECT_INFORMATION_BY_PID')
-		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
+		//console.log(req.body.project_pid);
+
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].project         = req.body.new_project_name;
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].env_source_name = req.CONSTS.ENV_SOURCE[req.body.new_env_source_id];
     PROJECT_INFORMATION_BY_PID[req.body.project_pid].title           = req.body.new_project_title;
@@ -1004,13 +1004,12 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 		//console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
 
     for(var d in req.body.new_dataset_names){
-    
     	var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"',\n";
 			d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"',\n";
 			d_sql += " dataset_description='"+helpers.mysql_real_escape_string(req.body.new_dataset_descriptions[d])+"'\n";
 			d_sql += " WHERE dataset_id='"+req.body.dataset_ids[d]+"' ";
 			d_sql += " AND project_id='"+req.body.project_pid+"' ";
-			console.log(d_sql);
+			//console.log(d_sql);
 			connection.query(d_sql, function(err, rows, fields){
         if(err){
           console.log('ERROR - in dataset update: '+err);
@@ -1035,7 +1034,6 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 				ALL_DATASETS.projects[i].name = req.body.new_project_name;
 				ALL_DATASETS.projects[i].title = req.body.new_project_title;
 
-
 				for(var d = 0; d < ALL_DATASETS.projects[i].datasets.length; d++) {
 					var did = ALL_DATASETS.projects[i].datasets[d].did;
 					var idx = req.body.dataset_ids.indexOf(did.toString());
@@ -1053,10 +1051,9 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	var project_name = req.body.old_project_name;
 	var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
-	
 	var project_dir = path.join(user_projects_base_dir,'project-'+project_name);
 	var config_file = path.join(project_dir,'config.ini');
-    var timestamp = +new Date();  // millisecs since the epoch!
+  var timestamp = +new Date();  // millisecs since the epoch!
 	var config_file_bu = path.join(project_dir,'config'+timestamp+'.ini');
 	fs.copy(config_file, config_file_bu, function (err) {
   	  	if (err){
@@ -1067,10 +1064,7 @@ router.post('/edit_project', helpers.isLoggedIn, function(req,res){
 	}); // copies fi
 	//console.log(config_file);
 
-
 	project_info.config = iniparser.parseSync(config_file);
-
-
 
 	//console.log('config:');
 	//console.log(JSON.stringify(project_info.config));
