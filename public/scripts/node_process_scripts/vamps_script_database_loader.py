@@ -525,15 +525,30 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
-            items = line.strip().split("\t")
-            
+            line = line.strip()
+            if not line:
+                continue
             # ['21|frequency:1', '', 'Bacteria', 'domain', '1.0', '"Firmicutes"', 'phylum', '1.0', '"Clostridia"', 'class', '1.0', 'Clostridiales', 'order', '1.0', '"Ruminococcaceae"', 'family', '1.0', 'Faecalibacterium', 'genus', '1.0']
+            # OR
+            # 4|frequency:1, '-','','','', Bacteria  domain 1.0 Firmicutes  phylum  1.0     Clostridia      class   1.0     Clostridiales   order   1.0     Clostridiaceae  family  1.0     Clostridium     genus   1.0
+ 
+            good_items = []
+            items = line.split("\t")
+            for i,item in enumerate(items):
+                if i < 6: 
+                    if item !='' and item != '-':
+                        good_items.append(item.strip('"').strip("'"))
+                else:
+                    good_items.append(item.strip('"').strip("'"))
+            items = good_items
+            # 4|frequency:1,  Bacteria  domain 1.0 Firmicutes  phylum  1.0     Clostridia      class   1.0     Clostridiales   order   1.0     Clostridiaceae  family  1.0   ... 
             # if boot_value > minboot add to tax_string
+            #print items
             tmp = items[0].split('|')
             seq_id = tmp[0]
             seq_count = tmp[1].split(':')[1]
             #seq_count =1
-            tax_line = items[2:]
+            tax_line = items[1:]
             print 'id',seq_id
             print 'cnt',seq_count
             print tax_line

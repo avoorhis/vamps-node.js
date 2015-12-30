@@ -128,16 +128,17 @@ function load_python_libraries () {
     echo "COMMENT===>Installing Python SciPy...."
     sudo pip install scipy
 
-    echo "COMMENT===>Installing illumina-utils...."
-    sudo pip install illumina-utils
-    
     echo "COMMENT===>Installing Python SciKit-Bio Prerequisites...."
     sudo easy_install -U distribute
     sudo apt-get install -qq pkg-config libcairo2-dev libpng-dev libfreetype6-dev libjpeg-dev
     #sudo pip install cairocffi
     #sudo pip install pygtk
-
+    
+    echo "COMMENT===>Installing illumina-utils...."
+    sudo pip install illumina-utils
+    
     #echo "COMMENT===>Installing Python SciKit-Bio...."
+    # scikit-bio is installed by emperor
     #sudo pip install scikit-bio==0.3.0
     #sudo pip install scikit-bio
 
@@ -196,8 +197,10 @@ unzip rdp_classifier.zip
 ln -s rdp_classifier_2.2 rdp_classifier
 cd rdp_classifier
 mkdir train
-java -Xmx400m -cp rdp_classifier-2.2.jar src/edu/msu/cme/rdp/classifier/train/ClassifierTraineeMaker sampledata/testTaxonForQuerySeq.txt sampledata/testQuerySeq.fasta 1 version1 test train
+echo "COMMENT===>Training the RDP Classifier...."
+java -Xmx400m -cp rdp_classifier-2.2.jar edu/msu/cme/rdp/classifier/train/ClassifierTraineeMaker sampledata/testTaxonForQuerySeq.txt sampledata/testQuerySeq.fasta 1 version1 test train
 cp sampledata/rRNAClassifier.properties train
+cd ..
 # rdp.py PATH_2_DB = '/home/vagrant/rdp_classifier/train'
 
 echo "COMMENT===>Cloning into vamps-node.js repository from github.com...."
