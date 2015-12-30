@@ -60,8 +60,9 @@ def run_rdp(infile, outfile, process_dir, rdp_script_dir, ref_db_dir='2.10.1'):
         classifier_cmd = os.path.join(rdp_script_dir,'rdp_classifier-2.2.jar')
     
     try:
-        rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -t "+properties_file+" -f fixrank"
-        
+        #rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -t "+properties_file+" -f fixrank"
+        # use non-trained as default:
+        rdp_cmd = PATH_2_JAVA + " -Xmx2400m -jar "+classifier_cmd+" -q "+infile+" -o "+outfile+" -f fixrank"
         logging.debug('RDPCMD: '+rdp_cmd)
         print rdp_cmd
 

@@ -188,7 +188,7 @@ if (save_config !== null) {
 }
 
 // download fasta
-download_fasta_btn = document.getElementById('download_fasta_btn') || null;
+var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
 if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
@@ -201,7 +201,7 @@ if (download_fasta_btn !== null) {
 }
 
 // download metadata
-download_metadata_btn = document.getElementById('download_metadata_btn') || null;
+var download_metadata_btn = document.getElementById('download_metadata_btn') || null;
 if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
@@ -213,7 +213,7 @@ if (download_metadata_btn !== null) {
   });
 }
 
-download_matrix_btn = document.getElementById('download_matrix_btn') || null;
+var download_matrix_btn = document.getElementById('download_matrix_btn') || null;
 if (typeof download_matrix_btn !== "undefined") {
   download_matrix_btn.addEventListener('click', function () {
       
@@ -273,7 +273,7 @@ if (typeof include_nas_radios[2] !=="undefined") {
   });
 }
 // Distance Metric Select (Combo)
-selected_distance_combo = document.getElementById('selected_distance');
+var selected_distance_combo = document.getElementById('selected_distance');
 if (typeof selected_distance_combo !=="undefined") {
 	$('.selectpicker').on('change', function () {
   	  //alert(selected_distance_combo)
@@ -283,7 +283,7 @@ if (typeof selected_distance_combo !=="undefined") {
 	});
 }
 // MIN Select (Combo)
-min_range_combo = document.getElementById('min_range') ;
+var min_range_combo = document.getElementById('min_range') ;
 if (typeof min_range_combo !=="undefined") {
 	min_range_combo.addEventListener('change', function () {
   	  document.getElementById('output_choices_submit_btn').disabled = false;
@@ -292,7 +292,7 @@ if (typeof min_range_combo !=="undefined") {
 	});
 }
 // MAX Select (Combo)
-max_range_combo = document.getElementById('max_range');
+var max_range_combo = document.getElementById('max_range');
 if (typeof max_range_combo !=="undefined") {
 	max_range_combo.addEventListener('change', function () {
   	  document.getElementById('output_choices_submit_btn').disabled = false;

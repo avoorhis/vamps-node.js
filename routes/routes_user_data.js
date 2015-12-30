@@ -585,7 +585,10 @@ router.get('/duplicate_project/:project', helpers.isLoggedIn,  function(req,res)
 		}); // copies directory, even if it has subdirectories or files
 
 });
-router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
+//
+//
+//
+router.get('/assign_taxonomy/:project/', helpers.isLoggedIn,  function(req,res){
 		var project = req.params.project;
 		var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
 
@@ -594,10 +597,9 @@ router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
 
 		res.render('user_data/assign_taxonomy', {
 			project : project,
-			//pinfo   : JSON.stringify(config),
-			//mdata   : JSON.stringify(jsonArray),
 			title   : project,
 			message : req.flash('successMessage'),
+			tax_choices : JSON.stringify(req.CONSTS.UNIT_ASSIGNMENT_CHOICES),
 	    user: req.user, hostname: req.CONFIG.hostname
      });
 
@@ -605,17 +607,24 @@ router.get('/assign_taxonomy/:project', helpers.isLoggedIn,  function(req,res){
 //
 // START_ASSIGNMENT
 //
-router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
-
+//router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
+router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  function(req,res){
 	var spawn = require('child_process').spawn;
 	var exec = require('child_process').exec;
 
 	console.log(req.params.project);
 	var project = req.params.project;
+	var classifier_id = req.params.classifier_id;
+// /GAST/SILVA108_FULL_LENGTH">Assign Taxonomy - GAST (Silva108)</a></li>
+// /GAST/GG_MAY2013">Assign Taxonomy - GAST (GreenGenes May2013)</a></li>
+// /RDP/2.10.1">Assign Taxonomy - RDP (2.10.1)</a></li>
+// /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
+// /RDP/ITS1"
 
-
-	var classifier = req.params.classifier;
-	var ref_db_dir = req.params.ref_db;
+	//var classifier = req.params.classifier;
+	var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method
+	//var ref_db_dir = req.params.ref_db;
+	var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
 	status_params = {'type':'update', 'user':req.user.username, 'project':project, 'status':'',	'msg':'' };
 	var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);

@@ -53,7 +53,21 @@ constants.UNITSELECT = { units: [
         {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'SLP'},
         {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',            name : "MED Nodes",        subtext: ''}
     ]};
-
+constants.UNIT_ASSIGNMENT_CHOICES = { 
+        1:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'SILVA108_FULL_LENGTH' },
+        2:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Av6v4 (Archaeal)',      availability:'not available', refdb:'' },
+        3:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Av3 (Archaeal)',        availability:'not available', refdb:'' },
+        4:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Av4v5 (Archaeal)',      availability:'not available', refdb:'' },
+        5:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Bv6v4 (Bacterial)',     availability:'not available', refdb:'' },
+        6:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Bv3 (Bacterial)',       availability:'not available', refdb:'' },
+        7:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Bv4v5 (Bacterial)',     availability:'not available', refdb:'' },
+        8:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'not available', refdb:'' },
+        9:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'not available', refdb:'' },
+        10: { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' },
+        11: { taxonomy_curator:'UNITE',        method:'GAST', reference_db:'ITS1',                  availability:'not available', refdb:'' },
+        12: { taxonomy_curator:'RDP (2.10.1)', method:'RDP',  reference_db:'',                      availability:'available',     refdb:'2.10.1' },
+        13: { taxonomy_curator:'GreenGenes',   method:'RDP',  reference_db:'',                      availability:'not available', refdb:'GG_MAY2013' }
+    };
 constants.VISUALOUTPUTCHOICES = { choices: [
         {id : 'counts_table',   show: 'Counts Table'},
         {id : 'barcharts',      show: 'Counts Bar Charts'},

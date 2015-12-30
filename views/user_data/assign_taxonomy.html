@@ -1,5 +1,5 @@
 <% include ../add_ins/begin.ejs %>
-
+<% choices = JSON.parse(tax_choices); %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -38,12 +38,34 @@ GAST vs RDP
 
 </div>
 
+<table class='table' >
+<tr><th>Source (Version)</th><th>Method</th><th>Reference DB</th><th></th></tr>
+<% for(id in choices){ %>
+	<% if(choices[id].availability == 'available'){ %>
+			<tr>
+					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td>
+					<td>
+						<a href='/user_data/start_assignment/<%= project %>/<%= id %>' class='btn btn-xs btn-success' name='assignment_choice' >Start</a>
+					</td>
+			</tr>
+	<% }else{ %>
+			<tr>
+					<td><%= choices[id].taxonomy_curator %></td><td><%= choices[id].method %></td><td><%= choices[id].reference_db %></td><td><%= choices[id].availability %></td>
+					
+			</tr>
+	<% } %>
+<% } %>
+
+</table>
+
+
+
 
 
 
 
 	
 <% include ../add_ins/end.ejs %>
-   
+<script type="text/javascript" src="/javascripts/user_data.js"></script>
  </body>
  </html>

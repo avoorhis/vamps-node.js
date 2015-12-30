@@ -34,3 +34,4 @@ if (validate_fasta_submit_btn !== null) {
   	  form.submit();
 	});
 }
+
