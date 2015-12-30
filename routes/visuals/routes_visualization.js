@@ -773,8 +773,10 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
         pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
         stderr1='';
         pcoa_process.stderr.on('data', function (data) {
-                console.log('1stderr: ' + data);
-                stderr += data;               
+                console.log('1stderr-POST: ' + data);
+                stderr1 += data; 
+                //res.send(stderr1); 
+                //return;              
         });
         pcoa_process.on('close', function (code1) {
                 console.log('pcoa_process1 process exited with code ' + code1);
@@ -806,13 +808,13 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                               env : env                            
                             }, function (error, stdout, stderr) {
 
-                      console.log('stdout: ' + stdout);
+                      console.log('stdout-POST: ' + stdout);
 
-                      console.log('stderr: ' + stderr);
+                      console.log('stderr-POST: ' + stderr);
 
                       if (error !== null) {
 
-                        console.log('exec error: ' + error);
+                        console.log('exec error-POST: ' + error);
                         var html = stderr
 
                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
@@ -821,6 +823,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                         html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
                         res.send(html); 
+                        return; 
 
                       }else{
                         //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
@@ -838,6 +841,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 
                         res.send(html); 
+                        return;
 
                       }
 
@@ -894,13 +898,13 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
       detached: true, 
       stdio:['pipe', 'pipe', 'pipe']
       //stdio: [ 'ignore', null, log ]
-        });  // stdin, stdout, stderr    
+        });  // stdin, stdout, stderr1    
        
         pcoa_process.stdout.on('data', function (data) { console.log('1stdout: ' + data);  });
         stderr1='';
-        pcoa_process.stderr.on('data', function (data) {
-                console.log('1stderr: ' + data);
-                stderr += data;               
+        pcoa_process.stderr1.on('data', function (data) {
+                console.log('1stderr-GET: ' + data);
+                stderr1 += data;               
         });
         pcoa_process.on('close', function (code1) {
                 console.log('pcoa_process1 process exited with code ' + code1);
@@ -932,13 +936,13 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                               env : env                            
                             }, function (error, stdout, stderr) {
 
-                      console.log('stdout: ' + stdout);
+                      console.log('stdout-GET: ' + stdout);
 
-                      console.log('stderr: ' + stderr);
+                      console.log('stderr-GET: ' + stderr);
 
                       if (error !== null) {
 
-                        console.log('exec error: ' + error);
+                        console.log('exec error-GET: ' + error);
                         
 
                       }else{
