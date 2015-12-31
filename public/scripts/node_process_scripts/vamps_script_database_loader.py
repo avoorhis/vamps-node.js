@@ -125,61 +125,61 @@ def start(args):
     cur = mysql_conn.cursor()
     
     
-    logging.info("running get_config_data")
-    print "running get_config_data"
+    logging.info("Database Loader:running get_config_data")
+    print "Database Loader:running get_config_data"
     get_config_data(args.project_dir)
     
-    logging.info("checking user")
-    print "checking user"
+    logging.info("Database Loader:checking user")
+    print "Database Loader:checking user"
     check_user()  ## script dies if user not in db
     
-    logging.info("checking project")
-    print "checking project"
+    logging.info("Database Loader:checking project")
+    print "Database Loader:checking project"
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
         print "ERROR res[0] -- Exiting (project name already taken)"
         sys.exit(res[1])
     else:
-        logging.info("recreating ranks")
-        print "recreating ranks"
+        logging.info("Database Loader:recreating ranks")
+        print "Database Loader:recreating ranks"
         recreate_ranks()
     
-        logging.info("env sources")
-        print "env sources"
+        logging.info("Database Loader:env sources")
+        print "Database Loader:env sources"
         create_env_source()
     
-        logging.info("classifier")
-        print "classifier"
+        logging.info("Database Loader:classifier")
+        print "Database Loader:classifier"
         create_classifier()
     
-        logging.info("starting taxonomy")
-        print "starting taxonomy"
+        logging.info("Database Loader:starting taxonomy")
+        print "Database Loader:starting taxonomy"
         push_taxonomy(args)
     
-        logging.info("starting sequences")
-        print "starting sequences"
+        logging.info("Database Loader:starting sequences")
+        print "Database Loader:starting sequences"
         push_sequences(args)
     
-        logging.info("projects")
-        print "projects"
+        logging.info("Database Loader:projects")
+        print "Database Loader:projects"
         push_project()
     
-        logging.info("datasets")
-        print "datasets"
+        logging.info("Database Loader:datasets")
+        print "Database Loader:datasets"
         push_dataset()
     
         #push_summed_counts()
-        logging.info("starting push_pdr_seqs")
-        print "starting push_pdr_seqs"
+        logging.info("Database Loader:starting push_pdr_seqs")
+        print "Database Loader:starting push_pdr_seqs"
         push_pdr_seqs(args)
     
         #print SEQ_COLLECTOR
         #pp.pprint(CONFIG_ITEMS)
-        logging.info("Finished "+os.path.basename(__file__))
-        print "Finished "+os.path.basename(__file__)
+        logging.info("Database Loader:Finished "+os.path.basename(__file__))
+        print "Database Loader:Finished "+os.path.basename(__file__)
         print CONFIG_ITEMS['project_id']
-        print 'Writing pid to pid.txt'
+        print 'Database Loader:Writing pid to pid.txt'
         fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
         fp.write(str(CONFIG_ITEMS['project_id']))
         fp.close()
@@ -268,7 +268,7 @@ def push_project():
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
-    #print q
+    print q
     logging.info(q)
     #print cur.lastrowid
     try:
@@ -339,7 +339,7 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            print q
+            #print q
             #print
             logging.info(q)
             try:

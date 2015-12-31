@@ -661,7 +661,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  fun
 			run_cmd,
 			options.scriptPath + '/vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
 //			"pid=$(head -n 1 "+data_dir+"/pid.txt)",   // pid is in a file pid.txt written by database loader
-			options.scriptPath + '/vamps_script_upload_metadata.py ' + options.upload_metadata_args.join(' '),
+			options.scriptPath + '/vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
 			options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
 		]
 		
@@ -1299,11 +1299,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		res.redirect("/user_data/import_data");
 		return;
   }else if(req.files[0].filename === undefined || req.files[0].size === 0){
-  	    req.flash('failMessage', 'A fasta file is required.');
+  	req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else if(req.files[1].filename === undefined || req.files[1].size === 0){
-  	    req.flash('failMessage', 'A metadata csv file is required.');
+  	req.flash('failMessage', 'A metadata csv file is required.');
 		res.redirect("/user_data/import_data");
 		return;
   }else{
@@ -1373,11 +1373,13 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 							return;
 						}
 
-                fs_old.chmod(data_repository, 0775, function (err) {
-			    if (err) {
-			        console.log(err)
-			        return;
-			    }
+            fs_old.chmod(data_repository, 0775, function (err) {
+						    if (err) {
+						        console.log(err)
+						        return;
+						    }
+				    
+
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 
 				    var spawn = require('child_process').spawn;
@@ -1395,17 +1397,17 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						});
 						
 						load_trim_process.on('close', function (code) {
-						   console.log('load_trim_process process exited with code ' + code);
-						   var ary = output.split("\n");
-						   var last_line = ary[ary.length - 1];
-						   if(code === 0){
+						   	console.log('load_trim_process process exited with code ' + code);
+						   	var ary = output.split("\n");
+						   	var last_line = ary[ary.length - 1];
+						   	if(code === 0){
 							   	console.log('Load Success');
 							   	status_params = {'type':'update', 'user':req.user.username,
 								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  };
 						   		helpers.update_status(status_params);
 						   		console.log('Finished loading '+project);
 						   		LoadDataFinishRequest();
-							 }else{
+							 	}else{
 								 	fs.move(data_repository,  path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'FAILED-project-'+project), function (err) {
 			    					if (err) { console.log(err);  }
 			    					else{
@@ -1417,12 +1419,12 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 											  return;
 										}
 									});
-							 }
-						});
+							 	}  // end else
+						}); // end load trim on close
 
-			  	}); // END move 2
-			}); // END move 1
-			});  // end mkdir
+			  	}); // 	END chmod
+			}); // 			END move 2
+			});  // 		END move 1
 
   }
   
@@ -1474,18 +1476,18 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			}
 			catch(err){
 				console.log(err);
+				original_metafile  = ''
 			}
-
-			console.log(original_metafile);
 
 
 			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-		        			args :       [ '-file', original_taxbyseqfile, '-o', username, '-pdir',process.env.PWD,'-db', NODE_DATABASE ]
+		        			args :       [ '-infile', original_taxbyseqfile, '-o', username, '--upload_type', 'multi', 
+		        											'--process_dir', process.env.PWD,'-db', NODE_DATABASE, '-host', req.CONFIG.dbhost ]
 		    			};
 			if(original_metafile){
 				options.args = options.args.concat(['-md_file',original_metafile]);
 			}
-			if(req.body.use_tax_from_file === 1){
+			if(use_file_taxonomy === '1'){
 				options.args = options.args.concat(['-use_tax']);
 			}
 			if(use_original_names == 'on'){
@@ -1497,7 +1499,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			//var original_tax_by_seq = path.join('./user_data', NODE_DATABASE, 'tmp', req.file.filename);
+			
 
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
@@ -1511,25 +1513,28 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					res.render('success', {  title   : 'VAMPS: Import Success',
 								          message : req.flash('successMessage'),
 					                display : "Import_Success",
-						              user    : req.user
+						              user    : req.user, hostname: req.CONFIG.hostname
 						  });
 			};
+			
 
-	  
+
 				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
-		    return;
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
-				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
+															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
+						    							detached: true, stdio: [ 'ignore', null, log ]
+														});  // stdin, stdout, stderr
 				var output = '';
 				// communicating with an external python process
 				// all the print statements in the py script are printed to stdout
 				// so you can grab the projectID here at the end of the process.
 				// use looging in the script to log to a file.
 				tax_by_seq_process.stdout.on('data', function (data) {
-					  //console.log('stdout: ' + data);
+					  console.log('stdout: ' + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
 					  output += data;
 					  var lines = data.split('\n');
@@ -1541,49 +1546,51 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					  }
 				});
 				tax_by_seq_process.on('close', function (code) {
-				   console.log('tax_by_seq_process process exited with code ' + code);
+				   console.log('tax_by_seq_process exited with code ' + code);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
 				   if(code === 0){
 					   console.log('TAXBYSEQ Success');
 					   //console.log('PID last line: '+last_line)
-					   var ll = last_line.split('=');
-					   // possible multiple pids
-					   pid_list = ll[1].split('-');
-					   for(var i in pid_list){
-						   //var pid = ll[1];
-						   var pid = pid_list[i];
-						   console.log('NEW PID=: '+pid);
-						   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
-						   if(helpers.isInt(pid)){
+					   if(use_file_taxonomy){
+							   var ll = last_line.split('=');
+							   // possibly multiple pids
+							   pid_list = ll[1].split('-');
+							   for(var i in pid_list){
+								   //var pid = ll[1];
+								   var pid = pid_list[i];
+								   console.log('NEW PID=: '+pid);
+								   //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+								   if(helpers.isInt(pid)){
 
-			            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
-								    if (err)  {
-							 		  	console.log('1-TAXBYSEQ-Query error: ' + err);				 		  			 
-							      } else {
-			        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
-			        				   		if (err)  {
-			        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  
-			        				    	} else {
-			                      	status_params = {'type':'update', 'user':req.user.username,
-			                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' };
-											   
-															helpers.assignment_finish_request(res,rows1,rows2,status_params);
-															helpers.update_status(status_params);
-															ALL_CLASSIFIERS_BY_PID[pid] = 'unknown';
+					            connection.query(queries.get_select_datasets_queryPID(pid), function(err, rows1, fields){
+										    if (err)  {
+									 		  	console.log('1-TAXBYSEQ-Query error: ' + err);				 		  			 
+									      } else {
+					        				   	connection.query(queries.get_select_sequences_queryPID(pid), function(err, rows2, fields){  
+					        				   		if (err)  {
+					        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  
+					        				    	} else {
+					                      	status_params = {'type':'update', 'user':req.user.username,
+					                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' };
+													   
+																	helpers.assignment_finish_request(res,rows1,rows2,status_params);
+																	helpers.update_status(status_params);
+																	ALL_CLASSIFIERS_BY_PID[pid] = 'unknown';
 
 
-			        				    	}
+					        				    	}
 
-			        				   	});
-								   	} // end else
+					        				   	});
+										   	} // end else
 
-							   });
+									   });
 
-				           }else{ // end if int
-			                   console.log('ERROR pid is not an integer: '+pid.toString());
-						   }
-						 } // end for pid in pid_list
+						           }else{ // end if int
+					                   console.log('ERROR pid is not an integer: '+pid.toString());
+								   }
+								 } // end for pid in pid_list
+							}
 				   }else{
 				   		// ERROR
 				   		console.log(output);
@@ -1594,7 +1601,9 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				   }
 				});  // end tax_by_seq_process ON Close
 
-
+			// }); // 	END chmod
+			// }); // 			END move 2
+			// });  // 		END move 1
 
   }
   LoadDataFinishRequest();

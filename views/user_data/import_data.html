@@ -11,7 +11,7 @@
 	
 	
 	
-<!-- ======================================================================================================== 
+<!-- ========== SIMPLE / SINGLE FASTA ============================================================================================== 
     Todo later: raw data processing (illumina -hiseq -miseq -newseq; 454)
     -->	
  
@@ -72,7 +72,7 @@
 	<input type='hidden' name='type' value='<%= import_type %>'>
   </form>
 <% } else if(import_type == 'multi_fasta') { %>
-<!-- ======================================================================================================== -->		
+<!-- ================ MULTI FASTA ======================================================================================== -->		
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
 	<h4>Import Multi-Dataset Form: <small>(All fields are required)</small></h4>
@@ -109,7 +109,7 @@
     </div>
 	<input type='hidden' name='type' value='<%= import_type %>'>
   </form>
-<!-- ======================================================================================================== -->		
+<!-- ================== ADD METADATA ====================================================================================== -->		
 <% } else if(import_type == 'metadata') { %>
 
   <form class="form-horizontal" role="form" method='POST' action='upload_metadata' enctype="multipart/form-data">
@@ -164,7 +164,7 @@
     </div>
 	<input type='hidden' name='type' value='<%= import_type %>' />
   </form>
-<!-- ======================================================================================================== -->	
+<!-- =================== ADD DATASET ===================================================================================== -->	
 <% } else if(import_type == 'new_data') { %>
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
@@ -196,7 +196,7 @@
     </div>
 	<input type='hidden' name='type' value='<%= import_type %>' />
   </form>
-
+<!-- =================== TAX - BY - SEQ ===================================================================================== -->  
 <% } else if(import_type == 'tax_by_seq') { %>
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data_tax_by_seq' enctype="multipart/form-data">
@@ -220,7 +220,7 @@
     <div class="form-group">  
         <label class="control-label col-sm-3" for="">Use Taxonomy from TaxBySeq File:</label> 
         <div class="col-sm-5">
-          <input type='radio' checked name='use_tax_from_file' value='1'> Yes &nbsp; &nbsp;&nbsp;&nbsp;    <input type='radio' name='use_tax' value='0'> No
+          <input type='radio' checked name='use_tax_from_file' value='1'> Yes &nbsp; &nbsp;&nbsp;&nbsp;    <input type='radio' name='use_tax_from_file' value='0'> No
            -- You will need to assign taxonomy later.
         </div>
     </div>

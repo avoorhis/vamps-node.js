@@ -216,6 +216,7 @@ def get_metadata(indir,csv_infile):
                         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
                     else:
                         ds = CONFIG_ITEMS['datasets'][0]
+                    print 'XXDATASET '+ds
                     did = DATASET_ID_BY_NAME[ds]
                     REQ_METADATA_ITEMS['dataset_id'].append(did)
                 else:
@@ -269,6 +270,7 @@ def get_config_data(indir):
     q = "SELECT project_id FROM project"
     q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
     logging.info(q)
+    print q
     cur.execute(q)
     
     row = cur.fetchone()     
@@ -277,57 +279,17 @@ def get_config_data(indir):
     q = "SELECT dataset,dataset_id from dataset"
     q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
     logging.info(q)
+    print q
     cur.execute(q)     
     for row in cur.fetchall():        
         DATASET_ID_BY_NAME[row[0]] = row[1]
         
     mysql_conn.commit()
-    
+    print 'DATASET_ID_BY_NAME'
+    print DATASET_ID_BY_NAME
 
     
-# def combine(indir):
-#     if not args.infile:
-#         sys.exit('need first file')
-#     if not args.other_file:
-#         sys.exit('need second file')
-#
-#     outfile = os.path.join(args.indir,'combined_metadata.txt')
-#     fp = open(outfile,'w')
-#     csv_infile1 = args.infile
-#     lol = list(csv.reader(open(csv_infile1, 'rb'), delimiter='\t'))
-#     #print lol
-#     keys = lol[0]
-#     TMP_METADATA_ITEMS = {}
-#     for i,key in enumerate(keys):
-#         TMP_METADATA_ITEMS[key] = []
-#         for line in lol[1:]:
-#             TMP_METADATA_ITEMS[key].append(line[i])
-#
-#
-#     csv_infile2 = args.other_file
-#     lol = list(csv.reader(open(csv_infile2, 'rb'), delimiter='\t'))
-#     keys = lol[0]
-#     for i,key in enumerate(keys):
-#         TMP_METADATA_ITEMS[key] = []
-#         for line in lol[1:]:
-#             TMP_METADATA_ITEMS[key].append(line[i])
-#
-#     headers =  TMP_METADATA_ITEMS.keys()
-#     txt = ''
-#     for key in headers:
-#         txt += key + "\t"
-#     txt = txt.strip() + "\n"
-#     fp.write(txt)
-#
-#     for i,line in enumerate(lol[1:]):
-#         txt = ''
-#         for key in headers:
-#             txt +=  TMP_METADATA_ITEMS[key][i] + "\t"
-#         txt = txt.strip() + "\n"
-#         fp.write(txt)
-#
-#     print outfile,'has been written'
-#     fp.close()
+
     
 if __name__ == '__main__':
     import argparse

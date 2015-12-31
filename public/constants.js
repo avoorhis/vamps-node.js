@@ -65,7 +65,7 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
         9:  { taxonomy_curator:'SILVA (v108)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'not available', refdb:'' },
         10: { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' },
         11: { taxonomy_curator:'UNITE',        method:'GAST', reference_db:'ITS1',                  availability:'not available', refdb:'' },
-        12: { taxonomy_curator:'RDP (2.10.1)', method:'RDP',  reference_db:'',                      availability:'available',     refdb:'2.10.1' },
+        12: { taxonomy_curator:'RDP (2.10.1)', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.10.1' },
         13: { taxonomy_curator:'GreenGenes',   method:'RDP',  reference_db:'',                      availability:'not available', refdb:'GG_MAY2013' }
     };
 constants.VISUALOUTPUTCHOICES = { choices: [

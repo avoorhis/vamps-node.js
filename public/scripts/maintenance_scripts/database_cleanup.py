@@ -216,7 +216,7 @@ if __name__ == '__main__':
                 help="")
                
     parser.add_argument("-json_file_path", "--json_file_path",        
-                required=False,  action='store', dest = "json_file_path",  default='../json', 
+                required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")   
                           
     args = parser.parse_args()    
