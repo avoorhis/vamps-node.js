@@ -113,7 +113,7 @@ def get_dataset_ids(args):
         CONFIG_ITEMS['project_id'] = row[0]
             
         q = "SELECT dataset,dataset_id from dataset"
-        q += " WHERE project_id = '"+str(CONFIG_ITEMS['project_id'])+"'"
+        q += " WHERE project_id='"+str(row[0])+"' AND project_id = '"+str(CONFIG_ITEMS['project_id'])+"'"
         logging.info(q)
         print q
         cur.execute(q)     

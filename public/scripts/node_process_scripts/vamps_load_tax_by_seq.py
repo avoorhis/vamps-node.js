@@ -263,7 +263,7 @@ def check_project_names(args,collector):
         print pj
     return collector
         
-def run_metadata(args,stats):
+def write_metadata_to_file(args,stats):
     print 'csv',args.metadata_file
     logging.info('csv '+ args.metadata_file)
     lol = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
@@ -274,11 +274,16 @@ def run_metadata(args,stats):
     scnlist = [] 
     for line in lol:
         #print line
-        pj = line[0]
+        if args.project:
+            pj = args.project
+            ds = line[0]+'__'+line[1]
+        else:
+            pj = line[0]
+            ds = line[1]
         #project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project-'+pj)
         #mdfile_clean = os.path.join(project_dir,'metadata_clean.csv')
         #f = open(mdfile_clean, 'w')
-        ds = line[1]
+        
         scn = line[2]
 
         val = line[3]
@@ -439,7 +444,7 @@ if __name__ == '__main__':
 
   #  write_metafile(args,stats)
     if args.metadata_file:
-        run_metadata(args, stats)
+        write_metadata_to_file(args, stats)
 
     write_config(args,stats)
 
@@ -460,15 +465,13 @@ if __name__ == '__main__':
             stats[pj]["pid"]=args.pid
             pids.append(str(args.pid))
 
-        if args.metadata_file:
-            import vamps_script_load_metadata as load_metadata
-            for pj in stats:
+            # Must be before taxcounts
+            if args.metadata_file:
+                import vamps_script_load_metadata as load_metadata
                 print 'Starting Metadata Upload for Project: '+pj
                 args.project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE, args.owner,'project-'+pj)
                 load_metadata.start_pipeline_load(args)
-        #sys.exit()       
-        for pj in stats:
-            print
+
             print "STARTING taxcounts files for Project: "+pj
             args.pid =  stats[pj]["pid"]   
             logging.info('running vamps_script_create_json_dataset_files.py')   
@@ -476,13 +479,9 @@ if __name__ == '__main__':
             logging.info("finishing taxcounts")
             
             
-            # 5-5-5-5-5-5
-
+            
             logging.info("DONE")
             print "DONE WITH ",pj
-
-        
-    
 
         #
         # this must be the last print:

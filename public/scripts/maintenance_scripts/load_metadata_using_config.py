@@ -205,7 +205,8 @@ def get_config_data(args):
     CONFIG_ITEMS['project_id'] = row[0]
         
     q = "SELECT dataset,dataset_id from dataset"
-    q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
+    q += " WHERE project_id='"+str(row[0])+"' AND dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
+    
     print q
     cur.execute(q)     
     for row in cur.fetchall():        

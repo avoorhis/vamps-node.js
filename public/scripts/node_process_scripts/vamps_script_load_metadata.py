@@ -37,10 +37,7 @@ import MySQLdb
 # Global:
 #NODE_DATABASE = "vamps_js_dev_av"
 #NODE_DATABASE = "vamps_js_development"
-CONFIG_ITEMS = {}
-DATASET_ID_BY_NAME = {}
-REQ_METADATA_ITEMS = {}
-CUST_METADATA_ITEMS = {}
+
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
 req_first_col = ['#SampleID','sample_name','dataset_name']
@@ -51,8 +48,12 @@ req_first_col = ['#SampleID','sample_name','dataset_name']
 
 
 def start_pipeline_load(args):
-    global mysql_conn, cur
+    global mysql_conn, cur, DATASET_ID_BY_NAME, REQ_METADATA_ITEMS, CUST_METADATA_ITEMS, CONFIG_ITEMS
     logging.info('CMD> '+' '.join(sys.argv))
+    CONFIG_ITEMS = {}
+    DATASET_ID_BY_NAME = {}
+    REQ_METADATA_ITEMS = {}
+    CUST_METADATA_ITEMS = {}
     print 'CMD> ',sys.argv
     NODE_DATABASE = args.NODE_DATABASE
     
@@ -78,7 +79,7 @@ def start_additional_upload(args):
     pass
 
 def put_required_metadata():
-    global mysql_conn, cur
+    global mysql_conn, cur, DATASET_ID_BY_NAME, REQ_METADATA_ITEMS, CUST_METADATA_ITEMS, CONFIG_ITEMS
     q = "INSERT IGNORE into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
     q = q+" VALUES("
     
@@ -101,7 +102,7 @@ def put_custom_metadata():
     """
       create new table
     """
-    global mysql_conn, cur
+    global mysql_conn, cur, DATASET_ID_BY_NAME, REQ_METADATA_ITEMS, CUST_METADATA_ITEMS, CONFIG_ITEMS
     print 'starting put_custom_metadata'
     # TABLE-1 === custom_metadata_fields
     print 'CUST_METADATA_ITEMS',CUST_METADATA_ITEMS
@@ -170,7 +171,7 @@ def put_custom_metadata():
     
 def get_metadata(indir,csv_infile):
     
-    
+    global  DATASET_ID_BY_NAME, REQ_METADATA_ITEMS, CUST_METADATA_ITEMS, CONFIG_ITEMS
     print 'csv',csv_infile
     logging.info('csv '+csv_infile)
     lol = list(csv.reader(open(csv_infile, 'rb'), delimiter='\t'))
@@ -216,7 +217,7 @@ def get_metadata(indir,csv_infile):
                         ds = TMP_METADATA_ITEMS[dataset_header_name][j]
                     else:
                         ds = CONFIG_ITEMS['datasets'][0]
-                    print 'XXDATASET '+ds
+                    print 'load_metadata:DATASET '+ds
                     did = DATASET_ID_BY_NAME[ds]
                     REQ_METADATA_ITEMS['dataset_id'].append(did)
                 else:
@@ -253,7 +254,7 @@ def get_metadata(indir,csv_infile):
         CUST_METADATA_ITEMS['dataset_id'] = []
             
 def get_config_data(indir):
-    global mysql_conn, cur
+    global mysql_conn, cur, DATASET_ID_BY_NAME, REQ_METADATA_ITEMS, CUST_METADATA_ITEMS, CONFIG_ITEMS
     config_infile =   os.path.join(indir,'config.ini') 
     print config_infile
     logging.info(config_infile)
@@ -277,7 +278,7 @@ def get_config_data(indir):
     CONFIG_ITEMS['project_id'] = row[0]
         
     q = "SELECT dataset,dataset_id from dataset"
-    q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
+    q += " WHERE project_id='"+str(row[0])+"' AND dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
     logging.info(q)
     print q
     cur.execute(q)     
