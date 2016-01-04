@@ -296,7 +296,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 
 		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
 		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+		var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 		var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		var output = '';
 		validate_process.stdout.on('data', function (data) {
@@ -1210,7 +1210,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 					}
 					console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
 					var spawn = require('child_process').spawn;
-					var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+					var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 					var output = '';
 					upload_metadata_process.stdout.on('data', function (data) {
@@ -1523,7 +1523,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
-				var log = fs.openSync(path.join(process.env.PWD,'node.log'), 'a');
+				var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
 						    							detached: true, stdio: [ 'ignore', null, log ]
