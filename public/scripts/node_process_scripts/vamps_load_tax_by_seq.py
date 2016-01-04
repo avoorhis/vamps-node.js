@@ -257,7 +257,7 @@ def check_project_names(args,collector):
             #return ('ERROR','Duplicate project name1; Query:'+q)
     for pj in tmp:
         collector[tmp[pj]] = collector[pj]
-        print 'removing duplicate project: ',pj
+        print 'found duplicate project: ',pj
         del collector[pj]
     for pj in collector:
         print pj
@@ -272,14 +272,32 @@ def write_metadata_to_file(args,stats):
     found_dsets_dict={}
     TMP_METADATA_ITEMS = {}
     scnlist = [] 
+    
     for line in lol:
         #print line
+        pj = ''
         if args.project:
-            pj = args.project
-            ds = line[0]+'__'+line[1]
+            pj = args.project  # single project
+            ds = pj+'__'+line[1]
+            if pj not in stats:
+                print "Could not find project in stats",pj,' - Exiting'
+                sys.exit(-23)
         else:
-            pj = line[0]
+            pjbase = line[0]
+            
+            if pjbase in stats:
+                pj = pjbase
+            else:
+                for item in stats:
+                    if item.find(pjbase) == 0:  # found at beginning
+                        pj = item
+                        break
+
+
             ds = line[1]
+        if not pj:
+            print "Could not find project - Exiting"
+            sys.exit(-24)
         #project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project-'+pj)
         #mdfile_clean = os.path.join(project_dir,'metadata_clean.csv')
         #f = open(mdfile_clean, 'w')
@@ -306,6 +324,8 @@ def write_metadata_to_file(args,stats):
             TMP_METADATA_ITEMS[pj][ds]={}
             TMP_METADATA_ITEMS[pj][ds][scn]=val
     
+
+
     print TMP_METADATA_ITEMS
     for pj in stats:
         project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project-'+pj)
