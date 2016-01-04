@@ -519,7 +519,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
   		if(delete_kind == 'all'){
   				// MOVE file dir to DELETED path (so it won't show in 'your_projects' list)
 					var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
-					var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'DELETED_project'+timestamp+':'+project);
+					var deleted_data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'DELETED_project'+timestamp+'-'+project);
 	
 					fs.move(data_dir, deleted_data_dir, function(err){
 						if(err){
@@ -1547,6 +1547,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				});
 				tax_by_seq_process.on('close', function (code) {
 				   console.log('tax_by_seq_process exited with code ' + code);
+				   console.log('output',output);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
 				   if(code === 0){
