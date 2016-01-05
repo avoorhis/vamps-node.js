@@ -11,7 +11,7 @@ vampsdbuser='ruby'
 vampsdbpass='ruby'
 vampsdb='vamps_starter'
 app_name='vamps-node.js'
-LOGFILE="/home/vagrant/$app_name/logs/node_server.log"
+LOGFILE="/home/vagrant/node_server.log"
 
 function create_mysql_mycnf_file () {
     echo "COMMENT===>Creating ~/.my.cnf_node"
@@ -192,15 +192,17 @@ echo "COMMENT===>Installing JAVA...."
 sudo apt-get install -qq default-jre
 
 echo "COMMENT===>Getting RDP_Classifier from SourceForge...."
-curl -L0k http://skylineservers.dl.sourceforge.net/project/rdp-classifier/rdp-classifier/rdp_classifier_2.2.zip > rdp_classifier.zip
-unzip rdp_classifier.zip
-ln -s rdp_classifier_2.2 rdp_classifier
-cd rdp_classifier
+cd /home/vagrant
+curl -L0k http://skylineservers.dl.sourceforge.net/project/rdp-classifier/rdp-classifier/rdp_classifier_2.2.zip > /home/vagrant/rdp_classifier.zip
+
+unzip /home/vagrant/rdp_classifier.zip
+ln -s /home/vagrant/rdp_classifier_2.2 /home/vagrant/rdp_classifier
+cd /home/vagrant/rdp_classifier
 mkdir train
 echo "COMMENT===>Training the RDP Classifier...."
 java -Xmx400m -cp rdp_classifier-2.2.jar edu/msu/cme/rdp/classifier/train/ClassifierTraineeMaker sampledata/testTaxonForQuerySeq.txt sampledata/testQuerySeq.fasta 1 version1 test train
 cp sampledata/rRNAClassifier.properties train
-cd ..
+cd /home/vagrant
 # rdp.py PATH_2_DB = '/home/vagrant/rdp_classifier/train'
 
 echo "COMMENT===>Cloning into vamps-node.js repository from github.com...."
@@ -227,10 +229,17 @@ create_n_load_mysql_database
 echo "COMMENT===>Running INITIALIZE_ALL_FILES Script...."
 public/scripts/maintenance_scripts/INITIALIZE_ALL_FILES.py -dbuser $vampsdbuser -dbpass $vampsdbpass -db $vampsdb
 
+sudo chgrp -R vagrant ../*
+sudo chmod -R ug+rw ../* 
 
 # Uncomment these lines to auto-start the vamps.js server when provisioning
+# start server as regular user (vagrant) not sudo (root)
 echo "COMMENT===>Starting VAMPS-Node.js Server"
+#sudo -u vagrant npm start
+cd /home/vagrant/$app_name
 forever -l $LOGFILE start bin/www
+#sudo -u vagrant forever -l $LOGFILE start bin/www
+
 #npm start
 
 

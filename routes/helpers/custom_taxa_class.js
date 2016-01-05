@@ -368,4 +368,5 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
   }
   write_partial(fileName, "</div> <!-- tree well -->");
   
+  
 };

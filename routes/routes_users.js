@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
-
+var fs = require('fs-extra');
+var path = require('path');
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
@@ -85,13 +86,25 @@ router.post('/signup',
 // we will want this protected so you have to be logged in to visit
 // we will use route middleware to verify this (the isLoggedIn function)
 router.get('/profile', helpers.isLoggedIn, function(req, res) {
-    
+    var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username)
+    fs.ensureDir(data_dir, function (err) {
+        if(err) {console.log(err);} // => null
+        else{
+            fs.chmod(data_dir, 0775, function (err) {
+                if(err) {console.log(err);} // ug+rwx
+                else{
+                  res.render('user_admin/profile', {
+                      title:'profile',
+                      message: req.flash('loginMessage'), 
+                      user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
+                  });
+                }
+            });
+        }       
 
-    res.render('user_admin/profile', {
-        title:'profile',
-        message: req.flash('loginMessage'), 
-        user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
     });
+
+    
 });
 
 // =====================================

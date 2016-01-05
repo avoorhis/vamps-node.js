@@ -443,6 +443,7 @@ if __name__ == '__main__':
                           db = args.NODE_DATABASE,
                           read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     #mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    #mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
     
     
