@@ -248,7 +248,6 @@ sudo chmod -R ug+rw ../*
 
 # Uncomment these lines to auto-start the vamps.js server when provisioning
 # start server as regular user (vagrant) not sudo (root)
-
 #sudo -u vagrant npm start
 #cd /home/vagrant/$app_name
 create_vamps_start_script

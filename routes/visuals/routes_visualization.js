@@ -317,6 +317,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants   : JSON.stringify(req.CONSTS),
                                 filtering   : 0,
+                                portal_to_show : '',
                                 data_to_open: JSON.stringify(data_to_open),
                                 //portal_name: 'none',
 	  							              message     : req.flash('nodataMessage'),

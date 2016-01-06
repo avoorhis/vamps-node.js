@@ -1,0 +1,150 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<a href='/portals/portals_index'>&lt;&lt;-portals</a>	
+
+<div class="container">	
+	<center><img src='/images/portals/<%= portal %>.jpg' width='500'></center>
+    <p class='title'><%= maintitle %></p>	
+	<p class='subtitle'><%= subtitle %></p>	
+	
+	<div class="row marketing">
+        <div class="col-lg-12">
+          
+         
+	 
+<% if(portal == 'cmp'){ %> 
+        <p> 
+        The Coral Microbiome Portal (CMP) database brings together next generation sequencing data of coral-associate microorganisms from studies conducted thoughout the world’s reefs, with the goal of enhancing knowledge and advancing understanding of coral-microbial relationships. The data are hosted on the CMP portal on the Marine Biological Laboratory’s VAMPS website, and are accessible for download, analysis, and visualization by anyone with a web browser. Visit the CMP to examine or download existing data, or use the private mode to view new sequencing data in comparison to the CMP data. 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/cmp/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/CMP'>CMP Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/CMP'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/CMP'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/CMP'>MAP</a> - Sample locations
+		    </ul>
+		</p>
+<% }else if(portal == 'codl') { %>
+        <p> Data are being compiled to explore:
+            1 	the genetic diversity of subsurface microbes
+            2 	non-biological controls on microbial distribution and diversity in the subsurface
+            3 	their community structure and distribution in different geological systems
+            4 	whether there are "keystone" species characteristic of underground habitats
+            5 	the role of microbes in carbon and other geochemical cycles
+            Investigators will provide high-quality DNA samples from relevant globally distributed sites for deep sequencing analysis of microbial ribosomal RNAs.
+            The Census of Deep Life (CoDL) is a sub-program within the Deep Life Directorate (DLD) of the Deep Carbon Observatory (DCO).
+            More information is available from the white paper "Deep Subsurface Microbiology and the Deep Carbon Observatory", the report from a Deep Carbon Observatory workshop on Deep Life in marine and continental subsurface environments.
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/codl/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/DCO'>CoDL Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/DCO'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/DCO'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/DCO'>MAP</a> - Sample locations
+            </ul>
+		</p>
+<% }else if(portal == 'hmp') { %>
+        <p> 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/hmp/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/HMP'>HMP Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/HMP'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/HMP'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            </ul>
+		</p>
+<% }else if(portal == 'icomm') { %>
+        <p> 
+            The Microbis database serves legacy, lipidomic, and pyrosequencing data and associated contextual data collected as part of the ICoMM Census of Marine Life Ocean Realm Project. Legacy data include geospatial and environmental data collected from environmental sequencing surveys prior to the initiation of the ICoMM effort. Microbis links to lipid structures (via Lipid Maps) and a mass spectrometry library that contains lipid data derived from microbes from modern and ancient environments.
+            <br><br>
+            Details about ICoMM and Keck pyrosequencing projects can be viewed on project pages that contain downloadable MIENS-compliant contextual data, as well as project proposals, DNA extraction protocols and project PI contact information. Pyrotag projects can also be displayed on Google maps and searched by key words and structured comment names.
+            <br><br>
+            The database VAMPS (Visualization and Analysis of Microbial Population Structures) and its links to Microbis provide full access to the pyrotag sequences, the contextual data, analytical and graphical tools for comparing microbial population structures for different sites, search tools for locating sequences in each of our samples, descriptions of community composition at taxonomic ranks of phyla, class, order, family, or, when possible, genus for all samples, and rarefaction and diversity analyses for all of ICoMM's data. 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/icomm/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/ICM'>ICoMM Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/ICM'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/ICM'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/ICM'>MAP</a> - Sample locations.
+            </ul>
+		</p>
+<% }else if(portal == 'mirada') { %>
+        <p> 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/mirada/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/LTR'>MIRADA Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/LTR'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/LTR'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/LTR'>MAP</a> - Sample locations
+            </ul>
+		</p>
+<% }else if(portal == 'mobe') { %>
+        <p> 
+            The MoBeDAC provides a data repository and bioinformatics tools for analyzing molecular sequence data and for visualizing ecological and functional similarities between microbial communities in the indoor environment and other field sites. 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/mobe/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/projects/MBE'>MoBE Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/MBE'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/metadata/MBE'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/MBE'>MAP</a> - Sample locations
+            </ul>
+		</p>
+
+<% }else if(portal == 'rare') { %>
+        <p>  The rare biosphere includes the tens of thousands of low-abundance taxa that make up the long tail seen in rank distribution curves for complex microbial communities. Recent discoveries show that the sheer size of the long tail is enormous and the genotypic varia-tion of rare microbes eclipses all prior estimates of bacterial, archaeal, and eukaryl diversity. We have few clues about why so many different kinds of low-abundance organisms occur in complex microbial communities, how they distribute across temporal and spatial scales, and what might be their contribution to community function. The rare biosphere contains numerous, never-before-seen populations because dominant microbes have masked their detection.
+            <br><br>
+            Over the last 100 years, biologists have developed an appreciation for the importance of microbial life and the overwhelming influence of abundant microbial populations on ecosystem function and habitability. We know far less about rare microbes. Their extreme diversity tells us that these low-abundance populations diverged from each other many millions of years ago, and that over geological time scales they function in as yet unidentified ways to sustain biological systems. To address gaping holes in our knowledge about the rare biosphere, we must identify the requisite elements for a broad, interdisciplinary, multi-component research initiative. Large in scale, the program would support experimentation and training, as well as the development of a theoretical framework for modeling the functional role of the rare biosphere. The focus will be to understand why the rare biosphere exists and the underlying mechanisms that allow low-abundance microbial populations to persist over different temporal scales. The initiative will explore the rare biosphere's contribution to biogeochemical processes and emergent properties of ecosystems, its influence on the shifts and evolution of community members and population structure, its capacity to reshape the composite genomes of microbial communities, and its potential role in regulating homeostatic mechanisms that impact human health and well being. 
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/rare/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/rare/projects'>RARE Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/RARE'>Visualization and Analysis</a>	- Dataset selection.														
+            <li><a href='/portals/rare/metadata'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            <li><a href='/portals/geomap/RARE'>MAP</a> - Sample locations
+            </ul>
+		</p>
+<% }else if(portal == 'uc') { %>
+        <p>
+            The <i>Role of the Gut Microbiota in Ulcerative Colitis</i> is an HMP demonstration project addressing the hypothesis that the gut microbiota plays a critical role in the pathogenesis of inflammatory bowel disease (IBD). There already exists strong clinical, genetic, and experimental evidence that support the merits of this hypothesis. To circumvent the confounding effects of mucosal inflammation and medications that independently bias microbial selection, we are studying a unique clinical model of ulcerative colitis (pouchitis) where the development and status of the gut microbiota can be assessed prospectively and relative to the outcome of disease. Pouchitis is an inflammatory condition of a surgically-created pseudorectum that is unique to ulcerative colitis and does not occur when this procedure is performed for treatment of other underlying diseases. Since the incidence of developing pouchitis within one year is over 50%, the likelihood of detecting antecedent changes in microbiota is high. In addition, we can explore the cause of antibiotic treatment failure which occurs in 10-15% of patients. Collectively, these studies will provide insights into how enteric microbiota cause or contribute to the etiopathogenesis of human ulcerative colitis.
+        </p>
+        <p>
+          	<ul>
+          	<li><a href='/portals/uc/collaborators'>Project Background and Collaborators.</a>
+            <li><a href='/portals/uc/projects'>Ulcerative Colitis Projects</a>	- The individual projects with descriptions and metadata.
+            <li><a href='/portals/visuals_index/UC'>Visualization and Analysis</a>	- Dataset selection.
+                                            Note: the sequence data are not all public yet and therefore may not be visible unless you are an Ulcerative Colitis collaborator.
+            <li><a href='/portals/uc/metadata'>View Metadata</a>	- A list of the metadata for the projects in this portal.
+            </ul>
+		</p>
+
+
+<% } %>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

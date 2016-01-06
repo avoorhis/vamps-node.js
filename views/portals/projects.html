@@ -9,14 +9,13 @@
 	<div class="container">
 
 	<div class="hero-unit">
-	       <h2>VAMPS:</h2>
-				<h3>Visualization and Analysis of Microbial Population Structures</h3>
-		       An integrated collection of tools for researchers to visualize and analyze data for microbial population structures and distributions.         
+	       <h2>VAMPS portal: <%= portal %></h2>
+				<h3>Project listing</h3>       
 	</div>
 	
   <div class="row">  
       <div class="col-lg-12">
-				<h4>There are two essential elements to VAMPS:</h4> 
+				
 					<table class='table'>
 						<% for(n in data){ %>
 									<tr><td>(<%= project_info[data[n]].pid %>) <%= project_info[data[n]].project %></td><td><%= project_info[data[n]].title %></td></tr>

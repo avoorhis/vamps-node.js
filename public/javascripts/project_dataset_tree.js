@@ -188,6 +188,7 @@ function onPageLoad(){
   });
   
   // now load and check any datasets from 'data_to_open'
+  
   if(datasets_local){
       
       $('input.project_toggle').each(function(){
@@ -206,6 +207,11 @@ function onPageLoad(){
           check_selected_datasets(checkbox, datasets_per_pr, project, datasets_local[project]);
         }
       });
+  }
+  alert(portal_local)
+  if(portal_local){
+
+    document.getElementById('target_select').value=portal_local;
   }
   
 }

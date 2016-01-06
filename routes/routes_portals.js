@@ -6,17 +6,20 @@ var path  = require('path');
 /* GET Portals page. */
 router.get('/portals_index', function(req, res) {
     res.render('portals/portals_index', { 
-    		title: 'VAMPS:Portals',
+            title: 'VAMPS:Portals',
             user: req.user,hostname: req.CONFIG.hostname,
-    		message:'',
+            message:'',
                           });
 });
+//
+//
+//
 router.get('/visuals_index/:portal', function(req, res) {
     console.log('in portals visuals_index')
     console.log(ALL_DATASETS);
     
     var portal = req.params.portal;
-    console.log('xportal '+portal);
+    console.log('visuals_index: '+portal);
     var some_datasets = {}
     some_datasets.projects = []
     ALL_DATASETS.projects.forEach(function(prj) {
@@ -34,6 +37,8 @@ router.get('/visuals_index/:portal', function(req, res) {
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
             filtering : 0,
+            portal_to_show : portal,
+            data_to_open : JSON.stringify({}),
             //portal_name: portal,
             user      : req.user,hostname: req.CONFIG.hostname,
             message   :'',
@@ -74,86 +79,154 @@ router.get('/metadata/:portal', function(req, res) {
             message:'',
                           });
 });
+
+router.get('/:portal', function(req, res) {
+    
+    var portal = req.params.portal;
+    var pagetitle, maintitle, subtitle;
+    switch (portal) {
+    
+        case 'mobe':
+            pagetitle = 'VAMPS:Microbiology Of the Built Environment Portal';
+            maintitle   = 'VAMPS: MoBEDAC Portal'
+            subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
+            break;
+        case 'icomm':
+            pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
+            maintitle = 'VAMPS: ICoMM - Microbis Portal'
+            subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
+            break;
+        case 'hmp':
+            pagetitle = 'VAMPS:Human Microbiome Project Portal';
+            maintitle = 'VAMPS: HMP Portal'
+            subtitle = ''
+            break;
+        case 'codl':
+            pagetitle = 'VAMPS:Census of Deep Life Portal';
+            maintitle = 'VAMPS: Census of Deep Life Portal'
+            subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
+            break;
+        case 'uc':
+            pagetitle = 'VAMPS:Ulcerative Colitis Portal';
+            maintitle = 'VAMPS Ulcerative Colitis Portal'
+            subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
+            break;
+        case 'rare':
+            pagetitle = 'VAMPS:The Rare Biosphere Portal';
+            maintitle = 'VAMPS: Rare Biosphere Portal'
+            subtitle = 'A New Paradigm for Microbiology.'
+            break;
+        case 'cmp':
+            pagetitle = 'VAMPS:Coral Microbe Project Portal';
+            maintitle = 'VAMPS: Coral Microbiome Portal'
+            subtitle = ''
+            break;
+        case 'mirada':
+            pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
+            maintitle = 'VAMPS: MIRADA Portal'
+            subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research Sites (MIRADA).'
+            break;
+        default:
+            console.log('no portal')
+            res.render('portals/portals_index', { 
+                title: 'VAMPS:Portals',                
+                user: req.user,hostname: req.CONFIG.hostname,
+                message:'',
+            });
+            return
+            
+    }
+    
+    res.render('portals/home', { 
+            title       : pagetitle,
+            maintitle   : maintitle,
+            subtitle    : subtitle,
+            portal      : portal,
+            user: req.user,hostname: req.CONFIG.hostname,
+            message:'',
+    });
+    
+});
 //
 //  MOBE
 //
-router.get('/mobe/mobe_index', function(req, res) {
-    res.render('portals/mobe/mobe_index', { 
-    		title: 'VAMPS:Microbiology Of the Built Environment Portal',
-            user: req.user,hostname: req.CONFIG.hostname,
-    		message:'',
-        });
-});
-//
-//  ICOMM
-//
-router.get('/icomm/icomm_index', function(req, res) {
-    res.render('portals/icomm/icomm_index', { 
-        title: 'VAMPS:International Census of Marine Microbes Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  HMP
-//
-router.get('/hmp/hmp_index', function(req, res) {
-    res.render('portals/hmp/hmp_index', { 
-        title: 'VAMPS:Human Microbiome Project Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  CODL
-//
-router.get('/codl/codl_index', function(req, res) {
-    res.render('portals/codl/codl_index', { 
-        title: 'VAMPS:Census of Deep Life Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  UC
-//
-router.get('/uc/uc_index', function(req, res) {
-    res.render('portals/uc/uc_index', { 
-        title: 'VAMPS:Ulcerative Colitis Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  RARE
-//
-router.get('/rare/rare_index', function(req, res) {
-    res.render('portals/rare/rare_index', { 
-        title: 'VAMPS:The Rare Biosphere Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  CMP
-//
-router.get('/cmp/cmp_index', function(req, res) {
-    res.render('portals/cmp/cmp_index', { 
-        title: 'VAMPS:Coral Microbe Project Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
-//
-//  MIRADA
-//
-router.get('/mirada/mirada_index', function(req, res) {
-    res.render('portals/mirada/mirada_index', { 
-        title: 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal',
-        user: req.user,hostname: req.CONFIG.hostname,
-        message:'',
-        });
-});
+// router.get('/mobe/mobe_index', function(req, res) {
+//     res.render('portals/mobe/mobe_index', { 
+//          title: 'VAMPS:Microbiology Of the Built Environment Portal',
+//             user: req.user,hostname: req.CONFIG.hostname,
+//          message:'',
+//         });
+// });
+// //
+// //  ICOMM
+// //
+// router.get('/icomm/icomm_index', function(req, res) {
+//     res.render('portals/icomm/icomm_index', { 
+//         title: 'VAMPS:International Census of Marine Microbes Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  HMP
+// //
+// router.get('/hmp/hmp_index', function(req, res) {
+//     res.render('portals/hmp/hmp_index', { 
+//         title: 'VAMPS:Human Microbiome Project Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  CODL
+// //
+// router.get('/codl/codl_index', function(req, res) {
+//     res.render('portals/codl/codl_index', { 
+//         title: 'VAMPS:Census of Deep Life Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  UC
+// //
+// router.get('/uc/uc_index', function(req, res) {
+//     res.render('portals/uc/uc_index', { 
+//         title: 'VAMPS:Ulcerative Colitis Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  RARE
+// //
+// router.get('/rare/rare_index', function(req, res) {
+//     res.render('portals/rare/rare_index', { 
+//         title: 'VAMPS:The Rare Biosphere Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  CMP
+// //
+// router.get('/cmp/cmp_index', function(req, res) {
+//     res.render('portals/cmp/cmp_index', { 
+//         title: 'VAMPS:Coral Microbe Project Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
+// //
+// //  MIRADA
+// //
+// router.get('/mirada/mirada_index', function(req, res) {
+//     res.render('portals/mirada/mirada_index', { 
+//         title: 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal',
+//         user: req.user,hostname: req.CONFIG.hostname,
+//         message:'',
+//         });
+// });
 
 module.exports = router;
 
