@@ -2007,6 +2007,59 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     res.send(html);
 });
 //
+//
+//
+router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
+    var portal = req.params.portal;
+    console.log('in load_portal: '+portal)
+    SHOW_DATA = ALL_DATASETS;
+    var all_pr_dat = []
+    
+    switch (portal) {
+    
+      case 'mobe':
+          prefixes = ['mbe'];
+          break;
+      case 'icomm':
+          prefixes = ['icm','kck'];
+          break;
+      case 'hmp':
+          prefixes = ['hmp'];
+          break;
+      case 'codl':
+          prefixes = ['dco'];
+          break;
+      case 'uc':
+          prefixes = ['uc'];
+          break;
+      case 'rare':
+          prefixes = ['rare'];
+          break;
+      case 'cmp':
+          prefixes = ['cmp'];
+          break;
+      case 'mirada':
+          prefixes = ['ltr'];
+          break;
+      default:
+          console.log('no portal found -- loading all data')
+          html = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
+          return
+          
+    }
+
+    SHOW_DATA.projects.forEach(function(prj) {
+      lcname = prj.name.toLowerCase();
+      for(p in prefixes){
+        if(lcname.indexOf(prefixes[p]) != -1){
+          all_pr_dat.push(prj);        
+        }
+      }
+    });
+    html = get_livesearch_html(all_pr_dat, PROJECT_INFORMATION_BY_PID, req.user);
+    res.send(html);
+});
+//
 //  LIVESEARCH PROJECTS FILTER
 //
 router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {

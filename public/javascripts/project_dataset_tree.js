@@ -130,19 +130,24 @@ $(document).ready(function () {
       //onPageLoad({});
       //dsets = <%= datasets %>
       //clear_filters();
+      //var portal_local  = "<%= portal_to_show %>";
+      //alert(portal_local)
+      if(portal_local){
+        var target = "/visuals/load_portal/"+portal_local;
+      }else{
+        var target = "/visuals/clear_filters";
+      }
       filtering = 0;  
       document.getElementById('target_select').value='.....';
       document.getElementById('env_source_select').value='.....';
-      document.getElementById('tax_search_id').value='';
+      document.getElementById('pname_search_id').value='';
       var xmlhttp = new XMLHttpRequest();  
-      xmlhttp.open("GET", "/visuals/clear_filters", true);
+      xmlhttp.open("GET", target, true);
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState==4 ) {
           document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
           onPageLoad();
-          
-
         }
       }
       xmlhttp.send();
@@ -208,11 +213,21 @@ function onPageLoad(){
         }
       });
   }
-  alert(portal_local)
-  if(portal_local){
-
-    document.getElementById('target_select').value=portal_local;
-  }
+  
+  // if(portal_local){
+  //   alert('lo')
+  //   var xmlhttp = new XMLHttpRequest(); 
+  //   xmlhttp.open("GET", "/visuals/livesearch_projects/"+portal_local, true);
+  //   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  //   xmlhttp.onreadystatechange=function() {
+  //     if (xmlhttp.readyState==4 ) {
+  //       document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+  //       onPageLoad();      
+  //     }
+  //   }
+  //   xmlhttp.send();
+    
+  // }
   
 }
 
@@ -228,7 +243,7 @@ function clear_filters() {
   
   document.getElementById('target_select').value='.....';
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('tax_search_id').value='';
+  document.getElementById('pname_search_id').value='';
   
   var xmlhttp = new XMLHttpRequest();  
   xmlhttp.open("GET", "/visuals/clear_filters", true);
@@ -253,7 +268,7 @@ function filter_by_env() {
   
   var env_source_id =  document.getElementById('env_source_select').value;
   document.getElementById('target_select').value='.....';
-  document.getElementById('tax_search_id').value='';
+  document.getElementById('pname_search_id').value='';
 
   xmlhttp.open("GET", "/visuals/livesearch_env/"+env_source_id, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -274,7 +289,7 @@ function filter_by_target() {
   var xmlhttp = new XMLHttpRequest(); 
   var target =   document.getElementById('target_select').value;
   document.getElementById('env_source_select').value='.....';
-  document.getElementById('tax_search_id').value='';
+  document.getElementById('pname_search_id').value='';
   xmlhttp.open("GET", "/visuals/livesearch_target/"+target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {

@@ -3,15 +3,14 @@
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
-
 <% if(filtering == undefined){ %>
 <%  filtering = 0 %>
 <% } %>
 <script>
 
   var datasets_local  = JSON.parse('<%- data_to_open %>');
-  var portal_local  = JSON.parse('<%= portal_to_show %>');
-
+  var portal_local  = "<%= portal_to_show %>";
+  
 </script>
 
 <div class='title'>Community Visualization</div>
@@ -55,7 +54,7 @@
             <table id='filters_table' border='1' width=''>
               <tr>
                 <td>by substring:<br>
-                  <input id="tax_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
+                  <input id="pname_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
                 </td>
               </tr>
               <tr>
