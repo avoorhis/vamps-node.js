@@ -2017,29 +2017,29 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     
     switch (portal) {
     
-      case 'mobe':
-          prefixes = ['mbe'];
+      case 'MBE':
+          prefixes = [portal];
           break;
-      case 'icomm':
-          prefixes = ['icm','kck'];
+      case 'ICM':
+          prefixes = [portal,'KCK'];
           break;
-      case 'hmp':
-          prefixes = ['hmp'];
+      case 'HMP':
+          prefixes = [portal];
           break;
-      case 'codl':
-          prefixes = ['dco'];
+      case 'DCO':
+          prefixes = [portal];
           break;
-      case 'uc':
-          prefixes = ['uc'];
+      case 'UC':
+          prefixes = [portal];
           break;
-      case 'rare':
-          prefixes = ['rare'];
+      case 'RARE':
+          prefixes = [portal];
           break;
-      case 'cmp':
-          prefixes = ['cmp'];
+      case 'CMP':
+          prefixes = [portal];
           break;
-      case 'mirada':
-          prefixes = ['ltr'];
+      case 'LTR':
+          prefixes = [portal];
           break;
       default:
           console.log('no portal found -- loading all data')
@@ -2049,7 +2049,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     }
 
     SHOW_DATA.projects.forEach(function(prj) {
-      lcname = prj.name.toLowerCase();
+      lcname = prj.name.toUpperCase();
       for(p in prefixes){
         if(lcname.indexOf(prefixes[p]) != -1){
           all_pr_dat.push(prj);        

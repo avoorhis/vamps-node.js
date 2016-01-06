@@ -86,42 +86,42 @@ router.get('/:portal', function(req, res) {
     var pagetitle, maintitle, subtitle;
     switch (portal) {
     
-        case 'mobe':
+        case 'MBE':
             pagetitle = 'VAMPS:Microbiology Of the Built Environment Portal';
             maintitle   = 'VAMPS: MoBEDAC Portal'
             subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
             break;
-        case 'icomm':
+        case 'ICM':
             pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
             maintitle = 'VAMPS: ICoMM - Microbis Portal'
             subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
             break;
-        case 'hmp':
+        case 'HMP':
             pagetitle = 'VAMPS:Human Microbiome Project Portal';
             maintitle = 'VAMPS: HMP Portal'
             subtitle = ''
             break;
-        case 'codl':
+        case 'DCO':
             pagetitle = 'VAMPS:Census of Deep Life Portal';
             maintitle = 'VAMPS: Census of Deep Life Portal'
             subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
             break;
-        case 'uc':
+        case 'UC':
             pagetitle = 'VAMPS:Ulcerative Colitis Portal';
             maintitle = 'VAMPS Ulcerative Colitis Portal'
             subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
             break;
-        case 'rare':
+        case 'RARE':
             pagetitle = 'VAMPS:The Rare Biosphere Portal';
             maintitle = 'VAMPS: Rare Biosphere Portal'
             subtitle = 'A New Paradigm for Microbiology.'
             break;
-        case 'cmp':
+        case 'CMP':
             pagetitle = 'VAMPS:Coral Microbe Project Portal';
             maintitle = 'VAMPS: Coral Microbiome Portal'
             subtitle = ''
             break;
-        case 'mirada':
+        case 'LTR':
             pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
             maintitle = 'VAMPS: MIRADA Portal'
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research Sites (MIRADA).'
