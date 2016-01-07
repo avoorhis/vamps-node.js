@@ -413,3 +413,15 @@ i.icon-minus-sign {
 #filters_table select{
    width:140px;
 }
+#loading_data_info_div {
+
+    padding:24px;
+    text-align:center;
+    position:relative;
+
+    background:#bdedff;
+    border:1px solid black;
+    width:60%;
+    margin:auto;
+    margin-top:20px;
+}
