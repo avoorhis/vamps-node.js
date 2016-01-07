@@ -41,3 +41,14 @@
 	width:100%;
 	
 }
+#search_choices_div {
+
+}
+
+#search_choices_div ul{
+	list-style-type:none;
+	
+}
+#search_choices_div ul li{
+	display: inline;
+}

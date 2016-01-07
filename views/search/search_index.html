@@ -1,5 +1,5 @@
 <% include ../add_ins/begin.ejs %>
-
+<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
 <% var metaitems = JSON.parse(metadata_items); %>
 
 <% // sort keys %>
@@ -13,25 +13,27 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
  
-<table>
-<tr>
- 	<td>Search Options:&nbsp;</td>
-	<td>
+
+<div id='search_choices_div'>
+<ul>
+<li>Search Options:&nbsp;</li>
+	<li>
 		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by name)</small></a>
+	</li><li>
 		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by value)</small></a>
-	</td>
-</tr>
-<tr>
-	<td></td>
-	<td>
+	</li><li>
 		<a href="#taxonomy" role="button" class="btn btn-default btn-xs">Taxonomy</a>
+	</li><li>
 		<a href="#names" role="button" class="btn btn-default btn-xs">Names (key words)</a>
+	</li><li>
 		<a href="#user" role="button" class="btn btn-default btn-xs">Users</a>
+	</li><li>
 		<a href="#project" role="button" class="btn btn-default btn-xs">Project/Dataset</a>
+	</li><li>
 		<a href="#blast" role="button" class="btn btn-default btn-xs">Blast</a>
-	</td>
-</tr>
-</table>
+	</li>
+</ul>
+</div>
 
 <!-- METADATA SEARCH by Name --><a name="metadata"></a>
 <br><br>

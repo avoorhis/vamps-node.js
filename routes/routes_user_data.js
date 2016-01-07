@@ -177,7 +177,7 @@ router.post('/export_data', helpers.isLoggedIn, function(req, res) {
   console.log('data_to_open-exports');
   console.log(data_to_open);
 
-    res.render('user_data/export_data', { title: 'VAMPS:Import Data',
+    res.render('user_data/export_data', { title: 'VAMPS:Export Data',
                 rows     : JSON.stringify(ALL_DATASETS),
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.CONSTS),
