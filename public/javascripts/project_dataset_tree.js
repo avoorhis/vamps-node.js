@@ -240,13 +240,17 @@ function onPageLoad(){
 function clear_filters() {
   filtering = 0; 
   datasets_local = {}; 
-  
+  if(portal_local){
+    var target = "/visuals/load_portal/"+portal_local;
+  }else{
+    var target = "/visuals/clear_filters";
+  }
   document.getElementById('target_select').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('pname_search_id').value='';
   
   var xmlhttp = new XMLHttpRequest();  
-  xmlhttp.open("GET", "/visuals/clear_filters", true);
+  xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
@@ -264,13 +268,19 @@ function clear_filters() {
 function filter_by_env() {
   filtering = 1;
   datasets_local = {};
+  var env_source_id =  document.getElementById('env_source_select').value;
+  if(portal_local){
+    var target = "/visuals/livesearch_env/"+env_source_id+'?portal='+portal_local;
+  }else{
+    var target = "/visuals/livesearch_env/"+env_source_id+'?portal=';
+  }
   var xmlhttp = new XMLHttpRequest();  
   
-  var env_source_id =  document.getElementById('env_source_select').value;
+  
   document.getElementById('target_select').value='.....';
   document.getElementById('pname_search_id').value='';
 
-  xmlhttp.open("GET", "/visuals/livesearch_env/"+env_source_id, true);
+  xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
@@ -286,11 +296,17 @@ function filter_by_env() {
 function filter_by_target() {
   filtering = 1;
   datasets_local = {};
+  var genetarget =   document.getElementById('target_select').value;
+  if(portal_local){
+    var target = "/visuals/portal_livesearch_target/"+genetarget+'/'+portal_local;
+  }else{
+    var target = "/visuals/livesearch_target/"+genetarget;
+  }
   var xmlhttp = new XMLHttpRequest(); 
-  var target =   document.getElementById('target_select').value;
+  
   document.getElementById('env_source_select').value='.....';
   document.getElementById('pname_search_id').value='';
-  xmlhttp.open("GET", "/visuals/livesearch_target/"+target, true);
+  xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
@@ -311,9 +327,13 @@ function showLiveProjectNames(str) {
   }
   document.getElementById('env_source_select').value='.....';
   document.getElementById('target_select').value='.....';
-
+  if(portal_local){
+    var target = "/visuals/portal_livesearch_projects/"+str+'/'+portal_local;
+  }else{
+    var target = "/visuals/livesearch_projects/"+str;
+  }
   var xmlhttp = new XMLHttpRequest();  
-  xmlhttp.open("GET", "/visuals/livesearch_projects/"+str, true);
+  xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {

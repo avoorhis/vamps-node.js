@@ -32,7 +32,8 @@ router.get('/visuals_index/:portal', function(req, res) {
     SHOW_DATA = some_datasets;
     
     res.render('visuals/visuals_index', { 
-            title     : 'VAMPS:Portals_Index',
+            title     : 'VAMPS:Portals:Dataset Selection',
+            subtitle  : 'Portal:'+portal+' -Dataset Selection Page',
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),

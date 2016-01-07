@@ -10,12 +10,15 @@
 
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = "<%= portal_to_show %>";
-  
+
 </script>
 
 <div class='title'>Community Visualization</div>
-
-<div class='subtitle'>Dataset Selection Page</div>
+<% if(subtitle == 'Dataset Selection Page'){ %>
+  <div class='subtitle' style=''><%= subtitle %></div>
+<% }else{ %>
+  <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%= subtitle %></div>
+<% }%>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>

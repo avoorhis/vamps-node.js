@@ -313,15 +313,14 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   
   res.render('visuals/visuals_index', {
                                 title       : 'VAMPS: Select Datasets',
-                                //rows      : JSON.stringify(ALL_DATASETS),
+                                subtitle : 'Dataset Selection Page',
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants   : JSON.stringify(req.CONSTS),
                                 filtering   : 0,
                                 portal_to_show : '',
-                                data_to_open: JSON.stringify(data_to_open),
-                                //portal_name: 'none',
-	  							              message     : req.flash('nodataMessage'),
+                                data_to_open: JSON.stringify(data_to_open),	  							              
                                 user        : req.user,hostname: req.CONFIG.hostname,
+                                message     : req.flash('nodataMessage'),
                             });
 });
 
@@ -2012,9 +2011,200 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     var portal = req.params.portal;
     console.log('in load_portal: '+portal)
+    var info = PROJECT_INFORMATION_BY_PID;
     SHOW_DATA = ALL_DATASETS;
     var all_pr_dat = []
-    
+    prefixes = get_portal_prefixes(portal);    
+    if(prefixes.length === 0){
+      html = get_livesearch_html(SHOW_DATA.projects, info, req.user);
+    }else{
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if(ucname.indexOf(prefixes[p]) != -1){
+            all_pr_dat.push(prj);        
+          }
+        }
+      });
+      html = get_livesearch_html(all_pr_dat, info, req.user);
+    }
+    res.send(html);
+});
+//
+//  LIVESEARCH PROJECTS FILTER
+//
+router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q.toUpperCase();
+  var myurl = url.parse(req.url, true);  
+  var portal = myurl.query.portal;
+  var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  
+  var all_pr_dat = []
+  if(portal){
+    prefixes = get_portal_prefixes(portal);  // all uppercase
+    console.log('got prefixes')
+    if(q === '.....'){
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if(ucname.indexOf(prefixes[p]) != -1){
+            all_pr_dat.push(prj);        
+          }
+        }
+      });
+    }else{
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if((ucname.indexOf(prefixes[p]) != -1) && ucname.indexOf(q) != -1){
+              all_pr_dat.push(prj); 
+          }       
+        }
+      });
+    }
+  }else{
+      if(q === '.....'){          
+          all_pr_dat = SHOW_DATA.projects
+      }else{
+          SHOW_DATA.projects.forEach(function(prj) {
+            ucname = prj.name.toUpperCase();
+            if(ucname.indexOf(q) != -1){
+              all_pr_dat.push(prj);        
+            }
+          });
+      }
+  }
+
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
+  res.send(html);
+
+});
+
+//
+//  LIVESEARCH ENV PROJECTS FILTER
+//
+router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  var portal = myurl.query.portal;
+  var info = PROJECT_INFORMATION_BY_PID;
+  console.log(portal)
+  console.log(q)
+  var all_pr_dat = []
+  if(portal){
+    prefixes = get_portal_prefixes(portal);    // all uppercase
+    console.log('got prefixes')
+    if(q === '.....'){
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if(ucname.indexOf(prefixes[p]) != -1){
+            all_pr_dat.push(prj);        
+          }
+        }
+      });
+    }else{
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if((ucname.indexOf(prefixes[p]) != -1) && parseInt(info[prj.pid].env_source_id) === parseInt(q)){
+              all_pr_dat.push(prj); 
+          }       
+        }
+      });
+    }
+  }else{
+      if(q === '.....'){          
+          all_pr_dat = SHOW_DATA.projects
+      }else{
+          SHOW_DATA.projects.forEach(function(prj) {
+            if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
+              all_pr_dat.push(prj);        
+            }
+          });
+      }
+  }
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
+  res.send(html);
+
+});
+//
+//  LIVESEARCH TARGET PROJECTS FILTER
+//
+router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  var portal = myurl.query.portal;
+  var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  
+  var all_pr_dat = []
+
+  if(portal){
+    prefixes = get_portal_prefixes(portal);    // all uppercase
+    console.log('got prefixes')
+    if(q === '.....'){
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        for(p in prefixes){
+          if(ucname.indexOf(prefixes[p]) != -1){
+            all_pr_dat.push(prj);        
+          }
+        }
+      });
+    }else{
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        pparts = prj.name.split('_');
+        last_el = pparts[pparts.length - 1]
+        for(p in prefixes){
+          if((ucname.indexOf(prefixes[p]) != -1) && last_el === q){
+              all_pr_dat.push(prj); 
+          }       
+        }
+      });
+    }
+  }else{
+      if(q === '.....'){          
+          all_pr_dat = SHOW_DATA.projects
+      }else{
+          SHOW_DATA.projects.forEach(function(prj) {
+            pparts = prj.name.split('_');
+            last_el = pparts[pparts.length - 1]
+            if(last_el === q){
+              all_pr_dat.push(prj);        
+            }
+          });
+      }
+  }
+  if(all_pr_dat.length == 0){
+    html = 'no projects found';
+  }else{
+    html = get_livesearch_html(all_pr_dat, info, req.user);
+  }
+   res.send(html);
+
+});
+module.exports = router;
+
+/**
+* F U N C T I O N S
+**/
+
+// Generally put fuction in global.js or helpers.js
+//
+//
+//
+function get_portal_prefixes(portal){
     switch (portal) {
     
       case 'MBE':
@@ -2043,114 +2233,10 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
           break;
       default:
           console.log('no portal found -- loading all data')
-          html = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
-          return
-          
+          prefixes = [];
     }
-
-    SHOW_DATA.projects.forEach(function(prj) {
-      lcname = prj.name.toUpperCase();
-      for(p in prefixes){
-        if(lcname.indexOf(prefixes[p]) != -1){
-          all_pr_dat.push(prj);        
-        }
-      }
-    });
-    html = get_livesearch_html(all_pr_dat, PROJECT_INFORMATION_BY_PID, req.user);
-    res.send(html);
-});
-//
-//  LIVESEARCH PROJECTS FILTER
-//
-router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
-  var q = req.params.q.toLowerCase();
-  var info = PROJECT_INFORMATION_BY_PID 
-  //console.log(q)
-  
-  var all_pr_dat = []
-  if(q === '----'){
-          
-          all_pr_dat = SHOW_DATA.projects
-  }else{ 
-          SHOW_DATA.projects.forEach(function(prj) {
-            lcname = prj.name.toLowerCase();
-            if(lcname.indexOf(q) != -1){
-              all_pr_dat.push(prj);        
-            }
-          });
-  }
-
-  if(all_pr_dat.length == 0){
-    html = 'no projects found';
-  }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
-  }
-  res.send(html);
-
-});
-
-//
-//  LIVESEARCH ENV PROJECTS FILTER
-//
-router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
-  var q = req.params.q;
-  var info = PROJECT_INFORMATION_BY_PID 
-  //console.log(PROJECT_INFORMATION_BY_PID)
-  
-  var all_pr_dat = []
-  if(q === '.....'){          
-          all_pr_dat = SHOW_DATA.projects
-  }else{
-          SHOW_DATA.projects.forEach(function(prj) {
-            if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
-              all_pr_dat.push(prj);        
-            }
-          });
-  }
-  if(all_pr_dat.length == 0){
-    html = 'no projects found';
-  }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
-  }
-  res.send(html);
-
-});
-//
-//  LIVESEARCH TARGET PROJECTS FILTER
-//
-router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
-  var q = req.params.q;
-  var info = PROJECT_INFORMATION_BY_PID 
-  //console.log(q)
-  
-  var all_pr_dat = []
-  if(q === '.....'){          
-          all_pr_dat = SHOW_DATA.projects
-  }else{
-          SHOW_DATA.projects.forEach(function(prj) {
-            pparts = prj.name.split('_');
-            last_el = pparts[pparts.length - 1]
-            if(last_el === q){
-              all_pr_dat.push(prj);        
-            }
-          });
-  }
-
-  if(all_pr_dat.length == 0){
-    html = 'no projects found';
-  }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
-  }
-   res.send(html);
-
-});
-module.exports = router;
-
-/**
-* F U N C T I O N S
-**/
-
-// Generally put fuction in global.js or helpers.js
+    return prefixes;
+}
 //
 //
 //
