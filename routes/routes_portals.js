@@ -22,6 +22,7 @@ router.get('/visuals_index/:portal', function(req, res) {
     console.log('visuals_index: '+portal);
     var some_datasets = {}
     some_datasets.projects = []
+    var subtitle = get_portal_metadata(portal, {}, true)
     ALL_DATASETS.projects.forEach(function(prj) {
       
       if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
@@ -33,7 +34,7 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
-            subtitle  : 'Portal:'+portal+' -Dataset Selection Page',
+            subtitle  : subtitle+' - Dataset Selection Page',
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
@@ -175,7 +176,7 @@ router.get('/geomap/:portal', function(req, res) {
 //  }
 
     console.log(AllMetadata)
-    var portal_info = get_portal_metadata(portal, AllMetadata)
+    var portal_info = get_portal_metadata(portal, AllMetadata, false)
     console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
@@ -193,7 +194,7 @@ module.exports = router;
 //
 //  FUNCTIONS
 //
-function get_portal_metadata(portal, all_metadata){
+function get_portal_metadata(portal, all_metadata, get_subtitle){
     // all_metadata is by did
     
     portal_info = {}
@@ -204,40 +205,50 @@ function get_portal_metadata(portal, all_metadata){
       case 'MBE':
           prefixes = [portal];
           portal_info[portal].zoom = 4  // mostly US?
+          subtitle = 'Microbiology of the Built Environment Portal'
           break;
       case 'ICM':
           prefixes = [portal,'KCK'];
           portal_info[portal].zoom = 2  // worldwide
+          subtitle = 'ICoMM Portal'
           break;
       case 'HMP':
           prefixes = [portal];
           portal_info[portal].zoom = 4  // mostly US? Do we even have or want distribution?
+          subtitle = 'Human Microbiome Project Portal'
           break;
       case 'DCO':
           prefixes = [portal];
           portal_info[portal].zoom = 2  // worldwide
+          subtitle = 'Census of Deep Life Portal'
           break;
       case 'UC':
           prefixes = [portal];
           portal_info[portal].zoom = 4  // mostly US?
+          subtitle = 'Ulcerative Colitis Portal'
           break;
       case 'RARE':
           prefixes = [portal];
           portal_info[portal].zoom = 13  // mostly Falmouth
+          subtitle = 'The Rare Biosphere Portal'
           break;
       case 'CMP':
           prefixes = [portal];
           portal_info[portal].zoom = 3  // mostly Falmouth
+          subtitle = 'The Coral Microbiome Project'
           break;
       case 'LTR':
           prefixes = [portal];
-          portal_info[portal].zoom = 5  // mostly Falmouth
+          portal_info[portal].zoom = 5  // mostly US
+          subtitle = 'MIRADA Portal'
           break;
       default:
           console.log('no portal found -- loading all data')
           prefixes = [];
     }
-
+    if(get_subtitle){
+        return subtitle
+    }
     for(did in all_metadata){
         //did = all_metadata[i]
         //all_metadata.forEach(function(did) {
