@@ -125,7 +125,7 @@ router.get('/:portal', function(req, res) {
         case 'LTR':
             pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
             maintitle = 'VAMPS: MIRADA Portal'
-            subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research Sites (MIRADA).'
+            subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             break;
         default:
             console.log('no portal')
@@ -148,87 +148,124 @@ router.get('/:portal', function(req, res) {
     });
     
 });
-//
-//  MOBE
-//
-// router.get('/mobe/mobe_index', function(req, res) {
-//     res.render('portals/mobe/mobe_index', { 
-//          title: 'VAMPS:Microbiology Of the Built Environment Portal',
-//             user: req.user,hostname: req.CONFIG.hostname,
-//          message:'',
-//         });
-// });
-// //
-// //  ICOMM
-// //
-// router.get('/icomm/icomm_index', function(req, res) {
-//     res.render('portals/icomm/icomm_index', { 
-//         title: 'VAMPS:International Census of Marine Microbes Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  HMP
-// //
-// router.get('/hmp/hmp_index', function(req, res) {
-//     res.render('portals/hmp/hmp_index', { 
-//         title: 'VAMPS:Human Microbiome Project Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  CODL
-// //
-// router.get('/codl/codl_index', function(req, res) {
-//     res.render('portals/codl/codl_index', { 
-//         title: 'VAMPS:Census of Deep Life Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  UC
-// //
-// router.get('/uc/uc_index', function(req, res) {
-//     res.render('portals/uc/uc_index', { 
-//         title: 'VAMPS:Ulcerative Colitis Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  RARE
-// //
-// router.get('/rare/rare_index', function(req, res) {
-//     res.render('portals/rare/rare_index', { 
-//         title: 'VAMPS:The Rare Biosphere Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  CMP
-// //
-// router.get('/cmp/cmp_index', function(req, res) {
-//     res.render('portals/cmp/cmp_index', { 
-//         title: 'VAMPS:Coral Microbe Project Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
-// //
-// //  MIRADA
-// //
-// router.get('/mirada/mirada_index', function(req, res) {
-//     res.render('portals/mirada/mirada_index', { 
-//         title: 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal',
-//         user: req.user,hostname: req.CONFIG.hostname,
-//         message:'',
-//         });
-// });
+router.get('/geomap/:portal', function(req, res) {
+    console.log('in geomap')
+    var portal = req.params.portal;
+
+// { 'ICM_CNE_Bv6--CNE_0001_2003_04_14': 
+//    { latitude: '0.0',
+//      longitude: '0.0',
+//      project: 'ICM_CNE_Bv6',
+//      dataset: 'CNE_0001_2003_04_14' },
+//   'ICM_CNE_Bv6--CNE_0002_2003_07_03': 
+//    { latitude: '0.0',
+//      longitude: '0.0',
+//      project: 'ICM_CNE_Bv6',
+//      dataset: 'CNE_0002_2003_07_03' },
+//   'ICM_CNE_Bv6--CNE_0003_2003_10_11': 
+//    { latitude: '0.0',
+//      longitude: '0.0',
+//      project: 'ICM_CNE_Bv6',
+//      dataset: 'CNE_0003_2003_10_11' },
+//   'ICM_CNE_Bv6--CNE_0004_2004_01_22': 
+//    { latitude: '0.0',
+//      longitude: '0.0',
+//      project: 'ICM_CNE_Bv6',
+//      dataset: 'CNE_0004_2004_01_22' } 
+//  }
+
+    console.log(AllMetadata)
+    var portal_info = get_portal_metadata(portal, AllMetadata)
+    console.log('FOUND '+JSON.stringify(portal_info))
+    res.render('portals/geomap', { 
+            title       : 'VAMPS: Geomap',
+            portal      : portal,
+            portal_info : JSON.stringify(portal_info[portal]),
+            user: req.user,hostname: req.CONFIG.hostname,
+            message:'',
+    });
+
+});
+
 
 module.exports = router;
+
+//
+//  FUNCTIONS
+//
+function get_portal_metadata(portal, all_metadata){
+    // all_metadata is by did
+    
+    portal_info = {}
+    portal_info[portal] = {}
+    portal_info[portal].metadata = {}
+    switch (portal) {
+    
+      case 'MBE':
+          prefixes = [portal];
+          portal_info[portal].zoom = 4  // mostly US?
+          break;
+      case 'ICM':
+          prefixes = [portal,'KCK'];
+          portal_info[portal].zoom = 2  // worldwide
+          break;
+      case 'HMP':
+          prefixes = [portal];
+          portal_info[portal].zoom = 4  // mostly US? Do we even have or want distribution?
+          break;
+      case 'DCO':
+          prefixes = [portal];
+          portal_info[portal].zoom = 2  // worldwide
+          break;
+      case 'UC':
+          prefixes = [portal];
+          portal_info[portal].zoom = 4  // mostly US?
+          break;
+      case 'RARE':
+          prefixes = [portal];
+          portal_info[portal].zoom = 13  // mostly Falmouth
+          break;
+      case 'CMP':
+          prefixes = [portal];
+          portal_info[portal].zoom = 3  // mostly Falmouth
+          break;
+      case 'LTR':
+          prefixes = [portal];
+          portal_info[portal].zoom = 5  // mostly Falmouth
+          break;
+      default:
+          console.log('no portal found -- loading all data')
+          prefixes = [];
+    }
+
+    for(did in all_metadata){
+        //did = all_metadata[i]
+        //all_metadata.forEach(function(did) {
+        pid = PROJECT_ID_BY_DID[did]
+        console.log(PROJECT_INFORMATION_BY_PID[pid])
+        pname = PROJECT_INFORMATION_BY_PID[pid].project
+        for(p in prefixes){
+          if(( pname.indexOf(prefixes[p]) === 0) ){
+              //console.log('FOUND '+pname)
+              pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+              portal_info[portal].metadata[pjds] = {}
+              //collected_metadata[pjds] = all_metadata[did]
+              if(all_metadata[did].hasOwnProperty('lat')){
+                portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+              }else{
+                portal_info[portal].metadata[pjds].latitude = 'notFound'
+              }
+              if(all_metadata[did].hasOwnProperty('lon')){
+                portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+              }else{
+                portal_info[portal].metadata[pjds].longitude = 'notFound'
+              }
+              //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
+          }       
+        }
+    }
+
+    return portal_info;
+}
 
 

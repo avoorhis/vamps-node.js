@@ -1,0 +1,43 @@
+<% include ../add_ins/begin.ejs %>
+
+<script>  
+  var portal = '<%= portal %>'
+  var zoom_level = '<%= zoom %>'
+  var md_local   = JSON.parse('<%- portal_info %>').metadata
+  
+</script>
+<% //for(i in info){ %>
+
+<% //for(k in metadata){ %>
+<%//=// k %><br>
+<% //} %>
+<% //} %>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	<div class="container">
+
+	
+      <div id='map-canvas' class='map'></div>
+	
+
+</div>
+
+
+<% include ../add_ins/end.ejs %>
+<script src ="https://maps.googleapis.com/maps/api/js"></script>
+<script src="/javascripts/portals.js"></script>
+<script>
+	$(document).ready(function(){
+		create_geospatial()
+	});
+</script>
+
+
+
+
+</body>
+</html>
+
