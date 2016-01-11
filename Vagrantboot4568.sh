@@ -199,8 +199,8 @@ function initialize_environment () {
 
 initialize_environment
 create_mysql_mycnf_file
-load_python_libraries
-load_r_and_libraries
+#load_python_libraries
+#load_r_and_libraries
 
 echo "COMMENT===>Installing JAVA...."
 sudo apt-get install -qq default-jre
@@ -256,7 +256,7 @@ echo "COMMENT===>Starting VAMPS-Node.js Server"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-error.log"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-server.log"
 #su - vagrant -c /home/vagrant/$app_name/start_script.sh
-su - vagrant -c "/home/vagrant/$app_name/vamps-launcher.sh start"
+su - vagrant -c "cd /home/vagrant/$app_name; vamps-launcher.sh start"
 #sudo -u vagrant forever -l $LOGFILE start bin/www
 
 #npm start

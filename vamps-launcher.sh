@@ -5,8 +5,8 @@
 # 
 #
 
-LOG=./logs/node-server.log
-ERRLOG=./logs/node-error.log
+LOG=logs/node-server.log
+ERRLOG=logs/node-error.log
 PROG=bin/www
 
 function usage() {
