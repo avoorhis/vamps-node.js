@@ -1475,7 +1475,8 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
 			}
 			catch(err){
-				console.log(err);
+				console.log('No Metadata file: '+err);
+				console.log('Continuing on');
 				original_metafile  = ''
 			}
 
