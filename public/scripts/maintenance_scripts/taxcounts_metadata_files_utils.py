@@ -211,7 +211,7 @@ def write_all_metadata_file(metadata_lookup):
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
     json_str = json.dumps(original_metadata_lookup, ensure_ascii=False)     
-    print(json_str)
+    #print(json_str)
     f = open(md_file,'w')
     f.write(json_str.encode('utf-8').strip()+"\n")
     f.close() 
