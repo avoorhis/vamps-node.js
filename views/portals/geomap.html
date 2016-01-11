@@ -2,9 +2,7 @@
 
 <script>  
   var portal = '<%= portal %>'
-  var zoom_level = '<%= zoom %>'
   var md_local   = JSON.parse('<%- portal_info %>').metadata
-  
 </script>
 <% //for(i in info){ %>
 
@@ -19,11 +17,9 @@
 	
 	<div class="container">
 
-	
       <div id='map-canvas' class='map'></div>
 	
-
-</div>
+	</div>
 
 
 <% include ../add_ins/end.ejs %>

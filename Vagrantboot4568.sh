@@ -23,19 +23,19 @@ function create_mysql_mycnf_file () {
     sudo chown -R vagrant .my.cnf_node
 }
 
-function create_vamps_start_script () {
-    echo "COMMENT===>Creating start_script.sh"
-    touch /home/vagrant/$app_name/start_script.sh
-    echo "#!/bin/bash" >> /home/vagrant/$app_name/start_script.sh
-    echo "" >>  /home/vagrant/$app_name/start_script.sh
-    echo "cd /home/vagrant/$app_name" >> /home/vagrant/$app_name/start_script.sh
-    echo "forever -l $LOGFILE start bin/www" >> /home/vagrant/$app_name/start_script.sh
-    echo "exit" >> /home/vagrant/$app_name/start_script.sh
-    echo "" >>  /home/vagrant/$app_name/start_script.sh
-    #echo "host=127.0.0.1" >> .my.cnf_node
-    sudo chown vagrant /home/vagrant/$app_name/start_script.sh
-    sudo chmod +x /home/vagrant/$app_name/start_script.sh
-}
+# function create_vamps_start_script () {
+#     echo "COMMENT===>Creating start_script.sh"
+#     touch /home/vagrant/$app_name/start_script.sh
+#     echo "#!/bin/bash" >> /home/vagrant/$app_name/start_script.sh
+#     echo "" >>  /home/vagrant/$app_name/start_script.sh
+#     echo "cd /home/vagrant/$app_name" >> /home/vagrant/$app_name/start_script.sh
+#     echo "forever -l $LOGFILE start bin/www" >> /home/vagrant/$app_name/start_script.sh
+#     echo "exit" >> /home/vagrant/$app_name/start_script.sh
+#     echo "" >>  /home/vagrant/$app_name/start_script.sh
+#     #echo "host=127.0.0.1" >> .my.cnf_node
+#     sudo chown vagrant /home/vagrant/$app_name/start_script.sh
+#     sudo chmod +x /home/vagrant/$app_name/start_script.sh
+# }
 
 function create_vamps_node_config_file () {
     echo "COMMENT===>Creating config/config.js"
@@ -199,8 +199,8 @@ function initialize_environment () {
 
 initialize_environment
 create_mysql_mycnf_file
-#load_python_libraries
-#load_r_and_libraries
+load_python_libraries
+load_r_and_libraries
 
 echo "COMMENT===>Installing JAVA...."
 sudo apt-get install -qq default-jre
@@ -255,8 +255,8 @@ sudo chmod -R ug+rw ../*
 echo "COMMENT===>Starting VAMPS-Node.js Server"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-error.log"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-server.log"
+su - vagrant -c "cd /home/vagrant/$app_name; ./vamps-launcher.sh start"
 #su - vagrant -c /home/vagrant/$app_name/start_script.sh
-su - vagrant -c "cd /home/vagrant/$app_name; vamps-launcher.sh start"
 #sudo -u vagrant forever -l $LOGFILE start bin/www
 
 #npm start
