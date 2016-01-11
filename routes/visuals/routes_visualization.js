@@ -831,7 +831,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                         //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
                         //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser."); 
                         //html = "<a href='../tmp/andy_1450362333240_pcoa_3d/index' target='_blank'>Emperor1</a>"
-                        var html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> (in another window)"
+                        var html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a>"
 
                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
                         html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";

@@ -250,10 +250,11 @@ sudo chmod -R ug+rw ../*
 # start server as regular user (vagrant) not sudo (root)
 #sudo -u vagrant npm start
 #cd /home/vagrant/$app_name
-create_vamps_start_script
+#create_vamps_start_script
 #forever -l $LOGFILE start bin/www
 echo "COMMENT===>Starting VAMPS-Node.js Server"
-su - vagrant -c /home/vagrant/$app_name/start_script.sh
+#su - vagrant -c /home/vagrant/$app_name/start_script.sh
+su - vagrant -c "/home/vagrant/$app_name/vamps-launcher.sh start"
 #sudo -u vagrant forever -l $LOGFILE start bin/www
 
 #npm start
