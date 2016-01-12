@@ -252,7 +252,7 @@ sudo chmod -R ug+rw ../*
 #cd /home/vagrant/$app_name
 #create_vamps_start_script
 #forever -l $LOGFILE start bin/www
-echo "COMMENT===>Starting VAMPS-Node.js Server"
+echo "COMMENT===>Starting VAMPS-Node.js Server on localhost:4568"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-error.log"
 su - vagrant -c "touch /home/vagrant/$app_name/logs/node-server.log"
 su - vagrant -c "cd /home/vagrant/$app_name; ./vamps-launcher.sh start"
