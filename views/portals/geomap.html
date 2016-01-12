@@ -2,8 +2,9 @@
 
 <script>  
   var portal = '<%= portal %>'
-  var md_local   = JSON.parse('<%- portal_info %>').metadata
-  var zoom_level = JSON.parse('<%- portal_info %>').zoom
+  var portal_info_local   = JSON.parse('<%- portal_info %>')
+  var md_local   = portal_info_local.metadata
+  var zoom_level = portal_info_local.zoom
 </script>
 <% //for(i in info){ %>
 
