@@ -9,7 +9,7 @@ router.get('/portals_index', function(req, res) {
             title: 'VAMPS:Portals',
             user: req.user,hostname: req.CONFIG.hostname,
             message:'',
-                          });
+        });
 });
 //
 //
@@ -44,7 +44,7 @@ router.get('/visuals_index/:portal', function(req, res) {
             //portal_name: portal,
             user      : req.user,hostname: req.CONFIG.hostname,
             message   :'',
-                          });
+        });
 });
 //
 // PROJECTS
@@ -63,10 +63,10 @@ router.get('/projects/:portal', function(req, res) {
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : portal,
-            pinfo : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             data      : some_datasets,
             message   : '',
-                          });
+        });
 });
 //
 // METADATA
@@ -79,7 +79,7 @@ router.get('/metadata/:portal', function(req, res) {
             user: req.user,hostname: req.CONFIG.hostname,
             portal:portal,
             message:'',
-                          });
+        });
 });
 
 router.get('/:portal', function(req, res) {
@@ -146,7 +146,7 @@ router.get('/:portal', function(req, res) {
             portal      : portal,
             user: req.user,hostname: req.CONFIG.hostname,
             message:'',
-    });
+        });
     
 });
 router.get('/geomap/:portal', function(req, res) {
@@ -184,7 +184,7 @@ router.get('/geomap/:portal', function(req, res) {
             portal_info : JSON.stringify(portal_info[portal]),
             user: req.user,hostname: req.CONFIG.hostname,
             message:'',
-    });
+        });
 
 });
 
@@ -249,8 +249,11 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
     if(get_subtitle){
         return subtitle
     }
+    //console.log('all_metadata')
+    //console.log(all_metadata)
     for(did in all_metadata){
         //did = all_metadata[i]
+
         //all_metadata.forEach(function(did) {
         pid = PROJECT_ID_BY_DID[did]
         console.log(PROJECT_INFORMATION_BY_PID[pid])
@@ -261,12 +264,13 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
               pjds = pname+'--'+DATASET_NAME_BY_DID[did]
               portal_info[portal].metadata[pjds] = {}
               //collected_metadata[pjds] = all_metadata[did]
-              if(all_metadata[did].hasOwnProperty('lat')){
+              if(all_metadata[did].hasOwnProperty('latitude')){
                 portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
               }else{
                 portal_info[portal].metadata[pjds].latitude = 'notFound'
               }
-              if(all_metadata[did].hasOwnProperty('lon')){
+
+              if(all_metadata[did].hasOwnProperty('longitude')){
                 portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
               }else{
                 portal_info[portal].metadata[pjds].longitude = 'notFound'
