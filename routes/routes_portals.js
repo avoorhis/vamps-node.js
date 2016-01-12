@@ -175,9 +175,9 @@ router.get('/geomap/:portal', function(req, res) {
 //      dataset: 'CNE_0004_2004_01_22' } 
 //  }
 
-    console.log(AllMetadata)
+    //console.log(AllMetadata)
     var portal_info = get_portal_metadata(portal, AllMetadata, false)
-    console.log('FOUND '+JSON.stringify(portal_info))
+    //console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
             portal      : portal,
