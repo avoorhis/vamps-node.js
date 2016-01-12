@@ -52,3 +52,12 @@
 #search_choices_div ul li{
 	display: inline;
 }
+.hover_table {
+	height:200px;
+	overflow:auto;
+
+}
+.hover_table td {
+	padding:5px;
+	
+}

@@ -269,9 +269,9 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
               if(got_lat === false)
                 portal_info[portal].metadata[pjds].latitude = 'notFound'
               if(got_lon === false)
-              portal_info[portal].metadata[pjds].longitude = 'notFound'
-                portal_info[portal].metadata[pjds].pid = pid
-                portal_info[portal].metadata[pjds].did = did
+                portal_info[portal].metadata[pjds].longitude = 'notFound'
+              portal_info[portal].metadata[pjds].pid = pid
+              portal_info[portal].metadata[pjds].did = did
               got_lat=false
               got_lon=false
               

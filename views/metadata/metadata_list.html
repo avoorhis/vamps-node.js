@@ -9,7 +9,11 @@
 	</thead>
 	<tbody>
 		<% for(i in metadata){ %>
-			<tr><td><a href='list_result/<%= metadata[i] %>'><%= metadata[i] %></a></td></tr>
+			<tr>
+				<td><%= metadata[i] %></td>
+				<td><a href='list_result/<%= metadata[i] %>'>View Values</a></td>
+				<td><a href='geomap/<%= metadata[i] %>'>View Map</a></td>
+			</tr>
 		<% } %>
 	</tbody>
 </table>

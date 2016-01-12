@@ -1,0 +1,36 @@
+<% include ../add_ins/begin.ejs %>
+
+<script>  
+  var mditem = '<%= md_item %>'
+  var metadata_info_local   = JSON.parse('<%- mdinfo %>')
+  var md_local   = metadata_info_local.metadata
+  //var zoom_level = metadata_info_local.zoom
+</script>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+	<div class="container">
+
+      <div id='map-canvas' class='map'></div>
+	
+	</div>
+
+
+<% include ../add_ins/end.ejs %>
+<script src ="https://maps.googleapis.com/maps/api/js"></script>
+<script src="/javascripts/metadata.js"></script>
+<script>
+	$(document).ready(function(){
+		create_geospatial()
+	});
+</script>
+
+
+
+
+</body>
+</html>
+
