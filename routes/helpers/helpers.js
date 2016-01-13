@@ -262,8 +262,9 @@ module.exports.run_select_datasets_query = function(rows){
           			}else{
           				DatasetsWithLatLong[did]={};
         				
-        				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-        				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+          				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+          				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+                  DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did]
           				if(mdname == 'latitude'){				
           					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
           				}else{

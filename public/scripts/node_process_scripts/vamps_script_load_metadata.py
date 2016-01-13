@@ -193,9 +193,12 @@ def get_metadata(indir,csv_infile):
             found = False
             for samp_head_name in req_first_col:
                 if samp_head_name in TMP_METADATA_ITEMS:
-                    found = True
-                    saved_indexes.append(TMP_METADATA_ITEMS[samp_head_name].index(ds))
-                    dataset_header_name = samp_head_name
+                    try:
+                        found = True
+                        saved_indexes.append(TMP_METADATA_ITEMS[samp_head_name].index(ds))
+                        dataset_header_name = samp_head_name
+                    except:
+                        print ds+'Not found in file -skipping'
             if not found:
                 sys.exit('ERROR: Could not find "dataset" or "sample_name" in matadata file')
                                 

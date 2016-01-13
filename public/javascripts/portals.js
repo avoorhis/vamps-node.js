@@ -108,7 +108,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
 //
 //
 function bindInfoWindow(marker, map, infowindow, html) { 
-  google.maps.event.addListener(marker, 'click', function() { 
+  google.maps.event.addListener(marker, 'mouseover', function() { 
     infowindow.setContent(html); 
     infowindow.open(map, marker); 
   }); 

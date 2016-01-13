@@ -143,7 +143,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     
     // add an event listener for this marker
     lines = data[0].split(':::')
-    var html = 'Item: '+mditem+'<br>';
+    var html = 'Parameter: '+mditem+'<br>';
     html += "<table  class='table table_striped' >"
     for(l in lines){
       var pid = pid_collector[lines[l]].pid;
@@ -160,7 +160,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
 //
 //
 function bindInfoWindow(marker, map, infowindow, html) { 
-  google.maps.event.addListener(marker, 'click', function() { 
+  google.maps.event.addListener(marker, 'mouseover', function() { 
     infowindow.setContent(html); 
     infowindow.open(map, marker); 
   }); 

@@ -1,13 +1,20 @@
 <% include add_ins/begin.ejs %>
 <script>
-  var data = JSON.parse('<%- geodata %>');
+  //var data = JSON.parse('<%- geodata %>');
+  var md_local = JSON.parse('<%- geodata %>');
 </script>
 
-	<div id="map" style="width:100%;height:800px;"></div>
+	<div id="map-canvas" style="height:800px;"></div>
 	
 <% include add_ins/end.ejs %>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript" src="/javascripts/geodistribution.js"></script>
+<script>
+	$(document).ready(function(){
+		create_geospatial()
+		//loadMap();
+	});
+</script>
 </body>
 </html>
 
