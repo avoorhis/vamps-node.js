@@ -74,7 +74,7 @@ module.exports = {
 			//var read_choices = ['DB','JSON','HTF5'];
 			//var read_from = read_choices[0];
 		  //if(read_from === 'JSON') {
-				
+			db_tax_id_list = {};
 		  for (var n in chosen_id_name_hash.ids) { // has correct order
 				
 				  did = chosen_id_name_hash.ids[n];	
@@ -193,34 +193,94 @@ module.exports = {
 
 
 					}else if(post_items.unit_choice === 'tax_silva108_custom'){
-							//for(var t in post_items.custom_taxa) {
-								testtax = 'Bacteria_domain'
+							
+								
 
-								for (var n in chosen_id_name_hash.ids){
-									did = chosen_id_name_hash.ids[n];	
-									console.log('TAXCOUNTS[did]>>')
-									console.log(TAXCOUNTS[did])
-									console.log('<<TAXCOUNTS[did]')
-									for(var x in TAXCOUNTS[did]){
-										var cnt = TAXCOUNTS[did][x]
-										var ids = x.split('_');// _3437_1749484_1819019_2223710_2287237_2311724_2240949_2062201: 9,
+								db_tax_id_list[did] = {}
+								for(var t in post_items.custom_taxa) {
+									var name_n_rank = post_items.custom_taxa[t]
+									
+									//console.log('name_n_rank',name_n_rank)
+									//console.log('TAXCOUNTS[did]>>')
+									//console.log(TAXCOUNTS[did])
+									//console.log('<<TAXCOUNTS[did]')
+									//for(var x in TAXCOUNTS[did]){
+									//	var cnt = TAXCOUNTS[did][x]
+										//var ids = x.split('_');// _3437_1749484_1819019_2223710_2287237_2311724_2240949_2062201: 9,
 										// ids = ['','3437','1749484','1819019','2223710','2287237','2311724','2240949','2062201']
 										//ids.shift(); // remove first -blank- item
 
-										temp = testtax.split('_')
+										temp = name_n_rank.split('_')
 										rank_name = temp[1]
-										rank_no = parseInt(C.RANKS.indexOf(rank_name))	+ 1;
-										db_id = ids[rank_no]
-										//console.log(rank_name,rank_no,db_id)
-										db_id_n_rank = db_id+'_'+rank_name;
-										console.log('tax',testtax,db_id_n_rank,rank_name,rank_no,db_id)
-										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
-											//tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
-											//console.log('tax_node',db_id_n_rank, tax_node.taxon, tax_node.db_id)
+										rank_no = parseInt(C.RANKS.indexOf(rank_name));
+										console.log(rank_no,rank_name)
+										// db_id = ids[rank_no]
+										// //console.log(rank_name,rank_no,db_id)
+										// db_id_n_rank = db_id+'_'+rank_name;
+										//console.log('tax',testtax,db_id_n_rank,rank_name,rank_no,db_id)
+										if(name_n_rank in new_taxonomy.taxa_tree_dict_map_by_name_n_rank){
+											db_tax_id_list[did][name_n_rank] = ''
+											tax_long_name = '';
+											//if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
+											tax_node = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_n_rank];
+											console.log('tax_node', name_n_rank,tax_node)
+											// // to get the counts we want to move up the parent tree to '0'
+											// console.log(rank_no)
+											// if(rank_no  === 0){
+											// 	db_tax_id_list.did.name_n_rank.unshift(tax_node.db_id)  // add to beginning
+											// }else if(rank_no  === 1) { // phylum
+											// 	db_tax_id_list.did.name_n_rank.unshift(tax_node.db_id)  // add to beginning
+											// 	parentnode = new_taxonomy.taxa_tree_dict_map_by_id[tax_node.parent_id]
+											// }
+
+
+											node_id = tax_node.parent_id
+											db_tax_id_list[did][name_n_rank] = '_' + tax_node.db_id  // add to beginning
+											tax_long_name = tax_node.taxon;
+											while(node_id !== 0) {  		
+												new_node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+									  		db_id = new_node.db_id
+									  		db_tax_id_list[did][name_n_rank] =  '_' + db_id + db_tax_id_list[did][name_n_rank]
+									  		node_id = new_node.parent_id; 
+									  		tax_long_name = new_node.taxon+';'+tax_long_name;
+									  		 	
+									  	}
+									  	cnt = 0
+									  	for(var id_chain in TAXCOUNTS[did]){
+									  			//console.log('id_chain',id_chain)
+									  			if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
+									  				console.log('MATCH',db_tax_id_list[did][name_n_rank], id_chain)
+									  				cnt += TAXCOUNTS[did][id_chain]
+									  			}
+									  	}
+							  			console.log('COUNT',cnt, rank_name, tax_long_name)
+									  	if(post_items.include_nas == 'no' ){
+										
+												if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
+													//console.log('ADDING '+tax_long_name)
+													// SCREEN DOMAINS
+													//if(post_items.domains.indexOf(rank_name) != -1){
+														console.log('FOUND1',rank_name)
+														unit_name_lookup[tax_long_name] = 1;
+														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+													//}
+												}
+												
+											}else{
+												// SCREEN DOMAINS
+												//if(post_items.domains.indexOf(rank_name) != -1){
+														console.log('FOUND2',rank_name)
+														unit_name_lookup[tax_long_name] = 1;
+														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
+												//}
+											}
+
+											
+
 									  }
 
-									}
 								}
+								console.log(db_tax_id_list) // to match with TAXCOUNTS to get counts
 
 
 							// 	console.log(post_items.custom_taxa[t])
@@ -239,12 +299,13 @@ module.exports = {
 					}
 
 			}
-			// console.log('unit_name_lookup>>')
-			// console.log(unit_name_lookup)
-			// console.log('<<unit_name_lookup')
-			// console.log('unit_name_lookup_per_dataset>>')
-			// console.log(unit_name_lookup_per_dataset)
-			// console.log('<<unit_name_lookup_per_dataset')
+			
+			console.log('unit_name_lookup>>')
+			console.log(unit_name_lookup)
+			console.log('<<unit_name_lookup')
+			console.log('unit_name_lookup_per_dataset>>')
+			console.log(unit_name_lookup_per_dataset)
+			console.log('<<unit_name_lookup_per_dataset')
 // 			unit_name_lookup>>
 // { 'Bacteria;Lentisphaerae': 1,
 //   'Bacteria;Planctomycetes': 1,

@@ -6,7 +6,7 @@ Visualization and Analysis of Microbial Population Structures
 INSTALL
 --------------
 
-**(Optional install method using VirtualBox and Vagrant -see below)**
+**(Optional (easy-)install method using VirtualBox and Vagrant -see below)**
 
 **Requirements**
  * MySQL (https://www.mysql.com/, downloads are under http://dev.mysql.com/downloads/mysql/)
@@ -113,8 +113,8 @@ Which will create the directory 'vamps-node.js'.
 
 * Run the command 'vagrant up' from the new vamps-node.js directory.
 Wait for the Ubuntu VirtualBox server to be created and all of the files 
-and libraries to be installed. When finished vamps will be available 
-in your browser at:  http://localhost:4568/
+and libraries to be installed (about 20-40 min). When finished vamps will be available 
+in your browser at:  localhost:4568/
 For more information see the help files at https://docs.vagrantup.com/v2/getting-started/index.html
 and examine the Vagrantboot4568.sh and Vagrantfile in the vamps-node.js main directory.
 
