@@ -53,7 +53,7 @@ router.get('/geomap/:item', helpers.isLoggedIn, function(req, res) {
       var md_item = req.params.item;
       //console.log(AllMetadata)
       var metadata_info = get_metadata_hash(md_item, AllMetadata)
-      console.log(metadata_info)
+      //console.log(metadata_info)
       res.render('metadata/geomap', { title: 'VAMPS:Metadata Distribution',
             user    : req.user,hostname: req.CONFIG.hostname,
             md_item : md_item,

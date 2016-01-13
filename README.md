@@ -104,7 +104,9 @@ OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 
 **Download and Install Vagrant (https://www.vagrantup.com/)**
 
-Install the vamps source code (assumes git is installed):
+Create an empty directory named 'vamps-node.js' and place the two files 
+(Vagrantfile and Vagrantboot4568.sh from the vamps-node.js github site) into it.
+Alternatively install the vamps-node.js source code (assumes git is installed):
 * run 'git clone https://github.com/avoorhis/vamps-node.js.git'.
 
 Which will create the directory 'vamps-node.js'.
@@ -115,6 +117,11 @@ and libraries to be installed. When finished vamps will be available
 in your browser at:  http://localhost:4568/
 For more information see the help files at https://docs.vagrantup.com/v2/getting-started/index.html
 and examine the Vagrantboot4568.sh and Vagrantfile in the vamps main directory.
+
+The server should start automatically and can be stopped,started or the status checked:
+using "./vamps-launcher.sh stop|start|status"
+
+The log files are at ./logs/node-server.log and ./logs/node-error.log
 
 
 ---------------

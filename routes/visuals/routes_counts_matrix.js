@@ -193,7 +193,36 @@ module.exports = {
 
 
 					}else if(post_items.unit_choice === 'tax_silva108_custom'){
-							// for(var t in post_items.custom_taxa) {
+							//for(var t in post_items.custom_taxa) {
+								testtax = 'Bacteria_domain'
+
+								for (var n in chosen_id_name_hash.ids){
+									did = chosen_id_name_hash.ids[n];	
+									console.log('TAXCOUNTS[did]>>')
+									console.log(TAXCOUNTS[did])
+									console.log('<<TAXCOUNTS[did]')
+									for(var x in TAXCOUNTS[did]){
+										var cnt = TAXCOUNTS[did][x]
+										var ids = x.split('_');// _3437_1749484_1819019_2223710_2287237_2311724_2240949_2062201: 9,
+										// ids = ['','3437','1749484','1819019','2223710','2287237','2311724','2240949','2062201']
+										//ids.shift(); // remove first -blank- item
+
+										temp = testtax.split('_')
+										rank_name = temp[1]
+										rank_no = parseInt(C.RANKS.indexOf(rank_name))	+ 1;
+										db_id = ids[rank_no]
+										//console.log(rank_name,rank_no,db_id)
+										db_id_n_rank = db_id+'_'+rank_name;
+										console.log('tax',testtax,db_id_n_rank,rank_name,rank_no,db_id)
+										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
+											//tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+											//console.log('tax_node',db_id_n_rank, tax_node.taxon, tax_node.db_id)
+									  }
+
+									}
+								}
+
+
 							// 	console.log(post_items.custom_taxa[t])
 							// 		var name_and_rank = post_items.custom_taxa[t];
 							// 		var items = name_and_rank.split('_');
@@ -206,12 +235,39 @@ module.exports = {
 							// 		unit_name_lookup[tax_long_name] = 1;
 							// 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
 							// 		unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							// } // END :: for(t in post_items.custom_taxa) {
+							//} // END :: for(t in post_items.custom_taxa) {
 					}
 
 			}
-			
-			
+			// console.log('unit_name_lookup>>')
+			// console.log(unit_name_lookup)
+			// console.log('<<unit_name_lookup')
+			// console.log('unit_name_lookup_per_dataset>>')
+			// console.log(unit_name_lookup_per_dataset)
+			// console.log('<<unit_name_lookup_per_dataset')
+// 			unit_name_lookup>>
+// { 'Bacteria;Lentisphaerae': 1,
+//   'Bacteria;Planctomycetes': 1,
+//   'Bacteria;Cyanobacteria': 1,
+//   'Bacteria;Op8': 1,
+//   'Bacteria;Spirochaetes': 1,
+//   'Organelle;Chloroplast': 1,
+//   'Bacteria;Verrucomicrobia': 1,
+//    }
+// <<unit_name_lookup
+// unit_name_lookup_per_dataset>>
+// { '1446': 
+//    { 'Bacteria;Lentisphaerae': 48,
+//      'Bacteria;Planctomycetes': 134,
+//      'Bacteria;Cyanobacteria': 813,
+//      'Bacteria;Op8': 4,
+//       },
+//   '1447': 
+//    { 'Bacteria;Lentisphaerae': 326,
+//      'Bacteria;Planctomycetes': 285,
+//      'Bacteria;Od1': 9,
+     
+//     } }
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
 
 
@@ -222,7 +278,7 @@ module.exports = {
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
 			console.log('POSTx - from routes_common_matrix.js');
-			console.log(post_items);
+			//console.log(post_items);
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
 
