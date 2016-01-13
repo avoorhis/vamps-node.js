@@ -143,12 +143,13 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     
     // add an event listener for this marker
     lines = data[0].split(':::')
-    var html = 'Parameter: '+mditem+'<br>';
+    var html = '';
     html += "<table  class='table table_striped' >"
+    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
     for(l in lines){
       var pid = pid_collector[lines[l]].pid;
       var val = pid_collector[lines[l]].value;
-      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>Value: "+val+"</td></tr>"
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
     }
     html += '</table>'
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>"); 
