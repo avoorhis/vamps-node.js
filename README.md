@@ -123,9 +123,9 @@ To log into the virtual box running the node server (for maintenance or to updat
 The server should have started automatically and can be stopped, started or the status checked:
 using "./vamps-launcher.sh stop|start|status"
 
-*The log files are at ./logs/node-server.log and ./logs/node-error.log
+* The log files are at ./logs/node-server.log and ./logs/node-error.log
 
-*Update the vamps code: run 'git pull' and restart the server.
+* Update the vamps code: run 'git pull' and restart the server.
 
 
 ---------------
