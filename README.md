@@ -116,14 +116,16 @@ Wait for the Ubuntu VirtualBox server to be created and all of the files
 and libraries to be installed. When finished vamps will be available 
 in your browser at:  http://localhost:4568/
 For more information see the help files at https://docs.vagrantup.com/v2/getting-started/index.html
-and examine the Vagrantboot4568.sh and Vagrantfile in the vamps main directory.
+and examine the Vagrantboot4568.sh and Vagrantfile in the vamps-node.js main directory.
 
-To log into the virtual box running the node server
+To log into the virtual box running the node server (for maintenance or to update the source code):
 * Run the command 'vagrant ssh' and then 'cd vamps-node.js' to enter the base of the running server
 The server should have started automatically and can be stopped, started or the status checked:
 using "./vamps-launcher.sh stop|start|status"
 
-The log files are at ./logs/node-server.log and ./logs/node-error.log
+*The log files are at ./logs/node-server.log and ./logs/node-error.log
+
+*Update the vamps code: run 'git pull' and restart the server.
 
 
 ---------------
