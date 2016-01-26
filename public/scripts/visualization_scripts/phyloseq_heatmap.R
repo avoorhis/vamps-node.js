@@ -10,7 +10,7 @@ dist_metric<- args[4]
 phy        <- args[5]
 md1        <- args[6]
 ord_type   <- args[7]
-fill       <- args[8]
+taxa_label       <- args[8]
 biom_file  <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
 tax_file   <- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
 map_file   <- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
@@ -52,7 +52,7 @@ MAP <- import_qiime_sample_data(map_file)
 #print(is.recursive(TAX))
 #print(is.atomic(TAX))
 
-df <- as.data.frame(TAX)[fill]
+df <- as.data.frame(TAX)[taxa_label]
 rows <- nrow(df)
 print(df)
 print(ncol(df))
@@ -70,31 +70,40 @@ h = 8
 
 w_svg=ds_count*0.5
 h_svg=rows*0.1
-w_png = ds_count*20
+# with must be related to md1 count
+md1_unique_count <- length(levels(MAP[[md1]]))
+w_png = 200 + (md1_unique_count*50)
+#w_png=300
 h_png = rows*5
-	out_file = paste("tmp/",out_file,sep='')
-	unlink(out_file)
-	#print(physeq)
-	#pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-	png(out_file, width=w_png, height=h_png)
-	#svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
-	#png(out_file, width=w_svg, height=h_svg)
-	gpac <- subset_taxa(physeq, Phylum==phy)
-	#gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+out_file = paste("tmp/",out_file,sep='')
+unlink(out_file)
+#print(physeq)
+#pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
+png(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
+#svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
+#png(out_file, width=w_svg, height=h_svg)
+gpac <- subset_taxa(physeq, Phylum==phy)
+# #gpac = prune_samples(sample_sums(gpac) > 50, gpac)
+# #plot_heatmap(gpac)
 
-	gpac <- tryCatch({ 
-			  prune_samples(sample_sums(gpac) > 50, gpac)
-		}, error = function(err) {
- 			  cat(paste("ERROR -- no data available for '",phy,"' after subsetting\n",sep=''))
-  		  q()
-		},
-		finally = { 
-			
-		})
-	plot_title = paste('Phylum:',phy, sep=' ')
-	print(gpac)
-	plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=fill, na.value = "black",)
+gpac <- tryCatch({ 
+		  			prune_samples(sample_sums(gpac) > 50, gpac)
+			}, 
+			error = function(err) {
+					  cat(paste("ERROR -- no data available for '",phy,"' after subsetting\n",sep=''))
+				  	q()
+			},
+			finally = { 
+				
+			})
+#print(gpac)
 
+
+plot_title = paste('Phylum:',phy, sep=' ')
+#p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title,  sample.label='X.SampleID', taxa.label=taxa_label, na.value = "black")
+p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=taxa_label)
+print(p$scales)
+print(p)
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html
 # GP.ord <- ordinate(physeq, "NMDS", "bray")
 

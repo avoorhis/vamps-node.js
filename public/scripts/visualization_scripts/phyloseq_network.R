@@ -10,9 +10,9 @@ dist_metric	<- args[4]
 md1 				<- args[5]
 md2 				<- args[6]
 max_dist 		<- args[7]
-biom_file 	<- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
-tax_file 		<- paste(tmp_path,'/',prefix,'_taxonomy.txt',sep='')
-map_file 		<- paste(tmp_path,'/',prefix,'_metadata.txt',sep='')
+biom_file 	<- paste(tmp_path, '/', prefix, '_count_matrix.biom', sep='')
+tax_file 		<- paste(tmp_path, '/', prefix, '_taxonomy.txt', sep='')
+map_file 		<- paste(tmp_path, '/', prefix, '_metadata.txt', sep='')
 
 distance     <-  'bray'
 
@@ -39,7 +39,7 @@ if(dist_metric  == "morisita_horn"){
 
 library(phyloseq)
 library(ggplot2)
-TAX<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
+TAX<-as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
 OTU <- import_biom(biom_file)
 MAP <- import_qiime_sample_data(map_file)
 TAX <- tax_table(TAX)

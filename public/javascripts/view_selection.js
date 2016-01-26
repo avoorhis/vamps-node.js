@@ -1129,21 +1129,44 @@ function create_counts_table() {
 	    tax_counts_div.style.display = 'block';
       var html = '';
          
-      html += "</table>  ";
-      html += "</span>";
+      // need the max ranks
+      maxrank = 0;
+      for (var i in mtx_local.rows){
+        taxitems = mtx_local.rows[i].id.split(';');
+        if(maxrank < taxitems.length){
+          maxrank = taxitems.length;
+        }
+      }
 
       //html += "<table border='1' class='single_border small_font counts_table' >";
-	  html += "<table border='1' class='table table-condensed' >";
-      html += "<tr><td></td><td></td>";
+	    html += "<table border='1' class='table table-condensed' >";
+      html += "<tr><td></td>"
+      for (t = 0; t < maxrank; t++) {
+        html += "<th><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
+      }
+      
       for (var n in mtx_local.columns) {
-        html += "<td class=''>"+mtx_local.columns[n].id +"</td>";
+        html += "<th class=''>"+mtx_local.columns[n].id +"</th>";
       }
       html += "</tr>";
       
+
       for (var i in mtx_local.rows){
         count = parseInt(i)+1;
+        taxitems = mtx_local.rows[i].id.split(';');
+
         html += "<tr class='chart_row'><td>"+count.toString()+"</td>";
-        html += "<td class='left_justify'>"+mtx_local.rows[i].id +"</td>";
+        
+        for (t = 0; t < maxrank; t++) {
+          if(taxitems.length > t){
+            html += "<td class='left_justify'>"+taxitems[t] +"</td>";
+          }else{
+            html += "<td class='left_justify'>--</td>";
+          }
+        }
+        //html += "<td class='left_justify'>"+mtx_local.rows[i].id +"</td>";
+        
+
         for (var da in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][da];
 		  
@@ -1157,6 +1180,9 @@ function create_counts_table() {
       // TOTALS
       html += "<tr><td></td>";
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
+      for (t = 0; t < maxrank-1; t++) {
+        html += "<td></td>";
+      }
       for (var m in mtx_local.column_totals){
         var total;
   		  if(pi_local.normalization == 'frequency'){

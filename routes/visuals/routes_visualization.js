@@ -1304,7 +1304,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
                  //      html += " <p>ERROR in loading pdf file</p>";
                  //      html += "</object></div>"; 
                  // }else{
-                      html = "<img src='/"+image_file+"'>";                    
+                      html = "<img src='/"+image_file+"'  >";                    
                 //}              
             }
 

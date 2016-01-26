@@ -29,6 +29,7 @@ function start_server() {
 	# 	echo "ERROR: server should be run as vampsdevhttpd user."
 	# 	exit 1
 	# fi
+	echo "Trying to start server.....See logs in './logs/*'"
 	node $PROG 2>>$ERRLOG 1>>$LOG &
 	#npm start
 }
@@ -38,7 +39,7 @@ function stop_server() {
 	# 	echo "ERROR: You must sudo vampsdevhttpd to stop this server."
 	# 	exit 1
 	# fi
-
+	echo "Stopping server"
 	#/usr/bin/pkill -xf "/usr/local/www/vampsdev/software/node/bin/node /usr/local/www/vampsdev/projects/node-server/webserver.js"
 	/usr/bin/pkill -xf "node $PROG"
 
