@@ -158,7 +158,7 @@ constants.VISUAL_THUMBNAILS = { visuals: [
         tip:''  },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',    	link:'user_viz_data/metadata_table', id:'metadata_table_link_id', 
         tip:''},
-    {name:'Data Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
+    {name:'Geo-Location',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
         tip:'lat/lon metadata'    },
     {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'},

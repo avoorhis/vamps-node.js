@@ -146,7 +146,9 @@ $(document).ready(function () {
       xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
       xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState==4 ) {
-          document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+          response  = JSON.parse(xmlhttp.responseText);
+          document.getElementById("projects_select_div").innerHTML = response.html;
+          document.getElementById("project_count_id").innerHTML = response.count;
           onPageLoad();
         }
       }
@@ -254,7 +256,9 @@ function clear_filters() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById("projects_select_div").innerHTML = response.html;
+      document.getElementById("project_count_id").innerHTML = response.count;
       onPageLoad();
       
 
@@ -284,7 +288,9 @@ function filter_by_env() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById("projects_select_div").innerHTML = response.html;
+      document.getElementById("project_count_id").innerHTML = response.count;
       onPageLoad();      
     }
   }
@@ -310,7 +316,9 @@ function filter_by_target() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById("projects_select_div").innerHTML = response.html;
+      document.getElementById("project_count_id").innerHTML = response.count;
       onPageLoad();      
     }
   }
@@ -337,7 +345,9 @@ function showLiveProjectNames(str) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-      document.getElementById("projects_select_div").innerHTML = xmlhttp.responseText;
+      response  = JSON.parse(xmlhttp.responseText);
+      document.getElementById("projects_select_div").innerHTML = response.html;
+      document.getElementById("project_count_id").innerHTML = response.count;
       onPageLoad();      
     }
   }

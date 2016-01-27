@@ -2002,8 +2002,9 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
 //
 router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     SHOW_DATA = ALL_DATASETS;
-    html = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
-    res.send(html);
+    result = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
+    
+    res.json(result);
 });
 //
 //
@@ -2016,7 +2017,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     var all_pr_dat = []
     prefixes = get_portal_prefixes(portal);    
     if(prefixes.length === 0){
-      html = get_livesearch_html(SHOW_DATA.projects, info, req.user);
+      result = get_livesearch_html(SHOW_DATA.projects, info, req.user);
     }else{
       SHOW_DATA.projects.forEach(function(prj) {
         ucname = prj.name.toUpperCase();
@@ -2026,9 +2027,9 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
           }
         }
       });
-      html = get_livesearch_html(all_pr_dat, info, req.user);
+      result = get_livesearch_html(all_pr_dat, info, req.user);
     }
-    res.send(html);
+    res.json(result);
 });
 //
 //  LIVESEARCH PROJECTS FILTER
@@ -2077,11 +2078,11 @@ router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
   }
 
   if(all_pr_dat.length == 0){
-    html = 'no projects found';
+    result = {'html':'no projects found','count':0};
   }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
+    result = get_livesearch_html(all_pr_dat, info, req.user);
   }
-  res.send(html);
+  res.json(result);
 
 });
 
@@ -2130,11 +2131,11 @@ router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
       }
   }
   if(all_pr_dat.length == 0){
-    html = 'no projects found';
+    result = {'html':'no projects found','count':0};
   }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
+    result = get_livesearch_html(all_pr_dat, info, req.user);
   }
-  res.send(html);
+  res.json(result);
 
 });
 //
@@ -2187,11 +2188,11 @@ router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
       }
   }
   if(all_pr_dat.length == 0){
-    html = 'no projects found';
+    result = {'html':'no projects found','count':0};
   }else{
-    html = get_livesearch_html(all_pr_dat, info, req.user);
+    result = get_livesearch_html(all_pr_dat, info, req.user);
   }
-   res.send(html);
+   res.json(result);
 
 });
 module.exports = router;
@@ -2243,9 +2244,9 @@ function get_portal_prefixes(portal){
 function get_livesearch_html(all_pr_dat, info, user)
 {
 
-  html = '';
+  var html = '';
   html += "<ul>";
-   
+  var project_count = 0;
   for (i in all_pr_dat) { 
       
           var pid = all_pr_dat[i].pid 
@@ -2301,12 +2302,13 @@ function get_livesearch_html(all_pr_dat, info, user)
             html += "  </div>";
             html += "</ul>";
             html += "</li>"
+            project_count += 1;
 
-        }
+          }
      
   }
   html += "</ul>";  
-  return html;
+  return {'html':html,'count':project_count};
 }
 
 

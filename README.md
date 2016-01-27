@@ -82,6 +82,7 @@ START the SERVER
 
 Start the server:
   * run 'npm start' from the base of the vamps-node.js directory
+  * or use the script './vamps-launcher.sh' |start|stop|status|
   * If you've installed the schema with data (db_schema_w_test_data.sql), you can log in with the guest
   account (username:'guest'; password:'guest'), otherwise you should register a new account.
 
@@ -105,7 +106,7 @@ OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 **Download and Install Vagrant (https://www.vagrantup.com/)**
 
 Create an empty directory named 'vamps-node.js' and place the two files 
-(Vagrantfile and Vagrantboot4568.sh from the vamps-node.js github site) into it.
+(Vagrantfile and Vagrantboot4568.sh from this 'vamps-node.js' github site) into it.
 
 Alternatively install the vamps-node.js source code (assumes git is installed):
 by running 'git clone https://github.com/avoorhis/vamps-node.js.git'.
@@ -133,7 +134,8 @@ UPDATE
 ---------------
 To update modules:
   * npm update
-
+To update the vamps code:
+ * git pull
 To refresh anew via git
   * git fetch --all
   * git reset --hard origin/master

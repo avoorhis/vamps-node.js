@@ -138,7 +138,7 @@
 <a name='top_o_viz'></a>
 <div style='float:right'>
 <table class=''>
-<tr><td>Phyloseq Input File Downloads:</td>
+<tr><td>Phyloseq Input File Downloads:&nbsp;</td>
   <td>       
           <form id='download_biom_form_id'  method='POST' action='download_file'>
             <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom File</button>
@@ -334,7 +334,7 @@
                                         </select>
                                       </td>
                                     </tr>
-                                    <tr><td>Ord Type:</td>
+                                    <tr><td>Ordination Type:</td>
                                       <td> 
                                       <input type='radio' name='<%= ordtype %>' id='' value='NMDS' > NMDS&nbsp;&nbsp;
                                       <input type='radio' checked name='<%= ordtype %>' id='' value='PCoA' > PCoA
@@ -381,7 +381,7 @@
                                 </select>
                               </td></tr>
                               <tr>
-                                <td>Max Dist:</td>
+                                <td>Max Distance:</td>
                                 <td> 
                                   <input type='radio' name='phyloseq_nwk_dist' id='' value='0.1' > 0.1&nbsp;&nbsp;
                                   <input type='radio' name='phyloseq_nwk_dist' id='' value='0.2' > 0.2<br>
@@ -405,7 +405,7 @@
                                 </a>
                               
                                     <table><tr>
-                                      <td>Metadata1  (shape):&nbsp;</td>
+                                      <td>Metadata1 (shape):&nbsp;</td>
                                       <td>
                                         <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
                                           <option value='Project' selected >Project</option>
@@ -430,7 +430,7 @@
                                       </td>
                                     </tr>
                                     <tr>
-                                      <td>Ord Type:</td>
+                                      <td>Ordination Type:</td>
                                       <td> 
                                     <input type='radio' name='<%= ordtype %>' id='<%= ordtype %>' value='NMDS' > NMDS&nbsp;&nbsp;
                                     <input type='radio' checked name='<%= ordtype %>' id='<%= ordtype %>' value='PCoA' > PCoA
