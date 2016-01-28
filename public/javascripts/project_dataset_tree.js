@@ -149,6 +149,7 @@ $(document).ready(function () {
           response  = JSON.parse(xmlhttp.responseText);
           document.getElementById("projects_select_div").innerHTML = response.html;
           document.getElementById("project_count_id").innerHTML = response.count;
+          document.getElementById('selected_ds_count_id').innerHTML = 0
           onPageLoad();
         }
       }
@@ -259,6 +260,7 @@ function clear_filters() {
       response  = JSON.parse(xmlhttp.responseText);
       document.getElementById("projects_select_div").innerHTML = response.html;
       document.getElementById("project_count_id").innerHTML = response.count;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
       onPageLoad();
       
 
@@ -291,6 +293,7 @@ function filter_by_env() {
       response  = JSON.parse(xmlhttp.responseText);
       document.getElementById("projects_select_div").innerHTML = response.html;
       document.getElementById("project_count_id").innerHTML = response.count;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
       onPageLoad();      
     }
   }
@@ -319,6 +322,7 @@ function filter_by_target() {
       response  = JSON.parse(xmlhttp.responseText);
       document.getElementById("projects_select_div").innerHTML = response.html;
       document.getElementById("project_count_id").innerHTML = response.count;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
       onPageLoad();      
     }
   }
@@ -348,6 +352,7 @@ function showLiveProjectNames(str) {
       response  = JSON.parse(xmlhttp.responseText);
       document.getElementById("projects_select_div").innerHTML = response.html;
       document.getElementById("project_count_id").innerHTML = response.count;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
       onPageLoad();      
     }
   }

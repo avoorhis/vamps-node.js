@@ -175,6 +175,10 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: unit_selection-->>');
   console.log(req.body);
   console.log('req.body: unit_selection');
+  if(typeof  unit_selection === 'undefined'){
+    unit_selection = 'tax_silva108_simple';
+  }
+  console.log(unit_selection);
   var dataset_ids = [];
   if(req.body.resorted === '1'){
   	dataset_ids = req.body.ds_order;	
@@ -260,6 +264,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
+                      unit_selection:unit_selection,
 		  				        message      : req.flash(),
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
@@ -290,11 +295,13 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
 
 
 
-  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
-  METADATA  = {};
+
   //console.log(ALL_DATASETS);
   // GLOBAL
   SHOW_DATA = ALL_DATASETS;
+  TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+  METADATA  = {};
+  unit_selection = 'tax_silva108_simple';
   var data_to_open = {};
   if(req.body.data_to_open){
     // open many projects
@@ -2195,6 +2202,19 @@ router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
    res.json(result);
 
 });
+//
+//
+//
+router.get('/set_units', function(req, res) {
+  //console.log('IN SET_UNITS')
+  if(req.query.hasOwnProperty('units')){
+    unit_selection = req.query.units
+  }else{
+    unit_selection = 'tax_silva108_simple';
+  }
+  
+});
+
 module.exports = router;
 
 /**

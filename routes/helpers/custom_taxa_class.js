@@ -124,14 +124,14 @@ function make_taxa_tree_dictNEW(taxonomy_obj)
 		          //console.log("taxon_name_id = " + JSON.stringify(taxon_name_id));
 		          //console.log("name_rank2 = " + taxa_name+' - '+taxa_rank)
 		          current_dict = make_current_dict(taxa_name, taxa_rank, i_am_a_parent, taxon_name_id, db_id);
-				  console.log(taxa_rank+" new_node = " + JSON.stringify(current_dict));
-				  //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
+				      console.log(taxa_rank+" new_node = " + JSON.stringify(current_dict));
+				      //console.log("current_dict = " + JSON.stringify(current_dict,null,4))
           
-				  taxa_tree_dict.push(current_dict);
+				      taxa_tree_dict.push(current_dict);
          
 		          add_to_dict_by_key(dictMap_by_name_n_rank,  current_dict.taxon + "_" + current_dict.rank, current_dict);
           
-				  add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
+				      add_to_dict_by_key(dictMap_by_db_id_n_rank, current_dict.db_id + "_" + current_dict.rank, current_dict);
 
 		          i_am_a_parent = current_dict.node_id;
 
@@ -273,10 +273,12 @@ function write_partial(fileName, html)
 
 function add_li(this_node)
 {
+  //console.log(this.node)
   this_html = '<li>\n';
   this_html += '<span class="sign"><i class="icon-no-sign"></i></span>';
-  this_html += '<input name="custom_taxa" class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '_' +this_node.rank + '"/>\n';  
-  this_html += '<span class="open-one-layer">' + this_node.taxon + '</span>';
+  //this_html += '<input name="custom_taxa" class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.taxon + '_' +this_node.rank + '"/>\n';  
+  this_html += '<input name="custom_taxa" class="custom-taxa" type="checkbox" id="' + this_node.taxon + '" value="' + this_node.node_id + '"/>\n';
+  this_html += '<span class="open-one-layer" title="'+ this_node.rank +'">' + this_node.taxon + '</span>';
   return this_html;
 }
 
@@ -307,6 +309,7 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   }
   new_level = level;
   html = end_ul(level, new_level, this_node.rank);
+  
   write_partial(fileName, html);
   
 }

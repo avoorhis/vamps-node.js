@@ -3,8 +3,9 @@
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var referer = 'unit_selection'; %>
 <script>
-  var ds_local  = JSON.parse('<%- chosen_id_name_hash %>');
-  var user_local  = '<%= user.username %>';
+  var ds_local       = JSON.parse('<%- chosen_id_name_hash %>');
+  var unit_selection = '<%= unit_selection %>';
+  var user_local     = '<%= user.username %>';
 </script>
   <div class='title'>Community Visualization</div>
   <div class='subtitle'>Units Selection Page</div>
@@ -49,11 +50,9 @@
       </tr>
       <tr>
       <td class='td_top small_font'>
-        <div id='units_select_choices_div' class='unit_selection_page_div_border table'>
-          
-          <% include partials/tax_silva108_simple.html %>
-
-        </div>
+        
+        <div id='units_select_choices_div' class='unit_selection_page_div_border table'></div>
+        
       </td>
       <td class='td_top small_font left_justify'>
         <div id='metadata_select_choices_div' class='metadata_selection_page_div_border '>

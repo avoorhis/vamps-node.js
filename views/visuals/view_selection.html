@@ -9,7 +9,7 @@
 <%  console.log('items') %>
 <%  console.log(items) %>
 <%  //console.log(cnsts.VISUAL_THUMBNAILS.visuals)%>
-<%  var disable_thumbs = false; %>
+<%  var activate_thumbs = true; %>
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
   var mtx_local = JSON.parse('<%- matrix %>');
@@ -86,83 +86,88 @@
   </div>
 </div>
 
+<% if(mtx.data == '') { %>
+<%  activate_thumbs = false %>
+    <div id='' class='no_data'>
+            <h3>No Sequences Found</h3>
+    </div>
+<% }else{ %>
+    <div style='float:left;'>
+      <table class='button_row'><tr>
+      	
+      	  <td>
+                
+            </td>
+      	
+      	    <!-- This form should run in the background and place the files 
+      	          in a 'downloads' directory where it can be retrieved.
+      	          The user should get an email when its ready.
+      	     -->
+            <td>
+        			<form id='download_fasta_form_id' method='POST' action=''>
+        		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
+        		    <input type='hidden' name='download_type' value='partial_project' />
+        		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+        			  <input type='hidden' name='referer' value='/visuals/view_selection' />
+      		  	</form>
+              
+      		</td><td>
+      		    <form id='download_metadata_form_id' method='POST' action=''>
+                <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
+      		      <input type='hidden' name='download_type' value='partial_project' />
+      		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+      			    <input type='hidden' name='referer' value='/visuals/view_selection' />
+      		    </form>	
+              
+      		</td><td>
+              
+              <form id='download_matrix_form_id'  method='POST' action=''>
+                <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Matrix File</button>
+                <input type='hidden' name='download_type' value='partial_project' />
+                <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
+                <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                <input type='hidden' name='referer' value='/visuals/view_selection' />
+              </form> 
+            
+          </td>
+          <td><div id='download_confirm_id'></div></td>
+     	
+      </tr></table>  <!-- button.row -->
 
+    </div>
 
-
-<div style='float:left;'>
-  <table class='button_row'><tr>
-  	<% if(mtx.data == '') { %>
-  	  <td>
-            <% disable_thumbs = true %>
-      	  <div id='' class='no_data'>
-      	        <h3>No Sequences Found</h3>
-      	  </div>
-        </td>
-  	<% } else { %>
-  	    <!-- This form should run in the background and place the files 
-  	          in a 'downloads' directory where it can be retrieved.
-  	          The user should get an email when its ready.
-  	     -->
-        <td>
-    			<form id='download_fasta_form_id' method='POST' action=''>
-    		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
-    		    <input type='hidden' name='download_type' value='partial_project' />
-    		    <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-    			  <input type='hidden' name='referer' value='/visuals/view_selection' />
-  		  	</form>
-          
-  		</td><td>
-  		    <form id='download_metadata_form_id' method='POST' action=''>
-            <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
-  		      <input type='hidden' name='download_type' value='partial_project' />
-  		      <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-  			    <input type='hidden' name='referer' value='/visuals/view_selection' />
-  		    </form>	
-          
-  		</td><td>
-          
-          <form id='download_matrix_form_id'  method='POST' action=''>
-            <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Matrix File</button>
-            <input type='hidden' name='download_type' value='partial_project' />
-            <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-        
-      </td>
-      <td><div id='download_confirm_id'></div></td>
-  	<% } %>
-  </tr></table>  <!-- button.row -->
-
-</div>
 <a name='top_o_viz'></a>
 <div style='float:right'>
-<table class=''>
-<tr><td>Phyloseq Input File Downloads:&nbsp;</td>
-  <td>       
-          <form id='download_biom_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom File</button>
-            <input type='hidden' name='file_type' value='biom' />           
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form>     
-      </td><td>
-          <form id='download_tax_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Tax File</button>
-            <input type='hidden' name='file_type' value='tax' />           
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form> 
-      </td><td>
-          <form id='download_meta_form_id'  method='POST' action='download_file'>
-            <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Meta File</button>
-            <input type='hidden' name='file_type' value='meta' />          
-            <input type='hidden' name='ts' value='<%= pi.ts %>' />
-            <input type='hidden' name='referer' value='/visuals/view_selection' />
-          </form>       
-</td></tr>
-</table>
+
+    <table class=''>
+
+    <tr><td>Phyloseq Input File Downloads:&nbsp;</td>
+      <td>       
+              <form id='download_biom_form_id'  method='POST' action='download_file'>
+                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom File</button>
+                <input type='hidden' name='file_type' value='biom' />           
+                <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                <input type='hidden' name='referer' value='/visuals/view_selection' />
+              </form>     
+          </td><td>
+              <form id='download_tax_form_id'  method='POST' action='download_file'>
+                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Tax File</button>
+                <input type='hidden' name='file_type' value='tax' />           
+                <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                <input type='hidden' name='referer' value='/visuals/view_selection' />
+              </form> 
+          </td><td>
+              <form id='download_meta_form_id'  method='POST' action='download_file'>
+                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Meta File</button>
+                <input type='hidden' name='file_type' value='meta' />          
+                <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                <input type='hidden' name='referer' value='/visuals/view_selection' />
+              </form>       
+    </td></tr>
+    </table>
+
 </div>
+<% } %>
 <% ds_count = mtx.shape[1]; %>
 <% tx_count = mtx.shape[0]; %>
 <% matrix_size = mtx.shape[0] * mtx.shape[1]; %>
@@ -202,14 +207,16 @@
 
                     <td class='td_top' id='<%= ttip %>'>                       
                             <center>    
-                                Too Much Data<br>              
+                                Not Available<br>              
                                  <img src='<%= thumb %>'  border='0' alt='<%= name %>' class='thumb_img' >
                             </center>                     
                     </td>
           <%    } else {                                                                              %>
-          <%        if(disable_thumbs) {                                                              %>
+          <%        if(activate_thumbs == false) {                                                              %>
                       <td class='td_top'><%= name %><br>
+                        <center> 
                         <img src='<%= thumb %>' border='0' alt='<%= name %>' class='thumb_img' >
+                        </center> 
                       </td>
           <%        }else{                                                                            %>
           <%            if(link_id == 'dbrowser_link_id'){ %> 

@@ -193,11 +193,19 @@ module.exports = {
 
 
 					}else if(post_items.unit_choice === 'tax_silva108_custom'){
-							
+								// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 								db_tax_id_list[did] = {};
+								console.log('creating custom counts matrix')
 								for(var t in post_items.custom_taxa) {
-									var name_n_rank = post_items.custom_taxa[t];
-									
+									//var name_n_rank = post_items.custom_taxa[t];
+									var selected_node_id = post_items.custom_taxa[t];
+									console.log('selected_node_id ', selected_node_id)
+									if( new_taxonomy.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
+
+										var tax_node = new_taxonomy.taxa_tree_dict_map_by_id[selected_node_id];
+										var rank_name = tax_node.rank;
+										var rank_no = parseInt(C.RANKS.indexOf(rank_name));
+										console.log('got one '+ rank_name)
 									//console.log('name_n_rank',name_n_rank)
 									//console.log('TAXCOUNTS[did]>>')
 									//console.log(TAXCOUNTS[did])
@@ -208,20 +216,20 @@ module.exports = {
 										// ids = ['','3437','1749484','1819019','2223710','2287237','2311724','2240949','2062201']
 										//ids.shift(); // remove first -blank- item
 
-										temp = name_n_rank.split('_')
-										rank_name = temp[1]
-										rank_no = parseInt(C.RANKS.indexOf(rank_name));
-										console.log(rank_no,rank_name)
+										//temp = name_n_rank.split('_')
+										//rank_name = temp[1]
+										//rank_no = parseInt(C.RANKS.indexOf(rank_name));
+										//console.log(rank_no,rank_name)
 										// db_id = ids[rank_no]
 										// //console.log(rank_name,rank_no,db_id)
 										// db_id_n_rank = db_id+'_'+rank_name;
 										//console.log('tax',testtax,db_id_n_rank,rank_name,rank_no,db_id)
-										if(name_n_rank in new_taxonomy.taxa_tree_dict_map_by_name_n_rank){
-											db_tax_id_list[did][name_n_rank] = ''
+										//if(name_n_rank in new_taxonomy.taxa_tree_dict_map_by_name_n_rank){
+											db_tax_id_list[did][selected_node_id] = ''
 											tax_long_name = '';
 											//if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
-											tax_node = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_n_rank];
-											console.log('tax_node', name_n_rank,tax_node);
+											//tax_node = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_n_rank];
+											//console.log('tax_node', name_n_rank, tax_node);
 											// // to get the counts we want to move up the parent tree to '0'
 											// console.log(rank_no)
 											// if(rank_no  === 0){
@@ -232,14 +240,14 @@ module.exports = {
 											// }
 
 
-											node_id = tax_node.parent_id
-											db_tax_id_list[did][name_n_rank] = '_' + tax_node.db_id  // add to beginning
+											new_node_id = tax_node.parent_id
+											db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id  // add to beginning
 											tax_long_name = tax_node.taxon;
-											while(node_id !== 0) {  		
-												new_node = new_taxonomy.taxa_tree_dict_map_by_id[node_id];
+											while(new_node_id !== 0) {  		
+												new_node = new_taxonomy.taxa_tree_dict_map_by_id[new_node_id];
 									  		db_id = new_node.db_id;
-									  		db_tax_id_list[did][name_n_rank] =  '_' + db_id + db_tax_id_list[did][name_n_rank];
-									  		node_id = new_node.parent_id; 
+									  		db_tax_id_list[did][selected_node_id] =  '_' + db_id + db_tax_id_list[did][selected_node_id];
+									  		new_node_id = new_node.parent_id; 
 									  		tax_long_name = new_node.taxon+';'+tax_long_name;
 									  		 	
 									  	}
@@ -247,8 +255,8 @@ module.exports = {
 									  	for(var id_chain in TAXCOUNTS[did]){
 									  			//console.log('id_chain',id_chain)
 									  			//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
-									  			if(id_chain == db_tax_id_list[did][name_n_rank]){	
-									  				console.log('MATCH',db_tax_id_list[did][name_n_rank], id_chain);
+									  			if(id_chain == db_tax_id_list[did][selected_node_id]){	
+									  				console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
 									  				cnt = TAXCOUNTS[did][id_chain];
 									  				break;
 									  			}
@@ -300,12 +308,12 @@ module.exports = {
 
 			}
 			
-			console.log('unit_name_lookup>>')
+			console.log('unit_name_lookup2>>')
 			console.log(unit_name_lookup)
-			console.log('<<unit_name_lookup')
-			console.log('unit_name_lookup_per_dataset>>')
+			console.log('<<2unit_name_lookup')
+			console.log('unit_name_lookup_per_dataset2>>')
 			console.log(unit_name_lookup_per_dataset)
-			console.log('<<unit_name_lookup_per_dataset')
+			console.log('<<2unit_name_lookup_per_dataset')
 // 			unit_name_lookup>>
 // { 'Bacteria;Lentisphaerae': 1,
 //   'Bacteria;Planctomycetes': 1,

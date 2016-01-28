@@ -1,3 +1,17 @@
+2016-01-27
+Custom taxonomy selection
+(Mitch has asked that this be a priority)
+1- The tree should include a (rank)_NA at each level.
+  If this is not in the database then the code should pad the list to include it in the tree.
+2- When you select two (or more) different rank levels the code should pad out the high (shorter)
+  level (with *_NAs) so that each selected taxa is of the same longest rank
+  (ie the tax tables items are all the same length)
+3- The tree is currently not functioning properly:
+  When a branch is closed and the CB is clicked the branch should open.
+  (whether the newly opened CBs are checked depends on the clade/indiv status)
+4- The tree is slow to load -- maybe try dynamic loading (branches not loaded til they are clicked open)
+5- The branches should all be ordered alphabetically
+
 2015-06-09
 Heatmap - give numbers more room and right justify
 Heatmap - limit sig figs on tt distance

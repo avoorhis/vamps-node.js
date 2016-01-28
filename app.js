@@ -286,11 +286,11 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //for(n in new_taxonomy.taxa_tree_dict){
     //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
     //}
-    //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id));
+    //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
 
 
 
-    //console.log('taxa_tree_dict_map_by_db_id_n_rank["55219_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["55219_phylum"]));
+    //console.log('taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3446_domain"]));
     //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
     //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
     //console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"]));

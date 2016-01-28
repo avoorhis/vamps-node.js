@@ -2,18 +2,14 @@
 
     Select Other Units:
     
-    <select id='unit_selection_id' name='unit_selection' class="selectpicker" data-style="btn btn-xs btn-info"  data-size="100">
+    <select id='unit_selection_id' name='unit_selection'  data-size="100">
 <%    for (var i in rows) { %>
 <%      var file_id  = rows[i].id; %>
 <%      var name     = rows[i].name; %>
 <%      var file     = rows[i].file; %>
 <%      var subtxt     = rows[i].subtext; %>
-<%      if (file_id === 'tax_silva108_simple') {  %>
-            <option   selected='selected' value='<%= file_id %>' data-subtext="<%= subtxt %>"><%= name %> </option>
-<%      } else { %>
-            <option   value='<%= file_id %>' data-subtext="<%= subtxt %>"><%= name %> </option>
-<%      } %>
-<%     }  %>
+            <option   value='<%= file_id %>' ><%= file_id %> </option>
+<%		}  %>
     </select>
 
  

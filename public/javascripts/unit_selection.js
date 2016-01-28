@@ -3,15 +3,8 @@
 $(document).ready(function(){
 
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
+    //unit_selection_id
     $("#unit_selection_id").on("change", get_requested_units_selection_box);
-
-    toggle_taxa_btn = document.getElementById('toggle_taxa_btn');
-    if (typeof toggle_taxa_btn !== "undefined") {
-      toggle_taxa_btn.addEventListener('click', function () {
-          toggle_simple_taxa();
-      });
-    }
-
 
     toggle_meta_r_btn = document.getElementById('toggle_meta_r_btn') || null;
     if (toggle_meta_r_btn !== null) {
@@ -27,6 +20,11 @@ $(document).ready(function(){
       });
     }
 
+    //get_requested_units_selection_box(unit_selection);
+
+    load_initial_taxa_tree(unit_selection);
+
+    
 
 });
 
@@ -38,8 +36,10 @@ function toggle_simple_taxa()
   // page: unit_selection
   // units: taxonomy
   // toggles domain checkboxes on/off
+  
   var boxes = document.getElementsByClassName('simple_taxa_ckbx');
   var i;
+  //alert(boxes)
   if (boxes[0].checked === false) {
       for (i = 0; i < boxes.length; i++) {
           boxes[i].checked = true;
@@ -96,30 +96,56 @@ function toggle_custom_metadata()
     }
   }
 }
-
+//
+//
+//
+function load_initial_taxa_tree(unit_selection){
+  get_requested_units_selection_box(unit_selection)
+}
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
-function get_requested_units_selection_box() {
-  var file_id = this.value;
+function get_requested_units_selection_box(file) {
+  //alert(file)
+  if(this.value){
+    var file_id = this.value
+  }else{
+    var file_id = file
+  }
+  
+  //alert(file_id)
   // Using ajax it will show the requested units module
   var file = '';
   var partial_name = '/visuals/partials/'+file_id;
   //alert(partial_name)
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.addEventListener("load", transferComplete(file_id), false);
+  var xmlhttp1 = new XMLHttpRequest();
+  var xmlhttp2 = new XMLHttpRequest();
+  xmlhttp1.addEventListener("load", transferComplete(file_id), false);
 
-  xmlhttp.open("GET", partial_name);
-  xmlhttp.onreadystatechange = function() {
+  xmlhttp1.open("GET", partial_name);
+  xmlhttp1.onreadystatechange = function() {
 
-         if (xmlhttp.readyState == 4 ) {
-           var string = xmlhttp.responseText;
+         if (xmlhttp1.readyState == 4 ) {
 
-           var div = document.getElementById('units_select_choices_div').innerHTML = string;
-           show_custom_taxa_tree();
+            var string = xmlhttp1.responseText;
+            var div = document.getElementById('units_select_choices_div').innerHTML = string;
+           //alert(file_id)
+            document.getElementById('unit_selection_id').value = file_id
+            show_custom_taxa_tree();
+            if(file_id == 'tax_silva108_simple'){
+              toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
+              //alert(toggle_taxa_btn)
+              if (toggle_taxa_btn !== null) {
+                toggle_taxa_btn.addEventListener('click', function () {
+                    toggle_simple_taxa();
+                });
+              }
+            }
+            xmlhttp2.open("GET", 'set_units?units='+file_id);
+            xmlhttp2.send();
          }
   };
-  xmlhttp.send();
+  xmlhttp1.send();
 }
 
 function transferComplete(file_id) {
