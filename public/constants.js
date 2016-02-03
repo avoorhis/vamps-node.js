@@ -45,6 +45,8 @@ constants.TARGETS = ["Av3","Av6", "Av6v4","Av4v5", "Av3v5","Av5v6",
 constants.UNITSELECT = { units: [
         {id : 'tax_silva108_simple',file: 'unit_selectors/taxa_silva108_simple.html', name : "Taxonomy -Simple", subtext: 'Silva108'},
         {id : 'tax_silva108_custom',file: 'unit_selectors/taxa_silva108_custom.html', name : "Taxonomy -Custom", subtext: 'Silva108'},
+        {id : 'tax_silva108_custom_fancytree',file: 'unit_selectors/taxa_silva108_custom_fancytree.json', name : "Taxonomy -Custom_fancytree", subtext: 'Silva108'},
+        {id : 'tax_silva108_custom_dhtmlx',file: 'unit_selectors/taxa_silva108_custom_dhtmlx.json', name : "Taxonomy -Custom_dhtmlx", subtext: 'Silva108'},
         {id : 'tax_gg_simple',      file: 'unit_selectors/taxa_gg_simple.html',       name : "Taxonomy -Simple", subtext: 'Greengenes v13.5'},
         {id : 'tax_gg_custom',      file: 'unit_selectors/taxa_gg_cust.html',         name : "Taxonomy -Custom", subtext: 'Greengenes v13.5'},
         {id : 'tax_rdp',            file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP",     subtext: 'Release 11'},

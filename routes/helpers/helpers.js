@@ -304,8 +304,11 @@ module.exports.run_select_sequences_query = function(rows){
           var count= rows[i].seq_count;
 		      var cid  =  rows[i].classifier_id;
           ALL_DCOUNTS_BY_DID[did] = parseInt(count);
-          ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+          if(ALL_CLASSIFIERS_BY_CID.hasOwnProperty(cid)){
+            ALL_CLASSIFIERS_BY_PID[pid] = ALL_CLASSIFIERS_BY_CID[cid];
+          }else{
 
+          }
           if(pid in ALL_PCOUNTS_BY_PID){
              ALL_PCOUNTS_BY_PID[pid] += parseInt(count);
           }else{

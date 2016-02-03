@@ -214,7 +214,7 @@ if (download_metadata_btn !== null) {
 }
 
 var download_matrix_btn = document.getElementById('download_matrix_btn') || null;
-if (typeof download_matrix_btn !== "undefined") {
+if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
       
       form = document.getElementById('download_matrix_form_id');

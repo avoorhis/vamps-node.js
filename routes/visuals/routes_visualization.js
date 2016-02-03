@@ -105,9 +105,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log(chosen_id_name_hash);
   console.log('<<chosen_id_name_hash');
     
-  console.log('TAXCOUNTS:>>');
-  console.log(TAXCOUNTS);
-  console.log('<<TAXCOUNTS');
+  //console.log('TAXCOUNTS:>>');
+  //console.log(TAXCOUNTS);
+  //console.log('<<TAXCOUNTS');
   // GLOBAL
   var timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
@@ -1645,9 +1645,44 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
       load    : load
     });
 });
+//
+//
+//
 router.get('/partials/tax_silva108_custom', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_silva108_custom',
-    { title   : 'Silva(v108) Custom Taxonomy Selection'});
+  res.render('visuals/partials/tax_silva108_custom',  { title   : 'Silva(v108) Custom Taxonomy Selection'});
+});
+//
+//
+router.get('/partials/tax_silva108_custom_dhtmlx', helpers.isLoggedIn,  function(req, res) {
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var file_path = path.join(pwd,'views','visuals','partials','tax_silva108_custom_dhtmlx.json');
+  fs.readFile(file_path, 'utf8', function (err, treeData) {
+        if (err) {
+          return console.log(err);
+        }else{
+          console.log('in tax_silva108_custom dhtmlx')
+          res.json(JSON.parse(treeData))
+        }
+  });
+  
+  //res.render('visuals/partials/tax_silva108_custom',    { title   : 'Silva(v108) Custom Taxonomy Selection'});
+});
+//
+//
+router.get('/partials/tax_silva108_custom_fancytree', helpers.isLoggedIn,  function(req, res) {
+  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
+  var file_path = path.join(pwd,'views','visuals','partials','tax_silva108_custom_fancytree.json');
+  fs.readFile(file_path, 'utf8', function (err, treeData) {
+        if (err) {
+          return console.log(err);
+        }else{
+          console.log('in tax_silva108_custom fancytree')
+          //res.json(treeData)
+          res.json(JSON.parse(treeData))
+        }
+  });
+  
+  //res.render('visuals/partials/tax_silva108_custom',    { title   : 'Silva(v108) Custom Taxonomy Selection'});
 });
 
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {

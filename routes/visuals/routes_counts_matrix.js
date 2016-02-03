@@ -203,6 +203,7 @@ module.exports = {
 									if( new_taxonomy.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
 
 										var tax_node = new_taxonomy.taxa_tree_dict_map_by_id[selected_node_id];
+										console.log(tax_node)
 										var rank_name = tax_node.rank;
 										var rank_no = parseInt(C.RANKS.indexOf(rank_name));
 										console.log('got one '+ rank_name)

@@ -1,5 +1,6 @@
 <% include ../add_ins/begin.ejs %>
-
+<link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
+<link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" >
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var referer = 'unit_selection'; %>
 <script>
@@ -28,39 +29,46 @@
 
 
 
-<div id='' class='row'>
-    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
-	
-	next: Show Available Graphics <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
-	</button>
-</div>
+
 
 <div id='' class=''>
 
 <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
-  
-  <table  class='center_table table' >
-    <tr>
-      <td>
-           <% include partials/unit_selection_choices.html %>
-      </td>
-      <td>
-        <span class='bold_font'>Metadata Selection:</span>
-      </td>
-      </tr>
+  <div id='' class='row'>
+    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
+      next: Show Available Graphics <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
+    </button>
+  </div>
+  <table  class='table' >
+  <tr><td>
+    <table style='width:700px' >
       <tr>
-      <td class='td_top small_font'>
-        
-        <div id='units_select_choices_div' class='unit_selection_page_div_border table'></div>
-        
-      </td>
-      <td class='td_top small_font left_justify'>
-        <div id='metadata_select_choices_div' class='metadata_selection_page_div_border '>
-          <% include partials/show_metadata_choices.html %>
-        </div>
-      </td>
-    </tr>
+        <td>
+          <% include partials/unit_selection_choices.html %>
+          <br>
+
+          <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div> 
+          <div id="treeBox" style="width:200;height:200"></div>
+          <div>Selected keys: <span id="echoSelection">-</span></div>
+
+        </td>
+        </tr>
+    </table>
+  </td><td>
+    <table>    
+        <tr>
+        <td class='td_top small_font'>
+          <span class='lg_font'>Metadata Selection:</span>
+          <br>
+          <div id='metadata_select_choices_div' class='metadata_selection_page_div_border '>
+            <% include partials/show_metadata_choices.html %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
   </table>
+  <!-- <input type='submit' value='go'> -->
 </form>
 </div>
 
@@ -69,10 +77,17 @@
  
   
  <% include ../add_ins/end.ejs %>
+
   <script type="text/javascript" src="/javascripts/global.js"></script>
   <script type="text/javascript" src="/javascripts/common_selection.js"></script>
   <script type="text/javascript" src="/javascripts/unit_selection.js"></script>
   <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+
+  <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
+  
+  <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script>
+
+   
  
  </body>
  </html>

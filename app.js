@@ -221,7 +221,9 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
 var silvaTaxonomy = require('./models/silva_taxonomy');
 var all_silva_taxonomy = new silvaTaxonomy();
 var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
-var TreeModel = require('tree-model');;
+//var CustomTaxa  = require('./routes/helpers/custom_taxa_class_json');   // for fancytree:  https://github.com/mar10/fancytree
+//var CustomTaxa  = require('./routes/helpers/custom_taxa_class_dhtmlx');   // for dhtmlx:  http://dhtmlx.com/docs/products/dhtmlxTree/
+//var TreeModel = require('tree-model');;
 
 // GLOBAL if leave off 'var':
 // FORMAT: TaxaCounts[ds_id][rank_name][tax_id] = count
@@ -242,8 +244,6 @@ var TreeModel = require('tree-model');;
 // 	});
 var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
 var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
-
-
 
 try {
     AllTaxCounts   = require(taxcounts_file);
@@ -280,8 +280,13 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //SEE require('./routes/helpers/custom_taxa_class');
     new_taxonomy = new CustomTaxa(results);
     // uncomment to print out the object:
-    // console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
-    new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+    //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
+    //
+    /// CREATE CUSTOM TAXONOMY TREE:
+    new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
+    new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
+    new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+    //
     //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
     //for(n in new_taxonomy.taxa_tree_dict){
     //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))

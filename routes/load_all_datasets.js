@@ -11,22 +11,22 @@ var helpers = require('./helpers/helpers');
 // This connection object is made global in app.js:  var routes = require('./routes/index');  and in routes/index: 
 module.exports.get_datasets = function(callback){
   PROJECT_INFORMATION_BY_PID  = {};  // GLOBAL
-  
-  connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
-      ALL_DATASETS                = {};  // GLOBAL
-      DATASET_NAME_BY_DID         = {};  // GLOBAL
-      PROJECT_ID_BY_DID           = {};
-      
-      PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
-      DATASET_IDS_BY_PID          = {};
-      ALL_CLASSIFIERS_BY_PID      = {};
-      
-      DatasetsWithLatLong         = {};
-      AllMetadataNames            = [];
-      
-	  
-	  
+  ALL_CLASSIFIERS_BY_CID      = {};
+  ALL_DATASETS                = {};  // GLOBAL
+  DATASET_NAME_BY_DID         = {};  // GLOBAL
+  PROJECT_ID_BY_DID           = {};
+  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
+  DATASET_IDS_BY_PID          = {};
+  ALL_CLASSIFIERS_BY_PID      = {};
+  DatasetsWithLatLong         = {};
+  AllMetadataNames            = [];
+  ALL_DATASETS.projects       = [];
+  ALL_USERS_BY_UID            = {};
+  ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
+  ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
+  ALL_CLASSIFIERS_BY_PID = {}; 
 
+  connection.query(queries.get_select_datasets_query(), function(err, rows, fields){
       if (err)  {
 		    console.log('Query error: ' + err);
 		    console.log(err.stack);
@@ -34,9 +34,6 @@ module.exports.get_datasets = function(callback){
       } else {
 
         console.log('Filling GLOBAL Variables (in routes/load_all_datasets.js and helpers.run_select_datasets_query):');
-
-        
-        ALL_DATASETS.projects = [];
         //datasetsByProject.projects = []
         helpers.run_select_datasets_query(rows);
         
@@ -60,7 +57,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        ALL_USERS_BY_UID            = {};
+        
         for (var i=0; i < rows.length; i++) {
           ALL_USERS_BY_UID[rows[i].uid] = {}
           ALL_USERS_BY_UID[rows[i].uid].email       = rows[i].email;
@@ -81,7 +78,7 @@ module.exports.get_datasets = function(callback){
         console.log(err.stack);
         process.exit(1);
       } else {
-        ALL_CLASSIFIERS_BY_CID      = {};
+        
         for (var i=0; i < rows.length; i++) {
       	  ALL_CLASSIFIERS_BY_CID[rows[i].cid] =  rows[i].classifier+'_'+rows[i].database;	
         }
@@ -91,9 +88,7 @@ module.exports.get_datasets = function(callback){
 
   
   connection.query(queries.get_select_sequences_query(), function(err, rows, fields){    
-      ALL_DCOUNTS_BY_DID = {};    // GLOBAL  
-      ALL_PCOUNTS_BY_PID = {};    // GLOBAL 
-      ALL_CLASSIFIERS_BY_PID = {}; 
+      
       //console.log(qSequenceCounts)
       if (err)  {
         console.log('Query error: ' + err);

@@ -313,7 +313,120 @@ function traverse(dict_map_by_id, this_node, level, fileName)
   write_partial(fileName, html);
   
 }
+function traverse_fancytree(dict_map_by_id, this_node, level, fileName)
+{ 
+  /** todo: 
+  *) benchmark what's faster: write_partial 3 times or collect html and then write_partial once above.
+  */
+  var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
+ 
+  orig_level = level;
+  var new_level = 0;  
+  var txt = "\n";
+  for(var i=0; i < level; i++){
+    txt += " ";
+  }
+  //txt = start_ul(level, new_level, this_node.rank);
+  txt += '{"title":"'+this_node.taxon+'","key":"'+this_node.node_id+'","rank":"'+this_node.rank+'","level":"'+level+'","tooltip":"'+this_node.rank+'"'
+  write_partial(fileName, txt);
+  if(this_node.rank == 'domain'){
+    txt = ',"selected":true'
+    write_partial(fileName, txt);
+  }
+  if(kids_length){
+    txt = ',"folder":true,"children":['
+    write_partial(fileName, txt);
+  }
+  //console.log('this_node: ' + JSON.stringify(this_node));
+    
+  
+  for (var i=0; i < kids_length; i++)
+  {
 
+    
+    if(i > 0){
+      txt = ",";
+      write_partial(fileName, txt);
+    }
+    //    TODO: The parameter level should not be assigned
+    level += 1;
+    traverse_fancytree(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
+    level -= 1;  
+  }
+  new_level = level;
+
+  if(kids_length){
+    txt = "\n"
+    for(var n=0; n < level; n++){
+      txt += " ";
+    }
+    txt += "]"
+    write_partial(fileName, txt);
+  }
+  //txt = end_ul(level, new_level, this_node.rank);
+  
+  txt = "}"
+  
+  write_partial(fileName, txt);
+  
+}
+function traverse_dhtmlx(dict_map_by_id, this_node, level, fileName)
+{ 
+  /** todo: 
+  *) benchmark what's faster: write_partial 3 times or collect html and then write_partial once above.
+  */
+  var kids_length = this_node.children_ids ? this_node.children_ids.length : 0;
+ 
+  orig_level = level;
+  var new_level = 0;  
+  var txt = "\n";
+  for(var i=0; i < level; i++){
+    txt += " ";
+  }
+  //txt = start_ul(level, new_level, this_node.rank);
+  txt += '{"id":"'+this_node.node_id+'","text":"'+this_node.taxon+'","tooltip":"'+this_node.rank+'"'
+  write_partial(fileName, txt);
+  if(this_node.rank == 'domain'){
+    //txt = ',selected:true'
+    //write_partial(fileName, txt);
+  }
+  if(kids_length){
+    txt = ',"child":"1","item":['
+    write_partial(fileName, txt);
+  }
+  //console.log('this_node: ' + JSON.stringify(this_node));
+    
+  
+  for (var i=0; i < kids_length; i++)
+  {
+
+    
+    if(i > 0){
+      txt = ",";
+      write_partial(fileName, txt);
+    }
+    //    TODO: The parameter level should not be assigned
+    level += 1;
+    traverse_dhtmlx(dict_map_by_id, dict_map_by_id[this_node.children_ids[i]], level, fileName);
+    level -= 1;  
+  }
+  new_level = level;
+
+  if(kids_length){
+    txt = "\n"
+    for(var n=0; n < level; n++){
+      txt += " ";
+    }
+    txt += "]"
+    write_partial(fileName, txt);
+  }
+  //txt = end_ul(level, new_level, this_node.rank);
+  
+  txt = "}"
+  
+  write_partial(fileName, txt);
+  
+}
 function add_title(fileName, title)
 {
   write_partial(fileName, title);
@@ -370,6 +483,50 @@ TaxonomyTree.prototype.make_html_tree_file = function(dict_map_by_id, domains)
     traverse(dict_map_by_id, domains[i], level, fileName);
   }
   write_partial(fileName, "</div> <!-- tree well -->");
+  
+  
+}
+TaxonomyTree.prototype.make_fancytree_file = function(dict_map_by_id, domains)
+{
+  var level = 1;
+  //var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom_fancytree.json';
+  var fileName = __dirname + '/../../public/json/tax_silva108_custom_fancytree.json';
+  
+  clear_partial_file(fileName);
+  
+  write_partial(fileName, "[");
+
+  for (var i=0; i < domains.length; i++)
+  {
+    if(i > 0){
+      txt = ","
+      write_partial(fileName, txt);
+    }
+    traverse_fancytree(dict_map_by_id, domains[i], level, fileName);
+  }
+  write_partial(fileName, "\n]");
+  
+  
+}
+TaxonomyTree.prototype.make_dhtmlx_tree_file = function(dict_map_by_id, domains)
+{
+  var level = 1;
+  //var fileName = __dirname + '/../../views/visuals/partials/tax_silva108_custom_dhtmlx.json';
+  var fileName = __dirname + '/../../public/json/tax_silva108_custom_dhtmlx.json';
+  
+  clear_partial_file(fileName);
+  
+  write_partial(fileName, '{"id":"0","item":[');
+
+  for (var i=0; i < domains.length; i++)
+  {
+    if(i > 0){
+      txt = ","
+      write_partial(fileName, txt);
+    }
+    traverse_dhtmlx(dict_map_by_id, domains[i], level, fileName);
+  }
+  write_partial(fileName, "\n]}");
   
   
 };

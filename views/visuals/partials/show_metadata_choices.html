@@ -2,8 +2,8 @@
 <%   var cust_meta_found = JSON.parse(md_cust) %>
 <%   var req_meta_found  = JSON.parse(md_req) %>
 
-<% no_of_cols = 3 %>
-<span class='small_font normal_weight' >Here is the available metadata for your selected datasets:</span>
+<% no_of_cols = 7 %>
+<span class='normal_weight' >Here is the available metadata for your selected datasets:</span>
 
 
   <hr><strong>Common Fields:</strong> <small>(<a href='#' title="<%= req_meta_fields %>">hover: common field identifiers</a>)</small>
@@ -54,7 +54,7 @@
 </table> 
 -->
 
-<% no_of_cols = 2 %>
+<% no_of_cols = 4 %>
 <hr><strong>Custom Fields for these Datasets:</strong> 
 <% if(Object.keys(cust_meta_found).length === 0 ){ %>
  <br>None Found

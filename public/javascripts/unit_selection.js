@@ -23,7 +23,7 @@ $(document).ready(function(){
     //get_requested_units_selection_box(unit_selection);
 
     load_initial_taxa_tree(unit_selection);
-
+    //load_custom_tree();
     
 
 });
@@ -99,54 +99,371 @@ function toggle_custom_metadata()
 //
 //
 //
-function load_initial_taxa_tree(unit_selection){
+function load_initial_taxa_tree(unit_selection) {
   get_requested_units_selection_box(unit_selection)
 }
+// var treeData = [
+//     {title: "item1 with key and tooltip", tooltip: "Look, a tool tip!" },
+//     {title: "item2: selected on init", selected: true },
+//     {title: "Folder", folder: true, key: "id3",
+//       children: [
+//         {title: "Sub-item 3.1",
+//           children: [
+//             {title: "Sub-item 3.1.1", key: "id3.1.1" },
+//             {title: "Sub-item 3.1.2", key: "id3.1.2" }
+//           ]
+//         },
+//         {title: "Sub-item 3.2",
+//           children: [
+//             {title: "Sub-item 3.2.1", key: "id3.2.1" },
+//             {title: "Sub-item 3.2.2", key: "id3.2.2" }
+//           ]
+//         }
+//       ]
+//     },
+//     {title: "Document with some children (expanded on init)", key: "id4", expanded: true,
+//       children: [
+//         {title: "Sub-item 4.1 (active on init)", active: true,
+//           children: [
+//             {title: "Sub-item 4.1.1", key: "id4.1.1" },
+//             {title: "Sub-item 4.1.2", key: "id4.1.2" }
+//           ]
+//         },
+//         {title: "Sub-item 4.2 (selected on init)", selected: true,
+//           children: [
+//             {title: "Sub-item 4.2.1", key: "id4.2.1" },
+//             {title: "Sub-item 4.2.2", key: "id4.2.2" }
+//           ]
+//         },
+//         {title: "Sub-item 4.3 (hideCheckbox)", hideCheckbox: true },
+//         {title: "Sub-item 4.4 (unselectable)", unselectable: true }
+//       ]
+//     },
+//     {title: "Lazy folder", folder: true, lazy: true }
+//   ];
+
+// function load_custom_tree() {
+//   var xmlhttp1 = new XMLHttpRequest();
+  
+//   document.getElementById('units_select_choices_div').innerHTML = '';
+
+    
+  
+//   //xmlhttp1.addEventListener("load", transferComplete(file_id), false);
+//   //alert('simple')
+//   //xmlhttp1.open("GET", '/visuals/partials/tax_silva108_custom');
+//   //xmlhttp1.onreadystatechange = function() {
+
+//   //   if (xmlhttp1.readyState == 4 ) {
+
+//   //      var data = xmlhttp1.responseText;
+//         //alert(data)
+//        //alert(file_id)
+//         //document.getElementById('unit_selection_id').value = 'tax_silva108_custom'
+//         //show_custom_taxa_tree();
+        
+//             //alert(data)
+//             $("#customTree").fancytree({
+//               checkbox: true,
+//               icon: true,
+//               //imagePath:'fancytree',
+//               source: treeData , //JSON.parse(data),
+              
+//               cache: false
+//               //source: $.ajax({url:file_path,  dataType: "json"})
+                
+//             });
+
+//   //      }
+//   //};
+//   //xmlhttp1.send();
+// }
 //
 // GET REQUESTED UNITS SELECTION BOX
 //
 function get_requested_units_selection_box(file) {
-  //alert(file)
+  
   if(this.value){
     var file_id = this.value
   }else{
     var file_id = file
   }
-  
+  //alert(file_id)
   //alert(file_id)
   // Using ajax it will show the requested units module
   var file = '';
   var partial_name = '/visuals/partials/'+file_id;
+  //var partial_name = '/public/json/tax_silva108_custom.json' //+file_id;
   //alert(partial_name)
   var xmlhttp1 = new XMLHttpRequest();
   var xmlhttp2 = new XMLHttpRequest();
-  xmlhttp1.addEventListener("load", transferComplete(file_id), false);
+  var customTree;  // = new dhtmlXTreeObject("treeBox","100%","100%",0);
+  $("#echoSelection").text('');
+  document.getElementById('units_select_choices_div').innerHTML = '';
 
+    
+  xmlhttp1.addEventListener("load", transferComplete(file_id), false);
+  //alert('simple')
   xmlhttp1.open("GET", partial_name);
   xmlhttp1.onreadystatechange = function() {
 
          if (xmlhttp1.readyState == 4 ) {
 
-            var string = xmlhttp1.responseText;
-            var div = document.getElementById('units_select_choices_div').innerHTML = string;
+            var data = xmlhttp1.responseText;
+            
            //alert(file_id)
             document.getElementById('unit_selection_id').value = file_id
-            show_custom_taxa_tree();
+            //show_custom_taxa_tree();
             if(file_id == 'tax_silva108_simple'){
-              toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
-              //alert(toggle_taxa_btn)
-              if (toggle_taxa_btn !== null) {
-                toggle_taxa_btn.addEventListener('click', function () {
-                    toggle_simple_taxa();
+              
+                document.getElementById('units_select_choices_div').innerHTML = data;
+                toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
+                if (toggle_taxa_btn !== null) {
+                  toggle_taxa_btn.addEventListener('click', function () {
+                      toggle_simple_taxa();
+                  });
+                } 
+
+            }else if(file_id == 'tax_silva108_custom'){
+                //alert('custom')
+                document.getElementById('units_select_choices_div').innerHTML = data;
+                show_custom_taxa_tree()
+                
+
+
+
+            }else if(file_id == 'tax_silva108_custom_fancytree'){
+                //alert(data)
+                customFile = "/json/tax_silva108_custom_fancytree.json" 
+                $("#units_select_choices_div").fancytree({
+                  checkbox: true,
+                  icon: false,
+                  clickFolderMode: 4,
+                  selectMode: 2,
+                  keyPathSeparator: "/",
+                  //generateIds: true,
+                  //idPrefix:'XXX_',
+                  //imagePath:'fancytree',
+                  //source:  JSON.parse(data),
+                  source:  {
+                    url:customFile
+                  },
+
+                  
+                  select: function(event, data) {
+                    // Display list of selected nodes
+                    var selNodes = data.tree.getSelectedNodes();
+                    // convert to title/key array
+                    var selKeys = $.map(selNodes, function(node){
+                         return "[" + node.key + "]: '" + node.title + "'";
+                         //return node.getKeyPath()
+                      });
+                    $("#echoSelection").text(selKeys);
+                  },
+                  click: function(event, data) {
+                    // We should not toggle, if target was "checkbox", because this
+                    // would result in double-toggle (i.e. no toggle)
+                    if( $.ui.fancytree.getEventTargetType(event) === "title" ){
+                      data.node.toggleSelected();
+                    }
+                  },
+                  keydown: function(event, data) {
+                    if( event.which === 32 ) {
+                      data.node.toggleSelected();
+                      return false;
+                    }
+                  }
+
+                  //cache: true
+                  //source: $.ajax({url:file_path,  dataType: "json"})
+                    
                 });
-              }
+                
+                $('#get_graphics_form').submit(function() {
+                  // Render hidden <input> elements for active and selected nodes
+                  
+                  $("#units_select_choices_div").fancytree("getTree").generateFormElements();
+
+                  //alert("POST data:\n" + jQuery.param($(this).serializeArray()));
+                  
+                  // return false to prevent submission of this sample
+                  //return false;
+                });
+            }else if(file_id == 'tax_silva108_custom_dhtmlx'){
+                //alert(data)
+                
+                customTree = new dhtmlXTreeObject("units_select_choices_div","100%","100%",0);
+                customTree.setImagesPath("/images/dhtmlx/imgs/");
+                customTree.enableCheckBoxes(true);
+                customTree.enableTreeLines(true); // true by default
+                customTree.enableTreeImages(false);
+                customTree.enableThreeStateCheckboxes(true);
+                customTree.enableSmartCheckboxes(true);
+                //customTree.setImagesPath("/Users/avoorhis/programming/vamps-node.js/public/images/dhtmlx/imgs/");
+                
+                // USING file: AJAX not needed here
+                customFile = "/json/tax_silva108_custom_dhtmlx.json"
+                //document.getElementById('units_select_choices_div').innerHTML = 'customTree';
+                
+                customTree.load(customFile,"json");
+                //customTree.parse(JSON.parse(data),"json");
+
+                //alert(customTree.getAllLeafs())
             }
             xmlhttp2.open("GET", 'set_units?units='+file_id);
             xmlhttp2.send();
          }
   };
   xmlhttp1.send();
+
 }
+// function get_requested_units_selection_box_orig(file) {
+//   //alert(file)
+//   if(this.value){
+//     var file_id = this.value
+//   }else{
+//     var file_id = file
+//   }
+  
+//   //alert(file_id)
+//   // Using ajax it will show the requested units module
+//   var file = '';
+//   var partial_name = '/visuals/partials/'+file_id;
+//   //alert(partial_name)
+//   var xmlhttp1 = new XMLHttpRequest();
+//   var xmlhttp2 = new XMLHttpRequest();
+//   xmlhttp1.addEventListener("load", transferComplete(file_id), false);
+
+//   xmlhttp1.open("GET", partial_name);
+//   xmlhttp1.onreadystatechange = function() {
+
+//          if (xmlhttp1.readyState == 4 ) {
+
+//             var string = xmlhttp1.responseText;
+//             var div = document.getElementById('units_select_choices_div').innerHTML = string;
+//            //alert(file_id)
+//             document.getElementById('unit_selection_id').value = file_id
+//             show_custom_taxa_tree();
+//             if(file_id == 'tax_silva108_simple'){
+//               toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
+//               //alert(toggle_taxa_btn)
+//               if (toggle_taxa_btn !== null) {
+//                 toggle_taxa_btn.addEventListener('click', function () {
+//                     toggle_simple_taxa();
+//                 });
+//               }
+//             }
+//             xmlhttp2.open("GET", 'set_units?units='+file_id);
+//             xmlhttp2.send();
+//          }
+//   };
+//   xmlhttp1.send();
+// }
+// function get_requested_units_selection_box2(file) {
+  
+//   if(this.value){
+//     var file_id = this.value
+//   }else{
+//     var file_id = file
+//   }
+//   //alert(file_id)
+//   //alert(file_id)
+//   // Using ajax it will show the requested units module
+//   var file = '';
+//   var partial_name = '/visuals/partials/'+file_id;
+//   //var partial_name = '/public/json/tax_silva108_custom.json' //+file_id;
+//   //alert(partial_name)
+//   var xmlhttp1 = new XMLHttpRequest();
+//   var xmlhttp2 = new XMLHttpRequest();
+//   document.getElementById('units_select_choices_div').innerHTML = '';
+
+    
+//   //xmlhttp1.addEventListener("load", transferComplete(file_id), false);
+//   //alert('simple')
+//   xmlhttp1.open("GET", partial_name);
+//   xmlhttp1.onreadystatechange = function() {
+
+//          if (xmlhttp1.readyState == 4 ) {
+
+//             var data = xmlhttp1.responseText;
+            
+//            //alert(file_id)
+//             document.getElementById('unit_selection_id').value = file_id
+//             //show_custom_taxa_tree();
+//             if(file_id == 'tax_silva108_simple'){
+              
+//                 document.getElementById('units_select_choices_div').innerHTML = data;
+//                 toggle_taxa_btn = document.getElementById('toggle_taxa_btn') || null;
+//                 if (toggle_taxa_btn !== null) {
+//                   toggle_taxa_btn.addEventListener('click', function () {
+//                       toggle_simple_taxa();
+//                   });
+//                 } 
+
+//             }else{
+              
+//                 //alert(data)
+//                 $("#units_select_choices_div").fancytree({
+//                   checkbox: true,
+//                   icon: false,
+//                   clickFolderMode: 4,
+//                   selectMode: 2,
+//                   keyPathSeparator: "/",
+//                   //generateIds: true,
+//                   //idPrefix:'XXX_',
+//                   //imagePath:'fancytree',
+//                   source:  JSON.parse(data),
+//                   //source:  treeData //JSON.parse(data),
+//                   select: function(event, data) {
+//                     // Display list of selected nodes
+//                     var selNodes = data.tree.getSelectedNodes();
+//                     // convert to title/key array
+//                     var selKeys = $.map(selNodes, function(node){
+//                          return "[" + node.key + "]: '" + node.title + "'";
+//                          //return node.getKeyPath()
+//                       });
+//                     $("#echoSelection").text(selKeys);
+//                   },
+//                   click: function(event, data) {
+//                     // We should not toggle, if target was "checkbox", because this
+//                     // would result in double-toggle (i.e. no toggle)
+//                     if( $.ui.fancytree.getEventTargetType(event) === "title" ){
+//                       data.node.toggleSelected();
+//                     }
+//                   },
+//                   keydown: function(event, data) {
+//                     if( event.which === 32 ) {
+//                       data.node.toggleSelected();
+//                       return false;
+//                     }
+//                   }
+
+//                   //cache: true
+//                   //source: $.ajax({url:file_path,  dataType: "json"})
+                    
+//                 });
+                
+//                 $('#get_graphics_form').submit(function() {
+//                   // Render hidden <input> elements for active and selected nodes
+                  
+//                   $("#units_select_choices_div").fancytree("getTree").generateFormElements();
+
+//                   //alert("POST data:\n" + jQuery.param($(this).serializeArray()));
+                  
+//                   // return false to prevent submission of this sample
+//                   //return false;
+//                 });
+
+
+
+//             }
+//             xmlhttp2.open("GET", 'set_units?units='+file_id);
+//             xmlhttp2.send();
+//          }
+//   };
+//   xmlhttp1.send();
+
+// }
 
 function transferComplete(file_id) {
   // alert("The transfer is complete.");
@@ -162,8 +479,8 @@ function transferComplete(file_id) {
 // visualization: check_form_pg2.js
 
 var get_graphics_form = document.getElementById('get_graphics_form');
-var get_graphics = document.getElementById('get_graphics');
-if (typeof get_graphics !=="undefined")
+var get_graphics = document.getElementById('get_graphics') || null;
+if (get_graphics !== null)
 {
   get_graphics.addEventListener('click', function () {
     var unit_selection = get_graphics_form["unit_selection"].value;
@@ -171,13 +488,15 @@ if (typeof get_graphics !=="undefined")
     {
       msg = 'You must select some taxa';
       var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
-    }
-    if (unit_selection === 'tax_silva108_custom')
+    }else if (unit_selection === 'tax_silva108_custom')
     {
       msg = 'You must select some custom taxa';
       var taxa_checked = check_form(get_graphics_form, msg, "custom_taxa");
-      //get_graphics_form.submit();
+      //var taxa_checked = check_form(get_graphics_form, msg, "ft_1");
+      get_graphics_form.submit();
       
+    }else{
+      get_graphics_form.submit();
     }
     if (taxa_checked)
     {

@@ -39,6 +39,9 @@ a {
     font-size:medium;
     text-align:center;
 }
+.lg_font {
+    font-size: large;
+}
 .med_font {
     font-size: small;
 }
@@ -138,9 +141,10 @@ td.left_justify {
 .metadata_selection_page_div_border {
   border:1px solid black;
   height: 430px;
-  width:320px;
+  width:600px;
   overflow:auto;
-  padding:3px;
+  padding:5px;
+  font: 11px Arial;
 }
 .unit_selection_page_div_border {
   border:1px solid black;
