@@ -1,11 +1,11 @@
 <% include ../add_ins/begin.ejs %>
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
-<link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" >
+<!-- <link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" > -->
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var referer = 'unit_selection'; %>
 <script>
   var ds_local       = JSON.parse('<%- chosen_id_name_hash %>');
-  var unit_selection = '<%= unit_selection %>';
+  var unit_choice = '<%= unit_choice %>';
   var user_local     = '<%= user.username %>';
 </script>
   <div class='title'>Community Visualization</div>
@@ -35,7 +35,7 @@
 
 <form id='get_graphics_form' class='' method='POST' action='/visuals/view_selection' >
   <div id='' class='row'>
-    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics" name='get_graphics'>
+    <button type='button' class='btn pull-right btn-sm btn-warning' id="get_graphics_btn" name='get_graphics_btn'>
       next: Show Available Graphics <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
     </button>
   </div>
@@ -47,9 +47,16 @@
           <% include partials/unit_selection_choices.html %>
           <br>
 
-          <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div> 
-          <div id="treeBox" style="width:200;height:200"></div>
-          <div>Selected keys: <span id="echoSelection">-</span></div>
+          <!-- <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div>  -->
+          <div id="simple_treebox" style="width:200;height:200;display:block;">simple</div>
+          <div id="custom_treebox" style="width:200;height:200;display:none;">custom</div>
+          <!-- 
+          <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
+          <div id="custom_treebox_dhtmlx" style="width:200;height:200;display:none;">dhtmlx</div> 
+          -->
+          
+
+          <!-- <div>Selected keys: <span id="echoSelection">-</span></div> -->
 
         </td>
         </tr>
@@ -85,7 +92,7 @@
 
   <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
   
-  <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script>
+  <!-- <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script>  -->
 
    
  

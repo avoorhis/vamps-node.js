@@ -146,9 +146,31 @@ module.exports = {
           if(typeof post_hash.domains == 'string') {
             post_hash.domains = post_hash.domains.split(',');
           }
-          post_hash.custom_taxa                  = req.body.custom_taxa  || ['NA'];
+
+          console.log('TYPEOF CUSTOM')
+          console.log(req.body.custom_taxa)
+          console.log(typeof req.body.custom_taxa)
+          post_hash.custom_taxa                  = ['NA'];
+          // reg: [ '1', '60', '2120', '2261' ], object
+          // fancy & dhtmlx:  1,60,2120,2260,2261,2266  string
+          if(typeof req.body.custom_taxa === 'string'){
+            post_hash.custom_taxa   = req.body.custom_taxa.split(',')
+          }
+
+          // if(post_hash.unit_choice == 'tax_silva108_custom_dhtmlx'){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa_dhtmlx  || ['NA'];
+          // }else if(post_hash.unit_choice == 'tax_silva108_custom_dhtmlx'){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa_fancytree  || ['NA'];
+          // }else if(post_hash.unit_choice == 'tax_silva108_custom'){
+          //   post_hash.custom_taxa                  = req.body.custom_taxa  || ['NA'];
+          // }
+          
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
+
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
+          
+
+
           post_hash.include_nas                  = req.body.include_nas  || 'yes';
           post_hash.min_range                    = req.body.min_range || 0;
           post_hash.max_range                    = req.body.max_range || 100;
