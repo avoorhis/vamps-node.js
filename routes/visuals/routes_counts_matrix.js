@@ -195,18 +195,18 @@ module.exports = {
 					}else if(post_items.unit_choice === 'tax_silva108_custom'){
 								// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 								db_tax_id_list[did] = {};
-								console.log('creating custom counts matrix')
+								
 								for(var t in post_items.custom_taxa) {
 									//var name_n_rank = post_items.custom_taxa[t];
 									var selected_node_id = post_items.custom_taxa[t];
-									console.log('selected_node_id ', selected_node_id)
+									//console.log('selected_node_id ', selected_node_id)
 									if( new_taxonomy.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
 
 										var tax_node = new_taxonomy.taxa_tree_dict_map_by_id[selected_node_id];
-										console.log(tax_node)
+										//console.log(tax_node)
 										var rank_name = tax_node.rank;
 										var rank_no = parseInt(C.RANKS.indexOf(rank_name));
-										console.log('got one '+ rank_name)
+										//console.log('got one '+ rank_name)
 									//console.log('name_n_rank',name_n_rank)
 									//console.log('TAXCOUNTS[did]>>')
 									//console.log(TAXCOUNTS[did])
@@ -257,19 +257,19 @@ module.exports = {
 									  			//console.log('id_chain',id_chain)
 									  			//if(id_chain.indexOf(db_tax_id_list[did][name_n_rank]) === 0){
 									  			if(id_chain == db_tax_id_list[did][selected_node_id]){	
-									  				console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
+									  				//console.log('MATCH',db_tax_id_list[did][selected_node_id], id_chain);
 									  				cnt = TAXCOUNTS[did][id_chain];
 									  				break;
 									  			}
 									  	}
-							  			console.log('COUNT',cnt, rank_name, tax_long_name)
+							  			//console.log('COUNT',cnt, rank_name, tax_long_name)
 									  	if(post_items.include_nas == 'no' ){
 										
 												if(tax_long_name.substring(tax_long_name.length-3,tax_long_name.length) != '_NA'){
 													//console.log('ADDING '+tax_long_name)
 													// SCREEN DOMAINS
 													//if(post_items.domains.indexOf(rank_name) != -1){
-														console.log('FOUND1',rank_name);
+														//console.log('FOUND1',rank_name);
 														unit_name_lookup[tax_long_name] = 1;
 														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 													//}
@@ -278,7 +278,7 @@ module.exports = {
 											}else{
 												// SCREEN DOMAINS
 												//if(post_items.domains.indexOf(rank_name) != -1){
-														console.log('FOUND2',rank_name);
+														//console.log('FOUND2',rank_name);
 														unit_name_lookup[tax_long_name] = 1;
 														unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
 												//}
@@ -289,7 +289,7 @@ module.exports = {
 									  }
 
 								}
-								console.log(db_tax_id_list) // to match with TAXCOUNTS to get counts
+								//console.log(db_tax_id_list) // to match with TAXCOUNTS to get counts
 
 
 							// 	console.log(post_items.custom_taxa[t])
@@ -309,12 +309,12 @@ module.exports = {
 
 			}
 			
-			console.log('unit_name_lookup2>>')
-			console.log(unit_name_lookup)
-			console.log('<<2unit_name_lookup')
-			console.log('unit_name_lookup_per_dataset2>>')
-			console.log(unit_name_lookup_per_dataset)
-			console.log('<<2unit_name_lookup_per_dataset')
+			// console.log('unit_name_lookup2>>')
+			// console.log(unit_name_lookup)
+			// console.log('<<2unit_name_lookup')
+			// console.log('unit_name_lookup_per_dataset2>>')
+			// console.log(unit_name_lookup_per_dataset)
+			// console.log('<<2unit_name_lookup_per_dataset')
 // 			unit_name_lookup>>
 // { 'Bacteria;Lentisphaerae': 1,
 //   'Bacteria;Planctomycetes': 1,

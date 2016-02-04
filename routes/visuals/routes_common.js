@@ -150,11 +150,15 @@ module.exports = {
           console.log('TYPEOF CUSTOM')
           console.log(req.body.custom_taxa)
           console.log(typeof req.body.custom_taxa)
-          post_hash.custom_taxa                  = ['NA'];
-          // reg: [ '1', '60', '2120', '2261' ], object
+          post_hash.custom_taxa   = req.body.custom_taxa  || ['NA'];
+          // html: [ '1', '60', '2120', '2261' ], object
           // fancy & dhtmlx:  1,60,2120,2260,2261,2266  string
           if(typeof req.body.custom_taxa === 'string'){
-            post_hash.custom_taxa   = req.body.custom_taxa.split(',')
+            if(req.body.custom_taxa === ''){
+              post_hash.custom_taxa   = ['NA'];
+            }else{              
+              post_hash.custom_taxa   = req.body.custom_taxa.split(',');
+            }
           }
 
           // if(post_hash.unit_choice == 'tax_silva108_custom_dhtmlx'){
@@ -168,7 +172,9 @@ module.exports = {
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
-          
+          if(post_hash.unit_choice === 'tax_silva108_custom' && post_hash.custom_taxa != ['NA']){
+            post_hash.custom_taxa = this.clean_custom_tax(post_hash.custom_taxa);
+          }
 
 
           post_hash.include_nas                  = req.body.include_nas  || 'yes';
@@ -472,8 +478,58 @@ check_initial_status: function(url) {
   }
   console.log('values_updated: '+values_updated.toString());
   return values_updated;
-}
+},
+//
+//
+//
+clean_custom_tax: function(custom_tax_ids){
+    console.log('cleaning custom tax-->')
+    new_id_list = []
+    nodes_to_delete = []
+    for(index in custom_tax_ids){
+      node_id = custom_tax_ids[index]
+      node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+      console.log('nodes ',node)
+      parent_id = node.parent_id.toString()
+      console.log('parent_id ',parent_id)
+      console.log(custom_tax_ids.indexOf(parent_id))
+      if(nodes_to_delete.indexOf(parent_id) == -1 && custom_tax_ids.indexOf(parent_id) > -1){
+        nodes_to_delete.push(parent_id)
+      }
 
+      
+    }
+
+    console.log('nodes_to_delete ',nodes_to_delete)
+    for(index in custom_tax_ids){
+      node_id = custom_tax_ids[index].toString()
+      console.log(node_id,' ',new_id_list.indexOf(node_id),' ',nodes_to_delete.indexOf(node_id))
+      if(new_id_list.indexOf(node_id) == -1 && nodes_to_delete.indexOf(node_id) == -1){
+        new_id_list.push(node_id)
+      }
+    }
+    console.log('<--cleaning custom tax')
+    console.log('new_id_list ',new_id_list)
+    custom_tax_ids = new_id_list
+    return custom_tax_ids
+
+    // no cleaning
+    // Bacteria;Acidobacteria
+    // Bacteria;Acidobacteria;Acidobacteria
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae;Chloroacidobacterium
+    // Bacteria;Acidobacteria;Acidobacteria_gp22
+    // Bacteria;Acidobacteria;Acidobacteria_gp26
+    // Bacteria;Acidobacteria;Holophagae
+
+    // with cleaning
+    // Bacteria;Acidobacteria;Acidobacteria;Acidobacteriales;Acidobacteriaceae;Chloroacidobacterium
+    // Bacteria;Acidobacteria;Acidobacteria_gp22
+}
+//
+//
+//
 };   // end module.exports
 
 
