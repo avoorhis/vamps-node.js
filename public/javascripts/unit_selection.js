@@ -298,6 +298,10 @@ function load_fancytree() {
         //url:customFile,
         url:'/visuals/tax_custom_fancytree'
       },
+      dblclick: function(event, data) {
+        //data.node.toggleSelected();
+        data.node.toggleExpanded();
+      },
       lazyLoad: function(event, data){
           var node = data.node;
           //alert(node.key,' ',node.node_id)

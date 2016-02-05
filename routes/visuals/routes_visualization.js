@@ -2248,9 +2248,9 @@ router.get('/tax_custom_fancytree', function(req, res) {
             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
             //console.log(node)
             if(node.children_ids.length === 0){
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank})
             }else{
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,lazy:true,folder:true})
             }
         }
     }
