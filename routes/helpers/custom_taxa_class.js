@@ -387,8 +387,8 @@ function traverse_dhtmlx(dict_map_by_id, this_node, level, fileName)
   txt += '{"id":"'+this_node.node_id+'","text":"'+this_node.taxon+'","tooltip":"'+this_node.rank+'"'
   write_partial(fileName, txt);
   if(this_node.rank == 'domain'){
-    //txt = ',selected:true'
-    //write_partial(fileName, txt);
+    txt = ',"checked":true'
+    write_partial(fileName, txt);
   }
   if(kids_length){
     txt = ',"child":"1","item":['

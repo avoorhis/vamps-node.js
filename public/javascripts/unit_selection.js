@@ -4,6 +4,8 @@ var get_graphics_btn = document.getElementById('get_graphics_btn') || null;
 //custom_selection = 'html'
 //custom_selection = 'fancytree'
 custom_selection = 'dhtmlx'
+var simple_loaded, custom_loaded;
+
 $(document).ready(function(){
 
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
@@ -173,7 +175,7 @@ function load_initial_taxa_tree(unit_choice) {
   var xmlhttp2 = new XMLHttpRequest();
   switch(unit_choice){
     case 'tax_silva108_simple':
-      load_simple();
+      load_simple_tax();
       // globals
       simple_loaded = true;  custom_loaded = false; // fancytree_loaded = false;  dhtmlx_loaded = false
       document.getElementById('simple_treebox').style.display = 'block'
@@ -182,7 +184,7 @@ function load_initial_taxa_tree(unit_choice) {
       //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
       break;
     case 'tax_silva108_custom':
-      load_custom();
+      load_custom_tax_tree();
       // globals
       simple_loaded = false;  custom_loaded = true; // fancytree_loaded = false;  dhtmlx_loaded = false
       document.getElementById('simple_treebox').style.display = 'none'
@@ -209,14 +211,14 @@ function load_initial_taxa_tree(unit_choice) {
     //     document.getElementById('custom_treebox_dhtmlx').style.display = 'block'
     //   break;
     default:
-      alert('error in load_initial....')
+      alert(unit_choice+' not implemented...')
   }
   
   xmlhttp2.open("GET", 'set_units?units='+unit_choice);
   xmlhttp2.send();
 
 }
-function load_simple() {
+function load_simple_tax() {
       var xmlhttp1 = new XMLHttpRequest();
       xmlhttp1.open("GET", '/visuals/partials/tax_silva108_simple');
       xmlhttp1.onreadystatechange = function() {
@@ -241,10 +243,10 @@ function load_simple() {
       };
       xmlhttp1.send();
 }
-function load_custom() {
-      //var custom = 'html'
-      var custom = 'fancytree'
-      //var custom = 'dhtmlx'
+function load_custom_tax_tree() {
+      //var custom_selection = 'html'
+      var custom_selection = 'fancytree'
+      //var custom_selection = 'dhtmlx'
       switch(custom_selection){
 
         case 'html':
@@ -283,7 +285,7 @@ function load_custom() {
 }
 function load_fancytree() {
     
-    customFile = "/json/tax_silva108_custom_fancytree.json" 
+    //customFile = "/json/tax_silva108_custom_fancytree.json" 
     customTree = $("#custom_treebox").fancytree({
       checkbox: true,
       icon: false,
@@ -295,8 +297,20 @@ function load_fancytree() {
       //imagePath:'fancytree',
       //source:  JSON.parse(data),
       source:  {
-        url:customFile
+        //url:customFile,
+        url:'/visuals/tax_custom_fancytree'
       },
+      lazyLoad: function(event, data){
+          var node = data.node;
+          //alert(node.key,' ',node.node_id)
+          // Load child nodes via ajax GET /getTreeData?mode=children&parent=1234
+          data.result = {
+             url: "/visuals/tax_custom_fancytree?id="+node.key,
+             data: {mode: "children", parent: node.key},
+             cache: false
+           };
+      },
+      
     });
     custom_loaded = true
 }
@@ -306,17 +320,19 @@ function load_dhtmlx() {
     customTree.enableCheckBoxes(true);
     customTree.enableTreeLines(true); // true by default
     customTree.enableTreeImages(false);
-    customTree.enableThreeStateCheckboxes(true);
-    customTree.enableSmartCheckboxes(true);
-    //customTree.setImagesPath("/Users/avoorhis/programming/vamps-node.js/public/images/dhtmlx/imgs/");
+    //customTree.enableThreeStateCheckboxes(true);
+    
+    customTree.setXMLAutoLoading("/visuals/tax_custom_dhtmlx");
+	customTree.setDataMode("json");
+	//load first level of tree
+	customTree.load("/visuals/tax_custom_dhtmlx?id=0","json");
     
     // USING file: AJAX not needed here
-    customFile = "/json/tax_silva108_custom_dhtmlx.json"
-    //document.getElementById('units_select_choices_div').innerHTML = 'customTree';
+    //customFile = "/json/tax_silva108_custom_dhtmlx.json"
+    //customTree.load(customFile,"json");
     
-    customTree.load(customFile,"json");
     custom_loaded = true
-
+    
 }
 function show_tax_selection_box() {
   // show/hide
@@ -330,7 +346,7 @@ function show_tax_selection_box() {
   switch(target){
     case 'tax_silva108_simple':
         if(!simple_loaded){
-          load_simple()
+          load_simple_tax()
         }
         document.getElementById('simple_treebox').style.display = 'block'
         document.getElementById('custom_treebox').style.display = 'none'
@@ -340,7 +356,7 @@ function show_tax_selection_box() {
         break;
     case 'tax_silva108_custom':
         if(!custom_loaded){
-          load_custom()
+          load_custom_tax_tree()
         }
         document.getElementById('simple_treebox').style.display = 'none'
         document.getElementById('custom_treebox').style.display = 'block'
@@ -369,7 +385,9 @@ function show_tax_selection_box() {
         
     //     break;
     default:
-        alert('error in show_tax_selection_box')
+        document.getElementById('simple_treebox').style.display = 'none'
+        document.getElementById('custom_treebox').style.display = 'none'
+        alert('Not Implemented Yet')
   }
   
 }

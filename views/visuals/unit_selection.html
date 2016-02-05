@@ -1,6 +1,6 @@
 <% include ../add_ins/begin.ejs %>
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
-<!-- <link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" > -->
+<link rel="stylesheet" href="/stylesheets/fancytree/skin-lion/ui.fancytree.css" >
 <%  var items  = JSON.parse(chosen_id_name_hash); %>
 <%  var referer = 'unit_selection'; %>
 <script>
@@ -50,10 +50,9 @@
           <!-- <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div>  -->
           <div id="simple_treebox" style="width:200;height:200;display:block;">simple</div>
           <div id="custom_treebox" style="width:200;height:200;display:none;">custom</div>
-          <!-- 
-          <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
+        <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
           <div id="custom_treebox_dhtmlx" style="width:200;height:200;display:none;">dhtmlx</div> 
-          -->
+         
           
 
           <!-- <div>Selected keys: <span id="echoSelection">-</span></div> -->
@@ -92,8 +91,7 @@
 
   <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
   
-  <!-- <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script>  -->
-
+  <script type="text/javascript" src="/javascripts/fancytree/jquery.fancytree-all.min.js" ></script> 
    
  
  </body>

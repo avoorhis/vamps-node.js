@@ -1653,37 +1653,6 @@ router.get('/partials/tax_silva108_custom', helpers.isLoggedIn,  function(req, r
 });
 //
 //
-router.get('/partials/tax_silva108_custom_dhtmlx', helpers.isLoggedIn,  function(req, res) {
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  // var file_path = path.join(pwd,'views','visuals','partials','tax_silva108_custom_dhtmlx.json');
-  // fs.readFile(file_path, 'utf8', function (err, treeData) {
-  //       if (err) {
-  //         return console.log(err);
-  //       }else{
-  //         console.log('in tax_silva108_custom dhtmlx')
-  //         res.json(JSON.parse(treeData))
-  //       }
-  // });
-  res.json({})
-  //res.render('visuals/partials/tax_silva108_custom',    { title   : 'Silva(v108) Custom Taxonomy Selection'});
-});
-//
-//
-router.get('/partials/tax_silva108_custom_fancytree', helpers.isLoggedIn,  function(req, res) {
-  var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
-  // var file_path = path.join(pwd,'views','visuals','partials','tax_silva108_custom_fancytree.json');
-  // fs.readFile(file_path, 'utf8', function (err, treeData) {
-  //       if (err) {
-  //         return console.log(err);
-  //       }else{
-  //         console.log('in tax_silva108_custom fancytree')
-  //         //res.json(treeData)
-  //         res.json(JSON.parse(treeData))
-  //       }
-  // });
-  res.json({})
-  //res.render('visuals/partials/tax_silva108_custom',    { title   : 'Silva(v108) Custom Taxonomy Selection'});
-});
 
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
@@ -2076,7 +2045,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH PROJECTS FILTER
 //
-router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_projects/:q', function(req, res) {
   var q = req.params.q.toUpperCase();
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
@@ -2131,7 +2100,7 @@ router.get('/livesearch_projects/:q', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH ENV PROJECTS FILTER
 //
-router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_env/:q', function(req, res) {
   var q = req.params.q;
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
@@ -2183,7 +2152,7 @@ router.get('/livesearch_env/:q', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH TARGET PROJECTS FILTER
 //
-router.get('/livesearch_target/:q', helpers.isLoggedIn, function(req, res) {
+router.get('/livesearch_target/:q', function(req, res) {
   var q = req.params.q;
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
@@ -2249,6 +2218,87 @@ router.get('/set_units', function(req, res) {
     unit_choice = 'tax_silva108_simple';
   }
   
+});
+//
+//
+//
+router.get('/tax_custom_fancytree', function(req, res) {
+    console.log('in fancytree')
+    var myurl = url.parse(req.url, true);
+    var id = myurl.query.id
+    console.log('id='+id)
+    
+ // {"title":"Bacteria","key":"1","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+//  {"title":"Archaea","key":"214","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+//  {"title":"Unknown","key":"338","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+//  {"title":"Organelle","key":"353","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true}
+    json = []
+    if(id == undefined || id == 'undefined' || id == 0){
+        for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+            node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+            if(node.children_ids.length === 0){
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
+            }else{
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
+            }
+        }
+    }else{
+        for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+            node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+            //console.log(node)
+            if(node.children_ids.length === 0){
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
+            }else{
+                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
+            }
+        }
+    }
+ res.send(json)
+});
+router.get('/tax_custom_dhtmlx', function(req, res) {
+    //console.log('IN tax_custom_dhtmlx')
+    var myurl = url.parse(req.url, true);
+    var id = myurl.query.id
+    console.log('id='+id)
+    var json = {}
+    
+    if(id==0){
+        // return json for collapsed tree: 'domain' only
+//         json = {"id":"0","item":[
+//             {"id":"1","text":"Bacteria","tooltip":"domain","checked":true,"child":"1","item":[]},
+//             {"id":"214","text":"Archaea","tooltip":"domain","checked":true,"child":"1","item":[]},
+//             {"id":"338","text":"Unknown","tooltip":"domain","checked":true,"child":"1","item":[]},
+//             {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
+//             ]
+//         }
+        json.id = id;
+        json.item = []
+        //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+        for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+            node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+            if(node.children_ids.length === 0){
+                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:0})
+            }else{
+                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,checked:true,child:1,item:[]})
+            }
+        }
+    }else{
+        
+        json.id = id
+        json.item =[]
+        for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+            node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+            //console.log(node)
+            if(node.children_ids.length === 0){
+                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:0})
+            }else{
+                json.item.push({id:node.node_id,text:node.taxon,tooltip:node.rank,child:1,item:[]})
+            }
+        }
+    }
+    res.json(json)
 });
 
 module.exports = router;

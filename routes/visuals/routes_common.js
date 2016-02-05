@@ -484,7 +484,7 @@ check_initial_status: function(url) {
 //
 clean_custom_tax: function(custom_tax_ids){
     console.log('cleaning custom tax-->')
-    new_id_list = []
+    cleaned_id_list = []
     nodes_to_delete = []
     for(index in custom_tax_ids){
       node_id = custom_tax_ids[index]
@@ -503,14 +503,14 @@ clean_custom_tax: function(custom_tax_ids){
     console.log('nodes_to_delete ',nodes_to_delete)
     for(index in custom_tax_ids){
       node_id = custom_tax_ids[index].toString()
-      console.log(node_id,' ',new_id_list.indexOf(node_id),' ',nodes_to_delete.indexOf(node_id))
-      if(new_id_list.indexOf(node_id) == -1 && nodes_to_delete.indexOf(node_id) == -1){
-        new_id_list.push(node_id)
+      //console.log(node_id,' ',cleaned_id_list.indexOf(node_id),' ',nodes_to_delete.indexOf(node_id))
+      if(cleaned_id_list.indexOf(node_id) == -1 && nodes_to_delete.indexOf(node_id) == -1){
+        cleaned_id_list.push(node_id)
       }
     }
     console.log('<--cleaning custom tax')
-    console.log('new_id_list ',new_id_list)
-    custom_tax_ids = new_id_list
+    console.log('cleaned_id_list ',cleaned_id_list)
+    custom_tax_ids = cleaned_id_list
     return custom_tax_ids
 
     // no cleaning
