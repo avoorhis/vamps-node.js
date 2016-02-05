@@ -2,8 +2,8 @@
 var get_graphics_form = document.getElementById('get_graphics_form');
 var get_graphics_btn = document.getElementById('get_graphics_btn') || null;
 //custom_selection = 'html'
-//custom_selection = 'fancytree'
-custom_selection = 'dhtmlx'
+custom_selection = 'fancytree'
+//custom_selection = 'dhtmlx'
 var simple_loaded, custom_loaded;
 
 $(document).ready(function(){
@@ -244,9 +244,7 @@ function load_simple_tax() {
       xmlhttp1.send();
 }
 function load_custom_tax_tree() {
-      //var custom_selection = 'html'
-      var custom_selection = 'fancytree'
-      //var custom_selection = 'dhtmlx'
+      
       switch(custom_selection){
 
         case 'html':
@@ -290,7 +288,7 @@ function load_fancytree() {
       checkbox: true,
       icon: false,
       clickFolderMode: 4,
-      selectMode: 2,
+      selectMode: 3,
       keyPathSeparator: "/",
       //generateIds: true,
       //idPrefix:'XXX_',

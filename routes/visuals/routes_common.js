@@ -483,24 +483,23 @@ check_initial_status: function(url) {
 //
 //
 clean_custom_tax: function(custom_tax_ids){
-    console.log('cleaning custom tax-->')
+    console.log('cleaning custom tax')
     cleaned_id_list = []
     nodes_to_delete = []
     for(index in custom_tax_ids){
       node_id = custom_tax_ids[index]
       node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
-      console.log('nodes ',node)
+      //console.log('nodes ',node)
       parent_id = node.parent_id.toString()
-      console.log('parent_id ',parent_id)
-      console.log(custom_tax_ids.indexOf(parent_id))
+      //console.log('parent_id ',parent_id)
+      //console.log(custom_tax_ids.indexOf(parent_id))
       if(nodes_to_delete.indexOf(parent_id) == -1 && custom_tax_ids.indexOf(parent_id) > -1){
         nodes_to_delete.push(parent_id)
       }
 
       
     }
-
-    console.log('nodes_to_delete ',nodes_to_delete)
+    //console.log('nodes_to_delete ',nodes_to_delete)
     for(index in custom_tax_ids){
       node_id = custom_tax_ids[index].toString()
       //console.log(node_id,' ',cleaned_id_list.indexOf(node_id),' ',nodes_to_delete.indexOf(node_id))
@@ -508,7 +507,7 @@ clean_custom_tax: function(custom_tax_ids){
         cleaned_id_list.push(node_id)
       }
     }
-    console.log('<--cleaning custom tax')
+    
     console.log('cleaned_id_list ',cleaned_id_list)
     custom_tax_ids = cleaned_id_list
     return custom_tax_ids
