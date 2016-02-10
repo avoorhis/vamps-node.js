@@ -49,8 +49,16 @@
 
           <!-- <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div>  -->
           <div id="simple_treebox" style="width:200;height:200;display:block;">simple</div>
-          <div id="custom_treebox" style="width:200;height:200;display:none;">custom</div>
-        <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
+          <div id='custom_tax_div' style="display:none;">
+            <br>
+            <input type='button' class='btn btn-xs btn-primary' name='' value='Reset Tree' onclick='reset_tree_dhtmlx()'> |
+            Selection Type:
+            <input type='radio' name='select_type' id='select_type_individual' value='individual' onclick="change_mode_dhtmlx('individual')"> Individual&nbsp;
+            <input type='radio' name='select_type' id='select_type_clade' value='clade' onclick="change_mode_dhtmlx('clade')"> Clade
+            <div id="custom_treebox" style="width:200;height:200;"></div>
+
+          </div>
+          <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
           <div id="custom_treebox_dhtmlx" style="width:200;height:200;display:none;">dhtmlx</div> 
          
           

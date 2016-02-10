@@ -2,8 +2,8 @@
 var get_graphics_form = document.getElementById('get_graphics_form');
 var get_graphics_btn = document.getElementById('get_graphics_btn') || null;
 //custom_selection = 'html'
-custom_selection = 'fancytree'
-//custom_selection = 'dhtmlx'
+//custom_selection = 'fancytree'
+custom_selection = 'dhtmlx'
 var simple_loaded, custom_loaded;
 
 $(document).ready(function(){
@@ -179,7 +179,7 @@ function load_initial_taxa_tree(unit_choice) {
       // globals
       simple_loaded = true;  custom_loaded = false; // fancytree_loaded = false;  dhtmlx_loaded = false
       document.getElementById('simple_treebox').style.display = 'block'
-      document.getElementById('custom_treebox').style.display = 'none'
+      document.getElementById('custom_tax_div').style.display = 'none'
       //document.getElementById('custom_treebox_fancytree').style.display = 'none'
       //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
       break;
@@ -188,7 +188,7 @@ function load_initial_taxa_tree(unit_choice) {
       // globals
       simple_loaded = false;  custom_loaded = true; // fancytree_loaded = false;  dhtmlx_loaded = false
       document.getElementById('simple_treebox').style.display = 'none'
-      document.getElementById('custom_treebox').style.display = 'block'
+      document.getElementById('custom_tax_div').style.display = 'block'
       //document.getElementById('custom_treebox_fancytree').style.display = 'none'
       //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
       break;
@@ -272,6 +272,11 @@ function load_custom_tax_tree() {
             break;
         case 'fancytree':
             load_fancytree();
+            // customTree.bind("fancytreedblclick", function(event, data){
+            //   if( data.node.isFolder() ){
+            //     return false;
+            //   }
+            // });
             break;
         case 'dhtmlx':
             load_dhtmlx()
@@ -298,9 +303,20 @@ function load_fancytree() {
         //url:customFile,
         url:'/visuals/tax_custom_fancytree'
       },
+      //dblclick: function(event, data) {
+      //  return false;
+      //},
       dblclick: function(event, data) {
         //data.node.toggleSelected();
-        data.node.toggleExpanded();
+        //data.node.toggleExpanded();
+        //alert(data.node)
+        var node = data.node;
+        //id = node.id
+        var id = node.key
+        var taxon = node.title
+        //alert(taxon) 
+        expand_children_fancytree(node)
+        return false;  // this turns off/on default behavior
       },
       lazyLoad: function(event, data){
           var node = data.node;
@@ -316,18 +332,73 @@ function load_fancytree() {
     });
     custom_loaded = true
 }
+clk_counter = 0
+function expand_children_fancytree(node) {
+  //alert(node)
+
+  
+
+  if(node.isExpanded()){
+    // second+ times through: -- node is open
+    // get children and open one level
+
+    child_nodes = node.getChildren()
+    // alert(child_nodes)
+    for(i in child_nodes){
+       cnode = child_nodes[i]
+       alert(cnode)
+       
+       
+       expand_children(cnode)
+    }
+  }else{
+    //first time through: node is not expanded: must open(lazy) first
+    node.load().done(function() {
+        //child_nodes = node.getChildren()
+        
+        node.setExpanded(true);
+        //alert(child_nodes)
+        // for(i in child_nodes){
+        //   cnode = child_nodes[i]
+        //   //expand_children(cnode)
+        //   cnode.setExpanded()
+        // }
+        //node.visit(function(childNode) {
+          //alert(childNode)
+          //node.setExpanded(true);
+           // childNode.setExpanded(true);
+            //expand_children(childNode)
+        //});
+    });
+
+    //child_nodes = node.getChildren()
+  }
+  
+  //alert(child_nodes)
+  // for(n in child_nodes){
+  //   cnode = child_nodes[n]
+  //   alert(cnode)
+  // }
+}
 function load_dhtmlx() {
     customTree = new dhtmlXTreeObject("custom_treebox","100%","100%",0);
     customTree.setImagesPath("/images/dhtmlx/imgs/");
     customTree.enableCheckBoxes(true);
+    //customTree.enableThreeStateCheckboxes(true);
     customTree.enableTreeLines(true); // true by default
     customTree.enableTreeImages(false);
+    customTree.attachEvent("onCheck",function(id){
+        on_check_dhtmlx(id)
+    });
+    customTree.attachEvent("onDblClick", function(id){
+        expand_tree_dhtmlx(id)
+    });
     //customTree.enableThreeStateCheckboxes(true);
     
     customTree.setXMLAutoLoading("/visuals/tax_custom_dhtmlx");
-	customTree.setDataMode("json");
-	//load first level of tree
-	customTree.load("/visuals/tax_custom_dhtmlx?id=0","json");
+	  customTree.setDataMode("json");
+	  //load first level of tree
+	  customTree.load("/visuals/tax_custom_dhtmlx?id=0","json");
     
     // USING file: AJAX not needed here
     //customFile = "/json/tax_silva108_custom_dhtmlx.json"
@@ -335,6 +406,109 @@ function load_dhtmlx() {
     
     custom_loaded = true
     
+}
+
+// initialize
+mode='clade'  // individual
+document.getElementById('select_type_clade').checked = true;
+function change_mode_dhtmlx(change_to_mode){
+  mode = change_to_mode;
+  //document.getElementById('select_type_'+change_to_mode).checked = true;
+}
+function reset_tree_dhtmlx(){
+  customTree.refreshItem();
+}
+function on_check_dhtmlx(id){
+
+  if(mode == 'individual') 
+   {
+       //this.setSubChecked(id,false);
+       // allows only the individual checkbox tobe 
+       // selected or unselected.
+      // if(customTree.isItemChecked(id)){
+      //   alert('checked')
+      //   //customTree.setCheck(id,false);
+
+      // }else{
+      //   alert('not checked')
+      //   //customTree.setCheck(id,true);
+      // }
+      
+   }else{  // clade mode ....
+       customTree.openItem(id);
+  
+       if(customTree.isItemChecked(id)){
+          customTree.setSubChecked(id,false);
+          customTree.setCheck(id,true);   
+          //alert(id)
+       }else{
+             //turn off this level
+          customTree.setCheck(id,false);
+          subTaxons = customTree.getAllSubItems(id);
+          subTaxonsArray = subTaxons.split(',');
+          //alert(subTaxons)
+          for(i=0;i<subTaxonsArray.length;i++)
+          {
+           
+           sid = subTaxonsArray[i];
+           //alert(sid)
+           //open state only applies to folders/nodes not leaves
+           openState = customTree.getOpenState(sid);
+           //alert(openState)
+           customTree.setCheck(sid,true);
+          
+           if(openState<1)
+           {
+            customTree.setCheck(sid,true);  
+           } 
+           else
+           {
+            customTree.setCheck(sid,false); 
+           }
+    
+           } //end of loop
+          
+       }
+   }  
+  // if(customTree.getOpenState(id)){
+    
+  //   nodes = customTree.getAllSubItems(id)
+  //   alert(nodes)
+  //   customTree.setSubChecked(id,true)
+
+  // }else{
+  //   // closed -- do nothing
+  // }
+}
+function expand_tree_dhtmlx(id){
+  //alert(customTree.hasChildren(id))
+  if ( customTree.hasChildren(id) ) {
+       
+        customTree.openAllItems(id,true); 
+       
+        //kids = customTree.getAllSubItems(id);
+        //ccid = click_ctr[id];
+        //taxon = taxa[ccid];
+        //alert(kids)
+        // if(kids !=0)
+        // {
+             
+        //      // here we try to prevent opening the OTU list on double click
+        //      kids_array = kids.split(',');
+        //      new_kids='';
+        //      for(n=0;n<kids_array.length;n++){
+                  
+        //         new_kids = new_kids + kids_array[n] + ',';
+                 
+        //      }
+        //      kids = new_kids.replace(/,$/,"");
+             
+        //      this.openItemsDynamic(kids,false);
+        // }
+  }else{
+    alert('no sub-levels found')
+  }
+
 }
 function show_tax_selection_box() {
   // show/hide
@@ -351,7 +525,7 @@ function show_tax_selection_box() {
           load_simple_tax()
         }
         document.getElementById('simple_treebox').style.display = 'block'
-        document.getElementById('custom_treebox').style.display = 'none'
+        document.getElementById('custom_tax_div').style.display = 'none'
         //document.getElementById('custom_treebox_fancytree').style.display = 'none'
         //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
         
@@ -361,7 +535,7 @@ function show_tax_selection_box() {
           load_custom_tax_tree()
         }
         document.getElementById('simple_treebox').style.display = 'none'
-        document.getElementById('custom_treebox').style.display = 'block'
+        document.getElementById('custom_tax_div').style.display = 'block'
         //document.getElementById('custom_treebox_fancytree').style.display = 'none'
         //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
         
@@ -388,7 +562,7 @@ function show_tax_selection_box() {
     //     break;
     default:
         document.getElementById('simple_treebox').style.display = 'none'
-        document.getElementById('custom_treebox').style.display = 'none'
+        document.getElementById('custom_tax_div').style.display = 'none'
         alert('Not Implemented Yet')
   }
   
