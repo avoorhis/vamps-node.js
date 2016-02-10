@@ -54,13 +54,15 @@
             <input type='button' class='btn btn-xs btn-primary' name='' value='Reset Tree' onclick='reset_tree_dhtmlx()'> |
             Selection Type:
             <input type='radio' name='select_type' id='select_type_individual' value='individual' onclick="change_mode_dhtmlx('individual')"> Individual&nbsp;
-            <input type='radio' name='select_type' id='select_type_clade' value='clade' onclick="change_mode_dhtmlx('clade')"> Clade
-            <div id="custom_treebox" style="width:200;height:200;"></div>
+            <input type='radio' name='select_type' id='select_type_clade' value='clade' onclick="change_mode_dhtmlx('clade')"> Clade |
+            <small>(double-click taxon names to expand lower levels.)</small>
+            <div id="custom_treebox" style="border:1px solid black;overflow:auto;height:400px;"></div>
 
           </div>
+          <!-- 
           <div id="custom_treebox_fancytree" style="width:200;height:200;display:none;">fancytree</div>
           <div id="custom_treebox_dhtmlx" style="width:200;height:200;display:none;">dhtmlx</div> 
-         
+          -->
           
 
           <!-- <div>Selected keys: <span id="echoSelection">-</span></div> -->

@@ -5,6 +5,8 @@ var get_graphics_btn = document.getElementById('get_graphics_btn') || null;
 //custom_selection = 'fancytree'
 custom_selection = 'dhtmlx'
 var simple_loaded, custom_loaded;
+mode='clade'  // or individual
+document.getElementById('select_type_clade').checked = true;
 
 $(document).ready(function(){
 
@@ -393,6 +395,10 @@ function load_dhtmlx() {
     customTree.attachEvent("onDblClick", function(id){
         expand_tree_dhtmlx(id)
     });
+    //customTree.attachEvent("onOpenEnd", function(id){
+    //    open_or_close_node(id)
+    //});
+
     //customTree.enableThreeStateCheckboxes(true);
     
     customTree.setXMLAutoLoading("/visuals/tax_custom_dhtmlx");
@@ -409,12 +415,12 @@ function load_dhtmlx() {
 }
 
 // initialize
-mode='clade'  // individual
-document.getElementById('select_type_clade').checked = true;
+
 function change_mode_dhtmlx(change_to_mode){
   mode = change_to_mode;
   //document.getElementById('select_type_'+change_to_mode).checked = true;
 }
+
 function reset_tree_dhtmlx(){
   customTree.refreshItem();
 }
@@ -433,6 +439,7 @@ function on_check_dhtmlx(id){
       //   alert('not checked')
       //   //customTree.setCheck(id,true);
       // }
+
       
    }else{  // clade mode ....
        customTree.openItem(id);
@@ -455,20 +462,21 @@ function on_check_dhtmlx(id){
            //open state only applies to folders/nodes not leaves
            openState = customTree.getOpenState(sid);
            //alert(openState)
-           customTree.setCheck(sid,true);
+           //customTree.setCheck(sid,true);
           
-           if(openState<1)
+           if(openState < 1)
            {
-            customTree.setCheck(sid,true);  
+              customTree.setCheck(sid,true);  
            } 
            else
            {
-            customTree.setCheck(sid,false); 
+              customTree.setCheck(sid,false); 
            }
     
            } //end of loop
           
        }
+
    }  
   // if(customTree.getOpenState(id)){
     
@@ -536,6 +544,7 @@ function show_tax_selection_box() {
         }
         document.getElementById('simple_treebox').style.display = 'none'
         document.getElementById('custom_tax_div').style.display = 'block'
+
         //document.getElementById('custom_treebox_fancytree').style.display = 'none'
         //document.getElementById('custom_treebox_dhtmlx').style.display = 'none'
         
