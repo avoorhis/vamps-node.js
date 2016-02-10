@@ -26,7 +26,11 @@
 			<div class="<%= span %>">
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
-		                <a class="btn btn-sm btn-primary" href='/user_data/export_data'>Export Data</a>
+		              	<form action="/user_data/export_data" method="POST">
+                			<button type="submit" class='btn btn-sm btn-primary' name="" value="" >Export Data</button>
+              			</form>
+
+		               <!--  <a class="btn btn-sm btn-primary" href='/user_data/export_data'>Export Data</a> -->
 						
 		              </div>
 		              <div class="panel-body">
