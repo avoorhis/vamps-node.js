@@ -177,21 +177,21 @@
             tip.id = link.id;
             link.id = '';
             id_items = tip.id.split('-|-');
-            html = "<table><tr>";
+            html = "<div style='padding:3px;'><table><tr>";
             if(id_items[0] == 'project') {
-              html += "<td>Name: "+id_items[1]+"</td>";
+              html += "<td>Name:</td><td>"+id_items[1]+"</td>";
               html += "</tr><tr>";
-              html += "<td>Title: "+id_items[2]+"</td>";  
+              html += "<td>Title:</td><td>"+id_items[2]+"</td>";  
               html += "</tr><tr>";
-              html += "<td>Status: "+id_items[3]+"</td>";             
+              html += "<td>Status:</td><td>"+id_items[3]+"</td>";             
             }else if(id_items[0] == 'dataset'){
-              html += "<td>Project: "+id_items[1]+"</td>";
+              html += "<td>Project:</td><td>"+id_items[1]+"</td>";
               html += "</tr><tr>";
-              html += "<td>Dataset: "+id_items[2]+"</td>";
+              html += "<td>Dataset:</td><td>"+id_items[2]+"</td>";
               html += "</tr><tr>";
-              html += "<td>Description: "+id_items[3]+"</td>";
+              html += "<td>Description:</td><td>"+id_items[3]+"</td>";
             }
-            html += "</tr><table>";
+            html += "</tr><table></div>";
 
             showTip = setTimeout(function() {
          
