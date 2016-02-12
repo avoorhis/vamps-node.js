@@ -14,7 +14,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
   router.get('/', function(req, res) {
     res.render('index', {
             title: 'VAMPS:Home',
-            message: req.flash('fail'),
+            message   :     req.flash('message'),
             user: req.user, 
             hostname: req.CONFIG.hostname });
   });

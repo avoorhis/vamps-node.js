@@ -1,7 +1,8 @@
 <% include add_ins/begin-img.ejs %>
-<% if ( message.length > 0 ) { %>
-		<p><strong>ALERT!</strong> <%= message %></p>
-<% } %> 
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+<br>
 
 <div class="hero-unit">
             <h2>VAMPS:</h2>

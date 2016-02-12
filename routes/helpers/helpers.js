@@ -55,7 +55,7 @@ module.exports = {
       req.session.returnTo = req.path;
       //console.log('URL Requested: '+JSON.stringify(req));
       //console.log(util.inspect(req, {showHidden: false, depth: null}));
-      //req.flash('loginMessage', 'Please login or register before continuing.');
+      req.flash('message', 'The page you are trying to access is for VAMPS admins only.');
       res.redirect('/');
       return;
   }

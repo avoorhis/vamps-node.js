@@ -6,26 +6,34 @@
 <% } %>
 
 <p class='title center'>Investigator Profile</p>
-	
-	<div class='well'>
+<div class="row">
+    <div class="col-lg-3"></div>	
+	<div class='col-lg-6 well'>
 			<li><%= user_info.first_name %> <%= user_info.last_name %>
 			<li>username: <%= user_info.username %> 
 			<li>email: <%= user_info.email %> 
 			<li>institution: <%= user_info.institution %> 
-			<% if(projects[0]) { %>
-				<li>Projects:
-				<div style='height:200px;overflow;auto;'>
-					<table>
+			
+	<% 			if(projects[0]) { %>
+				
+						<li>Owned Projects:<br>
+				
+						<div style='height:250px;overflow:auto;border:1px solid black;padding:2px 3px;'>
+						<table>
 						<% 	for(n in projects){ %>
 									<tr><td><a href='/projects/<%= projects[n].project_id %>'><%= projects[n].project %></a></td></tr>
 						<% 	} %>
-					</table>
-				</div>
-			<% }else{ %>
-				<li>No Projects
-			<% } %>
-	</div>
+						</table>
+						</div>
+			
+	<% 			}else{ %>
+						<li>No Projects
+	<% 			} %>
+				
 
+
+	</div>
+</div>
 	
 	
 <% include ../add_ins/end.ejs %>

@@ -115,7 +115,7 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
 
-router.get('/:id', function(req, res) {
+router.get('/:id', helpers.isAdmin, function(req, res) {
    
    var uid = req.params.id
    console.log(ALL_USERS_BY_UID[uid]);
