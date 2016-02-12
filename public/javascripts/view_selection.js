@@ -1139,14 +1139,14 @@ function create_counts_table() {
       }
 
       //html += "<table border='1' class='single_border small_font counts_table' >";
-	    html += "<table border='1' class='table table-condensed' >";
+	    html += "<br><br><br><br><br><table id='counts_table_id' border='1' class='table table-condensed' style=''>";
       html += "<tr><td></td>"
       for (t = 0; t < maxrank; t++) {
-        html += "<th><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
+        html += "<th class=''><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
       }
       
       for (var n in mtx_local.columns) {
-        html += "<th class=''>"+mtx_local.columns[n].id +"</th>";
+        html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
       }
       html += "</tr>";
       
@@ -1196,7 +1196,8 @@ function create_counts_table() {
       html += "</table>";
 
       //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
-      tax_counts_div.innerHTML = html;   
+      tax_counts_div.innerHTML = html; 
+      //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
 }
 
 //
