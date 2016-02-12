@@ -10,9 +10,9 @@
 	
 	
 	
-	<div class="hero-unit">
-	            <h2>VAMPS: Website Administration</h2>
-				<h3>Change Project Information</h3>
+	<div class="hero-unit center">
+	    <h2>Website Administration</h2>
+			<h3>Change Project Information</h3>
 		             
 	</div>
 
@@ -24,11 +24,12 @@
 			<a href='admin_index'><--back</a> | <a id='refresh_div' href="alter_project">refresh</a>
 	<% } %>
 	<hr>
+	<center>
 	
-	<div style=''>
 	<table border='0'>
-		<tr><td valign='top'>
-			Select Project:<br>
+		<tr>
+			<td valign='top' align='center'>
+				Select Project:<br>
 					<select id='select_project_alter' >
 						<option value='.....'>.....</option>
 						<% for(pid in pinfo) { %>						
@@ -39,9 +40,11 @@
 						<% 		} %>
 						<% } %>
 					</select>
-		</td>
-
-		<td>
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td>
 			
 				<div id='current_info'>
 					
@@ -166,7 +169,7 @@
 	</tr>
 
 	</table>
-</div>
+</center>
 
 
       

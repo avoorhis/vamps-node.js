@@ -9,10 +9,9 @@
 	
 	
 	
-				<div class="hero-unit">
-				            <h2>VAMPS: Website Administration</h2>
-							<h3>Permissions</h3>
-					             
+				<div class="hero-unit center">
+				      <h2>Website Administration</h2>
+							<h3>Permissions</h3>  
 				</div>
 
 	<br>
@@ -24,11 +23,11 @@
 <div class='col-md-6'>
 
 
-			 By Project (sortable)
+			 By Project (only showing private projects)
 			<br>
 			<div class='admin_table_div'>
 			<table border='1'  class='admin_table table sortable' style=''>
-				<tr><thead><th>Project Name</th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th><th data-defaultsort='disabled'></th></thead></tr>
+				<tr><thead><th>Project Name <small>(sortable)</small></th><th>Owner</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add User?</th></thead></tr>
 				<tbody>
 				<% for(pid in pinfo) { %>
 				<% 		formname = 'by_project_'+pid; %>
@@ -63,9 +62,7 @@
 				<% 		} %>		
 				<% 	} %>			
 							</select>
-					</td>
-					<td>
-						<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
+							<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_project','<%= pid %>')">
 					</td>
 					</tr>
 				<% 		} %>
@@ -81,20 +78,23 @@
 <div class='col-md-6'>
 
 
-		By User	(sortable)
+		By User
 		<br>
 		<div class='admin_table_div' >
 		<table border='1' class='admin_table table sortable' style=''>
-		<tr><thead><th>User</th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th><th data-defaultsort='disabled'></th></thead></tr>
+		<tr><thead><th>User <small>(sortable)</small></th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th></thead></tr>
 		<tbody>
 		<% for(uid in uinfo) { %>
 		<% 	var plist = [] %>
 		<%  formname = 'by_user_'+uid; %>
 		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
 
-			<tr><td><%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %><br><small>(<%= uinfo[uid].username %>-<%= uid %>)</small></td>
+			<tr>
+			<td>
+				<%= uinfo[uid].last_name %>, <%= uinfo[uid].first_name %><br><small>(<%= uinfo[uid].username %>-<%= uid %>)</small>
+			</td>
 
-				<td>
+			<td>
 
 		<% 			for(pid in pinfo) { %>
 		<%					if(pinfo[pid].permissions.length > 0 ){ %>
@@ -110,21 +110,16 @@
 									<%= plist[p] %><br>									
 		<%				} %>
 		<%			} %>
-					</div>
-							
-				</td>
+					</div>	
+			</td>
 
-				<td>
-
-
+			<td>
 				<select id='by_user_select' name='by_user_select' >
 							<option value='0'>.....</option>
-		<% for(pid in pinfo) { %>		
-							<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
-		<% 			} %>				
+		<% 				for(pid in pinfo) { %>		
+									<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
+		<% 				} %>				
 				</select>
-			</td>
-			<td>
 				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_user','<%= uid %>')" >
 			</td>
 

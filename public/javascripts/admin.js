@@ -212,8 +212,7 @@ function change_public(pid)
     var args = 'public='+public+'&pid='+pid;
     xmlhttp.onreadystatechange = function() {        
       if (xmlhttp.readyState == 4 ) {
-          
-          var response = xmlhttp.responseText;            
+          var response = xmlhttp.responseText;           
           info_div.innerHTML = response;      
          
       }

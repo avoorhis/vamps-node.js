@@ -9,8 +9,8 @@
 	
 	
 	
-	<div class="hero-unit">
-	            <h2>VAMPS: Website Administration</h2>
+	<div class="hero-unit center">
+	            <h2>Website Administration</h2>
 				<h3>Public Projects</h3>
 		             
 	</div>
@@ -19,39 +19,36 @@
 	<br>
 	<a href='admin_index'><--back</a> | <a href='public'>refresh</a>
 	<hr>
-
+<center>
 <table><tr>
 
 <td>
 
- All Projects (sortable)
+ 	All Projects (sortable)
 	<br>
+	
 	<div style=''>
 	<table border='1' class='admin_table table sortable'>
 		<tr><thead><th>Project Name (pid)</th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'></th><th data-defaultsort='disabled'>Msg</th></thead></tr>
 		<tbody>
 		<% for(pid in pinfo) { %>
 		
-		
 					<form name='public_form_<%= pid %>' id='public_form_<%= pid %>' method='POST' action=''>
-						<tr><td><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td>
+						<tr>
+							<td><%= pinfo[pid].project %> <small>(<%= pid %>)</small></td>
+							<td style='white-space: nowrap;padding:8px 3px 0 3px;'>
+
 		<% 		if(pinfo[pid].public === 1) { %>
-						
-						<td style='white-space: nowrap;padding:0 2px;'>
-							<input checked type='radio' name='public_radio_<%= pid %>' value='1'>Public
-							<input         type='radio' name='public_radio_<%= pid %>' value='0'>Private
-						</td>
-						
+							<input checked type='radio' name='public_radio_<%= pid %>' value='1'> Public
+							<input         type='radio' name='public_radio_<%= pid %>' value='0'> Private
 		<% 		}else{ %>
-						
-						<td style='white-space: nowrap;padding:0 2px;'>
-							<input         type='radio' name='public_radio_<%= pid %>' value='1'>Public
-							<input checked type='radio' name='public_radio_<%= pid %>' value='0'>Private
-						</td>						
-								
+							<input         type='radio' name='public_radio_<%= pid %>' value='1'> Public
+							<input checked type='radio' name='public_radio_<%= pid %>' value='0'> Private
 		<% 		} %>
+					</td>
 					<td>
-						<input id='public_btn' type='button' class='btn btn-link' value='update' onclick="change_public('<%= pid %>')">
+						<!-- <input id='public_btn' type='button' class='btn btn-link' value='update' onclick="change_public('<%= pid %>')"> -->
+						<a href='#' onclick="change_public('<%= pid %>')">update</a>
 					</td>
 					<td><div id='msg_div_<%= pid %>'></div></td>
 					</tr>
@@ -59,12 +56,11 @@
 		<% } %>
 	</tbody>
 	</table>
-
 </td>
-
-
 </tr>
 </table>
+</div>
+</center>
 
 
 

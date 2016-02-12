@@ -53,7 +53,7 @@ router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) 
 
   console.log('in public');
   //console.log(ALL_USERS_BY_UID);
-  console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
    res.render('admin/public', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
@@ -68,36 +68,32 @@ router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(re
 
   console.log('in public_update');
   //console.log(ALL_USERS_BY_UID);
-   console.log(PROJECT_INFORMATION_BY_PID);
+   //console.log(PROJECT_INFORMATION_BY_PID);
    selected_pid = req.body.pid ;
    new_public = parseInt(req.body.public);
+   //console.log(selected_pid,' ',new_public)
+   response = 'no'
    if(new_public !== PROJECT_INFORMATION_BY_PID[selected_pid].public){
-     q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'";
+      q = "UPDATE project set public='"+new_public+"' WHERE project_id='"+selected_pid+"'";
 
-       if(new_public === 1){
+      if(new_public === 1){
             PROJECT_INFORMATION_BY_PID[selected_pid].public = 1;
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [];
-       }else{
+      }else{
             // give owner sole permissions
             PROJECT_INFORMATION_BY_PID[selected_pid].permissions = [PROJECT_INFORMATION_BY_PID[selected_pid].oid];
             PROJECT_INFORMATION_BY_PID[selected_pid].public = 0;
-
-       }
-
-
-       connection.query(q, function(err, rows, fields){
+      }
+      connection.query(q, function(err, rows, fields){
             //console.log(qSequenceCounts)
                 if (err)  {
                   console.log('Query error: ' + err);
                   response = 'Query error: ' + err;
                 }else{
                   response = 'Successfully updated';
-
                 }
-
                 res.send(response);
-
-        });
+      });
   }else{
     res.send('no change to public status');
   }
