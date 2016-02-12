@@ -4,7 +4,8 @@
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-<p class='title'>Investigator Profile
+
+<p class='title center'>Investigator Profile</p>
 	
 	<div class='well'>
 			<li><%= user_info.first_name %> <%= user_info.last_name %>
@@ -12,16 +13,21 @@
 			<li>email: <%= user_info.email %> 
 			<li>institution: <%= user_info.institution %> 
 			<% if(projects[0]) { %>
-						<li>Projects:
+				<li>Projects:
+				<div style='height:200px;overflow;auto;'>
+					<table>
 						<% 	for(n in projects){ %>
-									<br><a href='/projects/<%= projects[n].project_id %>'><%= projects[n].project %></a>
+									<tr><td><a href='/projects/<%= projects[n].project_id %>'><%= projects[n].project %></a></td></tr>
 						<% 	} %>
+					</table>
+				</div>
 			<% }else{ %>
 				<li>No Projects
 			<% } %>
 	</div>
+
 	
-</p>	
+	
 <% include ../add_ins/end.ejs %>
    
  </body>
