@@ -53,8 +53,8 @@
 
 					<td>
 
-
-							<select id='by_project_select'  >
+						<%  selectuname = 'by_project_'+pid+'_select' %>
+							<select id='<%= selectuname %>' name='<%= selectuname %>'  >
 									<option value='0'>.....</option>
 				<% for(uid in uinfo) { %>
 				<% 		if(uinfo[uid].username !== 'guest') { %>
@@ -115,7 +115,8 @@
 			</td>
 
 			<td>
-				<select id='by_user_select' name='by_user_select' >
+				<%  selectpname = 'by_user_'+uid+'_select' %>
+				<select id='<%= selectpname %>' name='<%= selectpname %>' >
 							<option value='0'>.....</option>
 		<% 				for(pid in pinfo) { %>		
 		<%					if(pinfo[pid].public == 0){ %>

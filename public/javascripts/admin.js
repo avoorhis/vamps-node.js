@@ -22,12 +22,12 @@ $(document).ready(function(){
       });
     }
 
-    grant_access_btn = document.getElementById('grant_access_btn') || null;
-    if (grant_access_btn !== null) {
-      grant_access_btn.addEventListener('click', function () {
-          grant_access();
-      });
-    }
+    // grant_access_btn = document.getElementById('grant_access_btn') || null;
+    // if (grant_access_btn !== null) {
+    //   grant_access_btn.addEventListener('click', function () {
+    //       grant_access();
+    //   });
+    // }
     
 
 });
@@ -149,28 +149,34 @@ function show_access_button()
 }
 function grant_access(type, id)
 {
+  
     var info_div = document.getElementById('response_info');
     
-    form = document.getElementById(type+'_'+id);
+    //form = document.getElementById(type+'_'+id);
 
-    
+    //alert('1')
     var selected_pid, selected_uid;
-     //alert(type+" "+id)   
-    if(type==='by_user'){ 
-      selected_pid = form.by_user_select.value
+    var select_name = type+'_'+id+'_select'
+    //alert(type+" "+id) 
+    //alert(select_name)
+    if(type === 'by_user'){ 
+      selected_pid = document.getElementById(select_name).value
       selected_uid = id
-    }else if(type==='by_project'){
-      selected_uid = form.by_project_select.value
+    }else if(type === 'by_project'){
+      selected_uid = document.getElementById(select_name).value
       selected_pid = id
-   }else{
+    }else{
+      
       info_div.innerHTML = 'Error-1'; 
       return;
-   }
-   //alert(selected_pid+" "+selected_uid)  
-   if(selected_uid === '0' || selected_pid === '0'){
+    }
+    
+    //alert(selected_pid+" "+selected_uid)  
+
+    if(selected_uid === '0' || selected_pid === '0'){
       info_div.innerHTML = 'Choose a name'; 
       return;
-   }
+    }
    //return
     
     var xmlhttp = new XMLHttpRequest();  
