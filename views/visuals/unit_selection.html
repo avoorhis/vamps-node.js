@@ -44,12 +44,12 @@
     <table style='width:700px' >
       <tr>
         <td>
-          <% include partials/unit_selection_choices.html %>
+          <span class='pull-right' ><% include partials/unit_selection_choices.html %></span>
           <br>
-
           <!-- <div id='units_select_choices_div' class='unit_selection_page_div_border table' ></div>  -->
           <div id="simple_treebox" style="width:200;height:200;display:block;">simple</div>
           <div id='custom_tax_div' style="display:none;">
+            <span class='lg_font'>Silva(v108) Custom Taxonomy Selection</span>
             <br>
             <input type='button' class='btn btn-xs btn-primary' name='' value='Reset Tree' onclick='reset_tree_dhtmlx()'> |
             Tree Selection Mode:
@@ -73,7 +73,7 @@
   </td><td>
     <table>    
         <tr>
-        <td class='td_top small_font'>
+        <td class='td_top'>
           <span class='lg_font'>Metadata Selection:</span>
           <br>
           <div id='metadata_select_choices_div' class='metadata_selection_page_div_border '>
