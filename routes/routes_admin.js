@@ -38,7 +38,7 @@ router.get('/permissions', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 
   console.log('in permissions');
   //console.log(ALL_USERS_BY_UID);
-  console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
    res.render('admin/permissions', {
               title     :'VAMPS Site Administration',
               message   : req.flash('message'),
@@ -66,8 +66,8 @@ router.get('/public', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) 
 });
 router.post('/public_update', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in public_update');
-  //console.log(ALL_USERS_BY_UID);
+   console.log('in public_update');
+   //console.log(ALL_USERS_BY_UID);
    //console.log(PROJECT_INFORMATION_BY_PID);
    selected_pid = req.body.pid ;
    new_public = parseInt(req.body.public);
@@ -195,7 +195,7 @@ router.get('/alter_project', [helpers.isLoggedIn, helpers.isAdmin], function(req
 router.post('/show_project_info', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
   console.log('in show_user_info');
-  console.log(PROJECT_INFORMATION_BY_PID);
+  //console.log(PROJECT_INFORMATION_BY_PID);
 
   selected_pid = req.body.pid;
       if(selected_pid in PROJECT_INFORMATION_BY_PID){
@@ -442,7 +442,7 @@ router.post('/update_project_info', [helpers.isLoggedIn, helpers.isAdmin], funct
 //
 router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
 
-  console.log('in grant_access');
+      console.log('in grant_access');
       selected_uid = req.body.uid;
       selected_pid = req.body.pid;
       var html = 'Successfully Updated';

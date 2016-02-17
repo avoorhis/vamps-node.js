@@ -85,6 +85,7 @@
 		<tr><thead><th>User <small>(sortable)</small></th><th data-defaultsort='disabled'>Access</th><th data-defaultsort='disabled'>Add Project?</th></thead></tr>
 		<tbody>
 		<% for(uid in uinfo) { %>
+		<%    if(uinfo[uid].last_name != 'guest' && uinfo[uid].first_name != 'guest' ) { %>
 		<% 	var plist = [] %>
 		<%  formname = 'by_user_'+uid; %>
 		<form id='<%= formname %>' name='<%= formname %>' method='POST' action='/admin/grant_access'>			
@@ -117,8 +118,10 @@
 				<select id='by_user_select' name='by_user_select' >
 							<option value='0'>.....</option>
 		<% 				for(pid in pinfo) { %>		
+		<%					if(pinfo[pid].public == 0){ %>
 									<option value='<%= pid %>'><%= pinfo[pid].project %> <small>(<%= pid %>)</small></option>
-		<% 				} %>				
+		<% 					} %>	
+		<% 				} %>			
 				</select>
 				<input id='new_permission_btn' type='button' class='btn btn-link' value='add' onclick="grant_access('by_user','<%= uid %>')" >
 			</td>
@@ -127,6 +130,7 @@
 			<input type='hidden' name='uid' value='<%= uid %>'>
 		</form>
 		
+		<% } %>
 		<% } %>
 	</tbody>
 	</table>
