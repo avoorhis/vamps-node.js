@@ -18,6 +18,7 @@ constants.ENV_SOURCE = {
 		 41: "human-skin",
 		 42: "human-oral",
 		 43: "human-gut",
+         44: "human-vaginal",
 		 45: "human-amniotic-fluid",
 		 46: "human-urine",
 		 47: "human-blood",	
