@@ -81,7 +81,7 @@ function create_barcharts(imagetype) {
         data = [];
         //did_by_names ={}
         for (var p in mtx_local.columns){  
-          //alert(p)
+          
           tmp={};
           tmp.datasetName = mtx_local.columns[p].id;
 		      //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
@@ -202,17 +202,19 @@ function create_svg_object(svg, props, data, ts) {
           .data(data)
         .enter() .append("g")
           .attr("class", "g")
-          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
+          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
           .append("a")
-        .attr("xlink:xlink:href",  function(d) { return 'bar_single?id='+d.datasetName+'&ts='+ts;} )
-		  .attr("target", '_blank' );
+          .attr("xlink:xlink:href",  function(d) { return 'bar_single?id='+d.datasetName+'&ts='+ts;} )
+
+		      .attr("target", '_blank' );
+
   
   var labels = datasetBar.append("text")
-          .attr("class", "y label")
+      .attr("class", "y label")
 			.attr("text-anchor", "end")
-		  .style({"font-size":  "13px","font-weight":  "normal" })
-          .attr("x", "-2")
-          .attr("y", props.bar_height*2)
+		    .style({"font-size":  "13px","font-weight":  "normal" })
+      .attr("x", "-2")
+      .attr("y", props.bar_height*2)
 			.text(function(d) { return d.datasetName; })
 			
 			

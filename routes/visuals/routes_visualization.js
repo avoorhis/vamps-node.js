@@ -1602,14 +1602,15 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     for(d in BIOM_MATRIX.columns){
       if(BIOM_MATRIX.columns[d].id == ds1){
         idx1 = d;
-        new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
+        //new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
       }
       if(BIOM_MATRIX.columns[d].id == ds2){
         idx2 = d;
-        new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
+        //new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
       }
     }
-
+    new_matrix.columns.push(BIOM_MATRIX.columns[idx1]);
+    new_matrix.columns.push(BIOM_MATRIX.columns[idx2]);    
     //console.log('5')
     for(n in BIOM_MATRIX.rows){ // one item for each of two columns (datasets)
       new_matrix.data[n].push(BIOM_MATRIX.data[n][idx1])

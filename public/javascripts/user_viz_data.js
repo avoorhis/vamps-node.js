@@ -38,65 +38,7 @@ var tip = {
     });
   }
 };
-// $("body").delegate(".tooltip_user", "mouseover mouseout mousemove", function (event) {
-//       var link = this,
-//       html = '';
-//       $link = $(this);
-     
-//       if (event.type == 'mouseover') {
-//         tip.id = link.id;
-// 		//alert(tip.id)
-//         link.id = '';
-//         id_items = tip.id.split('-|-');
-//         html = "<table><tr>";
-//         if(id_items[0] == 'dheatmap') {
-//           html += "<td>"+id_items[1]+"</td>";
-//           html += "</tr><tr>";
-//           html += "<td>"+id_items[2]+"</td>";
-//           html += "</tr><tr>";
-//           html += "<td>Distance: "+id_items[3]+"</td>";
-//         }else if(id_items[0] == 'frequencies'){
-//           html += "<td>"+id_items[1]+"</td>";
-//           html += "</tr><tr>";
-//           html += "<td>"+id_items[2]+"</td>";
-//           html += "</tr><tr>";
-//           html += "<td>Count: "+id_items[3]+" ("+id_items[4]+"%)</td>";
-//         }else{  // barcharts and piecharts            
-//           html += "<td>"+id_items[1]+"</td>";
-//           html += "</tr><tr>";
-//           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
-//         }
-//         html += "</tr><table>";
 
-//         showTip = setTimeout(function() {
-     
-//           $link.data('tipActive', true);
-          
-//           tip.position(event);
-//      //alert(event.pageX)
-//           $liveTip
-//           .html('<div>' + html  + '</div>')
-//           .fadeOut(0)
-//           .fadeIn(200);
-     
-//         }, tip.delay);
-//       }
-     
-//       if (event.type == 'mouseout') {
-//         link.id = tip.id || link.id;
-//         if ($link.data('tipActive')) {
-//           $link.removeData('tipActive');
-//           $liveTip.hide();
-//         } else {
-//           clearTimeout(showTip);
-//         }
-//       }
-     
-//       if (event.type == 'mousemove' && $link.data('tipActive')) {
-//         tip.position(event);
-//       }
-              
-// });              
 
 $(document).ready(function() {  
 
@@ -109,66 +51,7 @@ $(document).ready(function() {
   }else{
     barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
   }
-        //var info_line = create_header('bars', pi_local);
-// 		var barcharts_div = document.getElementById('barcharts_div');
-// 		barcharts_div.style.display = 'block';
-//         
-//         //document.getElementById('pre_barcharts_table_div').style.display = 'block';
-// 
-// 
-//         data = [];
-//         // for (var p in mtx_local.columns){
-//            tmp={};
-//            tmp.datasetName = mtx_local.dataset;
-// 		   //tmp.alltotal = mtx_local.total
-//            for (var t in mtx_local.rows){
-//              tmp[mtx_local.rows[t]] = mtx_local.data[t];
-//            }
-//            data.push(tmp);
-//          
-// 
-//       
-//         var unit_list = mtx_local.rows;
-//        
-//         // for (var o in mtx_local.rows){
-//       //     unit_list.push(mtx_local.rows[o].name);
-//       //   }
-//         
-// 
-//         var ds_count = 1;      
-//         var bar_height = 20;
-//         var props = get_image_properties(bar_height, ds_count); 
-//         //console.log(props)
-//         var color = d3.scale.ordinal()                  
-//           .range( get_colors(unit_list) );
-// 
-//         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
-// 
-//         
-// 
-//         data.forEach(function(d) {
-//           var x0 = 0;
-//           d.unitObj = color.domain().map(function(name) { 
-//             return { name: name, x0: x0, x1: x0 += +d[name] }; 
-//           });
-//           
-//           d.total = d.unitObj[d.unitObj.length - 1].x1;
-//           //console.log(d.total);
-//         });
-// 
-// 
-//         data.forEach(function(d) {
-//           // normalize to 100%
-//           tot = d.total;
-//           d.unitObj.forEach(function(o) {
-//               //console.log(o);
-//               o.x0 = (o.x0*100)/tot;
-//               o.x1 = (o.x1*100)/tot;
-//           });
-//         });
-//       
-//         
-//         create_svg_object(props, color, data, ts);
+ 
         
 })
 
@@ -215,7 +98,6 @@ function get_double_bar_html(obj){
     total[0] += parseInt(obj.data[n][0]);
     total[1] += parseInt(obj.data[n][1]);
   }
-//alert(total[0])
   for(n in obj.rows){
     //if(obj.data[n] > 0){
       color = string_to_color_code(obj.rows[n].id)
