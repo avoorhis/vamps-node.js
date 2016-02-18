@@ -2107,38 +2107,52 @@ router.get('/livesearch_env/:q', function(req, res) {
   var info = PROJECT_INFORMATION_BY_PID;
   console.log(portal)
   console.log(q)
+  var envid_lst = []
+  // if q == 40 (human) then pull all from 40-49
   var all_pr_dat = []
   if(portal){
-    prefixes = get_portal_prefixes(portal);    // all uppercase
-    console.log('got prefixes')
-    if(q === '.....'){
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if(ucname.indexOf(prefixes[p]) != -1){
-            all_pr_dat.push(prj);        
+      prefixes = get_portal_prefixes(portal);    // all uppercase
+      console.log('got prefixes')
+      if(q === '.....'){
+        SHOW_DATA.projects.forEach(function(prj) {
+          ucname = prj.name.toUpperCase();
+          for(p in prefixes){
+            if(ucname.indexOf(prefixes[p]) != -1){
+              all_pr_dat.push(prj);        
+            }
           }
-        }
-      });
-    }else{
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if((ucname.indexOf(prefixes[p]) != -1) && parseInt(info[prj.pid].env_source_id) === parseInt(q)){
-              all_pr_dat.push(prj); 
-          }       
-        }
-      });
-    }
+        });
+      }else{
+        SHOW_DATA.projects.forEach(function(prj) {
+          ucname = prj.name.toUpperCase();
+          for(p in prefixes){
+            if(q === '40'){
+              envid_lst = [40,41,42,43,44,45,46,47,48,49];
+            }else{
+              envid_lst = [parseInt(q)]
+            }
+            if((ucname.indexOf(prefixes[p]) != -1) && envid_lst.indexOf(parseInt(info[prj.pid].env_source_id)) != -1){
+                all_pr_dat.push(prj); 
+            }       
+          }
+        });
+      }
   }else{
       if(q === '.....'){          
           all_pr_dat = SHOW_DATA.projects
       }else{
-          SHOW_DATA.projects.forEach(function(prj) {
-            if(parseInt(info[prj.pid].env_source_id) === parseInt(q)){
-              all_pr_dat.push(prj);        
+          if(q === '40'){
+              //console.log('found forty')
+              envid_lst = [40,41,42,43,44,45,46,47,48,49];
+            }else{
+              envid_lst = [parseInt(q)]
             }
-          });
+            //console.log('lst ',envid_lst)
+            SHOW_DATA.projects.forEach(function(prj) {
+              if(envid_lst.indexOf(parseInt(info[prj.pid].env_source_id)) != -1){
+                all_pr_dat.push(prj);        
+              }
+            });
       }
   }
   if(all_pr_dat.length == 0){
