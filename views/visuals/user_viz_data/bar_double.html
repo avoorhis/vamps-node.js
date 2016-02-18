@@ -1,14 +1,17 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
-<% var dataset = JSON.parse(matrix).dataset; %>
+<% var dataset1 = JSON.parse(matrix).datasets[0]; %>
+<% var dataset2 = JSON.parse(matrix).datasets[1]; %>
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
+  //alert(pi_local.no_of_datasets)
   var mtx_local = JSON.parse('<%- matrix %>');
+  //alert(mtx_local.data)
   var user_local  = '<%= user.username %>';
   var bar_type    = '<%= bar_type %>';
 </script>
   
 <div class='title'><%= title %></div>
-<div class='subtitle'>Dataset: <%= dataset %></div>
+<div class='subtitle'>Dataset-1: <%= dataset1 %><br>Dataset-2: <%= dataset2 %></div>
 <br>
 
 <div id='my_div' class='well' style="height: 130px;">

@@ -65,7 +65,7 @@ var save_datasets_list = function(ds_local, user)
 // PIES and BARS
 //
 function create_barcharts(imagetype) {
-
+        //alert(imagetype)
         var ts = pi_local.ts;
        
 		    var barcharts_div = document.getElementById('barcharts_div');
@@ -80,13 +80,16 @@ function create_barcharts(imagetype) {
 
         data = [];
         //did_by_names ={}
-        for (var p in mtx_local.columns){
+        for (var p in mtx_local.columns){  
+          //alert(p)
           tmp={};
           tmp.datasetName = mtx_local.columns[p].id;
 		      //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
 		      //tmp.did = mtx_local.columns[p].did;
           for (var t in mtx_local.rows){
+            
             tmp[mtx_local.rows[t].id] = mtx_local.data[t][p];
+            //tmp[mtx_local.rows[t].id] = mtx_local.data[p][t];
           }
           data.push(tmp);
         }
@@ -134,14 +137,18 @@ function create_barcharts(imagetype) {
   	      props.x.domain([0, 100]);	
 			
         if(imagetype=='single'){
-        	//create_singlebar_svg_object(svg,props, did_by_names, data, ts);
           create_singlebar_svg_object(svg, props, data, ts);
         }else{
         	//create_svg_object(svg,props, did_by_names, data, ts);
           create_svg_object(svg, props, data, ts);
         }
 }
-
+//
+//
+//
+function create_doublebar_svg_object(svg, props, data, ts) {
+  //alert('doublebar')
+}
 //
 //
 //

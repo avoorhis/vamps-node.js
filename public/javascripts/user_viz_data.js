@@ -100,8 +100,15 @@ var tip = {
 
 $(document).ready(function() {  
 
-	create_barcharts('single');
-	barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+  // function is where?  common_selection
+	create_barcharts(bar_type);
+	
+  if(bar_type == 'single'){
+    // function is where?  in this file (look below)
+    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+  }else{
+    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
+  }
         //var info_line = create_header('bars', pi_local);
 // 		var barcharts_div = document.getElementById('barcharts_div');
 // 		barcharts_div.style.display = 'block';
@@ -176,6 +183,7 @@ function get_single_bar_html(obj){
   for(n in obj.rows){
     total += parseInt(obj.data[n]);
   }
+  //alert(html)
   for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n].id)
@@ -194,6 +202,42 @@ function get_single_bar_html(obj){
 //
 //
 //
+function get_double_bar_html(obj){
+  
+  var html ='';
+
+  html += "<div class='overflow_500'>";
+  html += "<table class='table table-condensed overflow200'>";
+  html += "<tr><td width='25' >color</td><td>Taxonomy</td><td>"+obj.datasets[0]+"</td><td>"+obj.datasets[1]+"</td></tr>";
+  var total = [0,0];
+  var pct1,pct2,id1,id2;
+  for(n in obj.rows){
+    total[0] += parseInt(obj.data[n][0]);
+    total[1] += parseInt(obj.data[n][1]);
+  }
+//alert(total[0])
+  for(n in obj.rows){
+    //if(obj.data[n] > 0){
+      color = string_to_color_code(obj.rows[n].id)
+      link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id);
+      pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
+      id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
+      pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
+      id2 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][1] + '-|-' + pct2;
+      html += "<tr>"
+
+      html += "<td style='background-color:"+color+"'></td>";
+
+      html += "<td><a href='"+link+"'>"+obj.rows[n].id+'</a></td>'
+      html += "<td class='tooltip_viz' id='"+id1+"' >"+obj.data[n][0]+'</td>'
+      html += "<td class='tooltip_viz' id='"+id2+"' >"+obj.data[n][1]+'</td>'
+      html += "</tr>";
+    //}
+  }
+  html += '</table></div>';
+  
+  return html;
+}
 // function create_svg_object(props, color, data, ts) {
 //        //d3.select('svg').remove();
 //       

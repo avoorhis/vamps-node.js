@@ -427,14 +427,14 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     
     var stdout = '';
     heatmap_process.stdout.on('data', function (data) {
-        console.log('stdout: ' + data);
+        //console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stdout += data;
     });
     var stderr = '';
     heatmap_process.stderr.on('data', function (data) {
-        console.log('stdout: ' + data);
+        //console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stderr += data;
@@ -451,7 +451,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
           catch(err){
             distance_matrix = {'ERROR':err};
           }  
-            res.render('visuals/partials/load_distance',{
+            res.render('visuals/partials/create_distance_heatmap',{
                   dm        : distance_matrix,
                   hash      : JSON.stringify(chosen_id_name_hash),                      
                   constants : JSON.stringify(req.CONSTS),
@@ -608,7 +608,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
     
     var stdout = '';
     dendrogram_process.stdout.on('data', function (data) {
-        console.log('stdout: ' + data);
+        //console.log('stdout: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stdout += data;
@@ -815,7 +815,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                               env : env                            
                             }, function (error, stdout, stderr) {
 
-                      console.log('stdout-POST: ' + stdout);
+                      //console.log('stdout-POST: ' + stdout);
 
                       console.log('stderr-POST: ' + stderr);
 
@@ -943,7 +943,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                               env : env                            
                             }, function (error, stdout, stderr) {
 
-                      console.log('stdout-GET: ' + stdout);
+                      //console.log('stdout-GET: ' + stdout);
 
                       console.log('stderr-GET: ' + stderr);
 
@@ -1185,7 +1185,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     stdout = '';
     alphadiv_process.stdout.on('data', function (data) {
         
-        console.log(data)
+        //console.log(data)
         stdout += data;    
      
     });
@@ -1513,17 +1513,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     //var html  = COMMON.start_visuals_html('piechart');
     var html  = 'My HTML';
 
-    //html += PCHARTS.create_single_piechart_html ( ts, ds_name, res );
-
     var new_matrix={}
     new_matrix.rows = BIOM_MATRIX.rows;
     new_matrix.columns =[];
     new_matrix.dataset = pjds;
     new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
-    //console.log('did ');
-    //console.log(new_matrix.did );
-    //console.log(ds_name );
-    //console.log(new_matrix.did ); 
     new_matrix.data = []
     new_matrix.total = 0
     new_matrix.shape = [BIOM_MATRIX.shape[0],1]
@@ -1541,8 +1535,6 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
 
     for(n in BIOM_MATRIX.data){
-      //new_matrix.rows.push(BIOM_MATRIX.rows[n].name)
-      //new_matrix.data.push(BIOM_MATRIX.data[n][d])
       new_matrix.data.push([BIOM_MATRIX.data[n][d]])
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
@@ -1553,13 +1545,102 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
         ts: ts || 'default_timestamp',
   		  matrix    :           JSON.stringify(new_matrix),
   		  post_items:           JSON.stringify(visual_post_items),
-  		  //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+        bar_type  : 'single',
         html: html,
         user: req.user, hostname: req.CONFIG.hostname,
     });
 
 });
+//
+// B A R - C H A R T  -- D O U B L E
+//
+router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
+  //console.log('req.body: bar_double-->>');
+  //console.log(req.body);
+  //console.log('req.body: bar_double');
+  var myurl = url.parse(req.url, true);
+    //console.log('in piechart_single'+myurl)
+    //var ts = myurl.query.ts;
+    //var id = myurl.query.id;
+    //var pid = PROJECT_ID_BY_DID[did]
+    //PROJECT_INFORMATION_BY_PID[pid].project
+    //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    var did1 = myurl.query.did1;
+    var did2 = myurl.query.did2;
+    var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
+    var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
+    //var ds_items = pjds.split('--');
 
+    //console.log('in piechart_single'+myurl)
+    //var did1 = req.body.did1;
+    //var did2 = req.body.did2;
+    
+    
+    var html  = 'My HTML';
+    var ts = '';
+    var new_matrix={}
+    new_matrix.rows = BIOM_MATRIX.rows;   // taxonomy
+    new_matrix.columns =[];
+    new_matrix.datasets = [ds1,ds2];
+    new_matrix.dids = [did1,did2];
+    //console.log('did ');
+    //console.log(new_matrix.did );
+    //console.log(ds_name );
+    //console.log(new_matrix.did ); 
+    //console.log('2')
+    new_matrix.data = []
+    for(n in BIOM_MATRIX.rows){
+      new_matrix.data.push([])
+    }
+    new_matrix.column_totals = [0,0]
+    //console.log('3')
+    new_matrix.shape = [BIOM_MATRIX.shape[0],2]
+    var idx1 = -1;
+    var idx2 = -1;
+    //console.log('4')
+    // datasets
+    for(d in BIOM_MATRIX.columns){
+      if(BIOM_MATRIX.columns[d].id == ds1){
+        idx1 = d;
+        new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
+      }
+      if(BIOM_MATRIX.columns[d].id == ds2){
+        idx2 = d;
+        new_matrix.columns.push(BIOM_MATRIX.columns[d]);        
+      }
+    }
+
+    //console.log('5')
+    for(n in BIOM_MATRIX.rows){ // one item for each of two columns (datasets)
+      new_matrix.data[n].push(BIOM_MATRIX.data[n][idx1])
+      new_matrix.data[n].push(BIOM_MATRIX.data[n][idx2])
+      //new_matrix.column_totals[0] += BIOM_MATRIX.data[n][idx1]
+
+      //new_matrix.data[1].push(BIOM_MATRIX.data[n][idx2])
+      //new_matrix.column_totals[1] += BIOM_MATRIX.data[n][idx2]
+    }
+    for(n in BIOM_MATRIX.data){ // one item for each column
+      
+      new_matrix.column_totals[0] += BIOM_MATRIX.data[n][idx1]
+
+      //new_matrix.data[1].push(BIOM_MATRIX.data[n][idx2])
+      new_matrix.column_totals[1] += BIOM_MATRIX.data[n][idx2]
+    }
+    console.log(JSON.stringify(new_matrix))
+    //console.log(chosen_id_name_hash)
+    //open('views/visuals/user_viz_data/bar_double.html');
+    res.render('visuals/user_viz_data/bar_double', {
+        title: 'Taxonomic Data',
+        ts: ts || 'default_timestamp',
+        matrix    :           JSON.stringify(new_matrix),
+        post_items:           JSON.stringify(visual_post_items),
+        bar_type  : 'double',
+        //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+        html: html,
+        user: req.user, hostname: req.CONFIG.hostname,
+    });
+
+});
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
@@ -1651,9 +1732,6 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
 router.get('/partials/tax_silva108_custom', helpers.isLoggedIn,  function(req, res) {
   res.render('visuals/partials/tax_silva108_custom',  { title   : 'Silva(v108) Custom Taxonomy Selection'});
 });
-//
-//
-
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
 });

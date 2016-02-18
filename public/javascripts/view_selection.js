@@ -1736,7 +1736,56 @@ function create_piecharts(ts) {
 
    
 }
+function heatmap_click_fxn(did1,ds1,did2,ds2){
+      //alert(did1)
+      var args =  "did1="+did1;
+      args += "&ds1="+ds1;
+      args += "&did2="+did2;
+      args += "&ds2="+ds2;
+      //args += "&ts="+ts;
+      //document.getElementById('pre_adiversity_div').style.display = 'block';
+       // get distance matrix via AJAX
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open("POST", '/visuals/bar_double', true);
+      xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //showDots='';
+      //var myWaitVar = setInterval(myWaitFunction,1000,adiversity_div);
+      xmlhttp.onreadystatechange = function() {        
+        if (xmlhttp.readyState == 4 ) {
 
+          
+           //clearInterval(myWaitVar);
+            var retstring = xmlhttp.responseText;           
+        //alert(retstring)
+        window.open(retstring,"_blank")
+        //    var lines = retstring.split('\n');
+        //    //alert(lines[0])
+        //    var headers = lines.shift();
+        //    //var line2 = lines.pop();
+        //    //alert(headers)
+        //    html = "<table class='table'>";
+        //    html += '<tr>';
+        //    //alert(line2)
+        //    var header_items = headers.split('\t')
+        //    for(i in header_items){
+        //      html += '<td>'+header_items[i]+'</td>';
+        //    }
+        //    html +=  '</tr>';
+        //    for(i in lines){
+        //       html +=  '<tr>';
+        //       items = lines[i].split('\t');
+        //       for(j in items){
+        //         html += '<td>'+items[j]+'</td>';
+        //       }
+        //       html +=  '</tr>';
+        //    }
+        //    html += '</table>';
+
+        //    adiversity_div.innerHTML = html;
+        }
+      };
+      xmlhttp.send(args);      
+}
 //
 //  CREATE BARCHARTS
 //
