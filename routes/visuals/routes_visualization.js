@@ -2315,47 +2315,75 @@ router.get('/set_units', function(req, res) {
 //
 //
 //
-router.get('/tax_custom_fancytree', function(req, res) {
-    console.log('in fancytree')
-    var myurl = url.parse(req.url, true);
-    var id = myurl.query.id
-    console.log('id='+id)
+// router.get('/tax_custom_fancytree', function(req, res) {
+//     console.log('in fancytree')
+//     var myurl = url.parse(req.url, true);
+//     var id = myurl.query.id
+//     console.log('id='+id)
     
- // {"title":"Bacteria","key":"1","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-//  {"title":"Archaea","key":"214","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-//  {"title":"Unknown","key":"338","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-//  {"title":"Organelle","key":"353","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true}
-    json = []
-    if(id == undefined || id == 'undefined' || id == 0){
-        for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-            node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-            if(node.children_ids.length === 0){
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
-            }else{
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
-            }
-        }
-    }else{
-        for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-            node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-            node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
-            //console.log(node)
-            if(node.children_ids.length === 0){
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank})
-            }else{
-                json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,lazy:true,folder:true})
-            }
-        }
-    }
- res.send(json)
-});
+//  // {"title":"Bacteria","key":"1","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+// //  {"title":"Archaea","key":"214","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+// //  {"title":"Unknown","key":"338","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
+// //  {"title":"Organelle","key":"353","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true}
+//     json = []
+//     if(id == undefined || id == 'undefined' || id == 0){
+//         for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
+//             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
+//             if(node.children_ids.length === 0){
+//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
+//             }else{
+//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
+//             }
+//         }
+//     }else{
+//         for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
+//             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
+//             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
+//             //console.log(node)
+//             if(node.children_ids.length === 0){
+//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank})
+//             }else{
+//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,lazy:true,folder:true})
+//             }
+//         }
+//     }
+//  res.send(json)
+// });
+// router.get('/project_tree_dhtmlx', function(req, res) {
+//     console.log('in project_tree_dhtmlx')
+//     //console.log(PROJECT_INFORMATION_BY_PID)
+//     var myurl = url.parse(req.url, true);
+//     var pid = myurl.query.id
+//     console.log('pid='+pid)
+//     var json = {}
+//     json.id = pid;
+//     json.item = []
+//     if(pid==0){
+//       for( n in PROJECT_INFORMATION_BY_PID){
+//             var p = PROJECT_INFORMATION_BY_PID[n]
+//             json.item.push({id:p.pid,text:p.project,tooltip:'ttip',checked:false,child:1,item:[]})
+//         }
+//     }else{
+//         for(n in DATASET_IDS_BY_PID[pid]){
+//           var did = DATASET_IDS_BY_PID[pid][n]
+//           var dname = DATASET_NAME_BY_DID[did]
+//           console.log(dname)
+//           json.item.push({id:did,text:dname,tooltip:'ttip',child:0})
+//         }
+
+//     }
+//     console.log(json)
+//     res.json(json)
+
+// });
 router.get('/tax_custom_dhtmlx', function(req, res) {
     //console.log('IN tax_custom_dhtmlx')
     var myurl = url.parse(req.url, true);
     var id = myurl.query.id
-    console.log('id='+id)
+    //console.log('id='+id)
     var json = {}
-    
+    json.id = id;
+    json.item = []
     if(id==0){
         // return json for collapsed tree: 'domain' only
 //         json = {"id":"0","item":[
@@ -2365,8 +2393,7 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
 //             {"id":"353","text":"Organelle","tooltip":"domain","checked":true,"child":"1","item":[]}
 //             ]
 //         }
-        json.id = id;
-        json.item = []
+        
         //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
         for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
@@ -2378,8 +2405,6 @@ router.get('/tax_custom_dhtmlx', function(req, res) {
         }
     }else{
         
-        json.id = id
-        json.item =[]
         for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
@@ -2469,18 +2494,19 @@ function get_livesearch_html(all_pr_dat, info, user)
             html += "    </a>";
               
             html += "    <input type='checkbox' class='project_toggle' id='"+ pname+"--pj-id'  name='project_names[]' value='"+ pname +"'/>";
-            html += "    <a href='/projects/"+pid+"'>";
+            //html += "    <a href='/projects/"+pid+"'>";
             html += "      <span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>";
             if(status == 'public') {     
-              html += pname+"</span></a><small> <i>(public)</i></small>";
+              html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a><small> <i>(public)</i></small>";
             }else{ 
                 if(user.security_level === 1 ){
-                    html += pname+"</span></a></a><small> <i>(PI: "+info[pid].username +")</i></small>";
+                    html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a><small> <i>(PI: "+info[pid].username +")</i></small>";
                 }else{ 
-                    html += pname+"</span></a></a>";
+                    html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
                 }
             }
             html += "  </label>";
+            //html += " <small>"+title+"</small></label>";
             html += "  <ul>";
             html += "    <div id='"+ pname +"_ds_div' class='datasets_per_pr'>";
            //     <!--  class='display_none' -->

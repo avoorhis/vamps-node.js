@@ -157,6 +157,70 @@ $(document).ready(function () {
       
 });
 
+// $(document).ready(function () {
+      // experimenting with dhtmlx tree
+            
+//       document.getElementById('target_select').value='.....';
+//       document.getElementById('env_source_select').value='.....';
+//       document.getElementById('pname_search_id').value='';
+//       projectTree = new dhtmlxTreeObject("projects_select_div","100%","100%",0);
+//       projectTree.setImagesPath("/images/dhtmlx/imgs/");
+//       projectTree.enableCheckBoxes(true);
+//       projectTree.enableTreeLines(true); // true by default
+//       projectTree.enableTreeImages(false);
+      
+//       projectTree.attachEvent("onCheck",function(id){
+//           project_on_check(id)
+//       });
+//       projectTree.attachEvent("onDblClick", function(id){
+//           project_expand(id)
+//       });
+//       // customTree.attachEvent("onOpenStart", function(id, state){
+//       //     alert('open-start '+id)
+//       // });
+//       // customTree.attachEvent("onOpenEnd", function(id, state){
+//       //     alert('open-end '+id)
+//       // });
+      
+// });
+
+// function project_on_check(id){
+//   projectTree.openItem(id);
+//   if(projectTree.isItemChecked(id)){
+//           projectTree.setSubChecked(id,false);
+//           projectTree.setCheck(id,true);   
+//           //alert(id)
+//        }else{
+//              //turn off this level
+//           projectTree.setCheck(id,false);
+//           subTaxons = projectTree.getAllSubItems(id);
+//           subTaxonsArray = subTaxons.split(',');
+//           //alert(subTaxons)
+//           for(i=0;i<subTaxonsArray.length;i++)
+//           {
+           
+//             sid = subTaxonsArray[i];
+//             //alert(sid)
+//             //open state only applies to folders/nodes not leaves
+//             openState = projectTree.getOpenState(sid);
+//             //alert(openState)
+//             //customTree.setCheck(sid,true);
+          
+//             if(openState < 1){
+//               projectTree.setCheck(sid,true);  
+//             }else{
+//               projectTree.setCheck(sid,false); 
+//             }
+    
+//           } //end of loop
+          
+//        }
+// }
+
+// function project_expand(id){
+  
+// }
+
 function onPageLoad(){
   // All commands here in separate file so I can run them after changing project list
     // by default everything is visible, in case there is no js

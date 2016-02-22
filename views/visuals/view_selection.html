@@ -20,8 +20,12 @@
 </script>
 <div id='taxdepth_domains_div' >
   <small>
-    Taxonomic Depth: <%= pi.tax_depth %> --- 
-    Included Domains: <%= pi.domains %>
+    <% if(pi.custom_taxa.length == 1 && pi.custom_taxa[0] == 'NA'){ %>
+        Taxonomic Depth: <%= pi.tax_depth %> --- 
+        Included Domains: <%= pi.domains %>
+    <% }else{ %>
+        Taxonomic Depth: Custom
+    <% } %>
     <span id='save_config_confirmationXX' style='float:right;width:350px;'>
       <a href='#' id='save_config_id' style='' class=''>Save Configuration</a>
       <span id='save_config_confirmation' style=''></span>
@@ -502,9 +506,11 @@
 	<div class="navbar-header" >	    
 	  <span id='counts_table_title' class="navbar-brand table_title" >Frequency Table</span>  
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,200)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="20" height="20"></a>
-	<button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-sm btn-default'>download</button>
+	<div class='button_div pull-right'>
+	  <button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+	  <button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='tax_table_div'   class='display_none well overflow_500'></div></center>
   
@@ -514,9 +520,11 @@
 	<div class="navbar-header">	      
 	  <span id='metadata_title' class="navbar-brand table_title" >Metadata Table</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='metadata_table_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='metadata_table_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='metadata_local_table_div' class='display_none well overflow_500'></div></center>
   
@@ -527,9 +535,11 @@
     <div class="navbar-header">	      
       <span id='dheatmap_title' class="navbar-brand table_title" >Distance Heatmap</span> 
     </div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
- 	<button type='button' id='dheatmap_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
- 	<button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='dheatmap_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='dheatmap_div' class='display_none well'></div></center>
   
@@ -539,24 +549,27 @@
   <nav id='pre_fheatmap_div' class="navbar navbar-inverse viz_hidden_div display_none">
     <div class="navbar-header">	      
       <span id='fheatmap_title' class="navbar-brand table_title" >Frequency Heatmap</span> 
-    </div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
- 	<button type='button' id='fheatmap_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
- 	<button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+    </div> 
+  <div class='button_div pull-right'>
+    <button type='button' id='fheatmap_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='fheatmap_div' class='display_none well'></div></center>
 
 
   <!-- BarCharts -->
   <br>
-  
   <nav id='pre_barcharts_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 	    <span id='barcharts_title' class="navbar-brand table_title" >Bar Charts</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='barcharts_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='barcharts_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='barcharts_div' class='well display_none'></div></center>
 
@@ -566,10 +579,12 @@
   <nav id='pre_piecharts_table_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 	  <span id='piecharts_title' class="navbar-brand table_title" >Pie Charts</span> 
-	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='piecharts_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+	</div> 
+  <div class='button_div pull-right'>
+    <button type='button' id='piecharts_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='piecharts_div' class='well display_none'></div></center>
   
@@ -578,10 +593,12 @@
   <nav id='pre_dendrogram1_div' class="navbar navbar-inverse viz_hidden_div display_none">
 	<div class="navbar-header">	      
 	  <span id='dendrogram1_title' class="navbar-brand table_title" >Dendrogram</span> 
-	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+	</div> 
+  <div class='button_div pull-right'>
+    <button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='dendrogram1_div'        class='display_none well '></div></center>
   
@@ -591,9 +608,11 @@
 	<div class="navbar-header">	      
 	  <span id='dendrogram2_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='dendrogram2_div'        class='display_none well '></div></center>
   
@@ -603,9 +622,11 @@
   <div class="navbar-header">       
     <span id='dendrogram3_title' class="navbar-brand table_title" >Dendrogram</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='dendrogram3_div'        class='display_none well '></div></center>
 
@@ -615,9 +636,11 @@
 	<div class="navbar-header">	      
 	  <span id='dendrogram_pdf_title' class="navbar-brand table_title" >Dendrogram</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='dendrogram_pdf_div'        class='display_none well'></div></center>
 
@@ -627,9 +650,11 @@
 	<div class="navbar-header">	      
 		  <span id='pcoa_title' class="navbar-brand table_title" >PCoA 2D</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='pcoa_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='pcoa_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='pcoa_div'                    class='display_none well'></div> </center>
 
@@ -639,9 +664,11 @@
 	<div class="navbar-header">	      
 		  <span id='pcoa_3d_title' class="navbar-brand table_title" >PCoA 3D</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn pull-right btn-sm btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='pcoa_3d_div'                 class='display_none well'></div> </center>
   
@@ -651,9 +678,11 @@
 	<div class="navbar-header">	      
 		  <span id='geospatial_title' class="navbar-brand table_title" >GeoSpatial</span> 
 	</div>
-	<a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-	<button type='button' id='geospatial_hide_btn' class='close_open_btn btn btn-sm pull-right btn-default' value='hide'>hide</button>
-	<button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+  <div class='button_div pull-right'>
+    <button type='button' id='geospatial_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
   </nav>
   <center><div id='map-canvas'      class='display_none well'></div> </center>
   
@@ -676,9 +705,11 @@
   <div class="navbar-header">       
       <span id='adiversity_title' class="navbar-brand table_title" >Alpha Diversity</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='adiversity_hide_btn' class='close_open_btn btn btn-sm pull-right btn-default' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+ <div class='button_div pull-right'>
+    <button type='button' id='adiversity_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='adiversity_div'      class='display_none well'></div></center>
 
@@ -688,9 +719,11 @@
   <div class="navbar-header">       
       <span id='phyloseq01_title' class="navbar-brand table_title" >Phyloseq-01</span>
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn btn-sm btn-default pull-right' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn btn-sm btn-default pull-right'>download</button>
+ <div class='button_div pull-right'>
+    <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='phyloseq01_div'      class='display_none well'></div></center>
  
@@ -700,9 +733,11 @@
   <div class="navbar-header">       
       <span id='phyloseq02_title' class="navbar-brand table_title" >Phyloseq-02</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn btn-sm btn-default pull-right' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+ <div class='button_div pull-right'>
+    <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='phyloseq02_div'      class='display_none well'></div></center>
  
@@ -712,9 +747,11 @@
   <div class="navbar-header">       
       <span id='phyloseq03_title' class="navbar-brand table_title" >Phyloseq-03</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn btn-sm pull-right btn-default' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
+ <div class='button_div pull-right'>
+    <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='phyloseq03_div'      class='display_none well'></div></center>
  
@@ -724,10 +761,11 @@
   <div class="navbar-header">       
       <span id='phyloseq04_title' class="navbar-brand table_title" >Phyloseq-04</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top'src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn btn-sm pull-right btn-default' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
-  
+  <div class='button_div pull-right'>
+    <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='phyloseq04_div'      class='display_none well'></div></center>
  
@@ -737,10 +775,11 @@
   <div class="navbar-header">       
       <span id='phyloseq05_title' class="navbar-brand table_title" >Phyloseq-05</span> 
   </div>
-  <a class='btn pull-right' href="javascript:scroll(0,0)"><img border="0" alt="Top" title='Top' src="/images/up_arrow.png" width="30" height="30"></a>
-  <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn btn-sm pull-right btn-default' value='hide'>hide</button>
-  <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn btn-sm pull-right btn-default'>download</button>
-  
+  <div class='button_div pull-right'>
+    <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
  </nav>
  <center><div id='phyloseq05_div'      class='display_none well'></div></center>
 

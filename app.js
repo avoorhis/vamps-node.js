@@ -282,10 +282,10 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // uncomment to print out the object:
     //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     //
-    /// CREATE CUSTOM TAXONOMY TREE:
-    new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
-    new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
-    new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+    /// CREATE CUSTOM TAXONOMY TREE:  NOT NEEDED if using dhtmlx tree
+    //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
+    //new_taxonomy.make_fancytree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]); 
+    //new_taxonomy.make_dhtmlx_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
     //
     //console.log("\nnew_taxonomy.taxa_tree_dict = " + JSON.stringify(new_taxonomy.taxa_tree_dict));
     //for(n in new_taxonomy.taxa_tree_dict){

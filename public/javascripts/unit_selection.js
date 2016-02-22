@@ -288,100 +288,100 @@ function load_custom_tax_tree() {
     }
 
 }
-function load_fancytree() {
+// function load_fancytree() {
     
-    //customFile = "/json/tax_silva108_custom_fancytree.json" 
-    customTree = $("#custom_treebox").fancytree({
-      checkbox: true,
-      icon: false,
-      clickFolderMode: 4,
-      selectMode: 3,
-      keyPathSeparator: "/",
-      //generateIds: true,
-      //idPrefix:'XXX_',
-      //imagePath:'fancytree',
-      //source:  JSON.parse(data),
-      source:  {
-        //url:customFile,
-        url:'/visuals/tax_custom_fancytree'
-      },
-      //dblclick: function(event, data) {
-      //  return false;
-      //},
-      dblclick: function(event, data) {
-        //data.node.toggleSelected();
-        //data.node.toggleExpanded();
-        //alert(data.node)
-        var node = data.node;
-        //id = node.id
-        var id = node.key
-        var taxon = node.title
-        //alert(taxon) 
-        expand_children_fancytree(node)
-        return false;  // this turns off/on default behavior
-      },
-      lazyLoad: function(event, data){
-          var node = data.node;
-          //alert(node.key,' ',node.node_id)
-          // Load child nodes via ajax GET /getTreeData?mode=children&parent=1234
-          data.result = {
-             url: "/visuals/tax_custom_fancytree?id="+node.key,
-             data: {mode: "children", parent: node.key},
-             cache: false
-           };
-      },
+//     //customFile = "/json/tax_silva108_custom_fancytree.json" 
+//     customTree = $("#custom_treebox").fancytree({
+//       checkbox: true,
+//       icon: false,
+//       clickFolderMode: 4,
+//       selectMode: 3,
+//       keyPathSeparator: "/",
+//       //generateIds: true,
+//       //idPrefix:'XXX_',
+//       //imagePath:'fancytree',
+//       //source:  JSON.parse(data),
+//       source:  {
+//         //url:customFile,
+//         url:'/visuals/tax_custom_fancytree'
+//       },
+//       //dblclick: function(event, data) {
+//       //  return false;
+//       //},
+//       dblclick: function(event, data) {
+//         //data.node.toggleSelected();
+//         //data.node.toggleExpanded();
+//         //alert(data.node)
+//         var node = data.node;
+//         //id = node.id
+//         var id = node.key
+//         var taxon = node.title
+//         //alert(taxon) 
+//         expand_children_fancytree(node)
+//         return false;  // this turns off/on default behavior
+//       },
+//       lazyLoad: function(event, data){
+//           var node = data.node;
+//           //alert(node.key,' ',node.node_id)
+//           // Load child nodes via ajax GET /getTreeData?mode=children&parent=1234
+//           data.result = {
+//              url: "/visuals/tax_custom_fancytree?id="+node.key,
+//              data: {mode: "children", parent: node.key},
+//              cache: false
+//            };
+//       },
       
-    });
-    custom_loaded = true
-}
-clk_counter = 0
-function expand_children_fancytree(node) {
-  //alert(node)
+//     });
+//     custom_loaded = true
+// }
+
+// function expand_children_fancytree(node) {
+//   //alert(node)
 
   
 
-  if(node.isExpanded()){
-    // second+ times through: -- node is open
-    // get children and open one level
+//   if(node.isExpanded()){
+//     // second+ times through: -- node is open
+//     // get children and open one level
 
-    child_nodes = node.getChildren()
-    // alert(child_nodes)
-    for(i in child_nodes){
-       cnode = child_nodes[i]
-       alert(cnode)
+//     child_nodes = node.getChildren()
+//     // alert(child_nodes)
+//     for(i in child_nodes){
+//        cnode = child_nodes[i]
+//        alert(cnode)
        
        
-       expand_children(cnode)
-    }
-  }else{
-    //first time through: node is not expanded: must open(lazy) first
-    node.load().done(function() {
-        //child_nodes = node.getChildren()
+//        expand_children(cnode)
+//     }
+//   }else{
+//     //first time through: node is not expanded: must open(lazy) first
+//     node.load().done(function() {
+//         //child_nodes = node.getChildren()
         
-        node.setExpanded(true);
-        //alert(child_nodes)
-        // for(i in child_nodes){
-        //   cnode = child_nodes[i]
-        //   //expand_children(cnode)
-        //   cnode.setExpanded()
-        // }
-        //node.visit(function(childNode) {
-          //alert(childNode)
-          //node.setExpanded(true);
-           // childNode.setExpanded(true);
-            //expand_children(childNode)
-        //});
-    });
+//         node.setExpanded(true);
+//         //alert(child_nodes)
+//         // for(i in child_nodes){
+//         //   cnode = child_nodes[i]
+//         //   //expand_children(cnode)
+//         //   cnode.setExpanded()
+//         // }
+//         //node.visit(function(childNode) {
+//           //alert(childNode)
+//           //node.setExpanded(true);
+//            // childNode.setExpanded(true);
+//             //expand_children(childNode)
+//         //});
+//     });
 
-    //child_nodes = node.getChildren()
-  }
+//     //child_nodes = node.getChildren()
+//   }
   
-  //alert(child_nodes)
-  // for(n in child_nodes){
-  //   cnode = child_nodes[n]
-  //   alert(cnode)
-  // }
-}
+//   //alert(child_nodes)
+//   // for(n in child_nodes){
+//   //   cnode = child_nodes[n]
+//   //   alert(cnode)
+//   // }
+// }
 function load_dhtmlx() {
     customTree = new dhtmlXTreeObject("custom_treebox","100%","100%",0);
     customTree.setImagesPath("/images/dhtmlx/imgs/");
@@ -395,9 +395,12 @@ function load_dhtmlx() {
     customTree.attachEvent("onDblClick", function(id){
         expand_tree_dhtmlx(id)
     });
-    //customTree.attachEvent("onOpenEnd", function(id){
-    //    open_or_close_node(id)
-    //});
+    // customTree.attachEvent("onOpenStart", function(id, state){
+    //     alert('open-start '+id)
+    // });
+    // customTree.attachEvent("onOpenEnd", function(id, state){
+    //     alert('open-end '+id)
+    // });
 
     //customTree.enableThreeStateCheckboxes(true);
     
@@ -422,6 +425,7 @@ function change_mode_dhtmlx(change_to_mode){
 }
 
 function reset_tree_dhtmlx(){
+  clk_counter = 0
   customTree.refreshItem();
 }
 function on_check_dhtmlx(id){
@@ -457,23 +461,20 @@ function on_check_dhtmlx(id){
           for(i=0;i<subTaxonsArray.length;i++)
           {
            
-           sid = subTaxonsArray[i];
-           //alert(sid)
-           //open state only applies to folders/nodes not leaves
-           openState = customTree.getOpenState(sid);
-           //alert(openState)
-           //customTree.setCheck(sid,true);
+            sid = subTaxonsArray[i];
+            //alert(sid)
+            //open state only applies to folders/nodes not leaves
+            openState = customTree.getOpenState(sid);
+            //alert(openState)
+            //customTree.setCheck(sid,true);
           
-           if(openState < 1)
-           {
+            if(openState < 1){
               customTree.setCheck(sid,true);  
-           } 
-           else
-           {
+            }else{
               customTree.setCheck(sid,false); 
-           }
+            }
     
-           } //end of loop
+          } //end of loop
           
        }
 
@@ -488,15 +489,42 @@ function on_check_dhtmlx(id){
   //   // closed -- do nothing
   // }
 }
+
 function expand_tree_dhtmlx(id){
   //alert(customTree.hasChildren(id))
+  //kids = customTree.getAllSubItems(id);
+  level = customTree.getLevel(id)
+  clk_counter = 0
+  //clk_counter = level
+  //alert(level)
   if ( customTree.hasChildren(id) ) {
        
+      //clk_counter++;
+      //if(clk_counter+level <= 7){
+        //document.getElementById('custom_rank_info').innerHTML = 'opening;
         customTree.openAllItems(id,true); 
+
+      //}else{
+      //  alert('no more levels')
+      //}
+
+      
        
-        //kids = customTree.getAllSubItems(id);
-        //ccid = click_ctr[id];
+        // openkids = customTree.getAllSubItems(id).split(',');
+        // //alert(openkids)
+        // gotone = false
+        // for(i in openkids){
+        //   if(customTree.hasChildren(id)){
+        //     gotone = true
+        //   }
+        // }
+        // if(openkids !=[] && ! gotone){
+        //   alert(gotone)
+        // }
+
+        
         //taxon = taxa[ccid];
+        
         //alert(kids)
         // if(kids !=0)
         // {
