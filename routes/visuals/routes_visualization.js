@@ -1503,15 +1503,11 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     //console.log('in piechart_single'+myurl)
     var ts = myurl.query.ts;
-    //var id = myurl.query.id;
-    //var pid = PROJECT_ID_BY_DID[did]
-    //PROJECT_INFORMATION_BY_PID[pid].project
-    //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
     var pjds = myurl.query.id;
     var ds_items = pjds.split('--');
 
     //var html  = COMMON.start_visuals_html('piechart');
-    var html  = 'My HTML';
+    //var html  = 'My HTML';
 
     var new_matrix={}
     new_matrix.rows = BIOM_MATRIX.rows;
@@ -1533,20 +1529,47 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       }
     }
 
-
     for(n in BIOM_MATRIX.data){
       new_matrix.data.push([BIOM_MATRIX.data[n][d]])
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
     console.log(JSON.stringify(new_matrix))
-	
-  	res.render('visuals/user_viz_data/bar_single', {
+    
+    var filename = ts+'_sequences.json'
+    var file_path = path.join('tmp',filename);
+    console.log(file_path)
+    connection.query(QUERY.get_sequences_perDID(new_matrix.did), function(err, rows, fields){
+        if (err)  {
+          console.log('Query error: ' + err);
+          console.log(err.stack);
+          res.send(err)
+        } else {
+          //console.log(rows)
+          // should write to a file? Or res.render here?
+          for(s in rows){
+              rows[s].seq = rows[s].seq.toString('utf8')
+          }
+          // order by seq_count DESC
+          rows.sort(function(a, b) {
+            return b.seq_count - a.seq_count;
+          });
+          fs.writeFile(file_path, JSON.stringify(rows), function (err) {
+            if (err) return console.log(err);
+            console.log('rows > '+file_path);
+          });
+
+        }
+    })
+  	
+
+    res.render('visuals/user_viz_data/bar_single', {
         title: 'Taxonomic Data',
         ts: ts || 'default_timestamp',
   		  matrix    :           JSON.stringify(new_matrix),
   		  post_items:           JSON.stringify(visual_post_items),
+        seqs_file : filename,
         bar_type  : 'single',
-        html: html,
+        //html: html,
         user: req.user, hostname: req.CONFIG.hostname,
     });
 
@@ -1555,39 +1578,22 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 // B A R - C H A R T  -- D O U B L E
 //
 router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
-  //console.log('req.body: bar_double-->>');
-  //console.log(req.body);
-  //console.log('req.body: bar_double');
-  var myurl = url.parse(req.url, true);
-    //console.log('in piechart_single'+myurl)
-    //var ts = myurl.query.ts;
-    //var id = myurl.query.id;
-    //var pid = PROJECT_ID_BY_DID[did]
-    //PROJECT_INFORMATION_BY_PID[pid].project
-    //var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
+    
+    var myurl = url.parse(req.url, true);
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
     //var ds_items = pjds.split('--');
-
-    //console.log('in piechart_single'+myurl)
-    //var did1 = req.body.did1;
-    //var did2 = req.body.did2;
     
-    
-    var html  = 'My HTML';
+    //var html  = 'My HTML';
     var ts = '';
     var new_matrix={}
     new_matrix.rows = BIOM_MATRIX.rows;   // taxonomy
     new_matrix.columns =[];
     new_matrix.datasets = [ds1,ds2];
     new_matrix.dids = [did1,did2];
-    //console.log('did ');
-    //console.log(new_matrix.did );
-    //console.log(ds_name );
-    //console.log(new_matrix.did ); 
-    //console.log('2')
+    
     new_matrix.data = []
     for(n in BIOM_MATRIX.rows){
       new_matrix.data.push([])
@@ -1615,10 +1621,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     for(n in BIOM_MATRIX.rows){ // one item for each of two columns (datasets)
       new_matrix.data[n].push(BIOM_MATRIX.data[n][idx1])
       new_matrix.data[n].push(BIOM_MATRIX.data[n][idx2])
-      //new_matrix.column_totals[0] += BIOM_MATRIX.data[n][idx1]
-
-      //new_matrix.data[1].push(BIOM_MATRIX.data[n][idx2])
-      //new_matrix.column_totals[1] += BIOM_MATRIX.data[n][idx2]
+      
     }
     for(n in BIOM_MATRIX.data){ // one item for each column
       
@@ -1637,61 +1640,95 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
         post_items:           JSON.stringify(visual_post_items),
         bar_type  : 'double',
         //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
-        html: html,
+        //html: html,
         user: req.user, hostname: req.CONFIG.hostname,
     });
 
 });
+//
+//  S E Q U E N C E S
+//
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
+  var seqs_filename = myurl.query.filename;
 	var pjds = myurl.query.id;
+  var seq_list = [];
   did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
-	//var pid = PROJECT_ID_BY_DID[did]
-	//PROJECT_INFORMATION_BY_PID[pid].project
-	//var ds_name = PROJECT_INFORMATION_BY_PID[pid].project+'--'+DATASET_NAME_BY_DID[did];
-	//console.log('in sequences '+tax)
-
-	//var q = QUERY.get_sequences_perDID_and_taxa_query(did,tax);
-	
-	connection.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
+	if(seqs_filename){
+    console.log('found filename')
+    
+    fs.readFile(path.join('tmp',seqs_filename), 'utf8', function (err,data) {
+      if (err) {
+        console.log(err);
+        res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
+      }
+      var clean_data = JSON.parse(data)
+      for(i in clean_data){
+        //console.log(clean_data[i])
+        d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].domain_id+"_domain"].taxon;
+        p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].phylum_id+"_phylum"].taxon;
+        k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].klass_id+"_klass"].taxon;
+        o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].order_id+"_order"].taxon;
+        f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].family_id+"_family"].taxon;
+        g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].genus_id+"_genus"].taxon;
+        sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].species_id+"_species"].taxon;
+        st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].strain_id+"_strain"].taxon;
+        seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
+        if(seq_tax.substring(0, tax.length) === tax){
+          seq_list.push({seq:clean_data[i].seq, seq_count:clean_data[i].seq_count, gast_distance:clean_data[i].gast_distance, classifier:clean_data[i].classifier, tax:seq_tax});          
+        }
+      }
+      
+      console.log(seq_list)
+      // res.send('help')
+      res.render('visuals/user_viz_data/sequences', {
+                    title: 'Sequences',
+                    ds : pjds,
+                    tax : tax,
+                    //rows : JSON.stringify(rows),
+                    seq_list : JSON.stringify(seq_list),
+                    user: req.user, hostname: req.CONFIG.hostname,
+      });
+    });
+  }
+	// connection.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
 	  
-	      if (err)  {
-	  		  console.log('Query error: ' + err);
-	  		  console.log(err.stack);
-	  		  res.send(err)
-	      } else {
+	//       if (err)  {
+	//   		  console.log('Query error: ' + err);
+	//   		  console.log(err.stack);
+	//   		  res.send(err)
+	//       } else {
 		  	
-    			  for(s in rows){
-    			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
-      				//var seqcomp = buffer.toString('base64');
-      				rows[s].seq = rows[s].seq.toString('utf8')
-      				rows[s].tax = ''
+ //    			  for(s in rows){
+ //    			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
+ //      				//var seqcomp = buffer.toString('base64');
+ //      				rows[s].seq = rows[s].seq.toString('utf8')
+ //      				rows[s].tax = ''
 
-      				for(i in req.CONSTS.RANKS){
-      					id_n_rank = rows[s][req.CONSTS.RANKS[i]+'_id']+'_'+req.CONSTS.RANKS[i];
-      					//console.log(id_n_rank);
-      					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
-      					if(taxname.substr(-3) != '_NA'){
-      						rows[s].tax += taxname+';'
-      					}
-      				} 
-      				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
+ //      				for(i in req.CONSTS.RANKS){
+ //      					id_n_rank = rows[s][req.CONSTS.RANKS[i]+'_id']+'_'+req.CONSTS.RANKS[i];
+ //      					//console.log(id_n_rank);
+ //      					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
+ //      					if(taxname.substr(-3) != '_NA'){
+ //      						rows[s].tax += taxname+';'
+ //      					}
+ //      				} 
+ //      				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
 			
-    			  }
+ //    			  }
     			
-    			  res.render('visuals/user_viz_data/sequences', {
-    		            title: 'Sequences',
-    		            ds : pjds,
-    		            tax : tax,
-    				        rows : JSON.stringify(rows),
-    		            user: req.user, hostname: req.CONFIG.hostname,
-    		    });
+ //    			  res.render('visuals/user_viz_data/sequences', {
+ //    		            title: 'Sequences',
+ //    		            ds : pjds,
+ //    		            tax : tax,
+ //    				        rows : JSON.stringify(rows),
+ //    		            user: req.user, hostname: req.CONFIG.hostname,
+ //    		    });
 
-	      }
+	//       }
 
-	  });
-	
+	//   });
 	
 });
 

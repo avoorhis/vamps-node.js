@@ -741,7 +741,6 @@ if (typeof pcoa_btn !== "undefined") {
       }else{
         toggle_visual_element(pcoa_div,'hide',pcoa_btn);
       }
-      
   });
 }
 //
@@ -776,7 +775,6 @@ if (typeof pcoa_3d_btn !== "undefined") {
       }else{
         toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
       }
-      
   });
 }
 //
@@ -812,7 +810,6 @@ if (typeof geospatial_btn !== "undefined") {
       }else{
         toggle_visual_element(geospatial_div,'hide',geospatial_btn);
       }
-      
   });
 }
 //
@@ -848,7 +845,6 @@ if (typeof adiversity_btn !== "undefined") {
       }else{
         toggle_visual_element(adiversity_div,'hide',adiversity_btn);
       }
-      
   });
 }
 //
@@ -884,7 +880,6 @@ if (typeof phyloseq01_btn !== "undefined") {
       }else{
         toggle_visual_element(phyloseq01_div,'hide',phyloseq01_btn);
       }
-      
   });
 }
 //
@@ -920,7 +915,6 @@ if (typeof phyloseq02_btn !== "undefined") {
       }else{
         toggle_visual_element(phyloseq02_div,'hide',phyloseq02_btn);
       }
-      
   });
 }
 //
@@ -956,7 +950,6 @@ if (typeof phyloseq03_btn !== "undefined") {
       }else{
         toggle_visual_element(phyloseq03_div,'hide',phyloseq03_btn);
       }
-      
   });
 }
 //
@@ -992,7 +985,6 @@ if (typeof phyloseq04_btn !== "undefined") {
       }else{
         toggle_visual_element(phyloseq04_div,'hide',phyloseq04_btn);
       }
-      
   });
 }
 //
@@ -1028,7 +1020,6 @@ if (typeof phyloseq05_btn !== "undefined") {
       }else{
         toggle_visual_element(phyloseq05_div,'hide',phyloseq05_btn);
       }
-      
   });
 }
 //
@@ -1056,18 +1047,17 @@ function toggle_visual_element(table_div, tog, btn){
   if(tog == 'show') {
     table_div.style.display = 'none';
     btn.value = 'show';
-	btn.innerHTML = 'show';
+    btn.innerHTML = 'Show';
   }else{
     table_div.style.display = 'block';
     btn.value = 'hide';
-	btn.innerHTML = 'hide';
+    btn.innerHTML = 'Hide';
   }
 }
 
 
 function create_viz(visual, ts) {
    
-    
     if(visual === 'counts_table'){
       create_counts_table();      
     }else if(visual === 'metadata_table'){

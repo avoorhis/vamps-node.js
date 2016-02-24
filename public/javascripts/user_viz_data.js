@@ -40,28 +40,17 @@ var tip = {
 };
 
 
-$(document).ready(function() {  
 
-  // function is where?  common_selection
-	create_barcharts(bar_type);
-	
-  if(bar_type == 'single'){
-    // function is where?  in this file (look below)
-    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
-  }else{
-    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
-  }
- 
-        
-})
 
 
 function get_single_bar_html(obj){
 	
 	var html ='';
 	html += "<div class='overflow_500'>";
-	html += "<table class='table table-condensed overflow200'>";
-	html += "<tr><td width='25' >color</td><td>Taxonomy</td><td>Count</td></tr>";
+	html += "<table id='single_barchart_table_id' class='table table-condensed overflow200 sortable'>";
+  html += '<thead>'
+	html += "<tr><th width='25' >color</th><th>Taxonomy <small>(click to sort)</small></th><th>Count <small>(click to sort)</small></th></tr>";
+  html += '</thead><tbody>'
 	var total = 0;
   for(n in obj.rows){
     total += parseInt(obj.data[n]);
@@ -70,7 +59,7 @@ function get_single_bar_html(obj){
   for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n].id)
-			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id);
+			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
 			var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
       
@@ -78,7 +67,8 @@ function get_single_bar_html(obj){
       html += "<td><a href='"+link+"'>"+obj.rows[n].id+'</a></td><td>'+obj.data[n]+"</td></tr>";
 		}
 	}
-	html += '</table></div>';
+	html += '</tbody>'
+  html += '</table></div>';
 	
 	return html;
 }
@@ -90,8 +80,10 @@ function get_double_bar_html(obj){
   var html ='';
 
   html += "<div class='overflow_500'>";
-  html += "<table class='table table-condensed overflow200'>";
-  html += "<tr><td width='25' >color</td><td>Taxonomy</td><td>"+obj.datasets[0]+"</td><td>"+obj.datasets[1]+"</td></tr>";
+  html += "<table class='table table-condensed overflow200 sortable'>";
+  html += '<thead>'
+  html += "<tr><th width='25' >color</th><th>Taxonomy <small>(click to sort)</small></th><th>"+obj.datasets[0]+" <small>(click to sort)</small></th><th>"+obj.datasets[1]+" <small>(click to sort)</small></th></tr>";
+  html += '</thead><tbody>'
   var total = [0,0];
   var pct1,pct2,id1,id2;
   for(n in obj.rows){
@@ -116,6 +108,7 @@ function get_double_bar_html(obj){
       html += "</tr>";
     //}
   }
+  html += '</tbody>'
   html += '</table></div>';
   
   return html;

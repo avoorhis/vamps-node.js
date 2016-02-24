@@ -1,6 +1,7 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
 <% var dataset1 = JSON.parse(matrix).datasets[0]; %>
 <% var dataset2 = JSON.parse(matrix).datasets[1]; %>
+<link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <script>
   var pi_local  = JSON.parse('<%- post_items %>');
   //alert(pi_local.no_of_datasets)
@@ -46,8 +47,22 @@
   <% include ../../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="/javascripts/common_selection.js" charset="utf-8"></script>
-<script type="text/javascript" src="/javascripts/user_viz_data.js" charset="utf-8"></script>
+
 <script>
+$(document).ready(function() {  
+
+  // function is where?  common_selection
+  create_barcharts(bar_type);
+  
+  if(bar_type == 'single'){
+    // function is where?  in this file (look below)
+    barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
+  }else{
+    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
+  }
+    
+        
+})
 $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (event) {
       var link = this,
       html = '';
@@ -107,5 +122,7 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
               
 });              
 </script>
+<script type="text/javascript" src="/javascripts/user_viz_data.js" charset="utf-8"></script>
+<script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
 </body>
 </html>

@@ -254,6 +254,23 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   //
+  get_sequences_perDID: function( did ) {
+      
+
+      var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
+      seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
+      seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
+      seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
+      seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
+      seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
+      seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
+      seqQuery += " WHERE dataset_id='"+did+"'";
+      console.log(seqQuery)
+      return seqQuery;
+  },
+  //
+  //
+  //
   get_sequences_perDID_and_taxa_query: function( did, taxa ) {
       var tax_items  = taxa.split(';');
 
@@ -278,8 +295,6 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       console.log(seqQuery)
       return seqQuery;
   },
-  
-  
   
 } // end of module.exports
 
