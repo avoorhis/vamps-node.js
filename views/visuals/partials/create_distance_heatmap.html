@@ -42,7 +42,7 @@
 		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
 	                    <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 
-	                    		onclick="window.open('bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>', '_blank')">
+	                    		onclick="window.open('bar_double?did1=<%= id_order[x] %>&did2=<%= id_order[y] %>&ts=<%= ts %>', '_blank')">
 
 	                    		<!-- 	onclick="heatmap_click_fxn('<%= id_order[x] %>','<%= x_dname %>','<%= id_order[y] %>','<%= y_dname %>')"> -->
 

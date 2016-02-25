@@ -108,7 +108,7 @@ function create_barcharts(imagetype) {
         data.forEach(function(d) {
           var x0 = 0;
           d.unitObj = color.domain().map(function(name) { 
-            return { name: name, x0: x0, x1: x0 += +d[name] }; 
+            return { name: name, x0: x0, x1: x0 += +d[name], dsname: d.datasetName, cnt: d[name] }; 
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
@@ -121,6 +121,7 @@ function create_barcharts(imagetype) {
           tot = d.total;
           d.unitObj.forEach(function(o) {
               //console.log(o);
+              o.total = tot
               o.x0 = (o.x0*100)/tot;
               o.x1 = (o.x1*100)/tot;
           });
@@ -137,7 +138,10 @@ function create_barcharts(imagetype) {
   	      props.x.domain([0, 100]);	
 			
         if(imagetype=='single'){
-          create_singlebar_svg_object(svg, props, data, ts);
+          //alert(filename)
+          create_singlebar_svg_object(svg, props, data, filename);
+        }else if(imagetype=='double'){
+          create_doublebar_svg_object(svg, props, data, filename);
         }else{
         	//create_svg_object(svg,props, did_by_names, data, ts);
           create_svg_object(svg, props, data, ts);
@@ -146,13 +150,74 @@ function create_barcharts(imagetype) {
 //
 //
 //
-function create_doublebar_svg_object(svg, props, data, ts) {
-  //alert('doublebar')
+function create_doublebar_svg_object(svg, props, data, filename) {
+        svg.append("g")
+          .attr("class", "x axis")
+          .style({'stroke-width': '1px'})
+          .call(props.xAxis)
+        .append("text")
+          .attr("x", props.plot_width)
+          .attr("dy", ".8em")
+          .style("text-anchor", "end")
+          .text("Percent");
+     
+     
+       var datasetBar = svg.selectAll(".bar")
+          .data(data)
+        .enter() .append("g")
+          .attr("class", "g")
+          .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; }) 
+          // .append("a")
+          // .attr("xlink:xlink:href",  function(d) { 
+          //   return 'sequences?id='+d.datasetName+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
+          // })
+
+          // .attr("target", '_blank' );
+
+  
+    var labels = datasetBar.append("text")
+      .attr("class", "y label")
+      .attr("text-anchor", "end")
+        .style({"font-size":  "13px","font-weight":  "normal" })
+      .attr("x", "-2")
+      .attr("y", props.bar_height*2)
+      .text(function(d) { return d.datasetName; })
+      
+      
+    var gnodes = datasetBar.selectAll("rect")
+          .data(function(d) { return d.unitObj; })
+        .enter()
+        .append('a').attr("xlink:href",  function(d,i) {
+             //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
+             //alert(d.dsname)
+             return 'sequences?id='+d.dsname+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
+          }).style("fill",   function(d) { return string_to_color_code(d.name); })
+    
+        .append("rect")
+          .attr("x", function(d) { return props.x(d.x0); })
+          .attr("y", 15)  // adjust where first bar starts on x-axis
+          .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
+          .attr("height",  18)
+          .attr("id",function(d,i) { 
+            console.log(this.parentNode.__data__);
+            var cnt =  d.cnt;  //this.parentNode.__data__[d.name];
+            var total = d.total;  //this.parentNode.__data__['total'];
+            
+            //console.log(this._parentNode.__data__['total']);
+            var ds = ''; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            //return this._parentNode.__data__.DatasetName + '-|-' + d.id + '-|-' + cnt.toString() + '-|-' + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+          }) 
+
+          .attr("class","tooltip_viz")
+          .style("fill",   function(d,i) { return string_to_color_code(d.name); });
 }
 //
 //
 //
-function create_singlebar_svg_object(svg, props, data, ts) {
+function create_singlebar_svg_object(svg, props, data, filename) {
 
 	       var datasetBar = svg.selectAll(".bar")
 	          .data(data)
@@ -166,7 +231,7 @@ function create_singlebar_svg_object(svg, props, data, ts) {
 	           .enter()
 	             .append('a').attr("xlink:href",  function(d) {
 				     //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
-             return 'sequences?id='+mtx_local.dataset+'&taxa='+encodeURIComponent(d.name);
+             return 'sequences?id='+mtx_local.dataset+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
 				  }).style("fill",   function(d) { return string_to_color_code(d.name); });
 
 	       gnodes.append("rect")

@@ -93,7 +93,8 @@ function get_double_bar_html(obj){
   for(n in obj.rows){
     //if(obj.data[n] > 0){
       color = string_to_color_code(obj.rows[n].id)
-      link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id);
+      link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+      link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
       id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
       pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
@@ -102,9 +103,13 @@ function get_double_bar_html(obj){
 
       html += "<td style='background-color:"+color+"'></td>";
 
-      html += "<td><a href='"+link+"'>"+obj.rows[n].id+'</a></td>'
-      html += "<td class='tooltip_viz' id='"+id1+"' >"+obj.data[n][0]+'</td>'
-      html += "<td class='tooltip_viz' id='"+id2+"' >"+obj.data[n][1]+'</td>'
+      //html += "<td><a href='"+link2+"'>"+obj.rows[n].id+'</a></td>'
+      html += "<td>"+obj.rows[n].id+'</td>'
+      //html += "<td class='tooltip_viz' id='"+id1+"' >"+obj.data[n][0]+'</td>'
+      html += "<td class='tooltip_viz' id='"+id1+"' ><a href='"+link1+"'>"+obj.data[n][0]+'</a></td>'
+      //html += "<td class='tooltip_viz' id='"+id2+"' >"+obj.data[n][1]+'</td>'
+      html += "<td class='tooltip_viz' id='"+id2+"' ><a href='"+link2+"'>"+obj.data[n][1]+'</a></td>'
+
       html += "</tr>";
     //}
   }

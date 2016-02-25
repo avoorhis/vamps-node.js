@@ -254,17 +254,18 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   //
-  get_sequences_perDID: function( did ) {
+  get_sequences_perDID: function( sql_dids ) {
       
-
-      var seqQuery = "SELECT UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
+      //var sql_dids = dids.join(',')
+      console.log(sql_dids)
+      var seqQuery = "SELECT dataset_id, UNCOMPRESS(sequence_comp) as seq, seq_count, gast_distance, classifier\n"
       seqQuery += ",domain_id,phylum_id,klass_id,order_id,family_id,genus_id,species_id,strain_id FROM `sequence`\n"
       seqQuery += " JOIN sequence_pdr_info as t1 USING(sequence_id)\n"
       seqQuery += " JOIN sequence_uniq_info as t2 USING(sequence_id)\n"
       seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
       seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
       seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
-      seqQuery += " WHERE dataset_id='"+did+"'";
+      seqQuery += " WHERE dataset_id in ('"+sql_dids+"')";
       console.log(seqQuery)
       return seqQuery;
   },

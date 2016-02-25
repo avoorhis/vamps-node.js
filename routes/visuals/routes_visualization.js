@@ -455,6 +455,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
                   dm        : distance_matrix,
                   hash      : JSON.stringify(chosen_id_name_hash),                      
                   constants : JSON.stringify(req.CONSTS),
+                  ts        : ts
               }); 
 
         }else{
@@ -1533,29 +1534,46 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
       new_matrix.data.push([BIOM_MATRIX.data[n][d]])
       new_matrix.total += BIOM_MATRIX.data[n][d]
     }
-    console.log(JSON.stringify(new_matrix))
-    
-    var filename = ts+'_sequences.json'
+    //console.log(JSON.stringify(new_matrix))
+    var timestamp = +new Date();  // millisecs since the epoch!  
+    var filename = req.user.username+'_'+timestamp+'_sequences.json'
     var file_path = path.join('tmp',filename);
-    console.log(file_path)
-    connection.query(QUERY.get_sequences_perDID(new_matrix.did), function(err, rows, fields){
+    //console.log(file_path)
+    new_rows = {}
+    new_rows[new_matrix.did] = []
+    connection.query(QUERY.get_sequences_perDID([new_matrix.did]), function(err, rows, fields){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
           res.send(err)
         } else {
           //console.log(rows)
-          // should write to a file? Or res.render here?
           for(s in rows){
-              rows[s].seq = rows[s].seq.toString('utf8')
+              //rows[s].seq = rows[s].seq.toString('utf8')
+              did = rows[s].dataset_id
+              
+              var seq = rows[s].seq.toString('utf8');
+              var seq_cnt = rows[s].seq_count;
+              var gast = rows[s].gast_distance
+              var classifier = rows[s].classifier
+              var d_id = rows[s].domain_id
+              var p_id = rows[s].phylum_id
+              var k_id = rows[s].klass_id
+              var o_id = rows[s].order_id
+              var f_id = rows[s].family_id
+              var g_id = rows[s].genus_id
+              var sp_id = rows[s].species_id
+              var st_id = rows[s].strain_id
+              new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
+
           }
           // order by seq_count DESC
-          rows.sort(function(a, b) {
+          new_rows[did].sort(function(a, b) {
             return b.seq_count - a.seq_count;
           });
-          fs.writeFile(file_path, JSON.stringify(rows), function (err) {
+          fs.writeFile(file_path, JSON.stringify(new_rows), function (err) {
             if (err) return console.log(err);
-            console.log('rows > '+file_path);
+            console.log('wrote to > '+file_path);
           });
 
         }
@@ -1582,12 +1600,14 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     var myurl = url.parse(req.url, true);
     var did1 = myurl.query.did1;
     var did2 = myurl.query.did2;
+    var ts   = myurl.query.ts;
     var ds1  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did1)]
     var ds2  = chosen_id_name_hash.names[chosen_id_name_hash.ids.indexOf(did2)]
     //var ds_items = pjds.split('--');
     
+    
     //var html  = 'My HTML';
-    var ts = '';
+    
     var new_matrix={}
     new_matrix.rows = BIOM_MATRIX.rows;   // taxonomy
     new_matrix.columns =[];
@@ -1630,15 +1650,70 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
       //new_matrix.data[1].push(BIOM_MATRIX.data[n][idx2])
       new_matrix.column_totals[1] += BIOM_MATRIX.data[n][idx2]
     }
-    console.log(JSON.stringify(new_matrix))
+    //console.log(JSON.stringify(new_matrix))
     //console.log(chosen_id_name_hash)
     //open('views/visuals/user_viz_data/bar_double.html');
+    var timestamp = +new Date();  // millisecs since the epoch!  
+    var filename = req.user.username+'_'+timestamp+'_sequences.json'
+    var file_path = path.join('tmp',filename);
+    //console.log(file_path)
+    new_rows = {}
+    new_rows[did1] = []
+    new_rows[did2] = []
+    //console.log(new_rows)
+    connection.query(QUERY.get_sequences_perDID(did1+"','"+did2), function(err, rows, fields){
+        if (err)  {
+          console.log('Query error: ' + err);
+          console.log(err.stack);
+          res.send(err)
+        } else {
+          //console.log(rows)
+          // should write to a file? Or res.render here?
+
+          for(s in rows){
+              did = rows[s].dataset_id
+              
+              //console.log(did)
+              //rows[s].seq = rows[s].seq.toString('utf8')
+              var seq = rows[s].seq.toString('utf8');
+              var seq_cnt = rows[s].seq_count;
+              var gast = rows[s].gast_distance
+              var classifier = rows[s].classifier
+              var d_id = rows[s].domain_id
+              var p_id = rows[s].phylum_id
+              var k_id = rows[s].klass_id
+              var o_id = rows[s].order_id
+              var f_id = rows[s].family_id
+              var g_id = rows[s].genus_id
+              var sp_id = rows[s].species_id
+              var st_id = rows[s].strain_id
+              new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
+              //new_rows[did].seq = rows[s].seq.toString('utf8')
+          }
+          // order by seq_count DESC
+          //console.log(new_rows)
+          new_rows[did1].sort(function(a, b) {
+            return b.seq_count - a.seq_count;
+          });
+          new_rows[did2].sort(function(a, b) {
+                  return b.seq_count - a.seq_count;
+          });
+
+          fs.writeFile(file_path, JSON.stringify(new_rows), function (err) {
+            if (err) return console.log(err);
+            console.log('wrote file > '+file_path);
+          });
+
+        }
+    })
+
     res.render('visuals/user_viz_data/bar_double', {
         title: 'Taxonomic Data',
         ts: ts || 'default_timestamp',
         matrix    :           JSON.stringify(new_matrix),
         post_items:           JSON.stringify(visual_post_items),
         bar_type  : 'double',
+        seqs_file : filename,
         //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
         //html: html,
         user: req.user, hostname: req.CONFIG.hostname,
@@ -1654,7 +1729,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
   var seqs_filename = myurl.query.filename;
 	var pjds = myurl.query.id;
   var seq_list = [];
-  did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+  var selected_did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
 	if(seqs_filename){
     console.log('found filename')
     
@@ -1664,24 +1739,24 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
       }
       var clean_data = JSON.parse(data)
-      for(i in clean_data){
-        //console.log(clean_data[i])
-        d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].domain_id+"_domain"].taxon;
-        p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].phylum_id+"_phylum"].taxon;
-        k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].klass_id+"_klass"].taxon;
-        o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].order_id+"_order"].taxon;
-        f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].family_id+"_family"].taxon;
-        g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].genus_id+"_genus"].taxon;
-        sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].species_id+"_species"].taxon;
-        st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[clean_data[i].strain_id+"_strain"].taxon;
-        seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-        if(seq_tax.substring(0, tax.length) === tax){
-          seq_list.push({seq:clean_data[i].seq, seq_count:clean_data[i].seq_count, gast_distance:clean_data[i].gast_distance, classifier:clean_data[i].classifier, tax:seq_tax});          
-        }
+      for(i in clean_data[selected_did]){
+        
+          //console.log(clean_data[i])
+          var data = clean_data[selected_did][i]
+          var d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+          var p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+          var k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+          var o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+          var f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+          var g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+          var sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+          var st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+          var seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
+          if(seq_tax.substring(0, tax.length) === tax){
+            seq_list.push({seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
+          }
       }
       
-      console.log(seq_list)
-      // res.send('help')
       res.render('visuals/user_viz_data/sequences', {
                     title: 'Sequences',
                     ds : pjds,
