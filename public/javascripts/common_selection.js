@@ -64,9 +64,9 @@ var save_datasets_list = function(ds_local, user)
 //
 // PIES and BARS
 //
-function create_barcharts(imagetype) {
+function create_barcharts(imagetype, ts) {
         //alert(imagetype)
-        var ts = pi_local.ts;
+        //var ts = pi_local.ts;
        
 		    var barcharts_div = document.getElementById('barcharts_div');
 		    barcharts_div.style.display = 'block';
@@ -84,10 +84,9 @@ function create_barcharts(imagetype) {
           
           tmp={};
           tmp.datasetName = mtx_local.columns[p].id;
+          tmp.did = mtx_local.columns[p].did;
 		      //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
-		      //tmp.did = mtx_local.columns[p].did;
           for (var t in mtx_local.rows){
-            
             tmp[mtx_local.rows[t].id] = mtx_local.data[t][p];
             //tmp[mtx_local.rows[t].id] = mtx_local.data[p][t];
           }
@@ -97,18 +96,18 @@ function create_barcharts(imagetype) {
 
         var ds_count = mtx_local.shape[1];      
         
-        var props = get_image_properties(imagetype,ds_count); 
+        var props = get_image_properties(imagetype, ds_count); 
         //console.log(props)
         var color = d3.scale.ordinal()                  
           .range( colors );
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName"; }));
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "datasetName" && key !== "did"; }));
 
         
         data.forEach(function(d) {
           var x0 = 0;
           d.unitObj = color.domain().map(function(name) { 
-            return { name: name, x0: x0, x1: x0 += +d[name], dsname: d.datasetName, cnt: d[name] }; 
+            return { name: name, x0: x0, x1: x0 += +d[name], did: d.did, dsname: d.datasetName, cnt: d[name] }; 
           });
           //console.log(d.unitObj);
           d.total = d.unitObj[d.unitObj.length - 1].x1;
@@ -141,7 +140,7 @@ function create_barcharts(imagetype) {
           //alert(filename)
           create_singlebar_svg_object(svg, props, data, filename);
         }else if(imagetype=='double'){
-          create_doublebar_svg_object(svg, props, data, filename);
+          create_doublebar_svg_object(svg, props, data, ts);
         }else{
         	//create_svg_object(svg,props, did_by_names, data, ts);
           create_svg_object(svg, props, data, ts);
@@ -150,7 +149,7 @@ function create_barcharts(imagetype) {
 //
 //
 //
-function create_doublebar_svg_object(svg, props, data, filename) {
+function create_doublebar_svg_object(svg, props, data, ts) {
         svg.append("g")
           .attr("class", "x axis")
           .style({'stroke-width': '1px'})
@@ -190,6 +189,7 @@ function create_doublebar_svg_object(svg, props, data, filename) {
         .append('a').attr("xlink:href",  function(d,i) {
              //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
              //alert(d.dsname)
+             var filename = user_local+'_'+d.did+'_'+ts+'_sequences.json'
              return 'sequences?id='+d.dsname+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
           }).style("fill",   function(d) { return string_to_color_code(d.name); })
     
@@ -199,7 +199,7 @@ function create_doublebar_svg_object(svg, props, data, filename) {
           .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
           .attr("height",  18)
           .attr("id",function(d,i) { 
-            console.log(this.parentNode.__data__);
+            //console.log(this.parentNode.__data__);
             var cnt =  d.cnt;  //this.parentNode.__data__[d.name];
             var total = d.total;  //this.parentNode.__data__['total'];
             
@@ -232,17 +232,17 @@ function create_singlebar_svg_object(svg, props, data, filename) {
 	             .append('a').attr("xlink:href",  function(d) {
 				     //return 'sequences?did='+mtx_local.did+'&taxa='+encodeURIComponent(d.id);
              return 'sequences?id='+mtx_local.dataset+'&taxa='+encodeURIComponent(d.name)+'&filename='+filename;
-				  }).style("fill",   function(d) { return string_to_color_code(d.name); });
+				  }).style("fill",   function(d) { return string_to_color_code(d.name); })
 
-	       gnodes.append("rect")
+	         .append("rect")
 	             .attr("x", function(d) { return props.x(d.x0); })
 	             .attr("y", 15)  // adjust where first bar starts on x-axis
 	             .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
 	             .attr("height",  25)
 
 	             .attr("id",function(d,i) {
-	                var cnt =  mtx_local.data[i];
-	                var total = mtx_local.total;
+	                var cnt =  d.cnt; //mtx_local.data[i];
+	                var total = d.total;  //mtx_local.total;
 	                var pct = (cnt * 100 / total).toFixed(2);
 	                var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct;
 	                return id;    // ip of each rectangle should be datasetname-|-unitname-|-count

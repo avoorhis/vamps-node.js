@@ -628,7 +628,7 @@ function create_biom_matrix(biom_matrix, unit_name_counts, ukeys, chosen_id_name
 	for (var n in chosen_id_name_hash.names) {   // correct order
 	    //console.log(dataset_ids[did])
 	    //biom_matrix.columns.push({ name: chosen_id_name_hash.names[n], did:chosen_id_name_hash.ids[n], metadata: {} });
-	    biom_matrix.columns.push({ id: chosen_id_name_hash.names[n], metadata: null });
+	    biom_matrix.columns.push({ did: chosen_id_name_hash.ids[n], id: chosen_id_name_hash.names[n], metadata: null });
 	}
 	// ukeys is sorted by alpha
 	for(var uk in ukeys) {

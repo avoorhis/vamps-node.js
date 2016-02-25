@@ -1793,7 +1793,7 @@ function create_barcharts_group(ts) {
          document.getElementById('pre_barcharts_table_div').style.display = 'block';
 		 
          // this fxn is in common_selection.js
-         create_barcharts('group');
+         create_barcharts('group', ts);
 
 }
 //

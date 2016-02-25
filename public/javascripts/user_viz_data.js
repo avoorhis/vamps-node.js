@@ -75,7 +75,7 @@ function get_single_bar_html(obj){
 //
 //
 //
-function get_double_bar_html(obj){
+function get_double_bar_html(obj, ts){
   
   var html ='';
 
@@ -85,7 +85,7 @@ function get_double_bar_html(obj){
   html += "<tr><th width='25' >color</th><th>Taxonomy <small>(click to sort)</small></th><th>"+obj.datasets[0]+" <small>(click to sort)</small></th><th>"+obj.datasets[1]+" <small>(click to sort)</small></th></tr>";
   html += '</thead><tbody>'
   var total = [0,0];
-  var pct1,pct2,id1,id2;
+  var pct1,pct2,id1,id2,link1,link2,filename1,filename2,color;
   for(n in obj.rows){
     total[0] += parseInt(obj.data[n][0]);
     total[1] += parseInt(obj.data[n][1]);
@@ -93,8 +93,10 @@ function get_double_bar_html(obj){
   for(n in obj.rows){
     //if(obj.data[n] > 0){
       color = string_to_color_code(obj.rows[n].id)
-      link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
-      link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+      filename1 = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
+      filename2 = user_local+'_'+obj.columns[1].did+'_'+ts+'_sequences.json';
+      link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
+      link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
       pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
       id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
       pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);

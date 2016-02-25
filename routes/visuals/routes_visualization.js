@@ -1509,12 +1509,12 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
     //var html  = COMMON.start_visuals_html('piechart');
     //var html  = 'My HTML';
-
+    var selected_did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)]
     var new_matrix={}
     new_matrix.rows = BIOM_MATRIX.rows;
     new_matrix.columns =[];
     new_matrix.dataset = pjds;
-    new_matrix.did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+    //new_matrix.dids = [chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)]];
     new_matrix.data = []
     new_matrix.total = 0
     new_matrix.shape = [BIOM_MATRIX.shape[0],1]
@@ -1536,12 +1536,12 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
     }
     //console.log(JSON.stringify(new_matrix))
     var timestamp = +new Date();  // millisecs since the epoch!  
-    var filename = req.user.username+'_'+timestamp+'_sequences.json'
+    var filename = req.user.username+'_'+selected_did+'_'+timestamp+'_sequences.json'
     var file_path = path.join('tmp',filename);
     //console.log(file_path)
     new_rows = {}
-    new_rows[new_matrix.did] = []
-    connection.query(QUERY.get_sequences_perDID([new_matrix.did]), function(err, rows, fields){
+    new_rows[selected_did] = []
+    connection.query(QUERY.get_sequences_perDID([selected_did]), function(err, rows, fields){
         if (err)  {
           console.log('Query error: ' + err);
           console.log(err.stack);
@@ -1568,10 +1568,10 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
           }
           // order by seq_count DESC
-          new_rows[did].sort(function(a, b) {
+          new_rows[selected_did].sort(function(a, b) {
             return b.seq_count - a.seq_count;
           });
-          fs.writeFile(file_path, JSON.stringify(new_rows), function (err) {
+          fs.writeFile(file_path, JSON.stringify(new_rows[selected_did]), function (err) {
             if (err) return console.log(err);
             console.log('wrote to > '+file_path);
           });
@@ -1579,7 +1579,7 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
         }
     })
   	
-
+//console.log(new_matrix)
     res.render('visuals/user_viz_data/bar_single', {
         title: 'Taxonomic Data',
         ts: ts || 'default_timestamp',
@@ -1612,7 +1612,7 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     new_matrix.rows = BIOM_MATRIX.rows;   // taxonomy
     new_matrix.columns =[];
     new_matrix.datasets = [ds1,ds2];
-    new_matrix.dids = [did1,did2];
+    //new_matrix.dids = [did1,did2];
     
     new_matrix.data = []
     for(n in BIOM_MATRIX.rows){
@@ -1654,8 +1654,10 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
     //console.log(chosen_id_name_hash)
     //open('views/visuals/user_viz_data/bar_double.html');
     var timestamp = +new Date();  // millisecs since the epoch!  
-    var filename = req.user.username+'_'+timestamp+'_sequences.json'
-    var file_path = path.join('tmp',filename);
+    var filename1 = req.user.username+'_'+did1+'_'+timestamp+'_sequences.json'
+    var file_path1 = path.join('tmp',filename1);
+    var filename2 = req.user.username+'_'+did2+'_'+timestamp+'_sequences.json'
+    var file_path2 = path.join('tmp',filename2);
     //console.log(file_path)
     new_rows = {}
     new_rows[did1] = []
@@ -1699,22 +1701,24 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
                   return b.seq_count - a.seq_count;
           });
 
-          fs.writeFile(file_path, JSON.stringify(new_rows), function (err) {
+          fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function (err) {
             if (err) return console.log(err);
-            console.log('wrote file > '+file_path);
+            console.log('wrote file > '+file_path1);
+          });
+          fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function (err) {
+            if (err) return console.log(err);
+            console.log('wrote file > '+file_path2);
           });
 
         }
     })
-
+    //console.log(new_matrix)
     res.render('visuals/user_viz_data/bar_double', {
         title: 'Taxonomic Data',
-        ts: ts || 'default_timestamp',
+        ts: timestamp,
         matrix    :           JSON.stringify(new_matrix),
         post_items:           JSON.stringify(visual_post_items),
-        bar_type  : 'double',
-        seqs_file : filename,
-        //chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+        bar_type  : 'double',        
         //html: html,
         user: req.user, hostname: req.CONFIG.hostname,
     });
@@ -1739,10 +1743,10 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
       }
       var clean_data = JSON.parse(data)
-      for(i in clean_data[selected_did]){
+      for(i in clean_data){
         
           //console.log(clean_data[i])
-          var data = clean_data[selected_did][i]
+          var data = clean_data[i]
           var d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
           var p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
           var k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;

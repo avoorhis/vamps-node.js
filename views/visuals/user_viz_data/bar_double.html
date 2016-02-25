@@ -9,7 +9,7 @@
   //alert(mtx_local.data)
   var user_local  = '<%= user.username %>';
   var bar_type    = '<%= bar_type %>';
-  var filename    = '<%= seqs_file %>';
+
 </script>
   
 <div class='title'><%= title %></div>
@@ -53,13 +53,13 @@
 $(document).ready(function() {  
 
   // function is where?  common_selection
-  create_barcharts(bar_type);
+  create_barcharts(bar_type, <%= ts %>);
   
   if(bar_type == 'single'){
     // function is where?  in this file (look below)
     barcharts_table_div.innerHTML = get_single_bar_html(mtx_local);
   }else{
-    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local);
+    barcharts_table_div.innerHTML = get_double_bar_html(mtx_local, <%= ts %>);
   }
     
         
