@@ -122,62 +122,69 @@ def parse_file(args):
         print 'using orig names'
     else:
         print 'Have project: not using orig names'
-    with open(args.tax_by_seq_file, mode='r') as infile:
-        
-        for i,l in enumerate(infile):
-            line_items = l.strip().split('\t')
-            #print '0',line_items[0]
-            if i == 0 and line_items[0] != 'TaxBySeq':
-                print 'This doesnt look like a TaxBySeq File from VAMPS -- Exiting'
-                sys.exit()
-            if line_items[0] == 'TaxBySeq':
-                continue
-            if line_items[0] == 'refhvr_ids':
-                header_items = line_items
-                #print header_items
-                pjds_ary = []
-                projects = {}
-                for header in header_items:
-                    if header not in std_headers:
+    if args.tax_comp:
+        #with gzip.open(args.tax_by_seq_file, mode='r') as infile:
+        f=gzip.open(args.tax_by_seq_file,'rb')
+    else:
+        #with open(args.tax_by_seq_file, mode='r') as infile:
+        f=open(args.tax_by_seq_file,'rb')
 
-                        if args.orig_names:
-                            pjds = header
-                            (pj,ds) = header.split('--')
-                            if pj in collector:
-                                collector[pj][ds] = []
-                            else:
-                                collector[pj] = {}
-                                collector[pj][ds] = []
+    infile = f.readlines()
+    print infile
+    for i,l in enumerate(infile):
+        line_items = l.strip().split('\t')
+        print i,line_items
+        if i == 0 and line_items[0] != 'TaxBySeq':
+            print 'This doesnt look like a TaxBySeq File from VAMPS -- Exiting'
+            sys.exit()
+        if line_items[0] == 'TaxBySeq':
+            continue
+        if line_items[0] == 'refhvr_ids':
+            header_items = line_items
+            #print header_items
+            pjds_ary = []
+            projects = {}
+            for header in header_items:
+                if header not in std_headers:
+
+                    if args.orig_names:
+                        pjds = header
+                        (pj,ds) = header.split('--')
+                        if pj in collector:
+                            collector[pj][ds] = []
                         else:
-                            
-                            ds = header.replace('--','__')
-                            pjds = args.project+'--'+header.replace('--','__')
-                            collector[args.project][ds] = []
-                        pjds_ary.append(pjds)
+                            collector[pj] = {}
+                            collector[pj][ds] = []
+                    else:
                         
-                continue
-            
-            #tax_collector[ds][tax]
-            if not header_items:
-                sys.exit('no headers This doesn"t look like a TaxBySeq File' )
-            
-            #print len(line_items),len(std_headers),len(pjds_ary)
-            if len(line_items) != (len(std_headers)+len(pjds_ary)):
-                continue
-            
-            refhvrids = line_items[0]
-            distance  = line_items[len(pjds_ary)+1]
-            seq       = line_items[len(pjds_ary)+2]
-            rank      = line_items[len(pjds_ary)+3]
-            tax       = line_items[len(pjds_ary)+4]
-            
-            
-            for i,pjds in enumerate(pjds_ary):
-                (pj,ds) = pjds.split('--')
-                count = int(line_items[1+i])
-                #print count
-                if count  > 0:              
-                    collector[pj][ds].append({'tax':tax,'count':count,'seq':seq,'distance':distance,'refhvrids':refhvrids,'rank':rank})
+                        ds = header.replace('--','__')
+                        pjds = args.project+'--'+header.replace('--','__')
+                        collector[args.project][ds] = []
+                    pjds_ary.append(pjds)
+                    
+            continue
+        
+        #tax_collector[ds][tax]
+        if not header_items:
+            sys.exit('no headers This doesn"t look like a TaxBySeq File' )
+        
+        #print len(line_items),len(std_headers),len(pjds_ary)
+        if len(line_items) != (len(std_headers)+len(pjds_ary)):
+            continue
+        
+        refhvrids = line_items[0]
+        distance  = line_items[len(pjds_ary)+1]
+        seq       = line_items[len(pjds_ary)+2]
+        rank      = line_items[len(pjds_ary)+3]
+        tax       = line_items[len(pjds_ary)+4]
+        
+        
+        for i,pjds in enumerate(pjds_ary):
+            (pj,ds) = pjds.split('--')
+            count = int(line_items[1+i])
+            #print count
+            if count  > 0:              
+                collector[pj][ds].append({'tax':tax,'count':count,'seq':seq,'distance':distance,'refhvrids':refhvrids,'rank':rank})
 
 
 
@@ -266,7 +273,12 @@ def check_project_names(args,collector):
 def write_metadata_to_file(args,stats):
     print 'csv',args.metadata_file
     logging.info('csv '+ args.metadata_file)
-    lol = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
+    if args.md_comp:
+        f = gzip.open(args.metadata_file, 'rb')
+    else:
+        f = open(args.metadata_file, 'rb')
+    lol = list(csv.reader(f, delimiter='\t'))
+    #lol = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
     
     
     found_dsets_dict={}
@@ -274,7 +286,7 @@ def write_metadata_to_file(args,stats):
     scnlist = [] 
     
     for line in lol:
-        #print line
+        print line
         pj = ''
         if args.project:
             pj = args.project  # single project
@@ -430,9 +442,12 @@ if __name__ == '__main__':
     parser.add_argument('-use_tax', '--use_tax',         
                 required=False,   action="store_true",  dest = "use_tax",         
                 help = '')
+    parser.add_argument('-tax_comp', '--tax_comp',         
+                required=False,   action="store_true",  dest = "tax_comp",  help = '')
+    parser.add_argument('-md_comp', '--md_comp',         
+                required=False,   action="store_true",  dest = "md_comp",   help = '')
     parser.add_argument('-host', '--host',         
-                required=False,   action="store",  dest = "hostname",  default='localhost',         
-                help = '')
+                required=False,   action="store",  dest = "hostname",  default='localhost', help = '')
     args = parser.parse_args() 
     args.ref_db_dir = 'none'   
     args.classifier = 'unknown' 
@@ -502,7 +517,7 @@ if __name__ == '__main__':
             
             
             logging.info("DONE")
-            print "DONE WITH ",pj
+            print "DONE WITH",pj
 
         #
         # this must be the last print:

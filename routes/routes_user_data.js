@@ -11,7 +11,7 @@ var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
-var upload = multer({ dest: 'tmp'});
+var upload = multer({ dest: '/tmp'});
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 // router.use(multer({ dest: 'tmp',
@@ -1302,26 +1302,46 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   	req.flash('failMessage', 'A fasta file is required.');
 		res.redirect("/user_data/import_data");
 		return;
-  }else if(req.files[1].filename === undefined || req.files[1].size === 0){
-  	req.flash('failMessage', 'A metadata csv file is required.');
-		res.redirect("/user_data/import_data");
-		return;
-  }else{
+  }
+  // else if(req.files[1].filename === undefined || req.files[1].size === 0){
+  // 	req.flash('failMessage', 'A metadata csv file is required.');
+		// res.redirect("/user_data/import_data");
+		// return;
+  // }
+  else{
 		  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
-		    // if(req.CONFIG.hostname.substring(0,7) == 'bpcweb7'){
-		    //     var data_repository = path.join('/groups/vampsweb/vampsdev_user_data/',req.user.username,'project-'+project);
-		    // }else if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
-      //           var data_repository = path.join('/groups/vampsweb/vamps_user_data/',req.user.username,'project-'+project);
-		    // }else{ 
-		    //     var data_repository = path.join(process.env.PWD,'user_data',NODE_DATABASE,req.user.username,'project-'+project);
-		    // }
+		    
 		  console.log(data_repository);
+
+		  var original_fastafile = path.join('/tmp', req.files[0].filename);
+		  fasta_compressed = metadata_compressed = false;
+			if(req.files[0].mimetype === 'application/x-gzip'){
+				fasta_compressed = true;
+			}
 			status_params = {'type':'new', 'user':req.user.username,
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
 			helpers.update_status(status_params);
 			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-		        			args :       [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site]
+		        			args :       [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site, '-infile',original_fastafile]
 		    			};
+			if(req.files[0].mimetype === 'application/x-gzip'){
+				options.args = options.args.concat(['-fa_comp' ]);
+			}
+		  var original_metafile  = '';
+		  try{
+				//original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); 
+				original_metafile  = path.join('/tmp',req.files[1].filename); 
+				options.args = options.args.concat(['-md_file', original_metafile ]);
+				if(req.files[1].mimetype === 'application/x-gzip'){
+					metadata_compressed = true;
+					options.args = options.args.concat(['-md_comp' ]);
+				}
+			}
+			catch(err){
+				console.log('No Metadata file: '+err+'; Continuing on');
+				original_metafile  = '';
+			}
+
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){
 				  	req.flash('failMessage', 'A dataset name is required.');
@@ -1336,8 +1356,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					res.redirect("/user_data/import_data");
 					return;
 		  }
-			var original_fastafile = path.join(process.env.PWD, 'tmp', req.files[0].filename);
-			var original_metafile  = path.join(process.env.PWD, 'tmp', req.files[1].filename);
+			
+			
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1353,35 +1373,39 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						              user    : req.user, hostname: req.CONFIG.hostname
 						        });
 			};
+			// Using python to move files rather than node.js:::
+			// fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
+		 //    	if (err) {
+			// 			req.flash('failMessage', '1-File move failure  '+err);
+			// 			status_params = {'type':'update', 'user':req.user.username,
+			// 								'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  };
+			// 			helpers.update_status(status_params);
+			// 			res.redirect("/user_data/import_data");
+			// 			return;
+			// 		}
+			//   	fs.move(original_metafile,  path.join(data_repository,'meta_original.csv'), function (err) {
+			//     	if (err) {
+			// 				req.flash('failMessage', '2-File move failure '+err);
+			// 				status_params = {'type':'update', 'user':req.user.username,
+			// 								'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  };
+			// 				helpers.update_status(status_params);
+			// 				res.redirect("/user_data/import_data");
+			// 				return;
+			// 			}
 			
-			fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
-		    	if (err) {
-						req.flash('failMessage', '1-File move failure  '+err);
-						status_params = {'type':'update', 'user':req.user.username,
-											'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  };
-						helpers.update_status(status_params);
-						res.redirect("/user_data/import_data");
-						return;
-					}
-			  	fs.move(original_metafile,  path.join(data_repository,'meta_original.csv'), function (err) {
-			    	if (err) {
-							req.flash('failMessage', '2-File move failure '+err);
-							status_params = {'type':'update', 'user':req.user.username,
-											'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  };
-							helpers.update_status(status_params);
-							res.redirect("/user_data/import_data");
-							return;
-						}
-
-            fs_old.chmod(data_repository, 0775, function (err) {
+			fs.ensureDir(data_repository, function (err) {
+    		if(err) {console.log(err);} // => null
+    		else{
+            fs.chmod(data_repository, 0775, function (err) {
 						    if (err) {
 						        console.log(err)
 						        return;
 						    }
+						
+            
 				    
 
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
-
 				    var spawn = require('child_process').spawn;
 						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
@@ -1423,8 +1447,10 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						}); // end load trim on close
 
 			  	}); // 	END chmod
-			}); // 			END move 2
-			});  // 		END move 1
+					} // end else
+				}); // 	END ensuredir
+//			}); // 			END move 2
+//			});  // 		END move 1
 
   }
   
@@ -1464,29 +1490,65 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		return;
   }else{
 
-    console.log('working');
+    	console.log('working');
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
-			var original_taxbyseqfile = path.join(process.env.PWD, 'tmp',req.files[0].filename); 
+			//var original_taxbyseqfile = path.join(process.env.PWD, 'tmp',req.files[0].filename); 
+			var original_taxbyseqfile = path.join('/tmp',req.files[0].filename); 
 			console.log(original_taxbyseqfile);
+			taxbyseq_compressed = metadata_compressed = false;
+			if(req.files[0].mimetype === 'application/x-gzip'){
+				taxbyseq_compressed = true;
+			}
 			var original_metafile  = '';
 			try{
-				original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); //path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
+				//original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); 
+				original_metafile  = path.join('/tmp',req.files[1].filename); 
+				
+				if(req.files[1].mimetype === 'application/x-gzip'){
+					metadata_compressed = true;
+				}
 			}
 			catch(err){
-				console.log('No Metadata file: '+err);
-				console.log('Continuing on');
-				original_metafile  = ''
+				console.log('No Metadata file: '+err+'; Continuing on');
+				original_metafile  = '';
 			}
-
+		//console.log('file '+req.files[0].originalname)
+		//console.log(req.files[0])
+		//console.log(taxbyseq_compressed)
+		//console.log(taxbyseq_compressed)
+		// { fieldname: 'upload_files',
+		//   originalname: 'avoorhis_21190707TaxBySeq.txt.gz',
+		//   encoding: '7bit',
+		//   mimetype: 'application/x-gzip',
+		//   destination: '/tmp',
+		//   filename: 'c903a589970b36746c1bf22503270713',
+		//   path: '/tmp/c903a589970b36746c1bf22503270713',
+		//   size: 234197 
+		// }
+		// { fieldname: 'upload_files',
+		//   originalname: 'CNE_TaxBySeq.txt',
+		//   encoding: '7bit',
+		//   mimetype: 'text/plain',
+		//   destination: '/tmp',
+		//   filename: '3fdba8fdb25390c38e511149f459ee96',
+		//   path: '/tmp/3fdba8fdb25390c38e511149f459ee96',
+		//   size: 1668848 
+		// }
 
 			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args :       [ '-infile', original_taxbyseqfile, '-o', username, '--upload_type', 'multi', 
 		        											'--process_dir', process.env.PWD,'-db', NODE_DATABASE, '-host', req.CONFIG.dbhost ]
-		    			};
+		  };
+		  if(taxbyseq_compressed){
+				options.args = options.args.concat(['-tax_comp']);
+			}
 			if(original_metafile){
 				options.args = options.args.concat(['-md_file',original_metafile]);
+				if(metadata_compressed){
+					options.args = options.args.concat(['-md_comp']);
+				}
 			}
 			if(use_file_taxonomy === '1'){
 				options.args = options.args.concat(['-use_tax']);
@@ -1501,7 +1563,6 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					return;
 		  }
 			
-
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1518,13 +1579,12 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 						  });
 			};
 			
-
-
 				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+				
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
 						    							detached: true, stdio: [ 'ignore', null, log ]
