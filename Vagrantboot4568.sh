@@ -149,7 +149,8 @@ function load_python_libraries () {
     #sudo pip install pygtk
     
     echo "COMMENT===>Installing illumina-utils...."
-    sudo pip install illumina-utils
+    # need v 1.4.2 to work with python 2.7.3 in Ubuntu
+    sudo pip install illumina-utils==1.4.2
     
     #echo "COMMENT===>Installing Python SciKit-Bio...."
     # scikit-bio is installed by emperor

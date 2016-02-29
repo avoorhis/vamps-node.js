@@ -122,7 +122,7 @@ def parse_file(args):
         print 'using orig names'
     else:
         print 'Have project: not using orig names'
-    if args.tax_comp:
+    if args.tax_compressed:
         #with gzip.open(args.tax_by_seq_file, mode='r') as infile:
         f=gzip.open(args.tax_by_seq_file,'rb')
     else:
@@ -133,7 +133,7 @@ def parse_file(args):
     print infile
     for i,l in enumerate(infile):
         line_items = l.strip().split('\t')
-        print i,line_items
+        #print i,line_items
         if i == 0 and line_items[0] != 'TaxBySeq':
             print 'This doesnt look like a TaxBySeq File from VAMPS -- Exiting'
             sys.exit()
@@ -273,7 +273,7 @@ def check_project_names(args,collector):
 def write_metadata_to_file(args,stats):
     print 'csv',args.metadata_file
     logging.info('csv '+ args.metadata_file)
-    if args.md_comp:
+    if args.md_compressed:
         f = gzip.open(args.metadata_file, 'rb')
     else:
         f = open(args.metadata_file, 'rb')
@@ -286,7 +286,7 @@ def write_metadata_to_file(args,stats):
     scnlist = [] 
     
     for line in lol:
-        print line
+        #print line
         pj = ''
         if args.project:
             pj = args.project  # single project
@@ -443,9 +443,9 @@ if __name__ == '__main__':
                 required=False,   action="store_true",  dest = "use_tax",         
                 help = '')
     parser.add_argument('-tax_comp', '--tax_comp',         
-                required=False,   action="store_true",  dest = "tax_comp",  help = '')
+                required=False,   action="store_true",  dest = "tax_compressed",  help = '')
     parser.add_argument('-md_comp', '--md_comp',         
-                required=False,   action="store_true",  dest = "md_comp",   help = '')
+                required=False,   action="store_true",  dest = "md_compressed",   help = '')
     parser.add_argument('-host', '--host',         
                 required=False,   action="store",  dest = "hostname",  default='localhost', help = '')
     args = parser.parse_args() 

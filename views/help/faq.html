@@ -306,9 +306,9 @@ or
 
 						<p class='standard'><strong>FASTA File</strong></p> 
 						<p class='standard'><strong>Metadata File</strong></p> 
-						There is one metadata file format:<br>
+						There is one metadata file format for import (except taxbyseq --see below):<br>
 						<ul>
-						<li>QIIME style mapping file: This file MUST have a header named '#SampleID', 'sample_name'  or 'dataset_name' as the first column name.
+						<li>QIIME style mapping file: This file MUST have a header named '#SampleID', 'sample_name'  or 'dataset_name' as the <strong>first</strong> column name.
 							<ul>
 								<li>The Header line is required</li>
 								<li>The columns must be tab delimited</li>
@@ -318,7 +318,12 @@ or
 						
 						</ul>
 						<br>
-						<p class='standard'><strong>TaxBySeq File</strong></p> 
+						<p class='standard'><strong>TaxBySeq File and Metadata from Old (legacy) VAMPS</strong></p> 
+							<ul>
+								<li>See <a href='https://vamps.mbl.edu/exporter/export_data.php' target='_blank'>VAMPS Exports</a></li>
+								<li>Download the TaxBySeq and Metadata files to your harddrive.</li>
+								<li>Import them as a pair either directly (still compressed) or uncompressed.</li>
+							</ul>
 						
           </p>          
         </div>        
