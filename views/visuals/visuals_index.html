@@ -56,15 +56,15 @@
         <td style='width:100px;'>Filter Projects
           <!-- FILTER -->
           <div id='' class=''>
-            <table id='filters_table' border='1' width=''>
+            <table id='filters_table' class='table table-striped' border='1' width=''>
               <tr>
-                <td>by substring:<br>
+                <td>by Substring:<br>
                   <input id="pname_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
                 </td>
               </tr>
               <tr>
                 <td>
-                  by env source<br>
+                  by ENV Source:<br>
                   <select id='env_source_select' >
                     <option>.....</option>
                     <% for(n in env_sources) { %>
@@ -75,7 +75,7 @@
               </tr>
               <tr>
                 <td>
-                  by domain/target<br>
+                  by Domain/Target:<br>
                   <select  id='target_select'>
                     <option>.....</option>
                     <% for(n in targets) { %>
@@ -84,7 +84,23 @@
                   </select>
                 </td>
               </tr>
-              
+              <tr>
+                <td>
+                  <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
+                  <input type='radio' id='status_priv' name='pub_priv' value='0'> private
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by Metadata:<br>
+                  <select  id='metadata_select'>
+                    <option>.....</option>
+                    <% for(n in md_names) { %>
+                      <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
+                    <% } %>
+                  </select>
+                </td>
+              </tr>
             </table>
             
           </div>

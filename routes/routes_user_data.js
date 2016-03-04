@@ -181,6 +181,7 @@ router.post('/export_data', helpers.isLoggedIn, function(req, res) {
                 rows     : JSON.stringify(ALL_DATASETS),
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.CONSTS),
+                md_names    : AllMetadataNames,
                 data_to_open: JSON.stringify(data_to_open),
 								message  : req.flash('nodataMessage'),
                 user: req.user, hostname: req.CONFIG.hostname

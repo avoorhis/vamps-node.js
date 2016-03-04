@@ -75,7 +75,23 @@
                       </select>
                     </td>
                   </tr>
-                  
+                  <tr>
+                  <td>
+                    <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
+                    <input type='radio' id='status_priv' name='pub_priv' value='0'> private
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    by Metadata:<br>
+                    <select  id='metadata_select'>
+                      <option>.....</option>
+                      <% for(n in md_names) { %>
+                        <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
+                      <% } %>
+                    </select>
+                  </td>
+                </tr>
                 </table>
                 
               </div>

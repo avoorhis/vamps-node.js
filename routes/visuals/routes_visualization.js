@@ -330,6 +330,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 subtitle : 'Dataset Selection Page',
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants   : JSON.stringify(req.CONSTS),
+                                md_names    : AllMetadataNames,
                                 filtering   : 0,
                                 portal_to_show : '',
                                 data_to_open: JSON.stringify(data_to_open),	  							              
@@ -2248,7 +2249,6 @@ function filter_project_tree_for_permissions(req, obj){
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     var portal = req.params.portal;
     console.log('in load_portal: '+portal)
-    var info = PROJECT_INFORMATION_BY_PID;
     SHOW_DATA = ALL_DATASETS;
     PROJECT_TREE_OBJ = [];
     //var all_pr_dat = []
@@ -2276,14 +2276,13 @@ router.get('/livesearch_projects/:q', function(req, res) {
   var q = req.params.q.toUpperCase();
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
-  var info = PROJECT_INFORMATION_BY_PID;
   console.log(q)
   PROJECT_TREE_OBJ = []
   //var all_pr_dat = []
   if(portal){
     prefixes = get_portal_prefixes(portal);  // all uppercase
     console.log('got prefixes')
-    if(q === '.....'){
+    if(q === '----'){
       SHOW_DATA.projects.forEach(function(prj) {
         ucname = prj.name.toUpperCase();
         for(p in prefixes){
@@ -2303,7 +2302,7 @@ router.get('/livesearch_projects/:q', function(req, res) {
       });
     }
   }else{
-      if(q === '.....'){          
+      if(q === '----'){  // this is value         
           PROJECT_TREE_OBJ = SHOW_DATA.projects
       }else{
           SHOW_DATA.projects.forEach(function(prj) {
@@ -2314,12 +2313,7 @@ router.get('/livesearch_projects/:q', function(req, res) {
           });
       }
   }
-  //console.log(PROJECT_TREE_PIDS)
-  // if(all_pr_dat.length == 0){
-  //   result = {'html':'no projects found','count':0};
-  // }else{
-  //   result = get_livesearch_html(all_pr_dat, info, req.user);
-  // }
+  
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 
@@ -2384,13 +2378,7 @@ router.get('/livesearch_env/:q', function(req, res) {
             });
       }
   }
-  // if(PROJECT_TREE.length == 0){
-  //   result = {'html':'no projects found','count':0};
-  // }else{
-  //   result = get_livesearch_html(PROJECT_TREE, info, req.user);
-  // }
-  //console.log(PROJECT_TREE_OBJ)
-  //console.log(PROJECT_TREE_OBJ.length)
+  
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 
@@ -2402,7 +2390,7 @@ router.get('/livesearch_target/:q', function(req, res) {
   var q = req.params.q;
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
-  var info = PROJECT_INFORMATION_BY_PID;
+  //var info = PROJECT_INFORMATION_BY_PID;
   //console.log(q)
   PROJECT_TREE_OBJ = []
   //var all_pr_dat = []
@@ -2444,11 +2432,113 @@ router.get('/livesearch_target/:q', function(req, res) {
           });
       }
   }
-  // if(all_pr_dat.length == 0){
-  //   result = {'html':'no projects found','count':0};
-  // }else{
-  //   result = get_livesearch_html(all_pr_dat, info, req.user);
-  // }
+  
+  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  res.json(PROJECT_TREE_PIDS.length);
+
+});
+//
+//
+//
+//
+//  LIVESEARCH STATUS PROJECTS FILTER
+//
+router.get('/livesearch_status/:q', function(req, res) {
+  console.log('in livesearch status')
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  var portal = myurl.query.portal;
+  //var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  PROJECT_TREE_OBJ = []
+  //var all_pr_dat = []
+
+  if(portal){
+      prefixes = get_portal_prefixes(portal);    // all uppercase
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        pparts = prj.name.split('_');
+        last_el = pparts[pparts.length - 1]
+        for(p in prefixes){
+          if((ucname.indexOf(prefixes[p]) != -1) && PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(q)){
+              PROJECT_TREE_OBJ.push(prj); 
+          }       
+        }
+      });
+   
+  }else{
+      SHOW_DATA.projects.forEach(function(prj) {
+          if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(q)){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+      });
+  }
+  
+  
+  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  res.json(PROJECT_TREE_PIDS.length);
+
+});
+//
+//
+//
+router.get('/set_units', function(req, res) {
+  //console.log('IN SET_UNITS')
+
+  if(req.query.hasOwnProperty('units')){
+    unit_choice = req.query.units
+  }else{
+    unit_choice = 'tax_silva108_simple';
+  }
+  
+});
+//
+//
+//  LIVESEARCH METADATA FILTER
+//
+router.get('/livesearch_metadata/:q', function(req, res) {
+  console.log('in livesearch metadata')
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  var portal = myurl.query.portal;
+  //var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  PROJECT_TREE_OBJ = []
+  //var all_pr_dat = []
+
+  if(portal){
+      prefixes = get_portal_prefixes(portal);    // all uppercase
+      SHOW_DATA.projects.forEach(function(prj) {
+        ucname = prj.name.toUpperCase();
+        pparts = prj.name.split('_');
+        last_el = pparts[pparts.length - 1]
+        dids = DATASET_IDS_BY_PID[prj.pid]
+        for(p in prefixes){
+          if((ucname.indexOf(prefixes[p]) != -1)){
+            for(i in dids){
+              md = AllMetadata[dids[i]]
+              if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
+                PROJECT_TREE_OBJ.push(prj); 
+              }
+            }
+          }       
+        }
+      });
+   
+  }else{
+
+      SHOW_DATA.projects.forEach(function(prj) {
+          dids = DATASET_IDS_BY_PID[prj.pid]
+          for(i in dids){
+            md = AllMetadata[dids[i]]
+            if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
+              PROJECT_TREE_OBJ.push(prj); 
+            }
+          }
+      });
+  }
+  
+  //console.log(AllMetadata)
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 

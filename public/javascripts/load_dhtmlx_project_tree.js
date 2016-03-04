@@ -20,8 +20,21 @@ if (typeof target_select !== 'undefined') {
       filter_by_target()
   });
 }
-
-
+var pub_priv = document.getElementsByName('pub_priv');
+if (typeof pub_priv[0] !== 'undefined') {
+  pub_priv[0].addEventListener('click', function () {
+      filter_by_status(1)
+  });
+  pub_priv[1].addEventListener('click', function () {
+      filter_by_status(0)
+  });
+}
+var metadata_select = document.getElementById('metadata_select');
+if (typeof metadata_select !== 'undefined') {
+  metadata_select.addEventListener('change', function () {
+      filter_by_metadata()
+  });
+}
 function load_dhtmlx_project_tree() {
     // http://docs.dhtmlx.com/tree__index.html
     projectTree = new dhtmlXTreeObject("projects_select_div","100%","100%",0);
@@ -125,9 +138,11 @@ function clear_filters() {
     var target = "/visuals/clear_filters";
   }
   document.getElementById('target_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
   document.getElementById('env_source_select').value='.....';
   document.getElementById('pname_search_id').value='';
-  
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
   var xmlhttp = new XMLHttpRequest();  
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -148,23 +163,62 @@ function clear_filters() {
   xmlhttp.send();
 }
 //
+//  SHOW/FILTER  RESULTS for project/substring Search
+//
+function showLiveProjectNames(str) {
+  var filtering = 1;
+  var datasets_local = {};
+  if (str.length==0) {
+    str = '----';  // cannot be empty string : (hopefully no-one will search for this)
+  }
+  document.getElementById('env_source_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
+  document.getElementById('target_select').value='.....';
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
+  if(portal_local){
+    var target = "/visuals/livesearch_projects/"+str+'?portal='+portal_local;
+  }else{
+    var target = "/visuals/livesearch_projects/"+str;
+  }
+  var xmlhttp = new XMLHttpRequest();  
+  xmlhttp.open("GET", target, true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+        pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }
+      document.getElementById("project_count_id").innerHTML = pcount;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
+      projectTree.deleteChildItems(0);
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");     
+    }
+  }
+  xmlhttp.send();
+}
+//
 //  SHOW/FILTER  RESULTS for environmental source Search
 //
 function filter_by_env() {
   var filtering = 1;
   var datasets_local = {};
   var env_source_id =  document.getElementById('env_source_select').value;
+  var target = "/visuals/livesearch_env/"+env_source_id;
   if(portal_local){
-    var target = "/visuals/livesearch_env/"+env_source_id+'?portal='+portal_local;
-  }else{
-    var target = "/visuals/livesearch_env/"+env_source_id;
+    target += '?portal='+portal_local;
   }
   var xmlhttp = new XMLHttpRequest();  
   
   
   document.getElementById('target_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
   document.getElementById('pname_search_id').value='';
-
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
@@ -190,15 +244,17 @@ function filter_by_target() {
   var filtering = 1;
   var datasets_local = {};
   var genetarget =   document.getElementById('target_select').value;
+  var target = "/visuals/livesearch_target/"+genetarget;
   if(portal_local){
-    var target = "/visuals/livesearch_target/"+genetarget+'?portal='+portal_local;
-  }else{
-    var target = "/visuals/livesearch_target/"+genetarget;
+    target += '?portal='+portal_local;
   }
   var xmlhttp = new XMLHttpRequest(); 
   
   document.getElementById('env_source_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
   document.getElementById('pname_search_id').value='';
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
@@ -218,36 +274,72 @@ function filter_by_target() {
   xmlhttp.send();
 }
 //
-//  SHOW/FILTER  RESULTS for project/substring Search
+// SHOW/FILTER  RESULTS for gene target Search
 //
-function showLiveProjectNames(str) {
+function filter_by_status(pub_status) {
   var filtering = 1;
   var datasets_local = {};
-  if (str.length==0) {
-    str = '----';  // cannot be empty string : (hopefully no-one will search for this)
-  }
-  document.getElementById('env_source_select').value='.....';
-  document.getElementById('target_select').value='.....';
+  var target = "/visuals/livesearch_status/"+pub_status;
   if(portal_local){
-    var target = "/visuals/livesearch_projects/"+str+'?portal='+portal_local;
-  }else{
-    var target = "/visuals/livesearch_projects/"+str;
+    target += '?portal='+portal_local;
   }
-  var xmlhttp = new XMLHttpRequest();  
+  var xmlhttp = new XMLHttpRequest(); 
+  
+  document.getElementById('env_source_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
+  document.getElementById('target_select').value='.....';
+  document.getElementById('pname_search_id').value='';
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-        pcount = xmlhttp.responseText;
+       pcount = xmlhttp.responseText;
         if(pcount == 0){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
-        }
+        }     
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");     
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
+    }
+  }
+  xmlhttp.send();
+}
+
+//
+// SHOW/FILTER  RESULTS for Metadata Search
+//
+function filter_by_metadata() {
+  var filtering = 1;
+  var datasets_local = {};
+  var metadata_item =   document.getElementById('metadata_select').value;
+  var target = "/visuals/livesearch_metadata/"+metadata_item;
+  if(portal_local){
+    target += '?portal='+portal_local;
+  }
+  var xmlhttp = new XMLHttpRequest(); 
+  
+  document.getElementById('env_source_select').value='.....';
+  document.getElementById('pname_search_id').value='';
+  document.getElementById('target_select').value='.....';
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
+  xmlhttp.open("GET", target, true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange=function() {
+    if (xmlhttp.readyState==4 ) {
+       pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }     
+      document.getElementById("project_count_id").innerHTML = pcount;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
+      projectTree.deleteChildItems(0);
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
     }
   }
   xmlhttp.send();
