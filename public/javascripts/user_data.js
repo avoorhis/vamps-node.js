@@ -6,7 +6,6 @@ $( document ).ready(function() {
 
     clear_filters()
 
-
 });
 
 

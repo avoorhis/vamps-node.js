@@ -281,7 +281,7 @@
 #livetip_chart {
   position: absolute;
   background-color: #cfc;
-  border: 2px solid #c9c;
+  border: 2px solid green;
   font-size:11px;
   padding:2px;
   border-radius: 4px;
@@ -290,8 +290,8 @@
 }
 #livetip_pjds {
   position: absolute;
-  background-color: tan;
-  border: 2px solid #c9c;
+  background-color: #cfc;
+  border: 2px solid green;
   border-radius: 4px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
