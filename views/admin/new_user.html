@@ -1,0 +1,36 @@
+<% include ../add_ins/begin.ejs %>
+
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+	
+	
+<div class="container">
+<br><br>
+	<div class="hero-unit">
+				<h3>Admin: Create New User</h3>     
+	</div>
+	
+  <br><br>
+  <div id='new_user_div' class='table' >All fields are required
+    <form id='' name='newuser_form' method='POST' action='new_user' >
+      <ul>
+      <li> <input id='username'       name='username'       type="text"     \> Username <span class='tiny_font'>(alphanumeric only. no spaces.)</span></li>
+      <li> <input id='password'       name='password'       type="text"     \> Password <span class='tiny_font'>(between 3 and 20 characters.)</span></li>
+      <li> <input id='userfirstname'  name='userfirstname'  type="text"     \> First Name</li>
+      <li> <input id='userlastname'   name='userlastname'   type="text"     \> Last Name</li>
+      <li> <input id='useremail'      name='useremail'      type="text"     \> Email <span class='tiny_font'>(must be correct email format)</span></li>  
+      <li> <input id='userinstitution'name='userinstitution'type="text"     \> Institution</li>
+      <li> <input id=''   type="submit" value='Enter' \></li>
+      </ul>
+    </form>
+    
+  </div>
+
+</div>
+	
+<% include ../add_ins/end.ejs %>
+   
+ </body>
+ </html>

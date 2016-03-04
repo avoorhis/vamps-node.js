@@ -2,7 +2,9 @@
 var express = require('express');
 var router = express.Router();
 var C = require('../public/constants');
+
 module.exports = {
+
 get_project_permissions: function(){
     var qSelectAccess = "SELECT user_id, project_id from access";
     return qSelectAccess;
@@ -296,6 +298,9 @@ get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
       console.log(seqQuery)
       return seqQuery;
   },
+  //
+  //
+  //
   
 } // end of module.exports
 

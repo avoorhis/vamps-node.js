@@ -17,21 +17,45 @@ if (typeof unit_selection !=="undefined")
 	//msg = 'You must select some datasets';
     //checkbox_name = "dataset_ids[]";
     // ds = document.getElementsByClassName('dataset_check');
-    var im_checked = 0;
-    $('.dataset_check').each(function(){
-     	var input = $(this);
-     	if(input.prop('checked') == true){
-     		im_checked += 1;
-     	}
-    })
+    dids = projectTree.getAllChecked();
+    //alert(checked)
+    if(dids){
+        didArray = dids.split(',');
+        form = document.getElementById('dataset_select_form');
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'dataset_ids';
+        input.value = JSON.stringify(didArray);
+        form.appendChild(input);
 
-    if(im_checked){
-	  		form = document.getElementById('dataset_select_form');
-	  		form.submit();
-		}else{
-				alert('Select some data');
-				return;
-		}
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'retain_data';
+        input.value = '1';
+        form.appendChild(input);
+
+        form.submit();
+      }else{
+        alert('Select some data');
+        return;
+      }
+
+return;
+  //   var im_checked = 0;
+  //   $('.dataset_check').each(function(){
+  //    	var input = $(this);
+  //    	if(input.prop('checked') == true){
+  //    		im_checked += 1;
+  //    	}
+  //   })
+
+  //   if(im_checked){
+	 //  		form = document.getElementById('dataset_select_form');
+	 //  		form.submit();
+		// }else{
+		// 		alert('Select some data');
+		// 		return;
+		// }
 	
     //check_form(dataset_select_form, msg, checkbox_name);
   });

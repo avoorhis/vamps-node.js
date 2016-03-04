@@ -1,7 +1,7 @@
 <% include ../add_ins/begin.ejs %>
 <div class="title fa fa-anchor">User Profile Page</div>
-  <% if (message.length > 0) { %>
-      <div class="message"><%= message %></div>
+  <% if (message) { %>
+      <div class="message alert_flash_message"><%= message %></div>
   <% } %><br>
   <!-- USER INFORMATION -->
   <div class="row">
@@ -11,7 +11,10 @@
       <h3><span class="fa fa-user"></span></h3>
 
         <p>
-          <strong>UserID</strong>: <%= user.user_id %><br>
+          <strong>UserID</strong>: <%= user.user_id %>
+          <% if(user.username !== 'guest'){ %>
+            <a class='pull-right' href='change_password'>Change Password</a><br>
+          <% } %>
           <strong>username</strong>: <%= user.username %><br>
           <strong>First Name</strong>: <%= user.first_name %><br>
           <strong>Last Name</strong>: <%= user.last_name %><br>
@@ -23,7 +26,8 @@
             <strong>Security Level</strong>: <%= user.security_level %> (Registered User)<br>
           <% }else { %>
             <strong>Security Level</strong>: <%= user.security_level %> (Guest)<br>
-          <% } %>  
+          <% } %> 
+          
         </p>
     </div>
   </div>

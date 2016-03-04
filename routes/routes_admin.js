@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var queries = require('./queries');
 
@@ -484,13 +485,153 @@ router.post('/grant_access', [helpers.isLoggedIn, helpers.isAdmin], function(req
 
       });
 
-
-
-
-
-
-
 });
+//
+//
+//
+router.get('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in new_user GET ADMIN')
 
+    res.render('admin/new_user', {
+              title     :'VAMPS Create new user',
+              message   : req.flash('message'),
+              user      : req.user,
+              hostname  : req.CONFIG.hostname
+    });
+});
+//
+//
+//
+router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in new_user --POST')
+    var username = req.body.username;
+    var password = req.body.password;
+    var email = req.body.useremail;
+    var first = req.body.userfirstname;
+    var last = req.body.userlastname;
+    var inst = req.body.userinstitution;
+    var finish = function(){
+      res.render('admin/new_user', {
+                            title     :'VAMPS Create new user',
+                            message   : req.flash('message'),
+                            user: req.user,
+                            hostname: req.CONFIG.hostname
+                          });
+
+    };
+    if(password.length < 3 || password.length > 12){
+        req.flash('message', 'The password must be between 3 and 20 characters.');
+    }
+    if(helpers.checkUserName(username)){
+        req.flash('message', "The username cannot have any special characters (including <space> and underscore '_'). Alphanumeric only.");
+    }
+    if(username.length < 3 || username.length > 15){
+        req.flash('message', 'The username must be between 3 and 15 characters. Alphanumeric only.');
+    }
+    if( email.indexOf("@") == -1 || email.length < 3 || email.length > 100 ){
+        req.flash('message', 'The email address is empty or the wrong format.');
+    }
+    if( first.length < 1 || first.length > 50 ||  last.length < 1 || last.length > 50 ){
+        req.flash('message', 'Both first and last names are required.');
+    }
+    if( inst.length < 1 || inst.length > 50){
+        req.flash('message', 'The Institution name is required.');
+    }else{
+
+
+
+        req.db.query("select * from user where username = '"+username+"'",function(err,rows){
+                if (err) {
+                  return done(null, false, { message: err });
+                }
+                if (rows.length) {
+                    //console.log('That username is already taken.');
+                    return done(null, false, req.flash('message', 'That username is already taken.'));
+                } else {
+
+                    var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at, last_sign_in_at)";
+                    insertQuery +=    " VALUES ('" + username +"', '"+ 
+                                        helpers.generateHash(password) +"', '"+ 
+                                        first +"', '"+ 
+                                        last +"', '"+ 
+                                        email +"', '"+ 
+                                        inst +"',"+
+                                        " 1,"+
+                                        " 1,"+
+                                        " CURRENT_TIMESTAMP(), "+
+                                        " '' )";
+
+                    console.log(insertQuery);
+                    req.db.query(insertQuery, function(err,rows){
+                        user_id = rows.insertId;
+                        ALL_USERS_BY_UID[user_id] = {}
+                        ALL_USERS_BY_UID[user_id].email       = email;
+                        ALL_USERS_BY_UID[user_id].username    = username;
+                        ALL_USERS_BY_UID[user_id].last_name   = last;
+                        ALL_USERS_BY_UID[user_id].first_name  = first;
+                        ALL_USERS_BY_UID[user_id].institution = inst;
+                       
+                        req.flash('message', 'Success (user:'+username+'; uid:'+user_id+')');
+                        finish();
+                        return;
+
+                    });
+                }
+        });
+        return;
+         
+    }    
+    finish();
+});
+//
+//
+//
+router.get('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in reset_user_password');
+    res.render('admin/new_password', {
+              title     :'VAMPS Reset User Password',
+              message   : req.flash('message'),
+              user: req.user,
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+});
+router.post('/reset_user_password', [helpers.isLoggedIn, helpers.isAdmin], function(req, res) {
+    console.log('in reset_user_password --POST');
+    console.log(req.body)
+    var uid = req.body.user_id;
+    var password = req.body.password;
+    var finish = function(){
+      res.render('admin/new_password', {
+              title     :'VAMPS Reset User Password',
+              message   : req.flash('message'),
+              user: req.user,
+              user_info: JSON.stringify(ALL_USERS_BY_UID),
+              hostname: req.CONFIG.hostname, // get the user out of session and pass to template
+            });
+
+    };
+    if(password.length < 3 || password.length > 12){
+        req.flash('message', 'FAILED: The password must be between 3 and 20 characters.');
+    }else if(uid == ''){
+        req.flash('message', 'FAILED: You must select a user.');
+    }else{
+        
+        var updateQuery = "UPDATE user set encrypted_password='"+helpers.generateHash(password)+"' where user_id='"+uid+"'";
+        console.log(updateQuery);
+        req.db.query(updateQuery, function(err,rows){
+          if (err) {
+              req.flash('message', 'FAILED: sql error '+err);
+          }else{
+              req.flash('message', 'Success ( uid: '+uid+' )');
+          }
+            finish();
+            
+        });
+        return;
+
+    }
+    finish();
+});
 
 module.exports = router;

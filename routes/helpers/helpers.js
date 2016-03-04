@@ -7,6 +7,7 @@ var transporter = nodemailer.createTransport();
 var queries = require('../queries');
 var util = require('util');
 var path  = require('path');
+var crypto = require('crypto')
 
 module.exports = {
 
@@ -43,8 +44,6 @@ module.exports = {
   // route middleware to make sure a user is an aministrator
   isAdmin: function (req, res, next) {
 
-      //if user is authenticated in the session, carry on
-      
       if (req.user.security_level === 1) {
         console.log("Hurray! USER is an Admin");
         return next();
@@ -539,3 +538,24 @@ module.exports.mysql_real_escape_string = function (str) {
         }
     });
 };
+
+module.exports.checkUserName = function(username) {   // SAME FXN IN PASSPORT
+    reg = /[^A-Za-z0-9]/;   // allow alphanumeric ONLY!
+    a = (reg.test(username));  
+    //console.log(a)  
+    return a;
+};
+module.exports.generateHash = function(password) {
+    //return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    var cipher = crypto.createCipher('aes-256-cbc', 'salt');
+    cipher.update(password, 'utf8', 'base64');
+    return cipher.final('base64');
+};
+
+module.exports.compareStrings_alpha = function(a, b) {
+  // Assuming you want case-insensitive comparison
+  a = a.toLowerCase();
+  b = b.toLowerCase();
+
+  return (a < b) ? -1 : (a > b) ? 1 : 0;
+}

@@ -84,7 +84,8 @@ Start the server:
   * run 'npm start' from the base of the vamps-node.js directory
   * or use the script './vamps-launcher.sh' |start|stop|status|
   * If you've installed the schema with data (db_schema_w_test_data.sql), you can log in with the guest
-  account (username:'guest'; password:'guest'), otherwise you should register a new account.
+  account (username:'guest'; password:'guest') or the admin account (username:'admin'; password:'admin').
+  You can change the password(s) using the admin account. Otherwise you should register a new account.
 
 Optional: Install 'nodemon' to keep from restarting server after changes to the code.
 * sudo npm install nodemon -g
@@ -120,7 +121,7 @@ For more information see the help files at https://docs.vagrantup.com/v2/getting
 and examine the Vagrantboot4568.sh and Vagrantfile in the vamps-node.js main directory.
 
 To log into the virtual box running the node server (for maintenance or to update the source code):
-* Run the command 'vagrant ssh' and then 'cd vamps-node.js' to enter the base of the running server
+* Run the command 'vagrant ssh' (requires ssh in the $PATH variable) and then 'cd vamps-node.js' to enter the base of the running server
 The server should have started automatically and can be stopped, started or the status checked:
 using "./vamps-launcher.sh stop|start|status"
 

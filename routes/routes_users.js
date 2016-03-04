@@ -3,7 +3,10 @@ var router = express.Router();
 var passport = require('passport');
 var helpers = require('./helpers/helpers');
 var fs = require('fs-extra');
+var async = require('async');
+//var crypto = require('crypto')
 var path = require('path');
+//var nodemailer = require('nodemailer');
 //var session   = require('express-session')
 //var flash    = require('connect-flash');
 //var LocalStrategy = require('passport-local').Strategy;
@@ -70,7 +73,8 @@ router.get('/signup', function(req, res) {
         // render the page and pass in any flash data if it exists
         res.render('user_admin/signup', { 
                             title: 'signup',
-                            message: req.flash('signupMessage'), user: req.user,hostname: req.CONFIG.hostname });
+                            message: req.flash('message'), user: req.user,hostname: req.CONFIG.hostname 
+        });
 });
 
 // process the signup form
@@ -114,7 +118,30 @@ router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
+// =====================================
+// CHANGE PASSWORD =====================
+// =====================================
+router.get('/change_password', helpers.isLoggedIn, function(req, res) {
+  console.log('In change_password');
 
+
+  res.render('user_admin/change_password', {
+              title     :'change_password',
+              message   : req.flash('message'), 
+              user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
+            });  
+});
+//
+//
+//
+router.post('/change_password',  passport.authenticate('local-reset', { 
+                                        successRedirect: '/users/login',        successFlash: true,
+                                        failureRedirect: '/users/change_password',failureFlash: true 
+                                 })
+);
+//
+//
+//
 router.get('/:id', helpers.isAdmin, function(req, res) {
    
    var uid = req.params.id
@@ -141,6 +168,5 @@ router.get('/:id', helpers.isAdmin, function(req, res) {
       });
 
 });
-
 
 module.exports = router;

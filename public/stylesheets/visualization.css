@@ -296,7 +296,9 @@
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
 }
-
+.tooltip_table td {
+    padding:0 3px;
+}
 .chart_tooltip:hover{
     background:yellow;
 }
