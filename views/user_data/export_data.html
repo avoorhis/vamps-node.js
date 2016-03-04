@@ -9,6 +9,7 @@
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = ""; // no portal stuff here
 </script>
+<link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <div class='title title_color' id='export_data_title_div'>Export Data</div>
 
 <div class='subtitle'>Dataset Selection Page</div>
@@ -85,8 +86,8 @@
           
           <td>
             <div id='projects_select_div'>
-				
-			      </div>
+              <span id='nodata_span' style='visiblity:hidden'></span>
+            </div>
           </td>
 		      <td class='td_top'>			  
 			  
@@ -105,10 +106,12 @@
    
 
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/user_data.js"></script>
+
 <script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
+<script type="text/javascript" src="/javascripts/load_dhtmlx_project_tree.js"></script>
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>
-<script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script>
+<!-- <script type="text/javascript" src="/javascripts/project_dataset_tree.js"></script> -->
 <script>
     
     // code for tooltips
@@ -211,5 +214,6 @@
                   
      });              
 </script>
+<script type="text/javascript" src="/javascripts/user_data.js"></script>
  </body>
  </html>

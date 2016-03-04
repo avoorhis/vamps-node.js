@@ -133,10 +133,16 @@ function clear_filters() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-      document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
-      document.getElementById('selected_ds_count_id').innerHTML = 0
-      projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
+        pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }
+        document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
+        document.getElementById('selected_ds_count_id').innerHTML = 0
+        projectTree.deleteChildItems(0);
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
     }
   }
   xmlhttp.send();
@@ -163,8 +169,13 @@ function filter_by_env() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-        
-      document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
+      pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }  
+      document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
@@ -192,8 +203,13 @@ function filter_by_target() {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-            
-      document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
+       pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }     
+      document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
@@ -222,8 +238,13 @@ function showLiveProjectNames(str) {
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
     if (xmlhttp.readyState==4 ) {
-
-      document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
+        pcount = xmlhttp.responseText;
+        if(pcount == 0){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }
+      document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
       projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");     

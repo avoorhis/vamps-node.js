@@ -90,8 +90,9 @@
           </div>
         </td>
         <td>
-           <div id='projects_select_div'>          
-           </div>
+            <div id='projects_select_div'>
+              <span id='nodata_span' style='visiblity:hidden'></span>
+            </div>
             <!-- 
             <div id='projects_select_div'>
 				      <!-- project tree is first loaded on document.ready{ clear_filters() } see below
@@ -124,9 +125,6 @@
 <% include ../add_ins/end.ejs %>
 
 <script type="text/javascript" src="/javascripts/global.js"></script>
-
-
-
 <script type="text/javascript" src="/javascripts/dhtmlx/dhtmlxtree.js" ></script>
 <script type="text/javascript" src="/javascripts/load_dhtmlx_project_tree.js"></script>
 <script type="text/javascript" src="/javascripts/check_form_pg1.js"></script>

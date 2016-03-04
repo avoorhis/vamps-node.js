@@ -1,4 +1,16 @@
 
+
+$( document ).ready(function() {
+
+    load_dhtmlx_project_tree( )
+
+    clear_filters()
+
+
+});
+
+
+
 var view_saved_datasets_btn = document.getElementById('view_saved_datasets_btn') || null;
 if (view_saved_datasets_btn !== null) {
 	view_saved_datasets_btn.addEventListener('click', function () {
