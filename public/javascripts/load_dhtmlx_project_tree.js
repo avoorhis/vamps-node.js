@@ -315,7 +315,7 @@ function filter_by_metadata() {
   var filtering = 1;
   var datasets_local = {};
   var metadata_item =   document.getElementById('metadata_select').value;
-  var target = "/visuals/livesearch_metadata/"+metadata_item;
+  var target = '/visuals/livesearch_metadata/'+encodeURIComponent(metadata_item);
   if(portal_local){
     target += '?portal='+portal_local;
   }

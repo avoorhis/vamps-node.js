@@ -2673,13 +2673,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     var json = {}
     json.id = id;
     json.item = []
-    //console.log(ALL_DATASETS.projects)
- //    INITIALIZING ALL_DATASETS
- // INITIALIZING PROJECT_ID_BY_DID
- // INITIALIZING PROJECT_INFORMATION_BY_PID
- // INITIALIZING PROJECT_INFORMATION_BY_PNAME
- // INITIALIZING DATASET_IDS_BY_PID
- // INITIALIZING DATASET_NAME_BY_DID
+   
 
     if(id==0){
         //console.log(PROJECT_INFORMATION_BY_PID)

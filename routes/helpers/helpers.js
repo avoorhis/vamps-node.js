@@ -275,7 +275,9 @@ module.exports.run_select_datasets_query = function(rows){
          }
     }
     AllMetadata = clean_metadata;
-    AllMetadataNames.sort();
+    AllMetadataNames.sort(function(a, b){
+          return module.exports.compareStrings_alpha(a, b);
+    });
 
     connection.query(queries.get_project_permissions(), function(err, rows, fields){ 
       //console.log(qSequenceCounts)
