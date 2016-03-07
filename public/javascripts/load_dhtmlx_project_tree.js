@@ -82,6 +82,9 @@ function onNodeSelect(id){
     if(openState < 1){
         // un-select all on close node
         projectTree.setSubChecked(id, false)
+    }else{
+        projectTree.setSubChecked(id, true)
+        projectTree.setCheck(id,false); 
     }
     set_dataset_count(id)
 }
