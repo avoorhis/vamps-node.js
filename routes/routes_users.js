@@ -24,7 +24,7 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
   			 helpers.render_error_page(req,res,msg);
 		   } else {
 		      res.render('user_admin/users_index', { 
-                  title: 'users', 
+                  title: 'VAMPS:users', 
                   rows : rows, 
                   user: req.user,hostname: req.CONFIG.hostname,  message:''  
 				  });
@@ -33,7 +33,7 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 	    });
 	}else{
         res.render('denied', { 
-                title: 'users', user: req.user,hostname: req.CONFIG.hostname,
+                title: 'VAMPS:users', user: req.user,hostname: req.CONFIG.hostname,
 							  message: req.flash('nopermissionMessage', 'Permission Denied') 
 		    });
 
@@ -52,7 +52,7 @@ router.get('/login', function(req, res) {
     //var url = req.session.returnTo || 'user_admin/login'
     
     res.render('user_admin/login', { 
-                      title: 'login',
+                      title: 'VAMPS:login',
                       message: req.flash('loginMessage'), 
                       user: req.user,hostname: req.CONFIG.hostname });
 });
@@ -72,7 +72,7 @@ router.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
         res.render('user_admin/signup', { 
-                            title: 'signup',
+                            title: 'VAMPS:signup',
                             message: req.flash('message'), user: req.user,hostname: req.CONFIG.hostname 
         });
 });
@@ -98,7 +98,7 @@ router.get('/profile', helpers.isLoggedIn, function(req, res) {
                 if(err) {console.log(err);} // ug+rwx
                 else{
                   res.render('user_admin/profile', {
-                      title:'profile',
+                      title:'VAMPS:profile',
                       message: req.flash('loginMessage'), 
                       user : req.user,hostname: req.CONFIG.hostname // get the user out of session and pass to template
                   });
@@ -126,7 +126,7 @@ router.get('/change_password', helpers.isLoggedIn, function(req, res) {
 
 
   res.render('user_admin/change_password', {
-              title     :'change_password',
+              title     :'VAMPS:change_password',
               message   : req.flash('message'), 
               user      : req.user, hostname: req.CONFIG.hostname // get the user out of session and pass to template
             });  
@@ -156,7 +156,7 @@ router.get('/:id', helpers.isAdmin, function(req, res) {
           helpers.render_error_page(req,res,msg);
         } else {
             res.render('users/profile', {
-              title     :'profile',
+              title     :'VAMPS:profile',
               message   : req.flash('message'), 
               projects  : rows,
               user_info : JSON.stringify(ALL_USERS_BY_UID[uid]),

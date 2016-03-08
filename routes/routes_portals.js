@@ -38,6 +38,7 @@ router.get('/visuals_index/:portal', function(req, res) {
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
+            md_names    : AllMetadataNames,
             filtering : 0,
             portal_to_show : portal,
             data_to_open : JSON.stringify({}),
