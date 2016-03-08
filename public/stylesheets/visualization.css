@@ -63,6 +63,7 @@
     border:1px solid black;
     top:50px;
     padding:0px 10px 5px 3px;
+    z-index:-1;
 }
 #show_selected_datasets_div {
     
