@@ -12,7 +12,7 @@ $(document).ready(function(){
 $.fn.scrollView = function () {
     return this.each(function () {
         $('html, body').animate({
-            scrollTop: $(this).offset().top -70
+            scrollTop: $(this).offset().top - 80
         }, 500);
     });
 }
@@ -2088,6 +2088,15 @@ function save_configuration(ds_local, user){
     };
     xmlhttp.send(args);   
 }
+
+function reload_view_form(){
+  
+  form = document.getElementById('reload_form_id');
+  form.submit();
+  return null
+}
+
+
 
 
 

@@ -18,19 +18,49 @@
   var cts_local  = JSON.parse('<%- constants %>');
   var user_local  = '<%= user.username %>';
 </script>
-<div id='taxdepth_domains_div' >
+
+
+<div id='info_bar' class='navbar-fixed-top ' >
   <small>
+    <div id='view_selection_links'>
+      <ul>
+        <li><form id='back_form_id' name='' method='POST' action='unit_selection'>
+                  <a class='link_black' href='#' onclick="document.getElementById('back_form_id').submit();return false;">&lt;&lt;--back</a>
+                  <input type='hidden' name='retain_data' value='1' >
+                  <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+            </form>
+        </li>
+        <li>
+          <form class='' id='reload_form_id' name='reload_form' method='POST' action='view_selection'>
+            <!-- <button class='btn btn-link' type='submit'>Reload Page</button> -->
+            <a href='#' class='link_black' onclick="reload_view_form()">Reload Page</a>
+            <input type='hidden' name='domains' value='<%= pi.domains %>'>
+            <input type='hidden' name='tax_depth' value='<%= pi.tax_depth %>'>
+            <input type='hidden' name='unit_choice' value='<%= pi.unit_choice %>'>
+            <input type='hidden' name='selected_metadata' value='<%= pi.metadata %>'>
+            <input type='hidden' name='include_nas' value='<%= pi.include_nas %>'>
+            <input type='hidden' name='normalization' value='<%= pi.normalization %>'>
+            <input type='hidden' name='selected_distance' value='<%= pi.selected_distance %>'>
+            <input type='hidden' name='min_range' value='<%= pi.min_range %>'>
+            <input type='hidden' name='max_range' value='<%= pi.max_range %>'>
+            <input type='hidden' name='retain_data' value='1' >
+            <input type='hidden' name='dataset_ids' value='<%= JSON.stringify(items.ids) %>' >
+          </form>
+        </li>
+        
+        <li><a href='#' id='save_config_id' style='' class='link_black'>Save Configuration</a></li>
+        <li><span id='save_config_confirmation' ></span></li>
+      </ul>
+    </div>
+
+    <div id='viz_info'>
     <% if(pi.custom_taxa.length == 1 && pi.custom_taxa[0] == 'NA'){ %>
         Taxonomic Depth: <%= pi.tax_depth %> --- 
         Included Domains: <%= pi.domains %>
     <% }else{ %>
         Taxonomic Depth: Custom
     <% } %>
-    <span id='save_config_confirmationXX' style='float:right;width:350px;'>
-      <a href='#' id='save_config_id' style='' class=''>Save Configuration</a>
-      <span id='save_config_confirmation' style=''></span>
-    </span>
-
+    </div>
   </small>
 </div>
 
@@ -39,8 +69,10 @@
 <div class='subtitle'>Display Choices</div>
 <!-- Need a form here for the back button to retain state -->
 <!-- TODO add state for tax selection and metadata selection -->
+<!-- 
 <table class='button_row'>
 <tr><td>  
+
 <form id='back_form_id' name='' method='POST' action='unit_selection'>
 			<a href='' onclick="document.getElementById('back_form_id').submit();return false;">&lt;&lt;--back</a>
 			<input type='hidden' name='retain_data' value='1' >
@@ -63,6 +95,7 @@
 </form>
 </t></tr>
 </table>
+ -->
 <% if(message){ %>
   <div class="alert_flash_message" ><%= message %></div>
 <% } %>

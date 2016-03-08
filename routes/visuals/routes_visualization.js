@@ -66,6 +66,15 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   helpers.start = process.hrtime();
   
+//   req.body: view_selection-->>
+// { unit_choice: 'tax_silva108_simple',
+//   domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+//   tax_depth: 'phylum',
+//   select_type: 'clade',
+//   meta_ckbx_toggle: 'all',
+//   selected_metadata: [ 'sample_source', 'patient', 'gene_target' ] }
+// req.body: view_selection
+
   if(req.body.resorted === '1'){
     req.flash('message','The dataset order has been updated.');
     dataset_ids = req.body.ds_order;

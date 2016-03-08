@@ -24,6 +24,24 @@
     text-align:left;
 }
 
+
+
+#view_selection_links {
+    padding:0;
+   
+}
+#view_selection_links li {
+    
+    /*width:350px;*/
+    /*list-style-type: none;*/
+    float: left;
+    display: inline;
+    padding:0 10px;
+}
+#viz_info {
+    float:right;
+}
+
 #units_select_div {    
     overflow: auto;
 }
@@ -39,10 +57,12 @@
     list-style-type: none;
     margin-left: -30px;
 }
-#taxdepth_domains_div {
+#info_bar {
+    position:fixed;
+    background:darkgrey;
     border:1px solid black;
     top:50px;
-    padding:0 3px 0 3px;
+    padding:0px 10px 5px 3px;
 }
 #show_selected_datasets_div {
     

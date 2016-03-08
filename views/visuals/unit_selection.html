@@ -8,10 +8,23 @@
   var unit_choice = '<%= unit_choice %>';
   var user_local     = '<%= user.username %>';
 </script>
-  <div class='title title_color'>Community Visualization</div>
-  <div class='subtitle'>Units Selection Page</div>
+<div id='info_bar' class='navbar-fixed-top ' >
+  <small>
+    
+      <div id='view_selection_links'>
+        <ul>
+          <li><a href='#' class='link_black' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a></li>
+        </ul>
+      </div>
+    
+  </small>   
+  
 
-<a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
+</div>
+  <div class='title title_color'>Community Visualization</div>
+  <div class='subtitle'>Select Units, Taxonomic Depth and Metadata</div>
+
+
 <% if(messages.info){ %>
   <div class="alert_flash_message"><%= message %></div>
 <% } %> 
@@ -55,7 +68,7 @@
             Tree Selection Mode:
             <input type='radio' name='select_type' id='select_type_individual' value='individual' onclick="change_mode_dhtmlx('individual')"> Individual&nbsp;
             <input type='radio' name='select_type' id='select_type_clade' value='clade' onclick="change_mode_dhtmlx('clade')"> Clade |
-            <small>(double-click taxon names to expand lower levels.)</small>
+            <small>(double-click taxon names to expand deeper levels.)</small>
             <div id="custom_treebox" ></div>
 
           </div>

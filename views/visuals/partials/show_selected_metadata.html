@@ -4,8 +4,8 @@ Here are your selected metadata:<br>
 
 	<div id='dataset_names_div' class='small_font'>
 	    <ul>
-	    	<% if(Object.keys(pi.metadata).length == 0){ %>
-	    		<li>None Selected</li>
+	    	<% if(pi.metadata == '' || Object.keys(pi.metadata).length == 0){ %>
+	    			<li>None Selected</li>
 				<% }else{ %>
 			    <% for (var i in pi.metadata){ %>
 			        <li>  <%= parseInt(i)+1 %> - <%= pi.metadata[i] %></li>
