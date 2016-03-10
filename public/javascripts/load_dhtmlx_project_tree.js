@@ -40,19 +40,22 @@ function load_dhtmlx_project_tree() {
     projectTree = new dhtmlXTreeObject("projects_select_div","100%","100%",0);
     projectTree.setImagesPath("/images/dhtmlx/imgs/");
     projectTree.enableCheckBoxes(true);
-    projectTree.enableTreeLines(true); // true by default
-    projectTree.enableTreeImages(false);
+    
     //projectTree.enableAutoTooltips(true);
     //projectTree.enableDHTMLXTooltips(true);
+    
+    projectTree.enableTreeLines(true); // true by default
+    projectTree.enableTreeImages(false);
     projectTree.attachEvent("onCheck",function(id){
-        on_check_dhtmlx(id)
+      on_check_dhtmlx(id)
     });
     projectTree.attachEvent("onDblClick", function(id){
-        expand_tree_dhtmlx(id)
+      expand_tree_dhtmlx(id)
     });
     projectTree.attachEvent("onOpenEnd",onNodeSelect);
     projectTree.setXMLAutoLoading("/visuals/project_dataset_tree_dhtmlx");
-	projectTree.setDataMode("json");
+    projectTree.setDataMode("json");
+    
 
 	// MOVED TO CLEAR FILTERS:: loads first level of tree
 	//projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");
@@ -160,7 +163,10 @@ function clear_filters() {
         document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
         document.getElementById('selected_ds_count_id').innerHTML = 0
         projectTree.deleteChildItems(0);
+        
         projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
+        
+        
     }
   }
   xmlhttp.send();

@@ -493,7 +493,7 @@ module.exports.assignment_finish_request = function(res, rows1, rows2, status_pa
             throw err; // or return an error message, or something
           else
             new_taxonomy = new CustomTaxa(results);
-            new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
+            //new_taxonomy.make_html_tree_file(new_taxonomy.taxa_tree_dict_map_by_id, new_taxonomy.taxa_tree_dict_map_by_rank["domain"]);    
         });
         console.log(' UPDATED new_taxonomy');
 

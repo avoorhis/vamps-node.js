@@ -101,10 +101,27 @@
 
           
           <td>
-            <div id='projects_select_div'>
-              <span id='nodata_span' style='visiblity:hidden'></span>
+            <div id='projects_only_div'>
+              <% for(i in info){ %>
+                <li><input title='<%= i %>' type='checkbox' name='project[]' value='<%= i %>'> <%= info[i].project %></li>
+              <% } %>
             </div>
+            <div id='projects_select_div'>
+
+              <div style='float:right;'> 
+                <input type='radio' checked name='project_view' value='projects_only'> projects only
+                <input type='radio' name='project_view' value='datasets'> datasets
+              </div>
+
+            
+            
+              
+              <span id='nodata_span' style='visiblity:hidden'></span>
+            </div> 
+
           </td>
+
+
 		      <td class='td_top'>			  
 			  
               See the next page for a list of choices:

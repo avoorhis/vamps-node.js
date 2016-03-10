@@ -430,7 +430,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
      };
         
     
-    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
@@ -514,7 +514,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
   // RScript --no-restore --no-save /usr/local/www/vampsdev/projects/vamps-node.js/public/scripts/fheatmap.R 
   //    /usr/local/www/vampsdev/projects/vamps-node.js/tmp/avoorhis_1443031027846_count_matrix.biom morisita_horn phylum avoorhis_1443031027846    
   
-  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
   
   
   console.log(options.scriptPath+'/fheatmap.R '+options.args.join(' '));
@@ -615,7 +615,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
     };
    
-    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var dendrogram_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -692,7 +692,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
     var tmp_path = path.join(process.env.PWD,'tmp');
-    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
     md1 = req.body.md1 || "Project";
     md2 = req.body.md2 || "Description";
@@ -761,7 +761,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(pwd,'tmp', biom_file_name);
   
-  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
   var mapping_file_name = ts+'_metadata.txt';
   var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
@@ -812,8 +812,8 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     //console.log(req.CONFIG.PATH)
                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
                     //console.log(req.CONFIG.PYTHONPATH)
-                    console.log(path.join(pwd,'logs','node.log'))
-                    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+                    console.log(path.join(pwd,'logs','visualization.log'))
+                    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
                     var exec = require('child_process').exec;
                     cmd = options2.scriptPath+'/make_emperor_custom.py'
@@ -895,7 +895,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var biom_file_name = ts+'_count_matrix.biom';
   var biom_file = path.join(pwd,'tmp', biom_file_name);
   
-  var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+  var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
 
   var mapping_file_name = ts+'_metadata.txt';
   var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
@@ -940,8 +940,8 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
                     //console.log(req.CONFIG.PATH)
                     //console.log(req.CONFIG.LD_LIBRARY_PATH)
                     //console.log(req.CONFIG.PYTHONPATH)
-                    console.log(path.join(pwd,'logs','node.log'))
-                    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+                    console.log(path.join(pwd,'logs','visualization.log'))
+                    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
                     //var emperor_process = spawn( options2.scriptPath+'/make_emperor.py', options2.args, {
                     var exec = require('child_process').exec;
                     cmd = options2.scriptPath+'/make_emperor_custom.py'
@@ -1190,7 +1190,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
     };
 
    
-    var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
     // script will remove data from mysql and datset taxfile
     console.log(options.scriptPath+'alpha_diversity.py '+options.args.join(' '));
     var alphadiv_process = spawn( options.scriptPath+'/alpha_diversity.py', options.args, {
@@ -1281,7 +1281,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     }else{
       //ERROR
     }
-    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
     console.log(options.scriptPath+script+' '+options.args.join(' '));
     var phyloseq_process = spawn( options.scriptPath+script, options.args, {
@@ -2124,7 +2124,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     
-    var log = fs.openSync(path.join(pwd,'logs','node.log'), 'a');
+    var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     
@@ -2568,67 +2568,6 @@ router.get('/set_units', function(req, res) {
 //
 //
 //
-// router.get('/tax_custom_fancytree', function(req, res) {
-//     console.log('in fancytree')
-//     var myurl = url.parse(req.url, true);
-//     var id = myurl.query.id
-//     console.log('id='+id)
-    
-//  // {"title":"Bacteria","key":"1","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-// //  {"title":"Archaea","key":"214","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-// //  {"title":"Unknown","key":"338","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true},
-// //  {"title":"Organelle","key":"353","rank":"domain","level":"1","tooltip":"domain",lazy: true,"selected":true,"folder":true}
-//     json = []
-//     if(id == undefined || id == 'undefined' || id == 0){
-//         for( n in new_taxonomy.taxa_tree_dict_map_by_rank["domain"]){
-//             node = new_taxonomy.taxa_tree_dict_map_by_rank["domain"][n];
-//             if(node.children_ids.length === 0){
-//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true})
-//             }else{
-//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,selected:true,lazy:true,folder:true})
-//             }
-//         }
-//     }else{
-//         for(n in new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids){
-//             node_id = new_taxonomy.taxa_tree_dict_map_by_id[id].children_ids[n];
-//             node = new_taxonomy.taxa_tree_dict_map_by_id[node_id]
-//             //console.log(node)
-//             if(node.children_ids.length === 0){
-//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank})
-//             }else{
-//                 json.push({title:node.taxon,key:node.node_id,tootltip:node.rank,lazy:true,folder:true})
-//             }
-//         }
-//     }
-//  res.send(json)
-// });
-// router.get('/project_tree_dhtmlx', function(req, res) {
-//     console.log('in project_tree_dhtmlx')
-//     //console.log(PROJECT_INFORMATION_BY_PID)
-//     var myurl = url.parse(req.url, true);
-//     var pid = myurl.query.id
-//     console.log('pid='+pid)
-//     var json = {}
-//     json.id = pid;
-//     json.item = []
-//     if(pid==0){
-//       for( n in PROJECT_INFORMATION_BY_PID){
-//             var p = PROJECT_INFORMATION_BY_PID[n]
-//             json.item.push({id:p.pid,text:p.project,tooltip:'ttip',checked:false,child:1,item:[]})
-//         }
-//     }else{
-//         for(n in DATASET_IDS_BY_PID[pid]){
-//           var did = DATASET_IDS_BY_PID[pid][n]
-//           var dname = DATASET_NAME_BY_DID[did]
-//           console.log(dname)
-//           json.item.push({id:did,text:dname,tooltip:'ttip',child:0})
-//         }
-
-//     }
-//     console.log(json)
-//     res.json(json)
-
-// });
 router.get('/tax_custom_dhtmlx', function(req, res) {
     //console.log('IN tax_custom_dhtmlx')
     var myurl = url.parse(req.url, true);
@@ -2735,6 +2674,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     //console.log(json.item)
     res.json(json)
 });
+
 module.exports = router;
 
 /**

@@ -103,19 +103,34 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		if(req.body.fasta){
 
 		}
-		for(var fmt in req.body){
-			if(fmt != 'dids'){
-				requested_files.push(fmt);
+		var timestamp = +new Date();  // millisecs since the epoch!
+		var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);   
+		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); // create dir if not exists
+		helpers.mkdirSync(user_dir);  
+		for(var format in req.body){
+			if(format === 'fasta'){
+				requested_files.push(create_fasta_file(req, user_dir, timestamp, dids));
+			}
+			if(format === 'taxbytax'){
+				requested_files.push(create_taxbytax_file(req, user_dir, timestamp, dids));
+			}
+			if(format === 'taxbyref'){
+				requested_files.push(create_taxbyref_file(req, user_dir, timestamp, dids));
+			}
+			if(format === 'taxbyseq'){
+				requested_files.push(create_taxbyseq_file(req, user_dir, timestamp, dids));
+			}
+			if(format === 'metadata'){
+				requested_files.push(create_metadata_file(req, user_dir, timestamp, dids));
 			}
 		}
-		console.log(requested_files);
-		create_fasta_file(req,dids);
+		//console.log(requested_files);
 
 		res.render('user_data/export_selection', {
 		      title: 'VAMPS: Export Choices',
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-		      message: "Your files are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
+		      message: "Your file(s) are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
 		      user: req.user, hostname: req.CONFIG.hostname
 		});
 
@@ -163,6 +178,7 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
 //
 router.post('/export_data', helpers.isLoggedIn, function(req, res) {
   var data_to_open = {};
+  SHOW_DATA = ALL_DATASETS;
   if(req.body.data_to_open){
     // open many projects
     data_to_open = JSON.parse(req.body.data_to_open);
@@ -297,7 +313,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 
 		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
 		var spawn = require('child_process').spawn;
-		var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+		var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 		var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		var output = '';
 		validate_process.stdout.on('data', function (data) {
@@ -469,7 +485,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 		}
     console.log(options.args.join(' '));
 			var spawn = require('child_process').spawn;
-			var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+			var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 			// script will remove data from mysql and datset taxfile
 
 
@@ -686,7 +702,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  fun
 			      console.log('1exec error: ' + error);
 			    }else{
 			    		// run script
-			    		var nodelog = fs.openSync(path.join(data_dir,'node.log'), 'a');
+			    		var nodelog = fs.openSync(path.join(data_dir,'visualization.log'), 'a');
 			    		
 			    		console.log('RUNNING: '+script_path)
 			    		var run_process = spawn( script_path, [], {
@@ -1211,7 +1227,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 					}
 					console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
 					var spawn = require('child_process').spawn;
-					var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+					var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 					var output = '';
 					upload_metadata_process.stdout.on('data', function (data) {
@@ -1408,7 +1424,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 				    var spawn = require('child_process').spawn;
-						var log = fs.openSync(path.join(data_repository,'node.log'), 'a');
+						var log = fs.openSync(path.join(data_repository,'visualization.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
 						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
@@ -1584,7 +1600,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
-				var log = fs.openSync(path.join(process.env.PWD,'logs','node.log'), 'a');
+				var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 				
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
@@ -2095,24 +2111,50 @@ function update_dataset_names(config_info){
 
 		}
 }
-function create_fasta_file(req, pids){
+function create_metadata_file(req, user_dir, ts, pids){
+    
+		var file_name, out_file_path;
+		file_name = 'metadata-'+ts+'_custom.gz';
+		out_file_path = path.join(user_dir,file_name);
+
+		return file_name;
+}
+function create_taxbytax_file(req, user_dir, ts, pids){
+    
+		var file_name, out_file_path;
+		file_name = 'taxbytax-'+ts+'_custom.gz';
+		out_file_path = path.join(user_dir,file_name);
+
+		return file_name;
+}
+function create_taxbyref_file(req, user_dir, ts, pids){
+    
+		var file_name, out_file_path;
+		file_name = 'taxbyref-'+ts+'_custom.gz';
+		out_file_path = path.join(user_dir,file_name);
+
+		return file_name;
+}
+function create_taxbyseq_file(req, user_dir, ts, pids){
+    
+		var file_name, out_file_path;
+		file_name = 'taxbyseq-'+ts+'_custom.gz';
+		out_file_path = path.join(user_dir,file_name);
+
+		return file_name;
+}
+function create_fasta_file(req, user_dir, ts, pids){
+		var db = req.db;
 		var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
 		//var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
 		qSelect += " JOIN sequence using (sequence_id)\n";
 		qSelect += " JOIN dataset using (dataset_id)\n";
 		qSelect += " JOIN project using (project_id)\n";
 		var seq, seqid, seq_count, pjds;
-		var timestamp = +new Date();  // millisecs since the epoch!
-    var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);   
-
-  
-		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-		helpers.mkdirSync(user_dir);  // create dir if not exists
-		var file_name;
-		var out_file_path;
+		var file_name, out_file_path;
 
 		//var pids = JSON.parse(req.body.datasets).ids;
-		file_name = 'fasta:'+timestamp+'_'+'_custom.fa.gz';
+		file_name = 'fasta-'+ts+'_custom.fa.gz';
 		out_file_path = path.join(user_dir,file_name);
 		qSelect += " where dataset_id in ("+pids+")";
 
@@ -2159,7 +2201,7 @@ function create_fasta_file(req, pids){
 
 		});
 
-		res.send(file_name);
+		return file_name;
 
 }
 function get_local_script_text(log, site, code, cmd_list) {

@@ -34,36 +34,38 @@
             <tbody>
               <tr>
                 <td>                
-                 <input type="checkbox" name='fasta' value="1"> Get Sequences (Fasta File)                
+                 <input type="checkbox" name='fasta' value="1"> Sequences File (fasta)                
                 </td>
-                <td>Unique sequences with frequency count in defline.</td>
+                <td>Unique sequences with frequency count in defline: ">read_id|dataset|frequency"</td>
               </tr>    
               <tr>
                 <td>
-                <input type="checkbox" name='taxbytax' value="1"> Get TaxByTax File
+                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File
                 </td><td>Reads having the same taxonomic assignment are grouped (coarsest grouping).</td>
               </tr>        
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyref' value="1"> Get TaxByRef File</td>
+                <input type="checkbox" name='taxbyref' value="1"> TaxByRef File</td>
                 <td>Reads with the best match to the same reference are grouped (medium grouping).</td>
               </tr>        
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyseq' value="1"> Get TaxBySeq File</td>
+                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File</td>
                 <td>Reads having the exact same sequence are grouped (finest grouping).
                 </td>
               </tr>        
               <tr>
                 <td>
-                <input type="checkbox" name='metadata' value="1"> Get Metadata (CSV File)</td>
+                <input type="checkbox" name='metadata' value="1"> Metadata File (csv)</td>
                 <td>Tab-separated metadata (mapping) file.              </td>
               </tr>
+              <!-- 
               <tr>
                 <td>
                 <input type="checkbox" name='metadata' value="1"> Get data file for direct import to local VAMPS</td>
                 <td>This is an export file that you can use to transfer data to your local copy of (new) VAMPS              </td>
               </tr>            
+               -->
               <tr>
                 <td>
                 <button class='btn btn-link'>Filter Datasets using Taxonomy</button></td>
