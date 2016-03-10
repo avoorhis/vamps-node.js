@@ -5,9 +5,9 @@
 # 
 #
 
-LOG=~/vamps-node.js/logs/node-server.log
-ERRLOG=~/vamps-node.js/logs/node-error.log
-PROG=~/vamps-node.js/bin/www
+LOG=logs/node-server.log
+ERRLOG=logs/node-error.log
+PROG=bin/www
 
 function usage() {
 	cat <<-EOF
