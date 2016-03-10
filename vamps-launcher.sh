@@ -11,7 +11,7 @@ PROG=bin/www
 
 function usage() {
 	cat <<-EOF
-	`basename $0` (start|stop|status)
+	`basename $0` (start|stop|restart|status)
 
 	Starts and stops the vamps-node.js service.
 	EOF
@@ -44,11 +44,30 @@ function stop_server() {
 	/usr/bin/pkill -xf "node $PROG"
 
 }
+function restart_server() {
+	
+	echo "Stopping server"
+	#/usr/bin/pkill -xf "/usr/local/www/vampsdev/software/node/bin/node /usr/local/www/vampsdev/projects/node-server/webserver.js"
+	/usr/bin/pkill -xf "node $PROG"
 
+	echo "Re-Starting server"
+	node $PROG 2>>$ERRLOG 1>>$LOG &
+
+}
 case $1 in
+	restart)
+		EPID=`is_running`
+		if [ "$EPID" != "" ]; then
+			restart_server
+		else
+			echo "Service is not running."
+			start_service
+		fi
+		;;
 	start)
 		EPID=`is_running`
 		if [ "$EPID" == "" ]; then
+			echo "Starting Service"
 			start_server
 		else
 			echo "Service already running with PID $EPID"
