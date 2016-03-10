@@ -11,6 +11,7 @@ var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
 var multer = require('multer');
+var progress = require('progress-stream');
 var upload = multer({ dest: '/tmp'});
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
@@ -1484,6 +1485,26 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 	var use_original_names = req.body.use_original_names || 'off';
   var username = req.user.username;
   var use_file_taxonomy = req.body.use_tax_from_file;
+  
+  var p = progress()
+  req.pipe(p)
+  p.headers = req.headers
+	p.on('progress', function(progress) {
+		console.log(progress);
+	 
+		/*
+		{
+			percentage: 9.05,
+			transferred: 949624,
+			length: 10485760,
+			remaining: 9536136,
+			eta: 42,
+			runtime: 3,
+			delta: 295396,
+			speed: 949624
+		}
+		*/
+	});
   console.log('1req.body upload_data_tax_by_seq');
   console.log(req.body);
   console.log(req.files);  // array
@@ -1591,7 +1612,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 
 					res.render('success', {  title   : 'VAMPS: Import Success',
 								          message : req.flash('successMessage'),
-					                display : "Import_Success",
+					                display : "TaxBySeq_Import_Success",
 						              user    : req.user, hostname: req.CONFIG.hostname
 						  });
 			};

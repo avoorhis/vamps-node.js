@@ -320,9 +320,6 @@ module.exports = app;
 //   });
 // }
 
-if (!module.parent) {
-  var server = http.createServer(app);
-  cluster(server).listen(process.env.PORT);
-}
+
 
 

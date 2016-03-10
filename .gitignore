@@ -17,7 +17,7 @@ config/config.js
 config/db_vamps_node.sql.gz
 config/old/*
 
-
+vamps-launcher.sh
 
 node_modules/
 colony/

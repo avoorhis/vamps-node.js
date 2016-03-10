@@ -7,8 +7,8 @@
 
 dbrootuser='root'
 dbrootpass='rootpass'
-vampsdbuser='ruby'
-vampsdbpass='ruby'
+vampsdbuser='vagrant'
+vampsdbpass='vagrant'
 vampsdb='vamps_starter'
 app_name='vamps-node.js'
 LOGFILE="/home/vagrant/node_server.log"
