@@ -61,7 +61,7 @@ case $1 in
 			restart_server
 		else
 			echo "Service is not running."
-			start_service
+			start_server
 		fi
 		;;
 	start)
