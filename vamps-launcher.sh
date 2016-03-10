@@ -67,7 +67,6 @@ case $1 in
 	start)
 		EPID=`is_running`
 		if [ "$EPID" == "" ]; then
-			echo "Starting Service"
 			start_server
 		else
 			echo "Service already running with PID $EPID"
