@@ -124,9 +124,11 @@ def parse_file(args):
         print 'Have project: not using orig names'
     if args.tax_compressed:
         #with gzip.open(args.tax_by_seq_file, mode='r') as infile:
+        print 'trying to open taxbyseq gzip file'
         f=gzip.open(args.tax_by_seq_file,'rb')
     else:
         #with open(args.tax_by_seq_file, mode='r') as infile:
+        print 'trying to open taxbyseq text file'
         f=open(args.tax_by_seq_file,'rb')
 
     infile = f.readlines()
