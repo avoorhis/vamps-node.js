@@ -109,6 +109,11 @@ OPTIONAL INSTALLATION METHOD USING VirtualBox and Vagrant
 Create an empty directory named 'vamps-node.js' and place the two files 
 (Vagrantfile and Vagrantboot4568.sh from this 'vamps-node.js' github site) into it.
 
+WARNING: the RAM memory allocated to the VirtualBox in the Vagrantfile is 2GB.
+This amount of memory will be pulled away from your host machine and could 
+potentially prevent other programs from running on your host machine.
+If needed change the value in the Vagrantfile to suit your system.
+
 Alternatively install the vamps-node.js source code (assumes git is installed):
 by running 'git clone https://github.com/avoorhis/vamps-node.js.git'.
 Which will create the directory 'vamps-node.js'.

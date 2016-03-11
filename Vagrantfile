@@ -13,7 +13,6 @@ Vagrant.configure("2") do |config|
   config.vm.box = "hashicorp/precise64"
   #config.vm.box = "ubuntu/trusty64"
   config.vm.provision :shell, path: "Vagrantboot4568.sh"
-  #config.vm.network :forwarded_port, guest: 80, host: 4567
   config.vm.network :forwarded_port, guest: 3000, host: 4568
   
   config.vm.provider :virtualbox do |vb|

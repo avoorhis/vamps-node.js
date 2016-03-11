@@ -1606,7 +1606,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		 	// move files to user_data/<username>/ and rename
 			var LoadDataFinishRequest = function() {
 					// START STATUS //
-					req.flash('successMessage', "Upload in Progress: 'TaxBySeq File'");
+					req.flash('successMessage', "Upload in Progress: 'TaxBySeq File' -- You can continue to use vamps");
 
 					// type, user, project, status, msg
 
@@ -1622,6 +1622,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
+				
 				
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },

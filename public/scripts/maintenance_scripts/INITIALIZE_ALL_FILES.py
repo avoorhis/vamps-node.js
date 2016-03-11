@@ -303,13 +303,15 @@ if __name__ == '__main__':
     if not args.json_file_path:
         #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
         args.json_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','../','json')
-    print "ARGS: json_dir=",args.json_file_path
-    print "ARGS: dbhost  =",args.dbhost
+    
     if not os.path.exists(args.json_file_path):
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     else:
-        print 'Validated: json file path'
+        print "ARGS: json_dir=",args.json_file_path,'[Validated]'
+        print "ARGS: dbhost  =",args.dbhost
+        
+
     if args.dbpass and args.dbuser:
          db = MySQLdb.connect( host=args.dbhost, user=args.dbuser,passwd=args.dbpass )
     else:
