@@ -1486,11 +1486,11 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
   var username = req.user.username;
   var use_file_taxonomy = req.body.use_tax_from_file;
   
-  var p = progress()
-  req.pipe(p)
-  p.headers = req.headers
-	p.on('progress', function(progress) {
-		console.log(progress);
+  //var p = progress()
+  //req.pipe(p)
+  //p.headers = req.headers
+	//p.on('progress', function(progress) {
+	//	console.log(progress);
 	 
 		/*
 		{
@@ -1504,7 +1504,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 			speed: 949624
 		}
 		*/
-	});
+	//});
   console.log('1req.body upload_data_tax_by_seq');
   console.log(req.body);
   console.log(req.files);  // array

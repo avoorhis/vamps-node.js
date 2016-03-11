@@ -5,4 +5,4 @@
 # 
 #
 
-vagrant ssh -c "cd vamps-node.js;echo 'Restarting VAMPS (VirtualBox)';ls;./vamps-launcher.sh stop;"
+vagrant ssh -c "cd vamps-node.js;echo 'Restarting VAMPS (VirtualBox)';ls;./vamps-launcher.sh restart;"
