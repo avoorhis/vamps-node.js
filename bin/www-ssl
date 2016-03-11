@@ -11,5 +11,5 @@ var options = {
 app.set('port', process.env.PORT || 3000);
 
 var server = https.createServer(options, app).listen(app.get('port'), function () {
-   console.log('VAMPS-Node.js started on localhost:3000');
+   console.log('VAMPS-Node.js started on https://localhost:3000');
 });

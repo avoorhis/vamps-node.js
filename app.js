@@ -202,13 +202,12 @@ console.log('HOSTNAME: '+os.hostname())
 fs.ensureDir(config.USER_FILES_BASE, function (err) {
     if(err) {console.log(err);} // => null
     else{
-        
+        if(config.site != 'vamps' && config.site != 'vampsdev'){
             fs.chmod(config.USER_FILES_BASE, 0775, function (err) {
-                if(err) {console.log(err);} // ug+rwx
-                else{
-                    console.log('USER dir created and adjusted permissions to ug+rwx')
-                }
+                if(err) {console.log(err);} // ug+rwx       
             });
+        }
+        console.log('Ensured USER FILES dir is present: '+config.USER_FILES_BASE)
         
     }        // dir has now been created, including the directory it is to be placed in
 
