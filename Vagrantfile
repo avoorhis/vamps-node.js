@@ -6,7 +6,7 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-# the netwok line below should have the guest port set 
+# the network line below should have the guest port set 
 # to the same port that is set in bin/www from the vamps-node.js installation
 Vagrant.configure("2") do |config|
   #config.vm.box = "hashicorp/precise32"

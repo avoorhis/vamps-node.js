@@ -1231,6 +1231,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 					var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 					var output = '';
+					console.log('py process pid='+upload_metadata_process.pid)
 					upload_metadata_process.stdout.on('data', function (data) {
 					  console.log('stdout: ' + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
@@ -1430,7 +1431,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 						var output = '';
-
+						console.log('py process pid='+load_trim_process.pid)
 						load_trim_process.stdout.on('data', function (data) {
 						  console.log('stdout: ' + data);
 						  data = data.toString().replace(/^\s+|\s+$/g, '');
@@ -1513,7 +1514,16 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
   console.log('2req.body upload_data_tax_by_seq');
   //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-
+  if(req.files[0].size > 30000000){
+  	req.flash('failMessage', 'The file '+req.files[0].originalname+' exceeds the limit of 30MB');
+		res.redirect("/user_data/import_data");
+		return;
+  }
+  if(req.files[1].size > 30000000){
+  	req.flash('failMessage', 'The file '+req.files[1].originalname+' exceeds the limit of 30MB');
+		res.redirect("/user_data/import_data");
+		return;
+  }
   if((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on'){
 		req.flash('failMessage', 'A project name is required.');
 		res.redirect("/user_data/import_data");
@@ -1606,7 +1616,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		 	// move files to user_data/<username>/ and rename
 			var LoadDataFinishRequest = function() {
 					// START STATUS //
-					req.flash('successMessage', "Upload in Progress: 'TaxBySeq File' -- You can continue to use vamps");
+					req.flash('successMessage', "Upload in Progress");
 
 					// type, user, project, status, msg
 
@@ -1622,19 +1632,20 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 		    var spawn = require('child_process').spawn;
 				var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
-				
+
 				
 				var tax_by_seq_process = spawn( options.scriptPath+'/vamps_load_tax_by_seq.py', options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
 						    							detached: true, stdio: [ 'ignore', null, log ]
 														});  // stdin, stdout, stderr
+				console.log('py process pid='+tax_by_seq_process.pid)
 				var output = '';
 				// communicating with an external python process
 				// all the print statements in the py script are printed to stdout
 				// so you can grab the projectID here at the end of the process.
 				// use looging in the script to log to a file.
 				tax_by_seq_process.stdout.on('data', function (data) {
-					  console.log('stdout: ' + data);
+					  //console.log('Processing data');
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
 					  output += data;
 					  var lines = data.split('\n');
@@ -1647,7 +1658,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				});
 				tax_by_seq_process.on('close', function (code) {
 				   console.log('tax_by_seq_process exited with code ' + code);
-				   console.log('output',output);
+				   //console.log('output',output);
 				   var ary = output.split("\n");
 				   var last_line = ary[ary.length - 1];
 				   if(code === 0){
