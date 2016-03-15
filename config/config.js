@@ -49,5 +49,5 @@ config.PERL5LIB = '/opt/local/lib/perl5/site_perl/5.16.3/darwin-thread-multi-2le
 config.site = 'local';   // vamps ,vampsdev .....
 config.dbhost = 'localhost';
 config.hostname = os.hostname();
-
+config.UPLOAD_FILE_SIZE = {bytes:30000000,MB:30};  // for VB should be 20,000,000 to 30,000,000 larger for vamps 
 module.exports = config;

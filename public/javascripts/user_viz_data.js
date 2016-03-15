@@ -60,7 +60,8 @@ function get_single_bar_html(obj){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n].id)
 			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
-			var pct = ((obj.data[n] / total)*100).toFixed(2);
+			
+      var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
       
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";

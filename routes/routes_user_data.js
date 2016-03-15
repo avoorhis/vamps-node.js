@@ -10,9 +10,11 @@ var queries = require('./queries');
 var iniparser = require('iniparser');
 //var PythonShell = require('python-shell');
 var zlib = require('zlib');
+var config = require('../config/config');
 var multer = require('multer');
 //var progress = require('progress-stream');
-var upload = multer({ dest: '/tmp'});
+var upload = multer({ dest: '/tmp',	limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }	});
+
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
 // router.use(multer({ dest: 'tmp',
@@ -1509,18 +1511,24 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
   console.log('1req.body upload_data_tax_by_seq');
   console.log(req.body);
   console.log(req.files);  // array
-  console.log('project: '+project);
+  console.log('project: '+project || 'none');
   console.log('use_original_names: '+use_original_names);
   console.log('2req.body upload_data_tax_by_seq');
   //console.log(project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-  if(req.files[0].size > 30000000){
-  	req.flash('failMessage', 'The file '+req.files[0].originalname+' exceeds the limit of 30MB');
+  if(req.files.length === 0 ){
+  	req.flash('failMessage', 'Make sure you are choosing a file to upload and that it is smaller than '+ req.CONFIG.UPLOAD_FILE_SIZE+' bytes');
 		res.redirect("/user_data/import_data");
 		return;
   }
-  if(req.files[1].size > 30000000){
-  	req.flash('failMessage', 'The file '+req.files[1].originalname+' exceeds the limit of 30MB');
+
+  if(req.files[0] && req.files[0].size > config.UPLOAD_FILE_SIZE.bytes){  // 1155240026
+  	req.flash('failMessage', 'The file '+req.files[0].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
+		res.redirect("/user_data/import_data");
+		return;
+  }
+  if(req.files[1] && req.files[1].size > config.UPLOAD_FILE_SIZE.bytes){
+  	req.flash('failMessage', 'The file '+req.files[1].originalname+' exceeds the limit of '+config.UPLOAD_FILE_SIZE.MB);
 		res.redirect("/user_data/import_data");
 		return;
   }
@@ -1538,7 +1546,8 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		return;
   }else{
 
-    	console.log('working');
+    	console.log('return');
+    	return
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
