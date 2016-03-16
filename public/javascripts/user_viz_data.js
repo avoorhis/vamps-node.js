@@ -45,27 +45,47 @@ var tip = {
 
 function get_single_bar_html(obj){
 	
-	var html ='';
-	html += "<div class='overflow_500'>";
+	var total = 0;
+  var html ='';
+  var tax_col_count = 0;
+  var ordered_taxa = [];
+  var taxa;
+  var ranks = ['Domain','Phylum','Class','Order','Family','Genus','Species','Strain']
+  for(n in obj.rows){
+    if(obj.data[n] > 0){
+      total += parseInt(obj.data[n]);
+      taxa = obj.rows[n].id.split(';')
+
+      ordered_taxa[n] = taxa
+      if(taxa.length > tax_col_count){
+        tax_col_count = taxa.length
+      }
+    }
+  }
+  //alert(ordered_taxa)
+	html += "<div class='overflow_500'>click headers to sort";
 	html += "<table id='single_barchart_table_id' class='table table-condensed overflow200 sortable'>";
   html += '<thead>'
-	html += "<tr><th width='25' >color</th><th>Taxonomy <small>(click to sort)</small></th><th>Count <small>(click to sort)</small></th></tr>";
-  html += '</thead><tbody>'
-	var total = 0;
-  for(n in obj.rows){
-    total += parseInt(obj.data[n]);
+	html += "<tr><th width='25' >color</th>";  //<th>Taxonomy <small>(click to sort)</small></th>
+  for(i=0;i<tax_col_count;i++){
+    html += '<th>'+ranks[i]+'</th>'
   }
+  html += "<th>Count</th></tr>";
+  
+  html += '</thead><tbody>'
+	
   //alert(html)
   for(n in obj.rows){
 		if(obj.data[n] > 0){
 			color = string_to_color_code(obj.rows[n].id)
 			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
-			
       var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
-      
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
-      html += "<td><a href='"+link+"'>"+obj.rows[n].id+'</a></td><td>'+obj.data[n]+"</td></tr>";
+      for(i=0;i<tax_col_count;i++){
+        html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'
+      }
+      html += '<td>'+obj.data[n]+"</td></tr>";
 		}
 	}
 	html += '</tbody>'
@@ -78,43 +98,55 @@ function get_single_bar_html(obj){
 //
 function get_double_bar_html(obj, ts){
   
+  var total = [0,0];
+  var ranks = ['Domain','Phylum','Class','Order','Family','Genus','Species','Strain']
+  var pct1,pct2,id1,id2,link1,link2,filename1,filename2,color,taxa;
+  var tax_col_count = 0;
+  var ordered_taxa = [];
+  for(n in obj.rows){
+    if(obj.data[n][0] > 0 || obj.data[n][1] > 0){
+      total[0] += parseInt(obj.data[n][0]);
+      total[1] += parseInt(obj.data[n][1]);
+      taxa = obj.rows[n].id.split(';')
+      ordered_taxa[n] = taxa
+      if(taxa.length > tax_col_count){
+          tax_col_count = taxa.length
+      }
+    }
+  }
   var html ='';
 
-  html += "<div class='overflow_500'>";
+  html += "<div class='overflow_500'>click headers to sort";
   html += "<table class='table table-condensed overflow200 sortable'>";
   html += '<thead>'
-  html += "<tr><th width='25' >color</th><th>Taxonomy <small>(click to sort)</small></th><th>"+obj.datasets[0]+" <small>(click to sort)</small></th><th>"+obj.datasets[1]+" <small>(click to sort)</small></th></tr>";
-  html += '</thead><tbody>'
-  var total = [0,0];
-  var pct1,pct2,id1,id2,link1,link2,filename1,filename2,color;
-  for(n in obj.rows){
-    total[0] += parseInt(obj.data[n][0]);
-    total[1] += parseInt(obj.data[n][1]);
+  html += "<tr><th width='25' >color</th>"
+  for(i=0;i<tax_col_count;i++){
+    html += '<th>'+ranks[i]+'</th>'
   }
+  html += "<th>"+obj.datasets[0]+" </th><th>"+obj.datasets[1]+"</th></tr>";
+  html += '</thead><tbody>'
+  
   for(n in obj.rows){
-    //if(obj.data[n] > 0){
-      color = string_to_color_code(obj.rows[n].id)
-      filename1 = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
-      filename2 = user_local+'_'+obj.columns[1].did+'_'+ts+'_sequences.json';
-      link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
-      link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
-      pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
-      id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
-      pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
-      id2 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][1] + '-|-' + pct2;
-      html += "<tr>"
-
-      html += "<td style='background-color:"+color+"'></td>";
-
-      //html += "<td><a href='"+link2+"'>"+obj.rows[n].id+'</a></td>'
-      html += "<td>"+obj.rows[n].id+'</td>'
-      //html += "<td class='tooltip_viz' id='"+id1+"' >"+obj.data[n][0]+'</td>'
-      html += "<td class='tooltip_viz' id='"+id1+"' ><a href='"+link1+"'>"+obj.data[n][0]+'</a></td>'
-      //html += "<td class='tooltip_viz' id='"+id2+"' >"+obj.data[n][1]+'</td>'
-      html += "<td class='tooltip_viz' id='"+id2+"' ><a href='"+link2+"'>"+obj.data[n][1]+'</a></td>'
-
-      html += "</tr>";
-    //}
+      if(obj.data[n][0] > 0 || obj.data[n][1] > 0){
+        color = string_to_color_code(obj.rows[n].id)
+        filename1 = user_local+'_'+obj.columns[0].did+'_'+ts+'_sequences.json';
+        filename2 = user_local+'_'+obj.columns[1].did+'_'+ts+'_sequences.json';
+        link1 = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename1;
+        link2 = 'sequences?id='+obj.columns[1].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename2;
+        pct1 = ((obj.data[n][0] / total[0])*100).toFixed(2);
+        id1 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][0] + '-|-' + pct1;
+        pct2 = ((obj.data[n][1] / total[1])*100).toFixed(2);
+        id2 = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n][1] + '-|-' + pct2;
+        html += "<tr>"
+        html += "<td style='background-color:"+color+"'></td>";
+        for(i=0;i<tax_col_count;i++){
+          html += "<td>"+ordered_taxa[n][i]+'</td>'
+        }
+        html += "<td class='tooltip_viz' id='"+id1+"' ><a href='"+link1+"'>"+obj.data[n][0]+'</a></td>'
+        //html += "<td class='tooltip_viz' id='"+id2+"' >"+obj.data[n][1]+'</td>'
+        html += "<td class='tooltip_viz' id='"+id2+"' ><a href='"+link2+"'>"+obj.data[n][1]+'</a></td>'
+        html += "</tr>";
+      }
   }
   html += '</tbody>'
   html += '</table></div>';
