@@ -7,25 +7,6 @@ $( document ).ready(function() {
 
     clear_filters()
 
-    if(Object.keys(datasets_local).length > 0){
-      alert('datasets to load - in visuals_index.js')
-      // $('input.project_toggle').each(function(){
-      //   //alert($(this).prop('value'))
-      //   var checkbox = $(this);
-      //   var project = checkbox.prop('value')
-      //   //alert(project)
-      //   var datasets_per_pr = $(this.parentNode.parentNode).find('.datasets_per_pr');
-      //   if( datasets_local.hasOwnProperty(project) ){
-      //     //input.prop('checked', true)
-      //     if (datasets_per_pr.is(":hidden")) {
-            
-      //       datasets_per_pr.show();
-      //       minus_img(checkbox.siblings('a').find('img'));
-      //     }
-      //     check_selected_datasets(checkbox, datasets_per_pr, project, datasets_local[project]);
-      //   }
-      // });
-    }
 });
 
 

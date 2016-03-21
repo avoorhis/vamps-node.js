@@ -318,7 +318,8 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
   unit_choice = 'tax_silva108_simple';
-  var data_to_open = {};
+  // GLOBAL
+  data_to_open = {};
   if(req.body.data_to_open){
     // open many projects
     obj = JSON.parse(req.body.data_to_open)
@@ -2622,7 +2623,19 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     var json = {}
     json.id = id;
     json.item = []
-   
+   if(Object.keys(data_to_open).length > 0){
+      //console.log('datasets to load - in visuals_index.js')
+      for(pid in data_to_open){
+        dids = data_to_open[pid]
+        console.log(pid)
+        for(n in dids){
+          did = dids[n]
+          //alert(did)
+
+        }
+          
+      }
+  }
 
     if(id==0){
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -2638,6 +2651,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             }else{
               tt_pj_id += '-|-private'; 
             }
+            
             var itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
             itemtext    += " <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             
@@ -2648,7 +2662,15 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
                 itemtext += "<small> <i>(PI: "+node.username +")</i></small>"
               }                
             }
-            json.item.push({id:pid, text:itemtext, checked:false, child:1,item:[]});
+            console.log('Object.keys(data_to_open)')
+            console.log(Object.keys(data_to_open))
+            if(Object.keys(data_to_open).indexOf(pid.toString()) === -1){
+              json.item.push({id:pid, text:itemtext, checked:false, child:1, item:[]});
+            }else{
+              json.item.push({id:pid, text:itemtext, checked:false, open:'1', child:1, item:[]});
+            }
+            
+                
         }
         
     }else{
@@ -2658,6 +2680,16 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             this_project = prj  
           }
         })
+        var all_checked_dids = []
+        if(Object.keys(data_to_open).length > 0){
+          console.log('dto');
+          console.log(data_to_open);
+          for(openpid in data_to_open){
+            Array.prototype.push.apply(all_checked_dids,data_to_open[openpid])
+          }
+        }
+        console.log('all_checked_dids')
+        console.log(all_checked_dids)
         var pname = this_project.name 
         for(n in this_project.datasets){
             var did   = this_project.datasets[n].did
@@ -2665,8 +2697,11 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             var ddesc = this_project.datasets[n].ddesc
             var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc;
             var itemtext = "<span id='"+ tt_ds_id +"' class='tooltip_pjds_list'>"+dname+"</span>";
-            json.item.push({id:did,text:itemtext,child:0})
-            
+            if(all_checked_dids.indexOf(parseInt(did)) === -1){
+              json.item.push({id:did, text:itemtext, child:0})
+            }else{
+              json.item.push({id:did, text:itemtext, checked:'1', child:0})
+            }
         }
     }
     json.item.sort(function(a, b){
