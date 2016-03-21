@@ -321,14 +321,15 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   var data_to_open = {};
   if(req.body.data_to_open){
     // open many projects
-    data_to_open = JSON.parse(req.body.data_to_open);
+    obj = JSON.parse(req.body.data_to_open)
+    for(pj in obj){
+      pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
+      data_to_open[pid] = obj[pj]
+    }
     //console.log('got data to open '+data_to_open)
   }else if(req.body.project){
     // open whole project
-    // data_to_open = new Object();
-     //data_to_open['HMP_PT_Bv1v3'] = ['2019','2020']
-    // data_to_open.RARE = ['EFF_20090209']
-    data_to_open[req.body.project] = DATASET_IDS_BY_PID[req.body.project_id];
+    data_to_open[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
   }
   console.log('data_to_open');
   console.log(data_to_open);
