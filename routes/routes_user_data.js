@@ -180,34 +180,32 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
 //  EXPORT DATA
 //
 router.post('/export_data', helpers.isLoggedIn, function(req, res) {
-  var data_to_open = {};
+  console.log('req.body export_data')
+  console.log(req.body)
+  // GLOBAL
+  DATA_TO_OPEN = {};
   SHOW_DATA = ALL_DATASETS;
-  // data_to_open = {};
-  // if(req.body.data_to_open){
-  //   // open many projects
-  //   obj = JSON.parse(req.body.data_to_open)
-  //   for(pj in obj){
-  //     pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
-  //     data_to_open[pid] = obj[pj]
-  //   }
-  //   //data_to_open = JSON.parse(req.body.data_to_open);
-  //   //console.log('got data to open '+data_to_open)
-  // }else if(req.body.project){
-  //   // open whole project
-  //   // data_to_open = new Object();
-  //    //data_to_open['HMP_PT_Bv1v3'] = ['2019','2020']
-  //   // data_to_open.RARE = ['EFF_20090209']
-  //   data_to_open[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
-  // }
-  console.log('data_to_open-exports');
-  console.log(data_to_open);
+  if(req.body.data_to_open){
+    // open many projects
+    obj = JSON.parse(req.body.data_to_open)
+    for(pj in obj){
+      pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
+      DATA_TO_OPEN[pid] = obj[pj]
+    }
+    //console.log('got data to open '+data_to_open)
+  }else if(req.body.project){
+    // open whole project
+    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+  }
+  console.log('DATA_TO_OPEN-exports');
+  console.log(DATA_TO_OPEN);
 
     res.render('user_data/export_data', { title: 'VAMPS:Export Data',
                 rows     : JSON.stringify(ALL_DATASETS),
                 proj_info: JSON.stringify(PROJECT_INFORMATION_BY_PID),
                 constants: JSON.stringify(req.CONSTS),
                 md_names    : AllMetadataNames,
-                data_to_open: JSON.stringify(data_to_open),
+                data_to_open: JSON.stringify(DATA_TO_OPEN),
 								message  : req.flash('nodataMessage'),
                 user: req.user, hostname: req.CONFIG.hostname
           });

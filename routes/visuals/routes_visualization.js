@@ -319,21 +319,21 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   METADATA  = {};
   unit_choice = 'tax_silva108_simple';
   // GLOBAL
-  data_to_open = {};
+  DATA_TO_OPEN = {};
   if(req.body.data_to_open){
     // open many projects
     obj = JSON.parse(req.body.data_to_open)
     for(pj in obj){
       pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
-      data_to_open[pid] = obj[pj]
+      DATA_TO_OPEN[pid] = obj[pj]
     }
     //console.log('got data to open '+data_to_open)
   }else if(req.body.project){
     // open whole project
-    data_to_open[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+    DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
   }
-  console.log('data_to_open');
-  console.log(data_to_open);
+  console.log('DATA_TO_OPEN');
+  console.log(DATA_TO_OPEN);
   
   
   res.render('visuals/visuals_index', {
@@ -344,7 +344,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 md_names    : AllMetadataNames,
                                 filtering   : 0,
                                 portal_to_show : '',
-                                data_to_open: JSON.stringify(data_to_open),	  							              
+                                data_to_open: JSON.stringify(DATA_TO_OPEN),	  							              
                                 user        : req.user,hostname: req.CONFIG.hostname,
                                 message     : req.flash('nodataMessage'),
                             });
@@ -2623,19 +2623,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     var json = {}
     json.id = id;
     json.item = []
-   if(Object.keys(data_to_open).length > 0){
-      //console.log('datasets to load - in visuals_index.js')
-      for(pid in data_to_open){
-        dids = data_to_open[pid]
-        console.log(pid)
-        for(n in dids){
-          did = dids[n]
-          //alert(did)
-
-        }
-          
-      }
-  }
+    //console.log(DATA_TO_OPEN)
+  
 
     if(id==0){
         //console.log(PROJECT_INFORMATION_BY_PID)
@@ -2662,12 +2651,12 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
                 itemtext += "<small> <i>(PI: "+node.username +")</i></small>"
               }                
             }
-            console.log('Object.keys(data_to_open)')
-            console.log(Object.keys(data_to_open))
-            if(Object.keys(data_to_open).indexOf(pid.toString()) === -1){
-              json.item.push({id:pid, text:itemtext, checked:false, child:1, item:[]});
+            //console.log('Object.keys(data_to_open)')
+            //console.log(Object.keys(data_to_open))
+            if(Object.keys(DATA_TO_OPEN).indexOf(pid.toString()) >= 0){
+              json.item.push({id:pid, text:itemtext, checked:false, open:'1',child:1, item:[]});
             }else{
-              json.item.push({id:pid, text:itemtext, checked:false, open:'1', child:1, item:[]});
+              json.item.push({id:pid, text:itemtext, checked:false,  child:1, item:[]});
             }
             
                 
@@ -2681,11 +2670,11 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
           }
         })
         var all_checked_dids = []
-        if(Object.keys(data_to_open).length > 0){
+        if(Object.keys(DATA_TO_OPEN).length > 0){
           console.log('dto');
-          console.log(data_to_open);
-          for(openpid in data_to_open){
-            Array.prototype.push.apply(all_checked_dids,data_to_open[openpid])
+          console.log(DATA_TO_OPEN);
+          for(openpid in DATA_TO_OPEN){
+            Array.prototype.push.apply(all_checked_dids, DATA_TO_OPEN[openpid])
           }
         }
         console.log('all_checked_dids')
