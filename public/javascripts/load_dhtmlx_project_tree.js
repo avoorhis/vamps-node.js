@@ -35,16 +35,14 @@ if (typeof metadata_select !== 'undefined') {
       filter_by_metadata()
   });
 }
-function load_dhtmlx_project_tree() {
+function initialize_dhtmlx_project_tree() {
     // http://docs.dhtmlx.com/tree__index.html
+    
     projectTree = new dhtmlXTreeObject("projects_select_div","100%","100%",0);
     projectTree.setImagesPath("/images/dhtmlx/imgs/");
     projectTree.enableCheckBoxes(true);
     
-    //projectTree.enableAutoTooltips(true);
-    //projectTree.enableDHTMLXTooltips(true);
-    
-    projectTree.enableTreeLines(true); // true by default
+    //projectTree.enableTreeLines(true); // true by default
     projectTree.enableTreeImages(false);
     projectTree.attachEvent("onCheck",function(id){
       on_check_dhtmlx(id)
@@ -55,12 +53,30 @@ function load_dhtmlx_project_tree() {
     projectTree.attachEvent("onOpenEnd",onNodeSelect);
     projectTree.setXMLAutoLoading("/visuals/project_dataset_tree_dhtmlx");
     projectTree.setDataMode("json");
-    
 
 	// MOVED TO CLEAR FILTERS:: loads first level of tree
 	//projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");
     
 }
+//
+//
+//
+  // function load_projects_only_tree(){
+    
+  //   var xmlhttp = new XMLHttpRequest();  
+  //   xmlhttp.open("GET", 'get_projects_only_tree', true);
+  //   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  //   xmlhttp.onreadystatechange=function() {
+  //     if (xmlhttp.readyState==4 ) {
+  //         html = xmlhttp.responseText;
+  //         document.getElementById('projects_only_select_div').innerHTML=html;
+
+          
+          
+  //     }
+  //   }
+  //   xmlhttp.send();
+  // }
 //
 //
 //
@@ -136,6 +152,7 @@ function expand_tree_dhtmlx(id){
 ////////////////////////////////////////////
 function clear_filters() {
   // used to clear all search filters and upon intial load
+  
   var filtering = 0; 
   var datasets_local = {}; 
   if(portal_local){
@@ -153,16 +170,21 @@ function clear_filters() {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        
+        if( pcount === 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }
+        
         document.getElementById("project_count_id").innerHTML = xmlhttp.responseText;
+        
         document.getElementById('selected_ds_count_id').innerHTML = 0
+        
         projectTree.deleteChildItems(0);
+        //load initial
         
         projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
 
@@ -195,9 +217,9 @@ function showLiveProjectNames(str) {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        if( pcount == 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
@@ -232,9 +254,9 @@ function filter_by_env() {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
       pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        if( pcount == 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
@@ -268,9 +290,9 @@ function filter_by_target() {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        if( pcount == 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
@@ -302,9 +324,9 @@ function filter_by_status(pub_status) {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        if( pcount == 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';
@@ -339,9 +361,9 @@ function filter_by_metadata() {
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 ) {
+    if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
-        if(pcount == 0){
+        if( pcount == 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
             document.getElementById('nodata_span').innerHTML='';

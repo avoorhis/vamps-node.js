@@ -140,6 +140,23 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 
 });
 //
+//
+//
+router.get('/get_projects_only_tree', helpers.isLoggedIn, function(req, res) {
+    console.log('in get_projects_only_tree');  // for export data
+    var html = '';
+
+    html += '<ul>'
+    for(id in PROJECT_INFORMATION_BY_PID){
+      //console.log(id)
+      name = PROJECT_INFORMATION_BY_PID[id].project
+      html += "<li><input type='checkbox' name='project_ids' value='"+id+"'> "+name+"</li>"
+
+    }
+    html += '<ul>'
+    res.send(html);
+});
+//
 //  EXPORT SELECTION
 //
 /* GET Import Choices page. */
@@ -148,6 +165,8 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
   console.log('req.body: export_selection-->>');
   console.log(req.body);
   console.log('req.body: <<--export_selection');
+
+ 
   if(req.body.retain_data === '1'){
     dataset_ids = JSON.parse(req.body.dataset_ids);
   }else{
@@ -210,6 +229,8 @@ router.post('/export_data', helpers.isLoggedIn, function(req, res) {
                 user: req.user, hostname: req.CONFIG.hostname
           });
 });
+
+
 //
 // IMPORT_CHOICES
 //

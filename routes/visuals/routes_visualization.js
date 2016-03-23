@@ -2204,6 +2204,9 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
 
     
 });
+//
+//
+//
 router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     console.log('in download_file')
     var html = '';
@@ -2222,6 +2225,7 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     res.setHeader('Content-Type', 'text');
     res.download(file_path); // Set disposition and send it.
 });
+
 //
 //
 //
@@ -2229,10 +2233,10 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //SHOW_DATA = ALL_DATASETS;
     console.log('in clear filters')
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    //console.log(PROJECT_TREE)
+    //console.log(PROJECT_TREE_PIDS.length)
     //result = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     //res.send('tree')
-    res.json(PROJECT_TREE_PIDS.length);
+    res.send(PROJECT_TREE_PIDS.length);
 });
 //
 //
