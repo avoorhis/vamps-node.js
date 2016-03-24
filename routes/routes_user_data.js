@@ -1818,7 +1818,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   console.log(req.body);
   console.log('<<--req.body');
   console.log('in DOWNLOAD SELECTED SEQS');
-
+  var referer = req.body.referer;
   var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
   //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
   qSelect += " JOIN sequence using (sequence_id)\n";
@@ -1919,6 +1919,11 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   });
 
   res.send(file_name);
+  //console.log('message', 'success '+referer)
+  //req.flash('message', 'success '+referer);
+	//res.redirect(referer);
+	//res.redirect('/visuals/sequences');
+
 
 });
 
