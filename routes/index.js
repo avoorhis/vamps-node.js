@@ -46,6 +46,7 @@ var rs_ds = ds.get_datasets(function(ALL_DATASETS){
       user: req.user, 
       hostname: req.CONFIG.hostname,
 	    geodata: JSON.stringify(DatasetsWithLatLong),
+      gekey : req.CONFIG.GOOGLE_EARTH_KEY,
 	    message:'',
               });
   });
