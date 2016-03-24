@@ -161,6 +161,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 post_items:           JSON.stringify(visual_post_items),
                                 user      :           req.user,
                                 hostname  :           req.CONFIG.hostname,
+                                gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
 	                          //locals: {flash: req.flash('infomessage')},
                                 message   :           req.flash('message')
                  });

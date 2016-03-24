@@ -1083,7 +1083,7 @@ function create_viz(visual, ts) {
     }else if(visual === 'fheatmap'){
       create_fheatmap(ts);
     }else if(visual === 'geospatial'){
-      create_geospatial(ts);
+      create_geospatial();
     }else if(visual === 'dbrowser'){
       create_dbrowser(ts);
     }else if(visual === 'adiversity'){
@@ -1511,7 +1511,7 @@ function create_fheatmap(ts) {
 //
 //  CREATE GEOSPATIAL
 //
-function create_geospatial(ts) {
+function create_geospatial() {
       //alert('in GEO')
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');

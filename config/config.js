@@ -39,7 +39,8 @@ config.PATH2 = '/opt/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
 //config.PATH = '/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin'
 config.LD_LIBRARY_PATH2 = '/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload/:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages'
 config.PYTHONPATH2 = '/usr/local/lib/';
-config.GOOGLE_EARTH_KEY = 'AIzaSyCuH59zVfzdiBB90bZxwkDLi7nvWZDFE_E';
+config.GOOGLE_EARTH_KEY = ''
+//config.GOOGLE_EARTH_KEY = 'AIzaSyCuH59zVfzdiBB90bZxwkDLi7nvWZDFE_E';
 
 
 
