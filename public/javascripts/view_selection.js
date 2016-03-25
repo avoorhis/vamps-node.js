@@ -193,7 +193,6 @@ if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_fasta_form_id');
-      
       download_type = form.download_type.value; 
       ts =  '';       
       download_data('fasta',  download_type, ts);
@@ -206,7 +205,6 @@ if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_metadata_form_id');
-      
       download_type = form.download_type.value;  
       ts =  '';      
       download_data('metadata', download_type, ts);
@@ -218,7 +216,6 @@ if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
       
       form = document.getElementById('download_matrix_form_id');
-      
       download_type = form.download_type.value;       
       ts =  form.ts.value;    
       download_data('matrix', download_type, ts);
