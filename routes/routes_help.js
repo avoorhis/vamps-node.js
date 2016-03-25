@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var nodemailer = require('nodemailer');
+//var nodemailer = require('nodemailer');
+var spawn = require('child_process').spawn;
 
 //var sweetcaptcha = new require('sweetcaptcha')('233846', 'f2a70ef1df3edfaa6cf45d7c338e40b8', '720457356dc3156eb73fe316a293af2f');
 //var crypto = require('crypto');
@@ -44,11 +45,12 @@ var nodemailer = require('nodemailer');
   //
   //
   router.post('/contact', function (req, res) {
+    console.log(req.body)
     var mailOptions = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-to', biom_file, '-from', metric, '-sub', 'pcoa_3d', '-msg', process.env.PWD ],
+        args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', req.body.name, '-sub', 'VAMPS Inquery', '-msg', req.body.message ],
     };
-
+    console.log(mailOptions.scriptPath+'/send_email.py '+mailOptions.args.join(' '))
     var mail_process = spawn( mailOptions.scriptPath+'/send_email.py', mailOptions.args, {
                 env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
                 detached: true, 

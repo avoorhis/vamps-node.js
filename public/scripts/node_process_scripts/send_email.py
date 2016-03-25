@@ -23,18 +23,14 @@ import sys
 import shutil
 import types
 from smtplib import SMTP
-#import smtplib
 import string
 
 def send_email(args):
     
     TO          = args.toemail
     subject     = args.subject
-    message     = args.message
-    file_base   = args.file_base
-    run         = args.runcode
+    MESSAGE     = args.message + '\n\nFrom: '+ args.name
     
-    status_file = os.path.join(file_base,'STATUS.txt')
     error = False
     
     SUBJECT = subject
@@ -73,7 +69,8 @@ if __name__ == '__main__':
                                                     help="")
     parser.add_argument("-sub","--subject",        required=True,  action="store",   dest = "subject", default='Missing Subject',
                                                     help="")    
-                                                    
+    parser.add_argument("-name","--name",        required=False,  action="store",   dest = "name", default='',
+                                                    help="")                                               
     parser.add_argument("-msg","--message",        required=True,  action="store",   dest = "message", default='Missing Message',
                                                     help="")                                                     
                                                   
