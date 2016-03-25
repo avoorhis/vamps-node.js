@@ -20,15 +20,8 @@
 
 
 <% include ../add_ins/end.ejs %>
-<script src ="https://maps.googleapis.com/maps/api/js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=<%= gekey %>&callback=create_geospatial"></script>
 <script src="/javascripts/metadata.js"></script>
-<script>
-	$(document).ready(function(){
-		create_geospatial()
-	});
-</script>
-
-
 
 
 </body>
