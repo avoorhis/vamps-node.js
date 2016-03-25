@@ -6,7 +6,8 @@ var helpers = require('./helpers/helpers');
  router.get('/metadata', function(req, res) {
       console.log('in metadata')
       res.render('metadata/metadata', { title: 'VAMPS:Metadata',
-            user: req.user,hostname: req.CONFIG.hostname,
+            user: req.user,
+            hostname: req.CONFIG.hostname,
 	  				message:'',
                             });
   });

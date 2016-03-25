@@ -135,7 +135,7 @@ constants.RANKS = ["domain", "phylum", "klass", "order", "family", "genus", "spe
 constants.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100];
 
 constants.VISUAL_THUMBNAILS = { visuals: [
-    {name:'Frequency Table',   thumb:'/images/visuals/counts_table.png',   link:'user_viz_data/counts_table',   id:'counts_table_link_id', 
+    {name:'Taxonomy Frequency Table',   thumb:'/images/visuals/counts_table.png',   link:'user_viz_data/counts_table',   id:'counts_table_link_id', 
         tip:''  },
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',       link:'user_viz_data/metadata_table', id:'metadata_table_link_id', 
         tip:''},    
