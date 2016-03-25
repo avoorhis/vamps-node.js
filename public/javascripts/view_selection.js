@@ -193,10 +193,10 @@ if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_fasta_form_id');
-      datasets = form.datasets.value;
+      
       download_type = form.download_type.value; 
       ts =  '';       
-      download_data('fasta', datasets, download_type, ts);
+      download_data('fasta',  download_type, ts);
   });
 }
 
@@ -206,10 +206,10 @@ if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
       //alert(selected_distance_combo)
       form = document.getElementById('download_metadata_form_id');
-      datasets = form.datasets.value;
+      
       download_type = form.download_type.value;  
       ts =  '';      
-      download_data('metadata', datasets, download_type, ts);
+      download_data('metadata', download_type, ts);
   });
 }
 
@@ -218,10 +218,10 @@ if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
       
       form = document.getElementById('download_matrix_form_id');
-      datasets = form.datasets.value;
+      
       download_type = form.download_type.value;       
       ts =  form.ts.value;    
-      download_data('matrix', datasets, download_type, ts);
+      download_data('matrix', download_type, ts);
   });
 }
 
@@ -2036,10 +2036,9 @@ function create_header(viz, pi) {
   return txt;
 }
 
-function download_data(type, datasets, download_type, ts) {
+function download_data(type, download_type, ts) {
     var html = '';
-    var args =  "datasets="+datasets;
-    args += "&download_type="+download_type;
+    var args =  "download_type="+download_type;
     
     var xmlhttp = new XMLHttpRequest(); 
     if(type == 'metadata'){

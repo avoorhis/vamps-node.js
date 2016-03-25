@@ -59,21 +59,23 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     file_info.mtime ={};
     file_info.size = {};
     file_info.files = [];
+    var modify_times = [];
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
         var pts = files[f].split('-');
         if(pts[0] === 'metadata' || pts[0] === 'fasta' || pts[0] === 'matrix'){
-          file_info.files.push(files[f]);
-          stat = fs.statSync(export_dir+'/'+files[f]);
-          //console.log(stat)
-          file_info.mtime[files[f]] = stat.mtime.toString();  // modify time
-          file_info.size[files[f]] = stat.size;
+          stat = fs.statSync(export_dir+'/'+files[f]);          
+          file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
+      		modify_times.push(stat.mtime.getTime());
         }
       }
       //console.log(file_info)
+      modify_times.sort().reverse();
+
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
               user: req.user, hostname: req.CONFIG.hostname,
               finfo: JSON.stringify(file_info),
+              times: modify_times,
 							message : req.flash('message'),
             });
     });
@@ -1850,14 +1852,15 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
 
   }else if(req.body.download_type == 'partial_project'){
 
-    var pids = JSON.parse(req.body.datasets).ids;
+    //var pids = JSON.parse(req.body.datasets).ids;
+    var dids = chosen_id_name_hash.ids
 		file_name = 'fasta-'+timestamp+'_custom.fa.gz';
     out_file_path = path.join(user_dir,file_name);
-    qSelect += " where dataset_id in ("+pids+")";
-    console.log(pids);
+    qSelect += " where dataset_id in ("+dids+")";
+    console.log(dids);
 
   }else if(req.body.download_type == 'custom_taxonomy'){
-			console.log('in DOWNLOAD SEQS');
+			
 			req.flash('tax_message', 'Fasta being created');
 			file_name = 'fasta-'+timestamp+'_custom_taxonomy.fa.gz';
   		out_file_path = path.join(user_dir,file_name);
@@ -1953,8 +1956,8 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
 	  file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
 	  out_file_path = path.join(user_dir,file_name);
 	  header = 'Project: '+project+"\n\t";
-	}else{
-	  dids = JSON.parse(req.body.datasets).ids;
+	}else{   // partial projects
+	  dids = chosen_id_name_hash.ids
 	  file_name = 'metadata-'+timestamp+'.csv.gz';
 	  out_file_path = path.join(user_dir, file_name);
 	  header = 'Project: various'+"\n\t";
@@ -2059,7 +2062,7 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		helpers.mkdirSync(user_dir);  // create dir if not exists
 
 		console.log(biom_matrix)
-		dids = JSON.parse(req.body.datasets).ids;
+		dids = chosen_id_name_hash.ids
 		var timestamp = +new Date();
 		var file_name = 'matrix-'+timestamp+'.csv';
 		//out_file_path = path.join(user_dir, file_name);

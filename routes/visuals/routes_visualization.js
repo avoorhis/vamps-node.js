@@ -1989,13 +1989,13 @@ router.get('/saved_elements', helpers.isLoggedIn,  function(req, res) {
       //console.log('req.body: show_saved_datasets');
       var saved_elements_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 
-      file_info = {};
-      modify_times = [];
+      var file_info = {};
+      var modify_times = [];
       helpers.mkdirSync(saved_elements_dir);
       fs.readdir(saved_elements_dir, function(err, files){
           if(err){
       			
-    				msg = 'ERROR Message '+err;
+    				var msg = 'ERROR Message '+err;
     				helpers.render_error_page(req,res,msg);
     			
     			

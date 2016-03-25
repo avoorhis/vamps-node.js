@@ -1,7 +1,6 @@
-
 <% include ../add_ins/begin.ejs %>
-
 <% var file_info = JSON.parse(finfo) %>
+
 <p class='title'>Download your Data Files</p>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -10,12 +9,12 @@
 
 <table class='table sortable'>
 	<thead>
-	<tr><th></th><th>file</th><th>size</th><th>creation time</th><th></th></tr>
+	<tr><th></th><th>File Name</th><th>Size</th><th>Creation Time</th><th></th></tr>
   </thead>
   <tbody>
-	<% for(f in file_info.files){ %>
-		<% var filename = file_info.files[f] %>
-		<% var fileSizeInBytes = file_info.size[filename] %>
+	<% for(t in times){ %>
+		<% var filename = file_info[times[t]].filename %>
+		<% var fileSizeInBytes = file_info[times[t]].size %>
 		<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 		<% var sizer = 'Bytes' %>
 		<% if(fileSizeInBytes > 1000) { %>
@@ -34,7 +33,7 @@
 		<% parts = filename.split('_') %>
 	
 			<tr>
-				<td><%= parseInt(f)+1 %></td>
+				<td><%= parseInt(t)+1 %></td>
 				<td>
 					<a href='file_utils?fxn=download&user=<%= user.username %>&type=fasta&filename=<%= filename %>' ><%= filename %></a>
 				</td>
@@ -42,7 +41,7 @@
 					<%= fileSize %> <%= sizer %>
 				</td>
 				<td>
-					<%= file_info.mtime[filename] %>
+					<%= file_info[times[t]].mtime %>
 				</td>
 				<td>	 
 					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>

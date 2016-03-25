@@ -40,7 +40,17 @@ var tip = {
 };
 
 
-
+// download fasta
+var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
+if (download_fasta_btn !== null) {
+  download_fasta_btn.addEventListener('click', function () {
+      
+      form = document.getElementById('download_fasta_form_id');
+      download_type = form.download_type.value; 
+      ts =  '';       
+      download_data('fasta', download_type, ts);
+  });
+}
 
 
 function get_single_bar_html(obj){
@@ -153,79 +163,34 @@ function get_double_bar_html(obj, ts){
   
   return html;
 }
-// function create_svg_object(props, color, data, ts) {
-//        //d3.select('svg').remove();
-//       
-//       var svg = d3.select("#barcharts_div").append("svg")
-//                   .attr("width",  props.width)
-//                   .attr("height", props.height)
-//                 .append("g")
-//                   .attr("transform", "translate(" + props.margin.left + "," + props.margin.top + ")");
-//       
-//       
-//       // axis legends -- would like to rotate dataset names
-//       props.y.domain(data.map(function(d) { return d.datasetName; }));
-//       props.x.domain([0, 100]);
-// 
-// 
-//        var datasetBar = svg.selectAll(".bar")
-//           .data(data)
-//         .enter() .append("g")
-//           .attr("class", "g")
-//           .attr("transform", function(d) { return  "translate(0, " + props.y(d.datasetName) + ")"; })  
-// 	 
-// 
-//        var gnodes = datasetBar.selectAll("rect")
-//            .data(function(d) { return d.unitObj; })
-//            .enter()
-//              .append('a').attr("xlink:href",  function(d) { 
-// 			     return 'sequences?taxa='+encodeURIComponent(d.name)+'&did='+mtx_local.did;
-// 			  }).style("fill",   function(d) { return color(d.name); });
-//           
-//        gnodes.append("rect")
-//              .attr("x", function(d) { return props.x(d.x0); })
-//              .attr("y", 15)  // adjust where first bar starts on x-axis
-//              .attr("width", function(d) { return props.x(d.x1) - props.x(d.x0); })
-//              .attr("height",  25)
-// 		     
-//              .attr("id",function(d,i) { 
-//                 var cnt =  mtx_local.data[i];
-//                 var total = mtx_local.total;
-//                 var pct = (cnt * 100 / total).toFixed(2);
-//                 var id = 'barcharts-|-' + d.name + '-|-'+ cnt.toString() + '-|-' + pct;
-//                 return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
-//               }) 
-// 			  .attr("class","tooltipx");
-// 
-// 
-// }
+//
+//
+//
+function download_data(type, download_type, ts) {
+    var html = '';
+    var args =  "download_type="+download_type;
+    
+    var xmlhttp = new XMLHttpRequest(); 
+    if(type == 'metadata'){
+      target = '/user_data/download_selected_metadata';      
+    } else if(type == 'fasta'){
+      target = '/user_data/download_selected_seqs'
+    }else if(type == 'matrix'){
+      //alert(ts)
+      args += '&ts='+ts;
+      target = '/user_data/download_selected_matrix'
+    }else{
 
-// function get_image_properties(bar_height, ds_count) {
-//   var props = {};
-//   
-//   //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
-//   props.margin = {top: 20, right: 0, bottom: 20, left: 0};
-//   
-//   var plot_width = 900;
-//   var gap = 2;  // gap on each side of bar
-//   props.width = plot_width + props.margin.left + props.margin.right;
-//   props.height = (ds_count * (bar_height + 2 * gap)) + 125;
-//   
-//   props.x = d3.scale.linear() .rangeRound([0, plot_width]);
-//     
-//   props.y = d3.scale.ordinal()
-//       .rangeBands([0, (bar_height + 2 * gap) * ds_count]);
-//     
-//   props.xAxis = d3.svg.axis()
-//           .scale(props.x)
-//           .orient("top");
-//   
-//   props.yAxis = d3.svg.axis()
-//           .scale(props.y)
-//           .orient("left");
-//           
-//               
-//   return props;
-// }
-
-
+    }
+    xmlhttp.open("POST", target, true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 ) {
+         var filename = xmlhttp.responseText; 
+         html += "<div class=''>Your file is being compiled. "
+         html += " When ready your file can be downloaded from the file retrieval page under 'Your Data': "+filename+"</div>"
+         document.getElementById('download_confirm_id').innerHTML = html;
+      }
+    };
+    xmlhttp.send(args);   
+}

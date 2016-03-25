@@ -8,18 +8,18 @@
 <br>
 
 <a href='#' onclick='window.history.back()'>&lt;&lt;--Back</a>
-<div class="">
-	<form id='download_fasta_id' method='POST' action='/user_data/download_selected_seqs'>
+<div class="row">
+	<form id='download_fasta_form_id' method='POST' action=''>
     <!-- This form should run in the background and place the seqs file 
           in a 'downloads' directory where it can be retrieved.
           The user should get an email when its ready.
      -->
-    <input type='submit' class="btn btn-xs btn-success" value='Create Fasta File' />
+    <input type='button' id='download_fasta_btn'class="btn btn-xs btn-success" value='Create Fasta File' />
     <input type='hidden' name='download_type' value='partial_project' />
-    <input type='hidden' name='datasets' value='<%= JSON.stringify(chosen_id_name_hash) %>' />
 	  <input type='hidden' name='referer' value='/visuals/sequences' />
 
   	</form>
+    <div id='download_confirm_id'></div>
 </div>
 <div class='overflow_500'>
 <table class='table table-condensed  sortable'>

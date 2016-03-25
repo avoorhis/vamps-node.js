@@ -137,45 +137,62 @@ constants.PCT_RANGE = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9
 constants.VISUAL_THUMBNAILS = { visuals: [
     {name:'Taxonomy Frequency Table',   thumb:'/images/visuals/counts_table.png',   link:'user_viz_data/counts_table',   id:'counts_table_link_id', 
         tip:''  },
+    
     {name:'Metadata Table',             thumb:'/images/visuals/metadata.png',       link:'user_viz_data/metadata_table', id:'metadata_table_link_id', 
         tip:''},    
+    
     {name:'Distance Heatmap (py)',      thumb:'/images/visuals/heatmap.png',		link:'user_viz_data/heatmap',        id:'dheatmap_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'},
     
     {name:'Stackbar Charts (d3/svg)',   thumb:'/images/visuals/barcharts.png',   	link:'user_viz_data/barcharts',      id:'barcharts_link_id', 
         tip:''    },
+    
     {name:'Pie Charts (d3/svg)',        thumb:'/images/visuals/pie_charts.png',  	link:'user_viz_data/piecharts',      id:'piecharts_link_id', 
         tip:''    },
+    
     {name:'Frequency Heatmap (R/pdf)',  thumb:'/images/visuals/fheatmap.png',       link:'user_viz_data/frequency_heatmap', id:'fheatmap_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-R (https://www.r-project.org/)-|-pheatmap (R-package)-|-vegan (R-package)-|-jsonlite (R-package)-|-RColorBrewer (R-package)'},
+    
     {name:'Data Browser (Krona)',       thumb:'/images/visuals/krona.png',  		link:'user_viz_data/dbrowser',       id:'dbrowser_link_id', 
         tip:''     },
-	{name:'Dendrogram (d3/phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id', 
+	
+    {name:'Dendrogram (d3/phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
-	//{name:'Dendrogram (d3-phylonator)', thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
+	
+    //{name:'Dendrogram (d3-phylonator)', thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram2_link_id', 
    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
+    
     {name:'Dendrogram (d3/radial)',     thumb:'/images/visuals/radial.png',         link:'user_viz_data/dendrogram',     id:'dendrogram3_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
+   
+
    // {name:'Dendrogram (py-pdf)',        thumb:'/images/visuals/dendrogram.png',  	link:'user_viz_data/dendrogram',     id:'dendrogram_pdf_link_id', 
    //     tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-matplotlib (python library)'},
+    
     {name:'PCoA 2D Analyses (R/pdf)',   thumb:'/images/visuals/pcoa.png',        	link:'user_viz_data/pcoa',           id:'pcoa_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)-|-vegan (R-package)-|-ape (R-package)'        },
-    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',           id:'pcoa_3d_link_id', 
-        tip:'Python2.7-|-scikit-bio(python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)' },
     
+    {name:'PCoA 3D Analyses (Emperor)', thumb:'/images/visuals/emperor.png',        link:'user_viz_data/pcoa',           id:'pcoa_3d_link_id', 
+        tip:'Python2.7-|-scikit-bio (python library)-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)-|-QIIME (http://qiime.org)' },
     
     {name:'Geo Distribution',          thumb:'/images/visuals/map.png',         	link:'user_viz_data/geospatial',     id:'geospatial_link_id', 
         tip:'lat/lon metadata'    },
+    
     {name:'Alpha Diversity',            thumb:'/images/visuals/alpha.png',          link:'user_viz_data/alpha_diversity',id:'adiversity_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-scikit-bio'},
+    
     {name:'Phyloseq Bars (R/svg)',      thumb:'/images/visuals/phyloseq_bars.png',  link:'user_viz_data/phyloseq01',  id:'phyloseq01_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    
     {name:'Phyloseq Heatmap (R/png)',   thumb:'/images/visuals/phyloseq_heatmap.png',link:'user_viz_data/phyloseq02', id:'phyloseq02_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    
     {name:'Phyloseq Network (R/svg)',   thumb:'/images/visuals/phyloseq_network.png',link:'user_viz_data/phyloseq03', id:'phyloseq03_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    
     {name:'Phyloseq Ordination (R/svg)',thumb:'/images/visuals/phyloseq_ord1.png',  link:'user_viz_data/phyloseq04', id:'phyloseq04_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+    
     {name:'Phyloseq Tree (R/svg)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'}
    
