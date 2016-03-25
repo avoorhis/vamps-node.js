@@ -65,6 +65,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
         if(pts[0] === 'metadata' || pts[0] === 'fasta' || pts[0] === 'matrix'){
           file_info.files.push(files[f]);
           stat = fs.statSync(export_dir+'/'+files[f]);
+          //console.log(stat)
           file_info.mtime[files[f]] = stat.mtime.toString();  // modify time
           file_info.size[files[f]] = stat.size;
         }
@@ -1841,7 +1842,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
 
   if(req.body.download_type == 'whole_project'){
 
-		var pid = req.body.project_id;
+		var pid = req.body.pid;
 		var project = req.body.project;
 		file_name = 'fasta-'+timestamp+'_'+project+'.fa.gz';
   	out_file_path = path.join(user_dir,file_name);
@@ -1946,7 +1947,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
 	var out_file_path;
 
 	if(req.body.download_type == 'whole_project'){
-	  var pid  = req.body.project_id;
+	  var pid  = req.body.pid;
 	  dids = DATASET_IDS_BY_PID[pid];
 	  project = req.body.project;
 	  file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
@@ -1971,7 +1972,6 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
 	  //console.log(MetadataValues);
 	  //console.log('<--in projects');
 	  // we have all the metadata in MetadataValues by did
-
 	  var gzip = zlib.createGzip();
 	  var myrows = {}; // myrows[mdname] == [] list of values
 	  
@@ -1984,21 +1984,22 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
         dname = DATASET_NAME_BY_DID[did];
         if(req.body.download_type == 'whole_project'){
         	header += dname+"\t";
+
         }else{
         	pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         	header += pname+'--'+dname+"\t";
         }
-        
-        for (var k in METADATA[did]){
-          nm = k;
-          val = METADATA[did][k];
-          if(nm in myrows){
-            myrows[nm].push(val);
-          }else{
-            myrows[nm] = [];
-            myrows[nm].push(val);
-          }
-        }
+	        for (var k in AllMetadata[did]){
+	          nm = k;
+	          val = AllMetadata[did][k];
+	          if(nm in myrows){
+	            myrows[nm].push(val);
+	          }else{
+	            myrows[nm] = [];
+	            myrows[nm].push(val);
+	          }
+	        }
+      	
       }
 
     // print
