@@ -781,7 +781,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
   };
   var options2 = {
       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
@@ -791,6 +791,26 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   console.log('outdir: '+dir_path);
   console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
   
+/////
+// var options = {
+//      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+//        args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
+//      };
+        
+    
+//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
+    
+//     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
+//     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+//     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
+//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
+//             detached: true, 
+//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
+//             stdio: 'pipe' // stdin, stdout, stderr
+//         });  
+/////
+
+
   var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
       env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
       detached: true, 

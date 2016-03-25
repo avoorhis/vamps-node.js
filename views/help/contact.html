@@ -1,5 +1,11 @@
 <!-- Not used -->
 <% include ../add_ins/begin.ejs %>
+
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+
 <div class="title fa fa-anchor">Contact Us</div>
 <div class="row">
 <div class="col-lg-3"></div>
@@ -12,21 +18,21 @@
 	  
 	  <div class="form-group">
 	    <label for="contact-form-name">Your Name</label>
-	    <input type="text" class="form-control" id="contact-form-name" placeholder="enter name">
+	    <input type="text" class="form-control" name='name' id="contact-form-name" placeholder="enter name">
 	  </div>
 	  
 	  <div class="form-group">
 	    <label for="contact-form-mail">Email address</label>
-	    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="enter email">
+	    <input type="email" class="form-control" name='email' id="exampleInputEmail1" placeholder="enter email">
 	  </div>
 	  
 	  <div class="form-group">
 	    <label for="contact-form-message">Your message</label>
-	    <textarea name="contact-form-message" id="contact-form-message" rows="5" cols="50"></textarea>
+	    <textarea name="message"  id="contact-form-message" rows="5" cols="50"></textarea>
 	    
 	  </div>
       <div id="captchaHolder">
-          <%- captcha %> 
+          
        </div>
       
 	  <button type="submit" class="btn btn-default">Submit</button>
