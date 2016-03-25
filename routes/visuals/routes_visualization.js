@@ -734,7 +734,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
                                                       
           }else{
               console.log('ERROR');
-              html='PCoA Script Error';
+              html='PCoA Script Failure -- Try a deeper rank, or more metadata or datasets';
           } 
 
           res.send(html);

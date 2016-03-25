@@ -1850,7 +1850,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   }else if(req.body.download_type == 'partial_project'){
 
     var pids = JSON.parse(req.body.datasets).ids;
-		file_name = 'fasta-'+timestamp+'_'+'_custom.fa.gz';
+		file_name = 'fasta-'+timestamp+'_custom.fa.gz';
     out_file_path = path.join(user_dir,file_name);
     qSelect += " where dataset_id in ("+pids+")";
     console.log(pids);
@@ -1937,51 +1937,58 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
   var timestamp = +new Date();  // millisecs since the epoch!
 
 
-var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
-helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-helpers.mkdirSync(user_dir);  // create dir if not exists
-var dids;
-var project;
-var file_name;
-var out_file_path;
+	var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+	helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+	helpers.mkdirSync(user_dir);  // create dir if not exists
+	var dids;
+	var header, project;
+	var file_name;
+	var out_file_path;
 
-if(req.body.download_type == 'whole_project'){
-  var pid  = req.body.project_id;
-  dids = DATASET_IDS_BY_PID[pid];
-  project = req.body.project;
-  file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
-  out_file_path = path.join(user_dir,file_name);
-}else{
-  dids = JSON.parse(req.body.datasets).ids;
-  file_name = 'metadata-'+timestamp+'.csv.gz';
-  out_file_path = path.join(user_dir, file_name);
-}
-  console.log('dids');
-  console.log(dids);
+	if(req.body.download_type == 'whole_project'){
+	  var pid  = req.body.project_id;
+	  dids = DATASET_IDS_BY_PID[pid];
+	  project = req.body.project;
+	  file_name = 'metadata-'+timestamp+'_'+project+'.csv.gz';
+	  out_file_path = path.join(user_dir,file_name);
+	  header = 'Project: '+project+"\n\t";
+	}else{
+	  dids = JSON.parse(req.body.datasets).ids;
+	  file_name = 'metadata-'+timestamp+'.csv.gz';
+	  out_file_path = path.join(user_dir, file_name);
+	  header = 'Project: various'+"\n\t";
+	}
+	  console.log('dids');
+	  console.log(dids);
 
 
-  // check if custom metadata table exists
-  //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
+	  // check if custom metadata table exists
+	  //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
 
-  // get the fields from required_metadata_info as they may vary
-  //var qSelect = "SHOW columns from required_metadata_info";
-  //console.log('in projects-->');
-  //console.log(MetadataValues);
-  //console.log('<--in projects');
-  // we have all the metadata in MetadataValues by did
+	  // get the fields from required_metadata_info as they may vary
+	  //var qSelect = "SHOW columns from required_metadata_info";
+	  //console.log('in projects-->');
+	  //console.log(MetadataValues);
+	  //console.log('<--in projects');
+	  // we have all the metadata in MetadataValues by did
 
-  var gzip = zlib.createGzip();
-  var myrows = {}; // myrows[mdname] == [] list of values
-  var header = 'Project: '+project+"\n\t";
-
-  var wstream = fs.createWriteStream(out_file_path);
-  var rs = new Readable();
-  var filetxt;
+	  var gzip = zlib.createGzip();
+	  var myrows = {}; // myrows[mdname] == [] list of values
+	  
+	  var wstream = fs.createWriteStream(out_file_path);
+	  var rs = new Readable();
+	  var filetxt;
 
       for (var i in dids){
         did = dids[i];
         dname = DATASET_NAME_BY_DID[did];
-        header += dname+"\t";
+        if(req.body.download_type == 'whole_project'){
+        	header += dname+"\t";
+        }else{
+        	pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+        	header += pname+'--'+dname+"\t";
+        }
+        
         for (var k in METADATA[did]){
           nm = k;
           val = METADATA[did][k];
@@ -2050,7 +2057,7 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
 		helpers.mkdirSync(user_dir);  // create dir if not exists
 
-
+		console.log(biom_matrix)
 		dids = JSON.parse(req.body.datasets).ids;
 		var timestamp = +new Date();
 		var file_name = 'matrix-'+timestamp+'.csv';
@@ -2064,13 +2071,13 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 
 		header_txt = "Taxonomy ("+visual_post_items.tax_depth+" level)";
 		for (var y in biom_matrix.columns){
-		header_txt += ','+biom_matrix.columns[y].name;
+			header_txt += ','+biom_matrix.columns[y].id;
 		}
 		header_txt += '\n\r';
 		rs.push(header_txt);
 		for (var i in biom_matrix.rows){
 			row_txt = '';
-			row_txt += biom_matrix.rows[i].name;
+			row_txt += biom_matrix.rows[i].id;
 			for (var k in biom_matrix.data[i]){
 				row_txt += ','+biom_matrix.data[i][k];
 			}

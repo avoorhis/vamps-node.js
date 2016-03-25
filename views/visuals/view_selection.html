@@ -159,7 +159,7 @@
       		</td><td>
               
               <form id='download_matrix_form_id'  method='POST' action=''>
-                <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Matrix File</button>
+                <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Counts Matrix File</button>
                 <input type='hidden' name='download_type' value='partial_project' />
                 <input type='hidden' name='datasets' value='<%= chosen_id_name_hash %>' />
                 <input type='hidden' name='ts' value='<%= pi.ts %>' />
@@ -178,10 +178,10 @@
 
     <table class=''>
 
-    <tr><td>Phyloseq Input File Downloads:&nbsp;</td>
+    <tr><td><a href='https://joey711.github.io/phyloseq/' target='_blank'>Phyloseq</a> Input File Downloads:&nbsp;</td>
       <td>       
               <form id='download_biom_form_id'  method='POST' action='download_file'>
-                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom File</button>
+                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom Matrix File</button>
                 <input type='hidden' name='file_type' value='biom' />           
                 <input type='hidden' name='ts' value='<%= pi.ts %>' />
                 <input type='hidden' name='referer' value='/visuals/view_selection' />
@@ -195,7 +195,7 @@
               </form> 
           </td><td>
               <form id='download_meta_form_id'  method='POST' action='download_file'>
-                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Meta File</button>
+                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Metadata File</button>
                 <input type='hidden' name='file_type' value='meta' />          
                 <input type='hidden' name='ts' value='<%= pi.ts %>' />
                 <input type='hidden' name='referer' value='/visuals/view_selection' />
@@ -541,7 +541,7 @@
 	</div>
 	<div class='button_div pull-right'>
 	  <button type='button' id='counts_table_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-	  <button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+	  <button type='button' disabled='disabled' id='counts_table_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -555,7 +555,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='metadata_table_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='metadata_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -570,7 +570,7 @@
     </div>
   <div class='button_div pull-right'>
     <button type='button' id='dheatmap_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='dheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -585,7 +585,7 @@
     </div> 
   <div class='button_div pull-right'>
     <button type='button' id='fheatmap_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='fheatmap_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -600,7 +600,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='barcharts_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='barcharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -615,7 +615,7 @@
 	</div> 
   <div class='button_div pull-right'>
     <button type='button' id='piecharts_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='piecharts_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -629,7 +629,7 @@
 	</div> 
   <div class='button_div pull-right'>
     <button type='button' id='dendrogram1_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='dendrogram1_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -643,7 +643,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='dendrogram2_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='dendrogram2_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -657,7 +657,7 @@
   </div>
   <div class='button_div pull-right'>
     <button type='button' id='dendrogram3_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='dendrogram3_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -671,7 +671,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='dendrogram_pdf_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='dendrogram_pdf_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -685,7 +685,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='pcoa_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='pcoa_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -699,7 +699,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='pcoa_3d_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='pcoa_3d_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -713,7 +713,7 @@
 	</div>
   <div class='button_div pull-right'>
     <button type='button' id='geospatial_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='geospatial_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
   </nav>
@@ -740,7 +740,7 @@
   </div>
  <div class='button_div pull-right'>
     <button type='button' id='adiversity_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='adiversity_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -754,7 +754,7 @@
   </div>
  <div class='button_div pull-right'>
     <button type='button' id='phyloseq01_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='phyloseq01_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -768,7 +768,7 @@
   </div>
  <div class='button_div pull-right'>
     <button type='button' id='phyloseq02_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='phyloseq02_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -782,7 +782,7 @@
   </div>
  <div class='button_div pull-right'>
     <button type='button' id='phyloseq03_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='phyloseq03_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -796,7 +796,7 @@
   </div>
   <div class='button_div pull-right'>
     <button type='button' id='phyloseq04_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='phyloseq04_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -810,7 +810,7 @@
   </div>
   <div class='button_div pull-right'>
     <button type='button' id='phyloseq05_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
-    <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download</button>
+    <button type='button' disabled='disabled' id='phyloseq05_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
     <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
   </div>
  </nav>
@@ -820,7 +820,7 @@
 
   <div id='counts_tooltip_div' class=''></div>
   <div id='piebarcharts_tooltip_div' class=''></div>
-  <div id='metadata_tooltip_div' class=''></div> 
+  <div id='q' class=''></div> 
 
  
  
