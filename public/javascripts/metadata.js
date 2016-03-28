@@ -152,6 +152,7 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
       html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
     }
     html += '</table>'
+    alert(html)
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>"); 
 
   }

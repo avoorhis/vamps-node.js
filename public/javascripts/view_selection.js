@@ -1548,7 +1548,7 @@ function create_geospatial() {
           if(typeof lat == 'number' && typeof lon == 'number'){
             latlon = lat.toString() +';'+ lon.toString();
             if (latlon in lat_lon_collector) {
-              newds = lat_lon_collector[latlon] + "<br>" + ds;
+              newds = lat_lon_collector[latlon] + ";" + ds;
               lat_lon_collector[latlon] = newds;
             }else{
               lat_lon_collector[latlon] = ds;
@@ -1565,7 +1565,7 @@ function create_geospatial() {
         z+=1; 
 
       }
-
+//alert(ds)
       if (loc_data.length === 0){
           geospatial_div.innerHTML='No Lat/Lon Data Found/Selected';
       }else{
@@ -1601,23 +1601,27 @@ function setMarkers(map, loc_data, infowindow) {
   for (var i = 0; i < loc_data.length; i++) {
     // create a marker
 	 // alert(locations[0])
-    var data = loc_data[i];
+    //var data = loc_data[i];
 	
-    var myLatLng = new google.maps.LatLng(data[1],data[2]); 
+    var myLatLng = new google.maps.LatLng(loc_data[i][1],loc_data[i][2]); 
     var marker = new google.maps.Marker({
-      title: data[0],
+      title: loc_data[i][0],
       position: myLatLng,
       map: map
     });
-    alert(data[0])
+    //alert(data[0])
     // add an event listener for this marker
-    // var html = '';
-    // for(l in data[0]){
-    //   var pid = pid_collector[lines[l]];
-    //   html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a><br>"
-    //   html += ""
-    // }
-    bindInfoWindow(marker, map, infowindow, "<p>" + data[0] + "</p>"); 
+    var ds_array = loc_data[i][0].split(';')
+    var html = '';
+    html += "<table  class='table table_striped' >"
+    html += '<tr><th>Dataset</th></tr>';
+    for(d in ds_array){
+      //var pid = pid_collector[lines[l]].pid;
+      //var val = pid_collector[lines[l]].value;
+      html += "<tr><td>" + ds_array[d] + "</td></tr>"
+    }
+    html += '</table>'
+    bindInfoWindow(marker, map, infowindow, "<p>" + html + "</p>"); 
 
   }
 
