@@ -1134,7 +1134,6 @@ function create_counts_table() {
         }else{
           html += "<th class=''><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
         }
-        
       }
       
       for (var n in mtx_local.columns) {

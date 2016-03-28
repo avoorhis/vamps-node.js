@@ -1611,25 +1611,36 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
           new_rows[selected_did].sort(function(a, b) {
             return b.seq_count - a.seq_count;
           });
-          fs.writeFile(file_path, JSON.stringify(new_rows[selected_did]), function (err) {
-            if (err) return console.log(err);
-            console.log('wrote to > '+file_path);
+          //fs.writeFile(file_path, JSON.stringify(new_rows[selected_did]), function (err) {
+          //  if (err) return console.log(err);
+          //  console.log('wrote to > '+file_path);
+          //});
+          fs.writeFileSync(file_path, JSON.stringify(new_rows[selected_did]))
+          res.render('visuals/user_viz_data/bar_single', {
+              title: 'Taxonomic Data',
+              ts: ts || 'default_timestamp',
+              matrix    :           JSON.stringify(new_matrix),
+              post_items:           JSON.stringify(visual_post_items),
+              seqs_file : filename,
+              bar_type  : 'single',
+              //html: html,
+              user: req.user, hostname: req.CONFIG.hostname,
           });
 
         }
     })
   	
 //console.log(new_matrix)
-    res.render('visuals/user_viz_data/bar_single', {
-        title: 'Taxonomic Data',
-        ts: ts || 'default_timestamp',
-  		  matrix    :           JSON.stringify(new_matrix),
-  		  post_items:           JSON.stringify(visual_post_items),
-        seqs_file : filename,
-        bar_type  : 'single',
-        //html: html,
-        user: req.user, hostname: req.CONFIG.hostname,
-    });
+    // res.render('visuals/user_viz_data/bar_single', {
+    //     title: 'Taxonomic Data',
+    //     ts: ts || 'default_timestamp',
+  		//   matrix    :           JSON.stringify(new_matrix),
+  		//   post_items:           JSON.stringify(visual_post_items),
+    //     seqs_file : filename,
+    //     bar_type  : 'single',
+    //     //html: html,
+    //     user: req.user, hostname: req.CONFIG.hostname,
+    // });
 
 });
 
