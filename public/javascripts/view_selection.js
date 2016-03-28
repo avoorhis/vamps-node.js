@@ -1605,8 +1605,14 @@ function setMarkers(map, loc_data, infowindow) {
       position: myLatLng,
       map: map
     });
-    
+    alert(data[0])
     // add an event listener for this marker
+    // var html = '';
+    // for(l in data[0]){
+    //   var pid = pid_collector[lines[l]];
+    //   html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a><br>"
+    //   html += ""
+    // }
     bindInfoWindow(marker, map, infowindow, "<p>" + data[0] + "</p>"); 
 
   }

@@ -90,6 +90,7 @@ function create_geospatial() {
         var mapOptions = {
           center : center,
           zoom   : 3,
+          scrollwheel: false,
           //zoom: 2, for world view far out
           //zoom 13 for marsh
           mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -120,11 +121,17 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     
     // add an event listener for this marker
     lines = data[0].split(':::')
-    var html = '';
+    
+    if(lines.length > 10){
+      var html = "<div style='height:200px;width:300px;overflow:auto;'>";
+    }else{
+      var html = "<div style='width:300px;'>";
+    }
     for(l in lines){
     	var pid = pid_collector[lines[l]];
     	html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a><br>"
     }
+    html += "</div>";
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>"); 
 
   }
