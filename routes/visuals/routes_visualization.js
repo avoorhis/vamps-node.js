@@ -1644,25 +1644,25 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
 
 });
 
-router.post('visuals/fileUpload', function(req, res) {
-    console.log('in fileUPLOAD')
-    // http://www.iamrohit.in/file-upload-in-nodejs-with-progress-bar/
-    var tempPath = req.files.uploadfile.path;
-    var targetPath = config.UPLOADDIR+req.files.uploadfile.name;
-    fs.rename(tempPath, targetPath, function(err) {
-      if(err) {
-        //res.send("Error found to upload file "+err);
-        var msg = "Error found to upload file "+err;
-        var type="error";
-      } else {
-        //res.send("<b>File uploaded to "+targetPath+" ("+req.files.uploadfile.size +" bytes)</b>");
-        var fileSize = req.files.uploadfile.size/1024;
-        var msg = "File uploaded to "+targetPath+" ("+(fileSize.toFixed(2)) +" kb)";
-        var type="success";
-        res.send(req.files.uploadfile.name);
-      }
-    });
-});
+// router.post('visuals/fileUpload', function(req, res) {
+//     console.log('in fileUPLOAD')
+//     // http://www.iamrohit.in/file-upload-in-nodejs-with-progress-bar/
+//     var tempPath = req.files.uploadfile.path;
+//     var targetPath = config.UPLOADDIR+req.files.uploadfile.name;
+//     fs.rename(tempPath, targetPath, function(err) {
+//       if(err) {
+//         //res.send("Error found to upload file "+err);
+//         var msg = "Error found to upload file "+err;
+//         var type="error";
+//       } else {
+//         //res.send("<b>File uploaded to "+targetPath+" ("+req.files.uploadfile.size +" bytes)</b>");
+//         var fileSize = req.files.uploadfile.size/1024;
+//         var msg = "File uploaded to "+targetPath+" ("+(fileSize.toFixed(2)) +" kb)";
+//         var type="success";
+//         res.send(req.files.uploadfile.name);
+//       }
+//     });
+// });
 //
 // B A R - C H A R T  -- D O U B L E
 //
@@ -1775,24 +1775,36 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
           fs.writeFile(file_path1, JSON.stringify(new_rows[did1]), function (err) {
             if (err) return console.log(err);
             console.log('wrote file > '+file_path1);
-          });
-          fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function (err) {
-            if (err) return console.log(err);
-            console.log('wrote file > '+file_path2);
+
+         
+            fs.writeFile(file_path2, JSON.stringify(new_rows[did2]), function (err) {
+              if (err) return console.log(err);
+              console.log('wrote file > '+file_path2);
+              res.render('visuals/user_viz_data/bar_double', {
+                  title: 'Taxonomic Data',
+                  ts: timestamp,
+                  matrix    :           JSON.stringify(new_matrix),
+                  post_items:           JSON.stringify(visual_post_items),
+                  bar_type  : 'double',        
+                  //html: html,
+                  user: req.user, hostname: req.CONFIG.hostname,
+              });
+            });
+
           });
 
         }
     })
     //console.log(new_matrix)
-    res.render('visuals/user_viz_data/bar_double', {
-        title: 'Taxonomic Data',
-        ts: timestamp,
-        matrix    :           JSON.stringify(new_matrix),
-        post_items:           JSON.stringify(visual_post_items),
-        bar_type  : 'double',        
-        //html: html,
-        user: req.user, hostname: req.CONFIG.hostname,
-    });
+    // res.render('visuals/user_viz_data/bar_double', {
+    //     title: 'Taxonomic Data',
+    //     ts: timestamp,
+    //     matrix    :           JSON.stringify(new_matrix),
+    //     post_items:           JSON.stringify(visual_post_items),
+    //     bar_type  : 'double',        
+    //     //html: html,
+    //     user: req.user, hostname: req.CONFIG.hostname,
+    // });
 
 });
 //
