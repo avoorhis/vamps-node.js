@@ -1,0 +1,114 @@
+<% include ../add_ins/begin.ejs %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+<% var metaitems = JSON.parse(metadata_items); %>
+
+<% // sort keys %>
+
+
+<script>  
+  var mi_local  = JSON.parse('<%- metadata_items %>');
+</script>
+<p class='title'>Search</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+
+	
+	<div class="container">
+
+	<a href='/search/search_index'>Back to Search List</a>
+	
+  <div class="row">  
+      <!-- METADATA SEARCH by Name --><a name="metadata"></a>
+<br><br>
+<% if(metadata_search_type == 'byname'){ %>
+<div id='metadata_search_div' class='well'>
+	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
+			<div id='' class='pull-right' >Join searches by: 
+					<input type='radio' name='join_type' value='intersection' checked='checked' /> Intersection
+					&nbsp;&nbsp;
+					<input type='radio' name='join_type' value='addition' /> Addition
+			</div>
+		<br>
+		<strong>Metadata -- Search by Name</strong> (limited by permissions)
+		<br>
+		Select Field(s) to Search:<br>
+		<ol>	
+			
+			<li>
+				 <table><tr>
+					<td>
+					<select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
+						<option value='NONE'>select</option>						
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+						<% } %> 
+					</select>
+				    </td>
+					<!--
+					<td>
+					<input type='text'  onkeyup="showMetadataHint(this.value)">
+				    </td><td><span id="txtHint"></span>
+					</td>
+					-->
+			    </tr>
+			</table>
+				
+								
+			   <div id='metadata_search_range_div1' class='display_none'></div>
+					
+			</li>
+			<br>	
+			<li>		
+					<input id='search_metadata_activate_btn2' type='checkbox' value='activate' >
+					<select id='field2_metadata_search' class="selectpicker" data-style="btn-primary" name='search2_metadata-item' disabled='disabled' >
+						<option value='NONE'>select</option>
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+						<% } %>
+					</select> 
+					<div id='metadata_search_range_div2' class='display_none'></div>
+					
+			</li>	
+			<br>
+			<li>		
+					<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >
+					<select id='field3_metadata_search' class="selectpicker" data-style="btn-primary" name='search3_metadata-item' disabled='disabled' >
+						<option value='NONE'>select</option>
+						<% for (i = 0; i < mkeys.length; i++) { %>	
+							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
+						<% } %>
+					</select>	
+					<div id='metadata_search_range_div3' class='display_none'></div>
+					
+			</li>	
+		</ol>
+					<br>
+				<!--	<input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' > -->
+					<button id='search_metadata_btn' class='btn btn-xs btn-primary' disabled='disabled' type='submit'>Search Datasets</button>
+					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
+				
+				<ul>					
+					<li>TODO: Search all datasets or select subset of datasets then search in subset?
+				</ul>
+			
+	</form>
+	
+</div>
+<%}else{ %>
+TODO
+<% } %>
+
+
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/search.js"></script>
+</body>
+</html>

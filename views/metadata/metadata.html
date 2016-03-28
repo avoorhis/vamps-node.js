@@ -5,30 +5,29 @@
 <div class="title fa fa-anchor">Metadata</div>
 <div class="row">
 <div class="col-lg-3"></div>
-<div class="col-lg-6">
-<br>
-<div class="well">
-
-
-<li>
-	<a href='/user_data/export_data'>Export -TODO</a> metadata by project/dataset
-</li>
-<li>
-	<a href='metadata_list'>View</a> list of all metadata
-</li>
-<li>
-	<a href='/search/search_index#metadata'>Search</a> for specific metadata
-</li>
-<% if(hostname.substring(0,6) != 'bpcweb'){ %>
-	<li>
-		<a href='/user_data/import_data?import_type=metadata'>Upload</a> metadata for your project
-	</li>
-<% } %>
-<li>
-	<a href='metadata_list'>MAP</a> Find datasets by location.
-</li>
-</div>
-</div>
+	<div class="col-lg-6">
+		<br>
+		<div class="well">
+			<li>
+				<a href='/user_data/export_data'>Export -TODO</a> metadata by project/dataset
+			</li>
+			<li>
+				<a href='metadata_list'>View</a> list of all metadata
+			</li>
+			<li>
+				<a href='/search/search_index#metadata'>Search</a> for specific metadata
+			</li>
+			<% if(hostname.substring(0,6) != 'bpcweb'){ %>
+				<li>
+					<a href='/user_data/import_data?import_type=metadata'>Upload</a> metadata for your project
+				</li>
+			<% } %>
+			<li>
+				<a href='metadata_list'>MAP</a> Find datasets by location.
+			</li>
+		</div>
+	</div>
 </div>
 <% include ../add_ins/end.ejs %>
-
+</body>
+</html>

@@ -6,23 +6,23 @@
 //         return false;
 //     });
 // });
-document.getElementById("livesearch_result_div").value = '';
-document.getElementById("create_fasta_hidden_id").value = ''
-document.getElementById("find_datasets_hidden_id").value = ''
-document.getElementById("find_datasets_btn").disabled=true;
-document.getElementById("create_fasta_btn").disabled=true;
+// document.getElementById("livesearch_result_div").value = '';
+// document.getElementById("create_fasta_hidden_id").value = ''
+// document.getElementById("find_datasets_hidden_id").value = ''
+// document.getElementById("find_datasets_btn").disabled=true;
+// document.getElementById("create_fasta_btn").disabled=true;
 
-var metadata_search_range_div1 = document.getElementById('metadata_search_range_div1');
-var metadata_search_field1 = document.getElementById('field1_metadata_search');
-var metadata_search_range_div2 = document.getElementById('metadata_search_range_div2');
-var metadata_search_field2 = document.getElementById('field2_metadata_search');
-var metadata_search_range_div3 = document.getElementById('metadata_search_range_div3');
-var metadata_search_field3 = document.getElementById('field3_metadata_search');
-var search_metadata_activate_btn2 = document.getElementById('search_metadata_activate_btn2');
-var search_metadata_activate_btn3 = document.getElementById('search_metadata_activate_btn3');
-var search_metadata_btn = document.getElementById('search_metadata_btn');
+var metadata_search_range_div1 = document.getElementById('metadata_search_range_div1') || null;
+var metadata_search_field1 = document.getElementById('field1_metadata_search') || null;
+var metadata_search_range_div2 = document.getElementById('metadata_search_range_div2') || null;
+var metadata_search_field2 = document.getElementById('field2_metadata_search') || null;
+var metadata_search_range_div3 = document.getElementById('metadata_search_range_div3') || null;
+var metadata_search_field3 = document.getElementById('field3_metadata_search') || null;
+var search_metadata_activate_btn2 = document.getElementById('search_metadata_activate_btn2') || null;
+var search_metadata_activate_btn3 = document.getElementById('search_metadata_activate_btn3') || null;
+var search_metadata_btn = document.getElementById('search_metadata_btn') || null;
 
-if (typeof search_metadata_btn !=="undefined") {
+if (search_metadata_btn !== null) {
   search_metadata_btn.addEventListener('click', function () {
 	  var form = document.getElementById('metadata_search_form');
 	  var search1_comparison = document.getElementById('search1_comparison');
@@ -33,7 +33,7 @@ if (typeof search_metadata_btn !=="undefined") {
   });
 }
 
-if (typeof search_metadata_activate_btn2 !=="undefined") {
+if (search_metadata_activate_btn2 !== null) {
   search_metadata_activate_btn2.addEventListener('click', function () {
     
 	if(metadata_search_field2.disabled === true){
@@ -45,7 +45,7 @@ if (typeof search_metadata_activate_btn2 !=="undefined") {
     
   });
 }
-if (typeof search_metadata_activate_btn3 !=="undefined") {
+if (search_metadata_activate_btn3 !== null) {
   search_metadata_activate_btn3.addEventListener('click', function () {
     if(metadata_search_field3.disabled === true){
       metadata_search_field3.disabled = false;
@@ -59,7 +59,7 @@ if (typeof search_metadata_activate_btn3 !=="undefined") {
 
 var selection_choices = ['equal_to','less_than','greater_than','not_equal_to','between_range','outside_range'];
 
-if (typeof metadata_search_field1 !=="undefined") {
+if (metadata_search_field1 !== null) {
   metadata_search_field1.addEventListener('change', function () {
       var item = metadata_search_field1.value;
       if(item == 'NONE'){
@@ -89,8 +89,7 @@ if (typeof metadata_search_field1 !=="undefined") {
           
           html += " <select id='search1_comparison' name='search1_comparison' onchange=\"change_comparison(this.value,'1')\" >";
           for (var y in selection_choices) {
-			
-			html += "      <option class='' value='"+selection_choices[y]+"'>"+selection_choices[y]+"</option>";
+			       html += "      <option class='' value='"+selection_choices[y]+"'>"+selection_choices[y]+"</option>";
           } 
           html += "</select> ";
           html += "<div id='input1_comparison'> ";
@@ -110,7 +109,7 @@ if (typeof metadata_search_field1 !=="undefined") {
 }
 
 //
-if (typeof metadata_search_field2 !=="undefined") {
+if (metadata_search_field2 !== null) {
   metadata_search_field2.addEventListener('change', function () {
       var item = metadata_search_field2.value;
       if(item == 'NONE'){
@@ -158,7 +157,7 @@ if (typeof metadata_search_field2 !=="undefined") {
   });
 }
 //
-if (typeof metadata_search_field3 !=="undefined") {
+if (metadata_search_field3 !== null) {
   metadata_search_field3.addEventListener('change', function () {
       var item = metadata_search_field3.value;
       if(item == 'NONE'){

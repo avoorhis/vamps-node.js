@@ -8,39 +8,42 @@ var path  = require('path');
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 
-    var tmp_metadata_fields = {};
-    var metadata_fields = {};
-	  var metadata_fields_array = [];
-    for (var did in AllMetadata){
-      for (var name in AllMetadata[did]){
-          val = AllMetadata[did][name];
-          if(name in tmp_metadata_fields){
-            tmp_metadata_fields[name].push(val);
-          }else{
-            if(IsNumeric(val)){
-              tmp_metadata_fields[name]=[];
-            }else{
-              tmp_metadata_fields[name]=['non-numeric'];
-            }
-            tmp_metadata_fields[name].push(val);
-          }
-      }
-    }
-    //console.log(tmp_metadata_fields)
-	
-    for (var tmp_name in tmp_metadata_fields){
-      metadata_fields_array.push(tmp_name);
-	  if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
-        tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
-        metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
-      }else{
-        var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
-        var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
-        metadata_fields[tmp_name] = {"min":min,"max":max};
-      }
-    }
+   
+    
     //console.log(metadata_fields)
-    metadata_fields_array.sort();
+    res.render('search/search_index', { title: 'VAMPS:Search',
+        message:         req.flash('message'),
+        user:            req.user,hostname: req.CONFIG.hostname,
+    		});
+});
+//
+//
+//
+router.get('/users', helpers.isLoggedIn, function(req, res) {
+
+    res.render('search/users', { title: 'VAMPS:Search',
+        
+        message:              req.flash('message'),
+        
+        user:                 req.user,hostname: req.CONFIG.hostname,
+    });
+});
+//
+//
+//
+router.get('/names', helpers.isLoggedIn, function(req, res) {
+
+    res.render('search/names', { title: 'VAMPS:Search',
+        
+        message:              req.flash('message'),
+        
+        user:                 req.user,hostname: req.CONFIG.hostname,
+    });
+});
+//
+//
+//
+router.get('/blast', helpers.isLoggedIn, function(req, res) {
     var blast_db = req.CONSTS.blast_db;
     // check if blast database exists:
     var blast_nin = path.join('public','blast', NODE_DATABASE, blast_db+'.nin');
@@ -56,17 +59,75 @@ router.get('/search_index', helpers.isLoggedIn, function(req, res) {
     catch (e){
       console.log(e);
     }
-    //console.log(metadata_fields)
-    res.render('search/search_index', { title: 'VAMPS:Search',
-        metadata_items:  JSON.stringify(metadata_fields),
-        message:         req.flash('message'),
-        meta_message:    req.flash('meta_message'),
-        tax_message:     req.flash('tax_message'),
-        mkeys:           metadata_fields_array,
-        blast_db_path:   blast_db_path,
-        user:            req.user,hostname: req.CONFIG.hostname,
-    		});
+    res.render('search/blast', { title: 'VAMPS:Search',
+        blast_db_path:blast_db_path,
+        message:              req.flash('message'),
+        
+        user:                 req.user,hostname: req.CONFIG.hostname,
+    });
 });
+//
+//
+//
+router.get('/taxonomy', helpers.isLoggedIn, function(req, res) {
+
+    res.render('search/taxonomy', { title: 'VAMPS:Search',
+        
+        message:              req.flash('message'),
+        
+        user:                 req.user,hostname: req.CONFIG.hostname,
+    });
+});
+//
+//
+//
+router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
+      
+      console.log('in by '+req.params.type)
+
+      var tmp_metadata_fields = {};
+      var metadata_fields = {};
+      var metadata_fields_array = [];
+      for (var did in AllMetadata){
+        for (var name in AllMetadata[did]){
+            val = AllMetadata[did][name];
+            if(name in tmp_metadata_fields){
+              tmp_metadata_fields[name].push(val);
+            }else{
+              if(IsNumeric(val)){
+                tmp_metadata_fields[name]=[];
+              }else{
+                tmp_metadata_fields[name]=['non-numeric'];
+              }
+              tmp_metadata_fields[name].push(val);
+            }
+        }
+      }
+      //console.log(tmp_metadata_fields)
+    
+      for (var tmp_name in tmp_metadata_fields){
+        metadata_fields_array.push(tmp_name);
+      if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+          tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
+          metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
+        }else{
+          var min = Math.min.apply(null, tmp_metadata_fields[tmp_name]);
+          var max = Math.max.apply(null, tmp_metadata_fields[tmp_name]);
+          metadata_fields[tmp_name] = {"min":min,"max":max};
+        }
+      }
+      //console.log(metadata_fields)
+      metadata_fields_array.sort();
+
+
+      res.render('search/metadata', { title: 'VAMPS:Search',
+        metadata_items:       JSON.stringify(metadata_fields),
+        metadata_search_type: req.params.type,
+        message:              req.flash('message'),
+        mkeys:                metadata_fields_array,
+        user:                 req.user,hostname: req.CONFIG.hostname,
+      });
+})
 //
 //  TAXONOMY SEARCH
 //
@@ -436,7 +497,7 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
 router.get('/livesearch_taxonomy/:rank/:taxon', helpers.isLoggedIn, function(req, res) {
 	var selected_taxon = req.params.taxon;
 	var selected_rank = req.params.rank;
-  var rank_number = req.C.RANKS.indexOf(selected_rank);
+  var rank_number = req.CONSTS.RANKS.indexOf(selected_rank);
 	console.log(req.params);
 	var this_item = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[selected_taxon+'_'+selected_rank];
 	var tax_str = selected_taxon;
@@ -531,7 +592,7 @@ router.post('/blast_search_result', helpers.isLoggedIn, function(req, res) {
         var spawn = require('child_process').spawn;
         var log = fs.openSync(path.join(process.env.PWD,'logs','blast.log'), 'a');
         var blast_options = {
-          scriptPath : req.C.PATH_TO_BLAST,
+          scriptPath : req.CONFIG.PATH_TO_BLAST,
           args :       [ '-db', blast_db, '-query', query_file_path, '-outfmt','13','-out',out_file_path0 ],
         };
         //var blastn_cmd = 'blastn -db '+blast_db+' -query '+query_file_path+' -outfmt 13 -out '+out_file_path0

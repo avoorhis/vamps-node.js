@@ -1,0 +1,47 @@
+<% include ../add_ins/begin.ejs %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+
+
+
+
+<p class='title'>Search</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+
+<a href='/search/search_index'>Back to Search List</a>
+<!-- USER SEARCH --><a name="user"></a>
+<br><br>
+<div id='project_search_div' class='well'>
+	<strong>User Search</strong>	
+
+	<div class="row">	
+			<div class="dropdown col-md-1"></div>
+
+			<div class="dropdown col-md-3">
+			  Type partial name: <input id="user_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showUserResult(this.value)"/>
+			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			    <div id="livesearch_user" class=""></div>
+			  </ul>		
+			</div>
+	</div>	
+  <ul>					
+		<li>TODO: connect up to project listing (or something else)
+	</ul>		
+</div>
+
+	
+
+
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/search.js"></script>   
+ </body>
+ </html>

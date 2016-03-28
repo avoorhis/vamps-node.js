@@ -1,289 +1,39 @@
 <% include ../add_ins/begin.ejs %>
-<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
-<% var metaitems = JSON.parse(metadata_items); %>
 
-<% // sort keys %>
-
-
-<script>  
-  var mi_local  = JSON.parse('<%- metadata_items %>');
-</script>
-<p class='title'>Search</p>
-<% if (message) { %>
-	<div class="alert_flash_message"><%= message %></div>
-<% } %>
  
-
-<div id='search_choices_div'>
-<ul>
-<li>Search Options:&nbsp;</li>
-	<li>
-		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by name)</small></a>
-	</li><li>
-		<a href="#metadata" role="button" class="btn btn-default btn-xs">Metadata <small>(search by value)</small></a>
-	</li><li>
-		<a href="#taxonomy" role="button" class="btn btn-default btn-xs">Taxonomy</a>
-	</li><li>
-		<a href="#names" role="button" class="btn btn-default btn-xs">Names (key words)</a>
-	</li><li>
-		<a href="#user" role="button" class="btn btn-default btn-xs">Users</a>
-	</li><li>
-		<a href="#project" role="button" class="btn btn-default btn-xs">Project/Dataset</a>
-	</li><li>
-		<a href="#blast" role="button" class="btn btn-default btn-xs">Blast</a>
-	</li>
-</ul>
-</div>
-
-<!-- METADATA SEARCH by Name --><a name="metadata"></a>
-<br><br>
-<div id='metadata_search_div' class='well'>
-	<form id='metadata_search_form' name='' method='POST' action='/search/metadata_search_result' >	
-			<div id='' class='pull-right' >Join searches by: 
-					<input type='radio' name='join_type' value='intersection' checked='checked' /> Intersection
-					&nbsp;&nbsp;
-					<input type='radio' name='join_type' value='addition' /> Addition
-			</div>
+<div class="title fa fa-anchor">Search</div>
+<div class="row">
+<div class="col-lg-3"></div>
+	<div class="col-lg-6">
 		<br>
-		<strong>Metadata -- Search by Name</strong> (limited by permissions)
-		<br>
-		Select Field(s) to Search:<br>
-		<ol>	
-			
+		<div class="well">
 			<li>
-				 <table><tr>
-					<td>
-					<select id='field1_metadata_search'  data-style="btn-primary" name='search1_metadata-item'>
-						<option value='NONE'>select</option>						
-						<% for (i = 0; i < mkeys.length; i++) { %>	
-							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-						<% } %> 
-					</select>
-				    </td>
-					<!--
-					<td>
-					<input type='text'  onkeyup="showMetadataHint(this.value)">
-				    </td><td><span id="txtHint"></span>
-					</td>
-					-->
-			    </tr>
-			</table>
-				
-								
-			   <div id='metadata_search_range_div1' class='display_none'></div>
-					
+				<a href="metadata/byname">Metadata <small>(by name)</small></a>
 			</li>
-			<br>	
-			<li>		
-					<input id='search_metadata_activate_btn2' type='checkbox' value='activate' >
-					<select id='field2_metadata_search' class="selectpicker" data-style="btn-primary" name='search2_metadata-item' disabled='disabled' >
-						<option value='NONE'>select</option>
-						<% for (i = 0; i < mkeys.length; i++) { %>	
-							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-						<% } %>
-					</select> 
-					<div id='metadata_search_range_div2' class='display_none'></div>
-					
-			</li>	
-			<br>
-			<li>		
-					<input id='search_metadata_activate_btn3' type='checkbox' value='activate' >
-					<select id='field3_metadata_search' class="selectpicker" data-style="btn-primary" name='search3_metadata-item' disabled='disabled' >
-						<option value='NONE'>select</option>
-						<% for (i = 0; i < mkeys.length; i++) { %>	
-							<option class='' value='<%= mkeys[i] %>'><%= mkeys[i] %></option>
-						<% } %>
-					</select>	
-					<div id='metadata_search_range_div3' class='display_none'></div>
-					
-			</li>	
-		</ol>
-					<br>
-				<!--	<input id='search_metadata_btn' class='display_none' type='submit' value='Search Datasets' > -->
-					<button id='search_metadata_btn' class='btn btn-xs btn-primary' disabled='disabled' type='submit'>Search Datasets</button>
-					<input name='search_function'  type='hidden' value='search_metadata_all_datasets' >
-				
-				<ul>					
-					<li>TODO: Search all datasets or select subset of datasets then search in subset?
-				</ul>
-			
-	</form>
-	<% if (meta_message) { %>
-		<div class="alert_flash_message"><%= meta_message %></div>
-	<% } %>	
-</div>
-<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-
-<!-- TAXONOMY SEARCH --><a name="taxonomy"></a>
-<br><br>
-<div id='taxonomy_search_div' class='well'>
-
-		    <strong>Taxonomy</strong>
-
-				<div class='pull-right'>
-					<table class='button_row '>
-							<tr>
-					    <td>    	
-					    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_for_datasets' >	
-							  		<button id='find_datasets_btn' class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Find Datasets</button>
-							  		<input type='hidden' id='find_datasets_hidden_id' name='tax_string' value=''>
-							  		<input type='hidden' name='selection' value='custom_taxonomy'>
-							  	</form>
-					    </td>
-					    <td>
-					    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
-							  		<button id='create_fasta_btn'  class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Create Fasta File</button>
-							  		<input type='hidden' id='create_fasta_hidden_id' name='tax_string' value=''>
-							  		<input type='hidden' name='download_type' value='custom_taxonomy'>
-							  	</form>
-					    </td>    
-							</tr>
-							<tr><td colspan='3'>
-								<% if (tax_message) { %>
-									<div class="alert_flash_message"><%- tax_message %></div>
-								<% } %>
-							</td></tr>
-					</table>	  	
-				</div>
-		    <ul>
-		       <li>Enter a full or partial taxonomic name; Options: Select Datasets or Get Sequences
-		    </ul>
-	
-			<div class="row">	
-				<div class="dropdown col-md-1"></div>
-
-				<div class="dropdown col-md-2">
-				  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showTaxResult(this.value)"/>
-				  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-				    <div id="livesearch_taxonomy" class=""></div>
-				  </ul>		
-				</div>
-					
-				<div class='col-md-7'>or Enter Taxon String: 
-					<input type='text' id='livesearch_result_div' value='' name='tax_string' maxlength='150' size='100' onkeyup="showTaxResult(this.value)" />
-				</div>					
-		  </div>
-		
-		<br>TODO: After selecting a unique name should get a list of all strings that are more refined to choose from.
-	
-</div>
-<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-
-<!-- NAMES SEARCH --><a name="names"></a>
-<br><br>
-<div id='names_search_div' class='well'><strong>Names (key words)</strong>
-	<ul>
-	<li>project name, title, description
-	<li>dataset name, dataset_description
-	</ul>	
-	<ul>					
-		<li>TODO: search by partial names in titles and descriptions. Maybe combine this with project search??
-	</ul>		
-</div>
-<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-
-<!-- USER SEARCH --><a name="user"></a>
-<br><br>
-<div id='project_search_div' class='well'>
-	<strong>User Search</strong>	
-
-	<div class="row">	
-			<div class="dropdown col-md-1"></div>
-
-			<div class="dropdown col-md-3">
-			  Type partial name: <input id="user_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showUserResult(this.value)"/>
-			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-			    <div id="livesearch_user" class=""></div>
-			  </ul>		
-			</div>
-	</div>	
-  <ul>					
-		<li>TODO: connect up to project listing (or something else)
-	</ul>		
-</div>
-<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
-
-<!-- PROJECT SEARCH --><a name="project"></a>
-<br><br>
-<div id='project_search_div' class='well'>
-	<strong>Project/Dataset Search</strong>
-	
-	
-	</ul>		
-	<div class="row">	
-			<div class="dropdown col-md-1"></div>
-
-			<div class="dropdown col-md-3">
-			  Type partial name: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
-			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-			    <div id="livesearch_project" class=""></div>
-			  </ul>		
-			</div>
+			<li>
+				<a href="metadata/byvalue" >Metadata -TODO<small>(by value)</small></a>
+			</li>
+			<li>
+				<a href="taxonomy" >Taxonomy</a>
+			</li>
+			<li>
+				<a href="names" >Names (key words)</a>
+			</li>
+			<li>
+				<a href="users" >Users</a>
+			</li>
+			<li>
+				<a href="blast" >Blast</a>
+			</li>
+		</div>
 	</div>
-	  <ul>					
-		<li>TODO: connect up to project profile
-	</ul>				
 </div>
-<a class='btn btn-sm pull-right' href='search_index'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
 
-<!-- BLAST SEARCH --><a name="blast"></a>
-<br><br>
-<div id='blast_search_div' class='well'><strong>Local Blast</strong>
-	<div class='pull-right'>
-		<a href='make_a_blast_db'>How to make a blast database</a>
-	</div>
-	<% if(blast_db_path){ %>	
-		<form method='POST' action='/search/blast_search_result'>
-		<table class='table'>
-			<tr><td>
-									
-						<ul>
-								<div class="">Enter a complete or partial fasta sequence 
-									(with or without definition line ie: TGACATTGAGAGAATCCGCTAGAAATAGTGGAGTGTCTAACTTGCTAG)
-								  		  
-								  	<textarea id="blast_search_area" class="" name='query' rows='5' cols="10" ></textarea>
-								  	<br><button class='btn btn-xs btn-primary' type='submit'>BLAST</button>				  	  	
-								</div>
-						</ul>
-						<input type='hidden' name='blast_db_path' value='<%= blast_db_path %>'>				  
-				  
-				</td><td>
-				<div>
-					
-					<table>
-						<tr><td>Select a Database:</td></tr>
-						<tr><td>
-					<input type='radio' name='region' value='v1v3' /> v1v3<br>
-						</td><td>
-					<input type='radio' name='region' value='v3'   /> v3<br>
-						</td></tr>
-						<tr><td>
-					<input type='radio' name='region' value='v3v5' /> v3v5<br>
-						</td><td>
-					<input type='radio' name='region' value='v4'   /> v4<br>
-						</td></tr>
-						<tr><td>
-					<input type='radio' checked name='region' value='v6'   /> v6<br>
-						</td><td>
-					<input type='radio' name='region' value='v4v6' /> v4v6<br>
-						</td></tr>
-						<tr><td>
-					<input type='radio' name='region' value='its'  /> ITS
-						</td>
-					</tr>
-					</table>
-				</div>
-			</td></tr>
-		</table>
-		</form>
-	<% }else{ %>
-				No Blast Database Found
-	<% } %>
-</div>
+
+
 
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/search.js"></script>
+
 </body>
 </html>
 

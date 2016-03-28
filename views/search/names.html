@@ -1,0 +1,58 @@
+<% include ../add_ins/begin.ejs %>
+<link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+
+
+
+
+<p class='title'>Search</p>
+<% if (message) { %>
+	<div class="alert_flash_message"><%= message %></div>
+<% } %>
+
+
+
+<a href='/search/search_index'>Back to Search List</a>
+<!-- NAMES SEARCH --><a name="names"></a>
+<br><br>
+<div id='names_search_div' class='well'><strong>Names (key words)</strong>
+	<ul>
+	<li>project name, title, description
+	<li>dataset name, dataset_description
+	</ul>	
+	<ul>					
+		<li>TODO: search by partial names in titles and descriptions. Maybe combine this with project search??
+	</ul>		
+</div>
+
+<!-- PROJECT SEARCH --><a name="project"></a>
+<br><br>
+<div id='project_search_div' class='well'>
+	<strong>Project/Dataset Search</strong>
+	
+	
+	</ul>		
+	<div class="row">	
+			<div class="dropdown col-md-1"></div>
+
+			<div class="dropdown col-md-3">
+			  Type partial name: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
+			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			    <div id="livesearch_project" class=""></div>
+			  </ul>		
+			</div>
+	</div>
+	  <ul>					
+		<li>TODO: connect up to project profile
+	</ul>				
+</div>
+
+
+
+
+
+	
+<% include ../add_ins/end.ejs %>
+<script type="text/javascript" src="/javascripts/global.js"></script>
+<script type="text/javascript" src="/javascripts/search.js"></script>   
+ </body>
+ </html>
