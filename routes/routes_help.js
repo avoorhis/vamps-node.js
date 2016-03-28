@@ -33,7 +33,8 @@ var spawn = require('child_process').spawn;
             //Send the guts of the captcha to your template
             res.render('help/contact', {
               
-              title: 'VAMPS:Contact-Us',
+              title: 'VAMPS:Contact Us',
+              choices : req.CONSTS.CONTACT_US_SUBJECTS,
               user: req.user,
               message:'',
               hostname: req.CONFIG.hostname
@@ -48,7 +49,7 @@ var spawn = require('child_process').spawn;
     console.log(req.body)
     var mailOptions = {
         scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-        args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', '"'+req.body.name+'"', '-sub', '"VAMPS Inquery"', '-msg', '"'+req.body.message+'"' ],
+        args :       [ '-to', req.CONFIG.CONTACT_EMAIL, '-from', req.body.email, '-name', '"'+req.body.name+'"', '-sub', '"'+req.body.subject+'"', '-msg', '"'+req.body.message+'"' ],
     };
     console.log(mailOptions.scriptPath+'/send_email.py '+mailOptions.args.join(' '))
     var mail_process = spawn( mailOptions.scriptPath+'/send_email.py', mailOptions.args, {

@@ -1127,7 +1127,7 @@ function create_counts_table() {
 
       //html += "<table border='1' class='single_border small_font counts_table' >";
 	    html += "<br><br><br><br><br><table id='counts_table_id' border='1' class='table table-condensed' style=''>";
-      html += "<tr><td>CLASS</td>"
+      html += "<tr><td></td>"
       for (t = 0; t < maxrank; t++) {
         if(t==2){
           html += "<th class=''><small>Class</small></th>";
