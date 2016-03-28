@@ -7,6 +7,7 @@ var config = {};
 //
 ////  LOCAL Config  ////
 
+
 config.PROCESS_DIR = '/Users/avoorhis/programming/vamps-node.js';
 config.USER_FILES_BASE = '/Users/avoorhis/programming/vamps-node.js/user_data/'+NODE_DATABASE;
 config.JSON_FILES_BASE = '/Users/avoorhis/programming/vamps-node.js/public/json/';
