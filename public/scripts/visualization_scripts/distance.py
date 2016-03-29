@@ -87,8 +87,13 @@ def calculate_distance(args):
         #dist = distance.pdist(dmatrix, 'canberra')
     
     elif args.metric == 'jaccard':
-        #dist = dt.binary_dist_jaccard(dm)  
-        dist = distance.pdist(dmatrix, 'jaccard')
+        #print('jaccard dist') 
+        dtvar = dt.binary_dist_jaccard(dmatrix, strict=False) 
+        dist = distance.squareform( dtvar )
+        #dtvar = dt.dist_jaccard(dmatrix, strict=False)
+        
+        #dist = distance.pdist(dmatrix, 'jaccard') 
+        
      
     elif args.metric == 'kulczynski':
         dtvar = dt.dist_kulczynski(dmatrix, strict=False)
@@ -97,7 +102,8 @@ def calculate_distance(args):
         #dist = distance.pdist(dmatrix, 'kulsinski')
         
     else:  # default
-        dist = distance.pdist(dmatrix, 'braycurtis')
+        dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
+        dist = distance.squareform( dtvar )
 
     #print data['columns']
     #print dist
