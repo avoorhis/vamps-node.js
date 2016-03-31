@@ -1574,8 +1574,8 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 		return;
   }else{
 
-    	console.log('return');
-    	return
+    	
+    	
 			//var file_path = path.join(process.env.PWD,req.file.path);
 			//var original_taxbyseqfile = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[0].filename);
 			//var original_metafile  = path.join('./user_data', NODE_DATABASE, 'tmp', req.files[1].filename);
