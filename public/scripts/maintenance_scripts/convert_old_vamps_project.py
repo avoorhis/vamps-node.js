@@ -68,38 +68,32 @@ logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w",
 #logging = logging.getlogging('')
 #os.chdir(args.indir)
 
-def get_dataset_id(self, data_owner):
-    my_sql = """SELECT dataset_id FROM dataset WHERE vamps_name = '%s'""" % (data_owner)
-    res    = self.my_conn.execute_fetch_select(my_sql)
-    if res:
-        return int(res[0][0])        
-  
 def start(NODE_DATABASE, args):
-    
+
     global mysql_conn
     global cur
     seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))[1:]
-    
+
     logging.debug('starting convert_old_vamps_project.log')
-    
+
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
                           db = NODE_DATABASE,
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
-    my_class = Old_vamps_data(mysql_conn)
-    my_class.get_all_name_id('dataset')
-    
+    my_class       = Old_vamps_data(mysql_conn)
+    datasets_w_ids = my_class.get_all_name_id('dataset')
+
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
     logging.debug("checking project")
     # uncomment
     #    check_project(args)
-    
+
     logging.debug("running get_config_data")
     logging.debug("running get_config_data")
     get_config_data(args)
-    
-    
+
+
     #
     logging.debug("recreating ranks")
     # uncomment
@@ -120,29 +114,29 @@ def start(NODE_DATABASE, args):
     logging.debug("starting sequences")
     # uncomment
     #    push_sequences()
-    
+
     logging.debug("projects")
     push_project()
-    
+
     logging.debug("datasets")
     push_dataset()
-    
+
     #push_summed_counts()
     logging.debug("starting push_pdr_seqs")
     # uncomment
     #    push_pdr_seqs()
-    
-    collect_datasets(seqs_file_lines)
-    
+
+    my_class.collect_datasets(seqs_file_lines)
+
     logging.debug("starting metadata")
     start_metadata(args)
-    
+
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
 
     return CONFIG_ITEMS['project_id']
-    
-    
+
+
 def check_user(args):
     """
     check_user()
@@ -155,7 +149,7 @@ def check_user(args):
         sys.exit('Could not find owner: '+args.owner+' --Exiting')
     else:
         row = cur.fetchone()
-        CONFIG_ITEMS['owner_id'] = row[0] 
+        CONFIG_ITEMS['owner_id'] = row[0]
 
 def check_project(args):
     """
@@ -167,7 +161,7 @@ def check_project(args):
     numrows = int(cur.rowcount)
     if numrows > 0:
         sys.exit('Project already Exists: '+args.project+' --Exiting')
-       
+
 def create_env_source():
     q = "INSERT IGNORE INTO env_sample_source VALUES (0,''),(10,'air'),(20,'extreme habitat'),(30,'host associated'),(40,'human associated'),(45,'human-amniotic-fluid'),(47,'human-blood'),(43,'human-gut'),(42,'human-oral'),(41,'human-skin'),(46,'human-urine'),(44,'human-vaginal'),(140,'indoor'),(50,'microbial mat/biofilm'),(60,'miscellaneous_natural_or_artificial_environment'),(70,'plant associated'),(80,'sediment'),(90,'soil/sand'),(100,'unknown'),(110,'wastewater/sludge'),(120,'water-freshwater'),(130,'water-marine')"
     cur.execute(q)
@@ -182,10 +176,10 @@ def create_classifier():
     q = q[:-1]
     cur.execute(q)
     mysql_conn.commit()
-    
+
 def recreate_ranks():
     for i,rank in enumerate(ranks):
-        
+
         q = "INSERT IGNORE into rank (rank,rank_number) VALUES('"+rank+"','"+str(i)+"')"
         logging.debug(q)
         cur.execute(q)
@@ -201,7 +195,7 @@ def recreate_ranks():
     q = "INSERT IGNORE into rank (rank,rank_number) VALUES('superkingdom','0'),('NA','0')"
     cur.execute(q)
     mysql_conn.commit()
-    
+
 def push_dataset():
     print "IN push_dataset CONFIG_ITEMS"
     print CONFIG_ITEMS
@@ -223,7 +217,7 @@ def push_dataset():
     print "DATASET_ID_BY_NAME"
     print DATASET_ID_BY_NAME
     mysql_conn.commit()
-    
+
 def push_project():
     desc = "Project Description"
     title = "Title"
@@ -234,7 +228,7 @@ def push_project():
     pub = CONFIG_ITEMS['public']
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
     if args.add_project:
-        
+
         q = "SELECT project_id from project where project='%s'" % (args.project)
         logging.debug(q)
         cur.execute(q)
@@ -248,15 +242,15 @@ def push_project():
         # q = "INSERT into project ("+(',').join(fields)+")"
         q = "INSERT IGNORE into project ("+(',').join(fields)+")"
         q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
-        q = q % (proj,title,desc,rev,fund,id,pub)    
+        q = q % (proj,title,desc,rev,fund,id,pub)
         logging.debug(q)
         cur.execute(q)
         mysql_conn.commit()
         CONFIG_ITEMS['project_id'] = cur.lastrowid
         print("NEW PID="+str(CONFIG_ITEMS['project_id']))
         logging.debug("STARTING NEW project -- PID="+str(CONFIG_ITEMS['project_id']))
-        
-    
+
+
 
 
 def push_pdr_seqs():
@@ -270,7 +264,7 @@ def push_pdr_seqs():
             logging.debug(q)
             cur.execute(q)
     mysql_conn.commit()
-    
+
 def push_sequences():
     # sequences
     for ds in SEQ_COLLECTOR:
@@ -284,7 +278,7 @@ def push_sequences():
                 q2 = "select sequence_id from sequence where sequence_comp = COMPRESS('"+seq+"')"
                 logging.debug('DUP SEQ FOUND')
                 cur.execute(q2)
-                mysql_conn.commit() 
+                mysql_conn.commit()
                 row = cur.fetchone()
                 seqid=row[0]
             SEQ_COLLECTOR[ds][seq]['sequence_id'] = seqid
@@ -311,11 +305,11 @@ def push_sequences():
                 logging.debug('DUP silva_tax_seq')
                 logging.debug(q3)
                 cur.execute(q3)
-                mysql_conn.commit() 
+                mysql_conn.commit()
                 row = cur.fetchone()
                 silva_tax_seq_id=row[0]
                 logging.debug('0: '+str(silva_tax_seq_id))
-        
+
             q4 = "INSERT ignore into sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id)"
             q4 += " VALUES('"+str(seqid)+"','"+str(silva_tax_seq_id)+"')"
             logging.debug(q4)
@@ -323,39 +317,22 @@ def push_sequences():
             mysql_conn.commit()
         ## don't see that we need to save uniq_ids
     mysql_conn.commit()
-    #print SEQ_COLLECTOR    
-
-
-def collect_datasets(seqs_file_lines):
-    logging.debug("In collect_datasets, seqs_file_lines = ")
-    logging.debug(seqs_file_lines)
-    CONFIG_ITEMS_datasets_set = set()
-    for field_list in seqs_file_lines:
-      # print "field_list[3] = "
-      # print field_list[3]
-      CONFIG_ITEMS_datasets_set.add(field_list[3])
-    CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
-    print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
-      
-    # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
-    
+    #print SEQ_COLLECTOR
 
 def push_taxonomy(args):
-    
-    
-    
+
     #print  general_config_items
     silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
     accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
     tax_collector = {}
-    
-    
+
+
     logging.debug( 'csv '+args.seqs_file)
     lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
     #print tax_file
-    
+
     for line in lines:
-        
+
         if line[0]=='id':
             continue
         logging.debug( line)
@@ -367,7 +344,7 @@ def push_taxonomy(args):
         rank = line[6]
         seq_count = line[7]
         distance = line[9]
-       
+
         if pj_file != args.project:
             pass
             #sys.exit('Project file--name mismatch ('+pj_file+' - '+args.project+') -- Confused! Exiting!')
@@ -378,8 +355,8 @@ def push_taxonomy(args):
             CONFIG_ITEMS['datasets'].append(ds)
         if ds not in SEQ_COLLECTOR:
             SEQ_COLLECTOR[ds]={}
-        
-        
+
+
         if ds not in SUMMED_TAX_COLLECTOR:
             SUMMED_TAX_COLLECTOR[ds]={}
 
@@ -500,7 +477,7 @@ def push_taxonomy(args):
 
     logging.debug( 'SUMMED_TAX_COLLECTOR')
     logging.debug( SUMMED_TAX_COLLECTOR)
-             
+
 def get_config_data(args):
     CONFIG_ITEMS['env_source_id'] = args.env_source_id
     CONFIG_ITEMS['public']= args.public
@@ -508,9 +485,9 @@ def get_config_data(args):
     CONFIG_ITEMS['project'] = args.project
     CONFIG_ITEMS['datasets'] = []
 
-       
+
 def start_metadata(args):
-    
+
     #get_config_data(indir)
     get_metadata(args)
     # uncomment
@@ -521,9 +498,9 @@ def start_metadata(args):
     print "CONFIG_ITEMS"
     print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
-   
+
     logging.debug('CUST_METADATA_ITEMS '+str(CUST_METADATA_ITEMS))
-    
+
 def put_custom_metadata_a():
     """
       create new table
@@ -561,14 +538,14 @@ def put_custom_metadata_a():
                 logging.debug(q2)
                 cur.execute(q2)
         mysql_conn.commit()
-    
+
 def put_required_metadata():
-    
-    
-    
+
+
+
     #q_req = "INSERT into required_metadata_info (dataset_id,"+','.join(required_metadata_fields)+")"
     #q_req = q_req+" VALUES('"
-    
+
     #for i,did in enumerate(REQ_METADATA_ITEMS['dataset_id']):
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
@@ -578,27 +555,27 @@ def put_required_metadata():
             if did in REQ_METADATA_ITEMS and key in REQ_METADATA_ITEMS[did]:
                 vals.append(REQ_METADATA_ITEMS[did][key])
                 fields.append(key)
-            
-        f = ",".join(fields)       
+
+        f = ",".join(fields)
         v = "','".join(vals)
         q_req = "INSERT into required_metadata_info (dataset_id,"+f+")"
         q_req = q_req+" VALUES('"
-        
-        q2_req = q_req + v + "')"  
+
+        q2_req = q_req + v + "')"
         logging.debug( q2_req)
         try:
             cur.execute(q2_req)
-            
+
         except MySQLdb.Error, e:
             try:
                 logging.debug("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
             except IndexError:
                 logging.debug("MySQL Error: %s" % str(e))
-        
-        
-        
-    mysql_conn.commit()    
-    
+
+
+
+    mysql_conn.commit()
+
 def put_custom_metadata():
     """
       create new table
@@ -610,7 +587,7 @@ def put_custom_metadata():
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
         cust_keys_array[did]=[]
-        
+
         if did in CUST_METADATA_ITEMS:
             for key in CUST_METADATA_ITEMS[did]:
                 if key not in all_cust_keys:
@@ -627,9 +604,9 @@ def put_custom_metadata():
                 logging.debug(q2)
                 cur.execute(q2)
         mysql_conn.commit()
-        
-    
-    # TABLE-2 === CREATE custom_metadata_<pid>        
+
+
+    # TABLE-2 === CREATE custom_metadata_<pid>
     custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
     q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
     q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
@@ -637,12 +614,12 @@ def put_custom_metadata():
     q += " `dataset_id` int(11) unsigned NOT NULL,\n"
     for key in all_cust_keys:
         if key != 'dataset_id':
-            q += " `"+key+"` varchar(128) DEFAULT NULL,\n" 
-    q += " PRIMARY KEY (`"+custom_table+"_id` ),\n" 
+            q += " `"+key+"` varchar(128) DEFAULT NULL,\n"
+    q += " PRIMARY KEY (`"+custom_table+"_id` ),\n"
     # unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
     unique_key = "UNIQUE KEY `unique_key` (`dataset_id`,"
 
-    # ONLY 16 key items allowed:    
+    # ONLY 16 key items allowed:
     for i,key in enumerate(all_cust_keys):
         if i < 14 and key != 'dataset_id':
             unique_key += " `"+key+"`,"
@@ -654,8 +631,8 @@ def put_custom_metadata():
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
     logging.debug(q)
     cur.execute(q)
-    
-    
+
+
     # add data
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
@@ -671,22 +648,22 @@ def put_custom_metadata():
         q3 += " VALUES('"+str(did)+"',"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
-                if key in CUST_METADATA_ITEMS[did]:                    
-                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"                
-        q3 = q3[:-1] + ")" 
+                if key in CUST_METADATA_ITEMS[did]:
+                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
+        q3 = q3[:-1] + ")"
         logging.debug(q3)
         cur.execute(q3)
-    
+
     mysql_conn.commit()
-    
+
 def get_metadata(args):
-    
+
     logging.debug('csv '+str(args.metadata_file))
     if args.delim == 'comma':
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
     else:
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
- 
+
     TMP_METADATA_ITEMS = {}
     for line in lines:
         #print line
@@ -717,24 +694,24 @@ def get_metadata(args):
         if ds in TMP_METADATA_ITEMS:
             for key in TMP_METADATA_ITEMS[ds]:
                 #print key
-            
+
                 if key in required_metadata_fields:
                     if did in REQ_METADATA_ITEMS:
                         REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
                     else:
                         REQ_METADATA_ITEMS[did]= {}
                         REQ_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
-  
+
                 else:
-                
+
                     if did in CUST_METADATA_ITEMS:
                         CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
                     else:
                         CUST_METADATA_ITEMS[did]= {}
-                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'') 
-                
-                
-                
+                        CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
+
+
+
 
 
 def remove_accents(input_str):
@@ -743,7 +720,7 @@ def remove_accents(input_str):
     # print "res = "
     # print res
     return res
-    
+
 class Old_vamps_data:
   """
     get data from csv files made from old vamps
@@ -751,7 +728,7 @@ class Old_vamps_data:
   """
   def __init__(self, db):
     self.cursor = db.cursor()
-  
+
   def execute_fetch_select(self, sql):
     if self.cursor:
       try:
@@ -770,73 +747,88 @@ class Old_vamps_data:
       print "get_all_name_id res = "
       print res
       if res:
-          return int(res[0])         
-    
+        return res
+        
+  def collect_datasets(self, seqs_file_lines):
+    datasets_w_ids
+      logging.debug("In collect_datasets, seqs_file_lines = ")
+      logging.debug(seqs_file_lines)
+      CONFIG_ITEMS_datasets_set = set()
+      for field_list in seqs_file_lines:
+        # print "field_list[3] = "
+        # print field_list[3]
+        CONFIG_ITEMS_datasets_set.add(field_list[3])
+      CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
+      print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
+
+      # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
+
+
 if __name__ == '__main__':
     import argparse
     myusage = """
         -p/--project  project name          REQUIRED
-        
+
         -s/--seqs_file       sequences file REQUIRED --FORMAT: see below
         -m/--metadata_file   metadata file  REQUIRED --FORMAT: see below
-        
+
         -public/--public                    DEFAULT == '1'  true
         -env_source_id/--env_source_id      DEFAULT == '100' unknown
         -owner/--owner                      REQUIRED  (must be already in users table)
-        -add/--add_project                  Will add to project 
+        -add/--add_project                  Will add to project
 
         Example project: ICM_AGW_Bv6
         Retrieve data from old_vams as csv files like this:
         >>METADATA:
             SPECIFIC for VAMPS headers in this format:
-            dataset parameterName   parameterValue  units   miens_units project units_id    structured_comment_name method  other   notes   ts  entry_date  parameter_id    project_dataset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+            dataset parameterName   parameterValue  units   miens_units project units_id    structured_comment_name method  other   notes   ts  entry_date  parameter_id    project_dataset
             if vamps project has no metadata, create a file with the above headers only.
-            TAB delimited because QIIME/QIITA data comes TAB delimited 
+            TAB delimited because QIIME/QIITA data comes TAB delimited
             TAB delimited and wrapped in double quotes:
             This metadatafile is NOT the same as from qiita
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g"
             > metadata.csv
-        
+
         >>SEQS:
-            COMMA delimited and wrapped in double quotes 
+            COMMA delimited and wrapped in double quotes
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='AB_SAND_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
             mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='HMP_HP_v3v5';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g"
             > sequences.csv
-        
+
         NOTE: the project and project_dataset fields in either file should not conflict with the new_vamps project name given on the command line.
-              
+
     """
-    parser = argparse.ArgumentParser(description="" ,usage=myusage)  
-    
-    parser.add_argument("-p","--project",                   
+    parser = argparse.ArgumentParser(description="" ,usage=myusage)
+
+    parser.add_argument("-p","--project",
                 required=True,  action="store",   dest = "project", default='',
-                help="""ProjectID""") 
-    
-    
-    parser.add_argument("-s","--seqs_file",                   
+                help="""ProjectID""")
+
+
+    parser.add_argument("-s","--seqs_file",
                 required=True,  action="store",   dest = "seqs_file", default='',
-                help="""file path""") 
-    parser.add_argument("-m","--metadata_file",                   
+                help="""file path""")
+    parser.add_argument("-m","--metadata_file",
                 required=True,  action="store",   dest = "metadata_file", default='',
-                help="""file path""") 
-    parser.add_argument("-public","--public",                   
+                help="""file path""")
+    parser.add_argument("-public","--public",
                  required=False,  action="store",   dest = "public", default='1',
                  help="""0 (private) or 1 (public)""")
-    parser.add_argument("-env_source_id","--env_source_id",                   
+    parser.add_argument("-env_source_id","--env_source_id",
                 required=False,  action="store",   dest = "env_source_id", default='100',
                 help="""EnvID from list""")
-    parser.add_argument("-owner","--owner",                   
-                required=True,  action="store",   dest = "owner", 
+    parser.add_argument("-owner","--owner",
+                required=True,  action="store",   dest = "owner",
                 help="""VAMPS user name""")
-    parser.add_argument("-delim","--delimiter",                   
+    parser.add_argument("-delim","--delimiter",
                 required=False,  action="store",   dest = "delim", default='tab',
                 help="""METADATA: comma or tab""")
-    parser.add_argument("-add","--add_project",                   
+    parser.add_argument("-add","--add_project",
                 required=False,  action="store_true",   dest = "add_project", default=False,
                 help="""""")
-                
+
     args = parser.parse_args()
-    
+
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
@@ -853,18 +845,18 @@ if __name__ == '__main__':
         NODE_DATABASE = dbs[db_no]
     else:
         sys.exit("unrecognized number -- Exiting")
-        
-    
+
+
     cur.execute("USE "+NODE_DATABASE)
-    
+
     #out_file = "tax_counts--"+NODE_DATABASE+".json"
     #in_file  = "../json/tax_counts--"+NODE_DATABASE+".json"
-    
+
     print 'DATABASE:',NODE_DATABASE
     print('See '+LOG_FILENAME)
-    
-    
-    
+
+
+
     if args.project and args.seqs_file and args.metadata_file:
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
@@ -874,5 +866,5 @@ if __name__ == '__main__':
         logging.debug("Now Run: './taxcounts_metadata_files_utils.py -pid "+str(pid)+" -add' (-json_file_path; -host)")
         logging.debug("And re-start the server")
     else:
-        print myusage 
-        
+        print myusage
+
