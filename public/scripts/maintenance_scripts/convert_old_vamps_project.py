@@ -695,7 +695,10 @@ class Old_vamps_data:
   """
   def __init__(self, db):
     self.cursor = db.cursor()
-    self.dataset_id_by_name_dict = self.make_dataset_by_name_dict()
+    self.dataset_id_by_name_dict = {}
+    print "Old_vamps_data, init befor run: self.dataset_id_by_name_dict"
+    print self.dataset_id_by_name_dict
+    self.make_dataset_by_name_dict()
     print "Old_vamps_data, init: self.dataset_id_by_name_dict"
     print self.dataset_id_by_name_dict
     
