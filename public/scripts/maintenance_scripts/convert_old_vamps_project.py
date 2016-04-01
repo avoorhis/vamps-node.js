@@ -112,8 +112,7 @@ def start(NODE_DATABASE, args):
     push_project()
     
     logging.debug("datasets")
-    # uncomment
-    #    push_dataset()
+    push_dataset()
     
     #push_summed_counts()
     logging.debug("starting push_pdr_seqs")
@@ -500,6 +499,7 @@ def put_custom_metadata_a():
     # TABLE-1 === custom_metadata_fields
     cust_keys_array = {}
     all_cust_keys = []  # to create new table
+    logging.debug("CONFIG_ITEMS['datasets'] = ")
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
         logging.debug("DATASET_ID_BY_NAME[ds] = ")
