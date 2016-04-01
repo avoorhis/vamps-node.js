@@ -496,10 +496,8 @@ def start_metadata(args, DATASET_ID_BY_NAME, my_class):
     #    put_required_metadata()
     # uncomment
     # put_custom_metadata()
-    print "AAA, after get_metadata"
     my_class.put_custom_metadata_a()
     print "YYY, after put_custom_metadata_a"
-    print "AAAA"
     # print "CONFIG_ITEMS"
     # print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
@@ -738,6 +736,7 @@ class Old_vamps_data:
       """
         create new table
       """
+      print "IIIII put_custom_metadata_a"
       logging.debug('starting put_custom_metadata')
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
