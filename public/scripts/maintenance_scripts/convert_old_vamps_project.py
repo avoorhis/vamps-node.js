@@ -128,11 +128,12 @@ def start(NODE_DATABASE, args):
 
     my_class.collect_datasets(seqs_file_lines)
     
-    print "YYY, after collect_datasets"
     logging.debug("starting metadata")
     # start_metadata(args, DATASET_ID_BY_NAME, my_class)
     get_metadata(args, DATASET_ID_BY_NAME)
+    print "AAA, after get_metadata"
     my_class.put_custom_metadata_a()
+    print "YYY, after put_custom_metadata_a"
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
