@@ -81,7 +81,6 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
-    datasets_w_ids = my_class.get_all_name_id('dataset')
 
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
@@ -249,8 +248,6 @@ def push_project():
         CONFIG_ITEMS['project_id'] = cur.lastrowid
         print("NEW PID="+str(CONFIG_ITEMS['project_id']))
         logging.debug("STARTING NEW project -- PID="+str(CONFIG_ITEMS['project_id']))
-
-
 
 
 def push_pdr_seqs():
@@ -744,11 +741,20 @@ class Old_vamps_data:
       id_name = table_name + '_id'
       my_sql  = """SELECT %s, %s FROM %s""" % (id_name, table_name, table_name)
       res     = self.execute_fetch_select(my_sql)
-      print "get_all_name_id res = "
-      print res
       if res:
         return res
         
+  def make_dataset_by_name_dict():
+  # DATASET_ID_BY_NAME[ds]
+  DATASET_ID_BY_NAME = {}
+  datasets_w_ids = my_class.get_all_name_id('dataset')
+  print "make_dataset_by_name_dict: datasets_w_ids =  "
+  print datasets_w_ids
+  DATASET_ID_BY_NAME = dict(datasets_w_ids)
+  print "make_dataset_by_name_dict: DATASET_ID_BY_NAME =  "
+  print DATASET_ID_BY_NAME
+  
+  
   def collect_datasets(self, seqs_file_lines):
     # datasets_w_ids
       logging.debug("In collect_datasets, seqs_file_lines = ")
