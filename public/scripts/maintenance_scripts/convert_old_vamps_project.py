@@ -742,8 +742,6 @@ class Old_vamps_data:
       all_cust_keys = []  # to create new table
       # logging.debug("CONFIG_ITEMS['datasets'] = ")
       # logging.debug(CONFIG_ITEMS['datasets'])
-      print "put_custom_metadata_a: CUST_METADATA_ITEMS"
-      print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
           did = str(self.dataset_id_by_name_dict[ds])
           # logging.debug("DATASET_ID_BY_NAME[ds] = ")
@@ -753,8 +751,6 @@ class Old_vamps_data:
 
           # if did in CUST_METADATA_ITEMS:
           try:
-            print "put_custom_metadata_a: did"
-            print did
             for key in CUST_METADATA_ITEMS[did]:
                 logging.debug("key in CUST_METADATA_ITEMS[did] = ")
                 logging.debug(key)
@@ -763,9 +759,28 @@ class Old_vamps_data:
                 if key not in cust_keys_array[did]:
                     cust_keys_array[did].append(key)
                 # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 = "INSERT IGNORE into custom_metadata_fields (project_id, field_name, field_type, example)"
                 q2 += " VALUES("
-                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                q2 += "'1',"
+                # should be:
+                # q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+"""
+todo
+q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+make dict for all
+if args.add_project:
+
+    q = "SELECT project_id from project where project='%s'" % (args.project)
+    logging.debug(q)
+    cur.execute(q)
+    mysql_conn.commit()
+    row = cur.fetchone()
+    CONFIG_ITEMS['project_id'] = row[0]
+    print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
+    logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
+
+
+"""
                 q2 += "'"+str(key)+"',"
                 q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
