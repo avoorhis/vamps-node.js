@@ -130,7 +130,7 @@ def start(NODE_DATABASE, args):
     my_class.collect_datasets(seqs_file_lines)
 
     logging.debug("starting metadata")
-    start_metadata(args)
+    start_metadata(args, DATASET_ID_BY_NAME)
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
