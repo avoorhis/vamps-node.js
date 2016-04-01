@@ -193,14 +193,14 @@ def recreate_ranks():
     mysql_conn.commit()
     
 def push_dataset():
+    print "IN push_dataset CONFIG_ITEMS"
+    print CONFIG_ITEMS
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s')"
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
-        print "CONFIG_ITEMS"
-        print CONFIG_ITEMS
         q4 = q % (ds, desc, CONFIG_ITEMS['env_source_id'], CONFIG_ITEMS['project_id'])
         logging.debug(q4)
         try:
