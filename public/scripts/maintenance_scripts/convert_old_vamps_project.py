@@ -534,11 +534,12 @@ def put_custom_metadata():
                     all_cust_keys.append(key)
                 if key not in cust_keys_array[did]:
                     cust_keys_array[did].append(key)
+                # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
                 q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
                 q2 += " VALUES("
-                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                # q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
                 q2 += "'"+str(key)+"',"
-                q2 += "'varchar(128)',"
+                q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
                 logging.debug(q2)
                 cur.execute(q2)
@@ -549,22 +550,23 @@ def put_custom_metadata():
     custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
     q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
     q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
-    q += " `project_id` int(11) unsigned NOT NULL,\n"
+    # q += " `project_id` int(11) unsigned NOT NULL,\n"
     q += " `dataset_id` int(11) unsigned NOT NULL,\n"
     for key in all_cust_keys:
         if key != 'dataset_id':
             q += " `"+key+"` varchar(128) DEFAULT NULL,\n" 
     q += " PRIMARY KEY (`"+custom_table+"_id` ),\n" 
-    unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
+    # unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
+    unique_key = "UNIQUE KEY `unique_key` (`dataset_id`,"
 
     # ONLY 16 key items allowed:    
     for i,key in enumerate(all_cust_keys):
         if i < 14 and key != 'dataset_id':
             unique_key += " `"+key+"`,"
     q += unique_key[:-1]+"),\n"
-    q += " KEY `project_id` (`project_id`),\n"
+    # q += " KEY `project_id` (`project_id`),\n"
     q += " KEY `dataset_id` (`dataset_id`),\n"
-    q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
+    # q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
     logging.debug(q)
@@ -574,12 +576,14 @@ def put_custom_metadata():
     # add data
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
-        q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
+        # q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
+        q3 = "INSERT into "+custom_table+" (dataset_id,"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
                 q3 += "`"+key+"`,"
         q3 = q3[:-1]+ ")"
-        q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
+        # q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
+        q3 += " VALUES(','"+str(did)+"',"
         for key in cust_keys_array[did]:
             if key != 'dataset_id':
                 if key in CUST_METADATA_ITEMS[did]:                    
