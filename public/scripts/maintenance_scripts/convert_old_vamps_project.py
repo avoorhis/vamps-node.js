@@ -745,7 +745,7 @@ class Old_vamps_data:
       print "put_custom_metadata_a: CUST_METADATA_ITEMS"
       print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
-          did = int(self.dataset_id_by_name_dict[ds])
+          did = str(self.dataset_id_by_name_dict[ds])
           # logging.debug("DATASET_ID_BY_NAME[ds] = ")
           # logging.debug(did)
 
