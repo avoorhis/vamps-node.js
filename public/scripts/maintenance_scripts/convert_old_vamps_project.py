@@ -492,7 +492,7 @@ def start_metadata(args, DATASET_ID_BY_NAME, my_class):
     #    put_required_metadata()
     # uncomment
     # put_custom_metadata()
-    my_class.put_custom_metadata_a()
+    my_class.put_custom_metadata_a(CUST_METADATA_ITEMS)
     print "YYY, after put_custom_metadata_a"
     # print "CONFIG_ITEMS"
     # print CONFIG_ITEMS
@@ -735,7 +735,7 @@ class Old_vamps_data:
 
       # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
 
-  def put_custom_metadata_a(self):
+  def put_custom_metadata_a(self, CUST_METADATA_ITEMS):
       """
         create new table
       """
