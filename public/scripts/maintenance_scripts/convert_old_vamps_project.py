@@ -317,12 +317,13 @@ def collect_datasets(seqs_file_lines):
     logging.debug(seqs_file_lines)
     CONFIG_ITEMS_datasets_set = set()
     for field_list in seqs_file_lines:
-      print field_list[4]
-      CONFIG_ITEMS_datasets_set.add(field_list[4])
-    CONFIG_ITEMS['datasets'].update(CONFIG_ITEMS_datasets_set)
-    logging.debug("In collect_datasets, CONFIG_ITEMS['datasets'] = ")
-    logging.debug(CONFIG_ITEMS['datasets'])
+      print field_list[3]
+      CONFIG_ITEMS_datasets_set.add(field_list[3])
+    CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
+    print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
       
+    # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
+    
 
 def push_taxonomy(args):
     
