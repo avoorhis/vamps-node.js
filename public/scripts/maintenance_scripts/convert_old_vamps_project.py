@@ -488,7 +488,7 @@ def get_config_data(args):
 def start_metadata(args, DATASET_ID_BY_NAME):
 
     #get_config_data(indir)
-    get_metadata(args)
+    get_metadata(args, DATASET_ID_BY_NAME)
     # uncomment
     #    put_required_metadata()
     # uncomment
@@ -655,7 +655,7 @@ def put_custom_metadata():
 
     mysql_conn.commit()
 
-def get_metadata(args):
+def get_metadata(args, DATASET_ID_BY_NAME):
 
     logging.debug('csv '+str(args.metadata_file))
     if args.delim == 'comma':
