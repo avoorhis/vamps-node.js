@@ -499,7 +499,9 @@ def put_custom_metadata_a():
     # TABLE-1 === custom_metadata_fields
     cust_keys_array = {}
     all_cust_keys = []  # to create new table
+    logging.debug('HHHHH1')
     logging.debug("CONFIG_ITEMS['datasets'] = ")
+    logging.debug(CONFIG_ITEMS['datasets'])
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
         logging.debug("DATASET_ID_BY_NAME[ds] = ")
