@@ -315,7 +315,7 @@ def push_sequences():
 def collect_datasets(seqs_file_lines):
     logging.debug("In collect_datasets, seqs_file_lines = ")
     logging.debug(seqs_file_lines)
-    CONFIG_ITEMS_datasets_set = ()
+    CONFIG_ITEMS_datasets_set = set()
     for field_list in seqs_file_lines:
       print field_list[4]
       CONFIG_ITEMS_datasets_set.add(field_list[4])
