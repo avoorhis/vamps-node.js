@@ -204,10 +204,12 @@ def push_dataset():
         try:
             cur.execute(q4)
             did = cur.lastrowid
-            DATASET_ID_BY_NAME[ds]=str(did)
+            DATASET_ID_BY_NAME[ds] = str(did)
         except:
             logging.debug('ERROR: MySQL Integrity ERROR -- duplicate dataset')
             sys.exit('ERROR: MySQL Integrity ERROR -- duplicate dataset')
+    print "DATASET_ID_BY_NAME"
+    print DATASET_ID_BY_NAME
     mysql_conn.commit()
     
 def push_project():
@@ -317,6 +319,7 @@ def collect_datasets(seqs_file_lines):
     logging.debug(seqs_file_lines)
     CONFIG_ITEMS_datasets_set = set()
     for field_list in seqs_file_lines:
+      print "field_list[3] = "
       print field_list[3]
       CONFIG_ITEMS_datasets_set.add(field_list[3])
     CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
@@ -503,6 +506,7 @@ def start_metadata(args):
     # uncomment
     # put_custom_metadata()
     put_custom_metadata_a()
+    print "CONFIG_ITEMS"
     print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
    
@@ -724,6 +728,7 @@ def get_metadata(args):
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', unicode(input_str.strip(), 'utf8'))
     res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+    print "res = "
     print res
     return res
     
@@ -801,6 +806,7 @@ if __name__ == '__main__':
     for i, row in enumerate(cur.fetchall()):
         dbs.append(row[0])
         db_str += str(i)+'-'+row[0]+';  '
+    print("db_str = ")
     print(db_str)
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
