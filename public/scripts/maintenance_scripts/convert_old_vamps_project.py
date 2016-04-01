@@ -81,7 +81,7 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
-    DATASET_ID_BY_NAME = my_class.make_dataset_by_name_dict()
+    DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict()
     print "start: DATASET_ID_BY_NAME"
     print DATASET_ID_BY_NAME
 
@@ -130,9 +130,6 @@ def start(NODE_DATABASE, args):
     #    push_pdr_seqs()
 
     my_class.collect_datasets(seqs_file_lines)
-    # DATASET_ID_BY_NAME = my_class.make_dataset_by_name_dict()
-    # print "start: DATASET_ID_BY_NAME"
-    # print DATASET_ID_BY_NAME
     
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME)
@@ -500,50 +497,12 @@ def start_metadata(args, DATASET_ID_BY_NAME):
     #    put_required_metadata()
     # uncomment
     # put_custom_metadata()
-    put_custom_metadata_a()
+    put_custom_metadata_a(DATASET_ID_BY_NAME)
     print "CONFIG_ITEMS"
     print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
 
     logging.debug('CUST_METADATA_ITEMS '+str(CUST_METADATA_ITEMS))
-
-def put_custom_metadata_a():
-    """
-      create new table
-    """
-    logging.debug( 'starting put_custom_metadata')
-    # TABLE-1 === custom_metadata_fields
-    cust_keys_array = {}
-    all_cust_keys = []  # to create new table
-    logging.debug('HHHHH1')
-    logging.debug("CONFIG_ITEMS['datasets'] = ")
-    logging.debug(CONFIG_ITEMS['datasets'])
-    for ds in CONFIG_ITEMS['datasets']:
-        did = DATASET_ID_BY_NAME[ds]
-        logging.debug("DATASET_ID_BY_NAME[ds] = ")
-        logging.debug(did)
-
-        cust_keys_array[did]=[]
-
-        if did in CUST_METADATA_ITEMS:
-            for key in CUST_METADATA_ITEMS[did]:
-                logging.debug("key in CUST_METADATA_ITEMS[did] = ")
-                logging.debug(key)
-                if key not in all_cust_keys:
-                    all_cust_keys.append(key)
-                if key not in cust_keys_array[did]:
-                    cust_keys_array[did].append(key)
-                # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                q2 += " VALUES("
-                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-                q2 += "'"+str(key)+"',"
-                q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
-                q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
-                logging.debug("q2 = ")
-                logging.debug(q2)
-                cur.execute(q2)
-        mysql_conn.commit()
 
 def put_required_metadata():
 
@@ -736,6 +695,7 @@ class Old_vamps_data:
   """
   def __init__(self, db):
     self.cursor = db.cursor()
+    self.dataset_id_by_name_dict = self.make_dataset_by_name_dict()
 
   def execute_fetch_select(self, sql):
     if self.cursor:
@@ -756,15 +716,9 @@ class Old_vamps_data:
         return res
         
   def make_dataset_by_name_dict(self):
-  # DATASET_ID_BY_NAME[ds]
     datasets_w_ids = self.get_all_name_id('dataset')
-    # print "make_dataset_by_name_dict: datasets_w_ids =  "
-    # print datasets_w_ids
-    return dict(datasets_w_ids)
-    # print "make_dataset_by_name_dict: DATASET_ID_BY_NAME =  "
-    # print DATASET_ID_BY_NAME
-  
-  
+    self.dataset_id_by_name_dict = dict(datasets_w_ids)
+
   def collect_datasets(self, seqs_file_lines):
     # datasets_w_ids
       logging.debug("In collect_datasets, seqs_file_lines = ")
@@ -778,6 +732,46 @@ class Old_vamps_data:
       print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
 
       # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
+
+  def put_custom_metadata_a(self):
+      """
+        create new table
+      """
+      print "put_custom_metadata_a: DATASET_ID_BY_NAME"
+      print DATASET_ID_BY_NAME
+      logging.debug( 'starting put_custom_metadata')
+      # TABLE-1 === custom_metadata_fields
+      cust_keys_array = {}
+      all_cust_keys = []  # to create new table
+      logging.debug('HHHHH1')
+      logging.debug("CONFIG_ITEMS['datasets'] = ")
+      logging.debug(CONFIG_ITEMS['datasets'])
+      for ds in CONFIG_ITEMS['datasets']:
+          did = DATASET_ID_BY_NAME[ds]
+          logging.debug("DATASET_ID_BY_NAME[ds] = ")
+          logging.debug(did)
+
+          cust_keys_array[did]=[]
+
+          if did in CUST_METADATA_ITEMS:
+              for key in CUST_METADATA_ITEMS[did]:
+                  logging.debug("key in CUST_METADATA_ITEMS[did] = ")
+                  logging.debug(key)
+                  if key not in all_cust_keys:
+                      all_cust_keys.append(key)
+                  if key not in cust_keys_array[did]:
+                      cust_keys_array[did].append(key)
+                  # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                  q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                  q2 += " VALUES("
+                  q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                  q2 += "'"+str(key)+"',"
+                  q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
+                  q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+                  logging.debug("q2 = ")
+                  logging.debug(q2)
+                  cur.execute(q2)
+          mysql_conn.commit()
 
 
 if __name__ == '__main__':
