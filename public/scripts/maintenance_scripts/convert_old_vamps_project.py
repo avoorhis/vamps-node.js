@@ -750,7 +750,7 @@ class Old_vamps_data:
         return res
         
   def collect_datasets(self, seqs_file_lines):
-    datasets_w_ids
+    # datasets_w_ids
       logging.debug("In collect_datasets, seqs_file_lines = ")
       logging.debug(seqs_file_lines)
       CONFIG_ITEMS_datasets_set = set()
