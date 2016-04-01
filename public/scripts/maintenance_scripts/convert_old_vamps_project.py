@@ -82,6 +82,8 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
     DATASET_ID_BY_NAME = my_class.make_dataset_by_name_dict()
+    print "start: DATASET_ID_BY_NAME"
+    print DATASET_ID_BY_NAME
 
 
     logging.debug("checking user")
@@ -127,7 +129,11 @@ def start(NODE_DATABASE, args):
     # uncomment
     #    push_pdr_seqs()
 
-    DATASET_ID_BY_NAME = my_class.collect_datasets(seqs_file_lines)
+    my_class.collect_datasets(seqs_file_lines)
+    
+    DATASET_ID_BY_NAME = 
+    print "get_metadata: DATASET_ID_BY_NAME"
+    print DATASET_ID_BY_NAME
 
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME)
