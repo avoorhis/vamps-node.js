@@ -741,7 +741,7 @@ class Old_vamps_data:
 
   def get_all_name_id(self, table_name):
       id_name = table_name + '_id'
-      my_sql  = """SELECT %s, %s FROM %s""" % (id_name, table_name, table_name)
+      my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
       res     = self.execute_fetch_select(my_sql)
       if res:
         return res
