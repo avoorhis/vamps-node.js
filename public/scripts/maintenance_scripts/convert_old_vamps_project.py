@@ -764,23 +764,23 @@ class Old_vamps_data:
                 q2 += "'1',"
                 # should be:
                 # q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-"""
-todo
-q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-make dict for all
-if args.add_project:
+                """
+                todo
+                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                make dict for all
+                if args.add_project:
 
-    q = "SELECT project_id from project where project='%s'" % (args.project)
-    logging.debug(q)
-    cur.execute(q)
-    mysql_conn.commit()
-    row = cur.fetchone()
-    CONFIG_ITEMS['project_id'] = row[0]
-    print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
-    logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
+                    q = "SELECT project_id from project where project='%s'" % (args.project)
+                    logging.debug(q)
+                    cur.execute(q)
+                    mysql_conn.commit()
+                    row = cur.fetchone()
+                    CONFIG_ITEMS['project_id'] = row[0]
+                    print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
+                    logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
 
 
-"""
+                """
                 q2 += "'"+str(key)+"',"
                 q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
