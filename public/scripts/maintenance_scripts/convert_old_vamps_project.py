@@ -130,10 +130,6 @@ def start(NODE_DATABASE, args):
     
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME, my_class)
-    # get_metadata(args, DATASET_ID_BY_NAME)
-    # print "AAA, after get_metadata"
-    # my_class.put_custom_metadata_a()
-    # print "YYY, after put_custom_metadata_a"
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
@@ -545,6 +541,10 @@ def put_custom_metadata():
     """
       create new table
     """
+    
+    print "put_custom_metadata: CUST_METADATA_ITEMS"
+    print CUST_METADATA_ITEMS
+
     logging.debug( 'starting put_custom_metadata')
     # TABLE-1 === custom_metadata_fields
     cust_keys_array = {}
@@ -674,6 +674,9 @@ def get_metadata(args, DATASET_ID_BY_NAME):
                         CUST_METADATA_ITEMS[did]= {}
                         CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
 
+    print "get_metadata: CUST_METADATA_ITEMS"
+    print CUST_METADATA_ITEMS
+
 
 
 
@@ -720,8 +723,8 @@ class Old_vamps_data:
 
   def collect_datasets(self, seqs_file_lines):
     # datasets_w_ids
-      logging.debug("In collect_datasets, seqs_file_lines = ")
-      logging.debug(seqs_file_lines)
+      # logging.debug("In collect_datasets, seqs_file_lines = ")
+      # logging.debug(seqs_file_lines)
       CONFIG_ITEMS_datasets_set = set()
       for field_list in seqs_file_lines:
         # print "field_list[3] = "
@@ -736,18 +739,16 @@ class Old_vamps_data:
       """
         create new table
       """
-      print "IIIII put_custom_metadata_a"
       logging.debug('starting put_custom_metadata')
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
       all_cust_keys = []  # to create new table
-      logging.debug('HHHHH1')
       logging.debug("CONFIG_ITEMS['datasets'] = ")
       logging.debug(CONFIG_ITEMS['datasets'])
       for ds in CONFIG_ITEMS['datasets']:
           did = self.dataset_id_by_name_dict[ds]
-          logging.debug("DATASET_ID_BY_NAME[ds] = ")
-          logging.debug(did)
+          # logging.debug("DATASET_ID_BY_NAME[ds] = ")
+          # logging.debug(did)
 
           cust_keys_array[did]=[]
 
