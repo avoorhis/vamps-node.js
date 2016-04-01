@@ -46,7 +46,6 @@ SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
-seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
 
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
@@ -71,6 +70,8 @@ def start(NODE_DATABASE, args):
     
     global mysql_conn
     global cur
+    seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
+    
     logging.debug('starting convert_old_vamps_project.log')
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
