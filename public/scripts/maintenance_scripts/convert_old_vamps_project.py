@@ -82,9 +82,6 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
     DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict
-    print "start: DATASET_ID_BY_NAME"
-    print DATASET_ID_BY_NAME
-
 
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
@@ -132,7 +129,7 @@ def start(NODE_DATABASE, args):
     my_class.collect_datasets(seqs_file_lines)
     
     logging.debug("starting metadata")
-    start_metadata(args, DATASET_ID_BY_NAME)
+    start_metadata(args, DATASET_ID_BY_NAME, my_class)
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
@@ -487,10 +484,8 @@ def get_config_data(args):
     CONFIG_ITEMS['datasets'] = []
 
 
-def start_metadata(args, DATASET_ID_BY_NAME):
+def start_metadata(args, DATASET_ID_BY_NAME, my_class):
 
-    print "start_metadata: DATASET_ID_BY_NAME"
-    print DATASET_ID_BY_NAME
     #get_config_data(indir)
     get_metadata(args, DATASET_ID_BY_NAME)
     # uncomment
@@ -498,8 +493,8 @@ def start_metadata(args, DATASET_ID_BY_NAME):
     # uncomment
     # put_custom_metadata()
     my_class.put_custom_metadata_a()
-    print "CONFIG_ITEMS"
-    print CONFIG_ITEMS
+    # print "CONFIG_ITEMS"
+    # print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
 
     logging.debug('CUST_METADATA_ITEMS '+str(CUST_METADATA_ITEMS))
