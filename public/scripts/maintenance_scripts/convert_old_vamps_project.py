@@ -110,8 +110,7 @@ def start(NODE_DATABASE, args):
     #    push_sequences()
     
     logging.debug("projects")
-    # uncomment
-    #    push_project()
+    push_project()
     
     logging.debug("datasets")
     # uncomment
