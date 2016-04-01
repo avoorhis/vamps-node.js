@@ -617,9 +617,6 @@ def put_custom_metadata():
     mysql_conn.commit()
 
 def get_metadata(args, DATASET_ID_BY_NAME):
-    print "get_metadata: DATASET_ID_BY_NAME"
-    print DATASET_ID_BY_NAME
-
     logging.debug('csv '+str(args.metadata_file))
     if args.delim == 'comma':
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter=','))
@@ -691,11 +688,7 @@ class Old_vamps_data:
   def __init__(self, db):
     self.cursor = db.cursor()
     self.dataset_id_by_name_dict = {}
-    print "Old_vamps_data, init befor run: self.dataset_id_by_name_dict"
-    print self.dataset_id_by_name_dict
     self.make_dataset_by_name_dict()
-    print "Old_vamps_data, init: self.dataset_id_by_name_dict"
-    print self.dataset_id_by_name_dict
     
   def execute_fetch_select(self, sql):
     if self.cursor:
@@ -738,9 +731,7 @@ class Old_vamps_data:
       """
         create new table
       """
-      print "Old_vamps_data, make_dataset_by_name_dict: self.dataset_id_by_name_dict"
-      print self.dataset_id_by_name_dict
-      logging.debug( 'starting put_custom_metadata')
+      logging.debug('starting put_custom_metadata')
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
       all_cust_keys = []  # to create new table
