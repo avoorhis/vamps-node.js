@@ -26,11 +26,12 @@ import ConfigParser
 from IlluminaUtils.lib import fastalib
 import datetime
 import logging
-today = str(datetime.date.today())
 import subprocess
 import MySQLdb
 import unicodedata
 import pprint
+
+today = str(datetime.date.today())
 pp = pprint.PrettyPrinter(indent=4)
 
 # Global:
@@ -66,11 +67,18 @@ logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 #logging = logging.getlogging('')
 #os.chdir(args.indir)
+
+def get_dataset_id(self, data_owner):
+    my_sql = """SELECT dataset_id FROM dataset WHERE vamps_name = '%s'""" % (data_owner)
+    res    = self.my_conn.execute_fetch_select(my_sql)
+    if res:
+        return int(res[0][0])        
+  
 def start(NODE_DATABASE, args):
     
     global mysql_conn
     global cur
-    seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
+    seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))[1:]
     
     logging.debug('starting convert_old_vamps_project.log')
     
@@ -78,6 +86,8 @@ def start(NODE_DATABASE, args):
                           db = NODE_DATABASE,
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
+    my_class = Old_vamps_data(mysql_conn)
+    my_class.get_all_name_id('dataset')
     
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
@@ -733,6 +743,34 @@ def remove_accents(input_str):
     # print "res = "
     # print res
     return res
+    
+class Old_vamps_data:
+  """
+    get data from csv files made from old vamps
+    put data to vamps2
+  """
+  def __init__(self, db):
+    self.cursor = db.cursor()
+  
+  def execute_fetch_select(self, sql):
+    if self.cursor:
+      try:
+        # sql = self.conn.escape(sql)
+        self.cursor.execute(sql)
+        res = self.cursor.fetchall ()
+      except:
+        self.utils.print_both(("ERROR: query = %s") % sql)
+        raise
+      return res
+
+  def get_all_name_id(self, table_name):
+      id_name = table_name + '_id'
+      my_sql  = """SELECT %s, %s FROM %s""" % (id_name, table_name, table_name, table_name)
+      res     = self.my_conn.execute_fetch_select(my_sql)
+      print "get_all_name_id res = "
+      print res
+      if res:
+          return int(res[0])         
     
 if __name__ == '__main__':
     import argparse
