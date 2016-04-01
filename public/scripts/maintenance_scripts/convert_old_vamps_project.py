@@ -81,6 +81,8 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
+    DATASET_ID_BY_NAME = my_class.make_dataset_by_name_dict()
+
 
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
@@ -744,7 +746,7 @@ class Old_vamps_data:
       if res:
         return res
         
-  def make_dataset_by_name_dict():
+  def make_dataset_by_name_dict(self):
   # DATASET_ID_BY_NAME[ds]
     DATASET_ID_BY_NAME = {}
     datasets_w_ids = my_class.get_all_name_id('dataset')
