@@ -493,7 +493,6 @@ def start_metadata(args, DATASET_ID_BY_NAME, my_class):
     # uncomment
     # put_custom_metadata()
     my_class.put_custom_metadata_a(CUST_METADATA_ITEMS)
-    print "YYY, after put_custom_metadata_a"
     # print "CONFIG_ITEMS"
     # print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
@@ -674,8 +673,6 @@ def get_metadata(args, DATASET_ID_BY_NAME):
                         CUST_METADATA_ITEMS[did]= {}
                         CUST_METADATA_ITEMS[did][key] = TMP_METADATA_ITEMS[ds][key].replace('"','').replace("'",'')
 
-    print "get_metadata: CUST_METADATA_ITEMS"
-    print CUST_METADATA_ITEMS
 
 
 
@@ -743,12 +740,17 @@ class Old_vamps_data:
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
       all_cust_keys = []  # to create new table
-      logging.debug("CONFIG_ITEMS['datasets'] = ")
-      logging.debug(CONFIG_ITEMS['datasets'])
+      # logging.debug("CONFIG_ITEMS['datasets'] = ")
+      # logging.debug(CONFIG_ITEMS['datasets'])
+      print "put_custom_metadata_a: CUST_METADATA_ITEMS"
+      print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
           did = self.dataset_id_by_name_dict[ds]
           # logging.debug("DATASET_ID_BY_NAME[ds] = ")
           # logging.debug(did)
+
+          print "put_custom_metadata_a: did"
+          print did
 
           cust_keys_array[did]=[]
 
