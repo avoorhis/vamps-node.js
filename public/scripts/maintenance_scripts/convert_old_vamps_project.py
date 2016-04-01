@@ -577,9 +577,12 @@ def put_custom_metadata():
     for ds in CONFIG_ITEMS['datasets']:
         did = DATASET_ID_BY_NAME[ds]
         # q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
-        q3 = "INSERT into "+custom_table+" (dataset_id, "
+        q3 = "INSERT into "+custom_table+" (dataset_id"
         for key in cust_keys_array[did]:
+            logging.debug("key in cust_keys_array[did] = ")
+            logging.debug(key)
             if key != 'dataset_id':
+                q3 += ", "
                 q3 += "`"+key+"`,"
         q3 = q3[:-1]+ ")"
         # q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
