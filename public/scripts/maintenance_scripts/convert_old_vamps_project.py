@@ -757,13 +757,12 @@ class Old_vamps_data:
         
   def make_dataset_by_name_dict(self):
   # DATASET_ID_BY_NAME[ds]
-    DATASET_ID_BY_NAME = {}
     datasets_w_ids = self.get_all_name_id('dataset')
-    print "make_dataset_by_name_dict: datasets_w_ids =  "
-    print datasets_w_ids
-    DATASET_ID_BY_NAME = dict(datasets_w_ids)
-    print "make_dataset_by_name_dict: DATASET_ID_BY_NAME =  "
-    print DATASET_ID_BY_NAME
+    # print "make_dataset_by_name_dict: datasets_w_ids =  "
+    # print datasets_w_ids
+    return dict(datasets_w_ids)
+    # print "make_dataset_by_name_dict: DATASET_ID_BY_NAME =  "
+    # print DATASET_ID_BY_NAME
   
   
   def collect_datasets(self, seqs_file_lines):
