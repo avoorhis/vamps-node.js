@@ -80,7 +80,7 @@ def start(NODE_DATABASE, args):
                           db = NODE_DATABASE,
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
-    my_class       = Old_vamps_data(mysql_conn)
+    my_class           = Old_vamps_data(mysql_conn)
     DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict
 
     logging.debug("checking user")
@@ -129,7 +129,9 @@ def start(NODE_DATABASE, args):
     my_class.collect_datasets(seqs_file_lines)
     
     logging.debug("starting metadata")
-    start_metadata(args, DATASET_ID_BY_NAME, my_class)
+    # start_metadata(args, DATASET_ID_BY_NAME, my_class)
+    get_metadata(args, DATASET_ID_BY_NAME)
+    my_class.put_custom_metadata_a()
 
     #print SEQ_COLLECTOR
     #pp.pprint(CONFIG_ITEMS)
@@ -493,6 +495,7 @@ def start_metadata(args, DATASET_ID_BY_NAME, my_class):
     # uncomment
     # put_custom_metadata()
     my_class.put_custom_metadata_a()
+    print "AAAA"
     # print "CONFIG_ITEMS"
     # print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
@@ -723,7 +726,7 @@ class Old_vamps_data:
         # print field_list[3]
         CONFIG_ITEMS_datasets_set.add(field_list[3])
       CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
-      print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
+      # print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
 
       # [['id', 'sequence', 'project', 'dataset', 'taxonomy', 'refhvr_ids', 'rank', 'seq_count', 'frequency', 'dis     17 tance', 'rep_id', 'project_dataset']
 
