@@ -742,8 +742,8 @@ class Old_vamps_data:
       all_cust_keys = []  # to create new table
       # logging.debug("CONFIG_ITEMS['datasets'] = ")
       # logging.debug(CONFIG_ITEMS['datasets'])
-      # print "put_custom_metadata_a: CUST_METADATA_ITEMS"
-      # print CUST_METADATA_ITEMS
+      print "put_custom_metadata_a: CUST_METADATA_ITEMS"
+      print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
           did = int(self.dataset_id_by_name_dict[ds])
           # logging.debug("DATASET_ID_BY_NAME[ds] = ")
