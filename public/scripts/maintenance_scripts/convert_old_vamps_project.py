@@ -497,7 +497,7 @@ def start_metadata(args, DATASET_ID_BY_NAME):
     #    put_required_metadata()
     # uncomment
     # put_custom_metadata()
-    put_custom_metadata_a(DATASET_ID_BY_NAME)
+    my_class.put_custom_metadata_a()
     print "CONFIG_ITEMS"
     print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
@@ -723,8 +723,6 @@ class Old_vamps_data:
   def make_dataset_by_name_dict(self):
     datasets_w_ids = self.get_all_name_id('dataset')
     self.dataset_id_by_name_dict = dict(datasets_w_ids)
-    print "Old_vamps_data, make_dataset_by_name_dict: self.dataset_id_by_name_dict"
-    print self.dataset_id_by_name_dict
     
 
   def collect_datasets(self, seqs_file_lines):
@@ -745,8 +743,8 @@ class Old_vamps_data:
       """
         create new table
       """
-      print "put_custom_metadata_a: DATASET_ID_BY_NAME"
-      print DATASET_ID_BY_NAME
+      print "Old_vamps_data, make_dataset_by_name_dict: self.dataset_id_by_name_dict"
+      print self.dataset_id_by_name_dict
       logging.debug( 'starting put_custom_metadata')
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
@@ -755,7 +753,7 @@ class Old_vamps_data:
       logging.debug("CONFIG_ITEMS['datasets'] = ")
       logging.debug(CONFIG_ITEMS['datasets'])
       for ds in CONFIG_ITEMS['datasets']:
-          did = DATASET_ID_BY_NAME[ds]
+          did = self.dataset_id_by_name_dict[ds]
           logging.debug("DATASET_ID_BY_NAME[ds] = ")
           logging.debug(did)
 
