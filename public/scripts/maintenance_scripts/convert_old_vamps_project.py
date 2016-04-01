@@ -485,7 +485,7 @@ def get_config_data(args):
     CONFIG_ITEMS['datasets'] = []
 
 
-def start_metadata(args):
+def start_metadata(args, DATASET_ID_BY_NAME):
 
     #get_config_data(indir)
     get_metadata(args)
