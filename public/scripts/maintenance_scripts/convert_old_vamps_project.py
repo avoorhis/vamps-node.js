@@ -127,7 +127,7 @@ def start(NODE_DATABASE, args):
     # uncomment
     #    push_pdr_seqs()
 
-    my_class.collect_datasets(seqs_file_lines)
+    DATASET_ID_BY_NAME = my_class.collect_datasets(seqs_file_lines)
 
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME)
@@ -487,6 +487,8 @@ def get_config_data(args):
 
 def start_metadata(args, DATASET_ID_BY_NAME):
 
+    print "start_metadata: DATASET_ID_BY_NAME"
+    print DATASET_ID_BY_NAME
     #get_config_data(indir)
     get_metadata(args, DATASET_ID_BY_NAME)
     # uncomment
@@ -656,6 +658,8 @@ def put_custom_metadata():
     mysql_conn.commit()
 
 def get_metadata(args, DATASET_ID_BY_NAME):
+    print "get_metadata: DATASET_ID_BY_NAME"
+    print DATASET_ID_BY_NAME
 
     logging.debug('csv '+str(args.metadata_file))
     if args.delim == 'comma':
