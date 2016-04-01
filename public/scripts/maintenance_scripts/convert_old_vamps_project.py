@@ -751,7 +751,8 @@ class Old_vamps_data:
 
           cust_keys_array[did]=[]
 
-          if did in CUST_METADATA_ITEMS:
+          # if did in CUST_METADATA_ITEMS:
+          try:
             print "put_custom_metadata_a: did"
             print did
             for key in CUST_METADATA_ITEMS[did]:
@@ -773,6 +774,9 @@ class Old_vamps_data:
                 print "q2 = "
                 print q2
                 self.cursor.execute(q2)
+          except:
+            raise
+          
           # mysql_conn.commit()
 
 
