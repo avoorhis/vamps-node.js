@@ -226,7 +226,9 @@ def push_project():
         print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
         logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
     else:
-        q = "INSERT into project ("+(',').join(fields)+")"
+        # uncomment
+        # q = "INSERT into project ("+(',').join(fields)+")"
+        q = "INSERT IGNORE into project ("+(',').join(fields)+")"
         q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
         q = q % (proj,title,desc,rev,fund,id,pub)    
         logging.debug(q)
