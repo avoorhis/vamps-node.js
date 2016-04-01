@@ -537,7 +537,7 @@ def put_custom_metadata():
                 # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
                 q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
                 q2 += " VALUES("
-                # q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
                 q2 += "'"+str(key)+"',"
                 q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
