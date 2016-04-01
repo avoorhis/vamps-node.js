@@ -77,8 +77,7 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     
     logging.debug("checking user")
-    # uncomment
-    # check_user(args)  ## script dies if user not in db
+    check_user(args)  ## script dies if user not in db
     logging.debug("checking project")
     # uncomment
     #    check_project(args)
