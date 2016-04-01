@@ -81,7 +81,7 @@ def start(NODE_DATABASE, args):
                           read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
     my_class       = Old_vamps_data(mysql_conn)
-    DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict()
+    DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict
     print "start: DATASET_ID_BY_NAME"
     print DATASET_ID_BY_NAME
 
@@ -696,7 +696,9 @@ class Old_vamps_data:
   def __init__(self, db):
     self.cursor = db.cursor()
     self.dataset_id_by_name_dict = self.make_dataset_by_name_dict()
-
+    print "Old_vamps_data, init: self.dataset_id_by_name_dict"
+    print self.dataset_id_by_name_dict
+    
   def execute_fetch_select(self, sql):
     if self.cursor:
       try:
@@ -718,6 +720,9 @@ class Old_vamps_data:
   def make_dataset_by_name_dict(self):
     datasets_w_ids = self.get_all_name_id('dataset')
     self.dataset_id_by_name_dict = dict(datasets_w_ids)
+    print "Old_vamps_data, make_dataset_by_name_dict: self.dataset_id_by_name_dict"
+    print self.dataset_id_by_name_dict
+    
 
   def collect_datasets(self, seqs_file_lines):
     # datasets_w_ids
