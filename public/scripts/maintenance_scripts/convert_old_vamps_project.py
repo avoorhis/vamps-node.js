@@ -77,9 +77,11 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     
     logging.debug("checking user")
-    check_user(args)  ## script dies if user not in db
+    # uncomment
+    # check_user(args)  ## script dies if user not in db
     logging.debug("checking project")
-    check_project(args)
+    # uncomment
+    #    check_project(args)
     
     logging.debug("running get_config_data")
     logging.debug("running get_config_data")
@@ -88,29 +90,37 @@ def start(NODE_DATABASE, args):
     
     #
     logging.debug("recreating ranks")
-    recreate_ranks()
+    # uncomment
+    #    recreate_ranks()
     #
     logging.debug("env sources")
-    create_env_source()
+    # uncomment
+    #    create_env_source()
     #
     logging.debug("classifier")
-    create_classifier()
+    # uncomment
+    #    create_classifier()
     #
     logging.debug("starting taxonomy")
-    push_taxonomy(args)
+    # uncomment
+    #    push_taxonomy(args)
     #
     logging.debug("starting sequences")
-    push_sequences()
+    # uncomment
+    #    push_sequences()
     
     logging.debug("projects")
-    push_project()
+    # uncomment
+    #    push_project()
     
     logging.debug("datasets")
-    push_dataset()
+    # uncomment
+    #    push_dataset()
     
     #push_summed_counts()
     logging.debug("starting push_pdr_seqs")
-    push_pdr_seqs()
+    # uncomment
+    #    push_pdr_seqs()
     
     logging.debug("starting metadata")
     start_metadata(args)
@@ -472,12 +482,50 @@ def start_metadata(args):
     
     #get_config_data(indir)
     get_metadata(args)
-    put_required_metadata()
-    put_custom_metadata()
-    #print CONFIG_ITEMS
+    # uncomment
+    #    put_required_metadata()
+    # uncomment
+    # put_custom_metadata()
+    put_custom_metadata_a()
+    print CONFIG_ITEMS
     logging.debug('REQ_METADATA_ITEMS '+str(REQ_METADATA_ITEMS))
    
     logging.debug('CUST_METADATA_ITEMS '+str(CUST_METADATA_ITEMS))
+    
+def put_custom_metadata_a():
+    """
+      create new table
+    """
+    logging.debug( 'starting put_custom_metadata')
+    # TABLE-1 === custom_metadata_fields
+    cust_keys_array = {}
+    all_cust_keys = []  # to create new table
+    for ds in CONFIG_ITEMS['datasets']:
+        did = DATASET_ID_BY_NAME[ds]
+        logging.debug("DATASET_ID_BY_NAME[ds] = ")
+        logging.debug(did)
+
+        cust_keys_array[did]=[]
+
+        if did in CUST_METADATA_ITEMS:
+            for key in CUST_METADATA_ITEMS[did]:
+                logging.debug("key in CUST_METADATA_ITEMS[did] = ")
+                logging.debug(key)
+                if key not in all_cust_keys:
+                    all_cust_keys.append(key)
+                if key not in cust_keys_array[did]:
+                    cust_keys_array[did].append(key)
+                # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 += " VALUES("
+                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                q2 += "'"+str(key)+"',"
+                q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
+                q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+                logging.debug("q2 = ")
+                logging.debug(q2)
+                cur.execute(q2)
+        mysql_conn.commit()
     
 def put_required_metadata():
     
@@ -582,7 +630,6 @@ def put_custom_metadata():
             logging.debug("key in cust_keys_array[did] = ")
             logging.debug(key)
             if key != 'dataset_id':
-                q3 += ", "
                 q3 += "`"+key+"`,"
         q3 = q3[:-1]+ ")"
         # q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
