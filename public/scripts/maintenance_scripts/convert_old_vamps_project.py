@@ -73,7 +73,7 @@ def start(NODE_DATABASE, args):
     
     mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
                           db = NODE_DATABASE,
-                          read_default_file="~/.my.cnf"  )
+                          read_default_file="~/.my.cnf_node"  )
     cur = mysql_conn.cursor()
     
     logging.debug("checking user")
