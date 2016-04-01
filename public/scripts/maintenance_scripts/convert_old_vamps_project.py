@@ -742,37 +742,38 @@ class Old_vamps_data:
       all_cust_keys = []  # to create new table
       # logging.debug("CONFIG_ITEMS['datasets'] = ")
       # logging.debug(CONFIG_ITEMS['datasets'])
-      print "put_custom_metadata_a: CUST_METADATA_ITEMS"
-      print CUST_METADATA_ITEMS
+      # print "put_custom_metadata_a: CUST_METADATA_ITEMS"
+      # print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
           did = self.dataset_id_by_name_dict[ds]
           # logging.debug("DATASET_ID_BY_NAME[ds] = ")
           # logging.debug(did)
 
-          print "put_custom_metadata_a: did"
-          print did
-
           cust_keys_array[did]=[]
 
           if did in CUST_METADATA_ITEMS:
-              for key in CUST_METADATA_ITEMS[did]:
-                  logging.debug("key in CUST_METADATA_ITEMS[did] = ")
-                  logging.debug(key)
-                  if key not in all_cust_keys:
-                      all_cust_keys.append(key)
-                  if key not in cust_keys_array[did]:
-                      cust_keys_array[did].append(key)
-                  # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                  q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                  q2 += " VALUES("
-                  q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-                  q2 += "'"+str(key)+"',"
-                  q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
-                  q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
-                  logging.debug("q2 = ")
-                  logging.debug(q2)
-                  cur.execute(q2)
-          mysql_conn.commit()
+            print "put_custom_metadata_a: did"
+            print did
+            for key in CUST_METADATA_ITEMS[did]:
+                logging.debug("key in CUST_METADATA_ITEMS[did] = ")
+                logging.debug(key)
+                if key not in all_cust_keys:
+                    all_cust_keys.append(key)
+                if key not in cust_keys_array[did]:
+                    cust_keys_array[did].append(key)
+                # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+                q2 += " VALUES("
+                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+                q2 += "'"+str(key)+"',"
+                q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
+                q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+                logging.debug("q2 = ")
+                logging.debug(q2)
+                print "q2 = "
+                print q2
+                self.cursor.execute(q2)
+          # mysql_conn.commit()
 
 
 if __name__ == '__main__':
