@@ -46,6 +46,8 @@ SUMMED_TAX_COLLECTOR = {}  # SUMMED_TAX_COLLECTOR[ds][rank][tax_string] = count
 ranks =['domain','phylum','klass','order','family','genus','species','strain']
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
+seqs_file_lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
+
 
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
 classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
@@ -118,6 +120,8 @@ def start(NODE_DATABASE, args):
     logging.debug("starting push_pdr_seqs")
     # uncomment
     #    push_pdr_seqs()
+    
+    collect_datasets(seqs_file_lines)
     
     logging.debug("starting metadata")
     start_metadata(args)
@@ -306,7 +310,10 @@ def push_sequences():
     mysql_conn.commit()
     #print SEQ_COLLECTOR    
 
-        
+
+def collect_datasets(seqs_file_lines):
+    logging.debug("In collect_datasets, seqs_file_lines = ")
+    logging.debug(seqs_file_lines)
 
 def push_taxonomy(args):
     
