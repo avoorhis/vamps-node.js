@@ -130,11 +130,10 @@ def start(NODE_DATABASE, args):
     #    push_pdr_seqs()
 
     my_class.collect_datasets(seqs_file_lines)
+    # DATASET_ID_BY_NAME = my_class.make_dataset_by_name_dict()
+    # print "start: DATASET_ID_BY_NAME"
+    # print DATASET_ID_BY_NAME
     
-    DATASET_ID_BY_NAME = 
-    print "get_metadata: DATASET_ID_BY_NAME"
-    print DATASET_ID_BY_NAME
-
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME)
 
