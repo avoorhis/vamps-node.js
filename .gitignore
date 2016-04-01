@@ -13,7 +13,6 @@ public/scripts/*.pyc
 config/db-connection*
 config/config*
 config/config.js
-
 config/db_vamps_node.sql.gz
 config/old/*
 
