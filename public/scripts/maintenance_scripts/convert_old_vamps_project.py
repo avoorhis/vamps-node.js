@@ -199,7 +199,9 @@ def push_dataset():
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
-        q4 = q % (ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id'])
+        print "CONFIG_ITEMS"
+        print CONFIG_ITEMS
+        q4 = q % (ds, desc, CONFIG_ITEMS['env_source_id'], CONFIG_ITEMS['project_id'])
         logging.debug(q4)
         try:
             cur.execute(q4)
@@ -319,8 +321,8 @@ def collect_datasets(seqs_file_lines):
     logging.debug(seqs_file_lines)
     CONFIG_ITEMS_datasets_set = set()
     for field_list in seqs_file_lines:
-      print "field_list[3] = "
-      print field_list[3]
+      # print "field_list[3] = "
+      # print field_list[3]
       CONFIG_ITEMS_datasets_set.add(field_list[3])
     CONFIG_ITEMS['datasets'] = list(CONFIG_ITEMS_datasets_set)
     print "In collect_datasets, CONFIG_ITEMS['datasets'] = %s" % CONFIG_ITEMS['datasets']
@@ -728,8 +730,8 @@ def get_metadata(args):
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', unicode(input_str.strip(), 'utf8'))
     res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-    print "res = "
-    print res
+    # print "res = "
+    # print res
     return res
     
 if __name__ == '__main__':
