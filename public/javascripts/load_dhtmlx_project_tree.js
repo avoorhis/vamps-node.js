@@ -37,7 +37,6 @@ if (typeof metadata_select !== 'undefined') {
 }
 function initialize_dhtmlx_project_tree() {
     // http://docs.dhtmlx.com/tree__index.html
-    
     projectTree = new dhtmlXTreeObject("projects_select_div","100%","100%",0);
     projectTree.setImagesPath("/images/dhtmlx/imgs/");
     projectTree.enableCheckBoxes(true);
@@ -186,10 +185,8 @@ function clear_filters() {
         projectTree.deleteChildItems(0);
         //load initial
         
-        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
-
-        
-        
+        projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
+    
     }
   }
   xmlhttp.send();
@@ -197,6 +194,14 @@ function clear_filters() {
 //
 //  SHOW/FILTER  RESULTS for project/substring Search
 //
+function afterCall(){
+  //alert('set_dataset_count(0)')
+    var delay=100; //0.1 second
+    setTimeout(function() {
+        //your code to be executed after 0.1 second
+        set_dataset_count(0)
+    }, delay);
+}
 function showLiveProjectNames(str) {
   var filtering = 1;
   var datasets_local = {};
@@ -227,7 +232,7 @@ function showLiveProjectNames(str) {
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");     
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");     
     }
   }
   xmlhttp.send();
@@ -264,7 +269,7 @@ function filter_by_env() {
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
     }
   }
   xmlhttp.send();
@@ -300,7 +305,7 @@ function filter_by_target() {
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
@@ -334,7 +339,7 @@ function filter_by_status(pub_status) {
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
@@ -371,7 +376,7 @@ function filter_by_metadata() {
       document.getElementById("project_count_id").innerHTML = pcount;
       document.getElementById('selected_ds_count_id').innerHTML = 0
       projectTree.deleteChildItems(0);
-      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json");   
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
     }
   }
   xmlhttp.send();
