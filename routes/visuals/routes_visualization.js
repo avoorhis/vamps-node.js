@@ -39,6 +39,55 @@ PROJECT_TREE_OBJ = []
 /*
  * GET visualization page.
  */
+router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
+    console.log('req.body: view_selection::prefix-->>');
+    console.log(req.body);
+    console.log('req.body: view_selection>>prefix');
+    var file_to_open = req.params.filename;
+    var file_path_to_open = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, file_to_open);
+    var file_data_to_open = JSON.parse(fs.readFileSync(file_path_to_open, 'utf8'))
+    console.log(file_data_to_open)
+    chosen_id_name_hash = file_data_to_open.id_name_hash
+    visual_post_items = file_data_to_open.post_items
+    dataset_ids = chosen_id_name_hash.ids;
+    //http://localhost:3000/visuals/view_selection/configuration-1459886135939.json
+    TAXCOUNTS = {};
+    METADATA  = {}; 
+    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+    for(var i in dataset_ids){
+      var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+      try{
+        var jsonfile = require(path_to_file);
+      }
+      catch(err){
+        console.log('no file '+err.toString()+' Exiting');
+        req.flash('nodataMessage', "ERROR \
+          Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
+          //res.redirect('visuals_index');
+          return;
+      }
+      TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+      METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+    }
+    BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
+    var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
+    
+    res.render('visuals/view_selection', {
+                                title     :           'VAMPS: Visuals Select',
+                                referer   :           'unit_selection',
+                                chosen_id_name_hash : JSON.stringify(chosen_id_name_hash),
+                                matrix    :           JSON.stringify(BIOM_MATRIX),
+                                metadata  :           JSON.stringify(metadata),
+                                constants :           JSON.stringify(req.CONSTS),
+                                post_items:           JSON.stringify(visual_post_items),
+                                user      :           req.user,
+                                hostname  :           req.CONFIG.hostname,
+                                gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
+	                          //locals: {flash: req.flash('infomessage')},
+                                message   :           req.flash('message')
+    });
+    
+});
 router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   // This page (view_selection) comes after the datasets and units have been selected
@@ -2277,16 +2326,26 @@ router.post('/download_file', helpers.isLoggedIn,  function(req, res) {
     var ts = req.body.ts;
     var file_type = req.body.file_type;
     if(file_type == 'biom'){
-      file_name = ts+'_count_matrix.biom';      
+      file_name = ts+'_count_matrix.biom';  
+      file_path = path.join(process.env.PWD, 'tmp', file_name);  
+      res.setHeader('Content-Type', 'text');  
     }else if(file_type == 'tax'){
-      file_name = ts+'_taxonomy.txt';      
+      file_name = ts+'_taxonomy.txt';
+      file_path = path.join(process.env.PWD, 'tmp', file_name); 
+      res.setHeader('Content-Type', 'text');     
     }else if(file_type == 'meta'){
-      file_name = ts+'_metadata.txt';      
+      file_name = ts+'_metadata.txt';
+      file_path = path.join(process.env.PWD, 'tmp', file_name);
+      res.setHeader('Content-Type', 'text');      
+    }else if(file_type == 'configuration'){
+      file_name = req.body.filename; 
+      file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username,  file_name);   
+      res.setHeader('Content-Type', 'json'); 
     }else{
       // ERROR
     }
-    file_path = path.join(process.env.PWD, 'tmp', file_name);
-    res.setHeader('Content-Type', 'text');
+    
+    console.log(file_path)
     res.download(file_path); // Set disposition and send it.
 });
 

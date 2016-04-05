@@ -13,6 +13,7 @@
 	<thead>
 	<tr><th></th>
 		<th>Your saved files:</th>
+		<th></th>
 		<th data-defaultsort='disabled'></th>
 		<th data-defaultsort='disabled'></th>
 		<th>size</th>
@@ -52,7 +53,7 @@
 		<td>						
 			<% if(datatype == 'configuration'){ %>
 				<form id='' method='POST' action='view_selection'>
-					<input type='submit' class='btn btn-xs btn-link' value='Visualizations' />
+					<input type='submit' class='btn btn-xs btn-link' value='Load' />
 					<input type='hidden'  name='from_configuration_file' value='1' />
 					<input type='hidden'  name='filename' value='<%= filename %>' />
 				</form>
@@ -69,7 +70,18 @@
 			<% } %>
 		
 		</td>
-		
+		<td>
+		    <% if(datatype == 'configuration'){ %>
+                <form id='download_biom_form_id'  method='POST' action='download_file'>
+                    <button type='submit' id='download_configuration_btn' class='btn btn-xs btn-link'>Download</button>
+                    <input type='hidden' name='file_type' value='configuration' /> 
+                    <input type='hidden' name='filename' value='<%= filename %>' /> 
+                    <input type='hidden' name='referer' value='/visuals/saved_elements' />
+                </form> 
+            <% }else{ %>
+				
+			<% } %> 
+		</td>
 		<td>
 		<a href='/user_data/file_utils?fxn=delete&user=<%= user.username %>&type=elements&filename=<%= filename %>' >delete</a>
 		</td>
@@ -79,7 +91,7 @@
 			<%= fileSize %> <%= sizer %>
 		</td>
 		<td> 
-					<%= file_info[times[t]].mtime %>
+			<%= file_info[times[t]].mtime %>
 		</td>
 		
 		

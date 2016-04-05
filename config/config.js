@@ -6,8 +6,7 @@ var config = {};
 //// PATHS *** Change these to match your system ***  ////
 //
 ////  LOCAL Config  ////
-
-
+config.UPLOAD_FILE_SIZE = {bytes:30000000,MB:30};  // for VB should be 20,000,000 to 30,000,000 larger for vamps
 config.PROCESS_DIR = '/Users/avoorhis/programming/vamps-node.js';
 config.USER_FILES_BASE = '/Users/avoorhis/programming/vamps-node.js/user_data/'+NODE_DATABASE;
 config.JSON_FILES_BASE = '/Users/avoorhis/programming/vamps-node.js/public/json/';
@@ -51,7 +50,7 @@ config.PERL5LIB = '/opt/local/lib/perl5/site_perl/5.16.3/darwin-thread-multi-2le
 config.site = 'local';   // vamps ,vampsdev .....
 config.dbhost = 'localhost';
 config.hostname = os.hostname();
-config.UPLOAD_FILE_SIZE = {bytes:30000000,MB:30};  // for VB should be 20,000,000 to 30,000,000 larger for vamps 
+
 config.CONTACT_EMAIL = 'avoorhis@mbl.edu'
 
 module.exports = config;
