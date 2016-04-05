@@ -24,8 +24,7 @@
 <% } %>
 
     <!-- autocomplete="off" clears the checkboxes on page refresh -->
-    <form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
-
+    
       <table class='table table-bordered'>
         <tr>
         <td>
@@ -105,17 +104,13 @@
             
           </div>
         </td>
-        <td>
-            <div id='projects_select_div'>
-              <span id='nodata_span' style='visiblity:hidden'></span>
-            </div>
-            <!-- 
-            <div id='projects_select_div'>
-				      <!-- project tree is first loaded on document.ready{ clear_filters() } see below
-              <div id='loading_data_info_div'>Loading Projects<br>Please wait until project tree finishes loading.<br><small>(May take 20-30 seconds)</small></div>
-			     </div> -->
+<form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
 
-        </td>
+            <td>
+                <div id='projects_select_div'>
+                  <span id='nodata_span' style='visiblity:hidden'></span>
+                </div>
+            </td>
       
 		    <td class='td_top'>
                 - The projects to the left include all the public projects and any
@@ -133,7 +128,7 @@
       </table>
 	  
        <input type='hidden' name='Next2' value='Next: Unit Selection2' id="unit_selection2" >
-    </form>
+</form>
    
 
 
