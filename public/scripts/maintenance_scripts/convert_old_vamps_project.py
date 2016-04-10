@@ -48,7 +48,6 @@ ranks =['domain','phylum','klass','order','family','genus','species','strain']
 REQ_METADATA_ITEMS = {}
 CUST_METADATA_ITEMS = {}
 
-
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
 classifiers = {"GAST":{'ITS1':1,'SILVA108_FULL_LENGTH':2,'GG_FEB2011':3,'GG_MAY2013':4},
                 "RDP":{'ITS1':6,'2.10.1':5,'GG_FEB2011':7,'GG_MAY2013':8},
@@ -82,6 +81,7 @@ def start(NODE_DATABASE, args):
     cur = mysql_conn.cursor()
     my_class           = Old_vamps_data(mysql_conn)
     DATASET_ID_BY_NAME = my_class.dataset_id_by_name_dict
+    PROJECT_ID_BY_NAME = my_class.project_id_by_name_dict
 
     logging.debug("checking user")
     check_user(args)  ## script dies if user not in db
@@ -116,7 +116,7 @@ def start(NODE_DATABASE, args):
     #    push_sequences()
 
     logging.debug("projects")
-    push_project()
+    push_project(PROJECT_ID_BY_NAME)
 
     logging.debug("datasets")
     # push_dataset()
@@ -127,6 +127,9 @@ def start(NODE_DATABASE, args):
     #    push_pdr_seqs()
 
     my_class.collect_datasets(seqs_file_lines)
+    
+    print "CUST_METADATA_ITEMS before start_metadata = "
+    print CUST_METADATA_ITEMS
     
     logging.debug("starting metadata")
     start_metadata(args, DATASET_ID_BY_NAME, my_class)
@@ -218,7 +221,7 @@ def push_dataset():
     print DATASET_ID_BY_NAME
     mysql_conn.commit()
 
-def push_project():
+def push_project(PROJECT_ID_BY_NAME):
     desc = "Project Description"
     title = "Title"
     proj = CONFIG_ITEMS['project']
@@ -227,14 +230,19 @@ def push_project():
     id = CONFIG_ITEMS['owner_id']
     pub = CONFIG_ITEMS['public']
     fields = ['project','title','project_description','rev_project_name','funding','owner_user_id','public']
+    try: 
+      CONFIG_ITEMS['project_id'] = PROJECT_ID_BY_NAME[args.project]
+    except:
+      raise
+      
     if args.add_project:
-
-        q = "SELECT project_id from project where project='%s'" % (args.project)
-        logging.debug(q)
-        cur.execute(q)
-        mysql_conn.commit()
-        row = cur.fetchone()
-        CONFIG_ITEMS['project_id'] = row[0]
+        # q = "SELECT project_id from project where project='%s'" % (args.project)
+        # logging.debug(q)
+        # cur.execute(q)
+        # mysql_conn.commit()
+        # row = cur.fetchone()
+        # CONFIG_ITEMS['project_id'] = row[0]
+          
         print("ADD TO PID="+str(CONFIG_ITEMS['project_id']))
         logging.debug("ADDING to project -- PID="+str(CONFIG_ITEMS['project_id']))
     else:
@@ -243,10 +251,13 @@ def push_project():
         q = "INSERT IGNORE into project ("+(',').join(fields)+")"
         q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
         q = q % (proj,title,desc,rev,fund,id,pub)
+        print(q)
         logging.debug(q)
         cur.execute(q)
         mysql_conn.commit()
-        CONFIG_ITEMS['project_id'] = cur.lastrowid
+        last_insert_id = cur.lastrowid
+        if last_insert_id > 0:
+          CONFIG_ITEMS['project_id'] = cur.lastrowid
         print("NEW PID="+str(CONFIG_ITEMS['project_id']))
         logging.debug("STARTING NEW project -- PID="+str(CONFIG_ITEMS['project_id']))
 
@@ -492,6 +503,9 @@ def start_metadata(args, DATASET_ID_BY_NAME, my_class):
     #    put_required_metadata()
     # uncomment
     # put_custom_metadata()
+    print "CUST_METADATA_ITEMS in start_metadata = "
+    print CUST_METADATA_ITEMS
+    
     my_class.put_custom_metadata_a(CUST_METADATA_ITEMS)
     # print "CONFIG_ITEMS"
     # print CONFIG_ITEMS
@@ -536,89 +550,99 @@ def put_required_metadata():
 
     mysql_conn.commit()
 
-def put_custom_metadata():
-    """
-      create new table
-    """
-    
-    print "put_custom_metadata: CUST_METADATA_ITEMS"
-    print CUST_METADATA_ITEMS
-
-    logging.debug( 'starting put_custom_metadata')
-    # TABLE-1 === custom_metadata_fields
-    cust_keys_array = {}
-    all_cust_keys = []  # to create new table
-    for ds in CONFIG_ITEMS['datasets']:
-        did = DATASET_ID_BY_NAME[ds]
-        cust_keys_array[did]=[]
-
-        if did in CUST_METADATA_ITEMS:
-            for key in CUST_METADATA_ITEMS[did]:
-                if key not in all_cust_keys:
-                    all_cust_keys.append(key)
-                if key not in cust_keys_array[did]:
-                    cust_keys_array[did].append(key)
-                # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
-                q2 += " VALUES("
-                q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
-                q2 += "'"+str(key)+"',"
-                q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
-                q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
-                logging.debug(q2)
-                cur.execute(q2)
-        mysql_conn.commit()
-
-
-    # TABLE-2 === CREATE custom_metadata_<pid>
-    custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
-    q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
-    q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
-    # q += " `project_id` int(11) unsigned NOT NULL,\n"
-    q += " `dataset_id` int(11) unsigned NOT NULL,\n"
-    for key in all_cust_keys:
-        if key != 'dataset_id':
-            q += " `"+key+"` varchar(128) DEFAULT NULL,\n"
-    q += " PRIMARY KEY (`"+custom_table+"_id` ),\n"
-    # unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
-    unique_key = "UNIQUE KEY `unique_key` (`dataset_id`,"
-
-    # ONLY 16 key items allowed:
-    for i,key in enumerate(all_cust_keys):
-        if i < 14 and key != 'dataset_id':
-            unique_key += " `"+key+"`,"
-    q += unique_key[:-1]+"),\n"
-    # q += " KEY `project_id` (`project_id`),\n"
-    q += " KEY `dataset_id` (`dataset_id`),\n"
-    # q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
-    q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
-    q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
-    logging.debug(q)
-    cur.execute(q)
-
-
-    # add data
-    for ds in CONFIG_ITEMS['datasets']:
-        did = DATASET_ID_BY_NAME[ds]
-        # q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
-        q3 = "INSERT into "+custom_table+" (dataset_id"
-        for key in cust_keys_array[did]:
-            logging.debug("key in cust_keys_array[did] = ")
-            logging.debug(key)
-            if key != 'dataset_id':
-                q3 += "`"+key+"`,"
-        q3 = q3[:-1]+ ")"
-        # q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
-        q3 += " VALUES('"+str(did)+"',"
-        for key in cust_keys_array[did]:
-            if key != 'dataset_id':
-                if key in CUST_METADATA_ITEMS[did]:
-                    q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
-        q3 = q3[:-1] + ")"
-        logging.debug(q3)
-        cur.execute(q3)
-
-    mysql_conn.commit()
+# def put_custom_metadata():
+#     """
+#       create new table
+#     """
+#
+#     print "put_custom_metadata: CUST_METADATA_ITEMS"
+#     print CUST_METADATA_ITEMS
+#
+#     logging.debug( 'starting put_custom_metadata')
+#     # TABLE-1 === custom_metadata_fields
+#     cust_keys_array = {}
+#     all_cust_keys = []  # to create new table
+#     print "CONFIG_ITEMS"
+#     print CONFIG_ITEMS
+#     for ds in CONFIG_ITEMS['datasets']:
+#         did = DATASET_ID_BY_NAME[ds]
+#         cust_keys_array[did]=[]
+#         print "CUST_METADATA_ITEMS"
+#         print CUST_METADATA_ITEMS
+#
+#         if did in CUST_METADATA_ITEMS:
+#             print "did in CUST_METADATA_ITEMS"
+#             print did
+#             for key in CUST_METADATA_ITEMS[did]:
+#                 if key not in all_cust_keys:
+#                     all_cust_keys.append(key)
+#                 if key not in cust_keys_array[did]:
+#                     cust_keys_array[did].append(key)
+#                 # q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+#                 q2 = "INSERT IGNORE into custom_metadata_fields(project_id, field_name, field_type, example)"
+#                 q2 += " VALUES("
+#                 q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
+#                 q2 += "'"+str(key)+"',"
+#                 q2 += "'varchar(128)'," #? are they alvays the same? couldn't they by numbers?
+#                 q2 += "'"+str(CUST_METADATA_ITEMS[did][key])+"')"
+#                 print "put_custom_metadata: q2"
+#                 print q2
+#
+#                 logging.debug(q2)
+#                 cur.execute(q2)
+#         mysql_conn.commit()
+#
+#
+#     # TABLE-2 === CREATE custom_metadata_<pid>
+#     custom_table = 'custom_metadata_'+str(CONFIG_ITEMS['project_id'])
+#     q = "CREATE TABLE IF NOT EXISTS `"+ custom_table + "` (\n"
+#     q += " `"+custom_table+"_id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n"
+#     # q += " `project_id` int(11) unsigned NOT NULL,\n"
+#     q += " `dataset_id` int(11) unsigned NOT NULL,\n"
+#     for key in all_cust_keys:
+#         if key != 'dataset_id':
+#             q += " `"+key+"` varchar(128) DEFAULT NULL,\n"
+#     q += " PRIMARY KEY (`"+custom_table+"_id` ),\n"
+#     # unique_key = "UNIQUE KEY `unique_key` (`project_id`,`dataset_id`,"
+#     unique_key = "UNIQUE KEY `unique_key` (`dataset_id`,"
+#
+#     # ONLY 16 key items allowed:
+#     for i,key in enumerate(all_cust_keys):
+#         if i < 14 and key != 'dataset_id':
+#             unique_key += " `"+key+"`,"
+#     q += unique_key[:-1]+"),\n"
+#     # q += " KEY `project_id` (`project_id`),\n"
+#     q += " KEY `dataset_id` (`dataset_id`),\n"
+#     # q += " CONSTRAINT `"+custom_table+"_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`project_id`) ON UPDATE CASCADE,\n"
+#     q += " CONSTRAINT `"+custom_table+"_ibfk_2` FOREIGN KEY (`dataset_id`) REFERENCES `dataset` (`dataset_id`) ON UPDATE CASCADE\n"
+#     q += " ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
+#     logging.debug(q)
+#     cur.execute(q)
+#
+#
+#     # add data
+#     for ds in CONFIG_ITEMS['datasets']:
+#         did = DATASET_ID_BY_NAME[ds]
+#         # q3 = "INSERT into "+custom_table+" (project_id,dataset_id,"
+#         q3 = "INSERT into "+custom_table+" (dataset_id"
+#         for key in cust_keys_array[did]:
+#             logging.debug("key in cust_keys_array[did] = ")
+#             logging.debug(key)
+#             if key != 'dataset_id':
+#                 q3 += "`"+key+"`,"
+#         q3 = q3[:-1]+ ")"
+#         # q3 += " VALUES('"+str(CONFIG_ITEMS['project_id'])+"','"+str(did)+"',"
+#         q3 += " VALUES('"+str(did)+"',"
+#         for key in cust_keys_array[did]:
+#             if key != 'dataset_id':
+#                 if key in CUST_METADATA_ITEMS[did]:
+#                     q3 += "'"+str(CUST_METADATA_ITEMS[did][key])+"',"
+#         q3 = q3[:-1] + ")"
+#         logging.debug(q3)
+#         cur.execute(q3)
+#
+#     mysql_conn.commit()
+#
 
 def get_metadata(args, DATASET_ID_BY_NAME):
     logging.debug('csv '+str(args.metadata_file))
@@ -684,39 +708,125 @@ def remove_accents(input_str):
     # print "res = "
     # print res
     return res
+    
+class Utils:
+    def __init__(self):
+        pass          
+    
+    def is_local(self):
+        print os.uname()[1]
+        dev_comps = ['ashipunova.mbl.edu', "as-macbook.home", "as-macbook.local", "Ashipunova.local", "Annas-MacBook-new.local", "Annas-MacBook.local"]
+        if os.uname()[1] in dev_comps:
+            return True
+        else:
+            return False
+            
+    def is_vamps(self):
+        print os.uname()[1]
+        dev_comps = ['bpcweb8','bpcweb7','bpcweb7.bpcservers.private', 'bpcweb8.bpcservers.private']
+        if os.uname()[1] in dev_comps:
+            return True
+        else:
+            return False
+            
+    def print_both(self, message):
+        print message
+        logging.debug(message)
+    
+class Mysql_util:
+    """
+    Connection to vamps or vampsdev
 
+    Takes parameters from ~/.my.cnf_node, default host = "vampsdev", db="vamps2"
+    if different use my_conn = Mysql_util(host, db)
+    """
+    def __init__(self, host="bpcweb7", db="vamps2"):
+        self.utils  = Utils()        
+        self.conn   = None
+        self.cursor = None
+        self.rows   = 0
+        self.new_id = None
+        self.lastrowid = None
+        
+        try:           
+            self.utils.print_both("=" * 40)
+            self.utils.print_both("host = " + str(host) + ", db = "  + str(db))
+            self.utils.print_both("=" * 40)
+#             print "=" * 40
+#             print "host = " + str(host) + ", db = "  + str(db)            
+#             print "=" * 40
+
+            if self.utils.is_local():
+              self.conn = MySQLdb.connect(host=host, db=db, read_default_file=os.path.expanduser("~/.my.cnf_local"))
+            else:       
+              self.conn = MySQLdb.connect(host=host, db=db, read_default_file=os.path.expanduser("~/.my.cnf_node"))
+              # self.db = MySQLdb.connect(host="localhost", # your host, usually localhost
+              #                          read_default_file="~/.my.cnf_node"  )
+              # cur = db.cursor()
+            self.cursor = self.conn.cursor()
+            # self.escape = self.conn.escape()
+                   
+        except MySQLdb.Error, e:
+            self.utils.print_both("Error %d: %s" % (e.args[0], e.args[1]))
+            raise
+        except:                       # catch everything
+            self.utils.print_both("Unexpected:")
+            self.utils.print_both(sys.exc_info()[0])
+#             print "Unexpected:"         # handle unexpected exceptions
+#             print sys.exc_info()[0]     # info about curr exception (type,value,traceback)
+            raise                       # re-throw caught exception   
+
+    def execute_fetch_select(self, sql):
+        if self.cursor:
+          try:
+            # sql = self.conn.escape(sql)
+            self.cursor.execute(sql)
+            res = self.cursor.fetchall ()
+          except:
+            self.utils.print_both(("ERROR: query = %s") % sql)
+            raise
+          return res
+
+    def execute_no_fetch(self, sql):
+        if self.cursor:
+            self.cursor.execute(sql)
+            self.conn.commit()
+#            if (self.conn.affected_rows()):
+#            print dir(self.cursor)
+            return self.cursor.lastrowid
+#        logging.debug("rows = "  + str(self.rows))
+       
+    def get_all_name_id(self, table_name):
+        id_name = table_name + '_id'
+        my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
+        res     = self.execute_fetch_select(my_sql)
+        if res:
+          return res
+
+
+        
 class Old_vamps_data:
   """
     get data from csv files made from old vamps
     put data to vamps2
   """
   def __init__(self, db):
+    self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+    
+    # self.mysql_util = Mysql_util(mysql_conn)
     self.cursor = db.cursor()
     self.dataset_id_by_name_dict = {}
+    self.project_id_by_name_dict = {}
     self.make_dataset_by_name_dict()
-    
-  def execute_fetch_select(self, sql):
-    if self.cursor:
-      try:
-        # sql = self.conn.escape(sql)
-        self.cursor.execute(sql)
-        res = self.cursor.fetchall ()
-      except:
-        self.utils.print_both(("ERROR: query = %s") % sql)
-        raise
-      return res
-
-  def get_all_name_id(self, table_name):
-      id_name = table_name + '_id'
-      my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
-      res     = self.execute_fetch_select(my_sql)
-      if res:
-        return res
+    self.make_project_by_name_dict()
         
   def make_dataset_by_name_dict(self):
-    datasets_w_ids = self.get_all_name_id('dataset')
+    datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
     self.dataset_id_by_name_dict = dict(datasets_w_ids)
-    
+
+  def make_project_by_name_dict(self):
+    projects_w_ids = self.mysql_util.get_all_name_id('project')
+    self.project_id_by_name_dict = dict(projects_w_ids)
 
   def collect_datasets(self, seqs_file_lines):
     # datasets_w_ids
@@ -740,12 +850,14 @@ class Old_vamps_data:
       # TABLE-1 === custom_metadata_fields
       cust_keys_array = {}
       all_cust_keys = []  # to create new table
-      # logging.debug("CONFIG_ITEMS['datasets'] = ")
-      # logging.debug(CONFIG_ITEMS['datasets'])
+      logging.debug("CONFIG_ITEMS['datasets'] = ")
+      logging.debug(CONFIG_ITEMS['datasets'])
+      print "CUST_METADATA_ITEMS = "
+      print CUST_METADATA_ITEMS
       for ds in CONFIG_ITEMS['datasets']:
           did = str(self.dataset_id_by_name_dict[ds])
-          # logging.debug("DATASET_ID_BY_NAME[ds] = ")
-          # logging.debug(did)
+          logging.debug("DATASET_ID_BY_NAME[ds] = ")
+          logging.debug(did)
 
           cust_keys_array[did]=[]
 
@@ -859,6 +971,9 @@ if __name__ == '__main__':
                 help="""""")
 
     args = parser.parse_args()
+    utils = Utils()        
+
+    db = Mysql_util(host="localhost")
 
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
@@ -871,7 +986,12 @@ if __name__ == '__main__':
         db_str += str(i)+'-'+row[0]+';  '
     print("db_str = ")
     print(db_str)
-    db_no = input("\nchoose database number: ")
+    
+    
+    if utils.is_local():
+      db_no = 0
+    else:
+      db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]
     else:
@@ -887,7 +1007,9 @@ if __name__ == '__main__':
     print('See '+LOG_FILENAME)
 
 
-
+    print "CUST_METADATA_ITEMS before start() = "
+    print CUST_METADATA_ITEMS
+    
     if args.project and args.seqs_file and args.metadata_file:
         pid = start(NODE_DATABASE, args)
         print "PID=", str(pid)
