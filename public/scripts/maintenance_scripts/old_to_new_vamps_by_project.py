@@ -130,6 +130,10 @@ from metadata.csv
 
 """
 import csv
+import MySQLdb
+import logging
+import sys
+import os
 
 
 class Mysql_util:
@@ -239,11 +243,11 @@ class Seq_csv:
   """  
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name):
-    self.utils  = Utils()        
-    # self.mysql_util = Mysql_util(host = host, db = db)
+    self.utils      = Utils() 
+    #TODO: make dynamic by checkinf if it's local
+    self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+    # self.cursor     = db.cursor()
     
-    # self.mysql_util = Mysql_util(mysql_conn)
-    # self.cursor = db.cursor()
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     self.project_dataset_dict = self.make_project_dataset_dictionary()
     # self.seq_list             = self.make_seq_list()
@@ -263,6 +267,9 @@ class Seq_csv:
     self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
     self.utils.print_array_w_title(self.the_rest, "self.the_rest")
 
+    q = """show create table sequence"""
+    r = self.mysql_util.execute_fetch_select(q)
+    self.utils.print_array_w_title(r, "show create table sequence")
     
 
     # self.utils.print_array_w_title(list(self.seqs_file_content))
@@ -282,7 +289,6 @@ class Seq_csv:
     return [val[1] for val in self.seqs_file_content]
 
   def content_matrix_transposition(self):
-    # self.sequences, self.projects, self.datasets, self.taxa, self.refhvr_ids, self.the_rest =  zip(*self.seqs_file_content)
     return zip(*self.seqs_file_content)
     
   
