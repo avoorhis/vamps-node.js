@@ -220,13 +220,13 @@ class Utils:
         print message
         logging.debug(message)
     
-    def print_array_w_title(self, message):
-      print str(message)
+    def print_array_w_title(self, message, title = 'message'):
+      print title
       print message
     
     def read_csv_into_list(self, file_name):
-      # return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
-      return csv.reader(open(seq_csv_file_name, 'rb'), delimiter=',')
+      return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
+
 
 class Seq_csv:
   # sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -247,7 +247,7 @@ class Seq_csv:
     # self.cursor = db.cursor()
     self.seqs_file_content = self.utils.read_csv_into_list(seq_csv_file_name)
 
-    self.utils.print_array_w_title(self.seqs_file_content)
+    # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
     
     # print "MMM"
@@ -261,16 +261,30 @@ class Seq_csv:
     # project_dataset_dict = dict(x[i:i+2] for i in range(0, len(x), 2))
     # project_dataset_dict = dict(val[3]:val[2] for val in self.seqs_file_content)
     # d = {key: value for (key, value) in iterable}
-  
+    # self.project_dataset_dict = {pr: dat for (pr, dat) in list(self.seqs_file_content)[2:3]}
+    # self.project_dataset_dict = dict([ (val[2:4])  for idx, val in enumerate(self.seqs_file_content) ])
+    #
+    a = []
     for idx, val in enumerate(self.seqs_file_content):
-        print(idx, val)
-        print "project"
-        print(val[2])
-        print(val[3])
-        project = val[2]
-        dataset = val[3]
-        self.project_dataset_dict[dataset] = project
-    self.utils.print_array_w_title(self.project_dataset_dict)
+      print"MMM"
+      print(idx, val)
+      # print "val[2:4]"
+      # print val[2:4]
+      a.append((val[3],val[2]))
+      
+      # print val[4] taxonomy
+    #     print "project"
+    #     print(val[2])
+    #     print(val[3])
+    #     project = val[2]
+    #     dataset = val[3]
+    #     self.project_dataset_dict[dataset] = project
+    # print names_and_professions
+    # [("Nick", "Programmer"), ("Alice", "Engineer"), ("Kitty", "Art Therapist")]
+    self.utils.print_array_w_title("a", a)
+    self.project_dataset_dict = dict(a)
+    
+    self.utils.print_array_w_title("self.project_dataset_dict", self.project_dataset_dict)
   
     """
     ***) simple tables:
