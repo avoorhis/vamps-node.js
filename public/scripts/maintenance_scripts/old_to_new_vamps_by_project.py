@@ -240,12 +240,13 @@ class Seq_csv:
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name):
     self.utils  = Utils()        
-    self.project_dataset_dict = dict()
     # self.mysql_util = Mysql_util(host = host, db = db)
     
     # self.mysql_util = Mysql_util(mysql_conn)
     # self.cursor = db.cursor()
-    self.seqs_file_content = self.utils.read_csv_into_list(seq_csv_file_name)
+    self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
+    self.project_dataset_dict = self.make_project_dataset_dictionary()
+    self.utils.print_array_w_title("self.project_dataset_dict", self.project_dataset_dict)
 
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
@@ -258,33 +259,8 @@ class Seq_csv:
     # self.parse_refhvr_ids()
     
   def make_project_dataset_dictionary(self):
-    # project_dataset_dict = dict(x[i:i+2] for i in range(0, len(x), 2))
-    # project_dataset_dict = dict(val[3]:val[2] for val in self.seqs_file_content)
-    # d = {key: value for (key, value) in iterable}
-    # self.project_dataset_dict = {pr: dat for (pr, dat) in list(self.seqs_file_content)[2:3]}
-    # self.project_dataset_dict = dict([ (val[2:4])  for idx, val in enumerate(self.seqs_file_content) ])
-    #
-    a = []
-    for idx, val in enumerate(self.seqs_file_content):
-      print"MMM"
-      print(idx, val)
-      # print "val[2:4]"
-      # print val[2:4]
-      a.append((val[3],val[2]))
-      
-      # print val[4] taxonomy
-    #     print "project"
-    #     print(val[2])
-    #     print(val[3])
-    #     project = val[2]
-    #     dataset = val[3]
-    #     self.project_dataset_dict[dataset] = project
-    # print names_and_professions
-    # [("Nick", "Programmer"), ("Alice", "Engineer"), ("Kitty", "Art Therapist")]
-    self.utils.print_array_w_title("a", a)
-    self.project_dataset_dict = dict(a)
+    return {val[3]: val[2] for val in self.seqs_file_content}
     
-    self.utils.print_array_w_title("self.project_dataset_dict", self.project_dataset_dict)
   
     """
     ***) simple tables:
@@ -326,7 +302,7 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
-  seq_csv_parser.make_project_dataset_dictionary()
+  # seq_csv_parser.make_project_dataset_dictionary()
   
 
   #
