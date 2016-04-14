@@ -270,26 +270,14 @@ class Seq_csv:
     self.taxa       = content_by_field[4]
     self.refhvr_ids = content_by_field[5]
     self.the_rest   = content_by_field[6:]
-    print "RRR"
     
-    self.utils.print_array_w_title(self.sequences, "self.sequences")
-    self.utils.print_array_w_title(self.projects, "self.projects")
-    self.utils.print_array_w_title(self.datasets, "self.datasets")
-    self.utils.print_array_w_title(self.taxa, "self.taxa")
-    self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
-    self.utils.print_array_w_title(self.the_rest, "self.the_rest")
-
+    # self.utils.print_array_w_title(self.sequences, "self.sequences")
+    # self.utils.print_array_w_title(self.projects, "self.projects")
+    # self.utils.print_array_w_title(self.datasets, "self.datasets")
+    # self.utils.print_array_w_title(self.taxa, "self.taxa")
+    # self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
+    # self.utils.print_array_w_title(self.the_rest, "self.the_rest")
     
-    # q = """show create table sequence"""
-    # r = self.mysql_util.execute_fetch_select(q)
-    # self.utils.print_array_w_title(r, "show create table sequence")
-    
-    comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.utils.print_array_w_title(comp_seq, "comp_seq")
-    
-    r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
-    self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
-
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
     
@@ -309,6 +297,11 @@ class Seq_csv:
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
     
+  def insert_seq(self):
+    comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
+    r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
+    # self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
+    return r
   
     """
     ***) simple tables:
@@ -320,7 +313,6 @@ class Seq_csv:
         phylum
         refhvr_id
         sequence
-        silva_taxonomy
         species
         strain
 
@@ -350,7 +342,7 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
-  # seq_csv_parser.make_project_dataset_dictionary()
+  seq_csv_parser.insert_seq()
   
 
   #
