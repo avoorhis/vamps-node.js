@@ -229,7 +229,7 @@ class Utils:
 
 
 class Seq_csv:
-  # sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
+  # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
   # upload
   """   
@@ -246,7 +246,24 @@ class Seq_csv:
     # self.cursor = db.cursor()
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     self.project_dataset_dict = self.make_project_dataset_dictionary()
-    self.utils.print_array_w_title("self.project_dataset_dict", self.project_dataset_dict)
+    # self.seq_list             = self.make_seq_list()
+    content_by_field = self.content_matrix_transposition()
+    self.sequences  = content_by_field[1]
+    self.projects   = content_by_field[2]
+    self.datasets   = content_by_field[3]
+    self.taxa       = content_by_field[4]
+    self.refhvr_ids = content_by_field[5]
+    self.the_rest   = content_by_field[6:]
+    print "RRR"
+    
+    self.utils.print_array_w_title(self.sequences, "self.sequences")
+    self.utils.print_array_w_title(self.projects, "self.projects")
+    self.utils.print_array_w_title(self.datasets, "self.datasets")
+    self.utils.print_array_w_title(self.taxa, "self.taxa")
+    self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
+    self.utils.print_array_w_title(self.the_rest, "self.the_rest")
+
+    
 
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
@@ -260,6 +277,13 @@ class Seq_csv:
     
   def make_project_dataset_dictionary(self):
     return {val[3]: val[2] for val in self.seqs_file_content}
+
+  def make_seq_list(self):
+    return [val[1] for val in self.seqs_file_content]
+
+  def content_matrix_transposition(self):
+    # self.sequences, self.projects, self.datasets, self.taxa, self.refhvr_ids, self.the_rest =  zip(*self.seqs_file_content)
+    return zip(*self.seqs_file_content)
     
   
     """
