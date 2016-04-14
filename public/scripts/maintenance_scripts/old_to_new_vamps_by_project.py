@@ -175,30 +175,42 @@ class Mysql_util:
             raise                       # re-throw caught exception   
 
     def execute_fetch_select(self, sql):
-        if self.cursor:
-          try:
-            self.cursor.execute(sql)
-            res = self.cursor.fetchall ()
-          except:
-            self.utils.print_both(("ERROR: query = %s") % sql)
-            raise
-          return res
+      if self.cursor:
+        try:
+          self.cursor.execute(sql)
+          res = self.cursor.fetchall ()
+        except:
+          self.utils.print_both(("ERROR: query = %s") % sql)
+          raise
+        return res
 
     def execute_no_fetch(self, sql):
-        if self.cursor:
-            self.cursor.execute(sql)
-            self.conn.commit()
+      if self.cursor:
+          self.cursor.execute(sql)
+          self.conn.commit()
 #            if (self.conn.affected_rows()):
 #            print dir(self.cursor)
-            return self.cursor.lastrowid
+          return self.cursor.lastrowid
 #        logging.debug("rows = "  + str(self.rows))
+
+    def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
+      try:      
+        sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
+        
+        if self.cursor:
+          self.cursor.execute(sql)
+          self.conn.commit()
+          return self.cursor.lastrowid
+      except:
+        self.utils.print_both(("ERROR: query = %s") % sql)
+        raise
        
     def get_all_name_id(self, table_name):
-        id_name = table_name + '_id'
-        my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
-        res     = self.execute_fetch_select(my_sql)
-        if res:
-          return res
+      id_name = table_name + '_id'
+      my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
+      res     = self.execute_fetch_select(my_sql)
+      if res:
+        return res
 
 class Utils:
     def __init__(self):
@@ -267,10 +279,16 @@ class Seq_csv:
     self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
     self.utils.print_array_w_title(self.the_rest, "self.the_rest")
 
-    q = """show create table sequence"""
-    r = self.mysql_util.execute_fetch_select(q)
-    self.utils.print_array_w_title(r, "show create table sequence")
     
+    # q = """show create table sequence"""
+    # r = self.mysql_util.execute_fetch_select(q)
+    # self.utils.print_array_w_title(r, "show create table sequence")
+    
+    comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
+    self.utils.print_array_w_title(comp_seq, "comp_seq")
+    
+    r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
+    self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
 
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
