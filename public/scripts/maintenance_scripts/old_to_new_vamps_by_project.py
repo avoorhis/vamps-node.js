@@ -11,6 +11,9 @@
 # Please read the COPYING file.
 #
 """
+TODO:
+*) add benchmarks
+
 *) cd vamps-node.js/public/scripts/maintenance_scripts; time python old_to_new_vamps_by_project.py -s sequences.csv -m metadata.csv -owner admin -p "ICM_AGW_Bv6"
 
 *) Utils, connection - classes for all
@@ -218,11 +221,12 @@ class Utils:
         logging.debug(message)
     
     def print_array_w_title(self, message):
-      print "message"
+      print str(message)
       print message
     
     def read_csv_into_list(self, file_name):
-      return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
+      # return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
+      return csv.reader(open(seq_csv_file_name, 'rb'), delimiter=',')
 
 class Seq_csv:
   # sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -236,13 +240,66 @@ class Seq_csv:
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name):
     self.utils  = Utils()        
-    
+    self.project_dataset_dict = dict()
     # self.mysql_util = Mysql_util(host = host, db = db)
     
     # self.mysql_util = Mysql_util(mysql_conn)
     # self.cursor = db.cursor()
-    self.seqs_file_lines = self.utils.read_csv_into_list(seq_csv_file_name)
-    self.utils.print_array_w_title(self.seqs_file_lines)
+    self.seqs_file_content = self.utils.read_csv_into_list(seq_csv_file_name)
+
+    self.utils.print_array_w_title(self.seqs_file_content)
+    # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
+    
+    # print "MMM"
+    # print type(self.seqs_file_content)
+    # <type '_csv.reader'>
+        
+    # self.parse_taxonomy()
+    # self.parse_refhvr_ids()
+    
+  def make_project_dataset_dictionary(self):
+    # project_dataset_dict = dict(x[i:i+2] for i in range(0, len(x), 2))
+    # project_dataset_dict = dict(val[3]:val[2] for val in self.seqs_file_content)
+    # d = {key: value for (key, value) in iterable}
+  
+    for idx, val in enumerate(self.seqs_file_content):
+        print(idx, val)
+        print "project"
+        print(val[2])
+        print(val[3])
+        project = val[2]
+        dataset = val[3]
+        self.project_dataset_dict[dataset] = project
+    self.utils.print_array_w_title(self.project_dataset_dict)
+  
+    """
+    ***) simple tables:
+        domain
+        family
+        genus
+        klass
+        order
+        phylum
+        refhvr_id
+        sequence
+        silva_taxonomy
+        species
+        strain
+
+    ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
+        project
+        dataset
+        sequence_pdr_info
+        silva_taxonomy
+        sequence_uniq_info
+  
+    ***) ref tables
+        ref_silva_taxonomy_info_per_seq_refhvr_id
+        silva_taxonomy_info_per_seq
+    
+    """
+    
+
 
 class Metadata_csv:
   #parameterName, parameterValue, units, miens_units, project, units_id, structured_comment_name, method, other, notes, ts, entry_date, parameter_id, project_dataset
@@ -255,6 +312,7 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
+  seq_csv_parser.make_project_dataset_dictionary()
   
 
   #
