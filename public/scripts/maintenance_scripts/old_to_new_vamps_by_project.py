@@ -225,7 +225,7 @@ class Mysql_util:
         if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
-          return self.cursor.rowcount
+          return (self.cursor.rowcount, self.cursor.lastrowid)
       except:
         self.utils.print_both(("ERROR: query = %s") % sql)
         raise
@@ -348,7 +348,7 @@ class Seq_csv:
     comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
     r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     # self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
-    return r
+    return r[0]
     
   def get_taxa_by_rank(self):
     return zip(*self.taxa_list_w_empty_ranks)
@@ -374,7 +374,7 @@ class Seq_csv:
       # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
 
       rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
-      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
+      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
     
   def parse_refhvr_ids(self):    
     for r_id in self.refhvr_ids:      
@@ -390,7 +390,7 @@ class Seq_csv:
     insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
     # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
     rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
   def parse_project_csv(self):
     project_csv_file_name = "project_ICM_SMS_Bv6.csv"
@@ -422,7 +422,8 @@ class Seq_csv:
     # ['James Prosser', 'prosser', 'j.prosser@abdn.ac.uk', 'University of Aberdeen', 'James', 'Prosser', '1', '50', '7a40de8fd94d9f20fd1445ef58f65187']
     
     rows_affected = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
-    self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
+    self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
 
     
   def insert_project(self):
