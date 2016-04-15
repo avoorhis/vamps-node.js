@@ -271,6 +271,8 @@ class Seq_csv:
     self.refhvr_ids = content_by_field[5]
     self.the_rest   = content_by_field[6:]
     
+    self.parse_taxonomy()
+    
     # self.utils.print_array_w_title(self.sequences, "self.sequences")
     # self.utils.print_array_w_title(self.projects, "self.projects")
     # self.utils.print_array_w_title(self.datasets, "self.datasets")
@@ -285,7 +287,6 @@ class Seq_csv:
     # print type(self.seqs_file_content)
     # <type '_csv.reader'>
         
-    # self.parse_taxonomy()
     # self.parse_refhvr_ids()
     
   def make_project_dataset_dictionary(self):
@@ -302,6 +303,31 @@ class Seq_csv:
     r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     # self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
     return r
+    
+  def parse_taxonomy(self):
+    taxa_str_cnt = len(self.taxa)
+    print taxa_str_cnt
+    a = [""] * 8
+    print a
+
+    self.utils.print_array_w_title(self.taxa, "self.taxa")
+    
+    taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
+    for l in taxa_list:
+      print len(l)
+      a = [""] * (8 - len(l))
+      b = l + a
+      self.utils.print_array_w_title(b, "b")
+      print len(b)
+      
+    
+    self.utils.print_array_w_title(taxa_list, "taxa_list")
+    print len(max(taxa_list, key=len))
+    
+    # print taxa_list[-1][10]
+    # for taxon_string in self.taxa:
+    #   print taxon_string.split(";")
+
   
     """
     ***) simple tables:
@@ -342,7 +368,8 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
-  seq_csv_parser.insert_seq()
+  #uncomment
+  # seq_csv_parser.insert_seq()
   
 
   #
