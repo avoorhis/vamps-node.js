@@ -134,7 +134,8 @@ import MySQLdb
 import logging
 import sys
 import os
-
+import timeit
+import time
 
 class Mysql_util:
     """
@@ -245,6 +246,12 @@ class Utils:
 
     def flatten_2d_list(self, list):
       return [item for sublist in list for item in sublist]
+      
+    def wrapper(self, func, *args, **kwargs):
+        def wrapped():
+            return func(*args, **kwargs)
+        return wrapped
+
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -260,7 +267,7 @@ class Seq_csv:
     self.utils      = Utils() 
     #TODO: make dynamic by checking if it's local
     self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
-
+    
     self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
 
     
@@ -356,15 +363,30 @@ class Seq_csv:
       self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
     
   def parse_refhvr_ids(self):
-    self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
+    # self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
+    
+    t0 = time.time()    
     for i in self.refhvr_ids:      
       refhvr_ids_list = i.split()
       self.refhvr_ids_lists.append(refhvr_ids_list)
-      self.utils.print_array_w_title(refhvr_ids_list, "===\nsrefhvr_ids_list")
-    self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists")
+    #   self.utils.print_array_w_title(refhvr_ids_list, "===\nsrefhvr_ids_list")
+    # self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 1")
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
     
-    flat_refhvr_ids_list = self.utils.flatten_2d_list(self.refhvr_ids_lists)
-    self.utils.print_array_w_title(set(flat_refhvr_ids_list), "===\nset(flat_refhvr_ids_list")
+    t0 = time.time()
+    self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
+
+    # total = 0.0959160327911
+    # total = 0.148287057877
+
+    self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 2")
+    
+    self.all_refhvr_ids = set(self.utils.flatten_2d_list(self.refhvr_ids_lists))
     self.utils.print_array_w_title(self.all_refhvr_ids, "===\nself.all_refhvr_ids")
 
   def insert_refhvr_id(self):
@@ -408,8 +430,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
   # uncomment:
   # seq_csv_parser.insert_seq()
