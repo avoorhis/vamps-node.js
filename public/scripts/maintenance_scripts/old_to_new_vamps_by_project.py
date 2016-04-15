@@ -305,26 +305,25 @@ class Seq_csv:
     return r
     
   def parse_taxonomy(self):
-    taxa_str_cnt = len(self.taxa)
-    print taxa_str_cnt
-    a = [""] * 8
-    print a
 
     self.utils.print_array_w_title(self.taxa, "self.taxa")
     
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
     
-    taxa_list_full = []
-    for l in taxa_list:
-      print len(l)
-      a = [""] * (8 - len(l))
-      b = l + a
-      self.utils.print_array_w_title(b, "b")
-      print len(b)
-      taxa_list_full.append(b)
+    taxa_list_w_empty_ranks = [l + [""] * (8 - len(l)) for l in taxa_list]
+    self.utils.print_array_w_title(taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
     
-    self.utils.print_array_w_title(taxa_list_full, "taxa_list_full")
-    self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
+    # taxa_list_full = []
+    # for l in taxa_list:
+    #   print len(l)
+    #   a = [""] * (8 - len(l))
+    #   b = l + a
+    #   self.utils.print_array_w_title(b, "b")
+    #   print len(b)
+    #   taxa_list_full.append(b)
+    
+    # self.utils.print_array_w_title(taxa_list_full, "taxa_list_full")
+    # self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
     
 
     # print len(max(taxa_list, key=len))
