@@ -28,9 +28,22 @@ TODO:
 *) Utils, connection - classes for all
 
 *)
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata.csv
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences.csv
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences.csv
+mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
+
+mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
+mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
+
+mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv 
+mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv 
+
+mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> user_contact.csv
+
+dataset: 
+vamps_publications_datasets ? (ask Andy)
+new_dataset
+needed: dataset, dataset_description, env_sample_source_id, project_id
+
+mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset.csv
 
 vamps_sequences & vamps_sequences_pipe:
 sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset, 
@@ -145,6 +158,8 @@ import sys
 import os
 import timeit
 import time
+# from collections import defaultdict
+
 
 class Mysql_util:
     """
@@ -251,7 +266,7 @@ class Utils:
       print message
     
     def read_csv_into_list(self, file_name):
-      return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
+      return list(csv.reader(open(file_name, 'rb'), delimiter=','))[1:]
 
     def flatten_2d_list(self, list):
       return [item for sublist in list for item in sublist]
@@ -260,6 +275,12 @@ class Utils:
         def wrapped():
             return func(*args, **kwargs)
         return wrapped
+    
+    def search_in_2d_list(self, search, data):
+      for sublist in data:
+        if search in sublist:
+          return sublist
+          break
 
 
 class Seq_csv:
@@ -281,7 +302,9 @@ class Seq_csv:
 
     
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
-    self.project_dataset_dict = self.make_project_dataset_dictionary()
+    # self.project_dataset_dict = defaultdict(list)
+    self.project_dataset_dict = {}
+    self.make_project_dataset_dictionary()
     # self.seq_list             = self.make_seq_list()
     content_by_field = self.content_matrix_transposition()
     self.sequences   = content_by_field[1]
@@ -294,11 +317,15 @@ class Seq_csv:
     self.taxa_list_w_empty_ranks = []
     self.all_refhvr_ids          = set()
     self.refhvr_ids_lists        = []
-    
+    self.dataset_id_by_name_dict = {}
+    self.project_id_by_name_dict = {}
+
     self.parse_taxonomy()
     # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
     
     self.parse_refhvr_ids()
+    
+    self.parse_project_csv()
     
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
@@ -309,10 +336,10 @@ class Seq_csv:
         
     
   def make_project_dataset_dictionary(self):
-    return {val[3]: val[2] for val in self.seqs_file_content}
+    self.project_dataset_dict = {val[3]: val[2] for val in self.seqs_file_content}
 
   def make_seq_list(self):
-    return [val[1] for val in self.seqs_file_content]
+    self.seq_list = [val[1] for val in self.seqs_file_content]
 
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
@@ -361,9 +388,73 @@ class Seq_csv:
 
   def insert_refhvr_id(self):
     insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
-    self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
+    # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
     rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
     self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    
+  def parse_project_csv(self):
+    project_csv_file_name = "project_ICM_SMS_Bv6.csv"
+    # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
+    
+    self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
+    self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
+    project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
+    print project
+    print contact
+    
+    user_contact_csv_file_name = "user_contact.csv"
+    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
+    # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
+    
+    search = contact
+    data =  self.user_contact_file_content
+    print self.utils.search_in_2d_list(search, data)
+
+    
+  def insert_project(self):
+    print set(self.projects)
+    # TODO: get info from vamspsdb vamps_projects_info and new_project, and funding from env454?
+    # get_owner_id = SELECT user_id FROM user WHERE username='"+args.owner+"'
+    # insert_project_q = "INSERT IGNORE INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public)"
+    
+    # execute_insert
+        
+  def parse_env_sample_source_id(self):
+    # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
+    pass
+  
+  def check_env_sample_source_id(self):
+    # TODO: check env_source_id/env_sample_source_id in project, if not in env_sample_source_id.csv - change to 0
+    pass
+
+  def make_dataset_by_name_dict(self):
+    datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
+    self.dataset_id_by_name_dict = dict(datasets_w_ids)
+
+  def make_project_by_name_dict(self):
+    projects_w_ids = self.mysql_util.get_all_name_id('project')
+    self.project_id_by_name_dict = dict(projects_w_ids)
+    
+  def insert_dataset(self):
+    #TODO: get env_sample_source_id from new_project, env_source_id from vamps_projects_info
+    print set(self.datasets)
+    # fields: dataset, dataset_description, env_sample_source_id, project_id
+    # self.utils.print_array_w_title(self.dataset_id_by_name_dict, "dataset_id_by_name_dict")
+    # self.utils.print_array_w_title(self.project_id_by_name_dict, "project_id_by_name_dict")
+    self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
+    
+    for p in set(self.projects):
+      print self.project_id_by_name_dict[p]
+      
+    for d, pr in self.project_dataset_dict.items():
+      print d
+      print pr
+      print int(self.project_id_by_name_dict[pr])
+    insert_dataset_q = "INSERT IGNORE INTO dataset (dataset, dataset_description, env_sample_source_id, project_id) VALUES ()"
+      
+      # self.project_dataset_dict[d].append(self.project_id_by_name_dict[p])
+
+    self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
 
     """
     ***) simple tables:
@@ -373,7 +464,7 @@ class Seq_csv:
           klass
           order
           phylum
-        refhvr_id
+          refhvr_id
           sequence
           species
           strain
@@ -410,8 +501,14 @@ if __name__ == '__main__':
   # seq_csv_parser.insert_seq()
   # uncomment:
   # seq_csv_parser.insert_taxa()
-  seq_csv_parser.insert_refhvr_id()
-  
+  # uncomment:
+  # seq_csv_parser.insert_refhvr_id()
+  # uncomment:
+  # seq_csv_parser.insert_project()
+  # seq_csv_parser.make_project_by_name_dict()
+  #
+  # seq_csv_parser.insert_dataset()
+  # seq_csv_parser.make_dataset_by_name_dict()
 
   #
   # mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
