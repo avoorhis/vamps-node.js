@@ -200,7 +200,7 @@ class Mysql_util:
         if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
-          return self.cursor.lastrowid
+          return self.cursor.rowcount
       except:
         self.utils.print_both(("ERROR: query = %s") % sql)
         raise
@@ -316,24 +316,22 @@ class Seq_csv:
     
   def insert_taxa(self):
     taxa_by_rank = self.get_taxa_by_rank()
-    
-    # for rank in taxa_by_rank:
-    # >>> ["foo", "bar", "baz"].index("bar")
-    
+        
+    """
+    TODO: make all queries, then insert all? Benchmark!
+    """
     for rank in self.ranks:
       self.utils.print_array_w_title(rank, "rank")
       rank_num = self.ranks.index(rank)
-      self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
+      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
       
-      taxa_by_rank_i = set(taxa_by_rank[rank_num])
-      self.utils.print_array_w_title(taxa_by_rank_i, "set(taxa_by_rank[rank_num])")
+      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
       
-      insert_t_q = "%s" % '), ('.join(["'%s'" % key for key in taxa_by_rank_i])
-    # self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
-      self.utils.print_array_w_title(insert_t_q, "insert_t_q")
+      insert_t_q = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      # self.utils.print_array_w_title(insert_t_q, "insert_t_q")
 
       r = self.mysql_util.execute_insert(rank, rank, insert_t_q)
-      self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(rank, rank, insert_t_q)")
+      self.utils.print_array_w_title(r, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_t_q)")
     
   def parse_taxonomy(self):
 
