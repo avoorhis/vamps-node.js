@@ -408,7 +408,21 @@ class Seq_csv:
     
     search = contact
     data =  self.user_contact_file_content
-    print self.utils.search_in_2d_list(search, data)
+    user_data = self.utils.search_in_2d_list(search, data)
+    
+    field_list = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
+    insert_user_vals = ', '.join(["'%s'" % key for key in user_data[1:]])
+    # self.utils.print_array_w_title(insert_user_vals, "===\nself.insert_user_vals QQQ")
+    
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "user", field_list, insert_user_vals)
+    # print sql
+
+    #
+    #
+    # ['James Prosser', 'prosser', 'j.prosser@abdn.ac.uk', 'University of Aberdeen', 'James', 'Prosser', '1', '50', '7a40de8fd94d9f20fd1445ef58f65187']
+    
+    rows_affected = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+    self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
 
     
   def insert_project(self):
