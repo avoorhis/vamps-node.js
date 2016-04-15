@@ -395,6 +395,7 @@ class Seq_csv:
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
   def get_user_id(self, username):
+    #TODO: make general for user, project etc.
     user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
     return self.mysql_util.execute_fetch_select(user_id_query)
  
@@ -405,11 +406,17 @@ class Seq_csv:
     
   def insert_user(self):
     field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
-    print "HHH"
-    print self.user_data
     insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     
     return self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+  
+  def get_id(self, rows_affected):
+    #TODO: make general for user, project etc.
+    
+    if rows_affected[1] > 0:
+      self.user_id = rows_affected[1]
+    else:
+      self.user_id = int(self.get_user_id(self.user_data[1])[0][0])
     
   def parse_project_csv(self):
     project_csv_file_name = "project_ICM_SMS_Bv6.csv"
@@ -417,30 +424,48 @@ class Seq_csv:
     
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
     self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
-    project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
-    print project
+    contact = self.project_file_content[0][5]
     print contact
     
     self.parse_user_contact_csv()
-    
     self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)
     
     rows_affected = self.insert_user()
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
     self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
+    
     if rows_affected[1] > 0:
       self.user_id = rows_affected[1]
     else:
       self.user_id = int(self.get_user_id(self.user_data[1])[0][0])
     self.utils.print_array_w_title(self.user_id, "self.user_id")
 
-    
   def insert_project(self):
-    print set(self.projects)
+    project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
+    
+    field_list       = "project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id"
+    insert_user_vals = ', '.join("'%s'" % key for key in [project, title, project_description])
+    insert_user_vals += ", REVERSE('%s'), '%s', %s" % (project, funding, self.user_id)
+
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_user_vals)
+    # self.utils.print_array_w_title(sql, "sql")
+        
+    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
+    self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
+    
+    # #TODO:
+    # if rows_affected[1] > 0:
+    #   self.project_id = rows_affected[1]
+    # else:
+    #   self.project_id = int(self.get_project_id(self.project_data[1])[0][0])
+    # self.utils.print_array_w_title(self.project_id, "self.project_id")
+    
+    
+    # print set(self.projects)
     # TODO: get info from vamspsdb vamps_projects_info and new_project, and funding from env454?
     # insert_project_q = "INSERT IGNORE INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public)"
     
-    # execute_insert
         
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -527,7 +552,7 @@ if __name__ == '__main__':
   # uncomment:
   # seq_csv_parser.insert_refhvr_id()
   # uncomment:
-  # seq_csv_parser.insert_project()
+  seq_csv_parser.insert_project()
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.insert_dataset()
