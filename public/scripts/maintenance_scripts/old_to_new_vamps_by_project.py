@@ -195,7 +195,7 @@ class Mysql_util:
 
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:      
-        sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
+        sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % (ignore, table_name, field_name, val_list)
         
         if self.cursor:
           self.cursor.execute(sql)
@@ -256,9 +256,11 @@ class Seq_csv:
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name):
     self.utils      = Utils() 
-    #TODO: make dynamic by checkinf if it's local
+    #TODO: make dynamic by checking if it's local
     self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
-    # self.cursor     = db.cursor()
+
+    self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
+
     
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     self.project_dataset_dict = self.make_project_dataset_dictionary()
@@ -271,7 +273,12 @@ class Seq_csv:
     self.refhvr_ids = content_by_field[5]
     self.the_rest   = content_by_field[6:]
     
+    self.taxa_list_w_empty_ranks = []
+    
     self.parse_taxonomy()
+    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
+
+    self.insert_taxa()
     
     # self.utils.print_array_w_title(self.sequences, "self.sequences")
     # self.utils.print_array_w_title(self.projects, "self.projects")
@@ -304,14 +311,37 @@ class Seq_csv:
     # self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
     return r
     
+  def get_taxa_by_rank(self):
+    return zip(*self.taxa_list_w_empty_ranks)
+    
+  def insert_taxa(self):
+    taxa_by_rank = self.get_taxa_by_rank()
+    
+    # for rank in taxa_by_rank:
+    # >>> ["foo", "bar", "baz"].index("bar")
+    
+    for rank in self.ranks:
+      self.utils.print_array_w_title(rank, "rank")
+      rank_num = self.ranks.index(rank)
+      self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
+      
+      taxa_by_rank_i = set(taxa_by_rank[rank_num])
+      self.utils.print_array_w_title(taxa_by_rank_i, "set(taxa_by_rank[rank_num])")
+      
+      insert_t_q = "%s" % '), ('.join(["'%s'" % key for key in taxa_by_rank_i])
+    # self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
+      self.utils.print_array_w_title(insert_t_q, "insert_t_q")
+
+      r = self.mysql_util.execute_insert(rank, rank, insert_t_q)
+      self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(rank, rank, insert_t_q)")
+    
   def parse_taxonomy(self):
 
-    self.utils.print_array_w_title(self.taxa, "self.taxa")
+    # self.utils.print_array_w_title(self.taxa, "self.taxa")
     
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
     
-    taxa_list_w_empty_ranks = [l + [""] * (8 - len(l)) for l in taxa_list]
-    self.utils.print_array_w_title(taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
+    self.taxa_list_w_empty_ranks = [l + [""] * (8 - len(l)) for l in taxa_list]
     
     # taxa_list_full = []
     # for l in taxa_list:
@@ -323,7 +353,6 @@ class Seq_csv:
     #   taxa_list_full.append(b)
     
     # self.utils.print_array_w_title(taxa_list_full, "taxa_list_full")
-    # self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
     
 
     # print len(max(taxa_list, key=len))
@@ -332,7 +361,7 @@ class Seq_csv:
     # for taxon_string in self.taxa:
     #   print taxon_string.split(";")
 
-  
+
     """
     ***) simple tables:
         domain
