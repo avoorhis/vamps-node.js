@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'testing'
+
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
@@ -5,6 +7,8 @@ var async = require('async'),
     connection = require('../config/database-test');
 var passportStub = require('passport-stub');
 // passportStub.install(app);
+
+process.env.NODE_ENV = 'test';
 
 beforeEach(function() {
   passportStub.logout();    
@@ -65,3 +69,7 @@ before(function() {
   });
   console.log('before every test');
 });
+
+after(function() {
+  connection.query("DELETE from user where username='TEST'")
+})

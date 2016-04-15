@@ -14,7 +14,7 @@ router.get('/projects_index', function(req, res) {
     var db = req.db;
     
     //console.log(ALL_DATASETS);
-	console.log(PROJECT_INFORMATION_BY_PNAME)
+	//console.log(PROJECT_INFORMATION_BY_PNAME)
   	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);

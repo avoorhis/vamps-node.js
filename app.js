@@ -28,6 +28,7 @@ var zlib = require('zlib');
 //var db = require('mysql2');
 // without var declaration connection is global
 // needed for DATASETS initialization
+
 connection = require('./config/database').pool;
 
 
@@ -170,11 +171,14 @@ app.use(function(req, res, next) {
 });
 
 /// error handlers <-- these middleware go after routes
-
+app.set('env', process.env.NODE_ENV);
 // development error handler
 // will print stacktrace
+console.log('DATABASE: '+NODE_DATABASE);
+console.log('Database set in config/db-connection.js');
+console.log('ENV:',app.get('env'));
+console.log('Environment set in bin/www');
 if (app.get('env') === 'development') {
-    console.log('ENV: Development');
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error.ejs', {
@@ -183,9 +187,7 @@ if (app.get('env') === 'development') {
         });
     });
 }
-if (app.get('env') === 'production') {
-    console.log('ENV: Production');
-}
+
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
