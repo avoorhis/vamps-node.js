@@ -13,6 +13,15 @@
 """
 TODO:
 *) add benchmarks
+    t0 = time.time()
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
+
+  or
+  wrapped = self.utils.wrapper(func, arg)
+  time_res = timeit.timeit(wrapped, number=1)
+  
 
 *) cd vamps-node.js/public/scripts/maintenance_scripts; time python old_to_new_vamps_by_project.py -s sequences.csv -m metadata.csv -owner admin -p "ICM_AGW_Bv6"
 
@@ -323,18 +332,32 @@ class Seq_csv:
     
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
     
+    self.taxa_list_w_empty_ranks = []
+    t0 = time.time()
     self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
+    t1 = time.time()
+    total = t1-t0
+    print "LC total = %s" % total
+    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks LC")
     
+    self.taxa_list_w_empty_ranks = []
+    t0 = time.time()
     # taxa_list_full = []
-    # for l in taxa_list:
-    #   print len(l)
-    #   a = [""] * (8 - len(l))
-    #   b = l + a
-    #   self.utils.print_array_w_title(b, "b")
-    #   print len(b)
-    #   taxa_list_full.append(b)
+    for l in taxa_list:
+      # print len(l)
+      a = [""] * (len(self.ranks) - len(l))
+      b = l + a
+      # self.utils.print_array_w_title(b, "b")
+      # print len(b)
+      self.taxa_list_w_empty_ranks.append(b)
+    t1 = time.time()
+    total = t1-t0
+    print "for total = %s" % total
     
-    # self.utils.print_array_w_title(taxa_list_full, "taxa_list_full")
+    # LC total = 0.125090122223
+    # for total = 0.134382963181
+    
+    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks for")
     
 
     # print len(max(taxa_list, key=len))
@@ -365,24 +388,13 @@ class Seq_csv:
   def parse_refhvr_ids(self):
     # self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
     
-    t0 = time.time()    
     for i in self.refhvr_ids:      
       refhvr_ids_list = i.split()
       self.refhvr_ids_lists.append(refhvr_ids_list)
     #   self.utils.print_array_w_title(refhvr_ids_list, "===\nsrefhvr_ids_list")
     # self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 1")
-    t1 = time.time()
-    total = t1-t0
-    print "total = %s" % total
     
-    t0 = time.time()
     self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
-    t1 = time.time()
-    total = t1-t0
-    print "total = %s" % total
-
-    # total = 0.0959160327911
-    # total = 0.148287057877
 
     self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 2")
     
