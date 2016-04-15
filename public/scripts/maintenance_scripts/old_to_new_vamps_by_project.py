@@ -324,6 +324,8 @@ class Seq_csv:
     self.project_id_by_name_dict = {}
     self.user_data               = []
     self.user_contact_file_content = []
+    self.user_id    = ""
+    self.project_id = ""
     
     self.parse_taxonomy()
     # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
@@ -413,17 +415,18 @@ class Seq_csv:
     return self.mysql_util.execute_insert("user", field_list, insert_user_vals)
   
   def get_id(self, rows_affected, field_name, table_name, where_part):
-    #TODO: make general for user, project etc.
+    # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
     
     if rows_affected[1] > 0:
-      self.user_id = rows_affected[1]
-    else:
-      # id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-      id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-      self.user_id = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
+      print "a"
+      id_result = int(rows_affected[1])
       
-      # r = int(self.get_user_id(id_result[1])[0][0])
-      self.utils.print_array_w_title(self.user_id, "self.user_id")
+    else:
+      print "b"
+      id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
+      id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
+    # self.utils.print_array_w_title(id_result, "=====\nid_result")
+    return id_result
     
   def parse_project_csv(self):
     project_csv_file_name = "project_ICM_SMS_Bv6.csv"
@@ -438,7 +441,7 @@ class Seq_csv:
     self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)
     
     rows_affected = self.insert_user()
-    self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
     self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
     
     # self.utils.print_array_w_title(self.user_id, "self.user_id")
@@ -463,9 +466,14 @@ class Seq_csv:
     # self.utils.print_array_w_title(sql, "sql")
         
     rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
+    
+    self.project_id = self.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
+    self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
+    
+    
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
     # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
-    return rows_affected
+    # return rows_affected
     
     # #TODO:
     # if rows_affected[1] > 0:
