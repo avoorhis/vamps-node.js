@@ -185,6 +185,7 @@ function clear_filters() {
         projectTree.deleteChildItems(0);
         //load initial
         
+        //projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0","json"); 
         projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json"); 
     
     }

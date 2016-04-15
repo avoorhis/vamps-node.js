@@ -50,7 +50,7 @@ config.PERL5LIB = '/opt/local/lib/perl5/site_perl/5.16.3/darwin-thread-multi-2le
 config.site = 'local';   // vamps ,vampsdev .....
 config.dbhost = 'localhost';
 config.hostname = os.hostname();
-config.server_port = '3001'
+config.server_port = '3000'
 config.CONTACT_EMAIL = 'avoorhis@mbl.edu'
 
 module.exports = config;
