@@ -343,11 +343,11 @@ class Seq_csv:
       
       uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
       
-      insert_taxa_query = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      self.utils.print_array_w_title(insert_taxa_query, "insert_taxa_query")
+      insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
 
-      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
-      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
+      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
+      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
     
   def parse_refhvr_ids(self):    
     for r_id in self.refhvr_ids:      
@@ -362,7 +362,8 @@ class Seq_csv:
   def insert_refhvr_id(self):
     insert_refhvr_id_query = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
     self.utils.print_array_w_title(insert_refhvr_id_query, "===\ninsert_refhvr_id_query")
-    
+    # rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
+    # self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
 
     """
     ***) simple tables:
@@ -408,7 +409,7 @@ if __name__ == '__main__':
   # uncomment:
   # seq_csv_parser.insert_seq()
   # uncomment:
-  # seq_csv_parser.insert_taxa()
+  seq_csv_parser.insert_taxa()
   seq_csv_parser.insert_refhvr_id()
   
 
