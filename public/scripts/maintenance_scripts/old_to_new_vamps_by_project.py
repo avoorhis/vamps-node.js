@@ -313,16 +313,21 @@ class Seq_csv:
     self.utils.print_array_w_title(self.taxa, "self.taxa")
     
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
+    
+    taxa_list_full = []
     for l in taxa_list:
       print len(l)
       a = [""] * (8 - len(l))
       b = l + a
       self.utils.print_array_w_title(b, "b")
       print len(b)
-      
+      taxa_list_full.append(b)
     
-    self.utils.print_array_w_title(taxa_list, "taxa_list")
-    print len(max(taxa_list, key=len))
+    self.utils.print_array_w_title(taxa_list_full, "taxa_list_full")
+    self.utils.print_array_w_title(zip(*taxa_list_full), "zip(*taxa_list_full)")
+    
+
+    # print len(max(taxa_list, key=len))
     
     # print taxa_list[-1][10]
     # for taxon_string in self.taxa:
