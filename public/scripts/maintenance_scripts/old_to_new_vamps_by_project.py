@@ -346,9 +346,8 @@ class Seq_csv:
     
   def insert_seq(self):
     comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    r = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
-    # self.utils.print_array_w_title(r, "self.mysql_util.execute_insert(sequence, comp_seq)")
-    return r[0]
+    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
   def get_taxa_by_rank(self):
     return zip(*self.taxa_list_w_empty_ranks)
@@ -374,7 +373,7 @@ class Seq_csv:
       # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
 
       rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
-      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
+      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
     
   def parse_refhvr_ids(self):    
     for r_id in self.refhvr_ids:      
@@ -422,8 +421,8 @@ class Seq_csv:
     # ['James Prosser', 'prosser', 'j.prosser@abdn.ac.uk', 'University of Aberdeen', 'James', 'Prosser', '1', '50', '7a40de8fd94d9f20fd1445ef58f65187']
     
     rows_affected = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
-    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
-    self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)")
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
+    self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
 
     
   def insert_project(self):
@@ -513,11 +512,11 @@ if __name__ == '__main__':
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
   # uncomment:
-  # seq_csv_parser.insert_seq()
+  seq_csv_parser.insert_seq()
   # uncomment:
-  # seq_csv_parser.insert_taxa()
+  seq_csv_parser.insert_taxa()
   # uncomment:
-  # seq_csv_parser.insert_refhvr_id()
+  seq_csv_parser.insert_refhvr_id()
   # uncomment:
   # seq_csv_parser.insert_project()
   # seq_csv_parser.make_project_by_name_dict()
