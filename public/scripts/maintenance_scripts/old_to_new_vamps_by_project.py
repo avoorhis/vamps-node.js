@@ -277,15 +277,8 @@ class Seq_csv:
     
     self.parse_taxonomy()
     # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
-
-    self.insert_taxa()
     
-    # self.utils.print_array_w_title(self.sequences, "self.sequences")
-    # self.utils.print_array_w_title(self.projects, "self.projects")
-    # self.utils.print_array_w_title(self.datasets, "self.datasets")
-    # self.utils.print_array_w_title(self.taxa, "self.taxa")
-    # self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
-    # self.utils.print_array_w_title(self.the_rest, "self.the_rest")
+    self.parse_refhvr_ids()
     
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
@@ -294,7 +287,6 @@ class Seq_csv:
     # print type(self.seqs_file_content)
     # <type '_csv.reader'>
         
-    # self.parse_refhvr_ids()
     
   def make_project_dataset_dictionary(self):
     return {val[3]: val[2] for val in self.seqs_file_content}
@@ -327,11 +319,11 @@ class Seq_csv:
       
       uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
       
-      insert_t_q = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_t_q, "insert_t_q")
+      insert_taxa_query = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      # self.utils.print_array_w_title(insert_taxa_query, "insert_taxa_query")
 
-      r = self.mysql_util.execute_insert(rank, rank, insert_t_q)
-      self.utils.print_array_w_title(r, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_t_q)")
+      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
+      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
     
   def parse_taxonomy(self):
 
@@ -360,18 +352,25 @@ class Seq_csv:
     #   print taxon_string.split(";")
 
 
+  def parse_refhvr_ids(self):
+    self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
+    for i in self.refhvr_ids:      
+      refhvr_ids_list = i.split()
+      self.utils.print_array_w_title(refhvr_ids_list, "refhvr_ids_list")
+      
+
     """
     ***) simple tables:
-        domain
-        family
-        genus
-        klass
-        order
-        phylum
+          domain
+          family
+          genus
+          klass
+          order
+          phylum
         refhvr_id
-        sequence
-        species
-        strain
+          sequence
+          species
+          strain
 
     ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
         project
@@ -399,8 +398,10 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
-  #uncomment
+  # uncomment:
   # seq_csv_parser.insert_seq()
+  # uncomment:
+  # seq_csv_parser.insert_taxa()
   
 
   #
