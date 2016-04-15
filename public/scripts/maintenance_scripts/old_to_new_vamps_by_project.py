@@ -391,6 +391,10 @@ class Seq_csv:
     rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
+  def get_user_id(self, username):
+    user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
+    return self.mysql_util.execute_fetch_select(user_id_query)
+    
   def parse_project_csv(self):
     project_csv_file_name = "project_ICM_SMS_Bv6.csv"
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
@@ -411,24 +415,22 @@ class Seq_csv:
     
     field_list = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
     insert_user_vals = ', '.join(["'%s'" % key for key in user_data[1:]])
-    # self.utils.print_array_w_title(insert_user_vals, "===\nself.insert_user_vals QQQ")
-    
-    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "user", field_list, insert_user_vals)
-    # print sql
-
-    #
-    #
-    # ['James Prosser', 'prosser', 'j.prosser@abdn.ac.uk', 'University of Aberdeen', 'James', 'Prosser', '1', '50', '7a40de8fd94d9f20fd1445ef58f65187']
     
     rows_affected = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
     self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
+    if rows_affected[1] > 0:
+      self.user_id = rows_affected[1]
+      # print "a"
+    else:
+      self.user_id = int(self.get_user_id(user_data[1])[0][0])
+      # print "b"
+    self.utils.print_array_w_title(self.user_id, "self.user_id")
 
     
   def insert_project(self):
     print set(self.projects)
     # TODO: get info from vamspsdb vamps_projects_info and new_project, and funding from env454?
-    # get_owner_id = SELECT user_id FROM user WHERE username='"+args.owner+"'
     # insert_project_q = "INSERT IGNORE INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public)"
     
     # execute_insert
@@ -512,11 +514,11 @@ if __name__ == '__main__':
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
   # uncomment:
-  seq_csv_parser.insert_seq()
+  # seq_csv_parser.insert_seq()
   # uncomment:
-  seq_csv_parser.insert_taxa()
+  # seq_csv_parser.insert_taxa()
   # uncomment:
-  seq_csv_parser.insert_refhvr_id()
+  # seq_csv_parser.insert_refhvr_id()
   # uncomment:
   # seq_csv_parser.insert_project()
   # seq_csv_parser.make_project_by_name_dict()
