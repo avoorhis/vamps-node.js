@@ -327,44 +327,8 @@ class Seq_csv:
     return zip(*self.taxa_list_w_empty_ranks)
     
   def parse_taxonomy(self):
-
-    # self.utils.print_array_w_title(self.taxa, "self.taxa")
-    
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
-    
-    self.taxa_list_w_empty_ranks = []
-    t0 = time.time()
     self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
-    t1 = time.time()
-    total = t1-t0
-    print "LC total = %s" % total
-    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks LC")
-    
-    self.taxa_list_w_empty_ranks = []
-    t0 = time.time()
-    # taxa_list_full = []
-    for l in taxa_list:
-      # print len(l)
-      a = [""] * (len(self.ranks) - len(l))
-      b = l + a
-      # self.utils.print_array_w_title(b, "b")
-      # print len(b)
-      self.taxa_list_w_empty_ranks.append(b)
-    t1 = time.time()
-    total = t1-t0
-    print "for total = %s" % total
-    
-    # LC total = 0.125090122223
-    # for total = 0.134382963181
-    
-    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks for")
-    
-
-    # print len(max(taxa_list, key=len))
-    
-    # print taxa_list[-1][10]
-    # for taxon_string in self.taxa:
-    #   print taxon_string.split(";")
 
   def insert_taxa(self):
     taxa_by_rank = self.get_taxa_by_rank()
@@ -385,21 +349,15 @@ class Seq_csv:
       rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
       self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
     
-  def parse_refhvr_ids(self):
-    # self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
-    
-    for i in self.refhvr_ids:      
-      refhvr_ids_list = i.split()
+  def parse_refhvr_ids(self):    
+    for r_id in self.refhvr_ids:      
+      refhvr_ids_list = r_id.split()
       self.refhvr_ids_lists.append(refhvr_ids_list)
-    #   self.utils.print_array_w_title(refhvr_ids_list, "===\nsrefhvr_ids_list")
-    # self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 1")
     
-    self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
-
-    self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists 2")
+    # self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
+    #slightly slower
     
     self.all_refhvr_ids = set(self.utils.flatten_2d_list(self.refhvr_ids_lists))
-    self.utils.print_array_w_title(self.all_refhvr_ids, "===\nself.all_refhvr_ids")
 
   def insert_refhvr_id(self):
     insert_refhvr_id_query = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
@@ -442,10 +400,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   seq_csv_parser = Seq_csv(seq_csv_file_name)
   # uncomment:
   # seq_csv_parser.insert_seq()
