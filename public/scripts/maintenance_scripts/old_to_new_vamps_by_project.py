@@ -169,12 +169,13 @@ class Mysql_util:
     if different use my_conn = Mysql_util(host, db)
     """
     def __init__(self, host="bpcweb7", db="vamps2"):
-        self.utils  = Utils()        
-        self.conn   = None
-        self.cursor = None
-        self.rows   = 0
-        self.new_id = None
+        self.utils     = Utils()        
+        self.conn      = None
+        self.cursor    = None
+        self.rows      = 0
+        self.new_id    = None
         self.lastrowid = None
+        self.rowcount  = None
         
         try:           
             self.utils.print_both("=" * 40)
@@ -319,7 +320,9 @@ class Seq_csv:
     self.refhvr_ids_lists        = []
     self.dataset_id_by_name_dict = {}
     self.project_id_by_name_dict = {}
-
+    self.user_data               = []
+    self.user_contact_file_content = []
+    
     self.parse_taxonomy()
     # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
     
@@ -394,6 +397,19 @@ class Seq_csv:
   def get_user_id(self, username):
     user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
     return self.mysql_util.execute_fetch_select(user_id_query)
+ 
+  def parse_user_contact_csv(self):
+    user_contact_csv_file_name = "user_contact.csv"
+    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
+    # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
+    
+  def insert_user(self):
+    field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
+    print "HHH"
+    print self.user_data
+    insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
+    
+    return self.mysql_util.execute_insert("user", field_list, insert_user_vals)
     
   def parse_project_csv(self):
     project_csv_file_name = "project_ICM_SMS_Bv6.csv"
@@ -405,26 +421,17 @@ class Seq_csv:
     print project
     print contact
     
-    user_contact_csv_file_name = "user_contact.csv"
-    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
-    # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
+    self.parse_user_contact_csv()
     
-    search = contact
-    data =  self.user_contact_file_content
-    user_data = self.utils.search_in_2d_list(search, data)
+    self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)
     
-    field_list = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
-    insert_user_vals = ', '.join(["'%s'" % key for key in user_data[1:]])
-    
-    rows_affected = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+    rows_affected = self.insert_user()
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
     self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
     if rows_affected[1] > 0:
       self.user_id = rows_affected[1]
-      # print "a"
     else:
-      self.user_id = int(self.get_user_id(user_data[1])[0][0])
-      # print "b"
+      self.user_id = int(self.get_user_id(self.user_data[1])[0][0])
     self.utils.print_array_w_title(self.user_id, "self.user_id")
 
     
