@@ -331,7 +331,7 @@ class Seq_csv:
     
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
     
-    self.taxa_list_w_empty_ranks = [l + [""] * (8 - len(l)) for l in taxa_list]
+    self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
     
     # taxa_list_full = []
     # for l in taxa_list:
