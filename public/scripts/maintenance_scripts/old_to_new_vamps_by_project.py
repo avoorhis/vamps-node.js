@@ -243,6 +243,8 @@ class Utils:
     def read_csv_into_list(self, file_name):
       return list(csv.reader(open(seq_csv_file_name, 'rb'), delimiter=','))[1:]
 
+    def flatten_2d_list(self, list):
+      return [item for sublist in list for item in sublist]
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -266,14 +268,16 @@ class Seq_csv:
     self.project_dataset_dict = self.make_project_dataset_dictionary()
     # self.seq_list             = self.make_seq_list()
     content_by_field = self.content_matrix_transposition()
-    self.sequences  = content_by_field[1]
-    self.projects   = content_by_field[2]
-    self.datasets   = content_by_field[3]
-    self.taxa       = content_by_field[4]
-    self.refhvr_ids = content_by_field[5]
-    self.the_rest   = content_by_field[6:]
+    self.sequences   = content_by_field[1]
+    self.projects    = content_by_field[2]
+    self.datasets    = content_by_field[3]
+    self.taxa        = content_by_field[4]
+    self.refhvr_ids  = content_by_field[5]
+    self.the_rest    = content_by_field[6:]
     
     self.taxa_list_w_empty_ranks = []
+    self.all_refhvr_ids          = set()
+    self.refhvr_ids_lists        = []
     
     self.parse_taxonomy()
     # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
@@ -306,25 +310,6 @@ class Seq_csv:
   def get_taxa_by_rank(self):
     return zip(*self.taxa_list_w_empty_ranks)
     
-  def insert_taxa(self):
-    taxa_by_rank = self.get_taxa_by_rank()
-        
-    """
-    TODO: make all queries, then insert all? Benchmark!
-    """
-    for rank in self.ranks:
-      self.utils.print_array_w_title(rank, "rank")
-      rank_num = self.ranks.index(rank)
-      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
-      
-      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
-      
-      insert_taxa_query = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_taxa_query, "insert_taxa_query")
-
-      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
-      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
-    
   def parse_taxonomy(self):
 
     # self.utils.print_array_w_title(self.taxa, "self.taxa")
@@ -351,13 +336,41 @@ class Seq_csv:
     # for taxon_string in self.taxa:
     #   print taxon_string.split(";")
 
+  def insert_taxa(self):
+    taxa_by_rank = self.get_taxa_by_rank()
+        
+    """
+    TODO: make all queries, then insert all? Benchmark!
+    """
+    for rank in self.ranks:
+      self.utils.print_array_w_title(rank, "rank")
+      rank_num = self.ranks.index(rank)
+      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
+      
+      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
+      
+      insert_taxa_query = "%s" % '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      self.utils.print_array_w_title(insert_taxa_query, "insert_taxa_query")
 
+      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_query)
+      self.utils.print_array_w_title(rows_affected, "rows affected by self.mysql_util.execute_insert(rank, rank, insert_taxa_query)")
+    
   def parse_refhvr_ids(self):
     self.utils.print_array_w_title(self.refhvr_ids, "self.refhvr_ids")
     for i in self.refhvr_ids:      
       refhvr_ids_list = i.split()
-      self.utils.print_array_w_title(refhvr_ids_list, "refhvr_ids_list")
-      
+      self.refhvr_ids_lists.append(refhvr_ids_list)
+      self.utils.print_array_w_title(refhvr_ids_list, "===\nsrefhvr_ids_list")
+    self.utils.print_array_w_title(self.refhvr_ids_lists, "===\nself.refhvr_ids_lists")
+    
+    flat_refhvr_ids_list = self.utils.flatten_2d_list(self.refhvr_ids_lists)
+    self.utils.print_array_w_title(set(flat_refhvr_ids_list), "===\nset(flat_refhvr_ids_list")
+    self.utils.print_array_w_title(self.all_refhvr_ids, "===\nself.all_refhvr_ids")
+
+  def insert_refhvr_id(self):
+    insert_refhvr_id_query = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
+    self.utils.print_array_w_title(insert_refhvr_id_query, "===\ninsert_refhvr_id_query")
+    
 
     """
     ***) simple tables:
@@ -402,6 +415,7 @@ if __name__ == '__main__':
   # seq_csv_parser.insert_seq()
   # uncomment:
   # seq_csv_parser.insert_taxa()
+  seq_csv_parser.insert_refhvr_id()
   
 
   #
