@@ -336,7 +336,15 @@ class Seq_csv:
     
     self.parse_refhvr_ids()
     
-    self.parse_project_csv()
+    contact = self.parse_project_csv()
+    self.parse_user_contact_csv()
+    self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)    
+    
+    # rows_affected = self.insert_user()
+    # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    #
+    # self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
+    
     
     # self.utils.print_array_w_title(list(self.seqs_file_content))
     # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
@@ -416,7 +424,9 @@ class Seq_csv:
     field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
     insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     
-    return self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+    rows_affected    = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+    self.user_id     = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    # self.utils.print_array_w_title(self.user_id, "self.user_id AAA")
   
   def get_id(self, rows_affected, field_name, table_name, where_part):
     # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
@@ -428,7 +438,7 @@ class Seq_csv:
       # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
       
       id_result = int(self.mysql_util.execute_simple_select(field_name, table_name, where_part)[0][0])
-    self.utils.print_array_w_title(id_result, "=====\nid_result IN")
+    # self.utils.print_array_w_title(id_result, "=====\nid_result IN")
     return id_result
     
   def parse_project_csv(self):
@@ -438,14 +448,9 @@ class Seq_csv:
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
     self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
     contact = self.project_file_content[0][5]
-    print contact
+    return contact
     
-    self.parse_user_contact_csv()
-    self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)
-    
-    rows_affected = self.insert_user()
-    self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
+
     
     # self.utils.print_array_w_title(self.user_id, "self.user_id")
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
@@ -457,6 +462,8 @@ class Seq_csv:
     # else:
     #   self.user_id = int(self.get_user_id(self.user_data[1])[0][0])
     # self.utils.print_array_w_title(self.user_id, "self.user_id")
+  
+  
 
   def insert_project(self):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
@@ -471,7 +478,7 @@ class Seq_csv:
     rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
     
     self.project_id = self.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
-    self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
+    # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
     
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
     # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
@@ -504,24 +511,27 @@ class Seq_csv:
     
   def insert_dataset(self):
     #TODO: get env_sample_source_id from new_project, env_source_id from vamps_projects_info
-    print set(self.datasets)
+    # print set(self.datasets)
     # fields: dataset, dataset_description, env_sample_source_id, project_id
     # self.utils.print_array_w_title(self.dataset_id_by_name_dict, "dataset_id_by_name_dict")
     # self.utils.print_array_w_title(self.project_id_by_name_dict, "project_id_by_name_dict")
-    self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
+    # self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
     
-    for p in set(self.projects):
-      print self.project_id_by_name_dict[p]
-      
-    for d, pr in self.project_dataset_dict.items():
-      print d
-      print pr
-      print int(self.project_id_by_name_dict[pr])
-    insert_dataset_q = "INSERT IGNORE INTO dataset (dataset, dataset_description, env_sample_source_id, project_id) VALUES ()"
-      
-      # self.project_dataset_dict[d].append(self.project_id_by_name_dict[p])
-
-    self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
+    # for p in set(self.projects):
+    #   print self.project_id_by_name_dict[p]
+    #
+    # for d, pr in self.project_dataset_dict.items():
+    #   print d
+    #   print pr
+    #   print int(self.project_id_by_name_dict[pr])
+    # insert_dataset_q = "INSERT IGNORE INTO dataset (dataset, dataset_description, env_sample_source_id, project_id) VALUES ()"
+    #
+    #   # self.project_dataset_dict[d].append(self.project_id_by_name_dict[p])
+    #
+    # self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
+    self.utils.print_array_w_title(self.user_id, "self.user_id dat")
+    self.utils.print_array_w_title(self.project_id, "self.project_id dat")
+    
 
     """
     ***) simple tables:
@@ -571,10 +581,16 @@ if __name__ == '__main__':
   # uncomment:
   # seq_csv_parser.insert_refhvr_id()
   # uncomment:
+  seq_csv_parser.insert_user()
+  seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
+  # uncomment:
   seq_csv_parser.insert_project()
+  
+  seq_csv_parser.utils.print_array_w_title(seq_csv_parser.project_id, "self.project_id main")
+  seq_csv_parser.insert_dataset()
+
   # seq_csv_parser.make_project_by_name_dict()
   #
-  # seq_csv_parser.insert_dataset()
   # seq_csv_parser.make_dataset_by_name_dict()
 
   #
