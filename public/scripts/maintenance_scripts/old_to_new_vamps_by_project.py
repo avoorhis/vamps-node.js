@@ -132,6 +132,7 @@ strain
     silva_taxonomy
     species
     strain
+    user
 
 ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
     project
@@ -545,9 +546,10 @@ class Seq_csv:
           sequence
           species
           strain
+          user
 
     ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
-        project
+          project
         dataset
         sequence_pdr_info
         silva_taxonomy
