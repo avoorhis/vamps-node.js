@@ -201,8 +201,8 @@ class Mysql_util:
             raise                       # re-throw caught exception   
 
     def execute_fetch_select(self, sql):
-      print "+" * 20
-      print sql
+      # print "+" * 20
+      # print sql
       if self.cursor:
         try:
           self.cursor.execute(sql)
@@ -233,12 +233,16 @@ class Mysql_util:
         self.utils.print_both(("ERROR: query = %s") % sql)
         raise
        
-    def get_all_name_id(self, table_name):
-      id_name = table_name + '_id'
-      my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
-      res     = self.execute_fetch_select(my_sql)
-      if res:
-        return res
+    # def get_all_name_id(self, table_name):
+    #   id_name = table_name + '_id'
+    #   my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
+    #   res     = self.execute_fetch_select(my_sql)
+    #   if res:
+    #     return res
+        
+    def execute_simple_select(self, field_name, table_name, where_part):
+      id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
+      return self.execute_fetch_select(id_query)
 
 class Utils:
     def __init__(self):
@@ -418,14 +422,13 @@ class Seq_csv:
     # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
     
     if rows_affected[1] > 0:
-      print "a"
       id_result = int(rows_affected[1])
-      
     else:
-      print "b"
-      id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-      id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
-    # self.utils.print_array_w_title(id_result, "=====\nid_result")
+      # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
+      # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
+      
+      id_result = int(self.mysql_util.execute_simple_select(field_name, table_name, where_part)[0][0])
+    self.utils.print_array_w_title(id_result, "=====\nid_result IN")
     return id_result
     
   def parse_project_csv(self):
@@ -470,22 +473,17 @@ class Seq_csv:
     self.project_id = self.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
     self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
     
-    
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
     # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
     # return rows_affected
     
-    # #TODO:
     # if rows_affected[1] > 0:
     #   self.project_id = rows_affected[1]
     # else:
     #   self.project_id = int(self.get_project_id(self.project_data[1])[0][0])
     # self.utils.print_array_w_title(self.project_id, "self.project_id")
-    
-    
+        
     # print set(self.projects)
-    # TODO: get info from vamspsdb vamps_projects_info and new_project, and funding from env454?
-    # insert_project_q = "INSERT IGNORE INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public)"
     
         
   def parse_env_sample_source_id(self):
@@ -496,13 +494,13 @@ class Seq_csv:
     # TODO: check env_source_id/env_sample_source_id in project, if not in env_sample_source_id.csv - change to 0
     pass
 
-  def make_dataset_by_name_dict(self):
-    datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
-    self.dataset_id_by_name_dict = dict(datasets_w_ids)
-
-  def make_project_by_name_dict(self):
-    projects_w_ids = self.mysql_util.get_all_name_id('project')
-    self.project_id_by_name_dict = dict(projects_w_ids)
+  # def make_dataset_by_name_dict(self):
+  #   datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
+  #   self.dataset_id_by_name_dict = dict(datasets_w_ids)
+  #
+  # def make_project_by_name_dict(self):
+  #   projects_w_ids = self.mysql_util.get_all_name_id('project')
+  #   self.project_id_by_name_dict = dict(projects_w_ids)
     
   def insert_dataset(self):
     #TODO: get env_sample_source_id from new_project, env_source_id from vamps_projects_info
