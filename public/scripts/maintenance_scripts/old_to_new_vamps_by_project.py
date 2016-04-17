@@ -245,6 +245,20 @@ class Mysql_util:
     def execute_simple_select(self, field_name, table_name, where_part):
       id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
       return self.execute_fetch_select(id_query)
+      
+    def get_id(self, rows_affected, field_name, table_name, where_part):
+      # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
+    
+      if rows_affected[1] > 0:
+        id_result = int(rows_affected[1])
+      else:
+        # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
+        # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
+      
+        id_result = int(self.execute_simple_select(field_name, table_name, where_part)[0][0])
+      # self.utils.print_array_w_title(id_result, "=====\nid_result IN")
+      return id_result
+    
 
 class Utils:
     def __init__(self):
@@ -291,6 +305,7 @@ class Utils:
           return sublist
           break
 
+
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
     self.utils      = Utils() 
@@ -329,13 +344,14 @@ class Taxonomy:
       self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
       
 class Refhvr_id:
+
   def __init__(self, refhvr_id, mysql_util):
     self.utils      = Utils() 
     self.mysql_util = mysql_util
-    self.refhvr_id = refhvr_id
+    self.refhvr_id  = refhvr_id
     
-    self.all_refhvr_id          = set()
-    self.refhvr_id_lists        = []
+    self.all_refhvr_id   = set()
+    self.refhvr_id_lists = []
     
   def parse_refhvr_id(self):    
     for r_id in self.refhvr_id:      
@@ -354,10 +370,92 @@ class Refhvr_id:
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
 class User:
-  def __init__(self, refhvr_id, mysql_util):
+  def __init__(self, contact, mysql_util):
     self.utils      = Utils() 
     self.mysql_util = mysql_util
-    self.refhvr_id = refhvr_id
+    self.user_data               = []
+    self.user_contact_file_content = []
+    self.user_id    = ""
+    self.contact    = contact
+    
+    self.parse_user_contact_csv()
+    self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)    
+
+    # rows_affected = self.insert_user()
+    # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    #
+    # self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
+    
+    
+    # self.utils.print_array_w_title(list(self.seqs_file_content))
+    # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
+    
+  def get_user_id(self, username):
+    #TODO: make general for user, project etc.
+    user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
+    return self.mysql_util.execute_fetch_select(user_id_query)
+ 
+  def parse_user_contact_csv(self):
+    user_contact_csv_file_name = "user_contact.csv"
+    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
+    # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
+    
+  def insert_user(self):
+    field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
+    insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
+    
+    rows_affected    = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
+    self.user_id     = self.mysql_util.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    self.utils.print_array_w_title(self.user_id, "self.user_id AAA")
+  
+class Project:
+  
+  def __init__(self, mysql_util):
+    self.utils      = Utils() 
+    self.mysql_util = mysql_util
+    self.contact    = ""
+    self.project_id = ""
+    self.user_id    = ""
+    
+  def parse_project_csv(self):
+    project_csv_file_name = "project_ICM_SMS_Bv6.csv"
+    # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
+    
+    self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
+    self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
+    self.contact = self.project_file_content[0][5]
+    
+  def insert_project(self, user_id):
+    project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
+    
+    field_list       = "project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id"
+    insert_user_vals = ', '.join("'%s'" % key for key in [project, title, project_description])
+    insert_user_vals += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
+
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_user_vals)
+    # self.utils.print_array_w_title(sql, "sql")
+        
+    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
+    
+    self.project_id = self.mysql_util.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
+    # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
+    
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
+    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
+    # return rows_affected
+    
+    # if rows_affected[1] > 0:
+    #   self.project_id = rows_affected[1]
+    # else:
+    #   self.project_id = int(self.get_project_id(self.project_data[1])[0][0])
+    # self.utils.print_array_w_title(self.project_id, "self.project_id")
+        
+    # print set(self.projects)
+  
+
+class Dataset:
+  pass
+    
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -386,30 +484,13 @@ class Seq_csv:
     self.projects    = content_by_field[2]
     self.datasets    = content_by_field[3]
     self.taxa        = content_by_field[4]
-    self.refhvr_id  = content_by_field[5]
+    self.refhvr_id   = content_by_field[5]
     self.the_rest    = content_by_field[6:]
     
     self.dataset_id_by_name_dict = {}
     self.project_id_by_name_dict = {}
-    self.user_data               = []
-    self.user_contact_file_content = []
-    self.user_id    = ""
-    self.project_id = ""
     
 
-    
-    contact = self.parse_project_csv()
-    self.parse_user_contact_csv()
-    self.user_data = self.utils.search_in_2d_list(contact, self.user_contact_file_content)    
-    
-    # rows_affected = self.insert_user()
-    # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    #
-    # self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
-    
-    
-    # self.utils.print_array_w_title(list(self.seqs_file_content))
-    # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
     
     # print "MMM"
     # print type(self.seqs_file_content)
@@ -430,48 +511,9 @@ class Seq_csv:
     rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
-  def get_user_id(self, username):
-    #TODO: make general for user, project etc.
-    user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-    return self.mysql_util.execute_fetch_select(user_id_query)
- 
-  def parse_user_contact_csv(self):
-    user_contact_csv_file_name = "user_contact.csv"
-    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
-    # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
-    
-  def insert_user(self):
-    field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
-    insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
-    
-    rows_affected    = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
-    self.user_id     = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    # self.utils.print_array_w_title(self.user_id, "self.user_id AAA")
-  
-  def get_id(self, rows_affected, field_name, table_name, where_part):
-    # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
-    
-    if rows_affected[1] > 0:
-      id_result = int(rows_affected[1])
-    else:
-      # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-      # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
-      
-      id_result = int(self.mysql_util.execute_simple_select(field_name, table_name, where_part)[0][0])
-    # self.utils.print_array_w_title(id_result, "=====\nid_result IN")
-    return id_result
-    
-  def parse_project_csv(self):
-    project_csv_file_name = "project_ICM_SMS_Bv6.csv"
-    # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
-    
-    self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
-    self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
-    contact = self.project_file_content[0][5]
-    return contact
-    
 
-    
+
+
     # self.utils.print_array_w_title(self.user_id, "self.user_id")
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
     # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
@@ -485,32 +527,6 @@ class Seq_csv:
   
   
 
-  def insert_project(self):
-    project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
-    
-    field_list       = "project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id"
-    insert_user_vals = ', '.join("'%s'" % key for key in [project, title, project_description])
-    insert_user_vals += ", REVERSE('%s'), '%s', %s" % (project, funding, self.user_id)
-
-    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_user_vals)
-    # self.utils.print_array_w_title(sql, "sql")
-        
-    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
-    
-    self.project_id = self.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
-    # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
-    
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
-    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
-    # return rows_affected
-    
-    # if rows_affected[1] > 0:
-    #   self.project_id = rows_affected[1]
-    # else:
-    #   self.project_id = int(self.get_project_id(self.project_data[1])[0][0])
-    # self.utils.print_array_w_title(self.project_id, "self.project_id")
-        
-    # print set(self.projects)
     
         
   def parse_env_sample_source_id(self):
@@ -549,8 +565,8 @@ class Seq_csv:
     #   # self.project_dataset_dict[d].append(self.project_id_by_name_dict[p])
     #
     # self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
-    self.utils.print_array_w_title(self.user_id, "self.user_id dat")
-    self.utils.print_array_w_title(self.project_id, "self.project_id dat")
+    # self.utils.print_array_w_title(self.user_id, "self.user_id dat")
+    # self.utils.print_array_w_title(self.project_id, "self.project_id dat")
     
 
     """
@@ -600,7 +616,8 @@ if __name__ == '__main__':
   # seq_csv_parser = Seq_csv(seq_csv_file_name)
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
-  refhvr_id     = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  project        = Project(mysql_util)
 
   # uncomment:
   # seq_csv_parser.insert_seq()
@@ -612,15 +629,19 @@ if __name__ == '__main__':
   
   refhvr_id.parse_refhvr_id()
   # uncomment:
-  refhvr_id.insert_refhvr_id()
+  # refhvr_id.insert_refhvr_id()
+  
+  project.parse_project_csv()
+  user           = User(project.contact, mysql_util)
   
   # uncomment:
-  seq_csv_parser.insert_user()
-  seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
+  user.insert_user()
   # uncomment:
-  seq_csv_parser.insert_project()
+  # seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
+  # uncomment:
+  project.insert_project(user.user_id)
   
-  seq_csv_parser.utils.print_array_w_title(seq_csv_parser.project_id, "self.project_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
   seq_csv_parser.insert_dataset()
 
   # seq_csv_parser.make_project_by_name_dict()
