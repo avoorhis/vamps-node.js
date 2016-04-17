@@ -329,32 +329,38 @@ class Taxonomy:
       self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
       
 class Refhvr_id:
-  def __init__(self, refhvr_ids, mysql_util):
+  def __init__(self, refhvr_id, mysql_util):
     self.utils      = Utils() 
     self.mysql_util = mysql_util
-    self.refhvr_ids = refhvr_ids
+    self.refhvr_id = refhvr_id
     
-    self.all_refhvr_ids          = set()
-    self.refhvr_ids_lists        = []
+    self.all_refhvr_id          = set()
+    self.refhvr_id_lists        = []
     
-  def parse_refhvr_ids(self):    
-    for r_id in self.refhvr_ids:      
-      refhvr_ids_list = r_id.split()
-      self.refhvr_ids_lists.append(refhvr_ids_list)
+  def parse_refhvr_id(self):    
+    for r_id in self.refhvr_id:      
+      refhvr_id_list = r_id.split()
+      self.refhvr_id_lists.append(refhvr_id_list)
   
-    # self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
+    # self.refhvr_id_lists = [r_id.split() for r_id in self.refhvr_id]
     #slightly slower
   
-    self.all_refhvr_ids = set(self.utils.flatten_2d_list(self.refhvr_ids_lists))
+    self.all_refhvr_id = set(self.utils.flatten_2d_list(self.refhvr_id_lists))
 
   def insert_refhvr_id(self):
-    insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
+    insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
     # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
     rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
+class User:
+  def __init__(self, refhvr_id, mysql_util):
+    self.utils      = Utils() 
+    self.mysql_util = mysql_util
+    self.refhvr_id = refhvr_id
+
 class Seq_csv:
-  # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
+  # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
   # upload
   """   
@@ -380,7 +386,7 @@ class Seq_csv:
     self.projects    = content_by_field[2]
     self.datasets    = content_by_field[3]
     self.taxa        = content_by_field[4]
-    self.refhvr_ids  = content_by_field[5]
+    self.refhvr_id  = content_by_field[5]
     self.the_rest    = content_by_field[6:]
     
     self.dataset_id_by_name_dict = {}
@@ -594,7 +600,7 @@ if __name__ == '__main__':
   # seq_csv_parser = Seq_csv(seq_csv_file_name)
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
-  refhvr_ids     = Refhvr_id(seq_csv_parser.refhvr_ids, mysql_util)
+  refhvr_id     = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
 
   # uncomment:
   # seq_csv_parser.insert_seq()
@@ -603,9 +609,11 @@ if __name__ == '__main__':
   # print taxonomy.taxa_list_w_empty_ranks
   # uncomment:
   # taxonomy.insert_taxa()
-  refhvr_ids.parse_refhvr_ids()
+  
+  refhvr_id.parse_refhvr_id()
   # uncomment:
-  refhvr_ids.insert_refhvr_id()
+  refhvr_id.insert_refhvr_id()
+  
   # uncomment:
   seq_csv_parser.insert_user()
   seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
