@@ -370,16 +370,17 @@ class Refhvr_id:
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
 class User:
-  def __init__(self, contact, mysql_util):
+  def __init__(self, contact, user_contact_csv_file_name, mysql_util):
     self.utils      = Utils() 
     self.mysql_util = mysql_util
-    self.user_data               = []
     self.user_contact_file_content = []
     self.user_id    = ""
     self.contact    = contact
+    self.user_contact_csv_file_name = user_contact_csv_file_name
     
-    self.parse_user_contact_csv()
+    self.parse_user_contact_csv(self.user_contact_csv_file_name)
     self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)    
+    self.utils.print_array_w_title(self.user_data, "===\nSSS self.user_data in User")
 
     # rows_affected = self.insert_user()
     # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
@@ -395,8 +396,10 @@ class User:
     user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
     return self.mysql_util.execute_fetch_select(user_id_query)
  
-  def parse_user_contact_csv(self):
-    user_contact_csv_file_name = "user_contact.csv"
+  def parse_user_contact_csv(self, user_contact_csv_file_name):
+    # user_contact_csv_file_name = "user_contact.csv"
+    # self.utils.print_array_w_title(user_contact_csv_file_name, "===\nuser_contact_csv_file_name YYY")
+
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
     
@@ -610,6 +613,7 @@ if __name__ == '__main__':
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  user_contact_csv_file_name = "user_contact.csv"
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
 
@@ -632,7 +636,7 @@ if __name__ == '__main__':
   # refhvr_id.insert_refhvr_id()
   
   project.parse_project_csv()
-  user           = User(project.contact, mysql_util)
+  user           = User(project.contact, user_contact_csv_file_name, mysql_util)
   
   # uncomment:
   user.insert_user()
