@@ -397,9 +397,6 @@ class User:
     return self.mysql_util.execute_fetch_select(user_id_query)
  
   def parse_user_contact_csv(self, user_contact_csv_file_name):
-    # user_contact_csv_file_name = "user_contact.csv"
-    # self.utils.print_array_w_title(user_contact_csv_file_name, "===\nuser_contact_csv_file_name YYY")
-
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
     
@@ -420,8 +417,8 @@ class Project:
     self.project_id = ""
     self.user_id    = ""
     
-  def parse_project_csv(self):
-    project_csv_file_name = "project_ICM_SMS_Bv6.csv"
+  def parse_project_csv(self, project_csv_file_name):
+    # project_csv_file_name = "project_ICM_SMS_Bv6.csv"
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
     
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
@@ -614,6 +611,8 @@ if __name__ == '__main__':
   # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
+  project_csv_file_name = "project_ICM_SMS_Bv6.csv"
+  
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
 
@@ -635,7 +634,7 @@ if __name__ == '__main__':
   # uncomment:
   # refhvr_id.insert_refhvr_id()
   
-  project.parse_project_csv()
+  project.parse_project_csv(project_csv_file_name)
   user           = User(project.contact, user_contact_csv_file_name, mysql_util)
   
   # uncomment:
