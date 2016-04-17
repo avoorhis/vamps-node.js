@@ -327,6 +327,31 @@ class Taxonomy:
 
       rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
       self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+      
+class Refhvr_id:
+  def __init__(self, refhvr_ids, mysql_util):
+    self.utils      = Utils() 
+    self.mysql_util = mysql_util
+    self.refhvr_ids = refhvr_ids
+    
+    self.all_refhvr_ids          = set()
+    self.refhvr_ids_lists        = []
+    
+  def parse_refhvr_ids(self):    
+    for r_id in self.refhvr_ids:      
+      refhvr_ids_list = r_id.split()
+      self.refhvr_ids_lists.append(refhvr_ids_list)
+  
+    # self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
+    #slightly slower
+  
+    self.all_refhvr_ids = set(self.utils.flatten_2d_list(self.refhvr_ids_lists))
+
+  def insert_refhvr_id(self):
+    insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
+    # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
+    rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
+    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -337,6 +362,7 @@ class Seq_csv:
     get host and db dynamically, from args
     make one connection, in main?
   """  
+  
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name, mysql_util):
     self.utils      = Utils() 
@@ -357,8 +383,6 @@ class Seq_csv:
     self.refhvr_ids  = content_by_field[5]
     self.the_rest    = content_by_field[6:]
     
-    self.all_refhvr_ids          = set()
-    self.refhvr_ids_lists        = []
     self.dataset_id_by_name_dict = {}
     self.project_id_by_name_dict = {}
     self.user_data               = []
@@ -367,8 +391,6 @@ class Seq_csv:
     self.project_id = ""
     
 
-    
-    self.parse_refhvr_ids()
     
     contact = self.parse_project_csv()
     self.parse_user_contact_csv()
@@ -401,23 +423,6 @@ class Seq_csv:
     comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
     rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
-    
-
-  def parse_refhvr_ids(self):    
-    for r_id in self.refhvr_ids:      
-      refhvr_ids_list = r_id.split()
-      self.refhvr_ids_lists.append(refhvr_ids_list)
-    
-    # self.refhvr_ids_lists = [r_id.split() for r_id in self.refhvr_ids]
-    #slightly slower
-    
-    self.all_refhvr_ids = set(self.utils.flatten_2d_list(self.refhvr_ids_lists))
-
-  def insert_refhvr_id(self):
-    insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_ids])
-    # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
-    rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
   def get_user_id(self, username):
     #TODO: make general for user, project etc.
@@ -586,21 +591,21 @@ if __name__ == '__main__':
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
 
-
   # seq_csv_parser = Seq_csv(seq_csv_file_name)
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
+  refhvr_ids     = Refhvr_id(seq_csv_parser.refhvr_ids, mysql_util)
 
   # uncomment:
   # seq_csv_parser.insert_seq()
-  # uncomment:
-
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
-  taxonomy.insert_taxa()
   # uncomment:
-  # seq_csv_parser.insert_refhvr_id()
+  # taxonomy.insert_taxa()
+  refhvr_ids.parse_refhvr_ids()
+  # uncomment:
+  refhvr_ids.insert_refhvr_id()
   # uncomment:
   seq_csv_parser.insert_user()
   seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
