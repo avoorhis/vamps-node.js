@@ -12,6 +12,7 @@
 #
 """
 TODO:
+*) split into smaller classes - by table
 *) add benchmarks
     t0 = time.time()
     t1 = time.time()
@@ -290,7 +291,43 @@ class Utils:
           return sublist
           break
 
+class Taxonomy:
+  def __init__(self, taxa_content, mysql_util):
+    self.utils      = Utils() 
+    #TODO: make dynamic by checking if it's local
+    # self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+    
+    self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
+    self.taxa_list_w_empty_ranks = []
+    self.taxa_content = taxa_content
+    self.mysql_util   = mysql_util
+    
+  def get_taxa_by_rank(self):
+    return zip(*self.taxa_list_w_empty_ranks)
+    
+  def parse_taxonomy(self):
+    taxa_list = [taxon_string.split(";") for taxon_string in self.taxa_content]
+    self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
 
+  def insert_taxa(self):
+    taxa_by_rank = self.get_taxa_by_rank()
+        
+    """
+    TODO: make all queries, then insert all? Benchmark!
+    """
+    for rank in self.ranks:
+      self.utils.print_array_w_title(rank, "rank")
+      rank_num = self.ranks.index(rank)
+      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
+      
+      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
+      
+      insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
+
+      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
+      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+    
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_ids, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
@@ -301,13 +338,11 @@ class Seq_csv:
     make one connection, in main?
   """  
   # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
-  def __init__(self, seq_csv_file_name):
+  def __init__(self, seq_csv_file_name, mysql_util):
     self.utils      = Utils() 
     #TODO: make dynamic by checking if it's local
-    self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
-    
-    self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
-
+    # self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+    self.mysql_util   = mysql_util
     
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     # self.project_dataset_dict = defaultdict(list)
@@ -322,7 +357,6 @@ class Seq_csv:
     self.refhvr_ids  = content_by_field[5]
     self.the_rest    = content_by_field[6:]
     
-    self.taxa_list_w_empty_ranks = []
     self.all_refhvr_ids          = set()
     self.refhvr_ids_lists        = []
     self.dataset_id_by_name_dict = {}
@@ -332,8 +366,7 @@ class Seq_csv:
     self.user_id    = ""
     self.project_id = ""
     
-    self.parse_taxonomy()
-    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks")
+
     
     self.parse_refhvr_ids()
     
@@ -369,32 +402,7 @@ class Seq_csv:
     rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
-  def get_taxa_by_rank(self):
-    return zip(*self.taxa_list_w_empty_ranks)
-    
-  def parse_taxonomy(self):
-    taxa_list = [taxon_string.split(";") for taxon_string in self.taxa]
-    self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
 
-  def insert_taxa(self):
-    taxa_by_rank = self.get_taxa_by_rank()
-        
-    """
-    TODO: make all queries, then insert all? Benchmark!
-    """
-    for rank in self.ranks:
-      self.utils.print_array_w_title(rank, "rank")
-      rank_num = self.ranks.index(rank)
-      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
-      
-      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
-      
-      insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
-
-      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
-      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
-    
   def parse_refhvr_ids(self):    
     for r_id in self.refhvr_ids:      
       refhvr_ids_list = r_id.split()
@@ -575,11 +583,22 @@ if __name__ == '__main__':
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
-  seq_csv_parser = Seq_csv(seq_csv_file_name)
+
+  mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+
+
+  # seq_csv_parser = Seq_csv(seq_csv_file_name)
+  seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
+  taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
+
   # uncomment:
   # seq_csv_parser.insert_seq()
   # uncomment:
-  # seq_csv_parser.insert_taxa()
+
+  taxonomy.parse_taxonomy()
+  # print  "taxa_list_w_empty_ranks RRR"
+  # print taxonomy.taxa_list_w_empty_ranks
+  taxonomy.insert_taxa()
   # uncomment:
   # seq_csv_parser.insert_refhvr_id()
   # uncomment:
