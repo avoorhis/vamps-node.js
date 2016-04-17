@@ -406,7 +406,6 @@ class User:
     
     rows_affected    = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
     self.user_id     = self.mysql_util.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    self.utils.print_array_w_title(self.user_id, "self.user_id AAA")
   
 class Project:
   
@@ -418,7 +417,6 @@ class Project:
     self.user_id    = ""
     
   def parse_project_csv(self, project_csv_file_name):
-    # project_csv_file_name = "project_ICM_SMS_Bv6.csv"
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
     
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
@@ -500,17 +498,19 @@ class Seq_csv:
   def make_project_dataset_dictionary(self):
     self.project_dataset_dict = {val[3]: val[2] for val in self.seqs_file_content}
 
-  def make_seq_list(self):
-    self.seq_list = [val[1] for val in self.seqs_file_content]
-
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
+
+  # to seq class:
+  def make_seq_list(self):
+    self.seq_list = [val[1] for val in self.seqs_file_content]
     
   def insert_seq(self):
     comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
     rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
     self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
+  # to seq class end
 
 
 
@@ -595,8 +595,6 @@ class Seq_csv:
         silva_taxonomy_info_per_seq
     
     """
-    
-
 
 class Metadata_csv:
   #parameterName, parameterValue, units, miens_units, project, units_id, structured_comment_name, method, other, notes, ts, entry_date, parameter_id, project_dataset
@@ -635,7 +633,7 @@ if __name__ == '__main__':
   # refhvr_id.insert_refhvr_id()
   
   project.parse_project_csv(project_csv_file_name)
-  user           = User(project.contact, user_contact_csv_file_name, mysql_util)
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)
   
   # uncomment:
   user.insert_user()
@@ -643,17 +641,12 @@ if __name__ == '__main__':
   # seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
   # uncomment:
   project.insert_project(user.user_id)
+  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
   
-  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  
   seq_csv_parser.insert_dataset()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.make_dataset_by_name_dict()
-
-  #
-  # mysql_conn = MySQLdb.connect(host="localhost", # your host, usually localhost
-  #                       db = NODE_DATABASE,
-  #                       read_default_file="~/.my.cnf_node"  )
-  # cur = mysql_conn.cursor()
-  # my_class           = Old_vamps_data(mysql_conn)
