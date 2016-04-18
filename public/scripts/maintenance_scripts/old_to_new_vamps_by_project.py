@@ -11,7 +11,6 @@
 # Please read the COPYING file.
 #
 """
-<<<<<<< HEAD
 TODO:
 *) split into smaller classes - by table
 *) add benchmarks
@@ -25,14 +24,11 @@ TODO:
   time_res = timeit.timeit(wrapped, number=1)
   
 
-=======
->>>>>>> master
 *) cd vamps-node.js/public/scripts/maintenance_scripts; time python old_to_new_vamps_by_project.py -s sequences.csv -m metadata.csv -owner admin -p "ICM_AGW_Bv6"
 
 *) Utils, connection - classes for all
 
 *)
-<<<<<<< HEAD
 mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
 
 mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
@@ -58,13 +54,6 @@ parameterName, parameterValue, units, miens_units, project, units_id, structured
 
 *) beforehand
 TODO: create from a file, not from db? See the original script
-=======
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\"\t\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata.csv
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences.csv
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='DCO_BOM_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences.csv
-
-*) beforehand
->>>>>>> master
 access
 classifier
 dataset
@@ -93,7 +82,6 @@ user
 user_project
 user_project_status
 
-<<<<<<< HEAD
 1) on a server:
 mysqldump -u ashipunova -h vampsdb vamps2 access classifier dataset domain env_sample_source family genus gg_otu gg_taxonomy klass oligotype order phylum project rank species strain user user_project user_project_status >vampsdb_vamps2_part1.sql
 2) on local:
@@ -662,21 +650,3 @@ if __name__ == '__main__':
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.make_dataset_by_name_dict()
-=======
-*) from sequences.csv
-ref_silva_taxonomy_info_per_seq_refhvr_id
-refhvr_id
-sequence
-sequence_pdr_info
-sequence_uniq_info
-silva_taxonomy
-silva_taxonomy_info_per_seq
-
-*)
-from metadata.csv
-required_metadata_info
-custom_metadata_fields
-custom_metadata_#
-
-"""
->>>>>>> master
