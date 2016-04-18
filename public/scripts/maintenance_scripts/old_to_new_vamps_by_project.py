@@ -452,7 +452,17 @@ class Project:
   
 
 class Dataset:
-  pass
+  def __init__(self, mysql_util):
+     self.utils      = Utils() 
+     self.mysql_util = mysql_util
+     self.project_id = ""
+
+  def parse_dataset_csv(self, dataset_csv_file_name):
+   # "dataset","dataset_description","env_sample_source_id","project"
+   self.utils.print_array_w_title(dataset_csv_file_name, "===\nself.dataset_csv_file_name 555")
+   
+   self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
+   self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
     
 
 class Seq_csv:
@@ -610,7 +620,7 @@ if __name__ == '__main__':
   # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
-  
+  dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
 
@@ -618,7 +628,6 @@ if __name__ == '__main__':
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
-  project        = Project(mysql_util)
 
   # uncomment:
   # seq_csv_parser.insert_seq()
@@ -632,20 +641,25 @@ if __name__ == '__main__':
   # uncomment:
   # refhvr_id.insert_refhvr_id()
   
+  project = Project(mysql_util)
   project.parse_project_csv(project_csv_file_name)
+
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  
   # uncomment:
-  user.insert_user()
+  # user.insert_user()
   # uncomment:
   # seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
   # uncomment:
-  project.insert_project(user.user_id)
-  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  # project.insert_project(user.user_id)
   
-  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
   
-  seq_csv_parser.insert_dataset()
+  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+
+  dataset = Dataset(mysql_util)
+  dataset.parse_dataset_csv(dataset_csv_file_name)
+  
+  # seq_csv_parser.insert_dataset()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
