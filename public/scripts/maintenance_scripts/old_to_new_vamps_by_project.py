@@ -246,16 +246,17 @@ class Mysql_util:
       id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
       return self.execute_fetch_select(id_query)
       
-    def get_id(self, rows_affected, field_name, table_name, where_part):
-      # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected")
+    def get_id(self, field_name, table_name, where_part, rows_affected = [0,0]):
+      self.utils.print_array_w_title(rows_affected, "=====\nrows_affected from def get_id")
     
       if rows_affected[1] > 0:
         id_result = int(rows_affected[1])
       else:
         # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
         # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
-      
+    
         id_result = int(self.execute_simple_select(field_name, table_name, where_part)[0][0])
+        
       # self.utils.print_array_w_title(id_result, "=====\nid_result IN")
       return id_result
     
@@ -401,11 +402,11 @@ class User:
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
     
   def insert_user(self):
-    field_list       = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
-    insert_user_vals = ', '.join(["'%s'" % key for key in self.user_data[1:]])
+    field_list    = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
+    insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     
-    rows_affected    = self.mysql_util.execute_insert("user", field_list, insert_user_vals)
-    self.user_id     = self.mysql_util.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    rows_affected = self.mysql_util.execute_insert("user", field_list, insert_values)
+    self.user_id  = self.mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
   
 class Project:
   
@@ -420,26 +421,26 @@ class Project:
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
     
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
-    self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
+    # self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
     self.contact = self.project_file_content[0][5]
     
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
     
     field_list       = "project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id"
-    insert_user_vals = ', '.join("'%s'" % key for key in [project, title, project_description])
-    insert_user_vals += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
+    insert_values = ', '.join("'%s'" % key for key in [project, title, project_description])
+    insert_values += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
 
-    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_user_vals)
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_values)
     # self.utils.print_array_w_title(sql, "sql")
         
-    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_user_vals)
+    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_values)
     
-    self.project_id = self.mysql_util.get_id(rows_affected, "project_id", "project", "WHERE project = '%s'" % (project))
+    self.project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
     # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
     
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
-    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_user_vals)")
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_values)")
+    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_values)")
     # return rows_affected
     
     # if rows_affected[1] > 0:
@@ -449,21 +450,57 @@ class Project:
     # self.utils.print_array_w_title(self.project_id, "self.project_id")
         
     # print set(self.projects)
-  
 
 class Dataset:
   def __init__(self, mysql_util):
-     self.utils      = Utils() 
-     self.mysql_util = mysql_util
-     self.project_id = ""
+   self.utils      = Utils() 
+   self.mysql_util = mysql_util
 
   def parse_dataset_csv(self, dataset_csv_file_name):
    # "dataset","dataset_description","env_sample_source_id","project"
-   self.utils.print_array_w_title(dataset_csv_file_name, "===\nself.dataset_csv_file_name 555")
    
    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
    self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
     
+  def insert_dataset(self, project_id):
+   dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
+   project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % project)
+   self.utils.print_array_w_title(project, "project")
+   self.utils.print_array_w_title(project_id, "project_id")
+ 
+   field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
+   insert_values = ', '.join("'%s'" % key for key in [dataset, dataset_description, env_sample_source_id, project_id])
+   
+   
+   # taxa_by_rank = self.get_taxa_by_rank()
+   # 
+   # """
+   # TODO: make all queries, then insert all? Benchmark!
+   # """
+   # for rank in self.ranks:
+   #   self.utils.print_array_w_title(rank, "rank")
+   #   rank_num = self.ranks.index(rank)
+   #   # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
+   # 
+   #   uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
+   # 
+   #   insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+   #   # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
+   # 
+   #   rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
+   #   self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+
+ 
+   
+
+   sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, insert_values)
+   self.utils.print_array_w_title(sql, "sql")
+
+   rows_affected = self.mysql_util.execute_insert("dataset", field_list, insert_values)
+
+   self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
+   self.utils.print_array_w_title(self.dataset_id, "dataset_id")
+
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -525,8 +562,8 @@ class Seq_csv:
 
 
     # self.utils.print_array_w_title(self.user_id, "self.user_id")
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
-    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_user_vals)")
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_values)")
+    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_values)")
     
     # return rows_affected
     # if rows_affected[1] > 0:
@@ -658,6 +695,7 @@ if __name__ == '__main__':
 
   dataset = Dataset(mysql_util)
   dataset.parse_dataset_csv(dataset_csv_file_name)
+  dataset.insert_dataset(project.project_id)
   
   # seq_csv_parser.insert_dataset()
 
