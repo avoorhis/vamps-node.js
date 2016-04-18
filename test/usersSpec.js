@@ -1,36 +1,52 @@
+process.env.NODE_ENV = 'testing'
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
-    app = require('../app'),
-    connection = require('../config/database-test');
+    //connection = require('../config/database-test');
+    app = require('../app')
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 
-describe('Users page functionality', function(){
+testuser = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
+// describe('Users page functionality', function(){
 
-  it('Text on login page', function(done){
-    request(app)
-      .get('/users/index_users')
-      .expect(200)
-      .end(function (err, res) {
-        should.not.exist(err);
-        res.text.should.containEql('VAMPS User List');
-        res.text.should.containEql('TEST');
-        done();
-      });
-  });
+//   it('Text on login page', function(done){
+//     request(app)
+//       .get('/users/index_users')
+//       .expect(200)
+//       .end(function (err, res) {
+//         should.not.exist(err);
+//         res.text.should.containEql('VAMPS User List');
+//         res.text.should.containEql('TEST');
+//         done();
+//       });
+//   });
 
-});
+// });
 
-describe('Login page functionality', function(){
+describe('<<< Login page functionality >>>', function(){
   before(function (done) {
+    connection_dev = require('../config/database-test');
+    
+    connection_dev.query("DELETE FROM user WHERE username = '"+testuser.user+"' AND first_name = '"+testuser.first+"' AND last_name = '"+testuser.last+"' AND email = '"+testuser.email+"' AND institution = '"+testuser.inst+"'", function(err, result) {
+          if (err) {throw err;}
+    });
 
+    this.timeout(5000);
+
+    var q = "INSERT IGNORE INTO user (username, encrypted_password, first_name, last_name, email, institution, active) \
+      VALUES ('"+testuser.user+"','"+helpers.generateHash(testuser.pass)+"','"+testuser.first+"','"+testuser.last+"','"+testuser.email+"','"+testuser.inst+"','"+1+"')"
+    connection_dev.query(q, function(err, result) {
+      if (err) {throw err;}
+      console.log(q)
+      console.log("result.insertId: " + result.insertId);
+      console.log("=========");
+    });
     this.timeout(5000);
     async.series([
       function (cb) {
-        connection.query('SELECT * FROM user WHERE username="TEST"'+
-              ' AND email="TEST"',function(err,results){
+        connection.query('SELECT * FROM user WHERE username="'+testuser.user+'" AND email="'+testuser.email+'"',function(err,results){
             results.length.should.not.equal(0);
             done();
           });
@@ -43,7 +59,7 @@ describe('Login page functionality', function(){
       .get('/users/login')
       .expect(200)
       .end(function (err, res) {
-        res.text.should.containEql('VAMPS Login');
+        res.text.should.containEql('Login');
         res.text.should.containEql('Username');
         res.text.should.containEql('Password');
         done();
@@ -51,26 +67,21 @@ describe('Login page functionality', function(){
   });
 
   it('Able to login with user "TEST"', function(done){
-    connection_dev = require('../config/database-dev');
-    connection_dev.query('INSERT IGNORE INTO user (username, encrypted_password, first_name, last_name, email, institution) VALUES ("TEST","7kT94LYj7y5RnJVb34jrJw==","TEST","TEST","TEST","TEST")', function(err, result) {
-      if (err) {throw err;}
-
-      // console.log(query.sql);
-
-      console.log("result.insertId: " + result.insertId);
-      console.log("=========");
-    });
+    
+    
     
     request(app)
       .post('/users/login')
+      .send({ username: testuser.user, password: testuser.pass})
       .expect(302)
-      .send({ username: 'TEST', password: 'TEST'})
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
-        res.header.location.should.containEql('/');
+        console.log(res.header.location)
+        res.header.location.should.containEql('/users/profile');
         res.header.location.should.not.containEql('login');
-        connection_dev.query('DELETE FROM user WHERE username = "TEST" AND first_name = "TEST" AND last_name = "TEST" AND email = "TEST" AND institution = "TEST"', function(err, result) {
+        
+        connection_dev.query("DELETE FROM user WHERE username = '"+testuser.user+"' AND first_name = '"+testuser.first+"' AND last_name = '"+testuser.last+"' AND email = '"+testuser.email+"' AND institution = '"+testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
         });
         done();
@@ -122,7 +133,7 @@ describe('Login page functionality', function(){
     passportStub.install(app);
     
     passportStub.login({
-      username: 'TEST', password: 'TEST'
+      username: testuser.user, password: testuser.pass
     });
 
     request(app)
@@ -131,7 +142,7 @@ describe('Login page functionality', function(){
       // console.log("===2===");
       // console.log(res);
       // console.log("===22===");
-      res.text.should.containEql('Logged in as: TEST');
+      res.text.should.containEql(testuser.user);
       
       request(app)
         .get('/users/logout')
@@ -150,7 +161,7 @@ describe('Login page functionality', function(){
             // console.log("===1===");
             // console.log(res);
             // console.log("===11===");
-            res.text.should.not.containEql('Logged in as: TEST');
+            res.text.should.not.containEql(testuser.user);
           
           // request(app)
           //   .get('/')

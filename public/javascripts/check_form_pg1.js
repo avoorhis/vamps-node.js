@@ -14,11 +14,11 @@ if (unit_selection_btn_visuals !== null)
   unit_selection_btn_visuals.addEventListener('click', function () {
 
     //c = count_checked_datasets();
-    //alert('show_dataset_tree')
-    var form = document.getElementById('project_dataset_select_form');
+    
+      var form = document.getElementById('project_dataset_select_form');
     
       dids = projectTree.getAllChecked();
-      //alert(checked)
+      //alert(dids)
       if(dids){
           didArray = dids.split(',');
           

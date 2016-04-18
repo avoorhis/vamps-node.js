@@ -8,7 +8,7 @@ var path  = require('path');
 //var config_file = JSON.parse(fs.readFileSync('./config/db-connection.js', {encoding:'utf8'}));
 var db_config_file = './config/db-connection.js';
 eval(fs.readFileSync(db_config_file).toString());
-console.log('DATABASE: '+NODE_DATABASE);
+
 
 var pool      =    mysql.createPool({
     connectionLimit : 100, //important

@@ -388,7 +388,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   
   res.render('visuals/visuals_index', {
                                 title       : 'VAMPS: Select Datasets',
-                                subtitle : 'Dataset Selection Page',
+                                subtitle    : 'Dataset Selection Page',
                                 proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
                                 constants   : JSON.stringify(req.CONSTS),
                                 md_names    : AllMetadataNames,
@@ -515,6 +515,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
         //var last_line = ary[ary.length - 1];
         if(code === 0){   // SUCCESS     
           try{
+            console.log(stdout)
             distance_matrix = JSON.parse(stdout);
           }
           catch(err){
@@ -2781,16 +2782,18 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
             //console.log('Object.keys(data_to_open)')
             //console.log(Object.keys(data_to_open))
             if(Object.keys(DATA_TO_OPEN).indexOf(pid.toString()) >= 0){
-              json.item.push({id:pid, text:itemtext, checked:false, open:'1',child:1, item:[]});
+              json.item.push({id:'p'+pid, text:itemtext, checked:false, open:'1',child:1, item:[]});
             }else{
-              json.item.push({id:pid, text:itemtext, checked:false,  child:1, item:[]});
+              json.item.push({id:'p'+pid, text:itemtext, checked:false,  child:1, item:[]});
             }
             
                 
         }
         
     }else{
+        //console.log(JSON.stringify(ALL_DATASETS))
         var this_project = {}
+        id = id.substring(1);  // id = pxx
         ALL_DATASETS.projects.forEach(function(prj) {        
           if(prj.pid == id){
             this_project = prj  
@@ -2809,6 +2812,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         var pname = this_project.name 
         for(n in this_project.datasets){
             var did   = this_project.datasets[n].did
+            console.log('didXX',did)
             var dname = this_project.datasets[n].dname
             var ddesc = this_project.datasets[n].ddesc
             var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc;
@@ -2823,8 +2827,8 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     json.item.sort(function(a, b){
           return helpers.compareStrings_alpha(a.text, b.text);
     });
-    //console.log(json.item)
-    res.json(json)
+    console.log(json.item)
+    res.send(json)
 });
 
 module.exports = router;

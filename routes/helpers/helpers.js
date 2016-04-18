@@ -237,9 +237,10 @@ module.exports.run_select_datasets_query = function(rows){
         var ddesc = datasetsByProject[p][d].ddesc; 
         tmp.datasets.push({ did:dp_did, dname:ds, ddesc:ddesc });
       }
+      
       ALL_DATASETS.projects.push(tmp);
     }
-	
+	 //console.log(JSON.stringify(ALL_DATASETS))
     console.log('Cleaning Metadata');
     var clean_metadata = {};
     for(did in AllMetadata){
