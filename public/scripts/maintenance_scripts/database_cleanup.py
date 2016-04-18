@@ -235,13 +235,17 @@ if __name__ == '__main__':
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
-    cur.execute("SHOW databases like 'vamps%'")
+    cur.execute("SHOW databases")
     dbs = []
     db_str = ''
-    for i, row in enumerate(cur.fetchall()):
-        dbs.append(row[0])
-        db_str += str(i)+'-'+row[0]+';  '
-    print db_str
+    i = 0
+    for row in cur.fetchall():
+        if row[0] != 'mysql' and row[0] != 'information_schema':
+            dbs.append(row[0])
+            db_str += str(i)+'-'+row[0]+';  '
+            print str(i)+' - '+row[0]+';  '
+            i += 1
+    
     db_no = input("\nchoose database number: ")
     if int(db_no) < len(dbs):
         NODE_DATABASE = dbs[db_no]

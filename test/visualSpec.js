@@ -1,13 +1,19 @@
 // force the test environment to 'test'
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'testing'
 
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
-    app = require('../app'),    
-    connection = require('../config/database-test');
+    app = require('../app')
+    init = require('./init')
+////////////////////////////////////////////////////////////////////////////
+// LIST OF REQUIRED TESTS
+// must have functioning buttons: next, saved_datasets, clear_filters
+// Filters work: substring;ENV_source, domain;pub/priv; and metadata
+// project list: visible; permissions??; functional
+//var regular_user    = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
 
-describe('visualization functionality:', function(){
+describe('<<< visualization functionality: >>>', function(){
   //      Should show the closed project list on initialize
   //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
   //        should work to open the project (show and check the datasets) when either the plus image is clicked or the
@@ -15,6 +21,15 @@ describe('visualization functionality:', function(){
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
+  var passportStub = require('passport-stub');
+  passportStub.install(app);
+  console.log('Logging in with',app.test_user.user,app.test_user.pass);
+  passportStub.login({
+      username: app.test_user.user, password: app.test_user.pass
+
+  });
+  
+
   var test_name_hash = { ids: [ '135', '126', '122' ],
                           names: 
                            [ 'SLM_NIH_Bv4v5--01_Boonville',
@@ -32,10 +47,12 @@ describe('visualization functionality:', function(){
                                } 
                            }
   
-  describe('index_visuals', function(){
+  describe('visuals_index', function(){
       it('should have certain text', function(done){
+        var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
         request(app)
-          .get('/visuals/index_visuals')
+          .post('/visuals/visuals_index')
+          .send(body)
           .expect(200)
           .end(function (err, res) {
             res.text.should.containEql('Dataset Selection Page');
@@ -45,7 +62,7 @@ describe('visualization functionality:', function(){
 
       it('should show project/datasets', function(done){
         request(app)
-          .get('/visuals/index_visuals')
+          .get('/visuals/visuals_index')
           .expect(200)
           .end(function (err, res) {
             res.text.should.containEql('SLM_NIH_Bv6');
