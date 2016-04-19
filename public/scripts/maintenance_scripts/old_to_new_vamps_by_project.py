@@ -636,90 +636,33 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
 
   # uncomment:
-  t0 = time.time()
   seq_csv_parser.insert_seq()
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_seq = %s" % total
-  
-  t0 = time.time()  
   taxonomy.parse_taxonomy()
-  t1 = time.time()
-  total = t1-t0
-  print "total parse_taxonomy = %s" % total
-  
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
   # uncomment:
-  
-  t0 = time.time()
   taxonomy.insert_taxa()
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_taxa = %s" % total
   
-  t0 = time.time()  
   refhvr_id.parse_refhvr_id()
-  t1 = time.time()
-  total = t1-t0
-  print "total parse_refhvr_id = %s" % total
   # uncomment:
-  
-  t0 = time.time()
   refhvr_id.insert_refhvr_id()
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_refhvr_id = %s" % total
   
   project = Project(mysql_util)
-  t0 = time.time()  
   project.parse_project_csv(project_csv_file_name)
-  t1 = time.time()
-  total = t1-t0
-  print "total parse_project_csv = %s" % total
 
-  user = User(project.contact, user_contact_csv_file_name, mysql_util)  
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)
   user.insert_user()
-  t0 = time.time()
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_user = %s" % total
-  
-  t0 = time.time()  
   project.insert_project(user.user_id)
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_project = %s" % total
   
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")  
   seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
   seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
-  t0 = time.time()
   dataset.parse_dataset_csv(dataset_csv_file_name)
-  t1 = time.time()
-  total = t1-t0
-  print "total = %s" % total
-
-  t0 = time.time()
   dataset.make_dataset_project_dictionary()
-  t1 = time.time()
-  total = t1-t0
-  print "total make_dataset_project_dictionary = %s" % total
-
-
-  t0 = time.time()
   dataset.insert_dataset(project.project_dict)
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_dataset = %s" % total
-
-  t0 = time.time()
   dataset.collect_dataset_ids()
-  t1 = time.time()
-  total = t1-t0
-  print "total = %s" % total
   
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
 
