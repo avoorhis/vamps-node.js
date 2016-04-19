@@ -247,7 +247,7 @@ class Mysql_util:
       return self.execute_fetch_select(id_query)
       
     def get_id(self, field_name, table_name, where_part, rows_affected = [0,0]):
-      self.utils.print_array_w_title(rows_affected, "=====\nrows_affected from def get_id")
+      # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected from def get_id")
     
       if rows_affected[1] > 0:
         id_result = int(rows_affected[1])
@@ -336,7 +336,7 @@ class Taxonomy:
     TODO: make all queries, then insert all? Benchmark!
     """
     for rank in self.ranks:
-      self.utils.print_array_w_title(rank, "rank")
+      # self.utils.print_array_w_title(rank, "rank")
       rank_num = self.ranks.index(rank)
       # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
       
@@ -346,7 +346,7 @@ class Taxonomy:
       # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
 
       rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
-      self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+      # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
       
 class Refhvr_id:
 
@@ -372,7 +372,7 @@ class Refhvr_id:
     insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
     # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
     rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     
 class User:
   def __init__(self, contact, user_contact_csv_file_name, mysql_util):
@@ -445,8 +445,7 @@ class Project:
     self.project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
     self.project_dict[project] = self.project_id
 
-
-    self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+    # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
 
 
 class Dataset:
@@ -464,12 +463,11 @@ class Dataset:
   # "dataset","dataset_description","env_sample_source_id","project"
 
     self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
-    self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
+    # self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
 
   def put_project_id_into_dataset_file_content(self, project_id):
     for dl in self.dataset_file_content:
       dl[3] = project_id 
-
 
   def make_insert_values(self):
     all_insert_dat_vals = ""
@@ -486,7 +484,7 @@ class Dataset:
   def collect_dataset_ids(self):
     for dataset, project in self.dataset_project_dict.items():
       dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
-      self.utils.print_array_w_title(dataset_id, "dataset_id")
+      # self.utils.print_array_w_title(dataset_id, "dataset_id from collect_dataset_ids")
       self.dataset_dict[dataset] = dataset_id
     
   def insert_dataset(self, project_dict):
@@ -496,8 +494,8 @@ class Dataset:
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
-      self.utils.print_array_w_title(project, "project from insert_dataset")
-      self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
+      # self.utils.print_array_w_title(project, "project from insert_dataset")
+      # self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
 
       field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
 
@@ -527,8 +525,6 @@ class Seq_csv:
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     content_by_field = self.content_matrix_transposition()
     self.sequences   = content_by_field[1]
-    self.projects    = content_by_field[2]
-    self.datasets    = content_by_field[3]
     self.taxa        = content_by_field[4]
     self.refhvr_id   = content_by_field[5]
     self.the_rest    = content_by_field[6:]
@@ -552,7 +548,7 @@ class Seq_csv:
   def insert_seq(self):
     comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
     rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
-    self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
   # to seq class end
 
@@ -640,33 +636,90 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
 
   # uncomment:
-  # seq_csv_parser.insert_seq()
+  t0 = time.time()
+  seq_csv_parser.insert_seq()
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_seq = %s" % total
+  
+  t0 = time.time()  
   taxonomy.parse_taxonomy()
+  t1 = time.time()
+  total = t1-t0
+  print "total parse_taxonomy = %s" % total
+  
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
   # uncomment:
-  # taxonomy.insert_taxa()
   
+  t0 = time.time()
+  taxonomy.insert_taxa()
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_taxa = %s" % total
+  
+  t0 = time.time()  
   refhvr_id.parse_refhvr_id()
+  t1 = time.time()
+  total = t1-t0
+  print "total parse_refhvr_id = %s" % total
   # uncomment:
-  # refhvr_id.insert_refhvr_id()
+  
+  t0 = time.time()
+  refhvr_id.insert_refhvr_id()
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_refhvr_id = %s" % total
   
   project = Project(mysql_util)
+  t0 = time.time()  
   project.parse_project_csv(project_csv_file_name)
+  t1 = time.time()
+  total = t1-t0
+  print "total parse_project_csv = %s" % total
 
-  user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)  
   user.insert_user()
+  t0 = time.time()
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_user = %s" % total
+  
+  t0 = time.time()  
   project.insert_project(user.user_id)
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_project = %s" % total
   
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")  
   seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
   seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
+  t0 = time.time()
   dataset.parse_dataset_csv(dataset_csv_file_name)
+  t1 = time.time()
+  total = t1-t0
+  print "total = %s" % total
+
+  t0 = time.time()
   dataset.make_dataset_project_dictionary()
+  t1 = time.time()
+  total = t1-t0
+  print "total make_dataset_project_dictionary = %s" % total
+
+
+  t0 = time.time()
   dataset.insert_dataset(project.project_dict)
+  t1 = time.time()
+  total = t1-t0
+  print "total insert_dataset = %s" % total
+
+  t0 = time.time()
   dataset.collect_dataset_ids()
+  t1 = time.time()
+  total = t1-t0
+  print "total = %s" % total
   
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
 
