@@ -459,7 +459,7 @@ class Dataset:
 
   def make_dataset_project_dictionary(self):
     self.dataset_project_dict = {val[0]: val[3] for val in self.dataset_file_content}
-
+      
   def parse_dataset_csv(self, dataset_csv_file_name):
   # "dataset","dataset_description","env_sample_source_id","project"
 
@@ -490,12 +490,9 @@ class Dataset:
       self.dataset_dict[dataset] = dataset_id
     
   def insert_dataset(self, project_dict):
-    self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
-    
-    projects = set(self.dataset_project_dict.values())
+    # self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
 
-    for project in projects:
-      self.utils.print_array_w_title(projects, "\n=========\nprojects in insert_dataset")
+    for project in set(self.dataset_project_dict.values()):
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
@@ -509,14 +506,6 @@ class Dataset:
       # self.utils.print_array_w_title(sql, "sql")
 
       rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
-      
-      for dataset, project in self.dataset_project_dict.items():
-        dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
-        self.utils.print_array_w_title(dataset_id, "dataset_id")      
-        self.dataset_dict[dataset] = dataset_id
-      
-      # self.collect_dataset_ids(rows_affected)
-
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -666,38 +655,18 @@ if __name__ == '__main__':
   project.parse_project_csv(project_csv_file_name)
 
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  # uncomment:
   user.insert_user()
-  # uncomment:
   project.insert_project(user.user_id)
   
-  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  
+  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")  
   seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
   seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
   dataset.parse_dataset_csv(dataset_csv_file_name)
   dataset.make_dataset_project_dictionary()
-  
-  t0 = time.time()
   dataset.insert_dataset(project.project_dict)
-  t1 = time.time()
-  total = t1-t0
-  print "total insert_dataset = %s" % total
-  # total insert_dataset = 0.110909938812
-  # from inside insert_dataset 
-  # total insert_dataset = 0.126436948776
-  # total insert_dataset = 0.113431930542
-
-
-  t0 = time.time()
   dataset.collect_dataset_ids()
-  t1 = time.time()
-  total = t1-t0
-  print "total collect_dataset_ids = %s" % total
-  # total for collect_dataset_ids = 0.00395011901855
-  # total collect_dataset_ids = 0.00245594978333
   
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
 
