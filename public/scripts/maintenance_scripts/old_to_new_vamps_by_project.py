@@ -486,13 +486,12 @@ class Dataset:
     # self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
     return all_insert_dat_vals
 
+  
   def insert_dataset(self, project_dict):
-    # TODO: what if more then one project?
-    # dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
-    projects = set()
-    # for a in self.dataset_file_content:
-    #   projects.add(a[3])
-    projects = {x[3] for x in self.dataset_file_content}
+    self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
+    
+    projects = set(self.dataset_project_dict.values())
+    # projects = {x[3] for x in self.dataset_file_content}
 
     project = list(projects)[0]
 
@@ -507,12 +506,11 @@ class Dataset:
     field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
 
     all_insert_dat_vals = self.make_insert_values()
-    sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
-    self.utils.print_array_w_title(sql, "sql")
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
+    # self.utils.print_array_w_title(sql, "sql")
 
     rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
 
-    self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
     for dataset, project in self.dataset_project_dict.items():
       self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
       self.utils.print_array_w_title(self.dataset_id, "dataset_id")
