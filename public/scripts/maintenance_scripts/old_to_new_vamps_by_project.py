@@ -416,6 +416,7 @@ class Project:
     self.contact    = ""
     self.project_id = ""
     self.user_id    = ""
+    self.project_dict = {}
     
   def parse_project_csv(self, project_csv_file_name):
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
@@ -423,6 +424,7 @@ class Project:
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
     # self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
     self.contact = self.project_file_content[0][5]
+    self.project_dict[self.project_file_content[0][0]] = ""
     
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
@@ -437,6 +439,11 @@ class Project:
     rows_affected = self.mysql_util.execute_insert("project", field_list, insert_values)
     
     self.project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
+    self.project_dict[project] = self.project_id
+
+
+    self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+
     # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
     
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_values)")
@@ -683,11 +690,9 @@ if __name__ == '__main__':
 
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
   # uncomment:
-  # user.insert_user()
+  user.insert_user()
   # uncomment:
-  # seq_csv_parser.utils.print_array_w_title(seq_csv_parser.user_id, "self.user_id main")
-  # uncomment:
-  # project.insert_project(user.user_id)
+  project.insert_project(user.user_id)
   
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
   
