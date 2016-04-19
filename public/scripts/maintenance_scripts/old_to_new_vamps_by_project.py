@@ -469,6 +469,34 @@ class Dataset:
    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
    self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
     
+  def make_insert_values(self):
+    all_insert_dat_vals = ""
+    
+    print "0" * 50
+    for dl in self.dataset_file_content:
+      print "dl = "
+      print dl
+      for i, d in enumerate(dl):
+        print "d = %s, i = %s" % (d, i)
+        if i==3:
+          dl[3] = 275
+    
+      
+    
+    for dataset_l in self.dataset_file_content[:-1]:
+      # print dataset_l
+      insert_dat_vals = ', '.join("'%s'" % key for key in dataset_l)
+      # print insert_dat_vals
+      all_insert_dat_vals += insert_dat_vals + "), ("
+
+    all_insert_dat_vals += ', '.join("'%s'" % key for key in self.dataset_file_content[-1])
+
+    # insert_values = ', '.join("'%s'" % key for key in [dataset, dataset_description, env_sample_source_id, project_id])
+
+    self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
+    return all_insert_dat_vals
+    
+  
   def insert_dataset(self, project_dict):
    dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
    project_id = project_dict[project]
@@ -476,34 +504,12 @@ class Dataset:
    self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
  
    field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
-   insert_values = ', '.join("'%s'" % key for key in [dataset, dataset_description, env_sample_source_id, project_id])
    
-   
-   # taxa_by_rank = self.get_taxa_by_rank()
-   # 
-   # """
-   # TODO: make all queries, then insert all? Benchmark!
-   # """
-   # for rank in self.ranks:
-   #   self.utils.print_array_w_title(rank, "rank")
-   #   rank_num = self.ranks.index(rank)
-   #   # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
-   # 
-   #   uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
-   # 
-   #   insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-   #   # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
-   # 
-   #   rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
-   #   self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
-
- 
-   
-
-   sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, insert_values)
+   all_insert_dat_vals = self.make_insert_values()
+   sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
    self.utils.print_array_w_title(sql, "sql")
 
-   rows_affected = self.mysql_util.execute_insert("dataset", field_list, insert_values)
+   rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
 
    self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
    self.utils.print_array_w_title(self.dataset_id, "dataset_id")
