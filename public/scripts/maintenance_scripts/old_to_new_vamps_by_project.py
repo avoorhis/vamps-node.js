@@ -484,20 +484,14 @@ class Dataset:
   def collect_dataset_ids(self):
     for dataset, project in self.dataset_project_dict.items():
       dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
-      # self.utils.print_array_w_title(dataset_id, "dataset_id from collect_dataset_ids")
       self.dataset_dict[dataset] = dataset_id
     
   def insert_dataset(self, project_dict):
-    # self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
-
     for project in set(self.dataset_project_dict.values()):
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
-      # self.utils.print_array_w_title(project, "project from insert_dataset")
-      # self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
-
-      field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
+      field_list = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
 
       all_insert_dat_vals = self.make_insert_values()
       # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
@@ -601,7 +595,7 @@ class Seq_csv:
 
     ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
           project
-        dataset
+          dataset
         sequence_pdr_info
         silva_taxonomy
         sequence_uniq_info
