@@ -469,11 +469,11 @@ class Dataset:
    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
    self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
     
-  def insert_dataset(self, project_id):
+  def insert_dataset(self, project_dict):
    dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
-   project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % project)
-   self.utils.print_array_w_title(project, "project")
-   self.utils.print_array_w_title(project_id, "project_id")
+   project_id = project_dict[project]
+   self.utils.print_array_w_title(project, "project from insert_dataset")
+   self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
  
    field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
    insert_values = ', '.join("'%s'" % key for key in [dataset, dataset_description, env_sample_source_id, project_id])
@@ -599,30 +599,6 @@ class Seq_csv:
   #   projects_w_ids = self.mysql_util.get_all_name_id('project')
   #   self.project_id_by_name_dict = dict(projects_w_ids)
     
-  def insert_dataset(self):
-    #TODO: get env_sample_source_id from new_project, env_source_id from vamps_projects_info
-    # print set(self.datasets)
-    # fields: dataset, dataset_description, env_sample_source_id, project_id
-    # self.utils.print_array_w_title(self.dataset_id_by_name_dict, "dataset_id_by_name_dict")
-    # self.utils.print_array_w_title(self.project_id_by_name_dict, "project_id_by_name_dict")
-    # self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
-    
-    # for p in set(self.projects):
-    #   print self.project_id_by_name_dict[p]
-    #
-    # for d, pr in self.project_dataset_dict.items():
-    #   print d
-    #   print pr
-    #   print int(self.project_id_by_name_dict[pr])
-    # insert_dataset_q = "INSERT IGNORE INTO dataset (dataset, dataset_description, env_sample_source_id, project_id) VALUES ()"
-    #
-    #   # self.project_dataset_dict[d].append(self.project_id_by_name_dict[p])
-    #
-    # self.utils.print_array_w_title(self.project_dataset_dict, "project_dataset_dict")
-    # self.utils.print_array_w_title(self.user_id, "self.user_id dat")
-    # self.utils.print_array_w_title(self.project_id, "self.project_id dat")
-    
-
     """
     ***) simple tables:
           domain
@@ -697,10 +673,11 @@ if __name__ == '__main__':
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
   
   seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
   dataset.parse_dataset_csv(dataset_csv_file_name)
-  dataset.insert_dataset(project.project_id)
+  dataset.insert_dataset(project.project_dict)
   
   # seq_csv_parser.insert_dataset()
 
