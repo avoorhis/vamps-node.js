@@ -493,23 +493,24 @@ class Dataset:
     projects = set(self.dataset_project_dict.values())
     # projects = {x[3] for x in self.dataset_file_content}
 
-    project = list(projects)[0]
+    for project in projects:
+      # project = list(projects)[0]
 
-    # projects = set([a[3] for a[3] in self.dataset_file_content])
-    self.utils.print_array_w_title(projects, "\n=========\nprojects in insert_dataset")
-    project_id = project_dict[project]
-    self.put_project_id_into_dataset_file_content(project_id)
+      # projects = set([a[3] for a[3] in self.dataset_file_content])
+      self.utils.print_array_w_title(projects, "\n=========\nprojects in insert_dataset")
+      project_id = project_dict[project]
+      self.put_project_id_into_dataset_file_content(project_id)
 
-    self.utils.print_array_w_title(project, "project from insert_dataset")
-    self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
+      self.utils.print_array_w_title(project, "project from insert_dataset")
+      self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
 
-    field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
+      field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
 
-    all_insert_dat_vals = self.make_insert_values()
-    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
-    # self.utils.print_array_w_title(sql, "sql")
+      all_insert_dat_vals = self.make_insert_values()
+      # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
+      # self.utils.print_array_w_title(sql, "sql")
 
-    rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+      rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
 
     for dataset, project in self.dataset_project_dict.items():
       self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
