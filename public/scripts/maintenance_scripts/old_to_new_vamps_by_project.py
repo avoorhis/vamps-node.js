@@ -252,12 +252,16 @@ class Mysql_util:
       if rows_affected[1] > 0:
         id_result = int(rows_affected[1])
       else:
-        # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-        # id_result = int(self.mysql_util.execute_fetch_select(id_query)[0][0])
-    
-        id_result = int(self.execute_simple_select(field_name, table_name, where_part)[0][0])
+        try: 
+          # id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
+          id_result_full = self.execute_simple_select(field_name, table_name, where_part)
+          id_result = int(id_result_full[0][0])
+        except:
+          self.utils.print_both("Unexpected:")
+          # self.utils.print_both(sys.exc_info()[0])        
+          raise
         
-      # self.utils.print_array_w_title(id_result, "=====\nid_result IN")
+      # self.utils.print_array_w_title(id_result, "=====\nid_result IN get_id")
       return id_result
     
 
@@ -444,45 +448,31 @@ class Project:
 
     self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
 
-    # self.utils.print_array_w_title(self.project_id, "===\nSSS self.project_id after get_id")
-    
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert('project', field_list, insert_values)")
-    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert('project', field_list, insert_values)")
-    # return rows_affected
-    
-    # if rows_affected[1] > 0:
-    #   self.project_id = rows_affected[1]
-    # else:
-    #   self.project_id = int(self.get_project_id(self.project_data[1])[0][0])
-    # self.utils.print_array_w_title(self.project_id, "self.project_id")
-        
-    # print set(self.projects)
 
 class Dataset:
   def __init__(self, mysql_util):
-   self.utils      = Utils() 
-   self.mysql_util = mysql_util
+    self.utils      = Utils() 
+    self.mysql_util = mysql_util
+    self.dataset_project_dict = {}
+    self.dataset_file_content = []
+
+  def make_dataset_project_dictionary(self):
+    self.dataset_project_dict = {val[0]: val[3] for val in self.dataset_file_content}
 
   def parse_dataset_csv(self, dataset_csv_file_name):
-   # "dataset","dataset_description","env_sample_source_id","project"
-   
-   self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
-   self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
-    
+  # "dataset","dataset_description","env_sample_source_id","project"
+
+    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
+    self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
+
+  def put_project_id_into_dataset_file_content(self, project_id):
+    for dl in self.dataset_file_content:
+      dl[3] = project_id 
+
+
   def make_insert_values(self):
     all_insert_dat_vals = ""
-    
-    print "0" * 50
-    for dl in self.dataset_file_content:
-      print "dl = "
-      print dl
-      for i, d in enumerate(dl):
-        print "d = %s, i = %s" % (d, i)
-        if i==3:
-          dl[3] = 275
-    
-      
-    
+
     for dataset_l in self.dataset_file_content[:-1]:
       # print dataset_l
       insert_dat_vals = ', '.join("'%s'" % key for key in dataset_l)
@@ -493,26 +483,39 @@ class Dataset:
 
     # insert_values = ', '.join("'%s'" % key for key in [dataset, dataset_description, env_sample_source_id, project_id])
 
-    self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
+    # self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
     return all_insert_dat_vals
-    
-  
+
   def insert_dataset(self, project_dict):
-   dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
-   project_id = project_dict[project]
-   self.utils.print_array_w_title(project, "project from insert_dataset")
-   self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
- 
-   field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
-   
-   all_insert_dat_vals = self.make_insert_values()
-   sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
-   self.utils.print_array_w_title(sql, "sql")
+    # TODO: what if more then one project?
+    # dataset, dataset_description, env_sample_source_id, project = self.dataset_file_content[0]
+    projects = set()
+    # for a in self.dataset_file_content:
+    #   projects.add(a[3])
+    projects = {x[3] for x in self.dataset_file_content}
 
-   rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+    project = list(projects)[0]
 
-   self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
-   self.utils.print_array_w_title(self.dataset_id, "dataset_id")
+    # projects = set([a[3] for a[3] in self.dataset_file_content])
+    self.utils.print_array_w_title(projects, "\n=========\nprojects in insert_dataset")
+    project_id = project_dict[project]
+    self.put_project_id_into_dataset_file_content(project_id)
+
+    self.utils.print_array_w_title(project, "project from insert_dataset")
+    self.utils.print_array_w_title(project_id, "project_id from insert_dataset")
+
+    field_list       = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
+
+    all_insert_dat_vals = self.make_insert_values()
+    sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
+    self.utils.print_array_w_title(sql, "sql")
+
+    rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+
+    self.utils.print_array_w_title(self.dataset_project_dict, "dataset_project_dict = ")
+    for dataset, project in self.dataset_project_dict.items():
+      self.dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset), rows_affected)
+      self.utils.print_array_w_title(self.dataset_id, "dataset_id")
 
 
 class Seq_csv:
@@ -533,10 +536,6 @@ class Seq_csv:
     self.mysql_util   = mysql_util
     
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
-    # self.project_dataset_dict = defaultdict(list)
-    self.project_dataset_dict = {}
-    self.make_project_dataset_dictionary()
-    # self.seq_list             = self.make_seq_list()
     content_by_field = self.content_matrix_transposition()
     self.sequences   = content_by_field[1]
     self.projects    = content_by_field[2]
@@ -554,10 +553,6 @@ class Seq_csv:
     # print type(self.seqs_file_content)
     # <type '_csv.reader'>
         
-    
-  def make_project_dataset_dictionary(self):
-    self.project_dataset_dict = {val[3]: val[2] for val in self.seqs_file_content}
-
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
 
@@ -683,9 +678,10 @@ if __name__ == '__main__':
 
   dataset = Dataset(mysql_util)
   dataset.parse_dataset_csv(dataset_csv_file_name)
+  dataset.make_dataset_project_dictionary()
+  
   dataset.insert_dataset(project.project_dict)
   
-  # seq_csv_parser.insert_dataset()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
