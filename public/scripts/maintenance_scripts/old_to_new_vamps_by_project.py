@@ -384,14 +384,12 @@ class Taxonomy:
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "===\nself.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
     silva_taxonomy_list = []
     for taxonomy in self.taxa_list_w_empty_ranks:
-      rank_num = 0
       self.utils.print_array_w_title(taxonomy, "===\ntaxonomy from def silva_taxonomy: ")
       # ['Bacteria', 'Proteobacteria', 'Deltaproteobacteria', 'Desulfobacterales', 'Nitrospinaceae', 'Nitrospina', '', '']
-      # rank_num             = self.ranks.index(rank)
       silva_taxonomy_sublist = []
       for taxon in taxonomy:
         rank_num = taxonomy.index(taxon)
-        rank = self.ranks[rank_num]
+        rank     = self.ranks[rank_num]
         print "UUUUU"
         print self.uniqued_taxa_by_rank_w_id_dict[rank]
         # for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank]:
@@ -417,8 +415,15 @@ class Taxonomy:
         """
         
       self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
-  
+      silva_taxonomy_list.append(silva_taxonomy_sublist)
+    self.utils.print_array_w_title(silva_taxonomy_list, "===\nsilva_taxonomy_list from def silva_taxonomy: ")
 
+    """
+    TODO make a dict, by taxonomy?, to use later in silva_taxonomy_info_per_seq
+    silva_taxonomy_list from def silva_taxonomy: 
+    [[3, 5, 6, 7, 2, 2, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 5, 5, 2, 4, 3, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 6, 1, 1, 1, 1, 1, 1], [3, 2, 3, 5, 1, 1, 1, 1], [3, 1, 1, 1, 1, 1, 1, 1], [3, 5, 2, 4, 1, 1, 1, 1], [3, 5, 2, 6, 3, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
+
+    """
 
 class Refhvr_id:
 
