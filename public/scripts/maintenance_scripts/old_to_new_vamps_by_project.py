@@ -240,7 +240,7 @@ class Mysql_util:
       if (id_name == ""):
         id_name = table_name + '_id'
       my_sql  = """SELECT %s, %s FROM %s %s""" % (field_name, id_name, table_name, where_part)
-      self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
+      # self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
       res     = self.execute_fetch_select(my_sql)
       if res:
         return res
@@ -361,10 +361,13 @@ class Taxonomy:
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
       # self.utils.print_array_w_title(insert_taxa_vals, "HHH insert_taxa_vals from insert_taxa2")
       
-      shielded_rank_name = "`"+rank+"`"
+      shielded_rank_name = self.shield_rank_name(rank)
       rows_affected = mysql_util.execute_insert(shielded_rank_name, shielded_rank_name, insert_taxa_vals)
       # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
-            
+
+  def shield_rank_name(self, rank):
+    return "`"+rank+"`"  
+
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
@@ -373,11 +376,11 @@ class Taxonomy:
       # get_all_name_id(self, table_name, field_name = "", where_part = ""):
       # self.sequences_w_ids = mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
       # !
-      shielded_rank_name = "`"+rank+"`"
+      shielded_rank_name = self.shield_rank_name(rank)
       taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
       a = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
-      print "+++9999"
-      print a
+      # SELECT `strain`, strain_id FROM `strain` WHERE `strain` in ('')
+      # (('', 2148217L),)
   
   def get_taxonomy_ids(self):
     
@@ -681,33 +684,33 @@ if __name__ == '__main__':
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
-
-  sequence.insert_seq()
-  
-  refhvr_id.parse_refhvr_id()
-  refhvr_id.insert_refhvr_id()
-  
-  project = Project(mysql_util)
-  project.parse_project_csv(project_csv_file_name)
-  
-  user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  user.insert_user()
-  project.insert_project(user.user_id)
-  
-  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
-  
-  dataset = Dataset(mysql_util)
-  dataset.parse_dataset_csv(dataset_csv_file_name)
-  dataset.make_dataset_project_dictionary()
-  dataset.insert_dataset(project.project_dict)
-  dataset.collect_dataset_ids()
-  
-  seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
-  
-  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
-  
+  # 
+  # sequence.insert_seq()
+  # 
+  # refhvr_id.parse_refhvr_id()
+  # refhvr_id.insert_refhvr_id()
+  # 
+  # project = Project(mysql_util)
+  # project.parse_project_csv(project_csv_file_name)
+  # 
+  # user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  # user.insert_user()
+  # project.insert_project(user.user_id)
+  # 
+  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  # 
+  # dataset = Dataset(mysql_util)
+  # dataset.parse_dataset_csv(dataset_csv_file_name)
+  # dataset.make_dataset_project_dictionary()
+  # dataset.insert_dataset(project.project_dict)
+  # dataset.collect_dataset_ids()
+  # 
+  # seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
+  # 
+  # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
+  # 
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
