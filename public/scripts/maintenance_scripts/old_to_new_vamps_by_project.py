@@ -327,13 +327,10 @@ class Utils:
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
     self.utils      = Utils()
-    #TODO: make dynamic by checking if it's local
-    # self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
 
     self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
     self.taxa_list_w_empty_ranks = []
     self.taxa_content = taxa_content
-    self.mysql_util   = mysql_util
 
   def get_taxa_by_rank(self):
     return zip(*self.taxa_list_w_empty_ranks)
@@ -358,14 +355,13 @@ class Taxonomy:
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
       # self.utils.print_array_w_title(insert_taxa_vals, "WWW insert_taxa_vals")
 
-      rows_affected = self.mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
-      # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+      rows_affected = mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
+      # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
 
 class Refhvr_id:
 
   def __init__(self, refhvr_id, mysql_util):
     self.utils      = Utils()
-    self.mysql_util = mysql_util
     self.refhvr_id  = refhvr_id
 
     self.all_refhvr_id   = set()
@@ -384,13 +380,12 @@ class Refhvr_id:
   def insert_refhvr_id(self):
     insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
     # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
-    rows_affected = self.mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    rows_affected = mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
 
 class User:
   def __init__(self, contact, user_contact_csv_file_name, mysql_util):
     self.utils      = Utils()
-    self.mysql_util = mysql_util
     self.user_contact_file_content = []
     self.user_id    = ""
     self.contact    = contact
@@ -412,7 +407,7 @@ class User:
   def get_user_id(self, username):
     #TODO: make general for user, project etc.
     user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-    return self.mysql_util.execute_fetch_select(user_id_query)
+    return mysql_util.execute_fetch_select(user_id_query)
 
   def parse_user_contact_csv(self, user_contact_csv_file_name):
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
@@ -422,14 +417,13 @@ class User:
     field_list    = "`username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password`"
     insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
 
-    rows_affected = self.mysql_util.execute_insert("user", field_list, insert_values)
-    self.user_id  = self.mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
+    rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
+    self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
 
 class Project:
 
   def __init__(self, mysql_util):
     self.utils      = Utils()
-    self.mysql_util = mysql_util
     self.contact    = ""
     self.project_id = ""
     self.user_id    = ""
@@ -453,9 +447,9 @@ class Project:
     # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_values)
     # self.utils.print_array_w_title(sql, "sql")
 
-    rows_affected = self.mysql_util.execute_insert("project", field_list, insert_values)
+    rows_affected = mysql_util.execute_insert("project", field_list, insert_values)
 
-    self.project_id = self.mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
+    self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
     self.project_dict[project] = self.project_id
 
     # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
@@ -464,7 +458,6 @@ class Project:
 class Dataset:
   def __init__(self, mysql_util):
     self.utils      = Utils()
-    self.mysql_util = mysql_util
     self.dataset_project_dict = {}
     self.dataset_file_content = []
     self.dataset_dict = {}
@@ -496,7 +489,7 @@ class Dataset:
 
   def collect_dataset_ids(self):
     for dataset, project in self.dataset_project_dict.items():
-      dataset_id = self.mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
+      dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
       self.dataset_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
@@ -510,13 +503,12 @@ class Dataset:
       # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
       # self.utils.print_array_w_title(sql, "sql")
 
-      rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+      rows_affected = mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
 
 class Sequence:
 
   def __init__(self, sequences, mysql_util):
     self.utils      = Utils()
-    self.mysql_util = mysql_util
     self.sequences  = sequences
 
     self.all_sequences   = set()
@@ -526,14 +518,18 @@ class Sequence:
 
   def get_seq_ids(self):
     self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.sequences_w_ids = self.mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+    self.sequences_w_ids = mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def insert_seq(self):
-    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+    rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
-
+class Silva_taxonomy:
+  # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
+  def __init__(self, mysql_util):
+    self.utils      = Utils()
+  
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
@@ -547,8 +543,6 @@ class Seq_csv:
   def __init__(self, seq_csv_file_name, mysql_util):
     self.utils      = Utils()
     #TODO: make dynamic by checking if it's local
-    # self.mysql_util = Mysql_util(host = 'localhost', db="vamps2")
-    self.mysql_util   = mysql_util
 
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
     self.content_by_field = self.content_matrix_transposition()
@@ -588,7 +582,7 @@ class Seq_csv:
     fields = "dataset_id, sequence_id, seq_count, classifier_id"
     insert_seq_pdr_vals = self.utils.make_insert_values(self.sequence_pdr_info_content)
     self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
-    rows_affected = self.mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
+    rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
 
   def sequence_pdr_info(self, dataset_dict):
@@ -600,7 +594,6 @@ class Seq_csv:
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
 
-
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
     pass
@@ -610,11 +603,11 @@ class Seq_csv:
     pass
 
   # def make_dataset_by_name_dict(self):
-  #   datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
+  #   datasets_w_ids = mysql_util.get_all_name_id('dataset')
   #   self.dataset_id_by_name_dict = dict(datasets_w_ids)
   #
   # def make_project_by_name_dict(self):
-  #   projects_w_ids = self.mysql_util.get_all_name_id('project')
+  #   projects_w_ids = mysql_util.get_all_name_id('project')
   #   self.project_id_by_name_dict = dict(projects_w_ids)
 
     """
@@ -634,7 +627,7 @@ class Seq_csv:
     ***) tables with foreign keys (SELECT distinct referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = "vamps2" and referenced_table_schema = "vamps2";):
           project
           dataset
-        sequence_pdr_info
+          sequence_pdr_info
         silva_taxonomy
         sequence_uniq_info
 
