@@ -160,7 +160,7 @@ import sys
 import os
 import timeit
 import time
-# from collections import defaultdict
+from collections import defaultdict
 
 
 class Mysql_util:
@@ -548,29 +548,39 @@ class Seq_csv:
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
   def get_seq_ids(self):
-    # def make_dataset_by_name_dict(self):
-    #   datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
-    #   self.dataset_id_by_name_dict = dict(datasets_w_ids)
-    # for seq in self.sequences:
-    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    
-    # def get_all_name_id(self, table_name, field_name = "", where_part = ""):
-    
+    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])    
     self.sequences_w_ids = self.mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq) 
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
+  
+  def make_sequence_pdr_info_content(self, dataset_dict):
+    sequence_pdr_info_content = []
+    for e in self.seqs_file_content:
+      temp_tuple = []
+      
+      print "\n+++++++++\nFROM for e in self.seqs_file_content"
+      self.utils.print_array_w_title(e[1], "e[1] AFTER = ")
+      self.utils.print_array_w_title(e[3], "e[3] AFTER = ")
+      self.utils.print_array_w_title(self.seq_ids_by_name_dict[e[1]], "self.seq_ids_by_name_dict[e[1]] = ")
+      temp_tuple.append(int(self.seq_ids_by_name_dict[e[1]]))
+      temp_tuple.append(int(dataset_dict[e[3]]))
+      temp_tuple.append(int(e[7]))
+      self.utils.print_array_w_title(temp_tuple, "temp_tuple AFTER = ")
+      sequence_pdr_info_content.append(temp_tuple)
+
+    self.utils.print_array_w_title(sequence_pdr_info_content, "sequence_pdr_info_content = ")
     
   
-  def sequence_pdr_info(self):
+  def sequence_pdr_info(self, dataset_dict):
     # (dataset_id, sequence_id, seq_count, classifier_id)
     # classifier_id = 2 GAST  SILVA108_FULL_LENGTH
     # self.utils.print_array_w_title(self.content_by_field, "self.content_by_field = ")
     self.get_seq_ids()
     self.seq_ids_by_name_dict = dict(self.sequences_w_ids)
     self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
+    self.make_sequence_pdr_info_content(dataset_dict)
 
-    for e in self.seqs_file_content:
+      
       # e[1] = val[0]+whatever
-      pass
       
         
   def parse_env_sample_source_id(self):
@@ -670,7 +680,7 @@ if __name__ == '__main__':
   
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
 
-  seq_csv_parser.sequence_pdr_info()
+  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
 
   # seq_csv_parser.make_project_by_name_dict()
   #
