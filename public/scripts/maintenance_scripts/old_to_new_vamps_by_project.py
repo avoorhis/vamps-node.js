@@ -234,12 +234,13 @@ class Mysql_util:
         self.utils.print_both(("ERROR: query = %s") % sql)
         raise
 
-    def get_all_name_id(self, table_name, field_name = "", where_part = ""):
+    def get_all_name_id(self, table_name, id_name = "", field_name = "", where_part = ""):
       if (field_name == ""):
         field_name = table_name
-      id_name = table_name + '_id'
+      if (id_name == ""):
+        id_name = table_name + '_id'
       my_sql  = """SELECT %s, %s FROM %s %s""" % (field_name, id_name, table_name, where_part)
-      # self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
+      self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
       res     = self.execute_fetch_select(my_sql)
       if res:
         return res
@@ -342,14 +343,12 @@ class Taxonomy:
 
   def make_uniqued_taxa_by_rank_dict(self):
     for rank in self.ranks:
-      rank_num = self.ranks.index(rank)
+      rank_num             = self.ranks.index(rank)
       uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
       try:
         self.uniqued_taxa_by_rank_dict[rank] = uniqued_taxa_by_rank
       except:
-        self.utils.print_both("Unexpected:")
         raise
-    # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
 
   def insert_taxa(self):
     """
@@ -369,18 +368,16 @@ class Taxonomy:
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
-
-    # t0 = time.time()
-    # self.make_uniqued_taxa_by_rank_dict()
-    # t1 = time.time()
-    # total = t1-t0
-    # print "total for make_uniqued_taxa_by_rank_dict = %s" % total
-
-    # for rank in self.ranks:
-    #   # self.utils.print_array_w_title(rank, "rank")
-    #   rank_num = self.ranks.index(rank)
-    #   uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
-    #   self.utils.print_array_w_title(uniqued_taxa_by_rank, "uniqued_taxa_by_rank from def silva_taxonomy")
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
+    for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
+      # get_all_name_id(self, table_name, field_name = "", where_part = ""):
+      # self.sequences_w_ids = mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+      # !
+      shielded_rank_name = "`"+rank+"`"
+      taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      a = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
+      print "+++9999"
+      print a
   
   def get_taxonomy_ids(self):
     
@@ -547,7 +544,7 @@ class Sequence:
 
   def get_seq_ids(self):
     self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.sequences_w_ids = mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+    self.sequences_w_ids = mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def insert_seq(self):
@@ -680,44 +677,43 @@ if __name__ == '__main__':
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   utils      = Utils()
 
-  # seq_csv_parser = Seq_csv(seq_csv_file_name)
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
 
-  # uncomment:
   sequence.insert_seq()
+  
+  refhvr_id.parse_refhvr_id()
+  refhvr_id.insert_refhvr_id()
+  
+  project = Project(mysql_util)
+  project.parse_project_csv(project_csv_file_name)
+  
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  user.insert_user()
+  project.insert_project(user.user_id)
+  
+  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  
+  dataset = Dataset(mysql_util)
+  dataset.parse_dataset_csv(dataset_csv_file_name)
+  dataset.make_dataset_project_dictionary()
+  dataset.insert_dataset(project.project_dict)
+  dataset.collect_dataset_ids()
+  
+  seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
+  
+  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
+  
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
   taxonomy.get_taxa_by_rank()
+  taxonomy.make_uniqued_taxa_by_rank_dict()
   taxonomy.insert_taxa()
-  
-  # refhvr_id.parse_refhvr_id()
-  # refhvr_id.insert_refhvr_id()
-  # 
-  # project = Project(mysql_util)
-  # project.parse_project_csv(project_csv_file_name)
-  # 
-  # user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  # user.insert_user()
-  # project.insert_project(user.user_id)
-  # 
-  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
-  # 
-  # dataset = Dataset(mysql_util)
-  # dataset.parse_dataset_csv(dataset_csv_file_name)
-  # dataset.make_dataset_project_dictionary()
-  # dataset.insert_dataset(project.project_dict)
-  # dataset.collect_dataset_ids()
-  # 
-  # seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
-  # 
-  # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
-  # 
   taxonomy.silva_taxonomy()
 
   # seq_csv_parser.make_project_by_name_dict()
