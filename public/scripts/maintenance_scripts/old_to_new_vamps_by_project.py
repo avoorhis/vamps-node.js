@@ -326,11 +326,12 @@ class Utils:
 
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
-    self.utils      = Utils()
-    self.taxa_content    = taxa_content
-    self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
+    self.utils        = Utils()
+    self.taxa_content = taxa_content
+    self.ranks        = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
     self.taxa_list_w_empty_ranks = []
     self.taxa_by_rank = []
+    self.uniqued_taxa_by_rank_dict = {}
 
   def get_taxa_by_rank(self):
     self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks)
@@ -339,6 +340,18 @@ class Taxonomy:
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa_content]
     self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
 
+  def make_uniqued_taxa_by_rank_dict(self):
+    for rank in self.ranks:
+      rank_num = self.ranks.index(rank)
+      uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
+      try:
+        self.uniqued_taxa_by_rank_dict[rank] = uniqued_taxa_by_rank
+      except:
+        self.utils.print_both("Unexpected:")
+        raise
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
+      
+      
   def insert_taxa(self):
     """
     TODO: make all queries, then insert all? Benchmark!
@@ -359,7 +372,16 @@ class Taxonomy:
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
+    self.make_uniqued_taxa_by_rank_dict()
+    # for rank in self.ranks:
+    #   # self.utils.print_array_w_title(rank, "rank")
+    #   rank_num = self.ranks.index(rank)
+    #   uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
+    #   self.utils.print_array_w_title(uniqued_taxa_by_rank, "uniqued_taxa_by_rank from def silva_taxonomy")
+  
+  def get_taxonomy_ids(self):
     
+    pass
 
 
 class Refhvr_id:
