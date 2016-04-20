@@ -512,6 +512,28 @@ class Dataset:
 
       rows_affected = self.mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
 
+class Sequence:
+
+  def __init__(self, sequences, mysql_util):
+    self.utils      = Utils()
+    self.mysql_util = mysql_util
+    self.sequences  = sequences
+
+    self.all_sequences   = set()
+    self.sequences_lists = []
+    self.comp_seq        = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
+    self.sequences_w_ids = set()
+
+  def get_seq_ids(self):
+    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
+    self.sequences_w_ids = self.mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+    # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
+
+  def insert_seq(self):
+    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
+    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+
+
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
@@ -522,7 +544,6 @@ class Seq_csv:
     make one connection, in main?
   """
 
-  # def __init__(self, host = "localhost", db = "vamps2", seq_csv_file_name):
   def __init__(self, seq_csv_file_name, mysql_util):
     self.utils      = Utils()
     #TODO: make dynamic by checking if it's local
@@ -536,8 +557,7 @@ class Seq_csv:
     self.refhvr_id   = self.content_by_field[5]
     self.the_rest    = self.content_by_field[6:]
 
-    self.comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.sequences_w_ids = set()
+    self.sequence    = Sequence(self.sequences, mysql_util)
     self.sequence_pdr_info_content = []
 
     # print "MMM"
@@ -549,18 +569,9 @@ class Seq_csv:
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
 
-  # to seq class:
-  def make_seq_list(self):
-    self.seq_list = [val[1] for val in self.seqs_file_content]
+  # def make_seq_list(self):
+  #   self.seq_list = [val[1] for val in self.seqs_file_content]
 
-  def insert_seq(self):
-    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
-
-  def get_seq_ids(self):
-    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.sequences_w_ids = self.mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
-    # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def make_sequence_pdr_info_content(self, dataset_dict):
     for e in self.seqs_file_content:
@@ -583,8 +594,8 @@ class Seq_csv:
   def sequence_pdr_info(self, dataset_dict):
     # (dataset_id, sequence_id, seq_count, classifier_id)
     # classifier_id = 2 GAST  SILVA108_FULL_LENGTH
-    self.get_seq_ids()
-    self.seq_ids_by_name_dict = dict(self.sequences_w_ids)
+    self.sequence.get_seq_ids()
+    self.seq_ids_by_name_dict = dict(self.sequence.sequences_w_ids)
     self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
@@ -655,9 +666,10 @@ if __name__ == '__main__':
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
 
   # uncomment:
-  seq_csv_parser.insert_seq()
+  sequence.insert_seq()
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
