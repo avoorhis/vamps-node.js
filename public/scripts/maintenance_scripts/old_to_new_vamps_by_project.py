@@ -327,21 +327,19 @@ class Utils:
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
     self.utils      = Utils()
-
+    self.taxa_content    = taxa_content
     self.ranks = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
     self.taxa_list_w_empty_ranks = []
-    self.taxa_content = taxa_content
+    self.taxa_by_rank = []
 
   def get_taxa_by_rank(self):
-    return zip(*self.taxa_list_w_empty_ranks)
+    self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks)
 
   def parse_taxonomy(self):
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa_content]
     self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
 
   def insert_taxa(self):
-    taxa_by_rank = self.get_taxa_by_rank()
-
     """
     TODO: make all queries, then insert all? Benchmark!
     """
@@ -350,13 +348,19 @@ class Taxonomy:
       rank_num = self.ranks.index(rank)
       # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
 
-      uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
+      uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
 
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
       # self.utils.print_array_w_title(insert_taxa_vals, "WWW insert_taxa_vals")
 
       rows_affected = mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
       # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+      
+  def silva_taxonomy(self):
+    # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
+    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
+    
+
 
 class Refhvr_id:
 
@@ -525,11 +529,6 @@ class Sequence:
     rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
-class Silva_taxonomy:
-  # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
-  def __init__(self, mysql_util):
-    self.utils      = Utils()
-  
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
   # parse
@@ -581,7 +580,7 @@ class Seq_csv:
   def insert_sequence_pdr_info(self):
     fields = "dataset_id, sequence_id, seq_count, classifier_id"
     insert_seq_pdr_vals = self.utils.make_insert_values(self.sequence_pdr_info_content)
-    self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
+    # self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
     rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
 
@@ -590,7 +589,7 @@ class Seq_csv:
     # classifier_id = 2 GAST  SILVA108_FULL_LENGTH
     self.sequence.get_seq_ids()
     self.seq_ids_by_name_dict = dict(self.sequence.sequences_w_ids)
-    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
+    # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
 
@@ -667,6 +666,7 @@ if __name__ == '__main__':
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
   # uncomment:
+  taxonomy.get_taxa_by_rank()
   taxonomy.insert_taxa()
 
   refhvr_id.parse_refhvr_id()
@@ -693,6 +693,8 @@ if __name__ == '__main__':
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
 
   seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
+
+  taxonomy.silva_taxonomy()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
