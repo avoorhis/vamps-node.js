@@ -313,6 +313,19 @@ class Utils:
           return sublist
           break
 
+    def make_insert_values(self, matrix):
+      all_insert_vals = ""
+
+      for arr in matrix[:-1]:
+        insert_dat_vals = ', '.join("'%s'" % key for key in arr)
+        all_insert_vals += insert_dat_vals + "), ("
+
+      all_insert_vals += ', '.join("'%s'" % key for key in matrix[-1])
+
+      self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
+      return all_insert_vals
+
+
 
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
@@ -472,17 +485,17 @@ class Dataset:
     for dl in self.dataset_file_content:
       dl[3] = project_id 
 
-  def make_insert_values(self):
-    all_insert_dat_vals = ""
-
-    for dataset_l in self.dataset_file_content[:-1]:
-      insert_dat_vals = ', '.join("'%s'" % key for key in dataset_l)
-      all_insert_dat_vals += insert_dat_vals + "), ("
-
-    all_insert_dat_vals += ', '.join("'%s'" % key for key in self.dataset_file_content[-1])
-
-    # self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
-    return all_insert_dat_vals
+  # def make_insert_values(self):
+  #   all_insert_dat_vals = ""
+  # 
+  #   for dataset_l in self.dataset_file_content[:-1]:
+  #     insert_dat_vals = ', '.join("'%s'" % key for key in dataset_l)
+  #     all_insert_dat_vals += insert_dat_vals + "), ("
+  # 
+  #   all_insert_dat_vals += ', '.join("'%s'" % key for key in self.dataset_file_content[-1])
+  # 
+  #   # self.utils.print_array_w_title(all_insert_dat_vals, "all_insert_dat_vals from insert_dataset")
+  #   return all_insert_dat_vals
 
   def collect_dataset_ids(self):
     for dataset, project in self.dataset_project_dict.items():
@@ -496,7 +509,7 @@ class Dataset:
 
       field_list = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
 
-      all_insert_dat_vals = self.make_insert_values()
+      all_insert_dat_vals = self.utils.make_insert_values(self.dataset_file_content)
       # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
       # self.utils.print_array_w_title(sql, "sql")
 
