@@ -333,6 +333,7 @@ class Taxonomy:
     self.taxa_list_w_empty_ranks = []
     self.taxa_by_rank = []
     self.uniqued_taxa_by_rank_dict = {}
+    self.uniqued_taxa_by_rank_w_id_dict = {}
 
   def get_taxa_by_rank(self):
     self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks)
@@ -367,24 +368,23 @@ class Taxonomy:
 
   def shield_rank_name(self, rank):
     return "`"+rank+"`"  
+    
+  def get_taxonomy_ids(self, rank, taxa_names):
+    shielded_rank_name = self.shield_rank_name(rank)
+    return mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
+
+  def make_uniqued_taxa_by_rank_w_id_dict(self):
+    for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
+      taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      self.uniqued_taxa_by_rank_w_id_dict[rank] = self.get_taxonomy_ids(rank, taxa_names)
 
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
-    for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
-      # get_all_name_id(self, table_name, field_name = "", where_part = ""):
-      # self.sequences_w_ids = mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
-      # !
-      shielded_rank_name = self.shield_rank_name(rank)
-      taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      a = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
-      # SELECT `strain`, strain_id FROM `strain` WHERE `strain` in ('')
-      # (('', 2148217L),)
+    self.make_uniqued_taxa_by_rank_w_id_dict()
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "self.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
   
-  def get_taxonomy_ids(self):
-    
-    pass
 
 
 class Refhvr_id:
