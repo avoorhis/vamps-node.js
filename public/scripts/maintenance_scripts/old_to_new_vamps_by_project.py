@@ -443,7 +443,7 @@ class User:
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
 
   def insert_user(self):
-    field_list    = "`username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password`"
+    field_list    = "username, email, institution, first_name, last_name, active, security_level, encrypted_password"
     insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
 
     rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
@@ -469,7 +469,7 @@ class Project:
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
 
-    field_list       = "`project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id`"
+    field_list       = "project, title, project_description, rev_project_name, funding, owner_user_id"
     insert_values = ', '.join("'%s'" % key for key in [project, title, project_description])
     insert_values += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
 
@@ -526,7 +526,7 @@ class Dataset:
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
-      field_list = "`dataset`, `dataset_description`, `env_sample_source_id`, `project_id`"
+      field_list = "dataset, dataset_description, env_sample_source_id, project_id"
 
       all_insert_dat_vals = self.utils.make_insert_values(self.dataset_file_content)
       # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
