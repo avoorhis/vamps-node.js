@@ -106,10 +106,10 @@ project
 ! ref_silva_taxonomy_info_per_seq_refhvr_id
 ! refhvr_id
 ! sequence
-! sequence_pdr_info
-! sequence_uniq_info
-! silva_taxonomy
-! silva_taxonomy_info_per_seq
+! sequence_pdr_info (dataset_id, sequence_id, seq_count, classifier_id)
+! silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
+! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
+! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
 species
 strain
 
@@ -235,12 +235,15 @@ class Mysql_util:
         self.utils.print_both(("ERROR: query = %s") % sql)
         raise
        
-    # def get_all_name_id(self, table_name):
-    #   id_name = table_name + '_id'
-    #   my_sql  = """SELECT %s, %s FROM %s""" % (table_name, id_name, table_name)
-    #   res     = self.execute_fetch_select(my_sql)
-    #   if res:
-    #     return res
+    def get_all_name_id(self, table_name, field_name = "", where_part = ""):
+      if (field_name == ""):
+        field_name = table_name
+      id_name = table_name + '_id'
+      my_sql  = """SELECT %s, %s FROM %s %s""" % (field_name, id_name, table_name, where_part)
+      # self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
+      res     = self.execute_fetch_select(my_sql)
+      if res:
+        return res
         
     def execute_simple_select(self, field_name, table_name, where_part):
       id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
@@ -517,21 +520,22 @@ class Seq_csv:
     self.mysql_util   = mysql_util
     
     self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
-    content_by_field = self.content_matrix_transposition()
-    self.sequences   = content_by_field[1]
-    self.taxa        = content_by_field[4]
-    self.refhvr_id   = content_by_field[5]
-    self.the_rest    = content_by_field[6:]
+    self.content_by_field = self.content_matrix_transposition()
+    self.sequences   = self.content_by_field[1]
+    self.taxa        = self.content_by_field[4]
+    self.refhvr_id   = self.content_by_field[5]
+    self.the_rest    = self.content_by_field[6:]
     
-    self.dataset_id_by_name_dict = {}
-    self.project_id_by_name_dict = {}
+    self.comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
+    self.sequences_w_ids = set()
     
-
+    print "MMM"
+    print self.seqs_file_content
+    """
+    [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
+    """
     
-    # print "MMM"
-    # print type(self.seqs_file_content)
-    # <type '_csv.reader'>
-        
+    
   def content_matrix_transposition(self):
     return zip(*self.seqs_file_content)
 
@@ -540,28 +544,34 @@ class Seq_csv:
     self.seq_list = [val[1] for val in self.seqs_file_content]
     
   def insert_seq(self):
-    comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
+    rows_affected = self.mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
     # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
     
-  # to seq class end
-
-
-
-    # self.utils.print_array_w_title(self.user_id, "self.user_id")
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(user, field_list, insert_values)")
-    # self.utils.print_array_w_title(rows_affected[1], "last_id by self.mysql_util.execute_insert(user, field_list, insert_values)")
+  def get_seq_ids(self):
+    # def make_dataset_by_name_dict(self):
+    #   datasets_w_ids = self.mysql_util.get_all_name_id('dataset')
+    #   self.dataset_id_by_name_dict = dict(datasets_w_ids)
+    # for seq in self.sequences:
+    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
     
-    # return rows_affected
-    # if rows_affected[1] > 0:
-    #   self.user_id = rows_affected[1]
-    # else:
-    #   self.user_id = int(self.get_user_id(self.user_data[1])[0][0])
-    # self.utils.print_array_w_title(self.user_id, "self.user_id")
-  
-  
-
+    # def get_all_name_id(self, table_name, field_name = "", where_part = ""):
     
+    self.sequences_w_ids = self.mysql_util.get_all_name_id('sequence', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq) 
+    # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
+    
+  
+  def sequence_pdr_info(self):
+    # (dataset_id, sequence_id, seq_count, classifier_id)
+    # classifier_id = 2 GAST  SILVA108_FULL_LENGTH
+    # self.utils.print_array_w_title(self.content_by_field, "self.content_by_field = ")
+    self.get_seq_ids()
+    self.seq_ids_by_name_dict = dict(self.sequences_w_ids)
+    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
+
+    for e in self.seqs_file_content:
+      # e[1] = val[0]+whatever
+      pass
+      
         
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -659,6 +669,8 @@ if __name__ == '__main__':
   dataset.collect_dataset_ids()
   
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
+
+  seq_csv_parser.sequence_pdr_info()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
