@@ -351,7 +351,7 @@ class Taxonomy:
         raise
     # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
 
-  def insert_taxa2(self):
+  def insert_taxa(self):
     """
     TODO: make all queries, then insert all? Benchmark!
     """
@@ -361,29 +361,11 @@ class Taxonomy:
 
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
       # self.utils.print_array_w_title(insert_taxa_vals, "HHH insert_taxa_vals from insert_taxa2")
-
-      rows_affected = mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
+      
+      shielded_rank_name = "`"+rank+"`"
+      rows_affected = mysql_util.execute_insert(shielded_rank_name, shielded_rank_name, insert_taxa_vals)
       # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
-      
-      
-  def insert_taxa(self):
-    """
-    TODO: make all queries, then insert all? Benchmark!
-    """
-    for rank in self.ranks:
-      # self.utils.print_array_w_title(rank, "rank")
-      rank_num = self.ranks.index(rank)
-      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
-
-      uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
-      # self.utils.print_array_w_title(uniqued_taxa_by_rank, "uniqued_taxa_by_rank = ")
-
-      insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_taxa_vals, "WWW insert_taxa_vals")
-
-      rows_affected = mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
-      # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
-      
+            
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
@@ -687,10 +669,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
@@ -709,23 +691,8 @@ if __name__ == '__main__':
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
   # print taxonomy.taxa_list_w_empty_ranks
-  # uncomment:
   taxonomy.get_taxa_by_rank()
-  
-  t0 = time.time()
   taxonomy.insert_taxa()
-  t1 = time.time()
-  time_res = t1-t0
-  print "time_res for insert_taxa 1"
-  print time_res
-  
-  t0 = time.time()
-  taxonomy.make_uniqued_taxa_by_rank_dict()
-  taxonomy.insert_taxa2()
-  t1 = time.time()
-  time_res = t1-t0
-  print "time_res for insert_taxa 2"
-  print time_res
   
   # refhvr_id.parse_refhvr_id()
   # refhvr_id.insert_refhvr_id()
@@ -751,7 +718,7 @@ if __name__ == '__main__':
   # 
   # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
   # 
-  # taxonomy.silva_taxonomy()
+  taxonomy.silva_taxonomy()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
