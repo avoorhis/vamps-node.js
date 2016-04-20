@@ -225,7 +225,7 @@ class Mysql_util:
 
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:      
-        sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % (ignore, table_name, field_name, val_list)
+        sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
         
         if self.cursor:
           self.cursor.execute(sql)
@@ -322,10 +322,8 @@ class Utils:
 
       all_insert_vals += ', '.join("'%s'" % key for key in matrix[-1])
 
-      self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
+      # self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
       return all_insert_vals
-
-
 
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
@@ -359,9 +357,9 @@ class Taxonomy:
       uniqued_taxa_by_rank = set(taxa_by_rank[rank_num])
       
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_taxa_vals, "insert_taxa_vals")
+      # self.utils.print_array_w_title(insert_taxa_vals, "WWW insert_taxa_vals")
 
-      rows_affected = self.mysql_util.execute_insert(rank, rank, insert_taxa_vals)
+      rows_affected = self.mysql_util.execute_insert("`"+rank+"`", "`"+rank+"`", insert_taxa_vals)
       # self.utils.print_array_w_title(rows_affected[0], "rows affected by self.mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
       
 class Refhvr_id:
@@ -422,7 +420,7 @@ class User:
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
     
   def insert_user(self):
-    field_list    = "username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password"
+    field_list    = "`username`, `email`, `institution`, `first_name`, `last_name`, `active`, `security_level`, `encrypted_password`"
     insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     
     rows_affected = self.mysql_util.execute_insert("user", field_list, insert_values)
@@ -449,7 +447,7 @@ class Project:
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
     
-    field_list       = "project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id"
+    field_list       = "`project`, `title`, `project_description`, `rev_project_name`, `funding`, `owner_user_id`"
     insert_values = ', '.join("'%s'" % key for key in [project, title, project_description])
     insert_values += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
 
@@ -507,7 +505,7 @@ class Dataset:
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
-      field_list = "dataset`, `dataset_description`, `env_sample_source_id`, `project_id"
+      field_list = "`dataset`, `dataset_description`, `env_sample_source_id`, `project_id`"
 
       all_insert_dat_vals = self.utils.make_insert_values(self.dataset_file_content)
       # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
@@ -574,21 +572,21 @@ class Seq_csv:
       # self.utils.print_array_w_title(e[1], "e[1] AFTER = ")
       # self.utils.print_array_w_title(e[3], "e[3] AFTER = ")
       # self.utils.print_array_w_title(self.seq_ids_by_name_dict[e[1]], "self.seq_ids_by_name_dict[e[1]] = ")
-      temp_tuple.append(int(self.seq_ids_by_name_dict[e[1]]))
       temp_tuple.append(int(dataset_dict[e[3]]))
+      temp_tuple.append(int(self.seq_ids_by_name_dict[e[1]]))
       temp_tuple.append(int(e[7]))
+      temp_tuple.append(int(2))
       # self.utils.print_array_w_title(temp_tuple, "temp_tuple AFTER = ")
       self.sequence_pdr_info_content.append(temp_tuple)
 
     # self.utils.print_array_w_title(self.sequence_pdr_info_content, "sequence_pdr_info_content = ")
     
   def insert_sequence_pdr_info(self):
-    insert_seq_pdr_vals = '), ('.join(["'%s'" % key for key in self.sequence_pdr_info_content])
-    self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
-
-    # execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
     fields = "dataset_id, sequence_id, seq_count, classifier_id"
-    # rows_affected = self.mysql_util.execute_insert(sequence_pdr_info, fields, insert_seq_pdr_vals)
+    insert_seq_pdr_vals = self.utils.make_insert_values(self.sequence_pdr_info_content)
+    self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
+    rows_affected = self.mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
+    self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
     
   def sequence_pdr_info(self, dataset_dict):
     # (dataset_id, sequence_id, seq_count, classifier_id)
