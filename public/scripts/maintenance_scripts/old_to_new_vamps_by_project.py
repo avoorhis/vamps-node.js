@@ -369,21 +369,54 @@ class Taxonomy:
   def shield_rank_name(self, rank):
     return "`"+rank+"`"  
     
-  def get_taxonomy_ids(self, rank, taxa_names):
-    shielded_rank_name = self.shield_rank_name(rank)
-    return mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
-
   def make_uniqued_taxa_by_rank_w_id_dict(self):
     for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
+      shielded_rank_name = self.shield_rank_name(rank)
       taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      self.uniqued_taxa_by_rank_w_id_dict[rank] = self.get_taxonomy_ids(rank, taxa_names)
+      taxa_w_id = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
+      self.uniqued_taxa_by_rank_w_id_dict[rank] = taxa_w_id
 
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "self.taxa_list_w_empty_ranks from def silva_taxonomy")
-    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "sself.uniqued_taxa_by_rank_dict")
+    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "===\nself.taxa_list_w_empty_ranks from def silva_taxonomy")
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "===\nself.uniqued_taxa_by_rank_dict")
     self.make_uniqued_taxa_by_rank_w_id_dict()
-    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "self.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "===\nself.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
+    silva_taxonomy_list = []
+    for taxonomy in self.taxa_list_w_empty_ranks:
+      rank_num = 0
+      self.utils.print_array_w_title(taxonomy, "===\ntaxonomy from def silva_taxonomy: ")
+      # ['Bacteria', 'Proteobacteria', 'Deltaproteobacteria', 'Desulfobacterales', 'Nitrospinaceae', 'Nitrospina', '', '']
+      # rank_num             = self.ranks.index(rank)
+      silva_taxonomy_sublist = []
+      for taxon in taxonomy:
+        rank_num = taxonomy.index(taxon)
+        rank = self.ranks[rank_num]
+        print "UUUUU"
+        print self.uniqued_taxa_by_rank_w_id_dict[rank]
+        # for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank]:
+        #   print "k = %s, v = %s" % (k, v)
+        print "rank_num = %s, rank = %s, taxon = %s" % (rank_num, rank, taxon)
+        
+        taxon_id = [int(v) for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if k == taxon]
+        silva_taxonomy_sublist.extend(taxon_id)
+        # [3, 5, 6, 7, 2, 2, 1, 1]
+        
+        
+        # for k, v in self.uniqued_taxa_by_rank_w_id_dict.items():
+        #   print "k = %s, v = %s" % (k, v)
+        #   print k == rank
+        # taxon_id = self.uniqued_taxa_by_rank_w_id_dict[rank][]
+        # print [v for i, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if i[0] == taxon]
+        # for i, v in self.uniqued_taxa_by_rank_w_id_dict[rank]:
+        #   print "i = %s, v = %s" % (i, v)
+        """
+        self.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy
+        {'domain': (('Archaea', 2L), ('Bacteria', 3L), ('Unknown', 1L)), 'family': (('', 1L), ('Alteromonadaceae', 3L), ('Nitrospinaceae', 2L), ('Rhodobiaceae', 4L)), 'order': (('', 1L), ('Acidimicrobiales', 3L), ('Alteromonadales', 6L), ('Desulfobacterales', 7L), ('Nitrospirales', 5L), ('Rhizobiales', 2L), ('Thiotrichales', 4L)), 'strain': (('', 1L),), 'phylum': (('', 1L), ('Acidobacteria', 6L), ('Actinobacteria', 3L), ('Nitrospirae', 2L), ('Proteobacteria', 5L), ('Thaumarchaeota', 4L)), 'klass': (('', 1L), ('Acidimicrobiia', 4L), ('Alphaproteobacteria', 5L), ('Deltaproteobacteria', 6L), ('Gammaproteobacteria', 2L), ('Nitrospira', 3L)), 'genus': (('', 1L), ('Nitrospina', 2L), ('Rhodobium', 3L)), 'species': (('', 1L),)}
+        
+        """
+        
+      self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
   
 
 
