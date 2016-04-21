@@ -339,10 +339,15 @@ class Taxonomy:
   def get_taxa_by_rank(self):
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "EEEE \ntaxa_list_w_empty_ranks from parse_taxonomy")
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict.values(), "taxa_list_w_empty_ranks_dict.values() from parse_taxonomy")
+
+    self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks_dict.values())
+    self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy from values")
     
     
     self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks)
     self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy")
+
+
 
   def parse_taxonomy(self):
     taxa_list = [taxon_string.split(";") for taxon_string in self.taxa_content]
@@ -352,19 +357,14 @@ class Taxonomy:
     self.utils.print_array_w_title(taxa_list, "taxa_list from parse_taxonomy")
 
     self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
-    for key, val in self.taxa_list_dict.items():
-      print "key = %s,\nval = %s from self.taxa_list_dict" % (key, val)
-      self.taxa_list_w_empty_ranks_dict[key] = val + [""] * (len(self.ranks) - len(val))
       
-    self.taxa_list_w_empty_ranks_dict_temp_val = [l + [""] * (len(self.ranks) - len(l)) for l in self.taxa_list_dict.values()]
-    
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict_temp_val, "self.taxa_list_w_empty_ranks_dict_temp_val from parse_taxonomy")
-    
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict.values(), "taxa_list_w_empty_ranks_dict.values() from parse_taxonomy")
+    self.taxa_list_w_empty_ranks_dict = {key: val + [""] * (len(self.ranks) - len(val)) for key, val in self.taxa_list_dict.items()}
     
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "taxa_list_w_empty_ranks_dict from parse_taxonomy")
 
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks from parse_taxonomy")
+
+    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict.values(), "taxa_list_w_empty_ranks_dict.values() from parse_taxonomy")
     
 
   def make_uniqued_taxa_by_rank_dict(self):
