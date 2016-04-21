@@ -330,42 +330,20 @@ class Taxonomy:
     self.utils        = Utils()
     self.taxa_content = taxa_content
     self.ranks        = ['domain', 'phylum', 'klass', 'order', 'family', 'genus', 'species', 'strain']
-    self.taxa_list_w_empty_ranks = []
     self.taxa_list_w_empty_ranks_dict = defaultdict(list)
     self.taxa_by_rank = []
-    self.uniqued_taxa_by_rank_dict = {}
+    self.uniqued_taxa_by_rank_dict      = {}
     self.uniqued_taxa_by_rank_w_id_dict = {}
 
-  def get_taxa_by_rank(self):
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "EEEE \ntaxa_list_w_empty_ranks from parse_taxonomy")
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict.values(), "taxa_list_w_empty_ranks_dict.values() from parse_taxonomy")
-
-    self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks_dict.values())
-    self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy from values")
-    
-    
-    self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks)
-    self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy")
-
-
-
   def parse_taxonomy(self):
-    taxa_list = [taxon_string.split(";") for taxon_string in self.taxa_content]
     self.taxa_list_dict = {taxon_string: taxon_string.split(";") for taxon_string in self.taxa_content}
-    self.utils.print_array_w_title(self.taxa_list_dict, "taxa_list_dict from parse_taxonomy")
-
-    self.utils.print_array_w_title(taxa_list, "taxa_list from parse_taxonomy")
-
-    self.taxa_list_w_empty_ranks = [l + [""] * (len(self.ranks) - len(l)) for l in taxa_list]
-      
     self.taxa_list_w_empty_ranks_dict = {key: val + [""] * (len(self.ranks) - len(val)) for key, val in self.taxa_list_dict.items()}
-    
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "taxa_list_w_empty_ranks_dict from parse_taxonomy")
+    self.utils.print_array_w_title(self.taxa_list_dict, "taxa_list_dict from parse_taxonomy from parse_taxonomy")
+    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "taxa_list_w_empty_ranks_dict from parse_taxonomy from parse_taxonomy")
 
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "taxa_list_w_empty_ranks from parse_taxonomy")
-
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict.values(), "taxa_list_w_empty_ranks_dict.values() from parse_taxonomy")
-    
+  def get_taxa_by_rank(self):
+    self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks_dict.values())
+    # self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy from values")
 
   def make_uniqued_taxa_by_rank_dict(self):
     for rank in self.ranks:
@@ -381,15 +359,11 @@ class Taxonomy:
     TODO: make all queries, then insert all? Benchmark!
     """
     for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
-      rank_num = self.ranks.index(rank)
-      # self.utils.print_array_w_title(rank_num, "self.ranks.index(rank)")
-
       insert_taxa_vals = '), ('.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      # self.utils.print_array_w_title(insert_taxa_vals, "HHH insert_taxa_vals from insert_taxa2")
       
       shielded_rank_name = self.shield_rank_name(rank)
       rows_affected = mysql_util.execute_insert(shielded_rank_name, shielded_rank_name, insert_taxa_vals)
-      # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
+      self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(%s, %s, insert_taxa_vals)" % (rank, rank))
 
   def shield_rank_name(self, rank):
     return "`"+rank+"`"  
@@ -406,7 +380,7 @@ class Taxonomy:
 
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "===\nself.taxa_list_w_empty_ranks from def silva_taxonomy")
+    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "===\nself.taxa_list_w_empty_ranks from def silva_taxonomy")
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "===\nself.uniqued_taxa_by_rank_dict")
     self.make_uniqued_taxa_by_rank_w_id_dict()
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "===\nself.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
