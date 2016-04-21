@@ -343,34 +343,15 @@ class Taxonomy:
     self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks_dict.values())
 
   def make_uniqued_taxa_by_rank_dict(self):
-    t0 = time.time()
     for rank in self.ranks:
       rank_num             = self.ranks.index(rank)
-      # uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
+      uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
       try:
-        self.uniqued_taxa_by_rank_dict[rank] = self.taxa_by_rank[rank_num]
-        # uniqued_taxa_by_rank
+        self.uniqued_taxa_by_rank_dict[rank] = uniqued_taxa_by_rank
       except:
         raise
-    t1 = time.time()
-    total = t1-t0
-    print "total for = %s" % total
-    
+
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with for")
-        
-    # keys = ['a', 'b', 'c']
-    # values = [1, 2, 3]
-    # dictionary = dict(zip(keys, values))
-    t0 = time.time()
-    self.uniqued_taxa_by_rank_dict = dict(zip(self.ranks, self.taxa_by_rank))
-    t1 = time.time()
-    total = t1-t0
-    print "total zip = %s" % total
-    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with zip")
-    """total for = 8.10623168945e-06
-    0.00000810623168945
-    total zip = 1.69277191162e-05
-    0.0000169277191162"""
 
   def insert_taxa(self):
     """
