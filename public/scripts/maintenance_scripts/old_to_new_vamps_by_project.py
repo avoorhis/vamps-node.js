@@ -337,22 +337,40 @@ class Taxonomy:
 
   def parse_taxonomy(self):
     self.taxa_list_dict = {taxon_string: taxon_string.split(";") for taxon_string in self.taxa_content}
-    self.taxa_list_w_empty_ranks_dict = {key: val + [""] * (len(self.ranks) - len(val)) for key, val in self.taxa_list_dict.items()}
-    self.utils.print_array_w_title(self.taxa_list_dict, "taxa_list_dict from parse_taxonomy from parse_taxonomy")
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "taxa_list_w_empty_ranks_dict from parse_taxonomy from parse_taxonomy")
+    self.taxa_list_w_empty_ranks_dict = {taxonomy: tax_list + [""] * (len(self.ranks) - len(tax_list)) for taxonomy, tax_list in self.taxa_list_dict.items()}
 
   def get_taxa_by_rank(self):
     self.taxa_by_rank = zip(*self.taxa_list_w_empty_ranks_dict.values())
-    # self.utils.print_array_w_title(self.taxa_by_rank, "taxa_by_rank from parse_taxonomy from values")
 
   def make_uniqued_taxa_by_rank_dict(self):
+    t0 = time.time()
     for rank in self.ranks:
       rank_num             = self.ranks.index(rank)
-      uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
+      # uniqued_taxa_by_rank = set(self.taxa_by_rank[rank_num])
       try:
-        self.uniqued_taxa_by_rank_dict[rank] = uniqued_taxa_by_rank
+        self.uniqued_taxa_by_rank_dict[rank] = self.taxa_by_rank[rank_num]
+        # uniqued_taxa_by_rank
       except:
         raise
+    t1 = time.time()
+    total = t1-t0
+    print "total for = %s" % total
+    
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with for")
+        
+    # keys = ['a', 'b', 'c']
+    # values = [1, 2, 3]
+    # dictionary = dict(zip(keys, values))
+    t0 = time.time()
+    self.uniqued_taxa_by_rank_dict = dict(zip(self.ranks, self.taxa_by_rank))
+    t1 = time.time()
+    total = t1-t0
+    print "total zip = %s" % total
+    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with zip")
+    """total for = 8.10623168945e-06
+    0.00000810623168945
+    total zip = 1.69277191162e-05
+    0.0000169277191162"""
 
   def insert_taxa(self):
     """
@@ -373,10 +391,9 @@ class Taxonomy:
     
     for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
       shielded_rank_name = self.shield_rank_name(rank)
-      taxa_names = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
-      taxa_w_id = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
+      taxa_names         = ', '.join(["'%s'" % key for key in uniqued_taxa_by_rank])
+      taxa_w_id          = mysql_util.get_all_name_id(shielded_rank_name, rank + "_id", shielded_rank_name, 'WHERE %s in (%s)' % (shielded_rank_name, taxa_names))
       self.uniqued_taxa_by_rank_w_id_dict[rank] = taxa_w_id
-
 
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
@@ -386,49 +403,9 @@ class Taxonomy:
     self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "===\nself.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
     silva_taxonomy_dict = defaultdict(list)
     silva_taxonomy_list = []
-    for taxonomy in self.taxa_list_w_empty_ranks:
-      self.utils.print_array_w_title(taxonomy, "===\ntaxonomy from def silva_taxonomy: ")
-      # ['Bacteria', 'Proteobacteria', 'Deltaproteobacteria', 'Desulfobacterales', 'Nitrospinaceae', 'Nitrospina', '', '']
-      silva_taxonomy_sublist = []
-      for taxon in taxonomy:
-        rank_num = taxonomy.index(taxon)
-        rank     = self.ranks[rank_num]
-        print "UUUUU"
-        print self.uniqued_taxa_by_rank_w_id_dict[rank]
-        # for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank]:
-        #   print "k = %s, v = %s" % (k, v)
-        print "rank_num = %s, rank = %s, taxon = %s" % (rank_num, rank, taxon)
-        
-        taxon_id = [int(v) for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if k == taxon]
-        silva_taxonomy_sublist.extend(taxon_id)
-        # [3, 5, 6, 7, 2, 2, 1, 1]
-        
-        
-        # for k, v in self.uniqued_taxa_by_rank_w_id_dict.items():
-        #   print "k = %s, v = %s" % (k, v)
-        #   print k == rank
-        # taxon_id = self.uniqued_taxa_by_rank_w_id_dict[rank][]
-        # print [v for i, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if i[0] == taxon]
-        # for i, v in self.uniqued_taxa_by_rank_w_id_dict[rank]:
-        #   print "i = %s, v = %s" % (i, v)
-        """
-        self.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy
-        {'domain': (('Archaea', 2L), ('Bacteria', 3L), ('Unknown', 1L)), 'family': (('', 1L), ('Alteromonadaceae', 3L), ('Nitrospinaceae', 2L), ('Rhodobiaceae', 4L)), 'order': (('', 1L), ('Acidimicrobiales', 3L), ('Alteromonadales', 6L), ('Desulfobacterales', 7L), ('Nitrospirales', 5L), ('Rhizobiales', 2L), ('Thiotrichales', 4L)), 'strain': (('', 1L),), 'phylum': (('', 1L), ('Acidobacteria', 6L), ('Actinobacteria', 3L), ('Nitrospirae', 2L), ('Proteobacteria', 5L), ('Thaumarchaeota', 4L)), 'klass': (('', 1L), ('Acidimicrobiia', 4L), ('Alphaproteobacteria', 5L), ('Deltaproteobacteria', 6L), ('Gammaproteobacteria', 2L), ('Nitrospira', 3L)), 'genus': (('', 1L), ('Nitrospina', 2L), ('Rhodobium', 3L)), 'species': (('', 1L),)}
-        
-        """
-      
-      self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
-      silva_taxonomy_dict[taxonomy] = silva_taxonomy_sublist
-      silva_taxonomy_list.append(silva_taxonomy_sublist)
-    self.utils.print_array_w_title(silva_taxonomy_list, "===\nsilva_taxonomy_list from def silva_taxonomy: ")
-    self.utils.print_array_w_title(silva_taxonomy_dict, "===\nsilva_taxonomy_dict from def silva_taxonomy: ")
+    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "self.taxa_list_w_empty_ranks_dict from silva_taxonomy")
+    
 
-    """
-    TODO make a dict, by taxonomy?, to use later in silva_taxonomy_info_per_seq
-    silva_taxonomy_list from def silva_taxonomy: 
-    [[3, 5, 6, 7, 2, 2, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 5, 5, 2, 4, 3, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 3, 4, 3, 1, 1, 1, 1], [3, 6, 1, 1, 1, 1, 1, 1], [3, 2, 3, 5, 1, 1, 1, 1], [3, 1, 1, 1, 1, 1, 1, 1], [3, 5, 2, 4, 1, 1, 1, 1], [3, 5, 2, 6, 3, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [2, 4, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
-
-    """
 
 class Refhvr_id:
 
