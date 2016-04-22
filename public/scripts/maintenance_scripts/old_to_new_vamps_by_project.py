@@ -692,6 +692,7 @@ class Seq_csv:
                           
     self.sequence         = Sequence(self.sequences, mysql_util)
     self.sequence_pdr_info_content = []
+    self.silva_taxonomy_info_per_seq_list = []
 
     # print "MMM"
     # print self.seqs_file_content
@@ -735,12 +736,12 @@ class Seq_csv:
       
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq_from_csv(self, taxonomy):
-    sequence_id = 0
+    sequence_id       = 0
     silva_taxonomy_id = 0
-    gast_distance = 0.0
-    refssu_id = 0
-    refssu_count = 0
-    rank_id = 0
+    gast_distance     = 0.0
+    refssu_id         = 0
+    refssu_count      = 0
+    rank_id           = 0
     
     self.utils.print_array_w_title(taxonomy.silva_taxonomy_id_per_taxonomy_dict, "taxonomy.taxonomy.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
     
@@ -750,70 +751,35 @@ class Seq_csv:
     # all_rank_w_id
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
     
-    print "1" * 20
-    #1
-    t0 = time.time()
     for entry in self.seqs_file_content:
+      temp_list = []
       entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
       
       # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict from silva_taxonomy_info_per_seq_from_csv = ")
       
-      seq               = entry_w_fields_dict["sequence"]
-      sequence_id       = self.seq_ids_by_name_dict[seq]
+      sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
       gast_distance     = entry_w_fields_dict["distance"]
       # # refssu_id         =
       # # refssu_count      =
-      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])
-    t1 = time.time()
-    total = t1-t0
-    print "total with dict = %s" % total
-    
-    self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
-    print "2" * 20
-    #2
-    t0 = time.time()
-
-    # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
-    
-    for entry in self.seqs_file_content:
-      # entry = dict(zip(self.seq_csv_file_fields, entry))
+      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      temp_list.append(sequence_id)
+      temp_list.append(silva_taxonomy_id)
+      temp_list.append(gast_distance)
+      temp_list.append(refssu_id)
+      temp_list.append(refssu_count)
+      temp_list.append(rank_id)
+      self.utils.print_array_w_title(temp_list, "temp_list from silva_taxonomy_info_per_seq_from_csv = ")
       
-      # self.utils.print_array_w_title(entry, "entry from silva_taxonomy_info_per_seq_from_csv = ")
-      
-      seq               = entry[1]
-      sequence_id       = self.seq_ids_by_name_dict[seq]
-      silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry[4]]
-      gast_distance     = entry[9]
-      # # refssu_id         =
-      # # refssu_count      =
-      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry[6])[0]
-      
-    t1 = time.time()
-    total = t1-t0
-    print "total no dict = %s" % total    
-    
-    """
-    total with dict = 0.804136991501
-    total no dict = 0.545675992966
-    total with dict = 0.685003995895
-    total no dict = 0.456652879715
-    total with dict = 0.739241123199
-    total no dict = 0.597506046295
-    No dict is slightly faster, but with dict is more unversal, in case fields order is changed
-    """
-    
-    self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
-    self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
-    """
+      self.silva_taxonomy_info_per_seq_list.append(temp_list)
+    #
+    self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
+    # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
+    # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
+    # self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
 
  
-    
+    """
     [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
     """
       
@@ -870,10 +836,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
