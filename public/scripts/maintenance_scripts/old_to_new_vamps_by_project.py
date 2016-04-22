@@ -453,7 +453,7 @@ class Taxonomy:
     """
     ((2436595L, 2L, 2016066L, 2085666L, 2252460L, 2293035L, 2303053L, 1L, 2148217L), ...
     """
-    self.make_silva_taxonomy_ids_dict(silva_taxonomy_ids()
+    self.make_silva_taxonomy_ids_dict(silva_taxonomy_ids)
 
 class Refhvr_id:
 
@@ -673,9 +673,40 @@ class Seq_csv:
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
     
+  # def find_in_nested_list(self, hey, needle):
+  #   return [int(v) for k, v in hey if k == needle]
+  #
+  def find_key_by_value_in_dict(self, hey, needle):
+    # print "hey = "
+    # print hey
+    # for k, v in hey:
+    #   if v == needle:
+    #     return k
+    return [k for k, v in hey if v == needle]
+  
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
-  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict):
+  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict, silva_taxonomy_ids_dict):
     self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
+    self.utils.print_array_w_title(silva_taxonomy_ids_dict, "silva_taxonomy_ids_dict from silva_taxonomy_info_per_seq = ")
+    for silva_taxonomy_id, st_id_list1 in silva_taxonomy_ids_dict.items():
+      self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
+      self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
+
+      print "YYY"
+      print self.find_key_by_value_in_dict(taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
+
+
+      # for taxonomy, st_id_list2 in taxa_list_w_empty_ranks_ids_dict.items():
+      #   self.utils.print_array_w_title(taxonomy, "\n======\ntaxonomy = ")
+        # if (st_id_list1 == st_id_list2):
+        #   print "URA"
+        #   self.utils.print_array_w_title(st_id_list2, "\n======\nst_id_list2 = ")
+    """
+    for name, age in list.iteritems():
+        if age == search_age:
+            print name
+    """
+    
     # for taxonomy, 
     # self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)
 
@@ -783,7 +814,7 @@ if __name__ == '__main__':
   taxonomy.get_silva_taxonomy_ids()
 
 
-  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict)
+  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict, taxonomy.silva_taxonomy_ids_dict)
   
   # seq_csv_parser.make_project_by_name_dict()
   #
