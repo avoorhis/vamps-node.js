@@ -354,8 +354,7 @@ class Utils:
       
     def find_in_nested_list(self, hey, needle):      
       return [v for k, v in hey if k.lower() == needle.lower()]
-      # return [int(v) for k, v in hey if k == needle]
-      # i for i, v in enumerate(L) if v[0] == 53]
+
     def find_key_by_value_in_dict(self, hey, needle):
       return [k for k, v in hey if v == needle]
     
@@ -407,9 +406,32 @@ class Taxonomy:
   def shield_rank_name(self, rank):
     return "`"+rank+"`"  
     
+    """
+    >>> obj1 = (6, 1, 2, 6, 3)
+    >>> obj2 = list(obj1) #Convert to list
+    >>> obj2.append(8)
+    >>> print obj2
+    [6, 1, 2, 6, 3, 8]
+    >>> obj1 = tuple(obj2) #Convert back to tuple
+    >>> print obj1
+    (6, 1, 2, 6, 3, 8)
+    
+    """
+    
   def get_all_rank_w_id(self):
-    self.all_rank_w_id = mysql_util.get_all_name_id("rank")
-    # self.utils.print_array_w_title(self.all_rank_w_id, "self.all_rank_w_id from get_all_rank_w_id")
+    all_rank_w_id = mysql_util.get_all_name_id("rank")
+    self.utils.print_array_w_title(type(all_rank_w_id), "type(all_rank_w_id) from get_all_rank_w_id")
+    klass_id = self.utils.find_in_nested_list(all_rank_w_id, "klass")
+    self.utils.print_array_w_title(klass_id[0], "klass_id[0] from get_all_rank_w_id")
+    t = ("class", klass_id[0])
+    self.utils.print_array_w_title(t, "t from get_all_rank_w_id")
+    self.utils.print_array_w_title(type(t), "type(t) from get_all_rank_w_id")
+    a = list(all_rank_w_id)
+    a.append(t)
+    self.utils.print_array_w_title(a, "a from get_all_rank_w_id")
+    self.all_rank_w_id = tuple(a)
+    self.utils.print_array_w_title(self.all_rank_w_id, "self.all_rank_w_id from get_all_rank_w_id")
+    self.utils.print_array_w_title(type(self.all_rank_w_id), "self.all_rank_w_id from get_all_rank_w_id")
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
     
   
@@ -442,12 +464,6 @@ class Taxonomy:
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
-        print "OOOOO"
-        self.utils.print_array_w_title(rank, "===\nrank from def silva_taxonomy: ")
-        self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict[rank], "===\nself.uniqued_taxa_by_rank_w_id_dict[rank] from def silva_taxonomy: ")
-        self.utils.print_array_w_title(taxon, "===\ntaxon: ")
-        self.utils.print_array_w_title(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon), "===\nself.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon) from def silva_taxonomy: ")
-
         taxon_id = int(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)[0])
         silva_taxonomy_sublist.append(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
@@ -755,7 +771,17 @@ class Seq_csv:
       gast_distance     = entry_w_fields_dict["distance"]
       # # refssu_id         =
       # # refssu_count      =
-      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])
+      print "OOOOO"
+      self.utils.print_array_w_title(taxonomy.all_rank_w_id, "===\nall_rank_w_id from def silva_taxonomy: ")
+      self.utils.print_array_w_title(entry_w_fields_dict["rank"], "===\nentry_w_fields_dict[\"rank\"] from def silva_taxonomy: ")
+      self.utils.print_array_w_title(self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"]), "===\nself.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict[\"rank\"]) from def silva_taxonomy: ")
+      self.utils.print_array_w_title(rank_id, "===\nrank_id from def silva_taxonomy: ")
+      self.utils.print_array_w_title(type(rank_id), "===\ntype(rank_id) from def silva_taxonomy: ")
+      self.utils.print_array_w_title(rank_id[0], "===\nrank_id[0] from def silva_taxonomy: ")
+
+
+
       # self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
       # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
       # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
@@ -855,10 +881,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
