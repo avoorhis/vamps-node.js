@@ -338,7 +338,8 @@ class Taxonomy:
     self.uniqued_taxa_by_rank_dict        = {}
     self.uniqued_taxa_by_rank_w_id_dict   = {}
     self.taxa_list_w_empty_ranks_ids_dict = defaultdict(list)
-
+    self.silva_taxonomy_rank_list_w_ids_dict = defaultdict(list)
+    
   def parse_taxonomy(self):
     self.taxa_list_dict = {taxon_string: taxon_string.split(";") for taxon_string in self.taxa_content}
     self.taxa_list_w_empty_ranks_dict = {taxonomy: tax_list + [""] * (len(self.ranks) - len(tax_list)) for taxonomy, tax_list in self.taxa_list_dict.items()}
@@ -405,34 +406,26 @@ class Taxonomy:
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
     
-  def get_silva_taxonomy_ids(self):
-    
-    for silva_taxonomy_id_list in self.taxa_list_w_empty_ranks_ids_dict.values():
-      print "silva_taxonomy_id_list = "
-      print silva_taxonomy_id_list
+  def make_silva_taxonomy_rank_list_w_ids_dict(self):
+    for taxonomy, silva_taxonomy_id_list in self.taxa_list_w_empty_ranks_ids_dict.items():
       rank_w_id_list = []
       for rank_num, taxon_id in enumerate(silva_taxonomy_id_list):
         rank = self.ranks[rank_num]
         t = (rank, taxon_id)
-        print "(rank, taxon_id)"
-        print t
         rank_w_id_list.append(t)
-        """
-        append
-        [2, 2081011, 2189221, 2356015, 2407123, 2417291, 1, 2148217]
-        ('domain', 2)
-        ('phylum', 2081011)
-        ('klass', 2189221)
-        ('order', 2356015)
-        ('family', 2407123)
-        ('genus', 2417291)
-        ('species', 1)
-        ('strain', 2148217)
-        extend
-        ['domain', 2, 'phylum', 2081011, 'klass', 2189221, 'order', 2356015, 'family', 2407123, 'genus', 2417291, 'species', 1, 'strain', 2148217]
-        
-        """
-      print "rank_w_id_list"
+
+      self.silva_taxonomy_rank_list_w_ids_dict[taxonomy] = rank_w_id_list
+    self.utils.print_array_w_title(self.silva_taxonomy_rank_list_w_ids_dict, "===\nsilva_taxonomy_rank_list_w_ids_dict from def make_silva_taxonomy_rank_list_w_ids_dict: ")
+    """
+    {'Bacteria;Proteobacteria;Alphaproteobacteria;Rhizobiales;Rhodobiaceae;Rhodobium': [('domain', 2), ('phylum', 2016066), ('klass', 2085666), ('order', 2252460), ('family', 2293035), ('genus', 2303053), ('species', 1), ('strain', 2148217)], ...
+    """
+    
+  def get_silva_taxonomy_ids(self):
+    self.make_silva_taxonomy_rank_list_w_ids_dict()
+    for taxonomy, rank_w_id_list in self.silva_taxonomy_rank_list_w_ids_dict.items():
+      print "taxonomy = "
+      print taxonomy
+      print "rank_w_id_list = "
       print rank_w_id_list
 
       # >>> lst = [1, 2, 3]
@@ -446,8 +439,6 @@ class Taxonomy:
       a = "select silva_taxonomy_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id from silva_taxonomy where \n"
       for t in rank_w_id_list[:-1]:
         a += t[0] + "_id = " + str(t[1]) + " AND\n"
-      print "rank_w_id_list[-1] = "
-      print rank_w_id_list[-1]
       a += rank_w_id_list[-1][0] + "_id = " + str(rank_w_id_list[-1][1]) + "\n"
       print a
 
