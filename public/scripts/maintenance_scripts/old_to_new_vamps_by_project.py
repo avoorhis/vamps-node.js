@@ -425,9 +425,8 @@ class Taxonomy:
     l = list(all_rank_w_id)
     l.append(t)
     self.all_rank_w_id = set(l)
-    self.utils.print_array_w_title(self.all_rank_w_id, "self.all_rank_w_id from get_all_rank_w_id")
+    # self.utils.print_array_w_title(self.all_rank_w_id, "self.all_rank_w_id from get_all_rank_w_id")
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
-    
   
     
   def make_uniqued_taxa_by_rank_w_id_dict(self):
@@ -766,20 +765,6 @@ class Seq_csv:
       # # refssu_id         =
       # # refssu_count      =
       rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])
-      print "OOOOO"
-      self.utils.print_array_w_title(taxonomy.all_rank_w_id, "===\nall_rank_w_id from def silva_taxonomy: ")
-      self.utils.print_array_w_title(entry_w_fields_dict["rank"], "===\nentry_w_fields_dict[\"rank\"] from def silva_taxonomy: ")
-      self.utils.print_array_w_title(self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"]), "===\nself.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict[\"rank\"]) from def silva_taxonomy: ")
-      self.utils.print_array_w_title(rank_id, "===\nrank_id from def silva_taxonomy: ")
-      self.utils.print_array_w_title(type(rank_id), "===\ntype(rank_id) from def silva_taxonomy: ")
-      self.utils.print_array_w_title(rank_id[0], "===\nrank_id[0] from def silva_taxonomy: ")
-
-
-
-      # self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
-      # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
-      # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
-      # self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
     t1 = time.time()
     total = t1-t0
     print "total with dict = %s" % total
@@ -810,7 +795,17 @@ class Seq_csv:
     t1 = time.time()
     total = t1-t0
     print "total no dict = %s" % total    
-      
+    
+    """
+    total with dict = 0.804136991501
+    total no dict = 0.545675992966
+    total with dict = 0.685003995895
+    total no dict = 0.456652879715
+    total with dict = 0.739241123199
+    total no dict = 0.597506046295
+    No dict is slightly faster, but with dict is more unversal, in case fields order is changed
+    """
+    
     self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
     self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
     self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
@@ -875,10 +870,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
