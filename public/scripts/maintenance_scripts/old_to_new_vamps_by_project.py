@@ -297,7 +297,11 @@ class Utils:
       print message
 
     def read_csv_into_list(self, file_name):
-      return list(csv.reader(open(file_name, 'rb'), delimiter=','))[1:]
+      csv_file_content_all = list(csv.reader(open(file_name, 'rb'), delimiter=','))
+      csv_file_fields      = csv_file_content_all[0]
+      csv_file_content     = csv_file_content_all[1:]
+      return (csv_file_fields, csv_file_content)
+      # return list(csv.reader(open(file_name, 'rb'), delimiter=','))[1:]
 
     def flatten_2d_list(self, list):
       return [item for sublist in list for item in sublist]
@@ -462,16 +466,9 @@ class Taxonomy:
     
   def make_silva_taxonomy_id_per_taxonomy_dict(self):
     for silva_taxonomy_id, st_id_list1 in self.silva_taxonomy_ids_dict.items():
-      # self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
-      # self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
-      #
-      # print "YYY"
       taxon_string = self.utils.find_key_by_value_in_dict(self.taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
-      # self.utils.print_array_w_title(taxon_string[0], "taxon_string from silva_taxonomy_info_per_seq = ")
-      # self.utils.print_array_w_title(type(taxon_string[0]), "taxon_string from silva_taxonomy_info_per_seq = ")
-
       self.silva_taxonomy_id_per_taxonomy_dict[taxon_string[0]] = silva_taxonomy_id
-    self.utils.print_array_w_title(self.silva_taxonomy_id_per_taxonomy_dict, "silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
+    # self.utils.print_array_w_title(self.silva_taxonomy_id_per_taxonomy_dict, "silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
       
 class Refhvr_id:
 
@@ -525,7 +522,7 @@ class User:
     return mysql_util.execute_fetch_select(user_id_query)
 
   def parse_user_contact_csv(self, user_contact_csv_file_name):
-    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)
+    self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)[1]
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
 
   def insert_user(self):
@@ -547,7 +544,7 @@ class Project:
   def parse_project_csv(self, project_csv_file_name):
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
 
-    self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)
+    self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)[1]
     # self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
     self.contact = self.project_file_content[0][5]
     self.project_dict[self.project_file_content[0][0]] = ""
@@ -582,7 +579,7 @@ class Dataset:
   def parse_dataset_csv(self, dataset_csv_file_name):
   # "dataset","dataset_description","env_sample_source_id","project"
 
-    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)
+    self.dataset_file_content = self.utils.read_csv_into_list(dataset_csv_file_name)[1]
     # self.utils.print_array_w_title(self.dataset_file_content, "===\nself.dataset_file_content AAA")
 
   def put_project_id_into_dataset_file_content(self, project_id):
@@ -641,7 +638,9 @@ class Seq_csv:
     self.utils      = Utils()
     #TODO: make dynamic by checking if it's local
 
-    self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)
+    self.seqs_file_content    = self.utils.read_csv_into_list(seq_csv_file_name)[1]
+    seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
+    
     self.content_by_field = self.content_matrix_transposition()
     self.sequences   = self.content_by_field[1]
     self.taxa        = self.content_by_field[4]
@@ -692,7 +691,7 @@ class Seq_csv:
     self.insert_sequence_pdr_info()
       
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
-  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict, silva_taxonomy_id_per_taxonomy_dict):
+  def silva_taxonomy_info_per_seq_from_csv(self, taxa_list_w_empty_ranks_ids_dict, silva_taxonomy_id_per_taxonomy_dict):
     sequence_id = 0
     silva_taxonomy_id = 0
     gast_distance = 0.0
@@ -703,29 +702,22 @@ class Seq_csv:
     self.utils.print_array_w_title(silva_taxonomy_id_per_taxonomy_dict, "self.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
     
     self.utils.print_array_w_title(self.seq_ids_by_name_dict, "\n---\nself.seq_ids_by_name_dict from silva_taxonomy_info_per_seq = ")
+    print "SSSSS"
+    # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
     for e in self.seqs_file_content:
-      seq = e[1]
-      sequence_id = self.seq_ids_by_name_dict[seq]
-      # silva_taxonomy_id = 
+      seq               = e[1]
+      sequence_id       = self.seq_ids_by_name_dict[seq]
+      silva_taxonomy_id = silva_taxonomy_id_per_taxonomy_dict[e[4]]
+      gast_distance     = silva_taxonomy_id_per_taxonomy_dict[e[9]]
       self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_f = ")
+      self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_f = ")
       
-    self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
-    # self.utils.print_array_w_title(silva_taxonomy_ids_dict, "silva_taxonomy_ids_dict from silva_taxonomy_info_per_seq = ")
-    # for silva_taxonomy_id, st_id_list1 in silva_taxonomy_ids_dict.items():
-    #   self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
-    #   self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
-    #
-    #   print "YYY"
-    #   taxon_string = self.utils.find_key_by_value_in_dict(taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
-    #   self.utils.print_array_w_title(taxon_string[0], "taxon_string from silva_taxonomy_info_per_seq = ")
-    #   self.utils.print_array_w_title(type(taxon_string[0]), "taxon_string from silva_taxonomy_info_per_seq = ")
-    #
-    #   silva_taxonomy_id_per_taxonomy_dict[taxon_string[0]] = silva_taxonomy_id
-    #
-    #
-    # self.utils.print_array_w_title(silva_taxonomy_id_per_taxonomy_dict, "silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
-    # taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq
+    # self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
+
     """
+
+ 
+    
     [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
     """
       
@@ -835,7 +827,7 @@ if __name__ == '__main__':
   taxonomy.get_silva_taxonomy_ids()
   taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
 
-  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict, taxonomy.silva_taxonomy_id_per_taxonomy_dict)
+  seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy.taxa_list_w_empty_ranks_ids_dict, taxonomy.silva_taxonomy_id_per_taxonomy_dict)
   
   # seq_csv_parser.make_project_by_name_dict()
   #
