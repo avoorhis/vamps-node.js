@@ -707,26 +707,27 @@ class Seq_csv:
     self.utils.print_array_w_title(taxonomy.silva_taxonomy_id_per_taxonomy_dict, "taxonomy.taxonomy.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
     
     self.utils.print_array_w_title(self.seq_ids_by_name_dict, "\n---\nself.seq_ids_by_name_dict from silva_taxonomy_info_per_seq = ")
-    print "SSSSS"
+    # print "SSSSS"
     # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
-    # seq_csv_file_fields = 
-    for e in self.seqs_file_content:
-      dictionary = dict(zip(self.seq_csv_file_fields, e))
+    # all_rank_w_id
+    # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
+    
+    for entry in self.seqs_file_content:
+      entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
       
-      self.utils.print_array_w_title(dictionary, "dictionary from silva_taxonomy_info_per_seq_from_csv = ")
+      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict from silva_taxonomy_info_per_seq_from_csv = ")
       
-      seq               = dictionary["sequence"]
+      seq               = entry_w_fields_dict["sequence"]
       sequence_id       = self.seq_ids_by_name_dict[seq]
-      silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[dictionary["taxonomy"]]
-      gast_distance     = dictionary["distance"]
+      silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
+      gast_distance     = entry_w_fields_dict["distance"]
       # # refssu_id         =
       # # refssu_count      =
-      rank_id           = taxonomy.all_rank_w_id[dictionary["rank"]]
-      
-      self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
-      self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
-      self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
-      self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
+      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      # self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
+      # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
+      # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
+      # self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
       
 
     """
