@@ -438,10 +438,22 @@ class Taxonomy:
     field_names = "silva_taxonomy_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
     table_name  = "silva_taxonomy"
     where_part  = "WHERE " + sql_part
-    q = "SELECT %s FROM %s %s" % (field_names, table_name, where_part)
-    self.utils.print_array_w_title(q, '"SELECT %s FROM %s %s" % (field_names, table_name, where_part)')
+    # q = "SELECT %s FROM %s %s" % (field_names, table_name, where_part)
+    # self.utils.print_array_w_title(q, '"SELECT %s FROM %s %s" % (field_names, table_name, where_part)')
     
-    # self.mysql_util.execute_simple_select(self, field_names, table_name, where_part):
+    silva_taxonomy_ids = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    # self.utils.print_array_w_title(res, "===\nres from def get_silva_taxonomy_ids: ")
+    """
+    ((2436595L, 2L, 2016066L, 2085666L, 2252460L, 2293035L, 2303053L, 1L, 2148217L), (2436596L, 2L, 2017516L, 2087051L, 2253845L, 2407123L, 2417291L, 1L, 2148217L), (2436597L, 5L, 2081011L, 2189221L, 2356015L, 2407123L, 2417291L, 1L, 2148217L), (2436598L, 2L, 2016052L, 2189222L, 2252381L, 2407123L, 2417291L, 1L, 2148217L), (2436599L, 2L, 2016066L, 2085650L, 2252444L, 2293019L, 2303037L, 1L, 2148217L), (2436600L, 2L, 2016066L, 2085601L, 2253771L, 2294346L, 2417291L, 1L, 2148217L), (2436601L, 2L, 2016066L, 2085601L, 2253051L, 2407123L, 2417291L, 1L, 2148217L), (2436602L, 1L, 2081012L, 2189221L, 2356015L, 2407123L, 2417291L, 1L, 2148217L), (2436603L, 2L, 2016189L, 2189221L, 2356015L, 2407123L, 2417291L, 1L, 2148217L), (2436604L, 2L, 2081011L, 2189221L, 2356015L, 2407123L, 2417291L, 1L, 2148217L))
+    """
+    silva_taxonomy_ids_dict = defaultdict(list)
+    for ids in silva_taxonomy_ids:
+      print ids[0]
+      print ids[1:]
+      silva_taxonomy_ids_dict[int(ids[0])] = [int(id) for id in ids[1:]]
+    # for k, v in self.taxa_list_w_empty_ranks_ids_dict.items():
+    #   print type(v[0])
+    self.utils.print_array_w_title(silva_taxonomy_ids_dict, "===\nsilva_taxonomy_ids_dict from def get_silva_taxonomy_ids: ")
     
 
 class Refhvr_id:
