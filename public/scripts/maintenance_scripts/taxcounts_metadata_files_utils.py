@@ -425,13 +425,17 @@ if __name__ == '__main__':
                 required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")            
     args = parser.parse_args()
-    print "ARGS: json_dir=",args.json_file_path
+    
     print "ARGS: dbhost  =",args.dbhost
-    if not os.path.exists(args.json_file_path):
-        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
-        sys.exit(-1)
-    else:
+    if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
+    else:
+        if os.path.exists('../../json'):
+            args.json_file_path = '../../json'
+        else:
+            print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+            sys.exit(-1)
+    print "ARGS: json_dir=",args.json_file_path    
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()

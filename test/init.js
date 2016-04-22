@@ -9,7 +9,7 @@ var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 
 
-app.test_user    = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
+app.testuser    = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
 //var privileged_user = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
 
 

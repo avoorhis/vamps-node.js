@@ -2,13 +2,13 @@ process.env.NODE_ENV = 'testing'
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
-    //connection = require('../config/database-test');
-    app = require('../app')
+    app = require('../app'),
+    init = require('./init')
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 
-testuser = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
+
 // describe('Users page functionality', function(){
 
 //   it('Text on login page', function(done){
@@ -27,17 +27,17 @@ testuser = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test
 
 describe('<<< Login page functionality >>>', function(){
   before(function (done) {
-    connection_dev = require('../config/database-test');
+    connection = require('../config/database-test');
     
-    connection_dev.query("DELETE FROM user WHERE username = '"+testuser.user+"' AND first_name = '"+testuser.first+"' AND last_name = '"+testuser.last+"' AND email = '"+testuser.email+"' AND institution = '"+testuser.inst+"'", function(err, result) {
+    connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
     });
 
     this.timeout(5000);
 
     var q = "INSERT IGNORE INTO user (username, encrypted_password, first_name, last_name, email, institution, active) \
-      VALUES ('"+testuser.user+"','"+helpers.generateHash(testuser.pass)+"','"+testuser.first+"','"+testuser.last+"','"+testuser.email+"','"+testuser.inst+"','"+1+"')"
-    connection_dev.query(q, function(err, result) {
+      VALUES ('"+app.testuser.user+"','"+helpers.generateHash(app.testuser.pass)+"','"+app.testuser.first+"','"+app.testuser.last+"','"+app.testuser.email+"','"+app.testuser.inst+"','"+1+"')"
+    connection.query(q, function(err, result) {
       if (err) {throw err;}
       console.log(q)
       console.log("result.insertId: " + result.insertId);
@@ -46,7 +46,7 @@ describe('<<< Login page functionality >>>', function(){
     this.timeout(5000);
     async.series([
       function (cb) {
-        connection.query('SELECT * FROM user WHERE username="'+testuser.user+'" AND email="'+testuser.email+'"',function(err,results){
+        connection.query('SELECT * FROM user WHERE username="'+app.testuser.user+'" AND email="'+app.testuser.email+'"',function(err,results){
             results.length.should.not.equal(0);
             done();
           });
@@ -72,7 +72,7 @@ describe('<<< Login page functionality >>>', function(){
     
     request(app)
       .post('/users/login')
-      .send({ username: testuser.user, password: testuser.pass})
+      .send({ username: app.testuser.user, password: app.testuser.pass})
       .expect(302)
       .end(function (err, res) {
         should.not.exist(err);
@@ -81,7 +81,7 @@ describe('<<< Login page functionality >>>', function(){
         res.header.location.should.containEql('/users/profile');
         res.header.location.should.not.containEql('login');
         
-        connection_dev.query("DELETE FROM user WHERE username = '"+testuser.user+"' AND first_name = '"+testuser.first+"' AND last_name = '"+testuser.last+"' AND email = '"+testuser.email+"' AND institution = '"+testuser.inst+"'", function(err, result) {
+        connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
         });
         done();
@@ -133,7 +133,7 @@ describe('<<< Login page functionality >>>', function(){
     passportStub.install(app);
     
     passportStub.login({
-      username: testuser.user, password: testuser.pass
+      username: app.testuser.user, password: app.testuser.pass
     });
 
     request(app)
@@ -142,7 +142,7 @@ describe('<<< Login page functionality >>>', function(){
       // console.log("===2===");
       // console.log(res);
       // console.log("===22===");
-      res.text.should.containEql(testuser.user);
+      res.text.should.containEql(app.testuser.user);
       
       request(app)
         .get('/users/logout')
@@ -161,7 +161,7 @@ describe('<<< Login page functionality >>>', function(){
             // console.log("===1===");
             // console.log(res);
             // console.log("===11===");
-            res.text.should.not.containEql(testuser.user);
+            res.text.should.not.containEql(app.testuser.user);
           
           // request(app)
           //   .get('/')

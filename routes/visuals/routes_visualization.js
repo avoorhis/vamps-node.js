@@ -2827,7 +2827,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     json.item.sort(function(a, b){
           return helpers.compareStrings_alpha(a.text, b.text);
     });
-    console.log(json.item)
+    //console.log(json.item)
     res.send(json)
 });
 
