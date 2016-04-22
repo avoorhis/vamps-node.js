@@ -328,6 +328,10 @@ class Utils:
     def find_in_nested_list(self, hey, needle):
       return [int(v) for k, v in hey if k == needle]
 
+    def find_key_by_value_in_dict(self, hey, needle):
+      return [k for k, v in hey if v == needle]
+    
+
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
     self.utils        = Utils()
@@ -340,6 +344,7 @@ class Taxonomy:
     self.taxa_list_w_empty_ranks_ids_dict    = defaultdict(list)
     self.silva_taxonomy_rank_list_w_ids_dict = defaultdict(list)
     self.silva_taxonomy_ids_dict             = defaultdict(list)
+    self.silva_taxonomy_id_per_taxonomy_dict = defaultdict(list)
     
   def parse_taxonomy(self):
     self.taxa_list_dict = {taxon_string: taxon_string.split(";") for taxon_string in self.taxa_content}
@@ -454,7 +459,20 @@ class Taxonomy:
     ((2436595L, 2L, 2016066L, 2085666L, 2252460L, 2293035L, 2303053L, 1L, 2148217L), ...
     """
     self.make_silva_taxonomy_ids_dict(silva_taxonomy_ids)
+    
+  def make_silva_taxonomy_id_per_taxonomy_dict(self):
+    for silva_taxonomy_id, st_id_list1 in self.silva_taxonomy_ids_dict.items():
+      # self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
+      # self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
+      #
+      # print "YYY"
+      taxon_string = self.utils.find_key_by_value_in_dict(self.taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
+      # self.utils.print_array_w_title(taxon_string[0], "taxon_string from silva_taxonomy_info_per_seq = ")
+      # self.utils.print_array_w_title(type(taxon_string[0]), "taxon_string from silva_taxonomy_info_per_seq = ")
 
+      self.silva_taxonomy_id_per_taxonomy_dict[taxon_string[0]] = silva_taxonomy_id
+    self.utils.print_array_w_title(self.silva_taxonomy_id_per_taxonomy_dict, "silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
+      
 class Refhvr_id:
 
   def __init__(self, refhvr_id, mysql_util):
@@ -672,43 +690,46 @@ class Seq_csv:
     # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
-    
-  # def find_in_nested_list(self, hey, needle):
-  #   return [int(v) for k, v in hey if k == needle]
-  #
-  def find_key_by_value_in_dict(self, hey, needle):
-    # print "hey = "
-    # print hey
-    # for k, v in hey:
-    #   if v == needle:
-    #     return k
-    return [k for k, v in hey if v == needle]
-  
+      
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
-  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict, silva_taxonomy_ids_dict):
-    self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
-    self.utils.print_array_w_title(silva_taxonomy_ids_dict, "silva_taxonomy_ids_dict from silva_taxonomy_info_per_seq = ")
-    for silva_taxonomy_id, st_id_list1 in silva_taxonomy_ids_dict.items():
-      self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
-      self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
-
-      print "YYY"
-      print self.find_key_by_value_in_dict(taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
-
-
-      # for taxonomy, st_id_list2 in taxa_list_w_empty_ranks_ids_dict.items():
-      #   self.utils.print_array_w_title(taxonomy, "\n======\ntaxonomy = ")
-        # if (st_id_list1 == st_id_list2):
-        #   print "URA"
-        #   self.utils.print_array_w_title(st_id_list2, "\n======\nst_id_list2 = ")
-    """
-    for name, age in list.iteritems():
-        if age == search_age:
-            print name
-    """
+  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict, silva_taxonomy_id_per_taxonomy_dict):
+    sequence_id = 0
+    silva_taxonomy_id = 0
+    gast_distance = 0.0
+    refssu_id = 0
+    refssu_count = 0
+    rank_id = 0
     
-    # for taxonomy, 
-    # self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)
+    self.utils.print_array_w_title(silva_taxonomy_id_per_taxonomy_dict, "self.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
+    
+    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "\n---\nself.seq_ids_by_name_dict from silva_taxonomy_info_per_seq = ")
+    for e in self.seqs_file_content:
+      seq = e[1]
+      sequence_id = self.seq_ids_by_name_dict[seq]
+      # silva_taxonomy_id = 
+      self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_f = ")
+      
+    self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
+    # self.utils.print_array_w_title(silva_taxonomy_ids_dict, "silva_taxonomy_ids_dict from silva_taxonomy_info_per_seq = ")
+    # for silva_taxonomy_id, st_id_list1 in silva_taxonomy_ids_dict.items():
+    #   self.utils.print_array_w_title(silva_taxonomy_id, "\n======\nsilva_taxonomy_id = ")
+    #   self.utils.print_array_w_title(st_id_list1, "\n======\nneedle = st_id_list1 = ")
+    #
+    #   print "YYY"
+    #   taxon_string = self.utils.find_key_by_value_in_dict(taxa_list_w_empty_ranks_ids_dict.items(), st_id_list1)
+    #   self.utils.print_array_w_title(taxon_string[0], "taxon_string from silva_taxonomy_info_per_seq = ")
+    #   self.utils.print_array_w_title(type(taxon_string[0]), "taxon_string from silva_taxonomy_info_per_seq = ")
+    #
+    #   silva_taxonomy_id_per_taxonomy_dict[taxon_string[0]] = silva_taxonomy_id
+    #
+    #
+    # self.utils.print_array_w_title(silva_taxonomy_id_per_taxonomy_dict, "silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
+    # taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq
+    """
+    [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
+    """
+      
+
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -776,32 +797,32 @@ if __name__ == '__main__':
   taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
+
+  sequence.insert_seq()
+
+  refhvr_id.parse_refhvr_id()
+  refhvr_id.insert_refhvr_id()
+
+  project = Project(mysql_util)
+  project.parse_project_csv(project_csv_file_name)
+
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  user.insert_user()
+  project.insert_project(user.user_id)
+
+  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+
+  dataset = Dataset(mysql_util)
+  dataset.parse_dataset_csv(dataset_csv_file_name)
+  dataset.make_dataset_project_dictionary()
+  dataset.insert_dataset(project.project_dict)
+  dataset.collect_dataset_ids()
+
+  seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
   # 
-  # sequence.insert_seq()
-  # 
-  # refhvr_id.parse_refhvr_id()
-  # refhvr_id.insert_refhvr_id()
-  # 
-  # project = Project(mysql_util)
-  # project.parse_project_csv(project_csv_file_name)
-  # 
-  # user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  # user.insert_user()
-  # project.insert_project(user.user_id)
-  # 
-  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
-  # 
-  # dataset = Dataset(mysql_util)
-  # dataset.parse_dataset_csv(dataset_csv_file_name)
-  # dataset.make_dataset_project_dictionary()
-  # dataset.insert_dataset(project.project_dict)
-  # dataset.collect_dataset_ids()
-  # 
-  # seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
-  # 
-  # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
+  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
   # 
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
@@ -812,9 +833,9 @@ if __name__ == '__main__':
   taxonomy.silva_taxonomy()
   taxonomy.insert_silva_taxonomy()
   taxonomy.get_silva_taxonomy_ids()
+  taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
 
-
-  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict, taxonomy.silva_taxonomy_ids_dict)
+  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict, taxonomy.silva_taxonomy_id_per_taxonomy_dict)
   
   # seq_csv_parser.make_project_by_name_dict()
   #
