@@ -420,18 +420,12 @@ class Taxonomy:
     
   def get_all_rank_w_id(self):
     all_rank_w_id = mysql_util.get_all_name_id("rank")
-    self.utils.print_array_w_title(type(all_rank_w_id), "type(all_rank_w_id) from get_all_rank_w_id")
     klass_id = self.utils.find_in_nested_list(all_rank_w_id, "klass")
-    self.utils.print_array_w_title(klass_id[0], "klass_id[0] from get_all_rank_w_id")
     t = ("class", klass_id[0])
-    self.utils.print_array_w_title(t, "t from get_all_rank_w_id")
-    self.utils.print_array_w_title(type(t), "type(t) from get_all_rank_w_id")
-    a = list(all_rank_w_id)
-    a.append(t)
-    self.utils.print_array_w_title(a, "a from get_all_rank_w_id")
-    self.all_rank_w_id = tuple(a)
+    l = list(all_rank_w_id)
+    l.append(t)
+    self.all_rank_w_id = set(l)
     self.utils.print_array_w_title(self.all_rank_w_id, "self.all_rank_w_id from get_all_rank_w_id")
-    self.utils.print_array_w_title(type(self.all_rank_w_id), "self.all_rank_w_id from get_all_rank_w_id")
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
     
   
