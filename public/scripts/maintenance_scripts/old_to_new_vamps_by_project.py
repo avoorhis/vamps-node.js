@@ -404,6 +404,78 @@ class Taxonomy:
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
+    
+  def get_silva_taxonomy_ids(self):
+    
+    for silva_taxonomy_id_list in self.taxa_list_w_empty_ranks_ids_dict.values():
+      print "silva_taxonomy_id_list = "
+      print silva_taxonomy_id_list
+      rank_w_id_list = []
+      for rank_num, taxon_id in enumerate(silva_taxonomy_id_list):
+        rank = self.ranks[rank_num]
+        t = (rank, taxon_id)
+        print "(rank, taxon_id)"
+        print t
+        rank_w_id_list.append(t)
+        """
+        append
+        [2, 2081011, 2189221, 2356015, 2407123, 2417291, 1, 2148217]
+        ('domain', 2)
+        ('phylum', 2081011)
+        ('klass', 2189221)
+        ('order', 2356015)
+        ('family', 2407123)
+        ('genus', 2417291)
+        ('species', 1)
+        ('strain', 2148217)
+        extend
+        ['domain', 2, 'phylum', 2081011, 'klass', 2189221, 'order', 2356015, 'family', 2407123, 'genus', 2417291, 'species', 1, 'strain', 2148217]
+        
+        """
+      print "rank_w_id_list"
+      print rank_w_id_list
+
+      # >>> lst = [1, 2, 3]
+      # >>> print('\n'.join('{}: {}'.format(*k) for k in enumerate(lst)))
+      # 0: 1
+      # 1: 2
+      # 2: 3
+
+      #
+      print "^^^^^^^^^^^^"
+      a = "select silva_taxonomy_id from silva_taxonomy where \n"
+      for t in rank_w_id_list[:-1]:
+        a += t[0] + "_id = " + str(t[1]) + " AND\n"
+      print "rank_w_id_list[-1] = "
+      print rank_w_id_list[-1]
+      a += rank_w_id_list[-1][0] + "_id = " + str(rank_w_id_list[-1][1]) + "\n"
+      print a
+
+      #
+      #
+      # print('\n'.join('{}: {}'.format(*k) for k in enumerate(lst)))
+      #
+      # rank_w_id_list_join = '"' + '", "'.join(str(x) for x in rank_w_id_list) + '"'
+      # print rank_w_id_list_join
+      # a = """
+      # select silva_taxonomy_id from silva_taxonomy where
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s AND
+      # %s_id = %s
+      # """ % (rank_w_id_list_join)
+    """
+    def get_seq_ids(self):
+      self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
+      self.sequences_w_ids = mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+      # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
+    
+    """
+  
 
 class Refhvr_id:
 
@@ -626,7 +698,8 @@ class Seq_csv:
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict):
     self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
-    
+    # for taxonomy, 
+    # self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -729,6 +802,7 @@ if __name__ == '__main__':
   taxonomy.insert_taxa()
   taxonomy.silva_taxonomy()
   taxonomy.insert_silva_taxonomy()
+  taxonomy.get_silva_taxonomy_ids()
 
 
   seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict)
