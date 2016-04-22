@@ -750,7 +750,7 @@ class Seq_csv:
     # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
     # all_rank_w_id
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
-    
+    silva_taxonomy_info_per_seq_list1 = []
     for entry in self.seqs_file_content:
       temp_list = []
       entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
@@ -760,29 +760,14 @@ class Seq_csv:
       sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
       gast_distance     = entry_w_fields_dict["distance"]
-      # # refssu_id         =
-      # # refssu_count      =
+      # refssu_id         =
+      # refssu_count      =
       rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
-      temp_list.append(sequence_id)
-      temp_list.append(silva_taxonomy_id)
-      temp_list.append(gast_distance)
-      temp_list.append(refssu_id)
-      temp_list.append(refssu_count)
-      temp_list.append(rank_id)
-      self.utils.print_array_w_title(temp_list, "temp_list from silva_taxonomy_info_per_seq_from_csv = ")
+      temp_list = list((sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id))
       
       self.silva_taxonomy_info_per_seq_list.append(temp_list)
-    #
-    self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
-    # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
-    # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
-    # self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
 
- 
-    """
-    [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
-    """
-      
+    self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
 
 
   def parse_env_sample_source_id(self):
