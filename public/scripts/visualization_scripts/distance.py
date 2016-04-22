@@ -135,7 +135,7 @@ def calculate_distance(args):
                 #print data['columns'][col]['id']
                 file_data_line += str(dm1[row][col])+','
                 dm2[name][data['columns'][col]['id']]  = dm1[row][col]
-                dm3[(name, data['columns'][col]['id'])]  = dm1[row][col]
+                dm3[(name.encode("utf-8"), (data['columns'][col]['id'].encode("utf-8")))]  = dm1[row][col]
             file_data_line = file_data_line[:-1]+'\n'
             out_fp.write(file_data_line)
 
@@ -366,6 +366,48 @@ def create_emperor_pc_file(args, data, PCoA_result):
 #
 #
 #
+def test_PCoA():
+        """PCoA returns a cogent Table result"""
+        import random
+        import skbio
+        from cogent.cluster.metric_scaling import PCoA
+        from numpy import array
+        matrix14 = array([ \
+        [0,0.099,0.033,0.183,0.148,0.198,0.462,0.628,0.113,0.173,0.434,0.762,0.53,0.586],\
+                [0.099,0,0.022,0.114,0.224,0.039,0.266,0.442,0.07,0.119,0.419,0.633,0.389,0.435],\
+                [0.033,0.022,0,0.042,0.059,0.053,0.322,0.444,0.046,0.162,0.339,0.781,0.482,0.55], \
+                [0.183,0.114,0.042,0,0.068,0.085,0.435,0.406,0.047,0.331,0.505,0.7,0.579,0.53], \
+                [0.148,0.224,0.059,0.068,0,0.051,0.268,0.24,0.034,0.177,0.469,0.758,0.597,0.552], \
+                [0.198,0.039,0.053,0.085,0.051,0,0.025,0.129,0.002,0.039,0.39,0.625,0.498,0.509], \
+                [0.462,0.266,0.322,0.435,0.268,0.025,0,0.014,0.106,0.089,0.315,0.469,0.374,0.369], \
+                [0.628,0.442,0.444,0.406,0.24,0.129,0.014,0,0.129,0.237,0.349,0.618,0.562,0.471], \
+                [0.113,0.07,0.046,0.047,0.034,0.002,0.106,0.129,0,0.071,0.151,0.44,0.247,0.234], \
+                [0.173,0.119,0.162,0.331,0.177,0.039,0.089,0.237,0.071,0,0.43,0.538,0.383,0.346], \
+                [0.434,0.419,0.339,0.505,0.469,0.39,0.315,0.349,0.151,0.43,0,0.607,0.387,0.456], \
+                [0.762,0.633,0.781,0.7,0.758,0.625,0.469,0.618,0.44,0.538,0.607,0,0.084,0.09], \
+                [0.53,0.389,0.482,0.579,0.597,0.498,0.374,0.562,0.247,0.383,0.387,0.084,0,0.038], \
+                [0.586,0.435,0.55,0.53,0.552,0.509,0.369,0.471,0.234,0.346,0.456,0.09,0.038,0],\
+               ])
+        matrix26=skbio.stats.distance.randdm(26)
+       #  r = np.array([random.randrange(1, 26) for _ in range(0, 26)])
+#         matrix26 = scipy.spatial.distance.pdist(r, 'cityblock')
+        print matrix26
+        names14 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m', 'n']
+        names26 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l','m', 'n','o','p','q','r','s','t','u','v','w','x','y','z']
+        pairwise_dist = {}
+        for i, name1 in enumerate(names14):
+            for j, name2 in enumerate(names14):
+                combo = (name1, name2)
+                if combo not in pairwise_dist:
+                    pairwise_dist[combo] = matrix14[i,j]
+
+        #perform with the PCoA function
+        
+        result = PCoA(pairwise_dist)
+        print pairwise_dist
+        print result
+        #assertEqual(result[7,1], 'a')
+        #assertFloatEqual(abs(result[7,2]), 0.240788133045)
 def pcoa(args, dist):
     from cogent.cluster.metric_scaling import PCoA
     PCoA_result = PCoA(dist)
@@ -549,6 +591,7 @@ if __name__ == '__main__':
 
     if args.function == 'pcoa_3d':
         pcoa_data = pcoa(args, dm3)
+        #test_PCoA()
         
     if args.function == 'pcoa_2d':
         # if not args.metadata:
@@ -563,6 +606,5 @@ if __name__ == '__main__':
         #print pcoa_data
 
         pass
-
 
 

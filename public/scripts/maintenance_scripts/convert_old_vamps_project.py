@@ -102,10 +102,10 @@ def start(NODE_DATABASE, args):
     create_classifier()
     #
     logging.debug("starting taxonomy")
-    # push_taxonomy(args)
+    push_taxonomy(args)
     #
     logging.debug("starting sequences")
-    # push_sequences()
+    push_sequences()
     
     logging.debug("projects")
     push_project()
@@ -115,7 +115,7 @@ def start(NODE_DATABASE, args):
     
     #push_summed_counts()
     logging.debug("starting push_pdr_seqs")
-    # push_pdr_seqs()
+    push_pdr_seqs()
     
     logging.debug("starting metadata")
     start_metadata(args)
@@ -189,6 +189,7 @@ def push_dataset():
     fields = ['dataset','dataset_description','env_sample_source_id','project_id']
     q = "INSERT into dataset ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s')"
+    print q
     for ds in CONFIG_ITEMS['datasets']:
         desc = ds+'_description'
         #print ds,desc,CONFIG_ITEMS['env_source_id'],CONFIG_ITEMS['project_id']
@@ -281,10 +282,10 @@ def push_sequences():
             if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+str(seqid)+"'"
-                q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
-                q3 += " and gast_distance = '"+distance+"'"
-                q3 += " and refssu_id = '0'"
-                q3 += " and rank_id = '"+rank_id+"'"
+                # q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
+                # q3 += " and gast_distance = '"+distance+"'"
+                # q3 += " and refssu_id = '0'"
+                # q3 += " and rank_id = '"+rank_id+"'"
                 logging.debug('DUP silva_tax_seq')
                 logging.debug(q3)
                 cur.execute(q3)
@@ -307,7 +308,7 @@ def push_sequences():
 def push_taxonomy(args):
     
     
-    
+    print 'running push_taxonomy'
     #print  general_config_items
     silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
     accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
