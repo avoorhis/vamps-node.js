@@ -419,54 +419,30 @@ class Taxonomy:
     """
     {'Bacteria;Proteobacteria;Alphaproteobacteria;Rhizobiales;Rhodobiaceae;Rhodobium': [('domain', 2), ('phylum', 2016066), ('klass', 2085666), ('order', 2252460), ('family', 2293035), ('genus', 2303053), ('species', 1), ('strain', 2148217)], ...
     """
-    
+  
+  def make_rank_name_id_t_id_str(self, rank_w_id_list):
+    a = ""
+    for t in rank_w_id_list[:-1]:
+      a += t[0] + "_id = " + str(t[1]) + " AND\n"
+    a += rank_w_id_list[-1][0] + "_id = " + str(rank_w_id_list[-1][1]) + "\n"
+    return a
+  
   def get_silva_taxonomy_ids(self):
     self.make_silva_taxonomy_rank_list_w_ids_dict()
-    for taxonomy, rank_w_id_list in self.silva_taxonomy_rank_list_w_ids_dict.items():
-      print "taxonomy = "
-      print taxonomy
-      print "rank_w_id_list = "
-      print rank_w_id_list
-
-      # >>> lst = [1, 2, 3]
-      # >>> print('\n'.join('{}: {}'.format(*k) for k in enumerate(lst)))
-      # 0: 1
-      # 1: 2
-      # 2: 3
-
-      #
-      print "^^^^^^^^^^^^"
-      a = "select silva_taxonomy_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id from silva_taxonomy where \n"
-      for t in rank_w_id_list[:-1]:
-        a += t[0] + "_id = " + str(t[1]) + " AND\n"
-      a += rank_w_id_list[-1][0] + "_id = " + str(rank_w_id_list[-1][1]) + "\n"
-      print a
-
-      #
-      #
-      # print('\n'.join('{}: {}'.format(*k) for k in enumerate(lst)))
-      #
-      # rank_w_id_list_join = '"' + '", "'.join(str(x) for x in rank_w_id_list) + '"'
-      # print rank_w_id_list_join
-      # a = """
-      # select silva_taxonomy_id from silva_taxonomy where
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s AND
-      # %s_id = %s
-      # """ % (rank_w_id_list_join)
-    """
-    def get_seq_ids(self):
-      self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-      self.sequences_w_ids = mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
-      # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
+    sql_part = ""
+    for taxonomy, rank_w_id_list in self.silva_taxonomy_rank_list_w_ids_dict.items()[:-1]:
+      a = self.make_rank_name_id_t_id_str(rank_w_id_list)
+      sql_part += "(%s) OR " % a 
+    a_last = self.make_rank_name_id_t_id_str(self.silva_taxonomy_rank_list_w_ids_dict.values()[-1])
+    sql_part += "(%s)" % a_last
+    field_names = "silva_taxonomy_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
+    table_name  = "silva_taxonomy"
+    where_part  = "WHERE " + sql_part
+    q = "SELECT %s FROM %s %s" % (field_names, table_name, where_part)
+    self.utils.print_array_w_title(q, '"SELECT %s FROM %s %s" % (field_names, table_name, where_part)')
     
-    """
-  
+    # self.mysql_util.execute_simple_select(self, field_names, table_name, where_part):
+    
 
 class Refhvr_id:
 
