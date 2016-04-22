@@ -694,8 +694,8 @@ class Seq_csv:
     self.sequence_pdr_info_content = []
     self.silva_taxonomy_info_per_seq_list = []
 
-    # print "MMM"
-    # print self.seqs_file_content
+    print "MMM"
+    print self.seqs_file_content
     """
     [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
     """
@@ -763,12 +763,22 @@ class Seq_csv:
       # refssu_id         =
       # refssu_count      =
       rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      
       temp_list = list((sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id))
       
       self.silva_taxonomy_info_per_seq_list.append(temp_list)
 
     self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
 
+  def insert_silva_taxonomy_info_per_seq(self):
+    # self.silva_taxonomy_info_per_seq_list = [[8559950L, 2436599, '0.03900', 0, 0, 83],...
+    field_list = "sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id"
+
+    all_insert_dat_vals = self.utils.make_insert_values(self.silva_taxonomy_info_per_seq_list)
+    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("IGNORE", "silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
+    # self.utils.print_array_w_title(sql, "sql")
+
+    rows_affected = mysql_util.execute_insert("silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -877,7 +887,7 @@ if __name__ == '__main__':
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
 
   seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
-  
+  seq_csv_parser.insert_silva_taxonomy_info_per_seq()
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.make_dataset_by_name_dict()
