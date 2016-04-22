@@ -16,12 +16,13 @@ var helpers = require('../routes/helpers/helpers');
 //var regular_user    = {user:'TEST',pass:'TEST',first:'TestTest',last:'TestTest',email:'test@mbl.edu',inst:'MBL'}
 
 // for testing to work these datasets need to be in the vamps_testing database:
+// AND the correct dataset files should be in /public/json/vamps_testing--datasets/ (hint: run INITIALIZE_ALL_FILES.py)
 //======================================================================================
-var test_project = 'ICM_LCY_Bv6'
-var test_datasets = ['LCY_0001_2003_05_11','LCY_0003_2003_05_04','LCY_0005_2003_05_16']
+var test_project = 'ICM_LCY_Bv6'  // small project and few datasets
+var test_datasets = ['LCY_0001_2003_05_11','LCY_0003_2003_05_04','LCY_0005_2003_05_16','LCY_0007_2003_05_04']
 //======================================================================================
 
-describe('<<< visualization functionality: visuals_index  >>>', function(){
+describe('>>> visualization functionality: visuals_index  >>>', function(){
   //      Should show the closed project list on initialize
   //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
   //        should work to open the project (show and check the datasets) when either the plus image is clicked or the
@@ -30,14 +31,16 @@ describe('<<< visualization functionality: visuals_index  >>>', function(){
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   
-      before(function (done) {
+      beforeEach(function (done) {
         test_name_hash = {}
         test_name_hash.name = []
         test_name_hash.ids  = []
         test_selection_obj  = {}
+        
         connection = require('../config/database-test');
         var q = "SELECT dataset, dataset_id from dataset where dataset in ('"+test_datasets.join("','")+"')"
         console.log(q)
+
         connection.query(q, function(err, result) {
             if (err) {throw err;}
             for(r in result){
@@ -45,79 +48,105 @@ describe('<<< visualization functionality: visuals_index  >>>', function(){
               test_name_hash.name.push(test_project+'--'+result[r].dataset)
               test_name_hash.ids.push(result[r].dataset_id)
             }
+            reqbody_vindex = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+            reqbody_uselect = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
+            reqbody_vizselect = { tax_depth:'family',
+                              unit_choice: 'tax_silva108_simple',
+                              domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+                              selected_metadata: [ 'latitude', 'longitude' ]
+                            };
+
         });
         var passportStub = require('passport-stub');
         passportStub.install(app);
-        console.log('Logging in with',app.testuser.user,app.testuser.pass);
+        console.log('Logging in with username:',app.testuser.user,' and password:',app.testuser.pass);
         passportStub.login({
           username: app.testuser.user, password: app.testuser.pass
         });
+
+        
+
+
         done()
         //this.timeout(5000);              
           
       });
 
-      it('should have certain text', function(done){
-        var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+    // VISUALS INDEX (Dataset Selection Page)
+    it('should have certain text', function(done){
+        //var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
         request(app)
           .post('/visuals/visuals_index')
-          .send(body)
+          .send(reqbody_vindex)
           .expect(200)
           .end(function (err, res) {
             res.text.should.containEql('Dataset Selection Page');
             done();
           });
-      })
+    })
 
       
-
+      // UNIT_SELECTION PAGE
     it('should show one or more datasets in selected datasets list', function(done){
-      var body = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
+      //var body = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
       request(app)
       .post('/visuals/unit_selection')
-      .send(body)
+      .send(reqbody_uselect)
       .expect(200)
       .end(function (err, res) {
         if (err) { throw new Error(err); }
           res.text.should.containEql(test_name_hash.ids[0]);
           res.text.should.containEql(test_name_hash.name[0]);
+          // req metadata
+          res.text.should.containEql('longitude');
           res.text.should.containEql('latitude');
+          // custom matadata
+          res.text.should.containEql('envo_feature');
+          res.text.should.containEql('envo_biome');
+          res.text.should.containEql('envo_material');
           done();
         
-      });
+        });
     });
-
-    it('should show project dataset tree', function(done){
-        var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+    //
+    // VIEW_SELECTION PAGE
+    //
+    it('should show a certain text: family', function(done){
+        
         request(app)
           .post('/visuals/view_selection')
+          .send(reqbody_vizselect)
+          .expect(200)
+          .end(function (err, res) {
+            this.timeout(5000);
+            res.text.should.containEql('Taxonomic Depth: family');
+            
+            //res.text.should.containEql('Taxonomic Depth: species');
+            done();
+          });
+    });
+
+    it('should show a heatmap', function(done){
+        // var body = {tax_depth:'phylum',
+        //             unit_choice: 'tax_silva108_simple',
+        //             domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+        //             selected_metadata: [ 'latitude', 'longitude' ]
+        //           };
+        request(app)
+          .post('/visuals/heatmap')
           .send(body)
           .expect(200)
           .end(function (err, res) {
             this.timeout(5000);
-            res.text.should.containEql(test_project);
-            res.text.should.containEql(test_datasets[0]); //
+            res.text.should.containEql('Taxonomic Depth: species');
             done();
           });
-      });
-  // var test_name_hash = { ids: [ '135', '126', '122' ],
-  //                         names: 
-  //                          [ 'ICM_LCY_Bv6--LCY_0001_2003_05_11',
-  //                            'ICM_LCY_Bv6--LCY_0001_2003_05_11',
-  //                            'ICM_LCY_Bv6--LCY_0001_2003_05_11' ] 
-  //                       }
-  // console.log(test_name_hash)
-  // var test_selection_obj = { dataset_ids: [ '135', '126', '122' ],
-  //                           seq_ids: 
-  //                            [ [ 1002, 1003, 1004, 1005, 1007 ],
-  //                              [ 1002, 1004, 1005 ],
-  //                              [ 1002, 1004, 1005 ] ],
-  //                           seq_freqs: [ [ 166, 1, 2, 264, 1 ], [ 149, 2, 252 ], [ 94, 4, 178 ] ],
-  //                           unit_assoc: 
-  //                              { silva_taxonomy_info_per_seq_id: [ [34,45,23], [10,11,21], [17,9,12] ]                             
-  //                              } 
-  //                          }
+    });
+
+  
 });  
+
+
 //describe('visuals_index', function(){
       
 
@@ -137,7 +166,7 @@ describe('<<< visualization functionality: visuals_index  >>>', function(){
 // });
   //
   //
-// describe('<<< visualization functionality: unit_selection  >>>', function(){
+// describe('>>> visualization functionality: unit_selection  >>>', function(){
 //     before(function (done) {
 //         test_name_hash = {}
 //         test_name_hash.name = []

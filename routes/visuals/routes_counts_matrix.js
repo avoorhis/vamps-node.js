@@ -347,7 +347,7 @@ module.exports = {
 
 			// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
 			//console.log(unit_name_counts);
-			console.log('POSTx - from routes_common_matrix.js');
+			//console.log('POSTx - from routes_counts_matrix.js');
 			//console.log(post_items);
 
 			biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
