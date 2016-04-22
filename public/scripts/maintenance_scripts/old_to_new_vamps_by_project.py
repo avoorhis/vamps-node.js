@@ -222,6 +222,29 @@ class Mysql_util:
           return self.cursor.lastrowid
 #        logging.debug("rows = "  + str(self.rows))
 
+    # def execute_load_file(self, file_name):
+    #   query = open(file_name).read()
+    #   try:
+    #     if self.cursor:
+    #       self.cursor.execute(query)
+    #       self.conn.commit()
+    #       return (self.cursor.rowcount, self.cursor.lastrowid)
+    #   except:
+    #     self.utils.print_both(("ERROR: query = %s") % query)
+    #     raise
+    #
+    # def execute_insert_local(self, table_name, field_name, val_list, ignore = "IGNORE"):
+    #   q = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
+    #
+    #   q_file_name = table_name + "_insert.sql"
+    #   out_file    = open(q_file_name, 'w')
+    #   out_file.write(q)
+    #   out_file.close
+    #
+    #   self.execute_load_file(q_file_name)
+    #
+    #   return q_file_name
+
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:
         sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
@@ -329,8 +352,8 @@ class Utils:
       # self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
       return all_insert_vals
       
-    def find_in_nested_list(self, hey, needle):
-      return [v for k, v in hey if k == needle]
+    def find_in_nested_list(self, hey, needle):      
+      return [v for k, v in hey if k.lower() == needle.lower()]
       # return [int(v) for k, v in hey if k == needle]
       # i for i, v in enumerate(L) if v[0] == 53]
     def find_key_by_value_in_dict(self, hey, needle):
@@ -419,6 +442,12 @@ class Taxonomy:
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
+        print "OOOOO"
+        self.utils.print_array_w_title(rank, "===\nrank from def silva_taxonomy: ")
+        self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict[rank], "===\nself.uniqued_taxa_by_rank_w_id_dict[rank] from def silva_taxonomy: ")
+        self.utils.print_array_w_title(taxon, "===\ntaxon: ")
+        self.utils.print_array_w_title(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon), "===\nself.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon) from def silva_taxonomy: ")
+
         taxon_id = int(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)[0])
         silva_taxonomy_sublist.append(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
@@ -631,7 +660,7 @@ class Sequence:
 
   def insert_seq(self):
     rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+    self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -712,10 +741,13 @@ class Seq_csv:
     # all_rank_w_id
     # (('domain', 78), ('family', 82), ('genus', 83), ('klass', 80), ('NA', 87), ('order', 81), ('phylum', 79), ('species', 84), ('strain', 85), ('superkingdom', 86))
     
+    print "1" * 20
+    #1
+    t0 = time.time()
     for entry in self.seqs_file_content:
       entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
       
-      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict from silva_taxonomy_info_per_seq_from_csv = ")
+      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict from silva_taxonomy_info_per_seq_from_csv = ")
       
       seq               = entry_w_fields_dict["sequence"]
       sequence_id       = self.seq_ids_by_name_dict[seq]
@@ -728,8 +760,41 @@ class Seq_csv:
       # self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
       # self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
       # self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
-      
+    t1 = time.time()
+    total = t1-t0
+    print "total with dict = %s" % total
+    
+    self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
+    print "2" * 20
+    #2
+    t0 = time.time()
 
+    # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
+    
+    for entry in self.seqs_file_content:
+      # entry = dict(zip(self.seq_csv_file_fields, entry))
+      
+      # self.utils.print_array_w_title(entry, "entry from silva_taxonomy_info_per_seq_from_csv = ")
+      
+      seq               = entry[1]
+      sequence_id       = self.seq_ids_by_name_dict[seq]
+      silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry[4]]
+      gast_distance     = entry[9]
+      # # refssu_id         =
+      # # refssu_count      =
+      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry[6])[0]
+      
+    t1 = time.time()
+    total = t1-t0
+    print "total no dict = %s" % total    
+      
+    self.utils.print_array_w_title(sequence_id, "sequence_id from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(silva_taxonomy_id, "silva_taxonomy_id from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(gast_distance, "gast_distance from silva_taxonomy_info_per_seq_from_csv = ")
+    self.utils.print_array_w_title(rank_id, "rank_id from silva_taxonomy_info_per_seq_from_csv = ")
     """
 
  
@@ -790,10 +855,10 @@ class Metadata_csv:
 
 if __name__ == '__main__':
   #TODO: args
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
