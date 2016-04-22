@@ -12,6 +12,7 @@ import MySQLdb
 import json
 import logging
 import datetime
+import socket
 
 today     = str(datetime.date.today())
 
@@ -189,6 +190,7 @@ def go_metadata():
     metadata_lookup = {}
 
     logging.debug("running mysql for required metadata")
+    #print req_pquery
     cur.execute(req_pquery)
     for row in cur.fetchall():
         did = row[0]
@@ -300,6 +302,10 @@ if __name__ == '__main__':
     args = parser.parse_args() 
 
     warnings = []
+    if socket.gethostname() == 'bpcweb7':
+        args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')
+    elif socket.gethostname() == 'bpcweb8':
+        args.json_file_path = os.path.join('/','groups','vampsweb','vamps_node_data','json')
     if not args.json_file_path:
         #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
         args.json_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','../','json')

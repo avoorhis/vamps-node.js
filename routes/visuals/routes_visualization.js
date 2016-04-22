@@ -111,7 +111,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   
   console.log('req.body: view_selection-->>');
   console.log(req.body);
-  console.log('req.body: view_selection');
+  console.log('<<--req.body: view_selection');
   
   helpers.start = process.hrtime();
   
@@ -135,7 +135,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
     var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
     var file_data = JSON.parse(fs.readFileSync(file_path, 'utf8'))
-    console.log(file_data)
+    //console.log(file_data)
     visual_post_items = file_data.post_items;
     chosen_id_name_hash = file_data.id_name_hash;
     dataset_ids = chosen_id_name_hash.ids;
@@ -187,7 +187,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   //metadata = META.write_metadata_file(chosen_id_name_hash, visual_post_items);
   var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
   //metadata = JSON.parse(metadata);
-  console.log(metadata);
+  //console.log(metadata);
   //console.log('<<metadata');
   //console.log('MAP:::');
   //console.log(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank)
@@ -273,7 +273,9 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     //   var file_prefix = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets");
     // }
     for(var i in dataset_ids){
+      //console.log('ds',dataset_ids[i])
       var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
+      //console.log('path',path_to_file)
       try{
         var jsonfile = require(path_to_file);
       }
@@ -311,7 +313,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  //     console.log(process.hrtime(start)[0] + " s, " + elapsed.toFixed(precision) + " ms - " + note); // print message + time
 	  //     //start = process.hrtime(); // reset the timer
 	  // };
-
+    //console.log(custom_metadata_headers)
 	  // benchmarking
 	  helpers.start = process.hrtime();
 	  helpers.elapsed_time("START: select from sequence_pdr_info and sequence_uniq_info-->>>>>>");
@@ -503,7 +505,7 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     });
     var stderr = '';
     heatmap_process.stderr.on('data', function (data) {
-        //console.log('stdout: ' + data);
+        console.log('stderr: ' + data);
         //data = data.toString().replace(/^\s+|\s+$/g, '');
         data = data.toString();
         stderr += data;
