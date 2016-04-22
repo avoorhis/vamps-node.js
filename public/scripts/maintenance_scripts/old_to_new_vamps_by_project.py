@@ -443,7 +443,7 @@ class Taxonomy:
 
       #
       print "^^^^^^^^^^^^"
-      a = "select silva_taxonomy_id from silva_taxonomy where \n"
+      a = "select silva_taxonomy_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id from silva_taxonomy where \n"
       for t in rank_w_id_list[:-1]:
         a += t[0] + "_id = " + str(t[1]) + " AND\n"
       print "rank_w_id_list[-1] = "
