@@ -384,36 +384,23 @@ class Taxonomy:
     field_list = "domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
     all_insert_st_vals = self.utils.make_insert_values(self.taxa_list_w_empty_ranks_ids_dict.values())
     rows_affected = mysql_util.execute_insert("silva_taxonomy", field_list, all_insert_st_vals)
-    self.utils.print_array_w_title(rows_affected, "rows_affected")
+    self.utils.print_array_w_title(rows_affected, "rows_affected by inserting silva_taxonomy")
 
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
-    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks, "===\nself.taxa_list_w_empty_ranks from def silva_taxonomy")
-    # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "===\nself.uniqued_taxa_by_rank_dict")
     self.make_uniqued_taxa_by_rank_w_id_dict()
-    # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_w_id_dict, "===\nself.uniqued_taxa_by_rank_w_id_dict from def silva_taxonomy")
     silva_taxonomy_list = []
-    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_dict, "self.taxa_list_w_empty_ranks_dict from silva_taxonomy")
     
     for taxonomy, tax_list in self.taxa_list_w_empty_ranks_dict.items():
-      # self.utils.print_array_w_title(taxonomy, "===\ntaxonomy from def silva_taxonomy: ")
-      # self.utils.print_array_w_title(tax_list, "===\ntax_list from def silva_taxonomy: ")
       # ['Bacteria', 'Proteobacteria', 'Deltaproteobacteria', 'Desulfobacterales', 'Nitrospinaceae', 'Nitrospina', '', '']
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
-        # print "UUUUU"
-        # print "taxon = %s, rank_num = %s" % (taxon, rank_num)
-        # print self.uniqued_taxa_by_rank_w_id_dict[rank]
-        # print "rank_num = %s, rank = %s, taxon = %s" % (rank_num, rank, taxon)
-
         taxon_id = [int(v) for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if k == taxon]
         silva_taxonomy_sublist.extend(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
-    self.insert_silva_taxonomy()
-
 
 class Refhvr_id:
 
@@ -510,7 +497,6 @@ class Project:
     self.project_dict[project] = self.project_id
 
     # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
-
 
 class Dataset:
   def __init__(self, mysql_util):
@@ -633,6 +619,9 @@ class Seq_csv:
     # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
+    
+# ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
+
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -734,6 +723,7 @@ if __name__ == '__main__':
   taxonomy.make_uniqued_taxa_by_rank_dict()
   taxonomy.insert_taxa()
   taxonomy.silva_taxonomy()
+  taxonomy.insert_silva_taxonomy()
 
   # seq_csv_parser.make_project_by_name_dict()
   #
