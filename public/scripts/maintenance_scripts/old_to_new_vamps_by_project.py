@@ -386,6 +386,9 @@ class Taxonomy:
     rows_affected = mysql_util.execute_insert("silva_taxonomy", field_list, all_insert_st_vals)
     self.utils.print_array_w_title(rows_affected, "rows_affected by inserting silva_taxonomy")
 
+  def find_in_nested_list(self, hey, needle):
+    return [int(v) for k, v in hey if k == needle]
+    
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.make_uniqued_taxa_by_rank_w_id_dict()
@@ -397,6 +400,10 @@ class Taxonomy:
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
         taxon_id = [int(v) for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if k == taxon]
+        print "HHH taxon_id in = %s" % taxon_id
+        taxon_id = self.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)
+        print "HHH1 taxon_id met = %s" % taxon_id
+        
         silva_taxonomy_sublist.extend(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
@@ -621,7 +628,9 @@ class Seq_csv:
     self.insert_sequence_pdr_info()
     
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
-
+  def silva_taxonomy_info_per_seq(self, taxa_list_w_empty_ranks_ids_dict):
+    self.utils.print_array_w_title(taxa_list_w_empty_ranks_ids_dict, "taxa_list_w_empty_ranks_ids_dict from silva_taxonomy_info_per_seq = ")
+    
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -725,6 +734,9 @@ if __name__ == '__main__':
   taxonomy.silva_taxonomy()
   taxonomy.insert_silva_taxonomy()
 
+
+  seq_csv_parser.silva_taxonomy_info_per_seq(taxonomy.taxa_list_w_empty_ranks_ids_dict)
+  
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.make_dataset_by_name_dict()
