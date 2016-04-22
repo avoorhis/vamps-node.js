@@ -330,8 +330,9 @@ class Utils:
       return all_insert_vals
       
     def find_in_nested_list(self, hey, needle):
-      return [int(v) for k, v in hey if k == needle]
-
+      return [v for k, v in hey if k == needle]
+      # return [int(v) for k, v in hey if k == needle]
+      # i for i, v in enumerate(L) if v[0] == 53]
     def find_key_by_value_in_dict(self, hey, needle):
       return [k for k, v in hey if v == needle]
     
@@ -418,8 +419,8 @@ class Taxonomy:
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
-        taxon_id = self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)        
-        silva_taxonomy_sublist.extend(taxon_id)
+        taxon_id = int(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)[0])
+        silva_taxonomy_sublist.append(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
     self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
