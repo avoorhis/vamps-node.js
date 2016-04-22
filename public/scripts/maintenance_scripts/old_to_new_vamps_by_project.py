@@ -324,6 +324,9 @@ class Utils:
 
       # self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
       return all_insert_vals
+      
+    def find_in_nested_list(self, hey, needle):
+      return [int(v) for k, v in hey if k == needle]
 
 class Taxonomy:
   def __init__(self, taxa_content, mysql_util):
@@ -386,9 +389,6 @@ class Taxonomy:
     rows_affected = mysql_util.execute_insert("silva_taxonomy", field_list, all_insert_st_vals)
     self.utils.print_array_w_title(rows_affected, "rows_affected by inserting silva_taxonomy")
 
-  def find_in_nested_list(self, hey, needle):
-    return [int(v) for k, v in hey if k == needle]
-    
   def silva_taxonomy(self):
     # silva_taxonomy (domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id)
     self.make_uniqued_taxa_by_rank_w_id_dict()
@@ -399,11 +399,7 @@ class Taxonomy:
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
-        taxon_id = [int(v) for k, v in self.uniqued_taxa_by_rank_w_id_dict[rank] if k == taxon]
-        print "HHH taxon_id in = %s" % taxon_id
-        taxon_id = self.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)
-        print "HHH1 taxon_id met = %s" % taxon_id
-        
+        taxon_id = self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)        
         silva_taxonomy_sublist.extend(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
