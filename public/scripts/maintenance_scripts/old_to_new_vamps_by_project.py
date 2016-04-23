@@ -922,16 +922,13 @@ class Metadata:
     print "dataset.dataset_project_dict"
     print dataset.dataset_project_dict
     
-    #TODO: get all dataset_id by project in class dataset
+    #TODO: get all dataset_id by project, moive in class dataset
     all_dataset_id_by_project = defaultdict(list)
-    for key, value in sorted(dataset.dataset_project_dict.items()):
-        all_dataset_id_by_project[value].append(key)
-    # for p, d in dataset.dataset_project_dict.items():
-    #   print d,
-    #   print p
-      # all_dataset_id_by_project[p].append[d]
+    for dat, proj in sorted(dataset.dataset_project_dict.items()):
+        all_dataset_id_by_project[proj].append(dataset.dataset_id_by_name_dict[dat])
     print "all_dataset_id_by_project"
     print all_dataset_id_by_project
+    # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
     
     field_list = ", ".join(self.existing_required_metadata_fields.keys())
     ex_f_list  = self.existing_required_metadata_fields.values()
