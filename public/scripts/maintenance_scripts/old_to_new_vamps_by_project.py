@@ -887,72 +887,29 @@ class Metadata:
       """
 ['depth_end',
 'domain',
-'aux_corrected_sample_depth',
-'aux_absolute_depth',
-'habitat',
-'aux_modisa_sst',
-'aux_daylength',
-'envo_feature',
-'aux_sediment',
-'aux_silicate_(i)',
-'Sampling_date',
-'aux_sunset_min',
-'aux_sunrise_hr',
-'absolute_depth_beta',
-'envo_biome',
-'aux_bec_simulated_phosphate_(um)',
-'longhurst_long_name',
-'aux_chlo',
-'lon',
-'sample_type',
-'aux_sunrise_min',
-'redox_state',
-'aux_sunset_hr',
-'aux_temperature_(t)',
-'depth_start',
-'environmental_zone',
-'aux_dissolved_oxygen_(o)',
-'aux_corrected_depth',
-'aux_phosphate_(p)',
-'aux_nitrate_(n)',
-'aux_apparent_oxygen_utilization_(a)',
-'envo_material',
-'iho_area',
-'lat',
-'aux_avhrr_sst',
-'temp',
-'aux_salinity_(s)',
-'longhurst_zone',
-'aux_modis_k490',
-'aux_par',
-'salinity',
-'EnvO_tags',
-'depth',
-'sample_type_beta',
-'aux_bec_simulated_iron_(nm)',
-'aux_seawifis_k490',
-'aux_oxygen_saturation_(u)',
-'aux_bec_simulated_nitrate_(um)',
-'collection_time']
+...
 
       """
       self.parameter_name_project_dict[entry_w_fields_dict['project']][entry_w_fields_dict['structured_comment_name']] = entry_w_fields_dict
-    print "parameter_name_project_dict = "
-    print len(self.parameter_name_project_dict.keys())
+    # print "parameter_name_project_dict = "
+    # print len(self.parameter_name_project_dict.keys())
     # print self.parameter_name_project_dict
-    for key, value in self.parameter_name_project_dict.items():
-      print "8" * 30
-      print key
-      self.existing_field_names = value.keys()
-      print self.existing_field_names # (= structured_comment_name)
-      self.get_existing_required_metadata_fields()
-      print "UUU %s" % (value["envo_biome"]["parameterValue"])
-      print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
-      all_units = [value1["units"] for key1, value1 in value.items()]
+    self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
+    # print "self.existing_field_names"
+    # print self.existing_field_names
+    
+    # for key, value in self.parameter_name_project_dict.items():
+    #   # print "8" * 30
+    #   # print key
+    #   self.existing_field_names = value.keys()
+      # print self.existing_field_names # (= structured_comment_name)
+      # print "UUU %s" % (value["envo_biome"]["parameterValue"])
+      # print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
+      # all_units = [value1["units"] for key1, value1 in value.items()]
       # for key1, value1 in value.items():
-      print set(all_units)
+      # print set(all_units)
       # set(['decimalHour', 'unknown', 'meter', 'Alphanumeric', 'celsius', 'decimalDegree', 'YYYY-MM-DD', 'psu'])
-
+ # average lc vs. for: 0.0092371191	0.0072890997
 
 
   def get_existing_required_metadata_fields(self):
@@ -960,48 +917,21 @@ class Metadata:
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
+
     for k, v in self.substitute_field_names.items():
-      ii = set(self.existing_field_names) & set(v)
-      self.existing_required_metadata_fields[k] = list(ii)[0]
-    # full metadata
-    # time_res: 0.00829887390137
-    # time_res: 0.00822496414185
-    # time_res: 0.00903987884521
-    # time_res: 0.0066511631012
-    # time_res: 0.00802302360535
-    # time_res: 0.00852012634277
-    # time_res: 0.00944805145264
-    # time_res: 0.00905513763428
-    # time_res: 0.00637698173523
-    # time_res: 0.00876116752625
-
-
-    # for k, v in self.substitute_field_names.items():
-    #   for existing_field_name in self.existing_field_names:
-    #     if existing_field_name in v:
-    #       self.existing_required_metadata_fields[k] = existing_field_name
+      for existing_field_name in self.existing_field_names:
+        if existing_field_name in v:
+          self.existing_required_metadata_fields[k] = existing_field_name
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
-    # full metadata
-    # time_res: 0.00707793235779
-    # time_res: 0.00704193115234
-    # time_res: 0.00952792167664
-    # time_res: 0.00920391082764
-    # time_res: 0.00670409202576
-    # time_res: 0.00816583633423
-    # time_res: 0.00723195075989
-    # time_res: 0.00824594497681
-    # time_res: 0.0088210105896
-    # time_res: 0.00672721862793
 
-# avg  0.0149817033  0.0143177726
 
 
 if __name__ == '__main__':
   #TODO: args
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
@@ -1087,4 +1017,5 @@ if __name__ == '__main__':
   metadata = Metadata(mysql_util)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   # metadata.parse_metadata_csv(metadata_csv_file_name)
+  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   
