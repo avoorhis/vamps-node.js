@@ -960,29 +960,42 @@ class Metadata:
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
-    print "VVV self.substitute_field_names.values()"
-    print self.substitute_field_names.values()
-    a = set(self.utils.flatten_2d_list(self.substitute_field_names.values()))
-    b = set(self.existing_field_names)
-    inters = set(a & b)
-    for existing_field_name in inters:
-      k = self.utils.find_key_by_value_in_dict(self.substitute_field_names, existing_field_name)
-      self.existing_required_metadata_fields[k] = existing_field_name
-    print "III inters"
-    print inters
-    print "PPPP: existing_required_metadata_fields"
-    print self.existing_required_metadata_fields
-    
     for k, v in self.substitute_field_names.items():
-      for existing_field_name in self.existing_field_names:
-        if existing_field_name in v:
-          self.existing_required_metadata_fields[k] = existing_field_name
+      ii = set(self.existing_field_names) & set(v)
+      self.existing_required_metadata_fields[k] = list(ii)[0]
+    # full metadata
+    # time_res: 0.00829887390137
+    # time_res: 0.00822496414185
+    # time_res: 0.00903987884521
+    # time_res: 0.0066511631012
+    # time_res: 0.00802302360535
+    # time_res: 0.00852012634277
+    # time_res: 0.00944805145264
+    # time_res: 0.00905513763428
+    # time_res: 0.00637698173523
+    # time_res: 0.00876116752625
+
+
+    # for k, v in self.substitute_field_names.items():
+    #   for existing_field_name in self.existing_field_names:
+    #     if existing_field_name in v:
+    #       self.existing_required_metadata_fields[k] = existing_field_name
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
-    #time_res: 0.00335693359375
-    # time_res full metadata: 0.00707793235779
+    # full metadata
+    # time_res: 0.00707793235779
+    # time_res: 0.00704193115234
+    # time_res: 0.00952792167664
+    # time_res: 0.00920391082764
+    # time_res: 0.00670409202576
+    # time_res: 0.00816583633423
+    # time_res: 0.00723195075989
+    # time_res: 0.00824594497681
+    # time_res: 0.0088210105896
+    # time_res: 0.00672721862793
 
+# avg  0.0149817033  0.0143177726
 
 
 if __name__ == '__main__':
@@ -990,7 +1003,7 @@ if __name__ == '__main__':
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
