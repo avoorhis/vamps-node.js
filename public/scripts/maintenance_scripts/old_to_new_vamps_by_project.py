@@ -29,13 +29,13 @@ TODO:
 *) Utils, connection - classes for all
 
 *)
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
+mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
 
 mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
 mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
 
 mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
-mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
+~$ mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
 
 mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> user_contact.csv
 
@@ -357,6 +357,9 @@ class Utils:
 
     def find_key_by_value_in_dict(self, hey, needle):
       return [k for k, v in hey if v == needle]
+      
+    def make_entry_w_fields_dict(self, fields, entry):
+      return dict(zip(fields, entry))
     
 
 class Taxonomy:
@@ -552,7 +555,7 @@ class User:
 
     self.parse_user_contact_csv(self.user_contact_csv_file_name)
     self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)
-    self.utils.print_array_w_title(self.user_data, "===\nSSS self.user_data in User")
+    # self.utils.print_array_w_title(self.user_data, "===\nSSS self.user_data in User")
 
     # rows_affected = self.insert_user()
     # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
@@ -668,6 +671,7 @@ class Sequence:
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def insert_seq(self):
+    print "Inserting sequences..."
     rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
     self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
@@ -741,6 +745,8 @@ class Seq_csv:
       
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq_from_csv(self, taxonomy):
+    # TODO: refactoring (too long)
+    print "parse silva_taxonomy_info_per_seq..."
     sequence_id       = 0
     silva_taxonomy_id = 0
     gast_distance     = 0.0
@@ -758,9 +764,20 @@ class Seq_csv:
     silva_taxonomy_info_per_seq_list1 = []
     for entry in self.seqs_file_content:
       temp_list = []
+      t0 = time.time()
       entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
+      t1 = time.time()
+      total = t1-t0
+      print "total1 = %s" % total
+
+      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict1 from silva_taxonomy_info_per_seq_from_csv = ")
       
-      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict from silva_taxonomy_info_per_seq_from_csv = ")
+      t0 = time.time()
+      self.utils.make_entry_w_fields_dict(self.seq_csv_file_fields, entry)
+      t1 = time.time()
+      total = t1-t0
+      print "total2 = %s" % total
+      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict2 from silva_taxonomy_info_per_seq_from_csv = ")
       
       sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
@@ -773,7 +790,7 @@ class Seq_csv:
       
       self.silva_taxonomy_info_per_seq_list.append(temp_list)
 
-    self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
+    # self.utils.print_array_w_title(self.silva_taxonomy_info_per_seq_list, "self.silva_taxonomy_info_per_seq_list from silva_taxonomy_info_per_seq_from_csv = ")
 
   def insert_silva_taxonomy_info_per_seq(self):
     # self.silva_taxonomy_info_per_seq_list = [[8559950L, 2436599, '0.03900', 0, 0, 83],...
@@ -838,18 +855,46 @@ class Seq_csv:
 
     """
 
-class Metadata_csv:
-  #parameterName, parameterValue, units, miens_units, project, units_id, structured_comment_name, method, other, notes, ts, entry_date, parameter_id, project_dataset
+class Metadata:
   # parse
   # upload
-  pass
+  """
+  csv: "dataset"	"parameterName"	"parameterValue"	"units"	"miens_units"	"project"	"units_id"	"structured_comment_name"	"method"	"other"	"notes"	"ts"	"entry_date"	"parameter_id"	"project_dataset"
+"SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
+
+  required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
+  custom_metadata_fields (project_id, field_name, field_type, example)
+  """
+  
+  def __init__(self, mysql_util):
+    self.utils = Utils()
+    self.metadata_file_fields  = []
+    self.metadata_file_content = []
+    
+  def parse_metadata_csv(self, metadata_csv_file_name):
+    print "=" * 20
+    print metadata_csv_file_name
+    self.metadata_file_fields, self.metadata_file_content = self.utils.read_csv_into_list(metadata_csv_file_name)
+    print self.metadata_file_fields
+    print self.metadata_file_content
+    """
+    metadata_ICM_SMS_Bv6_short.csv
+    ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
+    [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
+    """
+  
+  def get_dataset_parameter_name_dict(self):
+    for entry in self.metadata_file_content:
+      entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
+      
+  
 
 if __name__ == '__main__':
   #TODO: args
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
@@ -862,17 +907,26 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
 
+  """TODO: add time"""
+  print "insert_seq"
   sequence.insert_seq()
+  print "get_seq_ids"
   sequence.get_seq_ids()
 
+  print "parse_refhvr_id"
   refhvr_id.parse_refhvr_id()
+  
+  print "insert_refhvr_id"
   refhvr_id.insert_refhvr_id()
 
   project = Project(mysql_util)
+  print "parse_project_csv"
   project.parse_project_csv(project_csv_file_name)
 
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  print "insert_user"
   user.insert_user()
+  print "insert_project"
   project.insert_project(user.user_id)
 
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
@@ -880,30 +934,48 @@ if __name__ == '__main__':
   seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
+  print "parse_dataset_csv"
   dataset.parse_dataset_csv(dataset_csv_file_name)
+  print "make_dataset_project_dictionary"
   dataset.make_dataset_project_dictionary()
+  print "insert_dataset"
   dataset.insert_dataset(project.project_dict)
+  print "collect_dataset_ids"
   dataset.collect_dataset_ids()
 
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
-  # 
+  print "sequence_pdr_info"
   seq_csv_parser.sequence_pdr_info(dataset.dataset_dict, sequence.sequences_w_ids)
-  # 
+  print "parse_taxonomy"
   taxonomy.parse_taxonomy()
-  # print  "taxa_list_w_empty_ranks RRR"
-  # print taxonomy.taxa_list_w_empty_ranks
+  print "get_taxa_by_rank()"
   taxonomy.get_taxa_by_rank()
+  print "make_uniqued_taxa_by_rank_dict()"
   taxonomy.make_uniqued_taxa_by_rank_dict()
+  print "insert_taxa()"
   taxonomy.insert_taxa()
+  print "silva_taxonomy()"
   taxonomy.silva_taxonomy()
+  print "insert_silva_taxonomy()"
   taxonomy.insert_silva_taxonomy()
+  print "get_silva_taxonomy_ids()"
   taxonomy.get_silva_taxonomy_ids()
+  print "make_silva_taxonomy_id_per_taxonomy_dict()"
   taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
+  print "get_all_rank_w_id()"
   taxonomy.get_all_rank_w_id()
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
 
+  print "silva_taxonomy_info_per_seq_from_csv(taxonomy)"
   seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
+  print "insert_silva_taxonomy_info_per_seq()"
   seq_csv_parser.insert_silva_taxonomy_info_per_seq()
-  
+
+  print "sequence_uniq_info_from_csv(sequence.sequences_w_ids)"
   seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
+  print "insert_sequence_uniq_info()"
   seq_csv_parser.insert_sequence_uniq_info()
+  
+  metadata = Metadata(mysql_util)
+  print "parse_metadata_csv"
+  metadata.parse_metadata_csv(metadata_csv_file_name)
