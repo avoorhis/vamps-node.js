@@ -956,19 +956,12 @@ class Metadata:
 
 
   def get_existing_required_metadata_fields(self):
-    # list(set(a) & set(b))
-    # self.existing_required_metadata_fields = dict(field_name: field_name for field_name in self.required_metadata_info_fields if field_name in self.existing_field_names)
-    for field_name in self.required_metadata_info_fields:
-      if (field_name in self.existing_field_names):
-        # print "field_name in self.existing_field_names = %s" % field_name
-        self.existing_required_metadata_fields[field_name] = field_name
-    # print "PPPP: existing_required_metadata_fields"
-    # print self.existing_required_metadata_fields
+    intersect_field_names = list(set(self.required_metadata_info_fields) & set(self.existing_field_names))
+    for field_name in intersect_field_names:
+      self.existing_required_metadata_fields[field_name] = field_name
 
     for k, v in self.substitute_field_names.items():
-      # print "TTT k = %s, v = %s" % (k, v)
       for existing_field_name in self.existing_field_names:
-        # print existing_field_name
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
           
