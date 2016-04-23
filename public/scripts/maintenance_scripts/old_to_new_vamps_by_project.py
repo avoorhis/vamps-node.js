@@ -624,10 +624,10 @@ class Project:
 
 class Dataset:
   def __init__(self, mysql_util):
-    self.utils      = Utils()
-    self.dataset_project_dict = {}
-    self.dataset_file_content = []
-    self.dataset_dict = {}
+    self.utils                   = Utils()
+    self.dataset_project_dict    = {}
+    self.dataset_file_content    = []
+    self.dataset_id_by_name_dict = {}
 
   def make_dataset_project_dictionary(self):
     self.dataset_project_dict = {val[0]: val[3] for val in self.dataset_file_content}
@@ -645,7 +645,7 @@ class Dataset:
   def collect_dataset_ids(self):
     for dataset, project in self.dataset_project_dict.items():
       dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
-      self.dataset_dict[dataset] = dataset_id
+      self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
     for project in set(self.dataset_project_dict.values()):
@@ -857,7 +857,7 @@ class Metadata:
   custom_metadata_fields (project_id, field_name, field_type, example)
   """
   
-  def __init__(self, mysql_util):
+  def __init__(self, mysql_util, dataset):
     self.utils = Utils()
     self.metadata_file_fields  = []
     self.metadata_file_content = []
@@ -916,10 +916,28 @@ class Metadata:
     print self.existing_required_metadata_fields
   
   def insert_required_metadata(self):
+    print "dataset.dataset_id_by_name_dict"
+    print dataset.dataset_id_by_name_dict
+    
+    print "dataset.dataset_project_dict"
+    print dataset.dataset_project_dict
+    
+    #TODO: get all dataset_id by project in class dataset
+    all_dataset_id_by_project = defaultdict(list)
+    for key, value in sorted(dataset.dataset_project_dict.items()):
+        all_dataset_id_by_project[value].append(key)
+    # for p, d in dataset.dataset_project_dict.items():
+    #   print d,
+    #   print p
+      # all_dataset_id_by_project[p].append[d]
+    print "all_dataset_id_by_project"
+    print all_dataset_id_by_project
+    
     field_list = ", ".join(self.existing_required_metadata_fields.keys())
     ex_f_list  = self.existing_required_metadata_fields.values()
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
 
+    insert_r_m_data = {}
     for project, vals in self.parameter_name_project_dict.items():
       # print "LLL"
       # print project
@@ -930,8 +948,10 @@ class Metadata:
           print field_name
           # print ex_f_name
           print ex_f_name['parameterValue']
+          insert_r_m_data[field_name] = ex_f_name['parameterValue']
       # ["parameterValue"]
-    # print "field_list = %s" % field_list
+    print "insert_r_m_data = "
+    print insert_r_m_data
     
     """
     (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
@@ -1008,8 +1028,8 @@ if __name__ == '__main__':
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   # dataset.collect_dataset_ids()
 
-  utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_dict, sequence.sequences_w_ids)
-  # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict, sequence.sequences_w_ids)
+  utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
+  # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
   utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
   # taxonomy.parse_taxonomy()
   utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
@@ -1040,7 +1060,7 @@ if __name__ == '__main__':
   utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   # seq_csv_parser.insert_sequence_uniq_info()
   
-  metadata = Metadata(mysql_util)
+  metadata = Metadata(mysql_util, dataset)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   # metadata.parse_metadata_csv(metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
