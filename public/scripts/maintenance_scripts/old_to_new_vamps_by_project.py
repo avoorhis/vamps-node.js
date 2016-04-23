@@ -861,7 +861,7 @@ class Metadata:
     self.utils = Utils()
     self.metadata_file_fields  = []
     self.metadata_file_content = []
-    self.parameter_name_project_dict   = defaultdict(dict)
+    self.parameter_name_dataset_dict   = defaultdict(dict)
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
     self.existing_field_names   = []
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
@@ -879,16 +879,16 @@ class Metadata:
     ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
     [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
     """
-    self.get_parameter_name_project_dict()
+    self.get_parameter_name_dataset_dict()
     
-  def get_parameter_name_project_dict(self):
+  def get_parameter_name_dataset_dict(self):
     for entry in self.metadata_file_content:
       entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      project_val                 = entry_w_fields_dict['project']
+      dataset_val                 = entry_w_fields_dict['dataset']
       structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
-      self.parameter_name_project_dict[project_val][structured_comment_name_val] = entry_w_fields_dict
+      self.parameter_name_dataset_dict[dataset_val][structured_comment_name_val] = entry_w_fields_dict
     
-    # for key, value in self.parameter_name_project_dict.items():
+    # for key, value in self.parameter_name_dataset_dict.items():
       # print self.existing_field_names # (= structured_comment_name)
       # print "UUU %s" % (value["envo_biome"]["parameterValue"])
       # print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
@@ -899,13 +899,12 @@ class Metadata:
  # average lc vs. for: 0.0092371191	0.0072890997
 
   def get_existing_field_names(self):
-    self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
+    self.existing_field_names = [value.keys() for key, value in self.parameter_name_dataset_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
     intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names)
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
-
 
     for k, v in self.substitute_field_names.items():
       for existing_field_name in self.existing_field_names:
@@ -914,6 +913,43 @@ class Metadata:
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
+  
+  def insert_required_metadata(self):
+    field_list = ", ".join(self.existing_required_metadata_fields.keys())
+    ex_f_list  = self.existing_required_metadata_fields.values()
+    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
+
+    for dataset, vals in self.parameter_name_dataset_dict.items():
+      # print "LLL"
+      # print project
+      print vals
+      for field_name, ex_f_name in vals.items():        
+        if field_name in ex_f_list:
+          print "ex_f_name['parameterValue']"
+          print field_name
+          # print ex_f_name
+          print ex_f_name['parameterValue']
+      # ["parameterValue"]
+    # print "field_list = %s" % field_list
+    
+    """
+    (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
+    
+    def insert_dataset(self, project_dict):
+      for project in set(self.dataset_project_dict.values()):
+        project_id = project_dict[project]
+        self.put_project_id_into_dataset_file_content(project_id)
+
+        field_list = "dataset, dataset_description, env_sample_source_id, project_id"
+
+        all_insert_dat_vals = self.utils.make_insert_values(self.dataset_file_content)
+        # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
+        # self.utils.print_array_w_title(sql, "sql")
+
+        rows_affected = mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+    """
+    
+    
 
 
 
@@ -1008,4 +1044,5 @@ if __name__ == '__main__':
   # metadata.parse_metadata_csv(metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   
