@@ -861,7 +861,11 @@ class Metadata:
     self.utils = Utils()
     self.metadata_file_fields  = []
     self.metadata_file_content = []
-    self.parameter_name_project_dict = defaultdict(dict)
+    self.parameter_name_project_dict   = defaultdict(dict)
+    self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
+    self.existing_field_names   = []
+    self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long"], "env_biome": ["envo_biome"]}
+
 
     
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -881,21 +885,56 @@ class Metadata:
     for entry in self.metadata_file_content:
       entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
       """
-      {'parameter_id': '0',
-'notes': 'IEO2.txt  2010-03-31 PRN -- EnvO DATA FROM Pier Buttigi MPI Bremen miens update prn 2010_05_19 miens update units --prn 2010_05_19',
-'structured_comment_name': 'envo_biome',
-'ts': '2013-10-29 13:26:39',
-'dataset': 'SMS_0001_2007_09_19',
-'project': 'ICM_SMS_Bv6',
-'miens_units': 'Alphanumeric',
-'parameterValue': 'marine abyssal zone biome',
-'other': '3',
-'entry_date': '',
-'project_dataset': 'ICM_SMS_Bv6--SMS_0001_2007_09_19',
-'units': 'Alphanumeric',
-'parameterName': 'EnvO_biome',
-'method': '',
-'units_id': '1'}
+['depth_end',
+'domain',
+'aux_corrected_sample_depth',
+'aux_absolute_depth',
+'habitat',
+'aux_modisa_sst',
+'aux_daylength',
+'envo_feature',
+'aux_sediment',
+'aux_silicate_(i)',
+'Sampling_date',
+'aux_sunset_min',
+'aux_sunrise_hr',
+'absolute_depth_beta',
+'envo_biome',
+'aux_bec_simulated_phosphate_(um)',
+'longhurst_long_name',
+'aux_chlo',
+'lon',
+'sample_type',
+'aux_sunrise_min',
+'redox_state',
+'aux_sunset_hr',
+'aux_temperature_(t)',
+'depth_start',
+'environmental_zone',
+'aux_dissolved_oxygen_(o)',
+'aux_corrected_depth',
+'aux_phosphate_(p)',
+'aux_nitrate_(n)',
+'aux_apparent_oxygen_utilization_(a)',
+'envo_material',
+'iho_area',
+'lat',
+'aux_avhrr_sst',
+'temp',
+'aux_salinity_(s)',
+'longhurst_zone',
+'aux_modis_k490',
+'aux_par',
+'salinity',
+'EnvO_tags',
+'depth',
+'sample_type_beta',
+'aux_bec_simulated_iron_(nm)',
+'aux_seawifis_k490',
+'aux_oxygen_saturation_(u)',
+'aux_bec_simulated_nitrate_(um)',
+'collection_time']
+
       """
       self.parameter_name_project_dict[entry_w_fields_dict['project']][entry_w_fields_dict['structured_comment_name']] = entry_w_fields_dict
     print "parameter_name_project_dict = "
@@ -904,34 +943,24 @@ class Metadata:
     for key, value in self.parameter_name_project_dict.items():
       print "8" * 30
       print key
-      print value.keys() # (= structured_comment_name)
-      for key1, value1 in value.items():
-        if (value1['miens_units'] != value1['units']):
-          print "value[miens_units] = %s" % value1['miens_units']
-          print "units = %s" % value1['units']
-          # value[miens_units] = decimalHours
-          # units = decimalHour
-          
-        # """
-        # value[parameterName] = Salinity
-        # structured_comment_name = salinity
-        # value[parameterName] = latitude
-        # structured_comment_name = lat
-        # value[parameterName] = Temperature
-        # structured_comment_name = temp
-        # value[parameterName] = longitude
-        # structured_comment_name = lon
-        # value[parameterName] = Sampling_time
-        # structured_comment_name = collection_time
-        # value[parameterName] = EnvO_feature
-        # structured_comment_name = envo_feature
-        # value[parameterName] = EnvO_material
-        # structured_comment_name = envo_material
-        # value[parameterName] = EnvO_biome
-        # structured_comment_name = envo_biome
-        #
-        #"""
-  
+      self.existing_field_names = value.keys()
+      print self.existing_field_names # (= structured_comment_name)
+      self.get_existing_required_metadata_info_fields()
+      print "UUU %s" % (value["envo_biome"]["parameterValue"])
+      print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
+      all_units = [value1["units"] for key1, value1 in value.items()]
+      # for key1, value1 in value.items():
+      print set(all_units)
+      # set(['decimalHour', 'unknown', 'meter', 'Alphanumeric', 'celsius', 'decimalDegree', 'YYYY-MM-DD', 'psu'])
+
+
+
+  def get_existing_required_metadata_info_fields(self):
+    for field_name in self.required_metadata_info_fields:
+      if (field_name in self.existing_field_names):
+        print "field_name in self.existing_field_names = %s" % field_name
+
+      # if field_name 
 
 if __name__ == '__main__':
   #TODO: args
