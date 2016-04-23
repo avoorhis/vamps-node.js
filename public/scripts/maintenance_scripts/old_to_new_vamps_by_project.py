@@ -900,14 +900,18 @@ class Metadata:
       self.parameter_name_project_dict[entry_w_fields_dict['project']][entry_w_fields_dict['structured_comment_name']] = entry_w_fields_dict
     print "parameter_name_project_dict = "
     print len(self.parameter_name_project_dict.keys())
-    print self.parameter_name_project_dict
+    # print self.parameter_name_project_dict
     for key, value in self.parameter_name_project_dict.items():
+      print "8" * 30
       print key
-      print value
-      # for key, value in value:
-      #   if (value['parameterName'] != value['structured_comment_name']):
-      #     print "value[parameterName] = %s" % value['parameterName']
-      #     print "structured_comment_name = %s" % value['structured_comment_name']
+      print value.keys() # (= structured_comment_name)
+      for key1, value1 in value.items():
+        if (value1['miens_units'] != value1['units']):
+          print "value[miens_units] = %s" % value1['miens_units']
+          print "units = %s" % value1['units']
+          # value[miens_units] = decimalHours
+          # units = decimalHour
+          
         # """
         # value[parameterName] = Salinity
         # structured_comment_name = salinity
