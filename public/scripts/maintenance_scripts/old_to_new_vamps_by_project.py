@@ -358,7 +358,7 @@ class Utils:
       # self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
       return all_insert_vals
       
-    def find_in_nested_list(self, hey, needle):      
+    def find_val_in_nested_list(self, hey, needle):      
       return [v for k, v in hey if k.lower() == needle.lower()]
 
     def find_key_by_value_in_dict(self, hey, needle):
@@ -429,7 +429,7 @@ class Taxonomy:
     
   def get_all_rank_w_id(self):
     all_rank_w_id = mysql_util.get_all_name_id("rank")
-    klass_id = self.utils.find_in_nested_list(all_rank_w_id, "klass")
+    klass_id = self.utils.find_val_in_nested_list(all_rank_w_id, "klass")
     t = ("class", klass_id[0])
     l = list(all_rank_w_id)
     l.append(t)
@@ -466,7 +466,7 @@ class Taxonomy:
       silva_taxonomy_sublist = []
       for rank_num, taxon in enumerate(tax_list):
         rank     = self.ranks[rank_num]
-        taxon_id = int(self.utils.find_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)[0])
+        taxon_id = int(self.utils.find_val_in_nested_list(self.uniqued_taxa_by_rank_w_id_dict[rank], taxon)[0])
         silva_taxonomy_sublist.append(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
@@ -775,7 +775,7 @@ class Seq_csv:
       gast_distance     = entry_w_fields_dict["distance"]
       # refssu_id         =
       # refssu_count      =
-      rank_id           = self.utils.find_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      rank_id           = self.utils.find_val_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
       
       temp_list = list((sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id))
       
@@ -864,8 +864,8 @@ class Metadata:
     self.parameter_name_project_dict   = defaultdict(dict)
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
     self.existing_field_names   = []
-    self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long"], "env_biome": ["envo_biome"]}
-
+    self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    self.existing_required_metadata_fields = {}
 
     
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -945,7 +945,7 @@ class Metadata:
       print key
       self.existing_field_names = value.keys()
       print self.existing_field_names # (= structured_comment_name)
-      self.get_existing_required_metadata_info_fields()
+      self.get_existing_required_metadata_fields()
       print "UUU %s" % (value["envo_biome"]["parameterValue"])
       print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
       all_units = [value1["units"] for key1, value1 in value.items()]
@@ -955,12 +955,26 @@ class Metadata:
 
 
 
-  def get_existing_required_metadata_info_fields(self):
+  def get_existing_required_metadata_fields(self):
+    # list(set(a) & set(b))
+    # self.existing_required_metadata_fields = dict(field_name: field_name for field_name in self.required_metadata_info_fields if field_name in self.existing_field_names)
     for field_name in self.required_metadata_info_fields:
       if (field_name in self.existing_field_names):
-        print "field_name in self.existing_field_names = %s" % field_name
+        # print "field_name in self.existing_field_names = %s" % field_name
+        self.existing_required_metadata_fields[field_name] = field_name
+    # print "PPPP: existing_required_metadata_fields"
+    # print self.existing_required_metadata_fields
 
-      # if field_name 
+    for k, v in self.substitute_field_names.items():
+      # print "TTT k = %s, v = %s" % (k, v)
+      for existing_field_name in self.existing_field_names:
+        # print existing_field_name
+        if existing_field_name in v:
+          self.existing_required_metadata_fields[k] = existing_field_name
+          
+    print "PPPP: existing_required_metadata_fields"
+    print self.existing_required_metadata_fields
+
 
 if __name__ == '__main__':
   #TODO: args
