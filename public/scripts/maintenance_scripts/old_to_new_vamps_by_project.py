@@ -807,7 +807,8 @@ class Seq_csv:
     sequence_ids = self.seq_ids_by_name_dict.values()
     self.utils.print_array_w_title(sequences_w_ids, "sequence_ids from sequence_uniq_info_from_csv")
     self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict from sequence_uniq_info_from_csv = ")
-    self.utils.print_array_w_title(sequence_ids, "sequence_ids from sequence_uniq_info_from_csv = ")
+    sequence_ids_ints = [int(id) for id in self.seq_ids_by_name_dict.values()]
+    self.utils.print_array_w_title(sequence_ids_ints, "sequence_ids_ints from sequence_uniq_info_from_csv = ")
     
     # get_all_name_id(self, "silva_taxonomy_info_per_seq", id_name = "silva_taxonomy_info_per_seq_id", field_name = "sequence_id", where_part = ):
   
