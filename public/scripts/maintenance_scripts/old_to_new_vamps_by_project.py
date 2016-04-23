@@ -333,6 +333,12 @@ class Utils:
         def wrapped():
             return func(*args, **kwargs)
         return wrapped
+    
+    def benchmarking(self, func, func_name, *args, **kwargs):
+      print "START %s" % func_name
+      wrapped = utils.wrapper(func, *args)
+      time_res = timeit.timeit(wrapped, number=1)
+      print "time_res: %s" % time_res
 
     def search_in_2d_list(self, search, data):
       for sublist in data:
@@ -393,7 +399,7 @@ class Taxonomy:
       except:
         raise
 
-    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with for")
+    # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "self.uniqued_taxa_by_rank_dict made with for")
 
   def insert_taxa(self):
     """
@@ -433,7 +439,7 @@ class Taxonomy:
   
     
   def make_uniqued_taxa_by_rank_w_id_dict(self):
-    self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "===\nself.uniqued_taxa_by_rank_dict from def silva_taxonomy")
+    # self.utils.print_array_w_title(self.uniqued_taxa_by_rank_dict, "===\nself.uniqued_taxa_by_rank_dict from def silva_taxonomy")
     
     for rank, uniqued_taxa_by_rank in self.uniqued_taxa_by_rank_dict.items():
       shielded_rank_name = self.shield_rank_name(rank)
@@ -464,7 +470,7 @@ class Taxonomy:
         silva_taxonomy_sublist.append(taxon_id)
         # self.utils.print_array_w_title(silva_taxonomy_sublist, "===\nsilva_taxonomy_sublist from def silva_taxonomy: ")
       self.taxa_list_w_empty_ranks_ids_dict[taxonomy] = silva_taxonomy_sublist
-    self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
+    # self.utils.print_array_w_title(self.taxa_list_w_empty_ranks_ids_dict, "===\ntaxa_list_w_empty_ranks_ids_dict from def silva_taxonomy: ")
     
   def make_silva_taxonomy_rank_list_w_ids_dict(self):
     for taxonomy, silva_taxonomy_id_list in self.taxa_list_w_empty_ranks_ids_dict.items():
@@ -475,7 +481,7 @@ class Taxonomy:
         rank_w_id_list.append(t)
 
       self.silva_taxonomy_rank_list_w_ids_dict[taxonomy] = rank_w_id_list
-    self.utils.print_array_w_title(self.silva_taxonomy_rank_list_w_ids_dict, "===\nsilva_taxonomy_rank_list_w_ids_dict from def make_silva_taxonomy_rank_list_w_ids_dict: ")
+    # self.utils.print_array_w_title(self.silva_taxonomy_rank_list_w_ids_dict, "===\nsilva_taxonomy_rank_list_w_ids_dict from def make_silva_taxonomy_rank_list_w_ids_dict: ")
     """
     {'Bacteria;Proteobacteria;Alphaproteobacteria;Rhizobiales;Rhodobiaceae;Rhodobium': [('domain', 2), ('phylum', 2016066), ('klass', 2085666), ('order', 2252460), ('family', 2293035), ('genus', 2303053), ('species', 1), ('strain', 2148217)], ...
     """
@@ -490,7 +496,7 @@ class Taxonomy:
   def make_silva_taxonomy_ids_dict(self, silva_taxonomy_ids):
     for ids in silva_taxonomy_ids:
       self.silva_taxonomy_ids_dict[int(ids[0])] = [int(id) for id in ids[1:]]
-    self.utils.print_array_w_title(self.silva_taxonomy_ids_dict, "===\nsilva_taxonomy_ids_dict from def get_silva_taxonomy_ids: ")
+    # self.utils.print_array_w_title(self.silva_taxonomy_ids_dict, "===\nsilva_taxonomy_ids_dict from def get_silva_taxonomy_ids: ")
     # {2436595: [2, 2016066, 2085666, 2252460, 2293035, 2303053, 1, 2148217], 2436596: [...
     
   def get_silva_taxonomy_ids(self):
@@ -671,7 +677,6 @@ class Sequence:
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def insert_seq(self):
-    print "Inserting sequences..."
     rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
     self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
@@ -754,9 +759,9 @@ class Seq_csv:
     refssu_count      = 0
     rank_id           = 0
     
-    self.utils.print_array_w_title(taxonomy.silva_taxonomy_id_per_taxonomy_dict, "taxonomy.taxonomy.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
+    # self.utils.print_array_w_title(taxonomy.silva_taxonomy_id_per_taxonomy_dict, "taxonomy.taxonomy.silva_taxonomy_id_per_taxonomy_dict from silva_taxonomy_info_per_seq = ")
     
-    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "\n---\nself.seq_ids_by_name_dict from silva_taxonomy_info_per_seq = ")
+    # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "\n---\nself.seq_ids_by_name_dict from silva_taxonomy_info_per_seq = ")
     # print "SSSSS"
     # seq_csv_file_fields = ["id","sequence","project","dataset","taxonomy","refhvr_ids","rank","seq_count","frequency","distance","rep_id","project_dataset"]
     # all_rank_w_id
@@ -770,15 +775,22 @@ class Seq_csv:
       total = t1-t0
       print "total1 = %s" % total
 
-      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict1 from silva_taxonomy_info_per_seq_from_csv = ")
+      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict1 from silva_taxonomy_info_per_seq_from_csv = ")
       
       t0 = time.time()
       self.utils.make_entry_w_fields_dict(self.seq_csv_file_fields, entry)
       t1 = time.time()
       total = t1-t0
       print "total2 = %s" % total
-      self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict2 from silva_taxonomy_info_per_seq_from_csv = ")
-      
+      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict2 from silva_taxonomy_info_per_seq_from_csv = ")
+      """      
+      > colSums(a)
+              X       X.1 
+      0.4833272 0.5344348 
+      > colMeans(a)
+                 X          X.1 
+      6.253101e-06 6.914312e-06 
+      """
       sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
       gast_distance     = entry_w_fields_dict["distance"]
@@ -891,8 +903,8 @@ class Metadata:
 
 if __name__ == '__main__':
   #TODO: args
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
   metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
@@ -908,74 +920,74 @@ if __name__ == '__main__':
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
 
   """TODO: add time"""
-  print "insert_seq"
-  sequence.insert_seq()
-  print "get_seq_ids"
-  sequence.get_seq_ids()
-
-  print "parse_refhvr_id"
-  refhvr_id.parse_refhvr_id()
+  # sequence.insert_seq()
+  utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
+  # sequence.get_seq_ids()
+    
+  utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
   
-  print "insert_refhvr_id"
-  refhvr_id.insert_refhvr_id()
+  utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  # refhvr_id.insert_refhvr_id()
 
   project = Project(mysql_util)
-  print "parse_project_csv"
-  project.parse_project_csv(project_csv_file_name)
+  utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
+  # project.parse_project_csv(project_csv_file_name)
 
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  print "insert_user"
-  user.insert_user()
-  print "insert_project"
-  project.insert_project(user.user_id)
+  utils.benchmarking(user.insert_user, "insert_user")
+  # user.insert_user()
+  utils.benchmarking(project.insert_project, "insert_project", user.user_id)
+  # project.insert_project(user.user_id)
 
-  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
 
   dataset = Dataset(mysql_util)
-  print "parse_dataset_csv"
-  dataset.parse_dataset_csv(dataset_csv_file_name)
-  print "make_dataset_project_dictionary"
-  dataset.make_dataset_project_dictionary()
-  print "insert_dataset"
-  dataset.insert_dataset(project.project_dict)
-  print "collect_dataset_ids"
-  dataset.collect_dataset_ids()
+  utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
+  # dataset.parse_dataset_csv(dataset_csv_file_name)
 
-  seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
-  print "sequence_pdr_info"
-  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict, sequence.sequences_w_ids)
-  print "parse_taxonomy"
-  taxonomy.parse_taxonomy()
-  print "get_taxa_by_rank()"
-  taxonomy.get_taxa_by_rank()
-  print "make_uniqued_taxa_by_rank_dict()"
-  taxonomy.make_uniqued_taxa_by_rank_dict()
-  print "insert_taxa()"
-  taxonomy.insert_taxa()
-  print "silva_taxonomy()"
-  taxonomy.silva_taxonomy()
-  print "insert_silva_taxonomy()"
-  taxonomy.insert_silva_taxonomy()
-  print "get_silva_taxonomy_ids()"
-  taxonomy.get_silva_taxonomy_ids()
-  print "make_silva_taxonomy_id_per_taxonomy_dict()"
-  taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
-  print "get_all_rank_w_id()"
-  taxonomy.get_all_rank_w_id()
+  utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
+  # dataset.make_dataset_project_dictionary()
+  utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
+  # dataset.insert_dataset(project.project_dict)
+  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  # dataset.collect_dataset_ids()
+
+  utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_dict, sequence.sequences_w_ids)
+  # seq_csv_parser.sequence_pdr_info(dataset.dataset_dict, sequence.sequences_w_ids)
+  utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
+  # taxonomy.parse_taxonomy()
+  utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
+  # taxonomy.get_taxa_by_rank()
+  utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
+  # taxonomy.make_uniqued_taxa_by_rank_dict()
+  utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
+  # taxonomy.insert_taxa()
+  utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
+  # taxonomy.silva_taxonomy()
+  utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
+  # taxonomy.insert_silva_taxonomy()
+  utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
+  # taxonomy.get_silva_taxonomy_ids()
+  utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
+  # taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
+  utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
+  # taxonomy.get_all_rank_w_id()
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
 
-  print "silva_taxonomy_info_per_seq_from_csv(taxonomy)"
-  seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
-  print "insert_silva_taxonomy_info_per_seq()"
-  seq_csv_parser.insert_silva_taxonomy_info_per_seq()
+  utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
+  # seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
+  utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
+  # seq_csv_parser.insert_silva_taxonomy_info_per_seq()
 
-  print "sequence_uniq_info_from_csv(sequence.sequences_w_ids)"
-  seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
-  print "insert_sequence_uniq_info()"
-  seq_csv_parser.insert_sequence_uniq_info()
+  utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
+  # seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
+  utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
+  # seq_csv_parser.insert_sequence_uniq_info()
   
   metadata = Metadata(mysql_util)
-  print "parse_metadata_csv"
-  metadata.parse_metadata_csv(metadata_csv_file_name)
+  utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
+  # metadata.parse_metadata_csv(metadata_csv_file_name)
+  
