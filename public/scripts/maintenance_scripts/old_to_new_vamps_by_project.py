@@ -751,7 +751,6 @@ class Seq_csv:
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq_from_csv(self, taxonomy):
     # TODO: refactoring (too long)
-    print "parse silva_taxonomy_info_per_seq..."
     sequence_id       = 0
     silva_taxonomy_id = 0
     gast_distance     = 0.0
@@ -971,3 +970,41 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   # metadata.parse_metadata_csv(metadata_csv_file_name)
   
+  """
+  > check_time[order(check_time$data),]
+                                         name         data
+  9           make_dataset_project_dictionary 8.106232e-06
+  5                         parse_project_csv 7.796288e-05
+  14                         get_taxa_by_rank 2.851486e-04
+  15           make_uniqued_taxa_by_rank_dict 5.879402e-04
+  21                        get_all_rank_w_id 6.899834e-04
+  8                         parse_dataset_csv 9.839535e-04
+  7                            insert_project 1.218081e-03
+  6                               insert_user 1.441956e-03
+  10                           insert_dataset 3.991842e-03
+  11                      collect_dataset_ids 6.792068e-03
+  26                       parse_metadata_csv 2.827311e-02
+  18                    insert_silva_taxonomy 5.583382e-02
+  16                              insert_taxa 5.604315e-02
+  13                           parse_taxonomy 6.223583e-02
+  3                           parse_refhvr_id 8.009505e-02
+  20 make_silva_taxonomy_id_per_taxonomy_dict 1.884089e-01
+  24              sequence_uniq_info_from_csv 1.917841e-01
+  4                          insert_refhvr_id 3.966310e-01
+  19                   get_silva_taxonomy_ids 5.507030e-01
+  22     silva_taxonomy_info_per_seq_from_csv 7.202630e-01
+  17                           silva_taxonomy 8.400302e-01
+  25                insert_sequence_uniq_info 1.528555e+00
+  2                               get_seq_ids 1.710238e+00
+  12                        sequence_pdr_info 2.410633e+00
+  23       insert_silva_taxonomy_info_per_seq 3.585288e+00
+  1                    Inserting_sequences... 7.614818e+00
+  
+  in 3 runs the slowest is the last:
+  silva_taxonomy
+  insert_sequence_uniq_info
+  get_seq_ids
+  sequence_pdr_info
+  insert_silva_taxonomy_info_per_seq
+  Inserting_sequences...
+  """
