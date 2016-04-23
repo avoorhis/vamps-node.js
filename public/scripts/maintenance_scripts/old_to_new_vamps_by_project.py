@@ -883,25 +883,12 @@ class Metadata:
     
   def get_parameter_name_project_dict(self):
     for entry in self.metadata_file_content:
-      entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      """
-['depth_end',
-'domain',
-...
-
-      """
-      self.parameter_name_project_dict[entry_w_fields_dict['project']][entry_w_fields_dict['structured_comment_name']] = entry_w_fields_dict
-    # print "parameter_name_project_dict = "
-    # print len(self.parameter_name_project_dict.keys())
-    # print self.parameter_name_project_dict
-    self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
-    # print "self.existing_field_names"
-    # print self.existing_field_names
+      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
+      project_val                 = entry_w_fields_dict['project']
+      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
+      self.parameter_name_project_dict[project_val][structured_comment_name_val] = entry_w_fields_dict
     
     # for key, value in self.parameter_name_project_dict.items():
-    #   # print "8" * 30
-    #   # print key
-    #   self.existing_field_names = value.keys()
       # print self.existing_field_names # (= structured_comment_name)
       # print "UUU %s" % (value["envo_biome"]["parameterValue"])
       # print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
@@ -911,6 +898,8 @@ class Metadata:
       # set(['decimalHour', 'unknown', 'meter', 'Alphanumeric', 'celsius', 'decimalDegree', 'YYYY-MM-DD', 'psu'])
  # average lc vs. for: 0.0092371191	0.0072890997
 
+  def get_existing_field_names(self):
+    self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
     intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names)
@@ -1017,5 +1006,6 @@ if __name__ == '__main__':
   metadata = Metadata(mysql_util)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   # metadata.parse_metadata_csv(metadata_csv_file_name)
+  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   
