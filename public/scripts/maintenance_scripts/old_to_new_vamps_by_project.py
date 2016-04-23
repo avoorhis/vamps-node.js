@@ -861,7 +861,7 @@ class Metadata:
     self.utils = Utils()
     self.metadata_file_fields  = []
     self.metadata_file_content = []
-    self.parameter_name_project_dict = {}
+    self.parameter_name_project_dict = defaultdict(dict)
 
     
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -897,34 +897,36 @@ class Metadata:
 'method': '',
 'units_id': '1'}
       """
-      param_project = entry_w_fields_dict['parameterName'] + "_" + entry_w_fields_dict['project']
-      self.parameter_name_project_dict[param_project] = entry_w_fields_dict
+      self.parameter_name_project_dict[entry_w_fields_dict['project']][entry_w_fields_dict['structured_comment_name']] = entry_w_fields_dict
     print "parameter_name_project_dict = "
     print len(self.parameter_name_project_dict.keys())
-    print self.parameter_name_project_dict["Salinity_ICM_SMS_Bv6"]
+    print self.parameter_name_project_dict
     for key, value in self.parameter_name_project_dict.items():
-      if (value['parameterName'] != value['structured_comment_name']):
-        print "value[parameterName] = %s" % value['parameterName']
-        print "structured_comment_name = %s" % value['structured_comment_name']
-        """
-        value[parameterName] = Salinity
-        structured_comment_name = salinity
-        value[parameterName] = latitude
-        structured_comment_name = lat
-        value[parameterName] = Temperature
-        structured_comment_name = temp
-        value[parameterName] = longitude
-        structured_comment_name = lon
-        value[parameterName] = Sampling_time
-        structured_comment_name = collection_time
-        value[parameterName] = EnvO_feature
-        structured_comment_name = envo_feature
-        value[parameterName] = EnvO_material
-        structured_comment_name = envo_material
-        value[parameterName] = EnvO_biome
-        structured_comment_name = envo_biome
-        
-        """
+      print key
+      print value
+      # for key, value in value:
+      #   if (value['parameterName'] != value['structured_comment_name']):
+      #     print "value[parameterName] = %s" % value['parameterName']
+      #     print "structured_comment_name = %s" % value['structured_comment_name']
+        # """
+        # value[parameterName] = Salinity
+        # structured_comment_name = salinity
+        # value[parameterName] = latitude
+        # structured_comment_name = lat
+        # value[parameterName] = Temperature
+        # structured_comment_name = temp
+        # value[parameterName] = longitude
+        # structured_comment_name = lon
+        # value[parameterName] = Sampling_time
+        # structured_comment_name = collection_time
+        # value[parameterName] = EnvO_feature
+        # structured_comment_name = envo_feature
+        # value[parameterName] = EnvO_material
+        # structured_comment_name = envo_material
+        # value[parameterName] = EnvO_biome
+        # structured_comment_name = envo_biome
+        #
+        #"""
   
 
 if __name__ == '__main__':
