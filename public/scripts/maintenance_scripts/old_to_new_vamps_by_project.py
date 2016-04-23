@@ -956,10 +956,23 @@ class Metadata:
 
 
   def get_existing_required_metadata_fields(self):
-    intersect_field_names = list(set(self.required_metadata_info_fields) & set(self.existing_field_names))
+    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names)
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
+    print "VVV self.substitute_field_names.values()"
+    print self.substitute_field_names.values()
+    a = set(self.utils.flatten_2d_list(self.substitute_field_names.values()))
+    b = set(self.existing_field_names)
+    inters = set(a & b)
+    for existing_field_name in inters:
+      k = self.utils.find_key_by_value_in_dict(self.substitute_field_names, existing_field_name)
+      self.existing_required_metadata_fields[k] = existing_field_name
+    print "III inters"
+    print inters
+    print "PPPP: existing_required_metadata_fields"
+    print self.existing_required_metadata_fields
+    
     for k, v in self.substitute_field_names.items():
       for existing_field_name in self.existing_field_names:
         if existing_field_name in v:
@@ -967,6 +980,9 @@ class Metadata:
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
+    #time_res: 0.00335693359375
+    # time_res full metadata: 0.00707793235779
+
 
 
 if __name__ == '__main__':
