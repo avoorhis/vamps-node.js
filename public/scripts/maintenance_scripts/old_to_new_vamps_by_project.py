@@ -861,31 +861,78 @@ class Metadata:
     self.utils = Utils()
     self.metadata_file_fields  = []
     self.metadata_file_content = []
+    self.parameter_name_project_dict = {}
+
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
     print metadata_csv_file_name
     self.metadata_file_fields, self.metadata_file_content = self.utils.read_csv_into_list(metadata_csv_file_name)
-    print self.metadata_file_fields
-    print self.metadata_file_content
+    # print self.metadata_file_fields
+    # print self.metadata_file_content
     """
     metadata_ICM_SMS_Bv6_short.csv
     ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
     [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
     """
-  
-  def get_dataset_parameter_name_dict(self):
+    self.get_parameter_name_project_dict()
+    
+  def get_parameter_name_project_dict(self):
     for entry in self.metadata_file_content:
-      entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
-      
+      entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
+      """
+      {'parameter_id': '0',
+'notes': 'IEO2.txt  2010-03-31 PRN -- EnvO DATA FROM Pier Buttigi MPI Bremen miens update prn 2010_05_19 miens update units --prn 2010_05_19',
+'structured_comment_name': 'envo_biome',
+'ts': '2013-10-29 13:26:39',
+'dataset': 'SMS_0001_2007_09_19',
+'project': 'ICM_SMS_Bv6',
+'miens_units': 'Alphanumeric',
+'parameterValue': 'marine abyssal zone biome',
+'other': '3',
+'entry_date': '',
+'project_dataset': 'ICM_SMS_Bv6--SMS_0001_2007_09_19',
+'units': 'Alphanumeric',
+'parameterName': 'EnvO_biome',
+'method': '',
+'units_id': '1'}
+      """
+      param_project = entry_w_fields_dict['parameterName'] + "_" + entry_w_fields_dict['project']
+      self.parameter_name_project_dict[param_project] = entry_w_fields_dict
+    print "parameter_name_project_dict = "
+    print len(self.parameter_name_project_dict.keys())
+    print self.parameter_name_project_dict["Salinity_ICM_SMS_Bv6"]
+    for key, value in self.parameter_name_project_dict.items():
+      if (value['parameterName'] != value['structured_comment_name']):
+        print "value[parameterName] = %s" % value['parameterName']
+        print "structured_comment_name = %s" % value['structured_comment_name']
+        """
+        value[parameterName] = Salinity
+        structured_comment_name = salinity
+        value[parameterName] = latitude
+        structured_comment_name = lat
+        value[parameterName] = Temperature
+        structured_comment_name = temp
+        value[parameterName] = longitude
+        structured_comment_name = lon
+        value[parameterName] = Sampling_time
+        structured_comment_name = collection_time
+        value[parameterName] = EnvO_feature
+        structured_comment_name = envo_feature
+        value[parameterName] = EnvO_material
+        structured_comment_name = envo_material
+        value[parameterName] = EnvO_biome
+        structured_comment_name = envo_biome
+        
+        """
   
 
 if __name__ == '__main__':
   #TODO: args
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
+  metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
+  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
+  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
   user_contact_csv_file_name = "user_contact.csv"
   project_csv_file_name = "project_ICM_SMS_Bv6.csv"
   dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
@@ -970,41 +1017,3 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   # metadata.parse_metadata_csv(metadata_csv_file_name)
   
-  """
-  > check_time[order(check_time$data),]
-                                         name         data
-  9           make_dataset_project_dictionary 8.106232e-06
-  5                         parse_project_csv 7.796288e-05
-  14                         get_taxa_by_rank 2.851486e-04
-  15           make_uniqued_taxa_by_rank_dict 5.879402e-04
-  21                        get_all_rank_w_id 6.899834e-04
-  8                         parse_dataset_csv 9.839535e-04
-  7                            insert_project 1.218081e-03
-  6                               insert_user 1.441956e-03
-  10                           insert_dataset 3.991842e-03
-  11                      collect_dataset_ids 6.792068e-03
-  26                       parse_metadata_csv 2.827311e-02
-  18                    insert_silva_taxonomy 5.583382e-02
-  16                              insert_taxa 5.604315e-02
-  13                           parse_taxonomy 6.223583e-02
-  3                           parse_refhvr_id 8.009505e-02
-  20 make_silva_taxonomy_id_per_taxonomy_dict 1.884089e-01
-  24              sequence_uniq_info_from_csv 1.917841e-01
-  4                          insert_refhvr_id 3.966310e-01
-  19                   get_silva_taxonomy_ids 5.507030e-01
-  22     silva_taxonomy_info_per_seq_from_csv 7.202630e-01
-  17                           silva_taxonomy 8.400302e-01
-  25                insert_sequence_uniq_info 1.528555e+00
-  2                               get_seq_ids 1.710238e+00
-  12                        sequence_pdr_info 2.410633e+00
-  23       insert_silva_taxonomy_info_per_seq 3.585288e+00
-  1                    Inserting_sequences... 7.614818e+00
-  
-  in 3 runs the slowest is the last:
-  silva_taxonomy
-  insert_sequence_uniq_info
-  get_seq_ids
-  sequence_pdr_info
-  insert_silva_taxonomy_info_per_seq
-  Inserting_sequences...
-  """
