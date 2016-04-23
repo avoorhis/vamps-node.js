@@ -693,6 +693,8 @@ class Seq_csv:
     # self.sequence         = Sequence(self.sequences, mysql_util)
     self.sequence_pdr_info_content = []
     self.silva_taxonomy_info_per_seq_list = []
+    self.seq_id_w_silva_taxonomy_info_per_seq_id = ()
+    self.sequence_uniq_info_values = ""
 
     # print "MMM"
     # print self.seqs_file_content
@@ -791,33 +793,23 @@ class Seq_csv:
     # TODO: check env_source_id/env_sample_source_id in project, if not in env_sample_source_id.csv - change to 0
     pass
 
-  # def make_dataset_by_name_dict(self):
-  #   datasets_w_ids = mysql_util.get_all_name_id('dataset')
-  #   self.dataset_id_by_name_dict = dict(datasets_w_ids)
-  #
-  # def make_project_by_name_dict(self):
-  #   projects_w_ids = mysql_util.get_all_name_id('project')
-  #   self.project_id_by_name_dict = dict(projects_w_ids)
-  
-  def sequence_uniq_info_from_csv(self, sequences_w_ids):
-    # ! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
-    # where_part = "" ?
-    #TODO: add where get all sequence_id we have
-    #TODO: move self.seq_ids_by_name_dictcreation into class Sequence
-    sequence_ids = self.seq_ids_by_name_dict.values()
-    self.utils.print_array_w_title(sequences_w_ids, "sequence_ids from sequence_uniq_info_from_csv")
-    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict from sequence_uniq_info_from_csv = ")
+  def get_seq_id_w_silva_taxonomy_info_per_seq_id(self):
     sequence_ids_strs = [str(id) for id in self.seq_ids_by_name_dict.values()]
-    self.utils.print_array_w_title(sequence_ids_strs, "sequence_ids_strs from sequence_uniq_info_from_csv = ")
     where_part = 'WHERE sequence_id in (%s)' % ', '.join(sequence_ids_strs)
-    self.utils.print_array_w_title(where_part, "where_part from sequence_uniq_info_from_csv = ")
-    seq_id_w_silva_taxonomy_info_per_seq_id = mysql_util.get_all_name_id("silva_taxonomy_info_per_seq", "silva_taxonomy_info_per_seq_id", "sequence_id", where_part)
-    self.utils.print_array_w_title(seq_id_w_silva_taxonomy_info_per_seq_id, "seq_id_w_silva_taxonomy_info_per_seq_id from sequence_uniq_info_from_csv = ")
-  # <type 'tuple'>
-    for t in seq_id_w_silva_taxonomy_info_per_seq_id:
-      print t[0]
-      print t[1]
+    self.seq_id_w_silva_taxonomy_info_per_seq_id = mysql_util.get_all_name_id("silva_taxonomy_info_per_seq", "silva_taxonomy_info_per_seq_id", "sequence_id", where_part)
+    
+  def sequence_uniq_info_from_csv(self, sequences_w_ids):
+    self.get_seq_id_w_silva_taxonomy_info_per_seq_id()
+    # ! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
+    self.sequence_uniq_info_values = '), ('.join(str(i1) + "," + str(i2) for i1, i2 in self.seq_id_w_silva_taxonomy_info_per_seq_id)
+    # print "sequence_uniq_info_values = %s" % sequence_uniq_info_values
+    
+  def insert_sequence_uniq_info(self):
+    field_list = "sequence_id, silva_taxonomy_info_per_seq_id"
+    rows_affected = mysql_util.execute_insert("sequence_uniq_info", field_list, self.sequence_uniq_info_values)
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_sequence_uniq_info = ")
   
+      
 
     """
     ***) simple tables:
@@ -914,7 +906,4 @@ if __name__ == '__main__':
   seq_csv_parser.insert_silva_taxonomy_info_per_seq()
   
   seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
-  
-  # seq_csv_parser.make_project_by_name_dict()
-  #
-  # seq_csv_parser.make_dataset_by_name_dict()
+  seq_csv_parser.insert_sequence_uniq_info()
