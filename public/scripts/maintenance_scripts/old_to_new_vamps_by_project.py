@@ -142,8 +142,8 @@ strain
     sequence_uniq_info
 
 ***) ref tables
+      silva_taxonomy_info_per_seq
     ref_silva_taxonomy_info_per_seq_refhvr_id
-    silva_taxonomy_info_per_seq
 
 *)
 from metadata.csv
@@ -690,7 +690,7 @@ class Seq_csv:
     self.refhvr_id        = self.content_by_field[5]
     self.the_rest         = self.content_by_field[6:]
                           
-    self.sequence         = Sequence(self.sequences, mysql_util)
+    # self.sequence         = Sequence(self.sequences, mysql_util)
     self.sequence_pdr_info_content = []
     self.silva_taxonomy_info_per_seq_list = []
 
@@ -725,11 +725,14 @@ class Seq_csv:
     rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
 
-  def sequence_pdr_info(self, dataset_dict):
+  def sequence_pdr_info(self, dataset_dict, sequences_w_ids):
     # (dataset_id, sequence_id, seq_count, classifier_id)
     # classifier_id = 2 GAST  SILVA108_FULL_LENGTH
-    self.sequence.get_seq_ids()
-    self.seq_ids_by_name_dict = dict(self.sequence.sequences_w_ids)
+    # self.sequence.get_seq_ids()
+    # sequences_w_ids
+    # self.utils.print_array_w_title(sequences_w_ids, "self.seq_ids_by_name_dict = ")
+    
+    self.seq_ids_by_name_dict = dict(sequences_w_ids)
     # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
     self.insert_sequence_pdr_info()
@@ -795,6 +798,19 @@ class Seq_csv:
   # def make_project_by_name_dict(self):
   #   projects_w_ids = mysql_util.get_all_name_id('project')
   #   self.project_id_by_name_dict = dict(projects_w_ids)
+  
+  def sequence_uniq_info_from_csv(self, sequences_w_ids):
+    # ! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
+    # where_part = "" ?
+    #TODO: add where get all sequence_id we have
+    #TODO: move self.seq_ids_by_name_dictcreation into class Sequence
+    sequence_ids = self.seq_ids_by_name_dict.values()
+    self.utils.print_array_w_title(sequences_w_ids, "sequence_ids from sequence_uniq_info_from_csv")
+    self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict from sequence_uniq_info_from_csv = ")
+    self.utils.print_array_w_title(sequence_ids, "sequence_ids from sequence_uniq_info_from_csv = ")
+    
+    # get_all_name_id(self, "silva_taxonomy_info_per_seq", id_name = "silva_taxonomy_info_per_seq_id", field_name = "sequence_id", where_part = ):
+  
 
     """
     ***) simple tables:
@@ -848,6 +864,7 @@ if __name__ == '__main__':
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
 
   sequence.insert_seq()
+  sequence.get_seq_ids()
 
   refhvr_id.parse_refhvr_id()
   refhvr_id.insert_refhvr_id()
@@ -871,7 +888,7 @@ if __name__ == '__main__':
 
   seq_csv_parser.utils.print_array_w_title(dataset.dataset_dict, "dataset.dataset_dict main")
   # 
-  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict)
+  seq_csv_parser.sequence_pdr_info(dataset.dataset_dict, sequence.sequences_w_ids)
   # 
   taxonomy.parse_taxonomy()
   # print  "taxa_list_w_empty_ranks RRR"
@@ -889,6 +906,7 @@ if __name__ == '__main__':
   seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
   seq_csv_parser.insert_silva_taxonomy_info_per_seq()
   
+  seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
   
   # seq_csv_parser.make_project_by_name_dict()
   #
