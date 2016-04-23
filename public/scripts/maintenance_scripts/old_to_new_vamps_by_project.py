@@ -811,7 +811,12 @@ class Seq_csv:
     self.utils.print_array_w_title(sequence_ids_strs, "sequence_ids_strs from sequence_uniq_info_from_csv = ")
     where_part = 'WHERE sequence_id in (%s)' % ', '.join(sequence_ids_strs)
     self.utils.print_array_w_title(where_part, "where_part from sequence_uniq_info_from_csv = ")
-    # get_all_name_id(self, "silva_taxonomy_info_per_seq", id_name = "silva_taxonomy_info_per_seq_id", field_name = "sequence_id", where_part):
+    seq_id_w_silva_taxonomy_info_per_seq_id = mysql_util.get_all_name_id("silva_taxonomy_info_per_seq", "silva_taxonomy_info_per_seq_id", "sequence_id", where_part)
+    self.utils.print_array_w_title(seq_id_w_silva_taxonomy_info_per_seq_id, "seq_id_w_silva_taxonomy_info_per_seq_id from sequence_uniq_info_from_csv = ")
+  # <type 'tuple'>
+    for t in seq_id_w_silva_taxonomy_info_per_seq_id:
+      print t[0]
+      print t[1]
   
 
     """
