@@ -694,8 +694,8 @@ class Seq_csv:
     self.sequence_pdr_info_content = []
     self.silva_taxonomy_info_per_seq_list = []
 
-    print "MMM"
-    print self.seqs_file_content
+    # print "MMM"
+    # print self.seqs_file_content
     """
     [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
     """
@@ -888,6 +888,8 @@ if __name__ == '__main__':
 
   seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
   seq_csv_parser.insert_silva_taxonomy_info_per_seq()
+  
+  
   # seq_csv_parser.make_project_by_name_dict()
   #
   # seq_csv_parser.make_dataset_by_name_dict()
