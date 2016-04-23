@@ -769,28 +769,8 @@ class Seq_csv:
     silva_taxonomy_info_per_seq_list1 = []
     for entry in self.seqs_file_content:
       temp_list = []
-      t0 = time.time()
-      entry_w_fields_dict = dict(zip(self.seq_csv_file_fields, entry))
-      t1 = time.time()
-      total = t1-t0
-      print "total1 = %s" % total
 
-      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict1 from silva_taxonomy_info_per_seq_from_csv = ")
-      
-      t0 = time.time()
-      self.utils.make_entry_w_fields_dict(self.seq_csv_file_fields, entry)
-      t1 = time.time()
-      total = t1-t0
-      print "total2 = %s" % total
-      # self.utils.print_array_w_title(entry_w_fields_dict, "entry_w_fields_dict2 from silva_taxonomy_info_per_seq_from_csv = ")
-      """      
-      > colSums(a)
-              X       X.1 
-      0.4833272 0.5344348 
-      > colMeans(a)
-                 X          X.1 
-      6.253101e-06 6.914312e-06 
-      """
+      entry_w_fields_dict = self.utils.make_entry_w_fields_dict(self.seq_csv_file_fields, entry)
       sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
       gast_distance     = entry_w_fields_dict["distance"]
