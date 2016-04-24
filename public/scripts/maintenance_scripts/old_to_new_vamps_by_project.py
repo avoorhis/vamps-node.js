@@ -941,10 +941,42 @@ class Metadata:
 
     print "dataset.all_dataset_id_by_project_dict = "
     print dataset.all_dataset_id_by_project_dict
-
+    all_insert_req_met_vals = ""
+    
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
-    # for project, dataset_id_list in dataset.all_dataset_id_by_project_dict:
-      all_insert_req_met_vals = "'" + "', '".join(required_metadata_dict.values()) + "'"
+      print "PPP"
+      print dataset.all_dataset_id_by_project_dict[project]
+      temp_list = ""
+      required_metadata_dict_values = required_metadata_dict.values()
+      for dataset_id in dataset.all_dataset_id_by_project_dict[project]:
+        # print "required_metadata_dict_values"
+        # print required_metadata_dict_values
+        # print "dataset_id = %s" % dataset_id
+        # required_metadata_dict_values.insert(0, str(dataset_id))
+        # print "required_metadata_dict_values = "
+        # print required_metadata_dict_values
+        # all_insert_req_met_vals = "'" + "', '".join(required_metadata_dict.values()) + "'"
+        
+        temp_list = "'%s', '" % str(dataset_id) + "', '".join(required_metadata_dict_values) + "'"
+        print "temp_list 1 = "
+        print temp_list 
+        a1 = ", (%s)" % temp_list
+        print "a1 1 = "
+        print a1 
+        all_insert_req_met_vals += a1
+      #
+      # print "temp_list 2 = "
+      # print temp_list
+
+        # all_insert_req_met_vals += self.utils.make_insert_values(temp_list)
+
+
+    # for project, dataset_id_list in dataset.all_dataset_id_by_project_dict.items():
+    #   print "PPP"
+    #   print project
+    #   print dataset_id_list
+      # for dataset_id in dataset.all_dataset_id_by_project_dict[]:
+
     
     return all_insert_req_met_vals
     
@@ -957,7 +989,7 @@ class Metadata:
   
   def insert_required_metadata(self):    
     #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
-    field_list = ", ".join(self.existing_required_metadata_fields.keys())
+    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
     print "field_list = %s" % field_list
     
     self.make_requred_metadata_dict()
