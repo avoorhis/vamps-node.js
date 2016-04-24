@@ -969,18 +969,16 @@ class Metadata:
     field_values = []
     for project, vals in self.parameter_name_project_dict.items():
       project_id   = project_dict[project]
-      field_values = [(project_id, field_name) for field_name in self.custom_metadata_fields]
-    
-    # ,'parameterValue': '3953.5'
+      field_values = [(project_id, field_name, vals[field_name]['parameterValue']) for field_name in self.custom_metadata_fields]
     
     self.custom_metadata_fields_insert_values = self.utils.make_insert_values(field_values) 
-    
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, insert_values)
+    # field_list   = "project_id, field_name, example"
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
     # self.utils.print_array_w_title(sql, "sql")
     
   def insert_custom_metadata_fields(self):
     # field_list = "project_id, field_name, field_type, example"
-    field_list   = "project_id, field_name"
+    field_list   = "project_id, field_name, example"
     
     rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
   
@@ -1100,3 +1098,4 @@ if __name__ == '__main__':
   
   
 # TODO: make "run all in class" methods in client
+# http://blog.michelemattioni.me/2015/01/10/list-intersection-in-python-lets-do-it-quickly/
