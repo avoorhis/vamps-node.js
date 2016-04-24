@@ -921,21 +921,17 @@ class Metadata:
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
           
-    print "PPPP: existing_required_metadata_fields"
-    print self.existing_required_metadata_fields
+    # print "PPPP: existing_required_metadata_fields"
+    # print self.existing_required_metadata_fields
     
   def get_custom_metadata_fields(self):
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names)
     
-  
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
 
     for project, vals in self.parameter_name_project_dict.items():
-      print "LLL"
-      print project
-      # print vals
       for field_name, ex_f_name in vals.items():
         if field_name in ex_f_list:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
@@ -967,6 +963,47 @@ class Metadata:
     rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
     
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    
+  def data_for_custom_metadata_fields_table(self, project_dict):
+    # field_list = "project_id, field_name, field_type, example"
+    field_list = "project_id, field_name"
+    field_values = []
+    for project, vals in self.parameter_name_project_dict.items():
+      project_id = project_dict[project]
+      print "project_id = %s" % project_id
+      
+      t0 = time.time()
+      field_values1 = [(project_id, field_name) for field_name in self.custom_metadata_fields]
+      t1 = time.time()
+      total = t1-t0
+      print "total field_values1 = %s" % total
+      print field_values1
+      
+      t0 = time.time()
+      for field_name in self.custom_metadata_fields:
+        temp_list = (project_id, field_name)
+        field_values.append(temp_list)
+      t1 = time.time()
+      total = t1-t0
+      print "total field_values2 = %s" % total
+      print field_values
+
+        # print "field_name = %s" % field_name
+      # field_type =
+      # print "field_type = %s" % field_type
+      # field_values.append
+    
+
+  def make_custom_metadata_dict(self):
+    field_list = self.custom_metadata_fields
+
+    for project, vals in self.parameter_name_project_dict.items():
+      print "MMM"
+      # print vals
+      # for field_name, ex_f_name in vals.items():
+      #   if field_name in field_list:
+      #     self.custom_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
+  
     
     
     
@@ -1064,6 +1101,8 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
+  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
+  utils.benchmarking(metadata.make_custom_metadata_dict, "make_custom_metadata_dict")
   
-  print ":LLLLL"
-  print metadata.custom_metadata_fields
+  
+# TODO: make "run all in class" methods in client
