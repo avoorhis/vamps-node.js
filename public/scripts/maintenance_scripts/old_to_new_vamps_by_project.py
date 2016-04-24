@@ -624,10 +624,11 @@ class Project:
 
 class Dataset:
   def __init__(self, mysql_util):
-    self.utils                   = Utils()
-    self.dataset_project_dict    = {}
-    self.dataset_file_content    = []
-    self.dataset_id_by_name_dict = {}
+    self.utils                     = Utils()
+    self.dataset_project_dict      = {}
+    self.dataset_file_content      = []
+    self.dataset_id_by_name_dict   = {}
+    self.all_dataset_id_by_project_dict = defaultdict(list)
 
   def make_dataset_project_dictionary(self):
     self.dataset_project_dict = {val[0]: val[3] for val in self.dataset_file_content}
@@ -659,6 +660,13 @@ class Dataset:
       # self.utils.print_array_w_title(sql, "sql")
 
       rows_affected = mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+      
+  def make_all_dataset_id_by_project_dict(self):
+    for dat, proj in sorted(self.dataset_project_dict.items()):
+        self.all_dataset_id_by_project_dict[proj].append(self.dataset_id_by_name_dict[dat])
+    print "all_dataset_id_by_project_dict"
+    print self.all_dataset_id_by_project_dict
+    # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
 
 class Sequence:
 
@@ -866,7 +874,7 @@ class Metadata:
     self.existing_field_names   = []
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
-
+    self.required_metadata_dict = {}
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -912,43 +920,29 @@ class Metadata:
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
           
-    print "PPPP: existing_required_metadata_fields"
-    print self.existing_required_metadata_fields
+    # print "PPPP: existing_required_metadata_fields"
+    # print self.existing_required_metadata_fields
   
-  def insert_required_metadata(self):
-    print "dataset.dataset_id_by_name_dict"
-    print dataset.dataset_id_by_name_dict
-    
-    print "dataset.dataset_project_dict"
-    print dataset.dataset_project_dict
-    
-    #TODO: get all dataset_id by project, moive in class dataset
-    all_dataset_id_by_project = defaultdict(list)
-    for dat, proj in sorted(dataset.dataset_project_dict.items()):
-        all_dataset_id_by_project[proj].append(dataset.dataset_id_by_name_dict[dat])
-    print "all_dataset_id_by_project"
-    print all_dataset_id_by_project
-    # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
-    
-    field_list = ", ".join(self.existing_required_metadata_fields.keys())
+  def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
 
-    insert_r_m_data = {}
     for project, vals in self.parameter_name_project_dict.items():
-      # print "LLL"
-      # print project
+      print "LLL"
+      print project
       # print vals
       for field_name, ex_f_name in vals.items():
         if field_name in ex_f_list:
-          print "ex_f_name['parameterValue']"
-          print field_name
-          # print ex_f_name
-          print ex_f_name['parameterValue']
-          insert_r_m_data[field_name] = ex_f_name['parameterValue']
-      # ["parameterValue"]
-    print "insert_r_m_data = "
-    print insert_r_m_data
+          self.required_metadata_dict[field_name] = ex_f_name['parameterValue']
+          
+    # for self.required_metadata_dict
+    print "self.required_metadata_dict = "
+    print self.required_metadata_dict
+  
+  def insert_required_metadata(self):    
+    #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
+    field_list = ", ".join(self.existing_required_metadata_fields.keys())
+    self.make_requred_metadata_dict()
     
     """
     (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
@@ -1024,6 +1018,11 @@ if __name__ == '__main__':
   # dataset.insert_dataset(project.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   # dataset.collect_dataset_ids()
+  utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
+  
+  print "dataset.make_all_dataset_id_by_project_dict"
+  print dataset.make_all_dataset_id_by_project_dict
+
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
   # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
@@ -1063,4 +1062,5 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  
   
