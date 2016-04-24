@@ -871,7 +871,7 @@ class Metadata:
     self.metadata_file_content = []
     self.parameter_name_project_dict   = defaultdict(dict)
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
-    self.existing_field_names   = []
+    self.existing_field_names   = defaultdict(list)
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
     self.required_metadata_by_pr_dict      = defaultdict(dict)
@@ -909,16 +909,17 @@ class Metadata:
  # average lc vs. for: 0.0092371191	0.0072890997
 
   def get_existing_field_names(self):
-    self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
+    self.existing_field_names = {project: value.keys() for project, value in self.parameter_name_project_dict.items()}
+    # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
-    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names)
+    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names.values()[0])
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
-
     for k, v in self.substitute_field_names.items():
-      for existing_field_name in self.existing_field_names:
+      # todo redo as intersect:      
+      for existing_field_name in self.existing_field_names.values():
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
           
@@ -926,7 +927,7 @@ class Metadata:
     # print self.existing_required_metadata_fields
     
   def get_custom_metadata_fields(self):
-    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names)
+    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
     
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
