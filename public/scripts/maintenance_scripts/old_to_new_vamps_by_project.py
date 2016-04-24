@@ -876,6 +876,7 @@ class Metadata:
     self.existing_required_metadata_fields = {}
     self.required_metadata_by_pr_dict      = defaultdict(dict)
     self.custom_metadata_fields            = set()
+    self.custom_metadata_fields_insert_values = ""
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -965,41 +966,33 @@ class Metadata:
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
     
   def data_for_custom_metadata_fields_table(self, project_dict):
-    # field_list = "project_id, field_name, field_type, example"
-    field_list = "project_id, field_name"
     field_values = []
     for project, vals in self.parameter_name_project_dict.items():
-      project_id = project_dict[project]
-      print "project_id = %s" % project_id
-      
-      t0 = time.time()
-      field_values1 = [(project_id, field_name) for field_name in self.custom_metadata_fields]
-      t1 = time.time()
-      total = t1-t0
-      print "total field_values1 = %s" % total
-      print field_values1
-      
-      t0 = time.time()
-      for field_name in self.custom_metadata_fields:
-        temp_list = (project_id, field_name)
-        field_values.append(temp_list)
-      t1 = time.time()
-      total = t1-t0
-      print "total field_values2 = %s" % total
-      print field_values
-
-        # print "field_name = %s" % field_name
-      # field_type =
-      # print "field_type = %s" % field_type
-      # field_values.append
+      project_id   = project_dict[project]
+      field_values = [(project_id, field_name) for field_name in self.custom_metadata_fields]
     
-
+    # ,'parameterValue': '3953.5'
+    
+    self.custom_metadata_fields_insert_values = self.utils.make_insert_values(field_values) 
+    
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, insert_values)
+    # self.utils.print_array_w_title(sql, "sql")
+    
+  def insert_custom_metadata_fields(self):
+    # field_list = "project_id, field_name, field_type, example"
+    field_list   = "project_id, field_name"
+    
+    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+  
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+  
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
 
     for project, vals in self.parameter_name_project_dict.items():
+      # pass
       print "MMM"
-      # print vals
+      print vals
       # for field_name, ex_f_name in vals.items():
       #   if field_name in field_list:
       #     self.custom_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
@@ -1102,6 +1095,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
+  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.make_custom_metadata_dict, "make_custom_metadata_dict")
   
   
