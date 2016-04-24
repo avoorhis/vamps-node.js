@@ -874,7 +874,7 @@ class Metadata:
     self.existing_field_names   = []
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
-    self.required_metadata_dict = {}
+    self.required_metadata_by_pr_dict = defaultdict(dict)
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -933,16 +933,40 @@ class Metadata:
       # print vals
       for field_name, ex_f_name in vals.items():
         if field_name in ex_f_list:
-          self.required_metadata_dict[field_name] = ex_f_name['parameterValue']
-          
-    # for self.required_metadata_dict
-    print "self.required_metadata_dict = "
-    print self.required_metadata_dict
+          self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
+      
+  def create_insert_required_metadata_string(self):
+    print "self.required_metadata_by_pr_dict = "
+    print self.required_metadata_by_pr_dict
+
+    print "dataset.all_dataset_id_by_project_dict = "
+    print dataset.all_dataset_id_by_project_dict
+
+    for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
+    # for project, dataset_id_list in dataset.all_dataset_id_by_project_dict:
+      all_insert_req_met_vals = "'" + "', '".join(required_metadata_dict.values()) + "'"
+    
+    return all_insert_req_met_vals
+    
+    """self.required_metadata_by_pr_dict = 
+    {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
+       dataset.all_dataset_id_by_project_dict = 
+    {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
+    """    
+    
   
   def insert_required_metadata(self):    
     #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
     field_list = ", ".join(self.existing_required_metadata_fields.keys())
+    print "field_list = %s" % field_list
+    
     self.make_requred_metadata_dict()
+    self.create_insert_required_metadata_string()
+    all_insert_req_met_vals = self.create_insert_required_metadata_string()
+    
+    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, all_insert_req_met_vals)
+    self.utils.print_array_w_title(sql, "sql")
+    
     
     """
     (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
@@ -1019,10 +1043,6 @@ if __name__ == '__main__':
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   # dataset.collect_dataset_ids()
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
-  
-  print "dataset.make_all_dataset_id_by_project_dict"
-  print dataset.make_all_dataset_id_by_project_dict
-
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
   # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
