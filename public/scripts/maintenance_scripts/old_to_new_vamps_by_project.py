@@ -874,7 +874,8 @@ class Metadata:
     self.existing_field_names   = []
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
-    self.required_metadata_by_pr_dict = defaultdict(dict)
+    self.required_metadata_by_pr_dict      = defaultdict(dict)
+    self.custom_metadata_fields            = set()
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -920,8 +921,12 @@ class Metadata:
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
           
-    # print "PPPP: existing_required_metadata_fields"
-    # print self.existing_required_metadata_fields
+    print "PPPP: existing_required_metadata_fields"
+    print self.existing_required_metadata_fields
+    
+  def get_custom_metadata_fields(self):
+    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names)
+    
   
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
@@ -957,14 +962,13 @@ class Metadata:
     field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
     
     self.make_requred_metadata_dict()
-    self.create_insert_required_metadata_string()
     all_insert_req_met_vals = self.create_insert_required_metadata_string()
     
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, all_insert_req_met_vals)
-    # self.utils.print_array_w_title(sql, "sql")
     rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
     
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    
+    
     
 if __name__ == '__main__':
   #TODO: args
@@ -1059,5 +1063,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   
-  
+  print ":LLLLL"
+  print metadata.custom_metadata_fields
