@@ -936,92 +936,36 @@ class Metadata:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
       
   def create_insert_required_metadata_string(self):
-    print "self.required_metadata_by_pr_dict = "
-    print self.required_metadata_by_pr_dict
-
-    print "dataset.all_dataset_id_by_project_dict = "
-    print dataset.all_dataset_id_by_project_dict
-    all_insert_req_met_vals = ""
-    
+    all_insert_req_met_vals = ""    
+    temp_list = []
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
-      print "PPP"
-      print dataset.all_dataset_id_by_project_dict[project]
-      temp_list = []
       for dataset_id in dataset.all_dataset_id_by_project_dict[project]:
         required_metadata_dict_values = required_metadata_dict.values()
-        # print "required_metadata_dict_values"
-        # print required_metadata_dict_values
-        # print "dataset_id = %s" % dataset_id
-        # required_metadata_dict_values.insert(0, str(dataset_id))
-        # print "required_metadata_dict_values = "
-        # print required_metadata_dict_values
-        # all_insert_req_met_vals = "'" + "', '".join(required_metadata_dict.values()) + "'"
         required_metadata_dict_values.insert(0, dataset_id)
         temp_list.append(required_metadata_dict_values)
-        # temp_list = "'%s', '" % str(dataset_id) + "', '".join(required_metadata_dict_values) + "'"
-        print "temp_list 1 = "
-        print temp_list 
-        # a1 = ", (%s)" % temp_list
-        # print "a1 1 = "
-        # print a1
-        # all_insert_req_met_vals += a1
-      #
-      # print "temp_list 2 = "
-      # print temp_list
-
-    all_insert_req_met_vals += self.utils.make_insert_values(temp_list)
-
-
-    # for project, dataset_id_list in dataset.all_dataset_id_by_project_dict.items():
-    #   print "PPP"
-    #   print project
-    #   print dataset_id_list
-      # for dataset_id in dataset.all_dataset_id_by_project_dict[]:
-
-    
+    all_insert_req_met_vals += self.utils.make_insert_values(temp_list)    
     return all_insert_req_met_vals
-    
+      
+  def insert_required_metadata(self):    
+    #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
     """self.required_metadata_by_pr_dict = 
     {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
        dataset.all_dataset_id_by_project_dict = 
     {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
     """    
     
-  
-  def insert_required_metadata(self):    
-    #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
     field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
-    print "field_list = %s" % field_list
     
     self.make_requred_metadata_dict()
     self.create_insert_required_metadata_string()
     all_insert_req_met_vals = self.create_insert_required_metadata_string()
     
-    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, all_insert_req_met_vals)
-    self.utils.print_array_w_title(sql, "sql")
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, all_insert_req_met_vals)
+    # self.utils.print_array_w_title(sql, "sql")
+    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
     
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
     
-    """
-    (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
-    
-    def insert_dataset(self, project_dict):
-      for project in set(self.dataset_project_dict.values()):
-        project_id = project_dict[project]
-        self.put_project_id_into_dataset_file_content(project_id)
-
-        field_list = "dataset, dataset_description, env_sample_source_id, project_id"
-
-        all_insert_dat_vals = self.utils.make_insert_values(self.dataset_file_content)
-        # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "dataset", field_list, all_insert_dat_vals)
-        # self.utils.print_array_w_title(sql, "sql")
-
-        rows_affected = mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
-    """
-    
-    
-
-
-
 if __name__ == '__main__':
   #TODO: args
   seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
