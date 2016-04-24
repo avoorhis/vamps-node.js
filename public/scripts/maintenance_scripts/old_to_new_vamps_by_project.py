@@ -875,7 +875,7 @@ class Metadata:
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
     self.required_metadata_by_pr_dict      = defaultdict(dict)
-    self.custom_metadata_fields            = set()
+    self.custom_metadata_fields_by_pr_dict = defaultdict(list)
     self.custom_metadata_fields_insert_values = ""
     
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -950,6 +950,8 @@ class Metadata:
       
   def insert_required_metadata(self):    
     #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
+    # the same question about custom metadata. Kee once for the whole project? Or couldb e a case when diff by dataset? then remove project_id from custom metadata
+    
     """self.required_metadata_by_pr_dict = 
     {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
        dataset.all_dataset_id_by_project_dict = 
@@ -984,10 +986,17 @@ class Metadata:
   
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
   
+  def create_custom_metadata_pr_id_table(self):
+    pass
+    
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
-
+    print "field_list = "
+    print field_list
     for project, vals in self.parameter_name_project_dict.items():
+      """
+      'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
+      """
       # pass
       print "MMM"
       print vals
