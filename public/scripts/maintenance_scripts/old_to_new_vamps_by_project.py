@@ -855,9 +855,10 @@ class Seq_csv:
     """
 
 class Metadata:
-  # parse
-  # upload
   """
+  custom_metadata fields are per project,
+  but data could be by dataset
+    
   csv: "dataset"	"parameterName"	"parameterValue"	"units"	"miens_units"	"project"	"units_id"	"structured_comment_name"	"method"	"other"	"notes"	"ts"	"entry_date"	"parameter_id"	"project_dataset"
 "SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
 
@@ -875,7 +876,6 @@ class Metadata:
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields = {}
     self.required_metadata_by_pr_dict      = defaultdict(dict)
-    self.custom_metadata_fields_by_pr_dict = defaultdict(list)
     self.custom_metadata_fields_insert_values  = ""
     self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
     
@@ -934,8 +934,6 @@ class Metadata:
         
   def get_custom_metadata_fields(self):
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
-    # print "SSSSS self.custom_metadata_fields"
-    # print self.custom_metadata_fields
     
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
@@ -1037,7 +1035,7 @@ class Metadata:
       id_name = "%s_id" % (table_name)
       primary_key_field = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
       
-      field_names = ("dataset_id`, `" + "`, `".join(self.custom_metadata_fields))
+      # field_names = ("dataset_id`, `" + "`, `".join(self.custom_metadata_fields))
       
       field_descriptions = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
       for field_desc in entry:
@@ -1047,10 +1045,9 @@ class Metadata:
       
       
       field_descriptions += """
-        UNIQUE KEY unique_key (`%s`),
-        KEY dataset_id (dataset_id),
+        UNIQUE KEY dataset_id (dataset_id),
         CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
-        """ % (field_names, table_name)
+        """ % (table_name)
       table_description = "ENGINE=InnoDB"
       q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
       print "QQQ"
