@@ -918,7 +918,7 @@ class Metadata:
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
     
-    intr1 = []
+    # intr1 = []
     existing_required_metadata_fields1 = self.existing_required_metadata_fields
     for good_name, bad_name_list in self.substitute_field_names.items():
       # todo redo as intersect?:      
@@ -928,26 +928,63 @@ class Metadata:
       print bad_name_list
       print "self.existing_field_names.values() = "
       print self.existing_field_names.values()
+      # intr1.extend(intr)
+      # print "intr1 = "
+      # print intr1
+      
+      t0 = time.time()
       intr = set(bad_name_list).intersection(self.existing_field_names.values()[0])
-      intr1.extend(intr)
-      print "intr1 = "
-      print intr1
       
       for existing_field_name1 in intr:
         existing_required_metadata_fields1[good_name] = existing_field_name1
+      t1 = time.time()
+      total = t1-t0
+      print "total existing_field_name1 in intr = %s" % total
       
+      t0 = time.time()  
       for existing_field_name in self.existing_field_names.values()[0]:
-        print "existing_field_name = "
-        print existing_field_name
+        # print "existing_field_name = "
+        # print existing_field_name
         if existing_field_name in bad_name_list:
           self.existing_required_metadata_fields[good_name] = existing_field_name
+      t1 = time.time()
+      total = t1-t0
+      print "total for + if = %s" % total
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
 
     print "LLL: existing_required_metadata_fields1"
     print existing_required_metadata_fields1
+    # PPPP: existing_required_metadata_fields
+    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
+    # LLL: existing_required_metadata_fields1
+    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
+    # time_res: 0.00102186203003
     
+    """
+    total existing_field_name1 in intr = 4.05311584473e-06
+    total for + if = 6.91413879395e-06
+    total existing_field_name1 in intr = 3.09944152832e-06
+    total for + if = 5.96046447754e-06
+    total existing_field_name1 in intr = 2.86102294922e-06
+    total for + if = 5.96046447754e-06
+
+    total existing_field_name1 in intr = 3.09944152832e-06
+    total for + if = 5.96046447754e-06
+    total existing_field_name1 in intr = 2.86102294922e-06
+    total for + if = 5.96046447754e-06
+    total existing_field_name1 in intr = 3.09944152832e-06
+    total for + if = 6.19888305664e-06
+
+    total existing_field_name1 in intr = 2.86102294922e-06
+    total for + if = 5.96046447754e-06
+    total existing_field_name1 in intr = 2.86102294922e-06
+    total for + if = 5.96046447754e-06
+    total existing_field_name1 in intr = 2.86102294922e-06
+    total for + if = 5.96046447754e-06
+    
+    """
     
   def get_custom_metadata_fields(self):
     print 999
