@@ -915,18 +915,24 @@ class Metadata:
 
   def get_existing_required_metadata_fields(self):
     intersect_field_names = set(self.required_metadata_info_fields).intersection(self.existing_field_names.values()[0])
-
+    print intersect_field_names
+    
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
     t0 = time.time()
 
     for k, v in self.substitute_field_names.items():
+      print "*" * 20
       # todo redo as intersect:      
-      for existing_field_name in self.existing_field_names.values():
+      print k
+      print v
+      print self.existing_field_names.values()
+      for existing_field_name in self.existing_field_names.values()[0]:
+        print existing_field_name
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
-
+    
     t1 = time.time()
     total = t1-t0
     print "total 1 = %s" % total
