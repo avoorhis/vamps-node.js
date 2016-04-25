@@ -1011,28 +1011,42 @@ class Metadata:
       
     
   def create_custom_metadata_pr_id_table(self):
-    
     for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
       field_descriptions = ""
       # "!!!"
-      dataset_id = 0
-      table_name = "custom_metadata_%s" % project_id
-      id_name = "%s_id" % (table_name)
-      primary_key_field = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
-      
-    
+      dataset_id         = 0
+      table_name         = "custom_metadata_%s" % project_id
+      id_name            = "%s_id" % (table_name)
+      primary_key_field  = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)          
       field_descriptions = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+      field_descriptions1 = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+      
+      t0 = time.time()
       for field_desc in entry:
         field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
+      t1 = time.time()
+      total = t1-t0
+      print "total in for = %s" % total
       
+      t0 = time.time()
+      field_descriptions1 += "".join(["`%s` %s,\n" % (field_desc[0], field_desc[1]) for field_desc in entry])
+      t1 = time.time()
+      total = t1-t0
+      print "total in LC = %s" % total
+      print field_descriptions1
+      
+      """
+      almost the same
+      
+      """  
       
       field_descriptions += """
         UNIQUE KEY dataset_id (dataset_id),
         CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
         """ % (table_name)
       table_description = "ENGINE=InnoDB"
-      q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
-      mysql_util.execute_no_fetch(q)
+      q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
+      print mysql_util.execute_no_fetch(q)
     
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
