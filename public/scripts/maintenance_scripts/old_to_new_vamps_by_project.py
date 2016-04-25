@@ -1033,6 +1033,7 @@ class Metadata:
       t1 = time.time()
       total = t1-t0
       print "total in LC = %s" % total
+      print "field_descriptions1 = "
       print field_descriptions1
       
       """
