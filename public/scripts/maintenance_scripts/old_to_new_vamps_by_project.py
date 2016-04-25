@@ -919,11 +919,13 @@ class Metadata:
       self.existing_required_metadata_fields[field_name] = field_name
     
     for good_name, bad_name_list in self.substitute_field_names.items():      
-      t0 = time.time()
       bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
+      
+      # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
       
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
+
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
     # PPPP: existing_required_metadata_fields
