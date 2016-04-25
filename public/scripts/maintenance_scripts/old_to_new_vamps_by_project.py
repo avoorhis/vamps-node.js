@@ -876,7 +876,8 @@ class Metadata:
     self.existing_required_metadata_fields = {}
     self.required_metadata_by_pr_dict      = defaultdict(dict)
     self.custom_metadata_fields_by_pr_dict = defaultdict(list)
-    self.custom_metadata_fields_insert_values = ""
+    self.custom_metadata_fields_insert_values  = ""
+    self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
     
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -1002,17 +1003,36 @@ class Metadata:
       field_names = "project_id, field_name, field_type"
       table_name  = "custom_metadata_fields"
       where_part  = "WHERE project_id in (%s)" % (",".join(map(str, project.project_dict.values())))
-      custom_metadata_field_data = mysql_util.execute_simple_select(field_names, table_name, where_part)
+      custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
+      self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
       # print "CCC custom_metadata_field_data = "
       # print custom_metadata_field_data
       # ((275L, 'depth_end', 'varchar(128)'), (275L, 'domain', 'varchar(128)'), (275L, 'aux_corrected_sample_depth', 'varchar(128)'), (275L, 'aux_absolute_depth', 'varchar(128)'), (275L, 'habitat', 'varchar(128)'), (275L, 'aux_modisa_sst', 'varchar(128)'), (275L, 'aux_daylength', 'varchar(128)'), (275L, 'envo_feature', 'varchar(128)'), (275L, 'aux_sediment', 'varchar(128)'), (275L, 'aux_silicate_(i)', 'varchar(128)'), (275L, 'Sampling_date', 'varchar(128)'), (275L, 'aux_sunset_min', 'varchar(128)'), (275L, 'aux_sunrise_hr', 'varchar(128)'), (275L, 'absolute_depth_beta', 'varchar(128)'), (275L, 'envo_biome', 'varchar(128)'), (275L, 'aux_bec_simulated_phosphate_(um)', 'varchar(128)'), (275L, 'longhurst_long_name', 'varchar(128)'), (275L, 'aux_chlo', 'varchar(128)'), (275L, 'lon', 'varchar(128)'), (275L, 'sample_type', 'varchar(128)'), (275L, 'aux_sunrise_min', 'varchar(128)'), (275L, 'redox_state', 'varchar(128)'), (275L, 'aux_sunset_hr', 'varchar(128)'), (275L, 'aux_temperature_(t)', 'varchar(128)'), (275L, 'depth_start', 'varchar(128)'), (275L, 'environmental_zone', 'varchar(128)'), (275L, 'aux_dissolved_oxygen_(o)', 'varchar(128)'), (275L, 'aux_corrected_depth', 'varchar(128)'), (275L, 'aux_phosphate_(p)', 'varchar(128)'), (275L, 'aux_nitrate_(n)', 'varchar(128)'), (275L, 'aux_apparent_oxygen_utilization_(a)', 'varchar(128)'), (275L, 'envo_material', 'varchar(128)'), (275L, 'iho_area', 'varchar(128)'), (275L, 'lat', 'varchar(128)'), (275L, 'aux_avhrr_sst', 'varchar(128)'), (275L, 'temp', 'varchar(128)'), (275L, 'aux_salinity_(s)', 'varchar(128)'), (275L, 'longhurst_zone', 'varchar(128)'), (275L, 'aux_modis_k490', 'varchar(128)'), (275L, 'aux_par', 'varchar(128)'), (275L, 'salinity', 'varchar(128)'), (275L, 'EnvO_tags', 'varchar(128)'), (275L, 'sample_type_beta', 'varchar(128)'), (275L, 'aux_bec_simulated_iron_(nm)', 'varchar(128)'), (275L, 'aux_seawifis_k490', 'varchar(128)'), (275L, 'aux_oxygen_saturation_(u)', 'varchar(128)'), (275L, 'aux_bec_simulated_nitrate_(um)', 'varchar(128)'), (275L, 'collection_time', 'varchar(128)'))
-      
+    
+  def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
+    for entry in custom_metadata_field_data_res:
+      self.custom_metadata_field_data_by_pr_dict[entry[0]].append((entry[1], entry[2]))
+    print "AAAE"
+    print self.custom_metadata_field_data_by_pr_dict
+    # defaultdict(<type 'list'>, {275L: [('depth_end', 'varchar(128)'), ('domain', 'varchar(128)'), ('aux_corrected_sample_depth', 'varchar(128)'), ('aux_absolute_depth', 'varchar(128)'), ('habitat', 'varchar(128)'), ('aux_modisa_sst', 'varchar(128)'), ('aux_daylength', 'varchar(128)'), ('envo_feature', 'varchar(128)'), ('aux_sediment', 'varchar(128)'), ('aux_silicate_(i)', 'varchar(128)'), ('Sampling_date', 'varchar(128)'), ('aux_sunset_min', 'varchar(128)'), ('aux_sunrise_hr', 'varchar(128)'), ('absolute_depth_beta', 'varchar(128)'), ('envo_biome', 'varchar(128)'), ('aux_bec_simulated_phosphate_(um)', 'varchar(128)'), ('longhurst_long_name', 'varchar(128)'), ('aux_chlo', 'varchar(128)'), ('lon', 'varchar(128)'), ('sample_type', 'varchar(128)'), ('aux_sunrise_min', 'varchar(128)'), ('redox_state', 'varchar(128)'), ('aux_sunset_hr', 'varchar(128)'), ('aux_temperature_(t)', 'varchar(128)'), ('depth_start', 'varchar(128)'), ('environmental_zone', 'varchar(128)'), ('aux_dissolved_oxygen_(o)', 'varchar(128)'), ('aux_corrected_depth', 'varchar(128)'), ('aux_phosphate_(p)', 'varchar(128)'), ('aux_nitrate_(n)', 'varchar(128)'), ('aux_apparent_oxygen_utilization_(a)', 'varchar(128)'), ('envo_material', 'varchar(128)'), ('iho_area', 'varchar(128)'), ('lat', 'varchar(128)'), ('aux_avhrr_sst', 'varchar(128)'), ('temp', 'varchar(128)'), ('aux_salinity_(s)', 'varchar(128)'), ('longhurst_zone', 'varchar(128)'), ('aux_modis_k490', 'varchar(128)'), ('aux_par', 'varchar(128)'), ('salinity', 'varchar(128)'), ('EnvO_tags', 'varchar(128)'), ('sample_type_beta', 'varchar(128)'), ('aux_bec_simulated_iron_(nm)', 'varchar(128)'), ('aux_seawifis_k490', 'varchar(128)'), ('aux_oxygen_saturation_(u)', 'varchar(128)'), ('aux_bec_simulated_nitrate_(um)', 'varchar(128)'), ('collection_time', 'varchar(128)')]})
+    
   
   def create_custom_metadata_pr_id_table(self):
-    # get info from insert_custom_metadata_fields
-    project_id = 275
-    custom_metadata_fields = ""
+    project_ids = set()
+    custom_metadata_fields = []
+    custom_metadata_descr  = []
     all_field_names = ""
+
+    for entry in self.custom_metadata_field_data:
+      project_ids.add(str(entry[0]))
+      custom_metadata_fields.append(entry[1])
+      custom_metadata_descr.append(entry[2])
+      
+    print "IIII"
+    print project_ids
+    print custom_metadata_fields
+    print custom_metadata_fields
+      
     
     
     table_name = "custom_metadata_%s" % project_id
