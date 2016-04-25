@@ -997,6 +997,17 @@ class Metadata:
   
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
   
+  def get_data_from_custom_metadata_fields(self):
+    # for project, project_id in project_dict.items():
+      field_names = "project_id, field_name, field_type"
+      table_name  = "custom_metadata_fields"
+      where_part  = "WHERE project_id in (%s)" % (",".join(map(str, project.project_dict.values())))
+      custom_metadata_field_data = mysql_util.execute_simple_select(field_names, table_name, where_part)
+      # print "CCC custom_metadata_field_data = "
+      # print custom_metadata_field_data
+      # ((275L, 'depth_end', 'varchar(128)'), (275L, 'domain', 'varchar(128)'), (275L, 'aux_corrected_sample_depth', 'varchar(128)'), (275L, 'aux_absolute_depth', 'varchar(128)'), (275L, 'habitat', 'varchar(128)'), (275L, 'aux_modisa_sst', 'varchar(128)'), (275L, 'aux_daylength', 'varchar(128)'), (275L, 'envo_feature', 'varchar(128)'), (275L, 'aux_sediment', 'varchar(128)'), (275L, 'aux_silicate_(i)', 'varchar(128)'), (275L, 'Sampling_date', 'varchar(128)'), (275L, 'aux_sunset_min', 'varchar(128)'), (275L, 'aux_sunrise_hr', 'varchar(128)'), (275L, 'absolute_depth_beta', 'varchar(128)'), (275L, 'envo_biome', 'varchar(128)'), (275L, 'aux_bec_simulated_phosphate_(um)', 'varchar(128)'), (275L, 'longhurst_long_name', 'varchar(128)'), (275L, 'aux_chlo', 'varchar(128)'), (275L, 'lon', 'varchar(128)'), (275L, 'sample_type', 'varchar(128)'), (275L, 'aux_sunrise_min', 'varchar(128)'), (275L, 'redox_state', 'varchar(128)'), (275L, 'aux_sunset_hr', 'varchar(128)'), (275L, 'aux_temperature_(t)', 'varchar(128)'), (275L, 'depth_start', 'varchar(128)'), (275L, 'environmental_zone', 'varchar(128)'), (275L, 'aux_dissolved_oxygen_(o)', 'varchar(128)'), (275L, 'aux_corrected_depth', 'varchar(128)'), (275L, 'aux_phosphate_(p)', 'varchar(128)'), (275L, 'aux_nitrate_(n)', 'varchar(128)'), (275L, 'aux_apparent_oxygen_utilization_(a)', 'varchar(128)'), (275L, 'envo_material', 'varchar(128)'), (275L, 'iho_area', 'varchar(128)'), (275L, 'lat', 'varchar(128)'), (275L, 'aux_avhrr_sst', 'varchar(128)'), (275L, 'temp', 'varchar(128)'), (275L, 'aux_salinity_(s)', 'varchar(128)'), (275L, 'longhurst_zone', 'varchar(128)'), (275L, 'aux_modis_k490', 'varchar(128)'), (275L, 'aux_par', 'varchar(128)'), (275L, 'salinity', 'varchar(128)'), (275L, 'EnvO_tags', 'varchar(128)'), (275L, 'sample_type_beta', 'varchar(128)'), (275L, 'aux_bec_simulated_iron_(nm)', 'varchar(128)'), (275L, 'aux_seawifis_k490', 'varchar(128)'), (275L, 'aux_oxygen_saturation_(u)', 'varchar(128)'), (275L, 'aux_bec_simulated_nitrate_(um)', 'varchar(128)'), (275L, 'collection_time', 'varchar(128)'))
+      
+  
   def create_custom_metadata_pr_id_table(self):
     # get info from insert_custom_metadata_fields
     project_id = 275
@@ -1141,6 +1152,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.make_custom_metadata_dict, "make_custom_metadata_dict")
+  utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   
   
