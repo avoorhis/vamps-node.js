@@ -933,12 +933,9 @@ class Metadata:
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
         
   def get_custom_metadata_fields(self):
-    print "999"
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
-    print self.custom_metadata_fields
-    custom_metadata_fields1 = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
-    print custom_metadata_fields1
-    
+    # print "SSSSS self.custom_metadata_fields"
+    # print self.custom_metadata_fields
     
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
@@ -1007,52 +1004,59 @@ class Metadata:
     
   def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
     for entry in custom_metadata_field_data_res:
-      self.custom_metadata_field_data_by_pr_dict[entry[0]].append((entry[1], entry[2]))  
-  
+      self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))  
+      
+  def create_custom_metadata_field_descriptions(self, some_tuple):
+    field_descriptions = ""
+    for field_desc in some_tuple:
+      field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
+      
+    
   def create_custom_metadata_pr_id_table(self):
     
-    print "AAAE"
+    print "AAAE self.custom_metadata_field_data_by_pr_dict = "
     print self.custom_metadata_field_data_by_pr_dict
     # defaultdict(<type 'list'>, {275L: [('depth_end', 'varchar(128)'), ('domain', 'varchar(128)'), ('aux_corrected_sample_depth', 'varchar(128)'), ('aux_absolute_depth', 'varchar(128)'), ('habitat', 'varchar(128)'), ('aux_modisa_sst', 'varchar(128)'), ('aux_daylength', 'varchar(128)'), ('envo_feature', 'varchar(128)'), ('aux_sediment', 'varchar(128)'), ('aux_silicate_(i)', 'varchar(128)'), ('Sampling_date', 'varchar(128)'), ('aux_sunset_min', 'varchar(128)'), ('aux_sunrise_hr', 'varchar(128)'), ('absolute_depth_beta', 'varchar(128)'), ('envo_biome', 'varchar(128)'), ('aux_bec_simulated_phosphate_(um)', 'varchar(128)'), ('longhurst_long_name', 'varchar(128)'), ('aux_chlo', 'varchar(128)'), ('lon', 'varchar(128)'), ('sample_type', 'varchar(128)'), ('aux_sunrise_min', 'varchar(128)'), ('redox_state', 'varchar(128)'), ('aux_sunset_hr', 'varchar(128)'), ('aux_temperature_(t)', 'varchar(128)'), ('depth_start', 'varchar(128)'), ('environmental_zone', 'varchar(128)'), ('aux_dissolved_oxygen_(o)', 'varchar(128)'), ('aux_corrected_depth', 'varchar(128)'), ('aux_phosphate_(p)', 'varchar(128)'), ('aux_nitrate_(n)', 'varchar(128)'), ('aux_apparent_oxygen_utilization_(a)', 'varchar(128)'), ('envo_material', 'varchar(128)'), ('iho_area', 'varchar(128)'), ('lat', 'varchar(128)'), ('aux_avhrr_sst', 'varchar(128)'), ('temp', 'varchar(128)'), ('aux_salinity_(s)', 'varchar(128)'), ('longhurst_zone', 'varchar(128)'), ('aux_modis_k490', 'varchar(128)'), ('aux_par', 'varchar(128)'), ('salinity', 'varchar(128)'), ('EnvO_tags', 'varchar(128)'), ('sample_type_beta', 'varchar(128)'), ('aux_bec_simulated_iron_(nm)', 'varchar(128)'), ('aux_seawifis_k490', 'varchar(128)'), ('aux_oxygen_saturation_(u)', 'varchar(128)'), ('aux_bec_simulated_nitrate_(um)', 'varchar(128)'), ('collection_time', 'varchar(128)')]})
     
     
-    project_ids = set()
-    custom_metadata_fields = []
-    custom_metadata_descr  = []
-    all_field_names = ""
+    print "QQQQ self.custom_metadata_fields"
+    print self.custom_metadata_fields
 
-    for entry in self.custom_metadata_field_data:
-      project_ids.add(str(entry[0]))
-      custom_metadata_fields.append(entry[1])
-      custom_metadata_descr.append(entry[2])
+    for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
+      field_descriptions = ""
+      # custom_metadata_fields.append(entry[1])
+      # custom_metadata_descr.append(entry[2])
       
-    print "IIII"
-    print project_ids
-    print custom_metadata_fields
-    print custom_metadata_fields
+      print "IIII"
+      print project_id #str
+      print entry #list
+    
+
+      dataset_id = 0
+      table_name = "custom_metadata_%s" % project_id
+      id_name = "%s_id" % (table_name)
+      primary_key_field = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
       
-    
-    
-    table_name = "custom_metadata_%s" % project_id
-    id_name = "%s_id" % (table_name)
-    field_names = ("%s, " % id_name) + ", ".join(custom_metadata_fields)
-    field_descriptions = ""
-    """
-      PRIMARY KEY (custom_metadata_272_id),
-      UNIQUE KEY unique_key (project_id,dataset_id,depth_end,dna_quant,aux_corrected_sample_depth,iho_area,habitat,depth_start,aux_daylength,envo_feature,domain,Sampling_date,aux_sunset_min,aux_sunrise_hr,absolute_depth_beta,sediment_depth_start),
-      KEY dataset_id (dataset_id),
-      CONSTRAINT custom_metadata_272_ibfk_2 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
-    ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
-    """
-    field_descriptions += """PRIMARY KEY (%s),
-      UNIQUE KEY unique_key (%s),
-      KEY dataset_id (dataset_id),
-      CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
-      """ % (id_name, all_field_names, table_name)
-    table_description = "ENGINE=InnoDB"
-    q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
-    print "QQQ"
-    print q
+      field_names = ("dataset_id`, `" + "`, `".join(self.custom_metadata_fields))
+      
+      field_descriptions = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+      for field_desc in entry:
+        field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
+      print "field_descriptions = "
+      print field_descriptions
+      
+      
+      field_descriptions += """
+        UNIQUE KEY unique_key (`%s`),
+        KEY dataset_id (dataset_id),
+        CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
+        """ % (field_names, table_name)
+      table_description = "ENGINE=InnoDB"
+      q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
+      print "QQQ"
+      print q
+      # ERROR 1070 (42000): Too many key parts specified; max 16 parts allowed
+      # 
     
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
