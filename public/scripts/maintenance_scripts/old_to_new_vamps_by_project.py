@@ -949,33 +949,42 @@ class Metadata:
     print self.substitute_field_names.values()
     # [['lat'], ['envo_biome'], ['long', 'lon']]
     # x = [set(a) for a in self.substitute_field_names.values()]
-    t0 = time.time()
-    a = itertools.chain(*self.substitute_field_names.values())
-    t1 = time.time()
-    total = t1-t0
-    print "total itertools = %s" % total
-    print "a itertools: "
-    print set(a)
+    substitute_field_names_list = list(itertools.chain(*self.substitute_field_names.values()))
+    print "substitute_field_names_list = "
+    print substitute_field_names_list
+    print "self.substitute_field_names.items() = "
+    print self.substitute_field_names.items()
     
-    t0 = time.time()
-    a1 = self.utils.flatten_2d_list(self.substitute_field_names.values())
-    t1 = time.time()
-    total = t1-t0
-    print "total flatten_2d_list = %s" % total
-    print set(a1)
+    for s in substitute_field_names_list:
+      print "SSSSS in substitute_field_names_list = "
+      print s
+      correct_name = self.utils.find_key_by_value_in_dict(self.substitute_field_names.items(), s)
+      print "correct_name = %s" % correct_name
     
     
     for k, v in self.substitute_field_names.items():
-      print "EEEEE"
-      # todo redo as intersect:      
-      print "self.existing_field_names.values(): %s" % type(self.existing_field_names.values())
-      print self.existing_field_names.values()
-      print "v: %s" % type(v)
+      print "RRRR"
+      print "k"
+      print k
+      print "v"
       print v
-      a = set(v).intersection(self.existing_field_names.values()[0])
-      for existing_field_name in a:
-          existing_required_metadata_fields1[k] = existing_field_name
-    
+      print substitute_field_names_list
+      for s in substitute_field_names_list:
+        print "SSSSS in substitute_field_names_list = "
+        print s
+        if set(v).issubset(substitute_field_names_list):
+          existing_required_metadata_fields1[k] = s
+      
+      
+      # todo redo as intersect:      
+      # print "self.existing_field_names.values(): %s" % type(self.existing_field_names.values())
+      # print self.existing_field_names.values()
+      # print "v: %s" % type(v)
+      # print v
+      # a = set(v).intersection(self.existing_field_names.values()[0])
+      # for existing_field_name in a:
+      #     existing_required_metadata_fields1[k] = existing_field_name
+      #     
     t1 = time.time()
     total = t1-t0
     print "total 2 = %s" % total
