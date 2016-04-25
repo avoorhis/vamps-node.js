@@ -913,7 +913,7 @@ class Metadata:
     # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
-    intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
+    intersect_field_names = set(self.required_metadata_info_fields).intersection(self.existing_field_names.values()[0])
 
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
@@ -928,12 +928,7 @@ class Metadata:
     # print self.existing_required_metadata_fields
     
   def get_custom_metadata_fields(self):
-    print 999
-    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
-    print self.custom_metadata_fields
-    custom_metadata_fields1 = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
-    print custom_metadata_fields1
-    
+    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
     
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
