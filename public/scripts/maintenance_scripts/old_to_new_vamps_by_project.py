@@ -1001,8 +1001,8 @@ class Metadata:
       table_name          = "custom_metadata_%s" % project_id
       id_name             = "%s_id" % (table_name)
       primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
+      
       field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
-
       for field_desc in entry:
         field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
       field_descriptions += """
@@ -1027,8 +1027,6 @@ class Metadata:
 
       rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
       self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
-
-
 
 if __name__ == '__main__':
   #TODO: args
@@ -1135,3 +1133,6 @@ if __name__ == '__main__':
 # TODO: make "run all in class" methods in client
 # http://blog.michelemattioni.me/2015/01/10/list-intersection-in-python-lets-do-it-quickly/
 # *) use all class methods in other classes directly?
+# *) insert data for MBE_1666G_Bv4 and check counts and taxonomy
+# *) args for file names
+# *) script for getting csv from vampsdb
