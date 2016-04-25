@@ -940,6 +940,8 @@ class Metadata:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
       
   def create_insert_required_metadata_string(self):
+
+    t0 = time.time()
     all_insert_req_met_vals = ""    
     temp_list = []
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
@@ -948,18 +950,28 @@ class Metadata:
         required_metadata_dict_values.insert(0, dataset_id)
         temp_list.append(required_metadata_dict_values)
     all_insert_req_met_vals += self.utils.make_insert_values(temp_list)    
+    t1 = time.time()
+    total = t1-t0
+    print "total 1 = %s" % total
     
     print "AAA"
     print all_insert_req_met_vals
     
+    t0 = time.time()
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
       bb = [([dataset_id] + required_metadata_dict.values()) for dataset_id in dataset.all_dataset_id_by_project_dict[project]]
-
     all_insert_req_met_vals1 = self.utils.make_insert_values(bb)
+    t1 = time.time()
+    total = t1-t0
+    print "total 2 = %s" % total
     
     print "BBB"
     print all_insert_req_met_vals1
-
+    """
+    total 1 = 7.5101852417e-05
+    total 2 = 5.69820404053e-05
+    
+    """
     
     return all_insert_req_met_vals
       
