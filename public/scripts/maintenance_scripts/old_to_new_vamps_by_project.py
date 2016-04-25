@@ -1023,28 +1023,29 @@ class Metadata:
     # *) get 
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
-    # *) get fields
-    # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
-    # field_desc[0] for field_desc in entry:
-      print "PPP"
-      # print self.custom_metadata_field_data_by_pr_dict[str(project_id)]
       field_list = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
       field_str  = "`, `".join(field_list)
       
-      print self.parameter_name_project_dict[project_name]
       parameter_values = self.parameter_name_project_dict[project_name]
       # TODO: change for per dataset, in case there are different!:
-      insert_values = "', '".join([self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list])
-      # for field_name in field_list:
-        # insert_values.append()
-      print "insert_values = "
-      print insert_values
-    # for project, vals in self.parameter_name_project_dict.items():
-    # vals
-    #  'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
-    # all_dataset_id_by_project_dict
-    sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (0, '%s')" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-    self.utils.print_array_w_title(sql, "sql")
+      insert_values_temp_list = [self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list]
+      insert_values_temp      = "', '".join([self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list])
+      
+      print "insert_values_temp_list = "
+      print insert_values_temp_list
+      
+      # for dataset_id in dataset.all_dataset_id_by_project_dict[project_name]:
+      #   a = insert_values_temp_list
+      #   a.insert(0, dataset_id)
+      #   print "AAAA = "
+      #   print a
+
+      insert_values_list = [([dataset_id] + insert_values_temp_list) for dataset_id in dataset.all_dataset_id_by_project_dict[project_name]]
+      print "AAAA = "
+      insert_values      = self.utils.make_insert_values(insert_values_list)
+
+      sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(sql, "sql")
     
     
     
