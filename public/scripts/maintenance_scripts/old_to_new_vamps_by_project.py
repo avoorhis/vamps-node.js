@@ -694,8 +694,8 @@ class Seq_csv:
   # upload
   """
   TODO:
-    get host and db dynamically, from args
-    make one connection, in main?
+    *) get host and db dynamically, from args
+    done) make one connection, in main?
   """
 
   def __init__(self, seq_csv_file_name, mysql_util):
@@ -913,7 +913,25 @@ class Metadata:
     # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
+    t0 = time.time()    
     intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names.values()[0])
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
+    
+    print "999"
+    print intersect_field_names
+    t0 = time.time()    
+    intersect_field_names1 = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
+    print "8888"
+    print intersect_field_names1
+    # total = 1.59740447998e-05
+    # total = 6.91413879395e-06
+    
+
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
