@@ -948,6 +948,19 @@ class Metadata:
         required_metadata_dict_values.insert(0, dataset_id)
         temp_list.append(required_metadata_dict_values)
     all_insert_req_met_vals += self.utils.make_insert_values(temp_list)    
+    
+    print "AAA"
+    print all_insert_req_met_vals
+    
+    for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
+      bb = [([dataset_id] + required_metadata_dict.values()) for dataset_id in dataset.all_dataset_id_by_project_dict[project]]
+
+    all_insert_req_met_vals1 = self.utils.make_insert_values(bb)
+    
+    print "BBB"
+    print all_insert_req_met_vals1
+
+    
     return all_insert_req_met_vals
       
   def insert_required_metadata(self):        
@@ -1016,36 +1029,16 @@ class Metadata:
       print mysql_util.execute_no_fetch(q)
   
   def insert_custom_metadata(self):
-    # insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
-    # # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
-    # rows_affected = mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    # # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
-    # *) get 
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       field_list = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
       field_str  = "dataset_id, `" + "`, `".join(field_list) + "`"
       
-      parameter_values = self.parameter_name_project_dict[project_name]
-      # TODO: change for per dataset, in case there are different!:
+      # TODO: change for per dataset, in case there are different data!:
       insert_values_temp_list = [self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list]
-      insert_values_temp      = "', '".join([self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list])
-      
-      print "insert_values_temp_list = "
-      print insert_values_temp_list
-      
-      # for dataset_id in dataset.all_dataset_id_by_project_dict[project_name]:
-      #   a = insert_values_temp_list
-      #   a.insert(0, dataset_id)
-      #   print "AAAA = "
-      #   print a
-
       insert_values_list = [([dataset_id] + insert_values_temp_list) for dataset_id in dataset.all_dataset_id_by_project_dict[project_name]]
-      print "AAAA = "
       insert_values      = self.utils.make_insert_values(insert_values_list)
 
-      # sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      # self.utils.print_array_w_title(sql, "sql = ")
       rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
       self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
       
