@@ -913,28 +913,7 @@ class Metadata:
     # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
   def get_existing_required_metadata_fields(self):
-    t0 = time.time()    
-    intersect_field_names1 = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
-    t1 = time.time()
-    total = t1-t0
-    print "total = %s" % total
-    print "8888"
-    print intersect_field_names1
-    # total = 1.59740447998e-05
-    # total = 6.91413879395e-06
-
-    t0 = time.time()    
-    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names.values()[0])
-    t1 = time.time()
-    total = t1-t0
-    print "total = %s" % total
-    
-    print "999"
-    print intersect_field_names
-    # total = 1.59740447998e-05
-    # total = 6.91413879395e-06
-
-#    whichever one is the second - it is faster!
+    intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
 
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
@@ -949,7 +928,12 @@ class Metadata:
     # print self.existing_required_metadata_fields
     
   def get_custom_metadata_fields(self):
+    print 999
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
+    print self.custom_metadata_fields
+    custom_metadata_fields1 = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
+    print custom_metadata_fields1
+    
     
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
