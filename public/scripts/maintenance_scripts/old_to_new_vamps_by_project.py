@@ -1024,7 +1024,7 @@ class Metadata:
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       field_list = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-      field_str  = "`, `".join(field_list)
+      field_str  = "dataset_id, `" + "`, `".join(field_list) + "`"
       
       parameter_values = self.parameter_name_project_dict[project_name]
       # TODO: change for per dataset, in case there are different!:
@@ -1044,9 +1044,11 @@ class Metadata:
       print "AAAA = "
       insert_values      = self.utils.make_insert_values(insert_values_list)
 
-      sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      self.utils.print_array_w_title(sql, "sql")
-    
+      # sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      # self.utils.print_array_w_title(sql, "sql = ")
+      rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+      
     
     
 if __name__ == '__main__':
