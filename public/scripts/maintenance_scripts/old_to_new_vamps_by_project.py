@@ -938,7 +938,11 @@ class Metadata:
       for field_name, ex_f_name in vals.items():
         if field_name in ex_f_list:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
-      
+  
+  def add_dataset_id_to_list(self, some_list, project_name):
+    return [([dataset_id] + some_list) for dataset_id in dataset.all_dataset_id_by_project_dict[project_name]]
+    
+  
   def create_insert_required_metadata_string(self):
 
     t0 = time.time()
@@ -959,7 +963,8 @@ class Metadata:
     
     t0 = time.time()
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
-      bb = [([dataset_id] + required_metadata_dict.values()) for dataset_id in dataset.all_dataset_id_by_project_dict[project]]
+      # bb = [([dataset_id] + required_metadata_dict.values()) for dataset_id in dataset.all_dataset_id_by_project_dict[project]]
+      bb = self.add_dataset_id_to_list(required_metadata_dict.values(), project)
     all_insert_req_met_vals1 = self.utils.make_insert_values(bb)
     t1 = time.time()
     total = t1-t0
