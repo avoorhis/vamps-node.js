@@ -612,7 +612,7 @@ class Project:
     insert_values = ', '.join("'%s'" % key for key in [project, title, project_description])
     insert_values += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
 
-    # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("ignore", "project", field_list, insert_values)
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "project", field_list, insert_values)
     # self.utils.print_array_w_title(sql, "sql")
 
     rows_affected = mysql_util.execute_insert("project", field_list, insert_values)
@@ -1012,59 +1012,66 @@ class Metadata:
     
   def create_custom_metadata_pr_id_table(self):
     for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
-      field_descriptions = ""
-      # "!!!"
-      dataset_id         = 0
-      table_name         = "custom_metadata_%s" % project_id
-      id_name            = "%s_id" % (table_name)
-      primary_key_field  = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)          
-      field_descriptions = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
-      field_descriptions1 = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+      field_descriptions  = ""
+      table_name          = "custom_metadata_%s" % project_id
+      id_name             = "%s_id" % (table_name)
+      primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)          
+      field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
       
-      t0 = time.time()
       for field_desc in entry:
         field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
-      t1 = time.time()
-      total = t1-t0
-      print "total in for = %s" % total
-      
-      t0 = time.time()
-      field_descriptions1 += "".join(["`%s` %s,\n" % (field_desc[0], field_desc[1]) for field_desc in entry])
-      t1 = time.time()
-      total = t1-t0
-      print "total in LC = %s" % total
-      print "field_descriptions1 = "
-      print field_descriptions1
-      
-      """
-      almost the same
-      
-      """  
-      
       field_descriptions += """
         UNIQUE KEY dataset_id (dataset_id),
         CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
         """ % (table_name)
+      
       table_description = "ENGINE=InnoDB"
       q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
       print mysql_util.execute_no_fetch(q)
     
-  def make_custom_metadata_dict(self):
-    field_list = self.custom_metadata_fields
-    print "field_list = "
-    print field_list
-    for project, vals in self.parameter_name_project_dict.items():
-      """
-      'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
-      """
-      # pass
-      print "MMM"
-      print project
-      print vals
+  # def make_custom_metadata_data_dict(self):
+    # print "dataset.all_dataset_id_by_project_dict"
+    # print dataset.all_dataset_id_by_project_dict
+    # # "!!!"             
+    # defaultdict(<type 'list'>, {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
+    # 
+    # dataset_id          = 0
+    # 
+    # field_list = self.custom_metadata_fields
+    # print "field_list = "
+    # print field_list
+    # for project, vals in self.parameter_name_project_dict.items():
+    #   """
+    #   'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
+    #   """
+    #   # pass
+    #   print "MMM"
+    #   print project
+    #   print vals
       # for field_name, ex_f_name in vals.items():
       #   if field_name in field_list:
       #     self.custom_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
   
+  def insert_custom_metadata(self):
+    # insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
+    # # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
+    # rows_affected = mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
+    # # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    # *) get 
+    for project_id in project.project_dict.values():
+      custom_metadata_table_name = "custom_metadata_%s" % project_id
+    # *) get fields
+    # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
+    # field_desc[0] for field_desc in entry:
+    
+    field_list = "dataset_id, depth_end, domain, aux_corrected_sample_depth, aux_absolute_depth, habitat, aux_modisa_sst, aux_daylength, envo_feature, aux_sediment, aux_silicate_(i), Sampling_date, aux_sunset_min, aux_sunrise_hr, absolute_depth_beta, envo_biome, aux_bec_simulated_phosphate_(um), longhurst_long_name, aux_chlo, lon, sample_type, aux_sunrise_min, redox_state, aux_sunset_hr, aux_temperature_(t), depth_start, environmental_zone, aux_dissolved_oxygen_(o), aux_corrected_depth, aux_phosphate_(p), aux_nitrate_(n), aux_apparent_oxygen_utilization_(a), envo_material, iho_area, lat, aux_avhrr_sst, temp, aux_salinity_(s), longhurst_zone, aux_modis_k490, aux_par, salinity, EnvO_tags, sample_type_beta, aux_bec_simulated_iron_(nm), aux_seawifis_k490, aux_oxygen_saturation_(u), aux_bec_simulated_nitrate_(um), collection_time"
+    
+    # for project, vals in self.parameter_name_project_dict.items():
+    # vals
+    #  'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
+    insert_values = ""
+    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_list, insert_values)
+    self.utils.print_array_w_title(sql, "sql")
     
     
     
@@ -1164,9 +1171,10 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-  utils.benchmarking(metadata.make_custom_metadata_dict, "make_custom_metadata_dict")
   utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
+  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
   
   
 # TODO: make "run all in class" methods in client
