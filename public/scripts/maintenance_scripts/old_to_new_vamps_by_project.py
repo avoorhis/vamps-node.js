@@ -160,6 +160,7 @@ import os
 import timeit
 import time
 from collections import defaultdict
+import itertools
 
 
 class Mysql_util:
@@ -918,15 +919,67 @@ class Metadata:
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
+    t0 = time.time()
+
     for k, v in self.substitute_field_names.items():
       # todo redo as intersect:      
       for existing_field_name in self.existing_field_names.values():
         if existing_field_name in v:
           self.existing_required_metadata_fields[k] = existing_field_name
-          
-    # print "PPPP: existing_required_metadata_fields"
-    # print self.existing_required_metadata_fields
+
+    t1 = time.time()
+    total = t1-t0
+    print "total 1 = %s" % total
+
+    print "PPPP: existing_required_metadata_fields"
+    print self.existing_required_metadata_fields
+
+    existing_required_metadata_fields1 = {}
     
+    t0 = time.time()
+    
+    print "777"
+    print "substitute_field_names: "
+    print self.substitute_field_names.values()
+    # [['lat'], ['envo_biome'], ['long', 'lon']]
+    # x = [set(a) for a in self.substitute_field_names.values()]
+    t0 = time.time()
+    a = itertools.chain(*self.substitute_field_names.values())
+    t1 = time.time()
+    total = t1-t0
+    print "total itertools = %s" % total
+    print "a itertools: "
+    print set(a)
+    
+    t0 = time.time()
+    a1 = self.utils.flatten_2d_list(self.substitute_field_names.values())
+    t1 = time.time()
+    total = t1-t0
+    print "total flatten_2d_list = %s" % total
+    print set(a1)
+    
+    
+    for k, v in self.substitute_field_names.items():
+      print "EEEEE"
+      # todo redo as intersect:      
+      print "self.existing_field_names.values(): %s" % type(self.existing_field_names.values())
+      print self.existing_field_names.values()
+      print "v: %s" % type(v)
+      print v
+      a = set(v).intersection(self.existing_field_names.values()[0])
+      for existing_field_name in a:
+          existing_required_metadata_fields1[k] = existing_field_name
+    
+    t1 = time.time()
+    total = t1-t0
+    print "total 2 = %s" % total
+
+          
+    print "LLLL: existing_required_metadata_fields2"
+    print existing_required_metadata_fields1
+    # {'latitude': ['lat'], 'env_biome': ['envo_biome'], 'longitude': ['long', 'lon']}
+    # {'latitude': 'lat', 'env_biome': 'envo_biome', 'longitude': 'lon'}
+
   def get_custom_metadata_fields(self):
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
     
@@ -950,10 +1003,7 @@ class Metadata:
     all_insert_req_met_vals += self.utils.make_insert_values(temp_list)    
     return all_insert_req_met_vals
       
-  def insert_required_metadata(self):    
-    #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
-    # the same question about custom metadata. Kee once for the whole project? Or couldb e a case when diff by dataset? then remove project_id from custom metadata
-    
+  def insert_required_metadata(self):        
     """self.required_metadata_by_pr_dict = 
     {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
        dataset.all_dataset_id_by_project_dict = 
