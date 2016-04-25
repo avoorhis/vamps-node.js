@@ -914,14 +914,6 @@ class Metadata:
 
   def get_existing_required_metadata_fields(self):
     t0 = time.time()    
-    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names.values()[0])
-    t1 = time.time()
-    total = t1-t0
-    print "total = %s" % total
-    
-    print "999"
-    print intersect_field_names
-    t0 = time.time()    
     intersect_field_names1 = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
     t1 = time.time()
     total = t1-t0
@@ -930,7 +922,19 @@ class Metadata:
     print intersect_field_names1
     # total = 1.59740447998e-05
     # total = 6.91413879395e-06
+
+    t0 = time.time()    
+    intersect_field_names = set(self.required_metadata_info_fields) & set(self.existing_field_names.values()[0])
+    t1 = time.time()
+    total = t1-t0
+    print "total = %s" % total
     
+    print "999"
+    print intersect_field_names
+    # total = 1.59740447998e-05
+    # total = 6.91413879395e-06
+
+#    whichever one is the second - it is faster!
 
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
