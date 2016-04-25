@@ -1012,36 +1012,18 @@ class Metadata:
     
   def create_custom_metadata_pr_id_table(self):
     
-    print "AAAE self.custom_metadata_field_data_by_pr_dict = "
-    print self.custom_metadata_field_data_by_pr_dict
-    # defaultdict(<type 'list'>, {275L: [('depth_end', 'varchar(128)'), ('domain', 'varchar(128)'), ('aux_corrected_sample_depth', 'varchar(128)'), ('aux_absolute_depth', 'varchar(128)'), ('habitat', 'varchar(128)'), ('aux_modisa_sst', 'varchar(128)'), ('aux_daylength', 'varchar(128)'), ('envo_feature', 'varchar(128)'), ('aux_sediment', 'varchar(128)'), ('aux_silicate_(i)', 'varchar(128)'), ('Sampling_date', 'varchar(128)'), ('aux_sunset_min', 'varchar(128)'), ('aux_sunrise_hr', 'varchar(128)'), ('absolute_depth_beta', 'varchar(128)'), ('envo_biome', 'varchar(128)'), ('aux_bec_simulated_phosphate_(um)', 'varchar(128)'), ('longhurst_long_name', 'varchar(128)'), ('aux_chlo', 'varchar(128)'), ('lon', 'varchar(128)'), ('sample_type', 'varchar(128)'), ('aux_sunrise_min', 'varchar(128)'), ('redox_state', 'varchar(128)'), ('aux_sunset_hr', 'varchar(128)'), ('aux_temperature_(t)', 'varchar(128)'), ('depth_start', 'varchar(128)'), ('environmental_zone', 'varchar(128)'), ('aux_dissolved_oxygen_(o)', 'varchar(128)'), ('aux_corrected_depth', 'varchar(128)'), ('aux_phosphate_(p)', 'varchar(128)'), ('aux_nitrate_(n)', 'varchar(128)'), ('aux_apparent_oxygen_utilization_(a)', 'varchar(128)'), ('envo_material', 'varchar(128)'), ('iho_area', 'varchar(128)'), ('lat', 'varchar(128)'), ('aux_avhrr_sst', 'varchar(128)'), ('temp', 'varchar(128)'), ('aux_salinity_(s)', 'varchar(128)'), ('longhurst_zone', 'varchar(128)'), ('aux_modis_k490', 'varchar(128)'), ('aux_par', 'varchar(128)'), ('salinity', 'varchar(128)'), ('EnvO_tags', 'varchar(128)'), ('sample_type_beta', 'varchar(128)'), ('aux_bec_simulated_iron_(nm)', 'varchar(128)'), ('aux_seawifis_k490', 'varchar(128)'), ('aux_oxygen_saturation_(u)', 'varchar(128)'), ('aux_bec_simulated_nitrate_(um)', 'varchar(128)'), ('collection_time', 'varchar(128)')]})
-    
-    
-    print "QQQQ self.custom_metadata_fields"
-    print self.custom_metadata_fields
-
     for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
       field_descriptions = ""
-      # custom_metadata_fields.append(entry[1])
-      # custom_metadata_descr.append(entry[2])
-      
-      print "IIII"
-      print project_id #str
-      print entry #list
-    
-
+      # "!!!"
       dataset_id = 0
       table_name = "custom_metadata_%s" % project_id
       id_name = "%s_id" % (table_name)
       primary_key_field = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
       
-      # field_names = ("dataset_id`, `" + "`, `".join(self.custom_metadata_fields))
-      
+    
       field_descriptions = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
       for field_desc in entry:
         field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
-      print "field_descriptions = "
-      print field_descriptions
       
       
       field_descriptions += """
@@ -1050,10 +1032,7 @@ class Metadata:
         """ % (table_name)
       table_description = "ENGINE=InnoDB"
       q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
-      print "QQQ"
-      print q
-      # ERROR 1070 (42000): Too many key parts specified; max 16 parts allowed
-      # 
+      mysql_util.execute_no_fetch(q)
     
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
