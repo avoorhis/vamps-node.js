@@ -917,15 +917,25 @@ class Metadata:
 
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
-
+    
+    intr1 = []
+    existing_required_metadata_fields1 = self.existing_required_metadata_fields
     for good_name, bad_name_list in self.substitute_field_names.items():
       # todo redo as intersect?:      
       print "good_name = "
       print good_name
-      print "bad_name = "
+      print "bad_name_list = "
       print bad_name_list
       print "self.existing_field_names.values() = "
       print self.existing_field_names.values()
+      intr = set(bad_name_list).intersection(self.existing_field_names.values()[0])
+      intr1.extend(intr)
+      print "intr1 = "
+      print intr1
+      
+      for existing_field_name1 in intr:
+        existing_required_metadata_fields1[good_name] = existing_field_name1
+      
       for existing_field_name in self.existing_field_names.values()[0]:
         print "existing_field_name = "
         print existing_field_name
@@ -934,6 +944,10 @@ class Metadata:
           
     print "PPPP: existing_required_metadata_fields"
     print self.existing_required_metadata_fields
+
+    print "LLL: existing_required_metadata_fields1"
+    print existing_required_metadata_fields1
+    
     
   def get_custom_metadata_fields(self):
     print 999
