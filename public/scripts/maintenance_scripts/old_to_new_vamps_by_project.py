@@ -1063,14 +1063,17 @@ class Metadata:
     # *) get fields
     # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
     # field_desc[0] for field_desc in entry:
-    
-    field_list = "dataset_id, depth_end, domain, aux_corrected_sample_depth, aux_absolute_depth, habitat, aux_modisa_sst, aux_daylength, envo_feature, aux_sediment, aux_silicate_(i), Sampling_date, aux_sunset_min, aux_sunrise_hr, absolute_depth_beta, envo_biome, aux_bec_simulated_phosphate_(um), longhurst_long_name, aux_chlo, lon, sample_type, aux_sunrise_min, redox_state, aux_sunset_hr, aux_temperature_(t), depth_start, environmental_zone, aux_dissolved_oxygen_(o), aux_corrected_depth, aux_phosphate_(p), aux_nitrate_(n), aux_apparent_oxygen_utilization_(a), envo_material, iho_area, lat, aux_avhrr_sst, temp, aux_salinity_(s), longhurst_zone, aux_modis_k490, aux_par, salinity, EnvO_tags, sample_type_beta, aux_bec_simulated_iron_(nm), aux_seawifis_k490, aux_oxygen_saturation_(u), aux_bec_simulated_nitrate_(um), collection_time"
-    
+      print "PPP"
+      # print self.custom_metadata_field_data_by_pr_dict[str(project_id)]
+      # field_list
+      
+      field_list = "`, `".join(zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0])
+          
     # for project, vals in self.parameter_name_project_dict.items():
     # vals
     #  'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
     insert_values = ""
-    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_list, insert_values)
+    sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_list, insert_values)
     self.utils.print_array_w_title(sql, "sql")
     
     
