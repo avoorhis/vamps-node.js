@@ -926,13 +926,13 @@ class Metadata:
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
 
-    print "PPPP: existing_required_metadata_fields"
-    print self.existing_required_metadata_fields
+    # print "PPPP: existing_required_metadata_fields"
+    # print self.existing_required_metadata_fields
     # PPPP: existing_required_metadata_fields
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
         
   def get_custom_metadata_fields(self):
-    print 999
+    print "999"
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
     print self.custom_metadata_fields
     custom_metadata_fields1 = set(self.existing_required_metadata_fields.values()).symmetric_difference(self.existing_field_names.values()[0])
@@ -998,7 +998,32 @@ class Metadata:
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
   
   def create_custom_metadata_pr_id_table(self):
-    pass
+    # get info from insert_custom_metadata_fields
+    project_id = 275
+    custom_metadata_fields = ""
+    all_field_names = ""
+    
+    
+    table_name = "custom_metadata_%s" % project_id
+    id_name = "%s_id" % (table_name)
+    field_names = ("%s, " % id_name) + ", ".join(custom_metadata_fields)
+    field_descriptions = ""
+    """
+      PRIMARY KEY (custom_metadata_272_id),
+      UNIQUE KEY unique_key (project_id,dataset_id,depth_end,dna_quant,aux_corrected_sample_depth,iho_area,habitat,depth_start,aux_daylength,envo_feature,domain,Sampling_date,aux_sunset_min,aux_sunrise_hr,absolute_depth_beta,sediment_depth_start),
+      KEY dataset_id (dataset_id),
+      CONSTRAINT custom_metadata_272_ibfk_2 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
+    ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+    """
+    field_descriptions += """PRIMARY KEY (%s),
+      UNIQUE KEY unique_key (%s),
+      KEY dataset_id (dataset_id),
+      CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
+      """ % (id_name, all_field_names, table_name)
+    table_description = "ENGINE=InnoDB"
+    q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
+    print "QQQ"
+    print q
     
   def make_custom_metadata_dict(self):
     field_list = self.custom_metadata_fields
@@ -1010,6 +1035,7 @@ class Metadata:
       """
       # pass
       print "MMM"
+      print project
       print vals
       # for field_name, ex_f_name in vals.items():
       #   if field_name in field_list:
@@ -1115,6 +1141,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.make_custom_metadata_dict, "make_custom_metadata_dict")
+  utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   
   
 # TODO: make "run all in class" methods in client
