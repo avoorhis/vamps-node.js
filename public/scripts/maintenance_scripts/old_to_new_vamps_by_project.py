@@ -926,11 +926,6 @@ class Metadata:
       
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
-
-    # print "PPPP: existing_required_metadata_fields"
-    # print self.existing_required_metadata_fields
-    # PPPP: existing_required_metadata_fields
-    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
         
   def get_custom_metadata_fields(self):
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
@@ -955,10 +950,7 @@ class Metadata:
     all_insert_req_met_vals += self.utils.make_insert_values(temp_list)    
     return all_insert_req_met_vals
       
-  def insert_required_metadata(self):    
-    #TODO: ask Andy, why not keep required_metadata_info by project and not repeat by dataset
-    # the same question about custom metadata. Kee once for the whole project? Or couldb e a case when diff by dataset? then remove project_id from custom metadata
-    
+  def insert_required_metadata(self):        
     """self.required_metadata_by_pr_dict = 
     {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
        dataset.all_dataset_id_by_project_dict = 
@@ -1004,12 +996,6 @@ class Metadata:
     for entry in custom_metadata_field_data_res:
       self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))  
       
-  def create_custom_metadata_field_descriptions(self, some_tuple):
-    field_descriptions = ""
-    for field_desc in some_tuple:
-      field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
-      
-    
   def create_custom_metadata_pr_id_table(self):
     for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
       field_descriptions  = ""
@@ -1028,29 +1014,6 @@ class Metadata:
       table_description = "ENGINE=InnoDB"
       q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
       print mysql_util.execute_no_fetch(q)
-    
-  # def make_custom_metadata_data_dict(self):
-    # print "dataset.all_dataset_id_by_project_dict"
-    # print dataset.all_dataset_id_by_project_dict
-    # # "!!!"             
-    # defaultdict(<type 'list'>, {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
-    # 
-    # dataset_id          = 0
-    # 
-    # field_list = self.custom_metadata_fields
-    # print "field_list = "
-    # print field_list
-    # for project, vals in self.parameter_name_project_dict.items():
-    #   """
-    #   'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
-    #   """
-    #   # pass
-    #   print "MMM"
-    #   print project
-    #   print vals
-      # for field_name, ex_f_name in vals.items():
-      #   if field_name in field_list:
-      #     self.custom_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
   
   def insert_custom_metadata(self):
     # insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
@@ -1058,22 +1021,33 @@ class Metadata:
     # rows_affected = mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
     # # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
     # *) get 
-    for project_id in project.project_dict.values():
+    for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
     # *) get fields
     # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
     # field_desc[0] for field_desc in entry:
       print "PPP"
       # print self.custom_metadata_field_data_by_pr_dict[str(project_id)]
-      # field_list
+      field_list = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+      field_str  = "`, `".join(field_list)
       
-      field_list = "`, `".join(zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0])
-          
+      print "type(field_list)"
+      print type(field_list)
+      # ('depth_end', 'domain', 'aux_corrected_sample_depth', 'aux_absolute_depth', 'habitat', 'aux_modisa_sst', 'aux_daylength', 'envo_feature', 'aux_sediment', 'aux_silicate_(i)', 'Sampling_date', 'aux_sunset_min', 'aux_sunrise_hr', 'absolute_depth_beta', 'envo_biome', 'aux_bec_simulated_phosphate_(um)', 'longhurst_long_name', 'aux_chlo', 'lon', 'sample_type', 'aux_sunrise_min', 'redox_state', 'aux_sunset_hr', 'aux_temperature_(t)', 'depth_start', 'environmental_zone', 'aux_dissolved_oxygen_(o)', 'aux_corrected_depth', 'aux_phosphate_(p)', 'aux_nitrate_(n)', 'aux_apparent_oxygen_utilization_(a)', 'envo_material', 'iho_area', 'lat', 'aux_avhrr_sst', 'temp', 'aux_salinity_(s)', 'longhurst_zone', 'aux_modis_k490', 'aux_par', 'salinity', 'EnvO_tags', 'sample_type_beta', 'aux_bec_simulated_iron_(nm)', 'aux_seawifis_k490', 'aux_oxygen_saturation_(u)', 'aux_bec_simulated_nitrate_(um)', 'collection_time')
+      # 
+      print self.parameter_name_project_dict[project_name]
+      parameter_values = self.parameter_name_project_dict[project_name]
+      # TODO: change for per dataset, in case there are different!:
+      insert_values = [self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list]
+      # for field_name in field_list:
+        # insert_values.append()
+      print "insert_values = "
+      print insert_values
     # for project, vals in self.parameter_name_project_dict.items():
     # vals
     #  'collection_time': {'parameter_id': '0', 'notes': 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'collection_time', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'decimalHours', 'parameterValue': '21', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'decimalHour', 'parameterName': 'Sampling_time', 'method': '', 'units_id': '11'}
-    insert_values = ""
-    sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_list, insert_values)
+    
+    sql = "INSERT %s INTO %s (dataset_id, `%s`) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
     self.utils.print_array_w_title(sql, "sql")
     
     
@@ -1182,3 +1156,4 @@ if __name__ == '__main__':
   
 # TODO: make "run all in class" methods in client
 # http://blog.michelemattioni.me/2015/01/10/list-intersection-in-python-lets-do-it-quickly/
+# *) use all class methods in other classes directly?
