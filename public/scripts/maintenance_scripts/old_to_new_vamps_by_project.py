@@ -1065,6 +1065,18 @@ if __name__ == '__main__':
   project_csv_file_name = "project_%s.csv" % (args.project)
   dataset_csv_file_name = "dataset_%s.csv" % (args.project)
   
+  def write_to_csv_file(file_name, res):
+    vamps_metadata, field_names = res
+    print "VVVV"
+    # print vamps_metadata[1]
+    print field_names
+        
+    with open(file_name, "wb") as csv_file:
+      csv_writer = csv.writer(csv_file)
+      csv_writer.writerow(field_names) # write headers
+      csv_writer.writerows(vamps_metadata)    
+    
+    
   def get_csv_file_calls(project_name, query):
     print "args.project = %s" % project_name
     prod_mysql_util = Mysql_util(host = '127.0.0.1', db="vamps", read_default_file=os.path.expanduser("~/.my.cnf_server"), port = 3308)
@@ -1073,23 +1085,24 @@ if __name__ == '__main__':
     
     # subprocess.call()
     
-    vamps_metadata, field_names = prod_mysql_util.execute_fetch_select(query)
-    print "vamps_metadata = "
-    print type(vamps_metadata)
+    # vamps_metadata, field_names = prod_mysql_util.execute_fetch_select(query)
+    # print "vamps_metadata = "
+    # print type(vamps_metadata)
+    return prod_mysql_util.execute_fetch_select(query)
     
-    myfile = "metadata_%s.csv" % project_name
-    f = open(myfile,'w')
-    # f.write(vamps_metadata) # python will convert \n to os.linesep
-    # f.close() # you can omit in most cases as the destructor will call it
-
-    print "VVVV"
-    print vamps_metadata[1]
-    print field_names
-        
-    with open(myfile, "wb") as csv_file:
-      csv_writer = csv.writer(csv_file)
-      csv_writer.writerow(field_names) # write headers
-      csv_writer.writerows(vamps_metadata)    
+    # myfile = "metadata_%s.csv" % project_name
+    # f = open(myfile,'w')
+    # # f.write(vamps_metadata) # python will convert \n to os.linesep
+    # # f.close() # you can omit in most cases as the destructor will call it
+    # 
+    # print "VVVV"
+    # # print vamps_metadata[1]
+    # print field_names
+    #     
+    # with open(myfile, "wb") as csv_file:
+    #   csv_writer = csv.writer(csv_file)
+    #   csv_writer.writerow(field_names) # write headers
+    #   csv_writer.writerows(vamps_metadata)    
     
     
       # command_lines = """
@@ -1106,8 +1119,34 @@ if __name__ == '__main__':
       #   """ % (args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project)
       #   print command_lines
       #   
+  project_name = args.project
   query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
-  get_csv_file_calls(args.project, query)
+  # vamps_metadata = get_csv_file_calls(args.project, query)
+  file_name = "metadata_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+
+  query = "SELECT * FROM vamps_sequences where project='%s'" % (args.project)  
+  # get_csv_file_calls(args.project, query)
+  file_name = "sequences_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+  
+  query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
+  file_name = "sequences_pipe_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+  
+  query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
+  file_name = "project_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+
+  query = "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';"
+  file_name = "user_contact_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+
+  query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';"
+  file_name = "dataset_%s.csv" % project_name
+  write_to_csv_file(file_name, get_csv_file_calls(args.project, query))
+
+# ========
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   utils      = Utils()
