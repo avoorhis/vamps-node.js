@@ -376,14 +376,15 @@ class Utils:
     def make_entry_w_fields_dict(self, fields, entry):
       return dict(zip(fields, entry))
 
-    def write_to_csv_file(self, file_name, res):
+    def write_to_csv_file(self, file_name, res, file_mode = "wb"):
       vamps_metadata, field_names = res
       print "VVVV"
       print field_names
 
-      with open(file_name, "wb") as csv_file:
+      with open(file_name, file_mode) as csv_file:
         csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(field_names) # write headers
+        if file_mode == "wb":
+          csv_writer.writerow(field_names) # write headers
         csv_writer.writerows(vamps_metadata)    
 
     def get_csv_file_calls(self, roject_name, query):
@@ -1095,8 +1096,8 @@ if __name__ == '__main__':
   utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
   
   query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
-  file_name = "sequences_pipe_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  file_name = "sequences_%s.csv" % project_name
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query), "ab")
   
   query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
   file_name = "project_%s.csv" % project_name
