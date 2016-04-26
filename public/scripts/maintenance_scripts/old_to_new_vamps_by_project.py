@@ -1029,37 +1029,14 @@ class Metadata:
       q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
       print mysql_util.execute_no_fetch(q)
 
-  def insert_custom_metadata(self):
-    for project_name, project_id in project.project_dict.items():
-      custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_list = ("dataset_id",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-      field_str  = "`" + "`, `".join(field_list) + "`"
-
-      print "self.parameter_by_dataset_dict"
-      print self.parameter_by_dataset_dict
-      """
-      {'ACB_0010_2008_01_30': {'depth_end': {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'depth_end', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0010_2008_01_30', 'project': 'ICM_ACB_Av6', 'miens_units': 'meter', 'parameterValue': '2', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0010_2008_01_30', 'units': 'meter', 'parameterName': 'depth_end', 'method': '', 'units_id': '20'}
-      """
-      
-      # for dataset_name, dataset_id in dataset.dataset_id_by_name_dict.items():
-      #   print "dataset_name = OOO"
-      #   print dataset_name
-      #   print "dataset_id = JJJ"
-      #   print dataset_id
-      # print self.parameter_by_dataset_dict[]
+  def make_custom_metadata_values_list(self, field_list_no_dataset):
       insert_values_list = []
       for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
-        print "DDD dataset_name, parameter_dict"
-        print dataset_name
-        print parameter_dict
         dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-        print "dataset_id = "
-        print dataset_id
-
         insert_values_temp_list = []
         insert_values_temp_list.append(str(dataset_id))
       
-        for field_name in field_list[1:]:
+        for field_name in field_list_no_dataset:
           try:
             insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
           except KeyError:
@@ -1068,21 +1045,16 @@ class Metadata:
           except:                       # catch everything
             raise                       # re-throw caught exception
           
-            
-            
-        # Thymidine_uptake only in one dataset!
-        # TODO: change custom_metadata_fields by dataset?
-          
-
-      
-        print "AAAAA insert_values_temp_list = "
-        print insert_values_temp_list
         insert_values_list.append(insert_values_temp_list)
-    insert_values           = self.utils.make_insert_values(insert_values_list)
-
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-    # print "SSS sql = "
-    # print sql
+      return self.utils.make_insert_values(insert_values_list)
+    
+  def insert_custom_metadata(self):
+    for project_name, project_id in project.project_dict.items():
+      custom_metadata_table_name = "custom_metadata_%s" % project_id
+      field_list = ("dataset_id",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+      field_str  = "`" + "`, `".join(field_list) + "`"
+      
+      insert_values = self.make_custom_metadata_values_list(field_list[1:])
 
     rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
