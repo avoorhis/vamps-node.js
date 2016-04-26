@@ -1065,7 +1065,7 @@ if __name__ == '__main__':
   project_csv_file_name = "project_%s.csv" % (args.project)
   dataset_csv_file_name = "dataset_%s.csv" % (args.project)
   
-  def get_csv_file_calls(project_name):
+  def get_csv_file_calls(project_name, query):
     print "args.project = %s" % project_name
     prod_mysql_util = Mysql_util(host = '127.0.0.1', db="vamps", read_default_file=os.path.expanduser("~/.my.cnf_server"), port = 3308)
     test_query = "SHOW tables" 
@@ -1073,8 +1073,7 @@ if __name__ == '__main__':
     
     # subprocess.call()
     
-    q1 = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)
-    vamps_metadata, field_names = prod_mysql_util.execute_fetch_select(q1)
+    vamps_metadata, field_names = prod_mysql_util.execute_fetch_select(query)
     print "vamps_metadata = "
     print type(vamps_metadata)
     
@@ -1086,39 +1085,29 @@ if __name__ == '__main__':
     print "VVVV"
     print vamps_metadata[1]
     print field_names
-      
-    
-    """with open("out.csv", "wb") as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow([i[0] for i in cursor.description]) # write headers
-        csv_writer.writerows(cursor)
-    """
+        
     with open(myfile, "wb") as csv_file:
       csv_writer = csv.writer(csv_file)
       csv_writer.writerow(field_names) # write headers
-      csv_writer.writerows(vamps_metadata)
-      
-    # process = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
-    # process.wait()
-    # print "process.returncode = "
-    # print process.returncode
+      csv_writer.writerows(vamps_metadata)    
     
     
-    command_lines = """
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > metadata_%s.csv
-
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" >> sequences_%s.csv
-
-    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > project_%s.csv
-
-    mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > dataset_%s.csv
-
-    mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > user_contact.csv
-    """ % (args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project)
-    print command_lines
-
-  get_csv_file_calls(args.project)
+      # command_lines = """
+      #   mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > metadata_%s.csv
+      # 
+      #   mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
+      #   mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" >> sequences_%s.csv
+      # 
+      #   mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > project_%s.csv
+      # 
+      #   mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > dataset_%s.csv
+      # 
+      #   mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > user_contact.csv
+      #   """ % (args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project)
+      #   print command_lines
+      #   
+  query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
+  get_csv_file_calls(args.project, query)
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   utils      = Utils()
