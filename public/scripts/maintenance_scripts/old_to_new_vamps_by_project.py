@@ -215,11 +215,12 @@ class Mysql_util:
       if self.cursor:
         try:
           self.cursor.execute(sql)
-          res = self.cursor.fetchall ()
+          res         = self.cursor.fetchall ()
+          field_names = [i[0] for i in self.cursor.description]
         except:
           self.utils.print_both(("ERROR: query = %s") % sql)
           raise
-        return res
+        return (res, field_names)
 
     def execute_no_fetch(self, sql):
       if self.cursor:
@@ -274,11 +275,11 @@ class Mysql_util:
       # self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
       res     = self.execute_fetch_select(my_sql)
       if res:
-        return res
+        return res[0]
 
     def execute_simple_select(self, field_name, table_name, where_part):
       id_query  = "SELECT %s FROM %s %s" % (field_name, table_name, where_part)
-      return self.execute_fetch_select(id_query)
+      return self.execute_fetch_select(id_query)[0]
 
     def get_id(self, field_name, table_name, where_part, rows_affected = [0,0]):
       # self.utils.print_array_w_title(rows_affected, "=====\nrows_affected from def get_id")
@@ -583,7 +584,7 @@ class User:
   def get_user_id(self, username):
     #TODO: make general for user, project etc.
     user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-    return mysql_util.execute_fetch_select(user_id_query)
+    return mysql_util.execute_fetch_select(user_id_query)[0]
 
   def parse_user_contact_csv(self, user_contact_csv_file_name):
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)[1]
@@ -1073,7 +1074,7 @@ if __name__ == '__main__':
     # subprocess.call()
     
     q1 = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)
-    vamps_metadata = prod_mysql_util.execute_fetch_select(q1)
+    vamps_metadata, field_names = prod_mysql_util.execute_fetch_select(q1)
     print "vamps_metadata = "
     print type(vamps_metadata)
     
@@ -1082,17 +1083,21 @@ if __name__ == '__main__':
     # f.write(vamps_metadata) # python will convert \n to os.linesep
     # f.close() # you can omit in most cases as the destructor will call it
 
-    for row in vamps_metadata:
-       print>>f, row
-    f.close()
+    print "VVVV"
+    print vamps_metadata[1]
+    print field_names
+      
     
     """with open("out.csv", "wb") as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow([i[0] for i in cursor.description]) # write headers
         csv_writer.writerows(cursor)
     """
-    
-    
+    with open(myfile, "wb") as csv_file:
+      csv_writer = csv.writer(csv_file)
+      csv_writer.writerow(field_names) # write headers
+      csv_writer.writerows(vamps_metadata)
+      
     # process = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
     # process.wait()
     # print "process.returncode = "
