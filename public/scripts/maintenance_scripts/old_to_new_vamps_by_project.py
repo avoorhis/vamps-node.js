@@ -1064,15 +1064,38 @@ if __name__ == '__main__':
   project_csv_file_name = "project_%s.csv" % (args.project)
   dataset_csv_file_name = "dataset_%s.csv" % (args.project)
   
-  def get_csv_file_calls():
+  def get_csv_file_calls(project_name):
+    print "args.project = %s" % project_name
     prod_mysql_util = Mysql_util(host = '127.0.0.1', db="vamps", read_default_file=os.path.expanduser("~/.my.cnf_server"), port = 3308)
     test_query = "SHOW tables" 
-    print prod_mysql_util.execute_fetch_select(test_query)
+    print prod_mysql_util.execute_fetch_select(test_query)[0:2]
     
     # subprocess.call()
     
-    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    q1 = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)
+    vamps_metadata = prod_mysql_util.execute_fetch_select(q1)
+    print "vamps_metadata = "
+    print type(vamps_metadata)
+    
+    myfile = "metadata_%s.csv" % project_name
+    f = open(myfile,'w')
+    # f.write(vamps_metadata) # python will convert \n to os.linesep
+    # f.close() # you can omit in most cases as the destructor will call it
+
+    for row in vamps_metadata:
+       print>>f, row
+    f.close()
+    
+    """with open("out.csv", "wb") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow([i[0] for i in cursor.description]) # write headers
+        csv_writer.writerows(cursor)
+    """
+    
+    
+    # process = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
     # process.wait()
+    # print "process.returncode = "
     # print process.returncode
     
     
@@ -1090,10 +1113,14 @@ if __name__ == '__main__':
     """ % (args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project)
     print command_lines
 
-  get_csv_file_calls()
+  get_csv_file_calls(args.project)
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   utils      = Utils()
+  
+  test_query1 = "SHOW tables" 
+  print mysql_util.execute_fetch_select(test_query1)
+  
 
   # seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
   # taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
