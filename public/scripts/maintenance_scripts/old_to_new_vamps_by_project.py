@@ -378,8 +378,8 @@ class Utils:
 
     def write_to_csv_file(self, file_name, res, file_mode = "wb"):
       vamps_metadata, field_names = res
-      print "VVVV"
-      print field_names
+      # print "VVVV"
+      # print field_names
 
       with open(file_name, file_mode) as csv_file:
         csv_writer = csv.writer(csv_file)
@@ -387,7 +387,7 @@ class Utils:
           csv_writer.writerow(field_names) # write headers
         csv_writer.writerows(vamps_metadata)    
 
-    def get_csv_file_calls(self, roject_name, query):
+    def get_csv_file_calls(self, query):
       return prod_mysql_util.execute_fetch_select(query)
     
 
@@ -1086,30 +1086,29 @@ if __name__ == '__main__':
 
   project_name = args.project
   query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
-  # vamps_metadata = get_csv_file_calls(args.project, query)
   file_name = "metadata_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
 
   query = "SELECT * FROM vamps_sequences where project='%s'" % (args.project)  
   # get_csv_file_calls(args.project, query)
   file_name = "sequences_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
   
   query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
   file_name = "sequences_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query), "ab")
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query), "ab")
   
   query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
   file_name = "project_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
 
   query = "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';"
   file_name = "user_contact_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
 
   query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';"
   file_name = "dataset_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(args.project, query))
+  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
 
 # ========
 
@@ -1119,16 +1118,15 @@ if __name__ == '__main__':
   print mysql_util.execute_fetch_select(test_query1)
   
 
-  # seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
-  # taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
-  # refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
-  # sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
-  # 
-  # """TODO: add time"""
-  # # sequence.insert_seq()
-  # utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
-  # utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
-  # # sequence.get_seq_ids()
+  seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
+  taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
+  refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
+  
+  sequence.insert_seq()
+  utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
+  sequence.get_seq_ids()
   # 
   # utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
   # 
