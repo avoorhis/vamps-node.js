@@ -879,11 +879,12 @@ class Metadata:
     self.metadata_file_fields  = []
     self.metadata_file_content = []
     self.parameter_name_project_dict   = defaultdict(dict)
+    self.parameter_by_dataset_dict     = defaultdict(dict)
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
     self.existing_field_names   = defaultdict(list)
     self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
-    self.existing_required_metadata_fields = {}
-    self.required_metadata_by_pr_dict      = defaultdict(dict)
+    self.existing_required_metadata_fields     = {}
+    self.required_metadata_by_pr_dict          = defaultdict(dict)
     self.custom_metadata_fields_insert_values  = ""
     self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
 
@@ -899,6 +900,14 @@ class Metadata:
     [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
     """
     self.get_parameter_name_project_dict()
+    self.get_parameter_by_dataset_dict()
+    
+  def get_parameter_by_dataset_dict(self):
+    for entry in self.metadata_file_content:
+      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
+      dataset_val                 = entry_w_fields_dict['dataset']
+      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
+      self.parameter_by_dataset_dict[dataset_val][structured_comment_name_val] = entry_w_fields_dict
 
   def get_parameter_name_project_dict(self):
     for entry in self.metadata_file_content:
@@ -948,6 +957,9 @@ class Metadata:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
 
   def create_insert_required_metadata_string(self):
+    print "SSS self.required_metadata_by_pr_dict = "
+    print self.required_metadata_by_pr_dict
+    
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
       temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
     return self.utils.make_insert_values(temp_list)
@@ -1018,13 +1030,55 @@ class Metadata:
       print mysql_util.execute_no_fetch(q)
 
   def insert_custom_metadata(self):
+    print "self.parameter_name_project_dict = UUU"
+    print self.parameter_name_project_dict
+    
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_list = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+      field_list = ("dataset",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
       field_str  = "dataset_id, `" + "`, `".join(field_list) + "`"
 
+      print "self.parameter_by_dataset_dict"
+      print self.parameter_by_dataset_dict
+      
+      # for dataset_name, dataset_id in dataset.dataset_id_by_name_dict.items():
+      #   print "dataset_name = OOO"
+      #   print dataset_name
+      #   print "dataset_id = JJJ"
+      #   print dataset_id
+        # print self.parameter_by_dataset_dict[]
+
+        
+      for field_name in field_list[1:]:
+        print field_name
+        # print self.parameter_name_project_dict[project_name][field_name]['dataset']        
+        print "self.parameter_name_project_dict[project_name][field_name]['parameterValue'] = GGG"
+        print self.parameter_name_project_dict[project_name][field_name]['parameterValue']
+        print "self.parameter_name_project_dict[project_name][field_name]['dataset'] = "
+        dataset_name = self.parameter_name_project_dict[project_name][field_name]['dataset'] 
+        print "dataset_name = "
+        print dataset_name
+        print "dataset.dataset_id_by_name_dict[dataset_name] = dataset_id = "
+        dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+        print dataset_id
+        print "=" * 30
+        print "self.parameter_by_dataset_dict[dataset_name]"
+        print self.parameter_by_dataset_dict[dataset_name]
+        print "self.parameter_by_dataset_dict[dataset_name][field_name]"
+        print self.parameter_by_dataset_dict[dataset_name][field_name]
+        print "self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']"
+        print self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']
+        
+        
+        # ['parameterValue']
+        
+        
+
       # TODO: change for per dataset, in case there are different data!:
-      insert_values_temp_list = [self.parameter_name_project_dict[project_name][field_name]['parameterValue'] for field_name in field_list]
+      insert_values_temp_list = [self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue'] for field_name in field_list]
+      print "insert_values_temp_list = TTT"
+      print insert_values_temp_list
+      
       insert_values_list      = dataset.add_dataset_id_to_list(insert_values_temp_list, project_name)
       insert_values           = self.utils.make_insert_values(insert_values_list)
 
