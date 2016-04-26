@@ -1033,7 +1033,7 @@ class Metadata:
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       field_list = ("dataset_id",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-      field_str  = "dataset_id, `" + "`, `".join(field_list) + "`"
+      field_str  = "`" + "`, `".join(field_list) + "`"
 
       print "self.parameter_by_dataset_dict"
       print self.parameter_by_dataset_dict
@@ -1047,7 +1047,7 @@ class Metadata:
       #   print "dataset_id = JJJ"
       #   print dataset_id
       # print self.parameter_by_dataset_dict[]
-
+      insert_values_list = []
       for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
         print "DDD dataset_name, parameter_dict"
         print dataset_name
@@ -1089,22 +1089,22 @@ class Metadata:
       
         print "AAAAA insert_values_temp_list = "
         print insert_values_temp_list
-        
+        insert_values_list.append(insert_values_temp_list)
       # insert_values_temp_list = [self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue'] for field_name in field_list[1:]]
       # print "insert_values_temp_list = TTT"
       # print insert_values_temp_list
       # 
       # insert_values_list      = dataset.add_dataset_id_to_list(insert_values_temp_list, project_name)
-      insert_values           = self.utils.make_insert_values(insert_values_temp_list)
-      # print "insert_values = "
-      # print insert_values
+    insert_values           = self.utils.make_insert_values(insert_values_list)
+    # print "insert_values = "
+    # print insert_values
 
-      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      print "SSS sql = "
-      print sql
+    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+    print "SSS sql = "
+    print sql
 
-      # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-      # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+    # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+    # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
 if __name__ == '__main__':
   #TODO: args ICM_ACB_Av6
