@@ -1029,35 +1029,36 @@ class Metadata:
       q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
       print mysql_util.execute_no_fetch(q)
 
-  def make_custom_metadata_values_list(self, field_list_no_dataset):
-      insert_values_list = []
-      for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
-        dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-        insert_values_temp_list = []
-        insert_values_temp_list.append(str(dataset_id))
-      
-        for field_name in field_list_no_dataset:
-          try:
-            insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
-          except KeyError:
-            print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
-            insert_values_temp_list.append("")
-          except:                       # catch everything
-            raise                       # re-throw caught exception
-          
-        insert_values_list.append(insert_values_temp_list)
-      return self.utils.make_insert_values(insert_values_list)
+  def make_custom_metadata_values_list(self, field_list):
+    # TODO: refactoring, it's too complicated
+    insert_values_list = []
+    for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
+      dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+      insert_values_temp_list = []
+      insert_values_temp_list.append(str(dataset_id))
+    
+      for field_name in field_list:
+        try:
+          insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
+        except KeyError:
+          print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
+          insert_values_temp_list.append("")
+        except:                       # catch everything
+          raise                       # re-throw caught exception
+        
+      insert_values_list.append(insert_values_temp_list)
+    return self.utils.make_insert_values(insert_values_list)
     
   def insert_custom_metadata(self):
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_list = ("dataset_id",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-      field_str  = "`" + "`, `".join(field_list) + "`"
+      field_list    = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+      field_str     = "`" + "`, `".join(("dataset_id",) + field_list) + "`"
       
-      insert_values = self.make_custom_metadata_values_list(field_list[1:])
+      insert_values = self.make_custom_metadata_values_list(field_list)
 
-    rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-    self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+      rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
 if __name__ == '__main__':
   #TODO: args ICM_ACB_Av6
