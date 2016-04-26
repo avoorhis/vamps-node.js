@@ -20,6 +20,12 @@ if (typeof target_select !== 'undefined') {
       filter_by_target()
   });
 }
+var portal_select = document.getElementById('portal_select') || null;
+if (portal_select !== null) {
+  portal_select.addEventListener('change', function () {
+      filter_by_portal()
+  });
+}
 var pub_priv = document.getElementsByName('pub_priv');
 if (typeof pub_priv[0] !== 'undefined') {
   pub_priv[0].addEventListener('click', function () {
@@ -165,6 +171,9 @@ function clear_filters() {
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
   var xmlhttp = new XMLHttpRequest();  
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -214,6 +223,9 @@ function showLiveProjectNames(str) {
   document.getElementById('target_select').value='.....';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
   if(portal_local){
     var target = "/visuals/livesearch_projects/"+str+'?portal='+portal_local;
   }else{
@@ -257,6 +269,9 @@ function filter_by_env() {
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
@@ -293,6 +308,47 @@ function filter_by_target() {
   document.getElementById('pname_search_id').value='';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
+  xmlhttp.open("GET", target, true);
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.onreadystatechange=function() {
+    if ( xmlhttp.readyState == 4 ) {
+       pcount = xmlhttp.responseText;
+        if( pcount == 0 ){
+            document.getElementById('nodata_span').innerHTML='No Data';
+        }else{
+            document.getElementById('nodata_span').innerHTML='';
+        }     
+      document.getElementById("project_count_id").innerHTML = pcount;
+      document.getElementById('selected_ds_count_id').innerHTML = 0
+      projectTree.deleteChildItems(0);
+      projectTree.load("/visuals/project_dataset_tree_dhtmlx?id=0",afterCall,"json");   
+    }
+  }
+  xmlhttp.send();
+}
+//
+// SHOW/FILTER  RESULTS for Portal
+//
+function filter_by_portal() {
+  var filtering = 1;
+  var datasets_local = {};
+  var portal_id =   document.getElementById('portal_select').value;
+  var target = "/visuals/livesearch_portal/"+portal_id;
+  if(portal_local){
+    target += '?portal='+portal_local;
+  }
+  var xmlhttp = new XMLHttpRequest(); 
+  
+  document.getElementById('env_source_select').value='.....';
+  document.getElementById('metadata_select').value='.....';
+  document.getElementById('pname_search_id').value='';
+  document.getElementById('status_pub').checked=0;
+  document.getElementById('status_priv').checked=0;
+  document.getElementById('target_select').value='.....';
+
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
@@ -327,6 +383,9 @@ function filter_by_status(pub_status) {
   document.getElementById('metadata_select').value='.....';
   document.getElementById('target_select').value='.....';
   document.getElementById('pname_search_id').value='';
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {
@@ -364,6 +423,9 @@ function filter_by_metadata() {
   document.getElementById('target_select').value='.....';
   document.getElementById('status_pub').checked=0;
   document.getElementById('status_priv').checked=0;
+  if(document.getElementById('portal_select')){
+    document.getElementById('portal_select').value ='.....'
+  }
   xmlhttp.open("GET", target, true);
   xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.onreadystatechange=function() {

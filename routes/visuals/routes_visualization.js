@@ -2582,6 +2582,28 @@ router.get('/livesearch_target/:q', function(req, res) {
 //
 //
 //
+router.get('/livesearch_portal/:q', function(req, res) {
+  console.log('in livesearch portal')
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  //var portal = myurl.query.portal;
+  //var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  PROJECT_TREE_OBJ = []
+  SHOW_DATA.projects.forEach(function(prj) {
+          
+          if(prj.name.split('_')[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+      });
+  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  res.json(PROJECT_TREE_PIDS.length);
+
+});
+//
+//
+//
+//
 //  LIVESEARCH STATUS PROJECTS FILTER
 //
 router.get('/livesearch_status/:q', function(req, res) {
