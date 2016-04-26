@@ -1095,8 +1095,8 @@ if __name__ == '__main__':
   utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
   
   query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
-  file_name = "sequences_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query), "ab")
+  seq_csv_file_name = "sequences_%s.csv" % project_name
+  utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
   
   query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
   file_name = "project_%s.csv" % project_name
@@ -1123,10 +1123,8 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  sequence.insert_seq()
   utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
-  sequence.get_seq_ids()
   # 
   # utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
   # 
