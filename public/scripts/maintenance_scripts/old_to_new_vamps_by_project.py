@@ -1189,9 +1189,10 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
-# TODO: make "run all in class" methods in client
+# TODO: 
+# *) make "run all in class" methods in client
 # http://blog.michelemattioni.me/2015/01/10/list-intersection-in-python-lets-do-it-quickly/
-# *) use all class methods in other classes directly?
 # *) insert data for MBE_1666G_Bv4 and check counts and taxonomy
-# *) args for file names
-# *) script for getting csv from vampsdb
+# done) args for file names
+# done) script for getting csv from vampsdb
+# *) add check if not data from vamps_prod
