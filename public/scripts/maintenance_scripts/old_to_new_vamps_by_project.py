@@ -572,7 +572,7 @@ class Refhvr_id:
     insert_refhvr_id_vals = '), ('.join(["'%s'" % key for key in self.all_refhvr_id])
     # self.utils.print_array_w_title(insert_refhvr_id_vals, "===\ninsert_refhvr_id_vals")
     rows_affected = mysql_util.execute_insert("refhvr_id", "refhvr_id", insert_refhvr_id_vals)
-    # self.utils.print_array_w_title(rows_affected[0], "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
+    self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(refhvr_id, refhvr_id, insert_refhvr_id_vals)")
 
 class User:
   def __init__(self, contact, user_contact_csv_file_name, mysql_util):
@@ -584,16 +584,6 @@ class User:
 
     self.parse_user_contact_csv(self.user_contact_csv_file_name)
     self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)
-    # self.utils.print_array_w_title(self.user_data, "===\nSSS self.user_data in User")
-
-    # rows_affected = self.insert_user()
-    # self.user_id = self.get_id(rows_affected, "user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    #
-    # self.utils.print_array_w_title(self.user_id, "===\nSSS self.user_id after get_id")
-
-
-    # self.utils.print_array_w_title(list(self.seqs_file_content))
-    # [['306177', 'CGGAGAGACAGCAGAATGAAGGTCAAGCTGAAGACTTTACCAGACAAGCTGAG', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Archaea;Thaumarchaeota', 'v6_AE885 v6_AE944 v6_AE955', 'phylum', '7', '0.000476028561713702', '0.00000', 'FL6XCJ201BJIND', 'ICM_SMS_Bv6--SMS_0001_2007_09_19'],
 
   def get_user_id(self, username):
     #TODO: make general for user, project etc.
@@ -609,6 +599,8 @@ class User:
     insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
 
     rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
+    self.utils.print_array_w_title(rows_affected, "rows affected by insert_user")
+    
     self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
 
 class Project:
@@ -639,6 +631,7 @@ class Project:
     # self.utils.print_array_w_title(sql, "sql")
 
     rows_affected = mysql_util.execute_insert("project", field_list, insert_values)
+    self.utils.print_array_w_title(rows_affected, "rows_affected by insert_project")
 
     self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
     self.project_dict[project] = self.project_id
@@ -672,8 +665,8 @@ class Dataset:
       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
-    for project in set(self.dataset_project_dict.values()):
-      project_id = project_dict[project]
+    for project_name in set(self.dataset_project_dict.values()):
+      project_id = project_dict[project_name]
       self.put_project_id_into_dataset_file_content(project_id)
 
       field_list = "dataset, dataset_description, env_sample_source_id, project_id"
@@ -683,6 +676,7 @@ class Dataset:
       # self.utils.print_array_w_title(sql, "sql")
 
       rows_affected = mysql_util.execute_insert("dataset", field_list, all_insert_dat_vals)
+      self.utils.print_array_w_title(rows_affected, "rows_affected by insert_dataset")
 
   def make_all_dataset_id_by_project_dict(self):
     for dat, proj in sorted(self.dataset_project_dict.items()):
@@ -828,6 +822,7 @@ class Seq_csv:
     # self.utils.print_array_w_title(sql, "sql")
 
     rows_affected = mysql_util.execute_insert("silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
+    self.utils.print_array_w_title(rows_affected, "rows_affected by insert_silva_taxonomy_info_per_seq")
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -1086,29 +1081,29 @@ if __name__ == '__main__':
 
   project_name = args.project
   query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
-  file_name = "metadata_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
+  metadata_csv_file_name = "metadata_%s.csv" % project_name
+  utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
 
   query = "SELECT * FROM vamps_sequences where project='%s'" % (args.project)  
   # get_csv_file_calls(args.project, query)
-  file_name = "sequences_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
+  seq_csv_file_name = "sequences_%s.csv" % project_name
+  utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
   
   query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
   seq_csv_file_name = "sequences_%s.csv" % project_name
   utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
   
   query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
-  file_name = "project_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
+  project_csv_file_name = "project_%s.csv" % project_name
+  utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
 
   query = "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';"
-  file_name = "user_contact_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
+  user_contact_csv_file_name = "user_contact_%s.csv" % project_name
+  utils.write_to_csv_file(user_contact_csv_file_name, utils.get_csv_file_calls(query))
 
-  query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';"
-  file_name = "dataset_%s.csv" % project_name
-  utils.write_to_csv_file(file_name, utils.get_csv_file_calls(query))
+  query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';"  % project_name
+  dataset_csv_file_name = "dataset_%s.csv" % project_name
+  utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
 
 # ========
 
@@ -1125,83 +1120,59 @@ if __name__ == '__main__':
   
   utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
-  # 
-  # utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  # 
-  # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
-  # # refhvr_id.insert_refhvr_id()
-  # 
-  # project = Project(mysql_util)
-  # utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
-  # # project.parse_project_csv(project_csv_file_name)
-  # 
-  # user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  # utils.benchmarking(user.insert_user, "insert_user")
-  # # user.insert_user()
-  # utils.benchmarking(project.insert_project, "insert_project", user.user_id)
-  # # project.insert_project(user.user_id)
-  # 
-  # # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  # # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  # # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
-  # 
-  # dataset = Dataset(mysql_util)
-  # utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
-  # # dataset.parse_dataset_csv(dataset_csv_file_name)
-  # 
-  # utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
-  # # dataset.make_dataset_project_dictionary()
-  # utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
-  # # dataset.insert_dataset(project.project_dict)
-  # utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
-  # # dataset.collect_dataset_ids()
-  # utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
-  # 
-  # utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  # # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  # utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
-  # # taxonomy.parse_taxonomy()
-  # utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
-  # # taxonomy.get_taxa_by_rank()
-  # utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  # # taxonomy.make_uniqued_taxa_by_rank_dict()
-  # utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
-  # # taxonomy.insert_taxa()
-  # utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  # # taxonomy.silva_taxonomy()
-  # utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
-  # # taxonomy.insert_silva_taxonomy()
-  # utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
-  # # taxonomy.get_silva_taxonomy_ids()
-  # utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
-  # # taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
-  # utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
-  # # taxonomy.get_all_rank_w_id()
-  # # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
-  # 
-  # utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  # # seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
-  # utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
-  # # seq_csv_parser.insert_silva_taxonomy_info_per_seq()
-  # 
-  # utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  # # seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
-  # utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
-  # # seq_csv_parser.insert_sequence_uniq_info()
-  # 
-  # metadata = Metadata(mysql_util, dataset)
-  # utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
-  # # metadata.parse_metadata_csv(metadata_csv_file_name)
-  # utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
-  # utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  # utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
-  # utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
-  # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
-  # utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-  # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
-  # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  # # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
-  # utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  
+  utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
+  utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  
+  project = Project(mysql_util)
+  utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
+
+  user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  utils.benchmarking(user.insert_user, "insert_user")
+  utils.benchmarking(project.insert_project, "insert_project", user.user_id)
+
+  
+  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  
+  dataset = Dataset(mysql_util)
+  utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
+  utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
+  utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
+  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
+
+  utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
+  utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
+  utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
+  utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
+  utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
+  utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
+  utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
+  utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
+  utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
+  utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
+  # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
+  
+  utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
+  utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
+  
+  utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
+  utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
+  
+  metadata = Metadata(mysql_util, dataset)
+  utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
+  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
+  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
+  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
+  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
+  utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
+  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: make "run all in class" methods in client
