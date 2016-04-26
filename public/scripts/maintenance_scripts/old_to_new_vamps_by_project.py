@@ -35,9 +35,10 @@ mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_S
 mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
 
 mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
-~$ mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
 
-mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> user_contact.csv
+mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
+
+mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > user_contact.csv
 
 dataset:
 vamps_publications_datasets ? (ask Andy)
@@ -160,7 +161,6 @@ import os
 import timeit
 import time
 from collections import defaultdict
-
 
 class Mysql_util:
     """
@@ -1029,105 +1029,147 @@ class Metadata:
       self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
 if __name__ == '__main__':
-  #TODO: args
-  seq_csv_file_name      = "sequences_ICM_SMS_Bv6_short.csv"
-  # metadata_csv_file_name = "metadata_ICM_SMS_Bv6_short.csv"
-  # seq_csv_file_name      = "sequences_ICM_SMS_Bv6.csv"
-  metadata_csv_file_name = "metadata_ICM_SMS_Bv6.csv"
+  #TODO: args ICM_ACB_Av6
+
+  import subprocess
+  import argparse
+  
+  parser = argparse.ArgumentParser(description = "")
+
+  parser.add_argument("-p","--project",
+      required = True, action = "store", dest = "project", default = '',
+      help = """ProjectID""")
+  parser.add_argument("-public","--public",
+      required = False, action = "store", dest = "public", default = '1',
+      help = """0 (private) or 1 (public)""")
+  parser.add_argument("-d","--delimiter",
+      required = False, action = "store", dest = "delim", default = ',',
+      help = """METADATA: comma or tab""")
+
+  args = parser.parse_args()
+  
+  seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
+  # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
+  # seq_csv_file_name      = "sequences_%s.csv" % (args.project)
+  metadata_csv_file_name = "metadata_%s.csv" % (args.project)
   user_contact_csv_file_name = "user_contact.csv"
-  project_csv_file_name = "project_ICM_SMS_Bv6.csv"
-  dataset_csv_file_name = "dataset_ICM_SMS_Bv6.csv"
+  project_csv_file_name = "project_%s.csv" % (args.project)
+  dataset_csv_file_name = "dataset_%s.csv" % (args.project)
+  
+  def get_csv_file_calls():
+    # subprocess.call()
+    
+    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    # process.wait()
+    # print process.returncode
+    
+    
+    command_lines = """
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > metadata_%s.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > project_%s.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > dataset_%s.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > user_contact.csv
+    """ % (args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project, args.project)
+    print command_lines
+
+  get_csv_file_calls()
 
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   utils      = Utils()
 
-  seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
-  taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
-  refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
-  sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
-
-  """TODO: add time"""
-  # sequence.insert_seq()
-  utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
-  utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
-  # sequence.get_seq_ids()
-
-  utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-
-  utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
-  # refhvr_id.insert_refhvr_id()
-
-  project = Project(mysql_util)
-  utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
-  # project.parse_project_csv(project_csv_file_name)
-
-  user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  utils.benchmarking(user.insert_user, "insert_user")
-  # user.insert_user()
-  utils.benchmarking(project.insert_project, "insert_project", user.user_id)
-  # project.insert_project(user.user_id)
-
-  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
-
-  dataset = Dataset(mysql_util)
-  utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
-  # dataset.parse_dataset_csv(dataset_csv_file_name)
-
-  utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
-  # dataset.make_dataset_project_dictionary()
-  utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
-  # dataset.insert_dataset(project.project_dict)
-  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
-  # dataset.collect_dataset_ids()
-  utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
-
-  utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
-  # taxonomy.parse_taxonomy()
-  utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
-  # taxonomy.get_taxa_by_rank()
-  utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  # taxonomy.make_uniqued_taxa_by_rank_dict()
-  utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
-  # taxonomy.insert_taxa()
-  utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  # taxonomy.silva_taxonomy()
-  utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
-  # taxonomy.insert_silva_taxonomy()
-  utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
-  # taxonomy.get_silva_taxonomy_ids()
-  utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
-  # taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
-  utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
-  # taxonomy.get_all_rank_w_id()
-  # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
-
-  utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  # seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
-  utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
-  # seq_csv_parser.insert_silva_taxonomy_info_per_seq()
-
-  utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  # seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
-  utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
-  # seq_csv_parser.insert_sequence_uniq_info()
-
-  metadata = Metadata(mysql_util, dataset)
-  utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
-  # metadata.parse_metadata_csv(metadata_csv_file_name)
-  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
-  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
-  utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
-  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
-  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-  utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
-  utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
-  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  # seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
+  # taxonomy       = Taxonomy(seq_csv_parser.taxa, mysql_util)
+  # refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
+  # sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
+  # 
+  # """TODO: add time"""
+  # # sequence.insert_seq()
+  # utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  # utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
+  # # sequence.get_seq_ids()
+  # 
+  # utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
+  # 
+  # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  # # refhvr_id.insert_refhvr_id()
+  # 
+  # project = Project(mysql_util)
+  # utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
+  # # project.parse_project_csv(project_csv_file_name)
+  # 
+  # user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  # utils.benchmarking(user.insert_user, "insert_user")
+  # # user.insert_user()
+  # utils.benchmarking(project.insert_project, "insert_project", user.user_id)
+  # # project.insert_project(user.user_id)
+  # 
+  # # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  # # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  # # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  # 
+  # dataset = Dataset(mysql_util)
+  # utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
+  # # dataset.parse_dataset_csv(dataset_csv_file_name)
+  # 
+  # utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
+  # # dataset.make_dataset_project_dictionary()
+  # utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
+  # # dataset.insert_dataset(project.project_dict)
+  # utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  # # dataset.collect_dataset_ids()
+  # utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
+  # 
+  # utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
+  # # seq_csv_parser.sequence_pdr_info(dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
+  # utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
+  # # taxonomy.parse_taxonomy()
+  # utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
+  # # taxonomy.get_taxa_by_rank()
+  # utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
+  # # taxonomy.make_uniqued_taxa_by_rank_dict()
+  # utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
+  # # taxonomy.insert_taxa()
+  # utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
+  # # taxonomy.silva_taxonomy()
+  # utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
+  # # taxonomy.insert_silva_taxonomy()
+  # utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
+  # # taxonomy.get_silva_taxonomy_ids()
+  # utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
+  # # taxonomy.make_silva_taxonomy_id_per_taxonomy_dict()
+  # utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
+  # # taxonomy.get_all_rank_w_id()
+  # # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
+  # 
+  # utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
+  # # seq_csv_parser.silva_taxonomy_info_per_seq_from_csv(taxonomy)
+  # utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
+  # # seq_csv_parser.insert_silva_taxonomy_info_per_seq()
+  # 
+  # utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
+  # # seq_csv_parser.sequence_uniq_info_from_csv(sequence.sequences_w_ids)
+  # utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
+  # # seq_csv_parser.insert_sequence_uniq_info()
+  # 
+  # metadata = Metadata(mysql_util, dataset)
+  # utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
+  # # metadata.parse_metadata_csv(metadata_csv_file_name)
+  # utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
+  # utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  # utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  # utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
+  # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
+  # utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
+  # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  # # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
+  # utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: make "run all in class" methods in client
