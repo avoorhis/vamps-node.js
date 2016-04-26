@@ -1080,8 +1080,18 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
   
-  utils           = Utils()
-  prod_mysql_util = Mysql_util(host = '127.0.0.1', db="vamps", read_default_file=os.path.expanduser("~/.my.cnf_server"), port = 3308)
+  utils = Utils()
+  # =====
+  if utils.is_local():
+    host_prod = "127.0.0.1"
+    read_default_file_prod = "~/.my.cnf_server"
+    port_prod = 3308
+  else:
+    host_prod = "vampsdb"
+    read_default_file_prod = "~/.my.cnf"
+    port_prod = 3306
+  prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
+    
   
   # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
   # # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
@@ -1196,3 +1206,4 @@ if __name__ == '__main__':
 # done) args for file names
 # done) script for getting csv from vampsdb
 # *) add check if not data from vamps_prod
+# move connection with vamps_prod and csv creation out
