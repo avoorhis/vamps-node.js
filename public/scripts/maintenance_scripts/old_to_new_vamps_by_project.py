@@ -1030,60 +1030,81 @@ class Metadata:
       print mysql_util.execute_no_fetch(q)
 
   def insert_custom_metadata(self):
-    print "self.parameter_name_project_dict = UUU"
-    print self.parameter_name_project_dict
-    
     for project_name, project_id in project.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_list = ("dataset",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+      field_list = ("dataset_id",) + zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
       field_str  = "dataset_id, `" + "`, `".join(field_list) + "`"
 
       print "self.parameter_by_dataset_dict"
       print self.parameter_by_dataset_dict
+      """
+      {'ACB_0010_2008_01_30': {'depth_end': {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'depth_end', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0010_2008_01_30', 'project': 'ICM_ACB_Av6', 'miens_units': 'meter', 'parameterValue': '2', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0010_2008_01_30', 'units': 'meter', 'parameterName': 'depth_end', 'method': '', 'units_id': '20'}
+      """
       
       # for dataset_name, dataset_id in dataset.dataset_id_by_name_dict.items():
       #   print "dataset_name = OOO"
       #   print dataset_name
       #   print "dataset_id = JJJ"
       #   print dataset_id
-        # print self.parameter_by_dataset_dict[]
+      # print self.parameter_by_dataset_dict[]
 
-        
-      for field_name in field_list[1:]:
-        print field_name
-        # print self.parameter_name_project_dict[project_name][field_name]['dataset']        
-        print "self.parameter_name_project_dict[project_name][field_name]['parameterValue'] = GGG"
-        print self.parameter_name_project_dict[project_name][field_name]['parameterValue']
-        print "self.parameter_name_project_dict[project_name][field_name]['dataset'] = "
-        dataset_name = self.parameter_name_project_dict[project_name][field_name]['dataset'] 
-        print "dataset_name = "
+      for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
+        print "DDD dataset_name, parameter_dict"
         print dataset_name
-        print "dataset.dataset_id_by_name_dict[dataset_name] = dataset_id = "
+        print parameter_dict
         dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+        print "dataset_id = "
         print dataset_id
-        print "=" * 30
-        print "self.parameter_by_dataset_dict[dataset_name]"
-        print self.parameter_by_dataset_dict[dataset_name]
-        print "self.parameter_by_dataset_dict[dataset_name][field_name]"
-        print self.parameter_by_dataset_dict[dataset_name][field_name]
-        print "self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']"
-        print self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']
-        
-        
-        # ['parameterValue']
-        
-        
 
-      # TODO: change for per dataset, in case there are different data!:
-      insert_values_temp_list = [self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue'] for field_name in field_list]
-      print "insert_values_temp_list = TTT"
-      print insert_values_temp_list
+        insert_values_temp_list = []
+        insert_values_temp_list.append(str(dataset_id))
       
-      insert_values_list      = dataset.add_dataset_id_to_list(insert_values_temp_list, project_name)
-      insert_values           = self.utils.make_insert_values(insert_values_list)
+        for field_name in field_list[1:]:
+          try:
+            insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
+          except KeyError:
+            print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
+          except:                       # catch everything
+            raise                       # re-throw caught exception
+          
+            
+            
+        # Thymidine_uptake only in one dataset!
+        # TODO: change custom_metadata_fields by dataset?
+          
+        # dataset_name = self.parameter_by_dataset_dict[project_name][field_name]['dataset'] 
+        # print "dataset_name = "
+        # print dataset_name
+        # print "dataset.dataset_id_by_name_dict[dataset_name] = dataset_id = "
+        # dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+        # print dataset_id
+        # print "=" * 30
+        # print "self.parameter_by_dataset_dict[dataset_name]"
+        # print self.parameter_by_dataset_dict[dataset_name]
+        # print "self.parameter_by_dataset_dict[dataset_name][field_name]"
+        # print self.parameter_by_dataset_dict[dataset_name][field_name]
+        # print "self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']"
+        # print self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']
 
-      rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-      self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+      
+        print "AAAAA insert_values_temp_list = "
+        print insert_values_temp_list
+        
+      # insert_values_temp_list = [self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue'] for field_name in field_list[1:]]
+      # print "insert_values_temp_list = TTT"
+      # print insert_values_temp_list
+      # 
+      # insert_values_list      = dataset.add_dataset_id_to_list(insert_values_temp_list, project_name)
+      insert_values           = self.utils.make_insert_values(insert_values_temp_list)
+      # print "insert_values = "
+      # print insert_values
+
+      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      print "SSS sql = "
+      print sql
+
+      # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+      # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
 if __name__ == '__main__':
   #TODO: args ICM_ACB_Av6
