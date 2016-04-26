@@ -169,7 +169,7 @@ class Mysql_util:
     Takes parameters from ~/.my.cnf_node, default host = "vampsdev", db="vamps2"
     if different use my_conn = Mysql_util(host, db)
     """
-    def __init__(self, host="bpcweb7", db="vamps2"):
+    def __init__(self, host="bpcweb7", db="vamps2", read_default_file=os.path.expanduser("~/.my.cnf_node"), port=3306):
         self.utils     = Utils()
         self.conn      = None
         self.cursor    = None
@@ -177,19 +177,27 @@ class Mysql_util:
         self.new_id    = None
         self.lastrowid = None
         self.rowcount  = None
+        
+        if read_default_file == "":
+          if self.utils.is_local():
+            read_default_file=os.path.expanduser("~/.my.cnf_local")
+          else:
+            read_default_file=os.path.expanduser("~/.my.cnf_node")
+        print "read_default_file = %s" % read_default_file
 
         try:
             self.utils.print_both("=" * 40)
             self.utils.print_both("host = " + str(host) + ", db = "  + str(db))
             self.utils.print_both("=" * 40)
 
-            if self.utils.is_local():
-              self.conn = MySQLdb.connect(host=host, db=db, read_default_file=os.path.expanduser("~/.my.cnf_local"))
-            else:
-              self.conn = MySQLdb.connect(host=host, db=db, read_default_file=os.path.expanduser("~/.my.cnf_node"))
-              # self.db = MySQLdb.connect(host="localhost", # your host, usually localhost
-              #                          read_default_file="~/.my.cnf_node"  )
-              # cur = db.cursor()
+            self.conn = MySQLdb.connect(host=host, db=db, read_default_file=read_default_file, port=port)
+            print "host=%s, db=%s, read_default_file = %s" % (host, db, read_default_file)
+            
+          # else:
+          #   self.conn = MySQLdb.connect(host=host, db=db, read_default_file)
+            # self.db = MySQLdb.connect(host="localhost", # your host, usually localhost
+            #                          read_default_file="~/.my.cnf_node"  )
+            # cur = db.cursor()
             self.cursor = self.conn.cursor()
             # self.escape = self.conn.escape()
 
@@ -1057,6 +1065,10 @@ if __name__ == '__main__':
   dataset_csv_file_name = "dataset_%s.csv" % (args.project)
   
   def get_csv_file_calls():
+    prod_mysql_util = Mysql_util(host = '127.0.0.1', db="vamps", read_default_file=os.path.expanduser("~/.my.cnf_server"), port = 3308)
+    test_query = "SHOW tables" 
+    print prod_mysql_util.execute_fetch_select(test_query)
+    
     # subprocess.call()
     
     # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
@@ -1068,7 +1080,7 @@ if __name__ == '__main__':
     mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > metadata_%s.csv
 
     mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > sequences_%s.csv
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='%s';" |sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" >> sequences_%s.csv
 
     mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s';" | sed "s/'/\\'/;s/\\t/\\",\\"/g;s/^/\\"/;s/$/\\"/;s/\\n//g" > project_%s.csv
 
