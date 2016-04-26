@@ -1064,6 +1064,7 @@ class Metadata:
             insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
           except KeyError:
             print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
+            insert_values_temp_list.append("")
           except:                       # catch everything
             raise                       # re-throw caught exception
           
@@ -1072,39 +1073,19 @@ class Metadata:
         # Thymidine_uptake only in one dataset!
         # TODO: change custom_metadata_fields by dataset?
           
-        # dataset_name = self.parameter_by_dataset_dict[project_name][field_name]['dataset'] 
-        # print "dataset_name = "
-        # print dataset_name
-        # print "dataset.dataset_id_by_name_dict[dataset_name] = dataset_id = "
-        # dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-        # print dataset_id
-        # print "=" * 30
-        # print "self.parameter_by_dataset_dict[dataset_name]"
-        # print self.parameter_by_dataset_dict[dataset_name]
-        # print "self.parameter_by_dataset_dict[dataset_name][field_name]"
-        # print self.parameter_by_dataset_dict[dataset_name][field_name]
-        # print "self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']"
-        # print self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue']
 
       
         print "AAAAA insert_values_temp_list = "
         print insert_values_temp_list
         insert_values_list.append(insert_values_temp_list)
-      # insert_values_temp_list = [self.parameter_by_dataset_dict[dataset_name][field_name]['parameterValue'] for field_name in field_list[1:]]
-      # print "insert_values_temp_list = TTT"
-      # print insert_values_temp_list
-      # 
-      # insert_values_list      = dataset.add_dataset_id_to_list(insert_values_temp_list, project_name)
     insert_values           = self.utils.make_insert_values(insert_values_list)
-    # print "insert_values = "
-    # print insert_values
 
-    sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-    print "SSS sql = "
-    print sql
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+    # print "SSS sql = "
+    # print sql
 
-    # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-    # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+    rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+    self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
 if __name__ == '__main__':
   #TODO: args ICM_ACB_Av6
