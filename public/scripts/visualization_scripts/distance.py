@@ -23,7 +23,7 @@ from cogent.maths import distance_transform as dt
 #print sys.path
 
 def go_distance(args):
-    print args
+    #print args
 
     if args.file_format == 'json': 
         try:
@@ -50,24 +50,20 @@ def go_distance(args):
 
     
     z = np.array(data['data'])
-    dmatrix = np.transpose(z)
+    (dmatrix, bad_rows) = remove_zero_sum_datasets(np.transpose(z))
     #print dmatrix
     # find zero sum rows (datasets) after transpose
-    bad_rows = np.nonzero(dmatrix.sum(axis=1) == 0)
-    #print bad_rows
-    # now remove them
-    dmatrix = np.delete(dmatrix, bad_rows, axis=0)
     # delete datasets too:
     edited_dataset_list=[]
     #edited_did_hash = {}
     for row,line in enumerate(data['columns']):
         if row not in bad_rows[0]:
-            edited_dataset_list.append(line['id'])
+            edited_dataset_list.append(line['id'].encode("utf-8"))
 
     #print edited_dataset_list
     dist = get_dist(args.metric, dmatrix)
+    dm1 = get_data_matrix1(dist)
     
-    dm1 = distance.squareform(dist)
       
 
     dm2 = {}
@@ -83,12 +79,12 @@ def go_distance(args):
 
     for row,name in enumerate(edited_dataset_list):
             #name = line['name']
-            dm2[name] = {}  
+            dm2[name.encode("utf-8")] = {}  
             file_data_line = name+','   
             for col,d in enumerate(dm1[row]):
                 #print data['columns'][col]['id']
                 file_data_line += str(dm1[row][col])+','
-                dm2[name][data['columns'][col]['id']]  = dm1[row][col]
+                dm2[name][data['columns'][col]['id'].encode("utf-8")]  = dm1[row][col]
                 dm3[(name.encode("utf-8"), (data['columns'][col]['id'].encode("utf-8")))]  = dm1[row][col]
             file_data_line = file_data_line[:-1]+'\n'
             out_fp.write(file_data_line)
@@ -96,7 +92,7 @@ def go_distance(args):
     
     out_fp.close()
     
-    #print dm1
+    print dm1
     #print edited_dataset_list
     #return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
     return (dm1, dist, dm2, dm3, edited_dataset_list)
@@ -149,6 +145,16 @@ def get_dist(metric, mtx):
 
     dist = distance.squareform( dtvar )
     return dist
+
+def get_data_matrix1(dist):
+    return distance.squareform(dist)
+
+def remove_zero_sum_datasets(mtx):
+    bad_rows = np.nonzero(mtx.sum(axis=1) == 0)
+    print mtx
+    mtx = np.delete(mtx, bad_rows, axis=0)
+    print mtx
+    return (mtx, bad_rows)
 
 def dendrogram_pdf(args, dm, leafLabels):
         from scipy.cluster.hierarchy import linkage, dendrogram
