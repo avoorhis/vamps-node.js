@@ -1122,16 +1122,16 @@ if __name__ == '__main__':
       required = False, action = "store", dest = "delim", default = ',',
       help = """METADATA: comma or tab""")
   parser.add_argument("-w","--write_files",
-      required = False, action = "store", dest = "write_files", default = 'False',
+      required = False, action = "store_false", dest = "write_files",
       help = """Create csv files first""")
 
   args = parser.parse_args()
   
   utils = Utils()
   
-  if args.write_files:
+  if (args.write_files == True):
     csv_files = CSV_files()
-    # =====
+
     if utils.is_local():
       host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
