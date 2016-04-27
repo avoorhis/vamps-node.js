@@ -396,10 +396,11 @@ class CSV_files:
                 SELECT DISTINCT dataset, dataset_info AS dataset_description, env_source_id AS env_sample_source_id, project 
                   FROM vamps_projects_datasets_pipe 
                   JOIN vamps_upload_info ON(project = project_name) 
-                  WHERE project_name =  = '%s'
-          ;"""  % project_name
+                  WHERE project_name = '%s'
+          ;"""  % (project_name, project_name)
     dataset_csv_file_name = "dataset_%s.csv" % project_name
     utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
+    return (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   
     
 
@@ -1105,12 +1106,17 @@ if __name__ == '__main__':
       required = False, action = "store", dest = "delim", default = ',',
       help = """METADATA: comma or tab""")
   parser.add_argument("-w","--write_files",
-      required = False, action = "store_false", dest = "write_files",
+      required = False, action = "store_true", dest = "write_files",
       help = """Create csv files first""")
 
   args = parser.parse_args()
   
   utils = Utils()
+  
+  print "args = "
+  print args
+  print "args.write_files"
+  print args.write_files
   
   if (args.write_files == True):
     print "WRITING CSV files!"
@@ -1125,7 +1131,7 @@ if __name__ == '__main__':
       read_default_file_prod = "~/.my.cnf"
       port_prod = 3306
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
-    csv_files.run_csv_dump(prod_mysql_util)
+    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
   else:
     # todo: get file_names and path from args
     """
@@ -1144,6 +1150,7 @@ if __name__ == '__main__':
     
     """
   
+    # TODO: add names from args here
     # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
     # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
     # seq_csv_file_name          = "sequences_%s.csv" % (args.project)
@@ -1237,3 +1244,4 @@ if __name__ == '__main__':
 # *) add file names from the command line if not created
 # *) add data for _pipe into csv
 # *) if rank table is not there - try: and give a miningful error
+# *) use public='1' for public in project!
