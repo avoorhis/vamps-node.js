@@ -91,7 +91,7 @@
                   <select  id='portal_select'>
                     <option>.....</option>
                     <% for(n in portals) { %>
-                      <option value='<%= portals[n].id %>'><%= portals[n].name %></option>
+                      <option value='<%= portals[n].id %>'>(<%= portals[n].id %>) <%= portals[n].name %></option>
                     <% } %>
                   </select>
                 </td>
