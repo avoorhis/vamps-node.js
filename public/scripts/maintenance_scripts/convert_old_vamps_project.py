@@ -718,7 +718,9 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "project", default='',
                 help="""ProjectID""") 
     
-    
+    parser.add_argument("-host", "--host",    
+                required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                help="")
     parser.add_argument("-s","--seqs_file",                   
                 required=True,  action="store",   dest = "seqs_file", default='',
                 help="""file path""") 
@@ -743,7 +745,7 @@ if __name__ == '__main__':
                 
     args = parser.parse_args()
     
-    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+    db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
     cur.execute("SHOW databases like 'vamps%'")

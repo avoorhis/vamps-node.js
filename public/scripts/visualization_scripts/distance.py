@@ -22,8 +22,9 @@ import csv
 from cogent.maths import distance_transform as dt
 #print sys.path
 
-def calculate_distance(args):
-    
+def go_distance(args):
+    print args
+
     if args.file_format == 'json': 
         try:
             json_data = open('./tmp/'+args.in_file)
@@ -62,63 +63,17 @@ def calculate_distance(args):
     for row,line in enumerate(data['columns']):
         if row not in bad_rows[0]:
             edited_dataset_list.append(line['id'])
-            
-            #edited_did_hash[line['id']] = line['did']
 
     #print edited_dataset_list
+    dist = get_dist(args.metric, dmatrix)
     
-    if args.metric == 'bray_curtis':
-        dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
-        dist = distance.squareform( dtvar )
-        #dist = distance.pdist(dmatrix, 'braycurtis')
-    
-    elif args.metric == 'morisita_horn':
-        #print dmatrix
-        dtvar = dt.dist_morisita_horn(dmatrix, strict=False)
-        #print '2'
-        dist = distance.squareform( dtvar )
-        #sys.exit()
-
-    elif args.metric == 'canberra':
-        
-        dtvar = dt.dist_canberra(dmatrix, strict=False)
-        dist = distance.squareform( dtvar )
-        #print 'canberra'
-        #dist = distance.pdist(dmatrix, 'canberra')
-    
-    elif args.metric == 'jaccard':
-        #print('jaccard dist') 
-        dtvar = dt.binary_dist_jaccard(dmatrix, strict=False) 
-        dist = distance.squareform( dtvar )
-        #dtvar = dt.dist_jaccard(dmatrix, strict=False)
-        
-        #dist = distance.pdist(dmatrix, 'jaccard') 
-        
-     
-    elif args.metric == 'kulczynski':
-        dtvar = dt.dist_kulczynski(dmatrix, strict=False)
-        dist = distance.squareform( dtvar ) 
-        # note different spelling
-        #dist = distance.pdist(dmatrix, 'kulsinski')
-        
-    else:  # default
-        dtvar = dt.dist_bray_curtis(dmatrix, strict=False)
-        dist = distance.squareform( dtvar )
-
-    #print data['columns']
-    #print dist
     dm1 = distance.squareform(dist)
-    # dist in in condensed form
-    # dm1 is in long form
-    #print dm1
-    #print dist
-    
+      
 
     dm2 = {}
     dm3 = {}
 
-    out_file = os.path.join(args.site_base,'tmp',args.prefix+'_distance.csv')
-    
+    out_file = os.path.join(args.outdir, args.prefix+'_distance.csv')
     out_fp = open(out_file,'w')
     
     file_header_line = ','.join([x['id'] for x in data['columns']]) + '\n'
@@ -126,7 +81,6 @@ def calculate_distance(args):
     out_fp.write(file_header_line)
 
 
-    
     for row,name in enumerate(edited_dataset_list):
             #name = line['name']
             dm2[name] = {}  
@@ -178,6 +132,24 @@ def calculate_distance(args):
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.0, 
 #  ('BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_2Step', 'BPC_1V2STP_Bv4v5--SLM_NIH_19SS_rep1_1Step'): 0.97554598143130711, 
 # }
+
+def get_dist(metric, mtx):
+    if metric == 'bray_curtis':
+        dtvar = dt.dist_bray_curtis(mtx, strict=False)    
+    elif metric == 'morisita_horn':
+        dtvar = dt.dist_morisita_horn(mtx, strict=False)
+    elif metric == 'canberra':        
+        dtvar = dt.dist_canberra(mtx, strict=False)    
+    elif metric == 'jaccard':
+        dtvar = dt.binary_dist_jaccard(mtx, strict=False)         
+    elif metric == 'kulczynski':
+        dtvar = dt.dist_kulczynski(mtx, strict=False)        
+    else:  # default
+        dtvar = dt.dist_bray_curtis(mtx, strict=False)
+
+    dist = distance.squareform( dtvar )
+    return dist
+
 def dendrogram_pdf(args, dm, leafLabels):
         from scipy.cluster.hierarchy import linkage, dendrogram
         #from hcluster import squareform, linkage, dendrogram
@@ -207,7 +179,7 @@ def dendrogram_pdf(args, dm, leafLabels):
         
         linkage_matrix = linkage(dm,  method="average" )
         dendrogram(linkage_matrix,  color_threshold=1,  leaf_font_size=6,  orientation='right', labels=leafLabels)
-        image_file = os.path.join(args.site_base,'tmp',args.prefix+'_dendrogram.pdf')
+        image_file = os.path.join(args.outdir,args.prefix+'_dendrogram.pdf')
 
         plt.savefig(image_file)
 
@@ -228,7 +200,7 @@ def cluster_datasets(args, dm):
     ascii = mycluster.asciiArt()
 
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
-    ascii_file_path = os.path.join(args.site_base,'tmp',ascii_file)
+    ascii_file_path = os.path.join(args.outdir,ascii_file)
     fp = open(ascii_file_path,'w')
     fp.write(ascii)
     fp.close()
@@ -358,7 +330,7 @@ def create_emperor_pc_file(args, data, PCoA_result):
         txt += pexpl_items[i+4]+'\t'
     txt += '\n'
     #print txt
-    pcfile = os.path.join(args.site_base,'tmp',args.prefix+'.pc')
+    pcfile = os.path.join(args.outdir,args.prefix+'.pc')
     pcfile_fp = open(pcfile,'w')
     pcfile_fp.write(txt)
     pcfile_fp.close()
@@ -533,7 +505,7 @@ def pcoa_pdf(args, data):
             ax[0,0].set_title('P1-P2')
             ax[0,2].set_title('P2-P3')
 
-            image_file = os.path.join(args.site_base,'tmp',args.prefix+'_pcoa.pdf')
+            image_file = os.path.join(args.outdir,args.prefix+'_pcoa.pdf')
             pylab.savefig(image_file, bbox_inches='tight')
         else:
             print 'no metadata'
@@ -552,14 +524,15 @@ if __name__ == '__main__':
     parser.add_argument('-ff','--file_format', required=False, action="store",  dest='file_format',help = 'json or csv only', default='json')   
     parser.add_argument('-metric','--metric',  required=False, action="store",  dest='metric',    help = 'Distance Metric', default='bray_curtis') 
     parser.add_argument('-fxn','--function',   required=True,  action="store",  dest='function',  help = 'distance, dendrogram, pcoa, dheatmap, fheatmap') 
-    parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
+    #parser.add_argument('-base','--site_base', required=True,  action="store",  dest='site_base', help = 'site base') 
+    parser.add_argument('-outdir','--outdir',   required=True,  action="store",  dest='outdir', help = 'site base') 
     parser.add_argument('-pre','--prefix',     required=True,  action="store",  dest='prefix',    help = 'file prefix') 
     #parser.add_argument('-meta','--metadata',  required=False, action="store",  dest='metadata',  help = 'json metadata') 
 
     args = parser.parse_args()
     
 
-    ( dm1, short_dm1, dm2, dm3, datasets ) = calculate_distance(args) 
+    ( dm1, dist, dm2, dm3, datasets ) = go_distance(args) 
     
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
@@ -569,7 +542,7 @@ if __name__ == '__main__':
 
     if args.function == 'fheatmap':
         # IMPORTANT print for freq heatmap
-        print short_dm1.tolist()
+        print dist.tolist()
 
 
     if args.function == 'dheatmap':
