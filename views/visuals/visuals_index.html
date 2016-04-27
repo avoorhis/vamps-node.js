@@ -75,7 +75,7 @@
               </tr>
               <tr>
                 <td>
-                  by Domain/Target: <%= hostname %><br>
+                  by Domain/Target:<br>
                   <select  id='target_select'>
                     <option>.....</option>
                     <% for(n in targets) { %>
@@ -84,7 +84,7 @@
                   </select>
                 </td>
               </tr>
-        <% if(hostname=='bpcweb7' || hostname=='bpcweb8'){ %>
+        <% if(hostname.substring(0,6) === 'bpcweb'){ %>
               <tr>
                 <td>
                   by Portal:<br>
