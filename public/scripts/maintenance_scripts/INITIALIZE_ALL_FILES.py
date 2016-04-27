@@ -302,9 +302,9 @@ if __name__ == '__main__':
     args = parser.parse_args() 
 
     warnings = []
-    if socket.gethostname() == 'bpcweb7':
+    if args.dbhost == 'vampsdev':
         args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')
-    elif socket.gethostname() == 'bpcweb8':
+    elif args.dbhost == 'vampsdb':
         args.json_file_path = os.path.join('/','groups','vampsweb','vamps_node_data','json')
     if not args.json_file_path:
         #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
