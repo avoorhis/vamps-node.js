@@ -1158,11 +1158,11 @@ if __name__ == '__main__':
     # TODO: add names from args here
     # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
     # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
-    # seq_csv_file_name          = "sequences_%s.csv" % (args.project)
-    # metadata_csv_file_name     = "metadata_%s.csv" % (args.project)
-    # user_contact_csv_file_name = "user_contact_%s.csv" % (args.project)
-    # project_csv_file_name      = "project_%s.csv" % (args.project)
-    # dataset_csv_file_name      = "dataset_%s.csv" % (args.project)
+    seq_csv_file_name          = "sequences_%s.csv" % (args.project)
+    metadata_csv_file_name     = "metadata_%s.csv" % (args.project)
+    user_contact_csv_file_name = "user_contact_%s.csv" % (args.project)
+    project_csv_file_name      = "project_%s.csv" % (args.project)
+    dataset_csv_file_name      = "dataset_%s.csv" % (args.project)
   
 
 # ========
