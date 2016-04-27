@@ -307,7 +307,6 @@ class Utils:
       wrapped  = utils.wrapper(func, *args)
       time_res = timeit.timeit(wrapped, number=1)
       print "time_res: %s" % time_res
-      return wrapped
 
     def search_in_2d_list(self, search, data):
       for sublist in data:
@@ -1131,8 +1130,12 @@ if __name__ == '__main__':
       read_default_file_prod = "~/.my.cnf"
       port_prod = 3306
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
-    # metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
-    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = utils.benchmarking(csv_files.run_csv_dump, "run_csv_dump", prod_mysql_util)
+    print "START run_csv_dump"
+    t0 = time.time()
+    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
+    t1 = time.time()
+    total = t1-t0
+    print "time_res = %s" % total
     
   else:
     # todo: get file_names and path from args
@@ -1164,10 +1167,11 @@ if __name__ == '__main__':
 
 # ========
 
+  print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   
-  test_query1 = "SHOW tables" 
-  print mysql_util.execute_fetch_select(test_query1)
+  # test_query1 = "SHOW tables" 
+  # print mysql_util.execute_fetch_select(test_query1)
   
 
   seq_csv_parser = Seq_csv(seq_csv_file_name, mysql_util)
