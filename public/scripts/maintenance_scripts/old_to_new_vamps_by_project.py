@@ -211,33 +211,7 @@ class Mysql_util:
       if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
-#            if (self.conn.affected_rows()):
-#            print dir(self.cursor)
           return self.cursor.lastrowid
-#        logging.debug("rows = "  + str(self.rows))
-
-    # def execute_load_file(self, file_name):
-    #   query = open(file_name).read()
-    #   try:
-    #     if self.cursor:
-    #       self.cursor.execute(query)
-    #       self.conn.commit()
-    #       return (self.cursor.rowcount, self.cursor.lastrowid)
-    #   except:
-    #     self.utils.print_both(("ERROR: query = %s") % query)
-    #     raise
-    #
-    # def execute_insert_local(self, table_name, field_name, val_list, ignore = "IGNORE"):
-    #   q = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
-    #
-    #   q_file_name = table_name + "_insert.sql"
-    #   out_file    = open(q_file_name, 'w')
-    #   out_file.write(q)
-    #   out_file.close
-    #
-    #   self.execute_load_file(q_file_name)
-    #
-    #   return q_file_name
 
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:
@@ -381,40 +355,49 @@ class CSV_files:
     pass
   
   def run_csv_dump(self, prod_mysql_util):
-
-
-    # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
-    # # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
-    # # seq_csv_file_name      = "sequences_%s.csv" % (args.project)
-    # metadata_csv_file_name = "metadata_%s.csv" % (args.project)
-    # user_contact_csv_file_name = "user_contact.csv"
-    # project_csv_file_name = "project_%s.csv" % (args.project)
-    # dataset_csv_file_name = "dataset_%s.csv" % (args.project)
-    # 
-
+    # TODO: add directory from args?
     project_name = args.project
-    query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
+    query = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)  
     metadata_csv_file_name = "metadata_%s.csv" % project_name
     utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences where project='%s'" % (args.project)  
-    # get_csv_file_calls(args.project, query)
+    query = "SELECT * FROM vamps_sequences where project='%s'" % (project_name)  
     seq_csv_file_name = "sequences_%s.csv" % project_name
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
+    query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (project_name)  
     seq_csv_file_name = "sequences_%s.csv" % project_name
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
 
-    query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
+    query = """SELECT DISTINCT project, title, project_description, funding, env_sample_source_id, contact, email, institution 
+                FROM new_project 
+                LEFT JOIN new_contact using(contact_id) 
+                WHERE project = '%s' 
+               UNION 
+               SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution 
+                FROM vamps_upload_info 
+                WHERE project_name = '%s'""" % (project_name, project_name)  
     project_csv_file_name = "project_%s.csv" % project_name
     utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';"
+    query = """SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password 
+              FROM new_user_contact 
+              JOIN new_user using(user_id) 
+              JOIN new_contact using(contact_id) 
+              WHERE first_name is not NULL and first_name <> '';"""
     user_contact_csv_file_name = "user_contact_%s.csv" % project_name
     utils.write_to_csv_file(user_contact_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';"  % project_name
+    query = """SELECT DISTINCT dataset, dataset_description, env_sample_source_id, project 
+                  FROM new_dataset 
+                  JOIN new_project using(project_id) 
+                  WHERE project = '%s' 
+                UNION 
+                SELECT DISTINCT dataset, dataset_info AS dataset_description, env_source_id AS env_sample_source_id, project 
+                  FROM vamps_projects_datasets_pipe 
+                  JOIN vamps_upload_info ON(project = project_name) 
+                  WHERE project_name =  = '%s'
+          ;"""  % project_name
     dataset_csv_file_name = "dataset_%s.csv" % project_name
     utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
   
@@ -1130,6 +1113,7 @@ if __name__ == '__main__':
   utils = Utils()
   
   if (args.write_files == True):
+    print "WRITING CSV files!"
     csv_files = CSV_files()
 
     if utils.is_local():
@@ -1142,45 +1126,32 @@ if __name__ == '__main__':
       port_prod = 3306
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
     csv_files.run_csv_dump(prod_mysql_util)
-  
-  
+  else:
+    # todo: get file_names and path from args
+    """
+    Create manually:
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
     
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> sequences_ICM_SMS_Bv6.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project_name = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
+    
+    mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
+
+    mysql -B -h vampsdb vamps -e "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> user_contact_ICM_SMS_Bv6.csv
+    
+    """
   
-  # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
-  # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
-  seq_csv_file_name          = "sequences_%s.csv" % (args.project)
-  metadata_csv_file_name     = "metadata_%s.csv" % (args.project)
-  user_contact_csv_file_name = "user_contact_%s.csv" % (args.project)
-  project_csv_file_name      = "project_%s.csv" % (args.project)
-  dataset_csv_file_name      = "dataset_%s.csv" % (args.project)
+    # seq_csv_file_name      = "sequences_%s_short.csv" % (args.project)
+    # metadata_csv_file_name = "metadata_%s_short.csv" % (args.project)
+    # seq_csv_file_name          = "sequences_%s.csv" % (args.project)
+    # metadata_csv_file_name     = "metadata_%s.csv" % (args.project)
+    # user_contact_csv_file_name = "user_contact_%s.csv" % (args.project)
+    # project_csv_file_name      = "project_%s.csv" % (args.project)
+    # dataset_csv_file_name      = "dataset_%s.csv" % (args.project)
   
-  #   
-  # 
-  # project_name = args.project
-  # query = "SELECT * FROM vamps_metadata where project='%s'" % (args.project)  
-  # metadata_csv_file_name = "metadata_%s.csv" % project_name
-  # utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
-  # 
-  # query = "SELECT * FROM vamps_sequences where project='%s'" % (args.project)  
-  # # get_csv_file_calls(args.project, query)
-  # seq_csv_file_name = "sequences_%s.csv" % project_name
-  # utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
-  # 
-  # query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (args.project)  
-  # seq_csv_file_name = "sequences_%s.csv" % project_name
-  # utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
-  # 
-  # query = "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='%s'" % (args.project)  
-  # project_csv_file_name = "project_%s.csv" % project_name
-  # utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
-  # 
-  # query = "SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password from new_user_contact join new_user using(user_id) join new_contact using(contact_id) where first_name is not NULL and first_name <> '';"
-  # user_contact_csv_file_name = "user_contact_%s.csv" % project_name
-  # utils.write_to_csv_file(user_contact_csv_file_name, utils.get_csv_file_calls(query))
-  # 
-  # query = "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = '%s';"  % project_name
-  # dataset_csv_file_name = "dataset_%s.csv" % project_name
-  # utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
 
 # ========
 
@@ -1259,5 +1230,10 @@ if __name__ == '__main__':
 # done) args for file names
 # done) script for getting csv from vampsdb
 # *) add check if not data from vamps_prod
-# *) move connection with vamps_prod and csv creation out
+# done) move connection with vamps_prod and csv creation out
 # *) use buffer for sequences - hangs mysql
+# *) add what tables are should be preuploaded (rank, classifier, env_sample_source)
+# *) choose database from a command line
+# *) add file names from the command line if not created
+# *) add data for _pipe into csv
+# *) if rank table is not there - try: and give a miningful error
