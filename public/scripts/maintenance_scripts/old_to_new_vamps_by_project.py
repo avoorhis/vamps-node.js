@@ -304,9 +304,10 @@ class Utils:
 
     def benchmarking(self, func, func_name, *args, **kwargs):
       print "START %s" % func_name
-      wrapped = utils.wrapper(func, *args)
+      wrapped  = utils.wrapper(func, *args)
       time_res = timeit.timeit(wrapped, number=1)
       print "time_res: %s" % time_res
+      return wrapped
 
     def search_in_2d_list(self, search, data):
       for sublist in data:
@@ -985,9 +986,9 @@ class Metadata:
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
 
   def create_insert_required_metadata_string(self):
-    print "SSS self.required_metadata_by_pr_dict = "
+    print "self.required_metadata_by_pr_dict = "
     print self.required_metadata_by_pr_dict
-    
+
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
       temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
     return self.utils.make_insert_values(temp_list)
@@ -1119,7 +1120,6 @@ if __name__ == '__main__':
   print args.write_files
   
   if (args.write_files == True):
-    print "WRITING CSV files!"
     csv_files = CSV_files()
 
     if utils.is_local():
@@ -1131,7 +1131,9 @@ if __name__ == '__main__':
       read_default_file_prod = "~/.my.cnf"
       port_prod = 3306
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
-    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
+    # metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
+    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = utils.benchmarking(csv_files.run_csv_dump, "run_csv_dump", prod_mysql_util)
+    
   else:
     # todo: get file_names and path from args
     """
