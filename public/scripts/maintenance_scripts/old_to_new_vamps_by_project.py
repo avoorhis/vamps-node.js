@@ -306,7 +306,7 @@ class Utils:
       print "START %s" % func_name
       wrapped  = utils.wrapper(func, *args)
       time_res = timeit.timeit(wrapped, number=1)
-      print "time_res: %s" % time_res
+      print "time_res: %s s" % time_res
 
     def search_in_2d_list(self, search, data):
       for sublist in data:
@@ -337,8 +337,10 @@ class Utils:
 
     def write_to_csv_file(self, file_name, res, file_mode = "wb"):
       vamps_metadata, field_names = res
-      # print "VVVV"
-      # print field_names
+      print "VVVV"
+      print field_names
+      print "vamps_metadata"
+      print vamps_metadata
 
       with open(file_name, file_mode) as csv_file:
         csv_writer = csv.writer(csv_file)
@@ -911,6 +913,10 @@ class Metadata:
 
   required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
   custom_metadata_fields (project_id, field_name, field_type, example)
+  
+  create all metadata values
+  create custom table
+  separately insert req and custom
   """
 
   def __init__(self, mysql_util, dataset):
@@ -938,8 +944,14 @@ class Metadata:
     ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
     [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
     """
-    self.get_parameter_name_project_dict()
+    self.get_parameter_by_project_dict()
     self.get_parameter_by_dataset_dict()
+  
+  
+    """    # TODO: DRY 
+      self.get_parameter_by_project_dict()
+      self.get_parameter_by_dataset_dict()
+    """
     
   def get_parameter_by_dataset_dict(self):
     for entry in self.metadata_file_content:
@@ -948,7 +960,7 @@ class Metadata:
       structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
       self.parameter_by_dataset_dict[dataset_val][structured_comment_name_val] = entry_w_fields_dict
 
-  def get_parameter_name_project_dict(self):
+  def get_parameter_by_project_dict(self):
     for entry in self.metadata_file_content:
       entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
       project_val                 = entry_w_fields_dict['project']
@@ -985,39 +997,6 @@ class Metadata:
 
   def get_custom_metadata_fields(self):
     self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
-
-  def make_requred_metadata_dict(self):
-    ex_f_list  = self.existing_required_metadata_fields.values()
-    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
-
-    for project, vals in self.parameter_name_project_dict.items():
-      for field_name, ex_f_name in vals.items():
-        if field_name in ex_f_list:
-          self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
-
-  def create_insert_required_metadata_string(self):
-    print "self.required_metadata_by_pr_dict = "
-    print self.required_metadata_by_pr_dict
-
-    for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
-      temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
-    return self.utils.make_insert_values(temp_list)
-
-  def insert_required_metadata(self):
-    """self.required_metadata_by_pr_dict =
-    {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
-       dataset.all_dataset_id_by_project_dict =
-    {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
-    """
-
-    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
-
-    self.make_requred_metadata_dict()
-    all_insert_req_met_vals = self.create_insert_required_metadata_string()
-
-    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
-
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
 
   def data_for_custom_metadata_fields_table(self, project_dict):
     field_values = []
@@ -1067,6 +1046,41 @@ class Metadata:
       table_description = "ENGINE=InnoDB"
       q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
       print mysql_util.execute_no_fetch(q)
+
+
+# values
+  def make_requred_metadata_dict(self):
+    ex_f_list  = self.existing_required_metadata_fields.values()
+    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
+
+    for project, vals in self.parameter_name_project_dict.items():
+      for field_name, ex_f_name in vals.items():
+        if field_name in ex_f_list:
+          self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
+
+  def create_insert_required_metadata_string(self):
+    print "self.required_metadata_by_pr_dict = "
+    print self.required_metadata_by_pr_dict
+
+    for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
+      temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
+    return self.utils.make_insert_values(temp_list)
+
+  def insert_required_metadata(self):
+    """self.required_metadata_by_pr_dict =
+    {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
+       dataset.all_dataset_id_by_project_dict =
+    {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
+    """
+
+    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
+
+    self.make_requred_metadata_dict()
+    all_insert_req_met_vals = self.create_insert_required_metadata_string()
+
+    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
+
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
 
   def make_custom_metadata_values_list(self, field_list):
     # TODO: refactoring, it's too complicated
@@ -1119,9 +1133,9 @@ if __name__ == '__main__':
   parser.add_argument("-w","--write_files",
       required = False, action = "store_true", dest = "write_files",
       help = """Create csv files first""")
-  parser.add_argument("-i","--insert_all",
-      required = False, action = "store_true", dest = "insert_all",
-      help = """Insert data into db, mostly for debugging purposes""")
+  parser.add_argument("-ni","--do_not_insert",
+      required = False, action = "store_false", dest = "do_not_insert",
+      help = """Do not insert data into db, mostly for debugging purposes""")
 
   args = parser.parse_args()
   
@@ -1149,7 +1163,7 @@ if __name__ == '__main__':
     metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
     t1 = time.time()
     total = t1-t0
-    print "time_res = %s" % total
+    print "time_res = %s s" % total
     
   else:
     # todo: get file_names and path from args
@@ -1193,22 +1207,22 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   pr = Project(mysql_util)
   utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
   user = User(pr.contact, user_contact_csv_file_name, mysql_util)
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(user.insert_user, "insert_user")
   utils.benchmarking(user.get_user_id, "get_user_id")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(pr.insert_project, "insert_project", user.user_id)
 
   utils.benchmarking(pr.get_project_id, "get_project_id")
@@ -1225,21 +1239,21 @@ if __name__ == '__main__':
   print "DDD"
   seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 2")
 
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(seq_csv_parser.insert_sequence_pdr_info, "insert_sequence_pdr_info")
   utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
   utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
   utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
   utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
   utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
   utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
@@ -1247,26 +1261,26 @@ if __name__ == '__main__':
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
   
   utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
   
   utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
   metadata = Metadata(mysql_util, dataset)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  if (args.insert_all == True):
+  if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
@@ -1287,4 +1301,4 @@ if __name__ == '__main__':
 # *) use public='1' for public in project!
 # *) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
 #  prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
-# combine creation metadata values and then insert required or custom
+# combine creation metadata values and then insert required or custom_metadata
