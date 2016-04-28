@@ -598,10 +598,10 @@ class User:
     self.parse_user_contact_csv(self.user_contact_csv_file_name)
     self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)
 
-  def get_user_id(self, username):
-    #TODO: make general for user, project etc.
-    user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-    return mysql_util.execute_fetch_select(user_id_query)[0]
+  # def get_user_id(self, username):
+  #   #TODO: make general for user, project etc.
+  #   user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
+  #   return mysql_util.execute_fetch_select(user_id_query)[0]
 
   def parse_user_contact_csv(self, user_contact_csv_file_name):
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)[1]
@@ -615,6 +615,10 @@ class User:
     self.utils.print_array_w_title(rows_affected, "rows affected by insert_user")
     
     self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
+    
+  def get_user_id(self):
+    self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    
 
 class Project:
 
@@ -1179,22 +1183,23 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  # utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   project = Project(mysql_util)
   utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
   user = User(project.contact, user_contact_csv_file_name, mysql_util)
-  utils.benchmarking(user.insert_user, "insert_user")
+  # utils.benchmarking(user.insert_user, "insert_user")
+  utils.benchmarking(user.get_user_id, "get_user_id")
   utils.benchmarking(project.insert_project, "insert_project", user.user_id)
 
   
-  # seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
+  seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
+  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
   # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
   
   dataset = Dataset(mysql_util)
@@ -1251,3 +1256,5 @@ if __name__ == '__main__':
 # *) add data for _pipe into csv
 # *) if rank table is not there - try: and give a miningful error
 # *) use public='1' for public in project!
+# *) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
+#  prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
