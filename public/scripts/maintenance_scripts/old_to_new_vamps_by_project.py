@@ -651,27 +651,15 @@ class Project:
     rows_affected = mysql_util.execute_insert("project", field_list, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_project")
 
-    '''
-      self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
-    
-    def get_user_id(self):
-      self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
-    
-    '''
-
     self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (self.project), rows_affected)
     
-    self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+    # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
     
   def get_project_id(self):
     self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % self.project)
     
   def make_project_dict(self):
-    self.project_dict[self.project] = self.project_id
-  
-  
-    # self.project_dict[project] = self.project_id
-    
+    self.project_dict[self.project] = self.project_id    
 
 class Dataset:
   def __init__(self, mysql_util):
@@ -813,7 +801,6 @@ class Seq_csv:
     self.seq_ids_by_name_dict = dict(sequences_w_ids)
     # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
-    self.insert_sequence_pdr_info()
 
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq_from_csv(self, taxonomy):
@@ -1132,6 +1119,9 @@ if __name__ == '__main__':
   parser.add_argument("-w","--write_files",
       required = False, action = "store_true", dest = "write_files",
       help = """Create csv files first""")
+  parser.add_argument("-i","--insert_all",
+      required = False, action = "store_true", dest = "insert_all",
+      help = """Insert data into db, mostly for debugging purposes""")
 
   args = parser.parse_args()
   
@@ -1203,19 +1193,23 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  # utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  if (args.insert_all == True):
+    utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  if (args.insert_all == True):
+    utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   pr = Project(mysql_util)
   utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
   user = User(pr.contact, user_contact_csv_file_name, mysql_util)
-  # utils.benchmarking(user.insert_user, "insert_user")
+  if (args.insert_all == True):
+    utils.benchmarking(user.insert_user, "insert_user")
   utils.benchmarking(user.get_user_id, "get_user_id")
-  utils.benchmarking(pr.insert_project, "insert_project", user.user_id)
+  if (args.insert_all == True):
+    utils.benchmarking(pr.insert_project, "insert_project", user.user_id)
 
   utils.benchmarking(pr.get_project_id, "get_project_id")
   utils.benchmarking(pr.make_project_dict, "make_project_dict")
@@ -1231,40 +1225,49 @@ if __name__ == '__main__':
   print "DDD"
   seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 2")
 
-  utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
+  if (args.insert_all == True):
+    utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
+  if (args.insert_all == True):
+    utils.benchmarking(seq_csv_parser.insert_sequence_pdr_info, "insert_sequence_pdr_info")
   utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
   utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
   utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
+  if (args.insert_all == True):
+    utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
   utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
+  if (args.insert_all == True):
+    utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
   utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
   utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
   utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
   
   utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
+  if (args.insert_all == True):
+    utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
   
   utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
+  if (args.insert_all == True):
+    utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
   metadata = Metadata(mysql_util, dataset)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  if (args.insert_all == True):
+    utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
-  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  if (args.insert_all == True):
+    utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  # utils.benchmarking(metadata.make_custom_metadata_data_dict, "make_custom_metadata_data_dict")
-  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  if (args.insert_all == True):
+    utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: 
@@ -1284,3 +1287,4 @@ if __name__ == '__main__':
 # *) use public='1' for public in project!
 # *) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
 #  prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
+# combine creation metadata values and then insert required or custom
