@@ -629,9 +629,12 @@ class Project:
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
 
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)[1]
-    # self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
+    self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
     self.contact = self.project_file_content[0][5]
     self.project_dict[self.project_file_content[0][0]] = ""
+    # self.utils.print_array_w_title(self.project_dict, "===\nself.project_dict PPP")
+    # self.utils.print_array_w_title(self.project_file_content[0][0], "===\nself.project_file_content[0][0] PPP")
+    
 
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
@@ -647,9 +650,10 @@ class Project:
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_project")
 
     self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
+    self.utils.print_array_w_title(self.project_id, "===\nEEE self.project_id from insert_project ")
     self.project_dict[project] = self.project_id
 
-    # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+    self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
 
 class Dataset:
   def __init__(self, mysql_util):
@@ -816,9 +820,8 @@ class Seq_csv:
       sequence_id       = self.seq_ids_by_name_dict[entry_w_fields_dict["sequence"]]
       silva_taxonomy_id = taxonomy.silva_taxonomy_id_per_taxonomy_dict[entry_w_fields_dict["taxonomy"]]
       gast_distance     = entry_w_fields_dict["distance"]
-      # refssu_id         =
-      # refssu_count      =
-      rank_id           = self.utils.find_val_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict["rank"])[0]
+      rank_id           = self.utils.find_val_in_nested_list(taxonomy.all_rank_w_id, entry_w_fields_dict['rank'])[0]
+      
 
       temp_list = list((sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id))
 
@@ -982,6 +985,8 @@ class Metadata:
     for project, vals in self.parameter_name_project_dict.items():
       for field_name, ex_f_name in vals.items():
         if field_name in ex_f_list:
+          print "FFF field_name to fix lat/lon = double type"
+          print field_name
           self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
 
   def create_insert_required_metadata_string(self):
@@ -1015,6 +1020,8 @@ class Metadata:
       field_values = [(project_id, field_name, vals[field_name]['parameterValue']) for field_name in self.custom_metadata_fields]
 
     self.custom_metadata_fields_insert_values = self.utils.make_insert_values(field_values)
+    print "self.custom_metadata_fields_insert_values"
+    print self.custom_metadata_fields_insert_values
     # field_list   = "project_id, field_name, example"
     # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
     # self.utils.print_array_w_title(sql, "sql")
@@ -1167,7 +1174,7 @@ if __name__ == '__main__':
 
 # ========
 
-  print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
+  print "metadata_csv_file_name = %s\n, seq_csv_file_name = %s\n, project_csv_file_name = %s\n, dataset_csv_file_name = %s\n, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   
   # test_query1 = "SHOW tables" 
@@ -1179,11 +1186,11 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
+  # utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
+  # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   project = Project(mysql_util)
   utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
@@ -1200,7 +1207,7 @@ if __name__ == '__main__':
   dataset = Dataset(mysql_util)
   utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
   utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
-  utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
+  # utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
@@ -1208,19 +1215,19 @@ if __name__ == '__main__':
   utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
   utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
   utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
+  # utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
   utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
+  # utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
   utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
   utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
   utils.benchmarking(taxonomy.get_all_rank_w_id, "get_all_rank_w_id")
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
   
   utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
+  # utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
   
   utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
+  # utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
   metadata = Metadata(mysql_util, dataset)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
@@ -1251,3 +1258,5 @@ if __name__ == '__main__':
 # *) add data for _pipe into csv
 # *) if rank table is not there - try: and give a miningful error
 # *) use public='1' for public in project!
+# !!!/* 5:14:37 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
+# *) L656 - create project_dict separately form insert! self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
