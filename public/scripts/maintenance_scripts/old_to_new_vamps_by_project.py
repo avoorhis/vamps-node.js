@@ -1058,36 +1058,58 @@ class Metadata:
     for entry in self.metadata_file_content:
       entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
       dataset_name        = entry_w_fields_dict['dataset']
+      dataset_id          = dataset.dataset_id_by_name_dict[dataset_name]
       param_name          = entry_w_fields_dict['structured_comment_name']
       param_value         = entry_w_fields_dict['parameterValue']
-      self.param_per_dataset_dict[dataset_name][param_name] = param_value
+      self.param_per_dataset_dict[dataset_name][param_name]   = param_value
+      self.param_per_dataset_dict[dataset_name]['dataset_id'] = dataset_id
+      
 
     print "XXX"
     print "self.param_per_dataset_dict"
     print self.param_per_dataset_dict
 
-  def make_requred_metadata_dict(self):
-    ex_f_list  = self.existing_required_metadata_fields.values()
-    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
-
-    self.required_metadata_dict = {dataset_name: utils.slicedict(param_dict, ex_f_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()}
-    # for dataset_name, param_dict in self.param_per_dataset_dict.items():
-    #
-    #   aa = utils.slicedict(param_dict, ex_f_list)
-    print "AAA self.required_metadata_dict"
-    print self.required_metadata_dict
+  # rename to use with required or custom metadata list
+  def make_requred_metadata_dict(self, field_list):
+    self.required_metadata_dict = {dataset_name: utils.slicedict(param_dict, field_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()}
+    """
+    self.required_metadata_dict = 
+    {'ACB_0010_2008_01_30': {'lat': '71.35275', 'dataset_id': 211, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, 'ACB_0011_2004_07_30': {'lat': '71.54226667', 'dataset_id': 212, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885', 'depth': '8.4'}, 'ACB_0009_2007_07_13': {'lat': '71.44783333', 'dataset_id': 210, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333', 'depth': '2'}, 'ACB_0012_2008_01_30': {'lat': '71.35275', 'dataset_id': 213, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, 'ACB_0014_2004_01_17': {'lat': '70.03694444', 'dataset_id': 214, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444', 'depth': '3'}}
+    
+    """
+    
+  def make_metadata_values_list(self, metadata_dict, field_list):
+    insert_values_list = []
     """
     AAA self.required_metadata_dict
     {'ACB_0010_2008_01_30': {'lat': '71.35275', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333'}, 'ACB_0011_2004_07_30': {'lat': '71.54226667', 'depth': '8.4', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885'}, 'ACB_0009_2007_07_13': {'lat': '71.44783333', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333'}, 'ACB_0012_2008_01_30': {'lat': '71.35275', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333'}, 'ACB_0014_2004_01_17': {'lat': '70.03694444', 'depth': '3', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444'}}
-    
     """
+    
+    for dataset_name, parameter_dict in metadata_dict.items():
+      dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+      insert_values_temp_list = []
+      insert_values_temp_list.append(str(dataset_id))
+    
+      # USE
+      for field_name in field_list:
+        try:
+          insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
+        except KeyError:
+          print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
+          insert_values_temp_list.append("")
+        except:                       # catch everything
+          raise                       # re-throw caught exception
+        
+      insert_values_list.append(insert_values_temp_list)
+    return self.utils.make_insert_values(insert_values_list)
 
   def create_insert_required_metadata_string(self):
-    print "self.required_metadata_by_pr_dict = "
-    print self.required_metadata_by_pr_dict
+    print "self.required_metadata_dict = "
+    print self.required_metadata_dict
+    
 
-    for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
-      temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
+    for dataset_name, required_metadata in self.required_metadata_dict.items():
+      temp_list = dataset.add_dataset_id_to_list(required_metadata.values(), project)
     self.all_insert_req_met_vals = self.utils.make_insert_values(temp_list)
 
   def insert_required_metadata(self):
@@ -1097,7 +1119,7 @@ class Metadata:
     {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
     """
 
-    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
+    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.values())
 
     rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
 
@@ -1298,7 +1320,7 @@ if __name__ == '__main__':
   
   
   
-  utils.benchmarking(metadata.make_requred_metadata_dict, "make_requred_metadata_dict")
+  utils.benchmarking(metadata.make_requred_metadata_dict, "make_requred_metadata_dict", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
   utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
   
   if (args.do_not_insert == True):
