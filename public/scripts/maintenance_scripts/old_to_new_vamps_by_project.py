@@ -356,17 +356,17 @@ class CSV_files:
   
   def run_csv_dump(self, prod_mysql_util):
     # TODO: add directory from args?
-    project_name = args.project
-    query = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)  
-    metadata_csv_file_name = "metadata_%s.csv" % project_name
+    project = args.project
+    query = "SELECT * FROM vamps_metadata where project='%s'" % (project)  
+    metadata_csv_file_name = "metadata_%s.csv" % project
     utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences where project='%s'" % (project_name)  
-    seq_csv_file_name = "sequences_%s.csv" % project_name
+    query = "SELECT * FROM vamps_sequences where project='%s'" % (project)  
+    seq_csv_file_name = "sequences_%s.csv" % project
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (project_name)  
-    seq_csv_file_name = "sequences_%s.csv" % project_name
+    query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (project)  
+    seq_csv_file_name = "sequences_%s.csv" % project
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
 
     query = """SELECT DISTINCT project, title, project_description, funding, env_sample_source_id, contact, email, institution 
@@ -374,10 +374,10 @@ class CSV_files:
                 LEFT JOIN new_contact using(contact_id) 
                 WHERE project = '%s' 
                UNION 
-               SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution 
+               SELECT project AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution 
                 FROM vamps_upload_info 
-                WHERE project_name = '%s'""" % (project_name, project_name)  
-    project_csv_file_name = "project_%s.csv" % project_name
+                WHERE project = '%s'""" % (project, project)  
+    project_csv_file_name = "project_%s.csv" % project
     utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
 
     query = """SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password 
@@ -385,7 +385,7 @@ class CSV_files:
               JOIN new_user using(user_id) 
               JOIN new_contact using(contact_id) 
               WHERE first_name is not NULL and first_name <> '';"""
-    user_contact_csv_file_name = "user_contact_%s.csv" % project_name
+    user_contact_csv_file_name = "user_contact_%s.csv" % project
     utils.write_to_csv_file(user_contact_csv_file_name, utils.get_csv_file_calls(query))
 
     query = """SELECT DISTINCT dataset, dataset_description, env_sample_source_id, project 
@@ -395,10 +395,10 @@ class CSV_files:
                 UNION 
                 SELECT DISTINCT dataset, dataset_info AS dataset_description, env_source_id AS env_sample_source_id, project 
                   FROM vamps_projects_datasets_pipe 
-                  JOIN vamps_upload_info ON(project = project_name) 
-                  WHERE project_name = '%s'
-          ;"""  % (project_name, project_name)
-    dataset_csv_file_name = "dataset_%s.csv" % project_name
+                  JOIN vamps_upload_info ON(project = project) 
+                  WHERE project = '%s'
+          ;"""  % (project, project)
+    dataset_csv_file_name = "dataset_%s.csv" % project
     utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
     return (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   
@@ -628,20 +628,21 @@ class Project:
     self.project_id = ""
     self.user_id    = ""
     self.project_dict = {}
+    self.project    = ""
 
   def parse_project_csv(self, project_csv_file_name):
     # "project","title","project_description","funding","env_sample_source_id","contact","email","institution"
 
     self.project_file_content = self.utils.read_csv_into_list(project_csv_file_name)[1]
     # self.utils.print_array_w_title(self.project_file_content, "===\nself.project_file_content AAA")
-    self.contact = self.project_file_content[0][5]
-    self.project_dict[self.project_file_content[0][0]] = ""
+    self.contact              = self.project_file_content[0][5]
+    self.project         = self.project_file_content[0][0]    
 
   def insert_project(self, user_id):
     project, title, project_description, funding, env_sample_source_id, contact, email, institution = self.project_file_content[0]
 
-    field_list       = "project, title, project_description, rev_project_name, funding, owner_user_id"
-    insert_values = ', '.join("'%s'" % key for key in [project, title, project_description])
+    field_list     = "project, title, project_description, rev_project_name, funding, owner_user_id"
+    insert_values  = ', '.join("'%s'" % key for key in [project, title, project_description])
     insert_values += ", REVERSE('%s'), '%s', %s" % (project, funding, user_id)
 
     # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "project", field_list, insert_values)
@@ -650,10 +651,27 @@ class Project:
     rows_affected = mysql_util.execute_insert("project", field_list, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows_affected by insert_project")
 
-    self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (project), rows_affected)
-    self.project_dict[project] = self.project_id
+    '''
+      self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
+    
+    def get_user_id(self):
+      self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    
+    '''
 
-    # self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+    self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % (self.project), rows_affected)
+    
+    self.utils.print_array_w_title(self.project_dict, "===\nSSS self.project_dict from insert_project ")
+    
+  def get_project_id(self):
+    self.project_id = mysql_util.get_id("project_id", "project", "WHERE project = '%s'" % self.project)
+    
+  def make_project_dict(self):
+    self.project_dict[self.project] = self.project_id
+  
+  
+    # self.project_dict[project] = self.project_id
+    
 
 class Dataset:
   def __init__(self, mysql_util):
@@ -682,8 +700,10 @@ class Dataset:
       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
-    for project_name in set(self.dataset_project_dict.values()):
-      project_id = project_dict[project_name]
+    print "PPP project_dict"
+    print project_dict
+    for project in set(self.dataset_project_dict.values()):
+      project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
 
       field_list = "dataset, dataset_description, env_sample_source_id, project_id"
@@ -702,8 +722,8 @@ class Dataset:
     print self.all_dataset_id_by_project_dict
     # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
 
-  def add_dataset_id_to_list(self, some_list, project_name):
-    return [([dataset_id] + some_list) for dataset_id in self.all_dataset_id_by_project_dict[project_name]]
+  def add_dataset_id_to_list(self, some_list, project):
+    return [([dataset_id] + some_list) for dataset_id in self.all_dataset_id_by_project_dict[project]]
 
 
 
@@ -1034,7 +1054,7 @@ class Metadata:
   def get_data_from_custom_metadata_fields(self):
     field_names = "project_id, field_name, field_type"
     table_name  = "custom_metadata_fields"
-    where_part  = "WHERE project_id in (%s)" % (",".join(map(str, project.project_dict.values())))
+    where_part  = "WHERE project_id in (%s)" % (",".join(map(str, pr.project_dict.values())))
     custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
     self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
 
@@ -1082,7 +1102,7 @@ class Metadata:
     return self.utils.make_insert_values(insert_values_list)
     
   def insert_custom_metadata(self):
-    for project_name, project_id in project.project_dict.items():
+    for project, project_id in pr.project_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       field_list    = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
       field_str     = "`" + "`, `".join(("dataset_id",) + field_list) + "`"
@@ -1151,7 +1171,7 @@ if __name__ == '__main__':
     
     mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> sequences_ICM_SMS_Bv6.csv
 
-    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project_name = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
     
     mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
 
@@ -1189,23 +1209,29 @@ if __name__ == '__main__':
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
   # utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
-  project = Project(mysql_util)
-  utils.benchmarking(project.parse_project_csv, "parse_project_csv", project_csv_file_name)
+  pr = Project(mysql_util)
+  utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
-  user = User(project.contact, user_contact_csv_file_name, mysql_util)
+  user = User(pr.contact, user_contact_csv_file_name, mysql_util)
   # utils.benchmarking(user.insert_user, "insert_user")
   utils.benchmarking(user.get_user_id, "get_user_id")
-  utils.benchmarking(project.insert_project, "insert_project", user.user_id)
+  utils.benchmarking(pr.insert_project, "insert_project", user.user_id)
 
-  
+  utils.benchmarking(pr.get_project_id, "get_project_id")
+  utils.benchmarking(pr.make_project_dict, "make_project_dict")
+
   seq_csv_parser.utils.print_array_w_title(user.user_id, "self.user_id main")
-  seq_csv_parser.utils.print_array_w_title(project.project_id, "project.project_id main")
-  # seq_csv_parser.utils.print_array_w_title(project.project_dict, "project.project_dict main")
+  seq_csv_parser.utils.print_array_w_title(pr.project_id, "pr.project_id main")
+  seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 1")
   
   dataset = Dataset(mysql_util)
   utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
   utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
-  utils.benchmarking(dataset.insert_dataset, "insert_dataset", project.project_dict)
+
+  print "DDD"
+  seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 2")
+
+  utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
@@ -1233,7 +1259,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
-  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", project.project_dict)
+  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
