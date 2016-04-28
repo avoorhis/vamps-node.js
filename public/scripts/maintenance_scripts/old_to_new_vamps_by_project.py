@@ -919,17 +919,18 @@ class Metadata:
 
   def __init__(self, mysql_util, dataset):
     self.utils = Utils()
-    self.metadata_file_fields  = []
-    self.metadata_file_content = []
+    self.metadata_file_fields          = []
+    self.metadata_file_content         = []
     self.parameter_name_project_dict   = defaultdict(dict)
     self.parameter_by_dataset_dict     = defaultdict(dict)
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
-    self.existing_field_names   = defaultdict(list)
-    self.substitute_field_names = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    self.existing_field_names                  = defaultdict(list)
+    self.substitute_field_names                = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
     self.existing_required_metadata_fields     = {}
     self.required_metadata_by_pr_dict          = defaultdict(dict)
     self.custom_metadata_fields_insert_values  = ""
     self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
+    self.all_insert_req_met_vals          = ""
 
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -1047,6 +1048,26 @@ class Metadata:
 
 
 # values
+
+  def make_param_per_dataset_dict(self):
+    # {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'depth_end', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0010_2008_01_30', 'project': 'ICM_ACB_Av6', 'miens_units': 'meter', 'parameterValue': '2', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0010_2008_01_30', 'units': 'meter', 'parameterName': 'depth_end', 'method': '', 'units_id': '20'}
+    
+    for entry in self.metadata_file_content:
+      pass
+    print "XXX"
+    
+    for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
+      print "dataset_name"
+      print dataset_name
+      print "parameter_dict"
+      print parameter_dict
+      for param_name, param_values_dict in parameter_dict.items():
+        print "param_name"
+        print param_name
+        print "param_values_dict"
+        print param_values_dict
+          # self.metadata_by_dataset_dict[dataset_name][param_name] =
+          
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
@@ -1062,7 +1083,7 @@ class Metadata:
 
     for project, required_metadata_dict in self.required_metadata_by_pr_dict.items():
       temp_list = dataset.add_dataset_id_to_list(required_metadata_dict.values(), project)
-    return self.utils.make_insert_values(temp_list)
+    self.all_insert_req_met_vals = self.utils.make_insert_values(temp_list)
 
   def insert_required_metadata(self):
     """self.required_metadata_by_pr_dict =
@@ -1073,10 +1094,7 @@ class Metadata:
 
     field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
 
-    self.make_requred_metadata_dict()
-    all_insert_req_met_vals = self.create_insert_required_metadata_string()
-
-    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, all_insert_req_met_vals)
+    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
 
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
 
@@ -1270,6 +1288,9 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.make_requred_metadata_dict, "make_requred_metadata_dict")
+  utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
+  
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
