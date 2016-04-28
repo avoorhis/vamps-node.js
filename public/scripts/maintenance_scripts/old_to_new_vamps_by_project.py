@@ -930,7 +930,8 @@ class Metadata:
     self.required_metadata_by_pr_dict          = defaultdict(dict)
     self.custom_metadata_fields_insert_values  = ""
     self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
-    self.all_insert_req_met_vals          = ""
+    self.all_insert_req_met_vals               = ""
+    self.param_per_dataset_dict                = defaultdict(dict)
 
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -1053,19 +1054,28 @@ class Metadata:
     # {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'depth_end', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0010_2008_01_30', 'project': 'ICM_ACB_Av6', 'miens_units': 'meter', 'parameterValue': '2', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0010_2008_01_30', 'units': 'meter', 'parameterName': 'depth_end', 'method': '', 'units_id': '20'}
     
     for entry in self.metadata_file_content:
-      pass
+      entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
+      dataset_name        = entry_w_fields_dict['dataset']
+      param_name          = entry_w_fields_dict['structured_comment_name']
+      param_value         = entry_w_fields_dict['parameterValue']
+      self.param_per_dataset_dict[dataset_name][param_name] = param_value
+
     print "XXX"
+    print "self.param_per_dataset_dict"
+    print self.param_per_dataset_dict
+# ['ACB_0009_2007_07_13', 'cruise', '707', 'Alphanumeric', 'Alphanumeric', 'ICM_ACB_Av6', '1', 'cruise', '', '0', 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_ACB_Av6--ACB_0009_2007_07_13']
+
     
-    for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
-      print "dataset_name"
-      print dataset_name
-      print "parameter_dict"
-      print parameter_dict
-      for param_name, param_values_dict in parameter_dict.items():
-        print "param_name"
-        print param_name
-        print "param_values_dict"
-        print param_values_dict
+    # for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
+    #   print "dataset_name"
+    #   print dataset_name
+    #   print "parameter_dict"
+    #   print parameter_dict
+    #   for param_name, param_values_dict in parameter_dict.items():
+    #     print "param_name"
+    #     print param_name
+    #     print "param_values_dict"
+    #     print param_values_dict
           # self.metadata_by_dataset_dict[dataset_name][param_name] =
           
   def make_requred_metadata_dict(self):
@@ -1288,6 +1298,11 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.make_param_per_dataset_dict, "make_param_per_dataset_dict")
+  
+  
+  
+  
   utils.benchmarking(metadata.make_requred_metadata_dict, "make_requred_metadata_dict")
   utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
   
