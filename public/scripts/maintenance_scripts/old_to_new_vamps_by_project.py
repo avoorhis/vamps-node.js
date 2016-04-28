@@ -349,6 +349,10 @@ class Utils:
     def get_csv_file_calls(self, query):
       return prod_mysql_util.execute_fetch_select(query)
       
+    def slicedict(self, my_dict, key_list):
+      return {k: v for k, v in my_dict.items() if k in key_list}
+   
+      
 
 class CSV_files:
   def __init__(self):
@@ -1050,9 +1054,7 @@ class Metadata:
 
 # values
 
-  def make_param_per_dataset_dict(self):
-    # {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'depth_end', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0010_2008_01_30', 'project': 'ICM_ACB_Av6', 'miens_units': 'meter', 'parameterValue': '2', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0010_2008_01_30', 'units': 'meter', 'parameterName': 'depth_end', 'method': '', 'units_id': '20'}
-    
+  def make_param_per_dataset_dict(self):    
     for entry in self.metadata_file_content:
       entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
       dataset_name        = entry_w_fields_dict['dataset']
@@ -1063,29 +1065,22 @@ class Metadata:
     print "XXX"
     print "self.param_per_dataset_dict"
     print self.param_per_dataset_dict
-# ['ACB_0009_2007_07_13', 'cruise', '707', 'Alphanumeric', 'Alphanumeric', 'ICM_ACB_Av6', '1', 'cruise', '', '0', 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_ACB_Av6--ACB_0009_2007_07_13']
 
-    
-    # for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
-    #   print "dataset_name"
-    #   print dataset_name
-    #   print "parameter_dict"
-    #   print parameter_dict
-    #   for param_name, param_values_dict in parameter_dict.items():
-    #     print "param_name"
-    #     print param_name
-    #     print "param_values_dict"
-    #     print param_values_dict
-          # self.metadata_by_dataset_dict[dataset_name][param_name] =
-          
   def make_requred_metadata_dict(self):
     ex_f_list  = self.existing_required_metadata_fields.values()
     # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
 
-    for project, vals in self.parameter_name_project_dict.items():
-      for field_name, ex_f_name in vals.items():
-        if field_name in ex_f_list:
-          self.required_metadata_by_pr_dict[project][field_name] = ex_f_name['parameterValue']
+    self.required_metadata_dict = {dataset_name: utils.slicedict(param_dict, ex_f_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()}
+    # for dataset_name, param_dict in self.param_per_dataset_dict.items():
+    #
+    #   aa = utils.slicedict(param_dict, ex_f_list)
+    print "AAA self.required_metadata_dict"
+    print self.required_metadata_dict
+    """
+    AAA self.required_metadata_dict
+    {'ACB_0010_2008_01_30': {'lat': '71.35275', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333'}, 'ACB_0011_2004_07_30': {'lat': '71.54226667', 'depth': '8.4', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885'}, 'ACB_0009_2007_07_13': {'lat': '71.44783333', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333'}, 'ACB_0012_2008_01_30': {'lat': '71.35275', 'depth': '2', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333'}, 'ACB_0014_2004_01_17': {'lat': '70.03694444', 'depth': '3', 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444'}}
+    
+    """
 
   def create_insert_required_metadata_string(self):
     print "self.required_metadata_by_pr_dict = "
