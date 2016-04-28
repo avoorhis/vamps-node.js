@@ -84,7 +84,7 @@ module.exports = {
 							rank = post_items.tax_depth;
 							rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;						
 							
-							console.log('did '+did+' rank: '+rank+' srank_no: '+rank_no);
+							//console.log('did '+did+' rank: '+rank+' srank_no: '+rank_no);
 							
 							// q =  "SELECT domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id, count from summed_counts"
 							// q += " JOIN rank using(rank_id)"
@@ -418,7 +418,7 @@ module.exports = {
         var tmp1 = [];
         if (norm === 'maximum'|| norm === 'max') {
             console.log('calculating norm MAX')
-			for(var cc in custom_count_matrix.data) {
+						for(var cc in custom_count_matrix.data) {
               new_counts = [];
               for (var kc in custom_count_matrix.data[cc]) {
                   new_counts.push(parseInt( ( custom_count_matrix.data[cc][kc] * max_cnt ) / custom_count_matrix.column_totals[kc], 10) );
@@ -429,7 +429,7 @@ module.exports = {
             custom_count_matrix.data = tmp1;
         }else if(norm === 'frequency' || norm === 'freq'){
             console.log('calculating norm FREQ')
-			for (var cc1 in custom_count_matrix.data) {
+						for (var cc1 in custom_count_matrix.data) {
               new_counts = [];
               for (var kc1 in custom_count_matrix.data[cc1]) {
                   new_counts.push(parseFloat( (custom_count_matrix.data[cc1][kc1] / custom_count_matrix.column_totals[kc1]).toFixed(6) ) );
@@ -439,7 +439,7 @@ module.exports = {
             custom_count_matrix.data = tmp1;
         }else{
           // nothing here
-			console.log('no-calculating norm NORM')
+					console.log('no-calculating norm NORM')
         }
 
         // re-calculate totals

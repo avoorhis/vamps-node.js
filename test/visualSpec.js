@@ -31,7 +31,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
   
-      beforeEach(function (done) {
+    before(function (done) {
         test_name_hash = {}
         test_name_hash.name = []
         test_name_hash.ids  = []
@@ -48,33 +48,34 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
               test_name_hash.name.push(test_project+'--'+result[r].dataset)
               test_name_hash.ids.push(result[r].dataset_id)
             }
-            reqbody_vindex = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
-            reqbody_uselect = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
-            reqbody_vizselect = { tax_depth:'family',
-                              unit_choice: 'tax_silva108_simple',
-                              domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
-                              selected_metadata: [ 'latitude', 'longitude' ]
-                            };
+            // reqbody_vindex = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+            // reqbody_uselect = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
+            // reqbody_vizselect = { tax_depth:'family',
+            //                   unit_choice: 'tax_silva108_simple',
+            //                   domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+            //                   selected_metadata: [ 'latitude', 'longitude' ]
+            //                 };
 
         });
+
+        // login with passport-stub
         var passportStub = require('passport-stub');
         passportStub.install(app);
         console.log('Logging in with username:',app.testuser.user,' and password:',app.testuser.pass);
         passportStub.login({
           username: app.testuser.user, password: app.testuser.pass
         });
-
-        
-
-
+        //this.timeout(10000);
         done()
-        //this.timeout(5000);              
+                 
           
-      });
+    });
 
     // VISUALS INDEX (Dataset Selection Page)
     it('should have certain text', function(done){
         //var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+        var reqbody_vindex = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
+        //this.timeout(5000);     
         request(app)
           .post('/visuals/visuals_index')
           .send(reqbody_vindex)
@@ -87,8 +88,8 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
 
       
       // UNIT_SELECTION PAGE
-    it('should show one or more datasets in selected datasets list', function(done){
-      //var body = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
+    it('should show one or more datasets in selected datasets list as well as certain metadata', function(done){
+      var reqbody_uselect = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
       request(app)
       .post('/visuals/unit_selection')
       .send(reqbody_uselect)
@@ -112,7 +113,11 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
     // VIEW_SELECTION PAGE
     //
     it('should show a certain text: family', function(done){
-        
+        var reqbody_vizselect = { tax_depth:'family',
+                                  unit_choice: 'tax_silva108_simple',
+                                  domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+                                  selected_metadata: [ 'latitude', 'longitude' ]
+                                };
         request(app)
           .post('/visuals/view_selection')
           .send(reqbody_vizselect)
@@ -127,17 +132,17 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
     });
 
     it('should show a heatmap', function(done){
-        // var body = {tax_depth:'phylum',
-        //             unit_choice: 'tax_silva108_simple',
-        //             domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
-        //             selected_metadata: [ 'latitude', 'longitude' ]
-        //           };
+        var body = {tax_depth:'phylum',
+                    unit_choice: 'tax_silva108_simple',
+                    domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
+                    selected_metadata: [ 'latitude', 'longitude' ]
+                  };
         request(app)
           .post('/visuals/heatmap')
           .send(body)
           .expect(200)
           .end(function (err, res) {
-            this.timeout(5000);
+            //this.timeout(5000);
             res.text.should.containEql('Taxonomic Depth: species');
             done();
           });

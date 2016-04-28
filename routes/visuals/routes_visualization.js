@@ -480,13 +480,11 @@ router.post('/heatmap', helpers.isLoggedIn, function(req, res) {
     
     var options = {
      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
+       args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
      };
         
-    
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
-    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -667,7 +665,7 @@ router.post('/dendrogram', helpers.isLoggedIn, function(req, res) {
 
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--site_base', pwd, '--prefix', ts ],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'dendrogram-'+image_type, '--outdir', path.join(pwd,'tmp'), '--prefix', ts ],
     };
    
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
@@ -761,7 +759,7 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
         args :       [ tmp_path, ts, metric, md1, md2, image_file],
       };
       console.log(options2.scriptPath+'/pcoa2.R '+options2.args.join(' '));
-      //console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
+     
       var pcoa_process = spawn( options2.scriptPath+'/pcoa2.R', options2.args, {
           env:{'PATH':req.CONFIG.PATH},
           detached: true, 
@@ -833,7 +831,7 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+    args :       [ '-in', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
   };
   var options2 = {
       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
@@ -843,25 +841,6 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   console.log('outdir: '+dir_path);
   console.log(options1.scriptPath+'/distance.py '+options1.args.join(' '));
   
-/////
-// var options = {
-//      scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-//        args :       [ '-in', biom_file, '-metric', metric, '--function', 'dheatmap', '--site_base', process.env.PWD, '--prefix', ts],
-//      };
-        
-    
-//     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
-    
-//     //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
-//     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
-//     var heatmap_process = spawn( options.scriptPath+'/distance.py', options.args, {
-//             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
-//             detached: true, 
-//             //stdio: [ 'ignore', null, log ] // stdin, stdout, stderr
-//             stdio: 'pipe' // stdin, stdout, stderr
-//         });  
-/////
-
 
   var pcoa_process = spawn( options1.scriptPath+'/distance.py', options1.args, {
       env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
@@ -983,7 +962,7 @@ router.get('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   //var html_path2 = path.join('../','tmp', dir_name, 'index.html');  // file to be created by make_emperor.py script
   var options1 = {
     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--site_base', process.env.PWD, '--prefix', ts],
+    args :       [ '-i', biom_file, '-metric', metric, '--function', 'pcoa_3d', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
   };
   var options2 = {
       //scriptPath : req.CONFIG.PATH_TO_QIIME_BIN,
@@ -2238,13 +2217,12 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     console.log(req.body)
     var options = {
       scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--site_base', process.env.PWD, '--prefix', ts],
+      args :       [ '-in', biom_file, '-metric', metric, '--function', 'cluster_datasets', '--outdir', path.join(pwd,'tmp'), '--prefix', ts],
     };
     console.log(options.scriptPath+'/distance.py '+options.args.join(' '));
     
     var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
     
-    //var heatmap_process = spawn( python_exe+' '+options.scriptPath+'/distance.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
     
     var cluster_process = spawn( options.scriptPath+'/distance.py', options.args, {
             env:{'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH},
@@ -2574,6 +2552,28 @@ router.get('/livesearch_target/:q', function(req, res) {
       }
   }
   
+  PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+  res.json(PROJECT_TREE_PIDS.length);
+
+});
+//
+//
+//
+//
+router.get('/livesearch_portal/:q', function(req, res) {
+  console.log('in livesearch portal')
+  var q = req.params.q;
+  var myurl = url.parse(req.url, true);  
+  //var portal = myurl.query.portal;
+  //var info = PROJECT_INFORMATION_BY_PID;
+  //console.log(q)
+  PROJECT_TREE_OBJ = []
+  SHOW_DATA.projects.forEach(function(prj) {
+          
+          if(prj.name.split('_')[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+      });
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 

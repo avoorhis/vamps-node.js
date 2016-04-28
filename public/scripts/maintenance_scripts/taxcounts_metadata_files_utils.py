@@ -418,7 +418,7 @@ if __name__ == '__main__':
                 help="""ProjectID""")
 
     parser.add_argument("-json_file_path", "--json_file_path",        
-                required=False,  action='store', dest = "json_file_path",  default='../json', 
+                required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")
                 # for vampsdev"  /groups/vampsweb/vampsdev_node_data/json
     parser.add_argument("-host", "--host",    
@@ -427,14 +427,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     print "ARGS: dbhost  =",args.dbhost
+    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
+        args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+    elif args.dbhost == 'vampsdev':
+        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+    
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:
-        if os.path.exists('../../json'):
-            args.json_file_path = '../../json'
-        else:
-            print "Could not find json directory: '",args.json_file_path,"'-Exiting"
-            sys.exit(-1)
+        print "Could not find json directory: '",args.json_file_path,"'-Exiting"
+        sys.exit(-1)
     print "ARGS: json_dir=",args.json_file_path    
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
