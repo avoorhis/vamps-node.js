@@ -336,17 +336,15 @@ class Utils:
       return dict(zip(fields, entry))
 
     def write_to_csv_file(self, file_name, res, file_mode = "wb"):
-      vamps_metadata, field_names = res
-      print "VVVV"
-      print field_names
-      print "vamps_metadata"
-      print vamps_metadata
+      data_from_db, field_names = res
+      # print "VVVV"
+      # print field_names
 
       with open(file_name, file_mode) as csv_file:
         csv_writer = csv.writer(csv_file)
         if file_mode == "wb":
           csv_writer.writerow(field_names) # write headers
-        csv_writer.writerows(vamps_metadata)    
+        csv_writer.writerows(data_from_db)    
 
     def get_csv_file_calls(self, query):
       return prod_mysql_util.execute_fetch_select(query)
@@ -376,9 +374,9 @@ class CSV_files:
                 LEFT JOIN new_contact using(contact_id) 
                 WHERE project = '%s' 
                UNION 
-               SELECT project AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution 
+               SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution 
                 FROM vamps_upload_info 
-                WHERE project = '%s'""" % (project, project)  
+                WHERE project_name = '%s'""" % (project, project)  
     project_csv_file_name = "project_%s.csv" % project
     utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
 
@@ -1175,7 +1173,7 @@ if __name__ == '__main__':
     
     mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> sequences_ICM_SMS_Bv6.csv
 
-    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project_name = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
     
     mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
 
