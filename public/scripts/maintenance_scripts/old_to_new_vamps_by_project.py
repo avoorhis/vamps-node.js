@@ -941,21 +941,24 @@ class Metadata:
   
   """
 
-  def __init__(self, mysql_util, dataset):
+  def __init__(self, mysql_util, dataset, project_dict):
     self.utils = Utils()
+    self.project_dict                  = project_dict
     self.metadata_file_fields          = []
     self.metadata_file_content         = []
-    self.parameter_name_project_dict   = defaultdict(dict)
-    self.parameter_by_dataset_dict     = defaultdict(dict)
+    self.metadata_w_names              = []
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
-    self.existing_field_names                  = defaultdict(list)
-    self.substitute_field_names                = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
-    self.existing_required_metadata_fields     = {}
-    self.required_metadata_by_pr_dict          = defaultdict(dict)
-    self.custom_metadata_fields_insert_values  = ""
-    self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
-    self.all_insert_req_met_vals               = ""
-    self.param_per_dataset_dict                = defaultdict(dict)
+    self.substitute_field_names        = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    
+    # self.parameter_name_project_dict   = defaultdict(dict)
+    # self.parameter_by_dataset_dict     = defaultdict(dict)
+    # self.existing_field_names                  = defaultdict(list)
+    # self.existing_required_metadata_fields     = {}
+    # self.required_metadata_by_pr_dict          = defaultdict(dict)
+    # self.custom_metadata_fields_insert_values  = ""
+    # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
+    # self.all_insert_req_met_vals               = ""
+    # self.param_per_dataset_dict                = defaultdict(dict)
 
   def parse_metadata_csv(self, metadata_csv_file_name):
     print "=" * 20
@@ -974,28 +977,47 @@ class Metadata:
   
   
   def add_names_to_params(self):
-    metadata_w_names = [zip(self.metadata_file_fields, row) for row in self.metadata_file_content]
-    print "TTT"
-    print metadata_w_names
+    self.metadata_w_names = [utils.make_entry_w_fields_dict(self.metadata_file_fields, row) for row in self.metadata_file_content]
+    print "YYY"
+    print self.metadata_w_names
     '''
-[('dataset', 'ACB_0014_2004_01_17'),
-('parameterName', 'Bact_cell_count'),
-('parameterValue', '0.373'),
-('units', 'x10e6CellPerMilliLiter'),
-('miens_units', 'x10e6CellPerMilliLiter'),
-('project', 'ICM_ACB_Av6'),
-('units_id', '57'),
-('structured_comment_name', 'Bact_cell_count'),
-('method', ''),
-('other', '0'),
-('notes', 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19'),
-('ts', '2012-04-27 08:25:07'),
-('entry_date', ''),
-('parameter_id', '0'),
-('project_dataset', 'ICM_ACB_Av6--ACB_0014_2004_01_17')]
+[{'parameter_id': '0',
+'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19',
+'structured_comment_name': 'cruise',
+'ts': '2012-04-27 08:25:07',
+'dataset': 'ACB_0009_2007_07_13',
+'project': 'ICM_ACB_Av6',
+'miens_units': 'Alphanumeric',
+'parameterValue': '707',
+'other': '0',
+'entry_date': '',
+'project_dataset': 'ICM_ACB_Av6--ACB_0009_2007_07_13',
+'units': 'Alphanumeric',
+'parameterName': 'cruise',
+'method': '',
+'units_id': '1'},
+{'parameter_id': '0', ...}]
       
       '''
     
+  def add_dataset_id_to_params(self):
+    for param_per_dataset in self.metadata_w_names:
+      # print "TTT"
+      # print param_per_dataset
+      """
+      {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'Bact_cell_count', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0014_2004_01_17', 'project': 'ICM_ACB_Av6', 'miens_units': 'x10e6CellPerMilliLiter', 'parameterValue': '0.373', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0014_2004_01_17', 'units': 'x10e6CellPerMilliLiter', 'parameterName': 'Bact_cell_count', 'method': '', 'units_id': '57'}
+      """
+      # dataset_name = param_per_dataset['dataset']
+      # dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+      param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
+      param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
+      # "\n====\n"
+      # print param_per_dataset
+# {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'cruise', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0009_2007_07_13', 'project': 'ICM_ACB_Av6', 'miens_units': 'Alphanumeric', 'parameterValue': '707', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0009_2007_07_13', 'units': 'Alphanumeric', 'parameterName': 'cruise', 'dataset_id': 210, 'project_id': 3, 'method': '', 'units_id': '1'}
+    print "TTT"
+    print self.metadata_w_names
+      
+      
   
     """    # TODO: DRY 
       self.get_parameter_by_project_dict()
@@ -1395,9 +1417,10 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
-  metadata = Metadata(mysql_util, dataset)
+  metadata = Metadata(mysql_util, dataset, pr.project_dict)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
+  utils.benchmarking(metadata.add_dataset_id_to_params, "add_dataset_id_to_params")
   
   
   
