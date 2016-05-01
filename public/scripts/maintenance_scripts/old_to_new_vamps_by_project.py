@@ -958,7 +958,7 @@ class Metadata:
     # self.required_metadata_by_pr_dict          = defaultdict(dict)
     # self.custom_metadata_fields_insert_values  = ""
     # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
-    # self.all_insert_req_met_vals               = ""
+    self.all_insert_req_met_vals               = {}
     # self.param_per_dataset_dict                = defaultdict(dict)
 
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -1024,20 +1024,21 @@ class Metadata:
   # ==== Required metadata =====
   
   def prepare_required_metadata(self):
-    field_list = self.existing_required_metadata_fields.keys()
+    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
     # req_meteadata_values = 
     for param_per_dataset in self.metadata_w_names:
-      print "PPP param_per_dataset['structured_comment_name'] = "
-      print param_per_dataset['structured_comment_name']
-      if param_per_dataset['structured_comment_name'] in self.existing_required_metadata_fields.values():
-        print "EEE param_per_dataset['structured_comment_name'], param_per_dataset[param_per_dataset['structured_comment_name']] = "
-        print param_per_dataset['structured_comment_name']
-        print param_per_dataset['parameterValue']
+      for key, value in self.existing_required_metadata_fields.items():
+        if param_per_dataset['structured_comment_name'] == value:
+          self.all_insert_req_met_vals[key] = param_per_dataset['parameterValue']
+
+    print "EEE self.all_insert_req_met_vals = "
+    print self.all_insert_req_met_vals
 
     print "FFF field_list = "
     print field_list
+    
+    print self.all_insert_req_met_vals
 
-    # field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.values())
     #
     # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
     #
