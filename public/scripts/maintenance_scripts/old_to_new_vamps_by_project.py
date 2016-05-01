@@ -1009,10 +1009,6 @@ class Metadata:
 
   def get_existing_required_metadata_fields(self):
     intersect_field_names = self.existing_field_names.intersection(self.required_metadata_info_fields) 
-    # print "LLL intersect_field_names"
-    # print intersect_field_names
-    # set(['depth'])
-    #
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
@@ -1020,39 +1016,29 @@ class Metadata:
       bad_and_exist_intersection = self.existing_field_names.intersection(bad_name_list) 
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
-    print "LLL self.existing_required_metadata_fields"
-    print self.existing_required_metadata_fields
-    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
-      
-    #
-    #   # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
-    #
-    #   for existing_field_name in bad_and_exist_intersection:
-    #     self.existing_required_metadata_fields[good_name] = existing_field_name
         
-  # print "self.existing_field_names"
-  # print self.existing_field_names
-  # for field_name in existing_names:
-  #   self.existing_required_metadata_fields[field_name] = field_name
-  # print "RRR self.existing_required_metadata_fields"
-  # print self.existing_required_metadata_fields
-  #
-  #
-  #   for good_name, bad_name_list in self.substitute_field_names.items():
-  #     bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
-  #
-  #     # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
-  #
-  #     for existing_field_name in bad_and_exist_intersection:
-  #       self.existing_required_metadata_fields[good_name] = existing_field_name
-  #
+  def get_custom_metadata_fields(self):
+    self.custom_metadata_fields = self.existing_field_names ^ set(self.existing_required_metadata_fields.values())    
 
-  def create_required_metadata_dict(self):
-    print "RRR self.metadata_w_names"
-    print self.metadata_w_names
-    requred_exist_names = existing_names.intersection(self.required_metadata_info_fields)
-    print "GGG requred_exist_names"
-    print requred_exist_names
+  def make_requred_metadata_list(self, field_list):
+    self.required_metadata_list = [utils.slicedict(param_dict, field_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()]
+
+    print 'YYY self.required_metadata_list = '
+    print self.required_metadata_list
+    """
+    self.required_metadata_list = 
+[{'lat': '71.35275', 'dataset_id': 211, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '71.54226667', 'dataset_id': 212, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885', 'depth': '8.4'}, {'lat': '71.44783333', 'dataset_id': 210, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333', 'depth': '2'}, {'lat': '71.35275', 'dataset_id': 213, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '70.03694444', 'dataset_id': 214, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444', 'depth': '3'}]
+
+    """
+  
+  #
+  #
+  # def create_required_metadata_dict(self):
+  #   print "RRR self.metadata_w_names"
+  #   print self.metadata_w_names
+  #   requred_exist_names = existing_names.intersection(self.required_metadata_info_fields)
+  #   print "GGG requred_exist_names"
+  #   print requred_exist_names
 
   # def get_existing_required_metadata_fields(self):
   #   # intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
@@ -1507,11 +1493,12 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
   utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
-  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
-
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  #
+
+
+  #  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
+
 
 
 
@@ -1529,7 +1516,7 @@ if __name__ == '__main__':
   # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
   #
   #
-  # # utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
+  utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
   # # if (args.do_not_insert == True):
   # #   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
