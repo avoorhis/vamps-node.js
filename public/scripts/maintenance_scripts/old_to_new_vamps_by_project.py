@@ -145,7 +145,7 @@ import sys
 import os
 import timeit
 import time
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 
 class Mysql_util:
     """
@@ -332,8 +332,8 @@ class Utils:
     def find_key_by_value_in_dict(self, hey, needle):
       return [k for k, v in hey if v == needle]
 
-    def make_entry_w_fields_dict(self, fields, entry):      
-      return OrderedDict(zip(fields, entry))
+    def make_entry_w_fields_dict(self, fields, entry):
+      return dict(zip(fields, entry))
 
     def write_to_csv_file(self, file_name, res, file_mode = "wb"):
       data_from_db, field_names = res
@@ -980,15 +980,9 @@ class Metadata:
   def get_parameter_by_dataset_dict(self):
     for entry in self.metadata_file_content:
       entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      print "RRR entry_w_fields_dict = "
-      print entry_w_fields_dict
-      
       dataset_val                 = entry_w_fields_dict['dataset']
       structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
       self.parameter_by_dataset_dict[dataset_val][structured_comment_name_val] = entry_w_fields_dict
-      print "RRR self.parameter_by_dataset_dict = "
-      print self.parameter_by_dataset_dict
-      
 
   def get_parameter_by_project_dict(self):
     for entry in self.metadata_file_content:
@@ -1097,6 +1091,11 @@ class Metadata:
       param_value         = entry_w_fields_dict['parameterValue']
       self.param_per_dataset_dict[dataset_name][param_name]   = param_value
       self.param_per_dataset_dict[dataset_name]['dataset_id'] = dataset_id
+      
+
+    print "XXX"
+    print "self.param_per_dataset_dict"
+    print self.param_per_dataset_dict
     
  # rename to use with required or custom metadata list
   def make_requred_metadata_list(self, field_list):
@@ -1112,11 +1111,12 @@ class Metadata:
     
   def create_insert_required_metadata_string(self):
     for field_name in self.required_metadata_info_fields:
-      pass
+      print "MMM self.required_metadata_info_fields"
+      print self.required_metadata_info_fields
       
 
-
-    
+    #
+    #
     # for dataset_name, required_metadata in self.required_metadata_list.items():
     #   temp_list = dataset.add_dataset_id_to_list(required_metadata.values(), project)
     # self.all_insert_req_met_vals = self.utils.make_insert_values(temp_list)
