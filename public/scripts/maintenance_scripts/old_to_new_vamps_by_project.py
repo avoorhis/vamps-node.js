@@ -930,7 +930,7 @@ class Metadata:
   get_existing_required_metadata_fields(self)
   
   custom_metadata_fields_tbls:
-  get_custom_metadata_fields(self)
+  get_existing_custom_metadata_fields(self)
   data_for_custom_metadata_fields_table(self, project_dict)
   insert_custom_metadata_fields(self)
   get_data_from_custom_metadata_fields(self)
@@ -977,8 +977,8 @@ class Metadata:
   
   def add_names_to_params(self):
     self.metadata_w_names = [utils.make_entry_w_fields_dict(self.metadata_file_fields, row) for row in self.metadata_file_content]
-    print "YYY"
-    print self.metadata_w_names
+    # print "YYY"
+    # print self.metadata_w_names
     '''
 [{'parameter_id': '0',
 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19',
@@ -1004,6 +1004,7 @@ class Metadata:
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
 
+  # ==== Fields =====
   def get_existing_field_names(self):
     self.existing_field_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
 
@@ -1017,19 +1018,32 @@ class Metadata:
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
         
-  def get_custom_metadata_fields(self):
+  def get_existing_custom_metadata_fields(self):
     self.custom_metadata_fields = self.existing_field_names ^ set(self.existing_required_metadata_fields.values())    
 
-  def make_requred_metadata_list(self, field_list):
-    self.required_metadata_list = [utils.slicedict(param_dict, field_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()]
+  # ==== Required metadata =====
+  
+  def prepare_required_metadata(self):
+    field_list = self.existing_required_metadata_fields.keys()
+    # req_meteadata_values = 
+    for param_per_dataset in self.metadata_w_names:
+      print "PPP param_per_dataset['structured_comment_name'] = "
+      print param_per_dataset['structured_comment_name']
+      if param_per_dataset['structured_comment_name'] in self.existing_required_metadata_fields.values():
+        print "EEE param_per_dataset['structured_comment_name'], param_per_dataset[param_per_dataset['structured_comment_name']] = "
+        print param_per_dataset['structured_comment_name']
+        print param_per_dataset['parameterValue']
 
-    print 'YYY self.required_metadata_list = '
-    print self.required_metadata_list
-    """
-    self.required_metadata_list = 
-[{'lat': '71.35275', 'dataset_id': 211, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '71.54226667', 'dataset_id': 212, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885', 'depth': '8.4'}, {'lat': '71.44783333', 'dataset_id': 210, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333', 'depth': '2'}, {'lat': '71.35275', 'dataset_id': 213, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '70.03694444', 'dataset_id': 214, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444', 'depth': '3'}]
+    print "FFF field_list = "
+    print field_list
 
-    """
+    # field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.values())
+    #
+    # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
+    #
+    # self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+  
+  
   
   #
   #
@@ -1040,20 +1054,6 @@ class Metadata:
   #   print "GGG requred_exist_names"
   #   print requred_exist_names
 
-  # def get_existing_required_metadata_fields(self):
-  #   # intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
-  #
-  #   for field_name in intersect_field_names:
-  #     self.existing_required_metadata_fields[field_name] = field_name
-  #
-  #   for good_name, bad_name_list in self.substitute_field_names.items():
-  #     bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
-  #
-  #     # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
-  #
-  #     for existing_field_name in bad_and_exist_intersection:
-  #       self.existing_required_metadata_fields[good_name] = existing_field_name
-  #
 
   # def create_insert_required_metadata_string(self):
   #   """
@@ -1138,30 +1138,16 @@ class Metadata:
     self.existing_field_names = {project: value.keys() for project, value in self.parameter_name_project_dict.items()}
     # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
 
-  def get_existing_required_metadata_fields(self):
-    intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
 
-    for field_name in intersect_field_names:
-      self.existing_required_metadata_fields[field_name] = field_name
-
-    for good_name, bad_name_list in self.substitute_field_names.items():
-      bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
-
-      # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
-
-      for existing_field_name in bad_and_exist_intersection:
-        self.existing_required_metadata_fields[good_name] = existing_field_name
 
   def custom_metadata_fields_tbls(self, project_dict):
-    self.get_custom_metadata_fields
+    self.get_existing_custom_metadata_fields
     self.data_for_custom_metadata_fields_table(project_dict)
     self.insert_custom_metadata_fields
     self.get_data_from_custom_metadata_fields
     # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
     self.create_custom_metadata_pr_id_table
     
-  def get_custom_metadata_fields(self):
-    self.custom_metadata_fields = set(self.existing_required_metadata_fields.values()) ^ set(self.existing_field_names.values()[0])
 
   def data_for_custom_metadata_fields_table(self, project_dict):
     field_values = []
@@ -1265,18 +1251,6 @@ class Metadata:
     #   temp_list = dataset.add_dataset_id_to_list(required_metadata.values(), project)
     # self.all_insert_req_met_vals = self.utils.make_insert_values(temp_list)
 
-  def insert_required_metadata(self):
-    """self.required_metadata_by_pr_dict =
-    {'ICM_SMS_Bv6': {'lat': '35.164188', 'depth': '3953.5', 'envo_biome': 'marine abyssal zone biome', 'lon': '-123.01564'}})
-       dataset.all_dataset_id_by_project_dict =
-    {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
-    """
-
-    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.values())
-
-    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
-
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")    
 
     
   def make_metadata_values_list(self, metadata_dict, field_list):
@@ -1495,7 +1469,10 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.get_existing_custom_metadata_fields, "get_existing_custom_metadata_fields")
 
+
+  utils.benchmarking(metadata.prepare_required_metadata, "prepare_required_metadata")
 
   #  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
 
@@ -1516,7 +1493,6 @@ if __name__ == '__main__':
   # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
   #
   #
-  utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
   # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
   # # if (args.do_not_insert == True):
   # #   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
