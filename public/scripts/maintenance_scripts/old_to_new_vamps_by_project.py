@@ -914,7 +914,7 @@ class Metadata:
 "SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
 
   required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
-  custom_metadata_fields (project_id, field_name, field_type, example)
+  custom_metadata_fields (project_id, field_name, field_units, example)
   
   create all metadata values
   create custom table
@@ -968,15 +968,53 @@ class Metadata:
     ['dataset', 'parameterName', 'parameterValue', 'units', 'miens_units', 'project', 'units_id', 'structured_comment_name', 'method', 'other', 'notes', 'ts', 'entry_date', 'parameter_id', 'project_dataset']
     [['SMS_0001_2007_09_19', 'domain', 'Bacteria', 'Alphanumeric', 'Alphanumeric', 'ICM_SMS_Bv6', '1', 'domain', '', '0', 'sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', '2012-04-27 08:25:07', '', '0', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']
     """
-    self.get_parameter_by_project_dict()
-    self.get_parameter_by_dataset_dict()
+    # self.get_parameter_by_project_dict()
+    # self.get_parameter_by_dataset_dict()
   
+  
+  
+  def add_names_to_params(self):
+    metadata_w_names = [zip(self.metadata_file_fields, row) for row in self.metadata_file_content]
+    print "TTT"
+    print metadata_w_names
+    '''
+[('dataset', 'ACB_0014_2004_01_17'),
+('parameterName', 'Bact_cell_count'),
+('parameterValue', '0.373'),
+('units', 'x10e6CellPerMilliLiter'),
+('miens_units', 'x10e6CellPerMilliLiter'),
+('project', 'ICM_ACB_Av6'),
+('units_id', '57'),
+('structured_comment_name', 'Bact_cell_count'),
+('method', ''),
+('other', '0'),
+('notes', 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19'),
+('ts', '2012-04-27 08:25:07'),
+('entry_date', ''),
+('parameter_id', '0'),
+('project_dataset', 'ICM_ACB_Av6--ACB_0014_2004_01_17')]
+      
+      '''
+    
   
     """    # TODO: DRY 
       self.get_parameter_by_project_dict()
       self.get_parameter_by_dataset_dict()
     """
+
+  def get_parameters_w_fileds_dict(self):
+    print "EEE self.metadata_file_fields"
+    print self.metadata_file_fields
+    print "WWW entry = "
+    print entry
     
+    for entry in self.metadata_file_content:
+      project_val                 = entry_w_fields_dict['project']
+      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
+      dataset_val                 = entry_w_fields_dict['dataset']
+      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
+      self.parameters_w_fileds_dict[project_val][dataset_val][structured_comment_name_val] = entry_w_fields_dict
+  
   def get_parameter_by_dataset_dict(self):
     for entry in self.metadata_file_content:
       entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
@@ -1042,7 +1080,7 @@ class Metadata:
     # self.utils.print_array_w_title(sql, "sql")
 
   def insert_custom_metadata_fields(self):
-    # field_list = "project_id, field_name, field_type, example"
+    # field_list = "project_id, field_name, field_units, example"
     field_list   = "project_id, field_name, example"
 
     rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
@@ -1050,7 +1088,7 @@ class Metadata:
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
 
   def get_data_from_custom_metadata_fields(self):
-    field_names = "project_id, field_name, field_type"
+    field_names = "project_id, field_name, field_units"
     table_name  = "custom_metadata_fields"
     where_part  = "WHERE project_id in (%s)" % (",".join(map(str, pr.project_dict.values())))
     custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
@@ -1110,9 +1148,20 @@ class Metadata:
     """
     
   def create_insert_required_metadata_string(self):
+    """
+    print "MMM self.required_metadata_info_fields"
+    print self.required_metadata_info_fields
+    dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public, 
+    """
     for field_name in self.required_metadata_info_fields:
-      print "MMM self.required_metadata_info_fields"
-      print self.required_metadata_info_fields
+      temp_list = []
+      try:
+        print "MMM self.required_metadata_list[0][field_name]"
+        print self.required_metadata_list[0][field_name]
+        temp_list.append(self.required_metadata_list[0][field_name])
+      except: 
+        pass
+        
       
 
     #
@@ -1348,30 +1397,34 @@ if __name__ == '__main__':
   
   metadata = Metadata(mysql_util, dataset)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
-  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
-  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  utils.benchmarking(metadata.make_param_per_dataset_dict, "make_param_per_dataset_dict")
+  utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
   
   
   
-  
-  utils.benchmarking(metadata.make_requred_metadata_list, "make_requred_metadata_list", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
-  utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
-  
-  if (args.do_not_insert == True):
-    utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
-    
-  utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
-  
-    
-  # utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
-  # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
+  # utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
+  # utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  # utils.benchmarking(metadata.make_param_per_dataset_dict, "make_param_per_dataset_dict")
+  #
+  #
+  #
+  #
+  # utils.benchmarking(metadata.make_requred_metadata_list, "make_requred_metadata_list", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
+  # utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
+  #
   # if (args.do_not_insert == True):
-  #   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-  # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
-  # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  if (args.do_not_insert == True):
-    utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  #   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
+  #
+  # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
+  #
+  #
+  # # utils.benchmarking(metadata.get_custom_metadata_fields, "get_custom_metadata_fields")
+  # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
+  # # if (args.do_not_insert == True):
+  # #   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  # # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
+  # # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  # if (args.do_not_insert == True):
+  #   utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: 
