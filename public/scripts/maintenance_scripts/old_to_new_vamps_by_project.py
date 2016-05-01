@@ -949,11 +949,12 @@ class Metadata:
     self.metadata_w_names              = []
     self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
     self.substitute_field_names        = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    self.existing_field_names          = set()
     
     # self.parameter_name_project_dict   = defaultdict(dict)
     # self.parameter_by_dataset_dict     = defaultdict(dict)
-    # self.existing_field_names                  = defaultdict(list)
-    # self.existing_required_metadata_fields     = {}
+    # defaultdict(list)
+    self.existing_required_metadata_fields     = {}
     # self.required_metadata_by_pr_dict          = defaultdict(dict)
     # self.custom_metadata_fields_insert_values  = ""
     # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
@@ -1003,32 +1004,108 @@ class Metadata:
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
 
-  def create_insert_required_metadata_string(self):
-    """
-    print "MMM self.required_metadata_info_fields"
-    print self.required_metadata_info_fields
-    dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public, 
-    
-    """
-    
-    for param_per_dataset in self.metadata_w_names:
-      print "LLL param_per_dataset"
-      print param_per_dataset
-      for field_name in (self.required_metadata_info_fields, ):
-        print "field_name"
-        print field_name
-        try:
-          print "MMM param_per_dataset[field_name]"
-          print param_per_dataset[field_name]
-          # temp_list.append(self.required_metadata_list[0][field_name])
-        except: 
-          pass
-        
-    # for field_name in
-    # self.required_metadata_info_fields:
-    #   temp_list = []
+  def get_existing_field_names(self):
+    self.existing_field_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
+
+  def get_existing_required_metadata_fields(self):
+    intersect_field_names = self.existing_field_names.intersection(self.required_metadata_info_fields) 
+    # print "LLL intersect_field_names"
+    # print intersect_field_names
+    # set(['depth'])
+    #
+    for field_name in intersect_field_names:
+      self.existing_required_metadata_fields[field_name] = field_name
+
+    for good_name, bad_name_list in self.substitute_field_names.items():
+      bad_and_exist_intersection = self.existing_field_names.intersection(bad_name_list) 
+      for existing_field_name in bad_and_exist_intersection:
+        self.existing_required_metadata_fields[good_name] = existing_field_name
+    print "LLL self.existing_required_metadata_fields"
+    print self.existing_required_metadata_fields
+    # {'latitude': 'lat', 'depth': 'depth', 'env_biome': 'envo_biome', 'longitude': 'lon'}
       
- #==============
+    #
+    #   # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
+    #
+    #   for existing_field_name in bad_and_exist_intersection:
+    #     self.existing_required_metadata_fields[good_name] = existing_field_name
+        
+  # print "self.existing_field_names"
+  # print self.existing_field_names
+  # for field_name in existing_names:
+  #   self.existing_required_metadata_fields[field_name] = field_name
+  # print "RRR self.existing_required_metadata_fields"
+  # print self.existing_required_metadata_fields
+  #
+  #
+  #   for good_name, bad_name_list in self.substitute_field_names.items():
+  #     bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
+  #
+  #     # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
+  #
+  #     for existing_field_name in bad_and_exist_intersection:
+  #       self.existing_required_metadata_fields[good_name] = existing_field_name
+  #
+
+  def create_required_metadata_dict(self):
+    print "RRR self.metadata_w_names"
+    print self.metadata_w_names
+    requred_exist_names = existing_names.intersection(self.required_metadata_info_fields)
+    print "GGG requred_exist_names"
+    print requred_exist_names
+
+  # def get_existing_required_metadata_fields(self):
+  #   # intersect_field_names = set(self.required_metadata_info_fields).intersection(set(self.existing_field_names.values()[0]))
+  #
+  #   for field_name in intersect_field_names:
+  #     self.existing_required_metadata_fields[field_name] = field_name
+  #
+  #   for good_name, bad_name_list in self.substitute_field_names.items():
+  #     bad_and_exist_intersection = set(bad_name_list).intersection(self.existing_field_names.values()[0])
+  #
+  #     # aa = { good_name : existing_field_name for existing_field_name in bad_and_exist_intersection }
+  #
+  #     for existing_field_name in bad_and_exist_intersection:
+  #       self.existing_required_metadata_fields[good_name] = existing_field_name
+  #
+
+  # def create_insert_required_metadata_string(self):
+  #   """
+  #   print "MMM self.required_metadata_info_fields"
+  #   print self.required_metadata_info_fields
+  #   dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public,
+  #
+  #   """
+  #   print "BBB self.required_metadata_info_fields +  bad_names"
+  #   # a = []
+  #   for l in self.substitute_field_names.values():
+  #     self.required_metadata_info_fields = self.required_metadata_info_fields + l
+  #   print self.required_metadata_info_fields
+  #
+  #
+  #   for param_per_dataset in self.metadata_w_names:
+  #     print "LLL param_per_dataset"
+  #     print param_per_dataset
+  #     for field_name in self.required_metadata_info_fields:
+  #       print "field_name"
+  #       print field_name
+  #
+  #       try:
+  #         print "SSS self.substitute_field_names[field_name]"
+  #         print self.substitute_field_names[field_name]
+  #         print "MMM param_per_dataset[field_name]"
+  #         print param_per_dataset[field_name]
+  #         # temp_list.append(self.required_metadata_list[0][field_name])
+  #       except:
+  #         pass
+  #
+  #   # for field_name in
+  #   # self.required_metadata_info_fields:
+  #   #   temp_list = []
+  #
+  # #==============
+  ''' 
+ 
     """    # TODO: DRY 
       self.get_parameter_by_project_dict()
       self.get_parameter_by_dataset_dict()
@@ -1215,7 +1292,6 @@ class Metadata:
 
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")    
 
-''' 
     
   def make_metadata_values_list(self, metadata_dict, field_list):
     insert_values_list = []
@@ -1431,10 +1507,11 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
   utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
+  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
+
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
-  utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
-  
+  #
 
 
 
