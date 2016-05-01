@@ -974,8 +974,6 @@ class Metadata:
     # self.get_parameter_by_project_dict()
     # self.get_parameter_by_dataset_dict()
   
-  
-  
   def add_names_to_params(self):
     self.metadata_w_names = [utils.make_entry_w_fields_dict(self.metadata_file_fields, row) for row in self.metadata_file_content]
     print "YYY"
@@ -1000,25 +998,37 @@ class Metadata:
       
       '''
     
-  def add_dataset_id_to_params(self):
+  def add_ids_to_params(self):
     for param_per_dataset in self.metadata_w_names:
-      # print "TTT"
-      # print param_per_dataset
-      """
-      {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'Bact_cell_count', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0014_2004_01_17', 'project': 'ICM_ACB_Av6', 'miens_units': 'x10e6CellPerMilliLiter', 'parameterValue': '0.373', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0014_2004_01_17', 'units': 'x10e6CellPerMilliLiter', 'parameterName': 'Bact_cell_count', 'method': '', 'units_id': '57'}
-      """
-      # dataset_name = param_per_dataset['dataset']
-      # dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
-      # "\n====\n"
-      # print param_per_dataset
-# {'parameter_id': '0', 'notes': 'acb.txt  2009-06-22 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19', 'structured_comment_name': 'cruise', 'ts': '2012-04-27 08:25:07', 'dataset': 'ACB_0009_2007_07_13', 'project': 'ICM_ACB_Av6', 'miens_units': 'Alphanumeric', 'parameterValue': '707', 'other': '0', 'entry_date': '', 'project_dataset': 'ICM_ACB_Av6--ACB_0009_2007_07_13', 'units': 'Alphanumeric', 'parameterName': 'cruise', 'dataset_id': 210, 'project_id': 3, 'method': '', 'units_id': '1'}
-    print "TTT"
-    print self.metadata_w_names
+
+  def create_insert_required_metadata_string(self):
+    """
+    print "MMM self.required_metadata_info_fields"
+    print self.required_metadata_info_fields
+    dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public, 
+    
+    """
+    
+    for param_per_dataset in self.metadata_w_names:
+      print "LLL param_per_dataset"
+      print param_per_dataset
+      for field_name in (self.required_metadata_info_fields, ):
+        print "field_name"
+        print field_name
+        try:
+          print "MMM param_per_dataset[field_name]"
+          print param_per_dataset[field_name]
+          # temp_list.append(self.required_metadata_list[0][field_name])
+        except: 
+          pass
+        
+    # for field_name in
+    # self.required_metadata_info_fields:
+    #   temp_list = []
       
-      
-  
+ #==============
     """    # TODO: DRY 
       self.get_parameter_by_project_dict()
       self.get_parameter_by_dataset_dict()
@@ -1169,20 +1179,20 @@ class Metadata:
 
     """
     
-  def create_insert_required_metadata_string(self):
-    """
-    print "MMM self.required_metadata_info_fields"
-    print self.required_metadata_info_fields
-    dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public, 
-    """
-    for field_name in self.required_metadata_info_fields:
-      temp_list = []
-      try:
-        print "MMM self.required_metadata_list[0][field_name]"
-        print self.required_metadata_list[0][field_name]
-        temp_list.append(self.required_metadata_list[0][field_name])
-      except: 
-        pass
+  # def create_insert_required_metadata_string(self):
+  #   """
+  #   print "MMM self.required_metadata_info_fields"
+  #   print self.required_metadata_info_fields
+  #   dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public,
+  #   """
+  #   for field_name in self.required_metadata_info_fields:
+  #     temp_list = []
+  #     try:
+  #       print "MMM self.required_metadata_list[0][field_name]"
+  #       print self.required_metadata_list[0][field_name]
+  #       temp_list.append(self.required_metadata_list[0][field_name])
+  #     except:
+  #       pass
         
       
 
@@ -1420,12 +1430,14 @@ if __name__ == '__main__':
   metadata = Metadata(mysql_util, dataset, pr.project_dict)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
-  utils.benchmarking(metadata.add_dataset_id_to_params, "add_dataset_id_to_params")
+  utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
+  utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
+  utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+  utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
   
-  
-  
-  # utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
-  # utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
+
+
+
   # utils.benchmarking(metadata.make_param_per_dataset_dict, "make_param_per_dataset_dict")
   #
   #
