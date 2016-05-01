@@ -1003,6 +1003,7 @@ class Metadata:
     for param_per_dataset in self.metadata_w_names:
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
+          
 
   # ==== Fields =====
   def get_existing_field_names(self):
@@ -1025,19 +1026,33 @@ class Metadata:
   
   def prepare_required_metadata(self):
     field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
-    # req_meteadata_values = 
+    # req_meteadata_values =
+    d = {}
+    all_insert_req_met = []
     for param_per_dataset in self.metadata_w_names:
+      #TODO: use intersection and split
       for key, value in self.existing_required_metadata_fields.items():
         if param_per_dataset['structured_comment_name'] == value:
-          self.all_insert_req_met_vals[key] = param_per_dataset['parameterValue']
+          d[key] = param_per_dataset['parameterValue']
+      d['dataset_id'] = str(param_per_dataset['dataset_id'])
+      print "QQQ d = "
+      print d
 
+      all_insert_req_met.append(d)
     print "EEE self.all_insert_req_met_vals = "
-    print self.all_insert_req_met_vals
+    print all_insert_req_met
 
-    print "FFF field_list = "
-    print field_list
+
+# {'latitude': '70.03694444', 'depth': '3', 'dataset_id': 214, 'env_biome': 'neritic epipelagic zone biome', 'longitude': '-126.3019444'}
     
-    print self.all_insert_req_met_vals
+    # field_list   = ", ".join(all_insert_req_met.keys())
+    # req_met_vals = ", ".join(all_insert_req_met.values())
+    #
+    #
+    # print "FFF field_list = "
+    # print field_list
+    # print "FFF1 req_met_vals = "
+    # print req_met_vals
 
     #
     # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
@@ -1468,6 +1483,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
   utils.benchmarking(metadata.add_ids_to_params, "add_ids_to_params")  
+  
   utils.benchmarking(metadata.get_existing_field_names, "get_existing_field_names")
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.get_existing_custom_metadata_fields, "get_existing_custom_metadata_fields")
