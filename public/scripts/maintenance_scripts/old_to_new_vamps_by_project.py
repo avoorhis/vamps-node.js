@@ -1078,23 +1078,8 @@ class Metadata:
         q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
         print q
     
-    # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
-    #   field_descriptions  = ""
-    #   table_name          = "custom_metadata_%s" % project_id
-    #   id_name             = "%s_id" % (table_name)
-    #   primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
-    # 
-    #   field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
-    #   for field_desc in entry:
-    #     field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
-    #   field_descriptions += """
-    #     UNIQUE KEY dataset_id (dataset_id),
-    #     CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
-    #     """ % (table_name)
-    # 
-    #   table_description = "ENGINE=InnoDB"
     #   q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
-    #   print mysql_util.execute_no_fetch(q)
+        print mysql_util.execute_no_fetch(q)
 
 
   '''
