@@ -964,18 +964,29 @@ class Metadata:
     print existing_required_metadata_fields_values_per_dataset
     
     intr = structured_comment_names.intersection(self.existing_required_metadata_fields.values())
-    
-    for b in list(intr):
-      key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
-      required_metadata_dict[key[0]] = existing_required_metadata_fields_values[b]
+    temp_dict = {}
+    for dataset_name, metadata in existing_required_metadata_fields_values_per_dataset.items():    
+      print "dataset_name" 
+      print dataset_name
+      dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
+      print "dataset_id" 
+      print dataset_id
+      temp_dict['dataset_id'] = dataset_id
+      for b in list(intr):
+        key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
+        temp_dict[key[0]] = metadata[b]
+      
+      required_metadata_dict[dataset_id] = temp_dict
+      # print "TTT temp_dict"
+      # print temp_dict
 
   
     print "DDD required_metadata_dict"
     print required_metadata_dict
   
-    field_list = "dataset_id, " + ", ".join(required_metadata_dict.keys())
-    print "FFF field_list"
-    print field_list
+    # field_list = "dataset_id, " + ", ".join(required_metadata_dict.keys())
+    # print "FFF field_list"
+    # print field_list
 
     
     
@@ -1370,7 +1381,6 @@ if __name__ == '__main__':
   utils.benchmarking(dataset.parse_dataset_csv, "parse_dataset_csv", dataset_csv_file_name)
   utils.benchmarking(dataset.make_dataset_project_dictionary, "make_dataset_project_dictionary")
 
-  print "DDD"
   seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 2")
 
   if (args.do_not_insert == True):
