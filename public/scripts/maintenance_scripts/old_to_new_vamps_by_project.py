@@ -1007,12 +1007,14 @@ class Metadata:
     custom_metadata_fields_for_tbl         = []
     custom_metadata_fields_uniqued_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
-      project_id  = param_per_dataset['project_id']
-      field_name  = self.correct_field_name(param_per_dataset['structured_comment_name'])
-      field_units = param_per_dataset['miens_units']
-      example     = param_per_dataset['parameterValue']
-      custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
-      custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
+      field_name = param_per_dataset['structured_comment_name']
+      if field_name in self.custom_metadata_fields:      
+        project_id  = param_per_dataset['project_id']
+        field_name  = self.correct_field_name(field_name)
+        field_units = param_per_dataset['miens_units']
+        example     = param_per_dataset['parameterValue']
+        custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
+        custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
       
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
     self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
@@ -1067,7 +1069,7 @@ class Metadata:
     
         field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
         for entry in self.custom_metadata_fields_uniqued_for_tbl:
-          field_descriptions += "`%s` varchar(128) DEFAULT NULL,\n" % (entry[1])
+            field_descriptions += "`%s` varchar(128) DEFAULT NULL,\n" % (entry[1])
 
         field_descriptions += """
             UNIQUE KEY dataset_id (dataset_id),
@@ -1076,9 +1078,7 @@ class Metadata:
         
         table_description = "ENGINE=InnoDB"
         q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
-        print q
-    
-    #   q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
+        # print q    
         print mysql_util.execute_no_fetch(q)
 
 
