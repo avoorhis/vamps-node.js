@@ -995,9 +995,6 @@ class Metadata:
     self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
     self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
   
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)
-    # self.utils.print_array_w_title(sql, "sql")
-  
   def insert_required_metadata(self):
     rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
@@ -1010,14 +1007,13 @@ class Metadata:
 
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
   def data_for_custom_metadata_fields_table(self):
+    # TODO: too long and does more then one thing
     custom_metadata_fields_for_tbl         = []
     custom_metadata_fields_uniqued_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
-      field_name = param_per_dataset['structured_comment_name']
+      field_name = self.correct_field_name(param_per_dataset['structured_comment_name'])
       if field_name in self.custom_metadata_fields:      
         project_id  = param_per_dataset['project_id']
-        # field_name  = self.correct_field_name(field_name)
-        field_name  = field_name
         field_units = param_per_dataset['miens_units']
         example     = param_per_dataset['parameterValue']
         custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
@@ -1036,13 +1032,11 @@ class Metadata:
     means that "example" is one of them
     '''
 
+    # aux_bec_simulated_phosphate__um_
+    print "self.custom_metadata_fields_insert_values VVV"
+    print self.custom_metadata_fields_insert_values
     rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
-  
-
-  # def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
-  #   for entry in custom_metadata_field_data_res:
-  #     self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))
 
   # create table per project
   def get_data_from_custom_metadata_fields(self, project_dict):
@@ -1050,9 +1044,6 @@ class Metadata:
     table_name  = "custom_metadata_fields"
     where_part  = "WHERE project_id in (%s)" % (",".join(map(str, project_dict.values())))
     self.custom_metadata_fields_uniqued_for_tbl = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print "self.custom_metadata_fields_uniqued_for_tbl"
-    print self.custom_metadata_fields_uniqued_for_tbl
-    # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
 
   def correct_field_name(self, field_name):
     return field_name.replace("(", "_").replace(")", "_")
@@ -1092,231 +1083,30 @@ class Metadata:
         self.custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
 
   def insert_custom_metadata(self):
-    # print self.custom_metadata_fields_uniqued_for_tbl
-    
+    # TODO: simplify
     self.make_custom_metadata_per_project_dataset_dict()
     field_str = "dataset_id, "  + "`"   + "`, `".join(self.custom_metadata_fields)   + "`"
-    print "SSS self.custom_metadata_per_project_dataset_dict"
-    print self.custom_metadata_per_project_dataset_dict
     for project_id, custom_metadata_dict_per_dataset in self.custom_metadata_per_project_dataset_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
-      insert_values = ""
-      insert_values_list_2d = []
+      insert_values              = ""
+      insert_values_list_2d      = []
       for dataset_id, custom_metadata_dict in custom_metadata_dict_per_dataset.items():
         insert_values_temp = [str(dataset_id)]
         for field_name in self.custom_metadata_fields:
-          print "AAA"
-          print dataset_id
-          print custom_metadata_dict
-          print "field_name"
-          print field_name
           try:
-            print "custom_metadata_dict[field_name]"
-            print custom_metadata_dict[field_name]
-            # insert_values += ", '"+ custom_metadata_dict[self.correct_field_name(field_name)] + "'"
             insert_values_temp.append(custom_metadata_dict[field_name])
           except KeyError: 
             insert_values_temp.append('')
           except:
             raise
-          # print "insert_values_temp"
-          # print insert_values_temp
         insert_values_list_2d.append(insert_values_temp)
-        # print "insert_values_list_2d"
-        # print insert_values_list_2d
             
       insert_values = self.utils.make_insert_values(insert_values_list_2d)
-      # print "insert_values"
-      # print insert_values
-    
       
-        # field_name = param_per_dataset['structured_comment_name']
-        # if field_name in self.custom_metadata_fields:      
-      
-      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      self.utils.print_array_w_title(sql, "sql")
-      rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-      self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
-  #     time_res: 0.243500947952 s vs. 2s if dataset by dataset upload
-  
-
-  '''
-  
-  def custom_metadata_fields_tbl(self, project_dict):
-    
-    
-    self.get_existing_custom_metadata_fields
-    self.data_for_custom_metadata_fields_table(project_dict)
-    self.insert_custom_metadata_fields
-    self.get_data_from_custom_metadata_fields
-    # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
-    self.create_custom_metadata_pr_id_table
-    
-
-  def get_parameters_w_fileds_dict(self):
-    print "EEE self.metadata_file_fields"
-    print self.metadata_file_fields
-    print "WWW entry = "
-    print entry
-    
-    for entry in self.metadata_file_content:
-      project_val                 = entry_w_fields_dict['project']
-      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      dataset_val                 = entry_w_fields_dict['dataset']
-      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
-      self.parameters_w_fileds_dict[project_val][dataset_val][structured_comment_name_val] = entry_w_fields_dict
-  
-  def get_parameter_by_dataset_dict(self):
-    for entry in self.metadata_file_content:
-      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      dataset_val                 = entry_w_fields_dict['dataset']
-      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
-      self.parameter_by_dataset_dict[dataset_val][structured_comment_name_val] = entry_w_fields_dict
-
-  def get_parameter_by_project_dict(self):
-    for entry in self.metadata_file_content:
-      entry_w_fields_dict         = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      project_val                 = entry_w_fields_dict['project']
-      structured_comment_name_val = entry_w_fields_dict['structured_comment_name']
-      self.parameter_name_project_dict[project_val][structured_comment_name_val] = entry_w_fields_dict
-
-    # for key, value in self.parameter_name_project_dict.items():
-      # print self.existing_field_names # (= structured_comment_name)
-      # print "UUU %s" % (value["envo_biome"]["parameterValue"])
-      # print 'value["envo_biome"]["units"] %s' % (value["envo_biome"]["units"])
-      # all_units = [value1["units"] for key1, value1 in value.items()]
-      # for key1, value1 in value.items():
-      # print set(all_units)
-      # set(['decimalHour', 'unknown', 'meter', 'Alphanumeric', 'celsius', 'decimalDegree', 'YYYY-MM-DD', 'psu'])
- # average lc vs. for: 0.0092371191	0.0072890997
-
-  def get_existing_field_names(self):
-    self.existing_field_names = {project: value.keys() for project, value in self.parameter_name_project_dict.items()}
-    # self.existing_field_names = [value.keys() for key, value in self.parameter_name_project_dict.items()][0]
-
-
-
-
-
-  def get_data_from_custom_metadata_fields(self):
-    field_names = "project_id, field_name, field_units"
-    table_name  = "custom_metadata_fields"
-    where_part  = "WHERE project_id in (%s)" % (",".join(map(str, pr.project_dict.values())))
-    custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
-
-  def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
-    for entry in custom_metadata_field_data_res:
-      self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))
-
-  def create_custom_metadata_pr_id_table(self):
-    for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
-      field_descriptions  = ""
-      table_name          = "custom_metadata_%s" % project_id
-      id_name             = "%s_id" % (table_name)
-      primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
-      
-      field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
-      for field_desc in entry:
-        field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
-      field_descriptions += """
-        UNIQUE KEY dataset_id (dataset_id),
-        CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
-        """ % (table_name)
-
-      table_description = "ENGINE=InnoDB"
-      q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
-      print mysql_util.execute_no_fetch(q)
-
-
-# values
-
-  def make_param_per_dataset_dict(self):    
-    for entry in self.metadata_file_content:
-      entry_w_fields_dict = utils.make_entry_w_fields_dict(self.metadata_file_fields, entry)
-      dataset_name        = entry_w_fields_dict['dataset']
-      dataset_id          = dataset.dataset_id_by_name_dict[dataset_name]
-      param_name          = entry_w_fields_dict['structured_comment_name']
-      param_value         = entry_w_fields_dict['parameterValue']
-      self.param_per_dataset_dict[dataset_name][param_name]   = param_value
-      self.param_per_dataset_dict[dataset_name]['dataset_id'] = dataset_id
-      
-
-    print "XXX"
-    print "self.param_per_dataset_dict"
-    print self.param_per_dataset_dict
-    
- # rename to use with required or custom metadata list
-  def make_requred_metadata_list(self, field_list):
-    self.required_metadata_list = [utils.slicedict(param_dict, field_list) for dataset_name, param_dict in self.param_per_dataset_dict.items()]
-
-    print 'YYY self.required_metadata_list = '
-    print self.required_metadata_list
-    """
-    self.required_metadata_list = 
-[{'lat': '71.35275', 'dataset_id': 211, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '71.54226667', 'dataset_id': 212, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-150.885', 'depth': '8.4'}, {'lat': '71.44783333', 'dataset_id': 210, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.0563333', 'depth': '2'}, {'lat': '71.35275', 'dataset_id': 213, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-156.6776333', 'depth': '2'}, {'lat': '70.03694444', 'dataset_id': 214, 'envo_biome': 'neritic epipelagic zone biome', 'lon': '-126.3019444', 'depth': '3'}]
-
-    """
-    
-
-  def make_metadata_values_list(self, metadata_dict, field_list):
-    insert_values_list = []
-    
-    for dataset_name, parameter_dict in metadata_dict.items():
-      dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-      insert_values_temp_list = []
-      insert_values_temp_list.append(str(dataset_id))
-    
-      # USE
-      for field_name in field_list:
-        try:
-          insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
-        except KeyError:
-          print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
-          insert_values_temp_list.append("")
-        except:                       # catch everything
-          raise                       # re-throw caught exception
-        
-      insert_values_list.append(insert_values_temp_list)
-    return self.utils.make_insert_values(insert_values_list)
-
-
-
-  def make_custom_metadata_values_list(self, field_list):
-    # TODO: refactoring, it's too complicated
-    insert_values_list = []
-    for dataset_name, parameter_dict in self.parameter_by_dataset_dict.items():
-      dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-      insert_values_temp_list = []
-      insert_values_temp_list.append(str(dataset_id))
-    
-      for field_name in field_list:
-        try:
-          insert_values_temp_list.append(parameter_dict[field_name]['parameterValue'])
-        except KeyError:
-          print "Field name %s does not have value in dataset %s" % (field_name, dataset_name)
-          insert_values_temp_list.append("")
-        except:                       # catch everything
-          raise                       # re-throw caught exception
-        
-      insert_values_list.append(insert_values_temp_list)
-    return self.utils.make_insert_values(insert_values_list)
-    
-  def insert_custom_metadata(self):
-    for project, project_id in pr.project_dict.items():
-      custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_list    = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-      field_str     = "`" + "`, `".join(("dataset_id",) + field_list) + "`"
-      
-      insert_values = self.make_custom_metadata_values_list(field_list)
-
       rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
       self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
 
-'''
 if __name__ == '__main__':
-  #TODO: args ICM_ACB_Av6
-
   import subprocess
   import argparse
   
@@ -1482,9 +1272,6 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
-  # utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls")
-  #
-  #
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
@@ -1492,8 +1279,8 @@ if __name__ == '__main__':
   if not metadata.custom_metadata_fields_uniqued_for_tbl:
     utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  # if (args.do_not_insert == True):
-  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  if (args.do_not_insert == True):
+    utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: 
