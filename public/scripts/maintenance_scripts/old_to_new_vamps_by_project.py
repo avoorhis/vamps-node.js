@@ -1084,12 +1084,11 @@ class Metadata:
 
   def make_custom_metadata_per_project_dataset_dict(self):
     for param_per_dataset in self.metadata_w_names:
-      field_name  = param_per_dataset['structured_comment_name']
+      field_name  = self.correct_field_name(param_per_dataset['structured_comment_name'])
       if field_name in self.custom_metadata_fields:              
         project_id  = str(param_per_dataset['project_id'])
         dataset_id  = str(param_per_dataset['dataset_id'])
         param_value = str(param_per_dataset['parameterValue'])
-        # self.custom_metadata_per_project_dataset_dict[project_id][dataset_id][self.correct_field_name(field_name)] = param_value
         self.custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
 
   def insert_custom_metadata(self):
@@ -1097,13 +1096,14 @@ class Metadata:
     
     self.make_custom_metadata_per_project_dataset_dict()
     field_str = "dataset_id, "  + "`"   + "`, `".join(self.custom_metadata_fields)   + "`"
-    print "field_str"
-    print field_str
+    print "SSS self.custom_metadata_per_project_dataset_dict"
+    print self.custom_metadata_per_project_dataset_dict
     for project_id, custom_metadata_dict_per_dataset in self.custom_metadata_per_project_dataset_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       insert_values = ""
+      insert_values_list_2d = []
       for dataset_id, custom_metadata_dict in custom_metadata_dict_per_dataset.items():
-        insert_values_temp = str(dataset_id)
+        insert_values_temp = [str(dataset_id)]
         for field_name in self.custom_metadata_fields:
           print "AAA"
           print dataset_id
@@ -1111,16 +1111,23 @@ class Metadata:
           print "field_name"
           print field_name
           try:
+            print "custom_metadata_dict[field_name]"
+            print custom_metadata_dict[field_name]
             # insert_values += ", '"+ custom_metadata_dict[self.correct_field_name(field_name)] + "'"
-            insert_values_temp += ", '"+ custom_metadata_dict[field_name] + "'"
+            insert_values_temp.append(custom_metadata_dict[field_name])
           except KeyError: 
-            insert_values_temp += ", ''"
+            insert_values_temp.append('')
           except:
             raise
+          # print "insert_values_temp"
+          # print insert_values_temp
+        insert_values_list_2d.append(insert_values_temp)
+        # print "insert_values_list_2d"
+        # print insert_values_list_2d
             
-        insert_values += "), (" + insert_values_temp
-      print "insert_values"
-      print insert_values
+      insert_values = self.utils.make_insert_values(insert_values_list_2d)
+      # print "insert_values"
+      # print insert_values
     
       
         # field_name = param_per_dataset['structured_comment_name']
@@ -1128,8 +1135,10 @@ class Metadata:
       
       sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
       self.utils.print_array_w_title(sql, "sql")
-        # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-        # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+      rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+  #     time_res: 0.243500947952 s vs. 2s if dataset by dataset upload
+  
 
   '''
   
