@@ -990,57 +990,80 @@ class Metadata:
     
   # ==== Custom metadata =====
   
-  # add fields per dataset to custom_metadata_fields (project_id, field_name, field_unites, example)
+  # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
   # create table per project
   # add data to the table per project
-  
-  
-  
-  #
-  #
-  # def create_required_metadata_dict(self):
-  #   print "RRR self.metadata_w_names"
-  #   print self.metadata_w_names
-  #   requred_exist_names = existing_names.intersection(self.required_metadata_info_fields)
-  #   print "GGG requred_exist_names"
-  #   print requred_exist_names
 
+  # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
+  def custom_metadata_fields_tbl(self, project_dict):
+    print "self.custom_metadata_fields"
+    print self.custom_metadata_fields
+    # {'parameter_id': '0', 'notes': 'Data from Dr. Adam Martiny. July 2010', 'structured_comment_name': 'aux_sunset_min', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'unknown', 'parameterValue': '5.0626', 'other': '8', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'unknown', 'parameterName': 'aux_sunset_min', 'dataset_id': 1077, 'project_id': 275, 'method': 'Auxiliary data. Dr. Adam Martiny', 'units_id': '0'}
+    custom_metadata_fields_for_tbl = []
+    for param_per_dataset in self.metadata_w_names:
+      project_id  = param_per_dataset['project_id']
+      field_name  = param_per_dataset['structured_comment_name']
+      field_units = param_per_dataset['miens_units']
+      example     = param_per_dataset['parameterValue']
+      # print """
+      # project_id  = %s
+      # field_name  = %s
+      # field_units = %s
+      # example     = %s
+      # """ % (project_id, field_name, field_units, example)
+      custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
+    print "III custom_metadata_fields_for_tbl"
+    print custom_metadata_fields_for_tbl
+    
 
-  # def create_insert_required_metadata_string(self):
-  #   """
-  #   print "MMM self.required_metadata_info_fields"
-  #   print self.required_metadata_info_fields
-  #   dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public,
-  #
-  #   """
-  #   print "BBB self.required_metadata_info_fields +  bad_names"
-  #   # a = []
-  #   for l in self.substitute_field_names.values():
-  #     self.required_metadata_info_fields = self.required_metadata_info_fields + l
-  #   print self.required_metadata_info_fields
-  #
-  #
-  #   for param_per_dataset in self.metadata_w_names:
-  #     print "LLL param_per_dataset"
-  #     print param_per_dataset
-  #     for field_name in self.required_metadata_info_fields:
-  #       print "field_name"
-  #       print field_name
-  #
-  #       try:
-  #         print "SSS self.substitute_field_names[field_name]"
-  #         print self.substitute_field_names[field_name]
-  #         print "MMM param_per_dataset[field_name]"
-  #         print param_per_dataset[field_name]
-  #         # temp_list.append(self.required_metadata_list[0][field_name])
-  #       except:
-  #         pass
-  #
-  #   # for field_name in
-  #   # self.required_metadata_info_fields:
-  #   #   temp_list = []
-  #
-  # #==============
+  '''
+  
+  def custom_metadata_fields_tbl(self, project_dict):
+    
+    
+    self.get_existing_custom_metadata_fields
+    self.data_for_custom_metadata_fields_table(project_dict)
+    self.insert_custom_metadata_fields
+    self.get_data_from_custom_metadata_fields
+    # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
+    self.create_custom_metadata_pr_id_table
+    
+
+  def data_for_custom_metadata_fields_table(self, project_dict):
+    field_values = []
+    for project, vals in self.parameter_name_project_dict.items():
+      project_id   = project_dict[project]
+      field_values = [(project_id, field_name, vals[field_name]['parameterValue']) for field_name in self.custom_metadata_fields]
+
+    self.custom_metadata_fields_insert_values = self.utils.make_insert_values(field_values)
+    # field_list   = "project_id, field_name, example"
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+    # self.utils.print_array_w_title(sql, "sql")
+
+  def insert_custom_metadata_fields(self):
+    # field_list = "project_id, field_name, field_units, example"
+    field_list   = "project_id, field_name, example"
+
+    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+
+  def get_data_from_custom_metadata_fields(self):
+    field_names = "project_id, field_name, field_units"
+    table_name  = "custom_metadata_fields"
+    where_part  = "WHERE project_id in (%s)" % (",".join(map(str, pr.project_dict.values())))
+    custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
+
+  def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
+    for entry in custom_metadata_field_data_res:
+      self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))
+  
+  '''
+  
+  
+  
+  
   ''' 
  
     """    # TODO: DRY 
@@ -1403,19 +1426,7 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
-  #  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
-
-
-
-
-  # utils.benchmarking(metadata.make_param_per_dataset_dict, "make_param_per_dataset_dict")
-  #
-  #
-  #
-  #
-  # utils.benchmarking(metadata.make_requred_metadata_list, "make_requred_metadata_list", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
-  #
-  # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
+  utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls", pr.project_dict)
   #
   #
   # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
