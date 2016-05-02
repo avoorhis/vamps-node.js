@@ -691,7 +691,6 @@ class Seq_csv:
     self.seq_id_w_silva_taxonomy_info_per_seq_id = ()
     self.sequence_uniq_info_values = ""
 
-    # print "MMM"
     # print self.seqs_file_content
     """
     [['278176', 'TGGACTTGACATGCACTTGTAAGCCATAGAGATATGGCCCCTCTTCGGAGC', 'ICM_SMS_Bv6', 'SMS_0001_2007_09_19', 'Bacteria;Proteobacteria;Deltaproteobacteria;Desulfobacterales;Nitrospinaceae;Nitrospina', 'v6_DU318 v6_DU349 v6_DU400 v6_DU416', 'genus', '2', '0.000136008160489629', '0.03900', 'FL6XCJ201ALT42', 'ICM_SMS_Bv6--SMS_0001_2007_09_19']...]
@@ -956,8 +955,14 @@ class Metadata:
     
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
     existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}    
-    existing_required_metadata_fields_values_w_dataset = {param_per_dataset['structured_comment_name']: (param_per_dataset['parameterValue'], param_per_dataset['dataset']) for param_per_dataset in self.metadata_w_names}    
-
+    # existing_required_metadata_fields_values_w_dataset = {param_per_dataset['structured_comment_name']: (param_per_dataset['parameterValue'], param_per_dataset['dataset']) for param_per_dataset in self.metadata_w_names}   
+    existing_required_metadata_fields_values_per_dataset = defaultdict(dict)
+    for param_per_dataset in self.metadata_w_names:
+      existing_required_metadata_fields_values_per_dataset[param_per_dataset['dataset']][param_per_dataset['structured_comment_name']] = param_per_dataset['parameterValue']
+    
+    print "MMM existing_required_metadata_fields_values_per_dataset"
+    print existing_required_metadata_fields_values_per_dataset
+    
     intr = structured_comment_names.intersection(self.existing_required_metadata_fields.values())
     
     for b in list(intr):
@@ -972,8 +977,6 @@ class Metadata:
     print "FFF field_list"
     print field_list
 
-    print "MMM existing_required_metadata_fields_values_w_dataset"
-    print existing_required_metadata_fields_values_w_dataset
     
     
   
