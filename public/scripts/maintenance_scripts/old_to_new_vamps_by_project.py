@@ -886,14 +886,14 @@ class Metadata:
     self.required_metadata               = []
     self.required_metadata_insert_values = ""
     self.required_metadata_field_list    = ""
-    self.existing_required_metadata_fields = {}
+    self.existing_required_metadata_fields     = {}
+    self.custom_metadata_fields_insert_values  = ""
     
     
     # self.parameter_name_project_dict   = defaultdict(dict)
     # self.parameter_by_dataset_dict     = defaultdict(dict)
     # defaultdict(list)
     # self.required_metadata_by_pr_dict          = defaultdict(dict)
-    # self.custom_metadata_fields_insert_values  = ""
     # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
     # self.all_insert_req_met_vals               = {}
     # self.param_per_dataset_dict                = defaultdict(dict)
@@ -1002,43 +1002,29 @@ class Metadata:
   # add data to the table per project
 
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
-  def custom_metadata_fields_tbl(self, project_dict):
-    print "self.custom_metadata_fields"
-    print self.custom_metadata_fields
-    # {'parameter_id': '0', 'notes': 'Data from Dr. Adam Martiny. July 2010', 'structured_comment_name': 'aux_sunset_min', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'unknown', 'parameterValue': '5.0626', 'other': '8', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'unknown', 'parameterName': 'aux_sunset_min', 'dataset_id': 1077, 'project_id': 275, 'method': 'Auxiliary data. Dr. Adam Martiny', 'units_id': '0'}
-
-    t0 = time.time()
+  def custom_metadata_fields_tbl(self):
     custom_metadata_fields_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
       project_id  = param_per_dataset['project_id']
       field_name  = param_per_dataset['structured_comment_name']
       field_units = param_per_dataset['miens_units']
       example     = param_per_dataset['parameterValue']
-      # print """
-      # project_id  = %s
-      # field_name  = %s
-      # field_units = %s
-      # example     = %s
-      # """ % (project_id, field_name, field_units, example)
       custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
-    t1 = time.time()
-    total = t1-t0
-    print "time_res 1 = %s s" % total
-    # print "III custom_metadata_fields_for_tbl"
-    # print custom_metadata_fields_for_tbl
     
-    t0 = time.time()
+    # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
+    self.custom_metadata_fields_insert_values = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
     
-    a = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
-    t1 = time.time()
-    total = t1-t0
-    print "time_res 2 = %s s" % total
-    
-    # print "UUU custom_metadata_fields_for_tbl 2"
-    # print a
-    # time_res 1 = 0.000250101089478 s
-    # time_res 2 = 0.000202178955078 s
-    
+  def insert_custom_metadata_fields(self):
+    field_list = "project_id, field_name, field_units, example"
+    '''
+    ('275', 'aux_corrected_depth', 'unknown', '3952'),
+    ('275', 'aux_corrected_depth', 'unknown', '3959'),
+    means that "example" is one of them
+    '''
+
+    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+  
 
   '''
   
@@ -1138,25 +1124,6 @@ class Metadata:
 
 
 
-  def custom_metadata_fields_tbls(self, project_dict):
-    self.get_existing_custom_metadata_fields
-    self.data_for_custom_metadata_fields_table(project_dict)
-    self.insert_custom_metadata_fields
-    self.get_data_from_custom_metadata_fields
-    # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
-    self.create_custom_metadata_pr_id_table
-    
-
-  def data_for_custom_metadata_fields_table(self, project_dict):
-    field_values = []
-    for project, vals in self.parameter_name_project_dict.items():
-      project_id   = project_dict[project]
-      field_values = [(project_id, field_name, vals[field_name]['parameterValue']) for field_name in self.custom_metadata_fields]
-
-    self.custom_metadata_fields_insert_values = self.utils.make_insert_values(field_values)
-    # field_list   = "project_id, field_name, example"
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
-    # self.utils.print_array_w_title(sql, "sql")
 
   def insert_custom_metadata_fields(self):
     # field_list = "project_id, field_name, field_units, example"
@@ -1450,12 +1417,12 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
-  utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls", pr.project_dict)
+  utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls")
   #
   #
   # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
   # # if (args.do_not_insert == True):
-  # #   utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   # # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   # # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   # if (args.do_not_insert == True):
