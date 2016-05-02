@@ -957,41 +957,71 @@ class Metadata:
     d = {}
     all_insert_req_met = []
     
+    t0 = time.time()
+    
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
     existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}
     
     a = self.existing_required_metadata_fields.values()
 
     intr = structured_comment_names.intersection(a)
-    print "III existing_required_metadata_fields_values: "
-    print existing_required_metadata_fields_values
+    # print "III existing_required_metadata_fields_values: "
+    # print existing_required_metadata_fields_values
     # set(['lat', 'depth', 'envo_biome', 'lon'])
     
     for b in list(intr):
-      print "b: "
-      print b
+      # print "b: "
+      # print b
       key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
-      print "EEE key: "
-      print key
-      print "XXX existing_required_metadata_fields_values[key[0]] "
-      print existing_required_metadata_fields_values[key[0]]
+      # print "EEE key: "
+      # print key
+      # print "XXX existing_required_metadata_fields_values[b] "
+      # print existing_required_metadata_fields_values[b]
 
-      d[key] = existing_required_metadata_fields_values[key[0]]
+      d[key[0]] = existing_required_metadata_fields_values[b]
+    t1 = time.time()
+    total = t1-t0
+    print "time_res 1 = %s s" % total
+    print "QQQ1 d = "
+    print d
     
-    # for param_per_dataset in self.metadata_w_names:
-    #   #TODO: use intersection and split
-    #   for key, value in self.existing_required_metadata_fields.items():
-    #     if param_per_dataset['structured_comment_name'] == value:
-    #       d[key] = param_per_dataset['parameterValue']
-    #   d['dataset_id'] = str(param_per_dataset['dataset_id'])
-    #   print "QQQ d = "
-    #   print d
+    t0 = time.time()
+
+    
+    
+    for param_per_dataset in self.metadata_w_names:
+      #TODO: use intersection and split
+      for key, value in self.existing_required_metadata_fields.items():
+        if param_per_dataset['structured_comment_name'] == value:
+          d[key] = param_per_dataset['parameterValue']
+      d['dataset_id'] = str(param_per_dataset['dataset_id'])
+    # print "QQQ d = "
+    # print d
     # 
-    #   all_insert_req_met.append(d)
-    # print "EEE self.all_insert_req_met_vals = "
-    # print all_insert_req_met
+      all_insert_req_met.append(d)
+    t1 = time.time()
+    total = t1-t0
+    print "time_res 2 = %s s" % total
+    print "EEE self.all_insert_req_met_vals = "
+    print all_insert_req_met
 
 
+    """
+    time_res 1 = 0.000163078308105 s
+    time_res 2 = 0.000370979309082 s
+    time_res 1 = 0.000140905380249 s
+    time_res 2 = 0.00036096572876 s
+
+    time_res 1 = 9.51290130615e-05 s
+    time_res 2 = 0.000287055969238 s
+
+    time_res 1 = 9.70363616943e-05 s
+    0.0000970363616943
+    time_res 2 = 
+    0.000308990478516 s
+    
+    
+    """
 # {'latitude': '70.03694444', 'depth': '3', 'dataset_id': 214, 'env_biome': 'neritic epipelagic zone biome', 'longitude': '-126.3019444'}
     
     # field_list   = ", ".join(all_insert_req_met.keys())
