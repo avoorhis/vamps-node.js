@@ -960,21 +960,19 @@ class Metadata:
     for param_per_dataset in self.metadata_w_names:
       existing_required_metadata_fields_values_per_dataset[param_per_dataset['dataset']][param_per_dataset['structured_comment_name']] = param_per_dataset['parameterValue']
     
-    print "MMM existing_required_metadata_fields_values_per_dataset"
-    print existing_required_metadata_fields_values_per_dataset
-    
     intr = structured_comment_names.intersection(self.existing_required_metadata_fields.values())
-    temp_dict = {}
     for dataset_name, metadata in existing_required_metadata_fields_values_per_dataset.items():    
-      print "dataset_name" 
-      print dataset_name
       dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
-      print "dataset_id" 
+      temp_dict = {}
+      for field_name in list(intr):
+        key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
+        temp_dict[key[0]] = metadata[field_name]
+        print "YYY temp_dict"
+        print temp_dict
+
+      print "TTT dataset_id"
       print dataset_id
       temp_dict['dataset_id'] = dataset_id
-      for b in list(intr):
-        key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
-        temp_dict[key[0]] = metadata[b]
       
       required_metadata_dict[dataset_id] = temp_dict
       # print "TTT temp_dict"
