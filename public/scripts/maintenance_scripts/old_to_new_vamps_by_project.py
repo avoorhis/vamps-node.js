@@ -11,6 +11,13 @@
 # Please read the COPYING file.
 #
 """
+*) 
+t0 = time.time()
+t1 = time.time()
+total = t1-t0
+print "time_res = %s s" % total
+
+
 *) cd vamps-node.js/public/scripts/maintenance_scripts; time python old_to_new_vamps_by_project.py -s sequences.csv -m metadata.csv -owner admin -p "ICM_AGW_Bv6"
 
 *) Utils, connection - classes for all
@@ -999,6 +1006,8 @@ class Metadata:
     print "self.custom_metadata_fields"
     print self.custom_metadata_fields
     # {'parameter_id': '0', 'notes': 'Data from Dr. Adam Martiny. July 2010', 'structured_comment_name': 'aux_sunset_min', 'ts': '2012-04-27 08:25:07', 'dataset': 'SMS_0016_2007_09_23', 'project': 'ICM_SMS_Bv6', 'miens_units': 'unknown', 'parameterValue': '5.0626', 'other': '8', 'entry_date': '', 'project_dataset': 'ICM_SMS_Bv6--SMS_0016_2007_09_23', 'units': 'unknown', 'parameterName': 'aux_sunset_min', 'dataset_id': 1077, 'project_id': 275, 'method': 'Auxiliary data. Dr. Adam Martiny', 'units_id': '0'}
+
+    t0 = time.time()
     custom_metadata_fields_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
       project_id  = param_per_dataset['project_id']
@@ -1012,8 +1021,23 @@ class Metadata:
       # example     = %s
       # """ % (project_id, field_name, field_units, example)
       custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
-    print "III custom_metadata_fields_for_tbl"
-    print custom_metadata_fields_for_tbl
+    t1 = time.time()
+    total = t1-t0
+    print "time_res 1 = %s s" % total
+    # print "III custom_metadata_fields_for_tbl"
+    # print custom_metadata_fields_for_tbl
+    
+    t0 = time.time()
+    
+    a = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
+    t1 = time.time()
+    total = t1-t0
+    print "time_res 2 = %s s" % total
+    
+    # print "UUU custom_metadata_fields_for_tbl 2"
+    # print a
+    # time_res 1 = 0.000250101089478 s
+    # time_res 2 = 0.000202178955078 s
     
 
   '''
