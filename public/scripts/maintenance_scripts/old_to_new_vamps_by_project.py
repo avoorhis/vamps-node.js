@@ -1103,7 +1103,7 @@ class Metadata:
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       insert_values = ""
       for dataset_id, custom_metadata_dict in custom_metadata_dict_per_dataset.items():
-        insert_values = str(dataset_id)
+        insert_values_temp = str(dataset_id)
         for field_name in self.custom_metadata_fields:
           print "AAA"
           print dataset_id
@@ -1112,71 +1112,24 @@ class Metadata:
           print field_name
           try:
             # insert_values += ", '"+ custom_metadata_dict[self.correct_field_name(field_name)] + "'"
-            insert_values += ", '"+ custom_metadata_dict[field_name] + "'"
+            insert_values_temp += ", '"+ custom_metadata_dict[field_name] + "'"
           except KeyError: 
-            insert_values += ", ''"
+            insert_values_temp += ", ''"
           except:
             raise
-        print "insert_values"
-        print insert_values
+            
+        insert_values += "), (" + insert_values_temp
+      print "insert_values"
+      print insert_values
     
       
         # field_name = param_per_dataset['structured_comment_name']
         # if field_name in self.custom_metadata_fields:      
       
-        sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-        self.utils.print_array_w_title(sql, "sql")
+      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(sql, "sql")
         # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
         # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
-        '''
-        START insert_custom_metadata
-        rows affected by insert_custom_metadata
-        (1L, 1L)
-        rows affected by insert_custom_metadata
-        (1L, 2L)
-        rows affected by insert_custom_metadata
-        (1L, 3L)
-        rows affected by insert_custom_metadata
-        (1L, 4L)
-        rows affected by insert_custom_metadata
-        (1L, 5L)
-        rows affected by insert_custom_metadata
-        (1L, 6L)
-        rows affected by insert_custom_metadata
-        (1L, 7L)
-        rows affected by insert_custom_metadata
-        (1L, 8L)
-        rows affected by insert_custom_metadata
-        (1L, 9L)
-        rows affected by insert_custom_metadata
-        (1L, 10L)
-        rows affected by insert_custom_metadata
-        (1L, 11L)
-        rows affected by insert_custom_metadata
-        (1L, 12L)
-        rows affected by insert_custom_metadata
-        (1L, 13L)
-        rows affected by insert_custom_metadata
-        (1L, 14L)
-        rows affected by insert_custom_metadata
-        (1L, 15L)
-        rows affected by insert_custom_metadata
-        (1L, 16L)
-        time_res: 2.00594305992 s
-        TODO: use maximum fields and insert once, adding empty data =
-        = make a table by all possible field names (self.custom_metadata_fields) and insert at once
-        '''
-    
-    # for project, project_id in pr.project_dict.items():
-    #   custom_metadata_table_name = "custom_metadata_%s" % project_id
-    #   field_list    = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
-    #   field_str     = "`" + "`, `".join(("dataset_id",) + field_list) + "`"
-    # 
-    #   insert_values = self.make_custom_metadata_values_list(field_list)
-    # 
-      # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
-      # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
-
 
   '''
   
