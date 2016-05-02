@@ -1002,7 +1002,7 @@ class Metadata:
   # add data to the table per project
 
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
-  def custom_metadata_fields_tbl(self):
+  def data_for_custom_metadata_fields_table(self):
     custom_metadata_fields_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
       project_id  = param_per_dataset['project_id']
@@ -1050,13 +1050,6 @@ class Metadata:
     # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
     # self.utils.print_array_w_title(sql, "sql")
 
-  def insert_custom_metadata_fields(self):
-    # field_list = "project_id, field_name, field_units, example"
-    field_list   = "project_id, field_name, example"
-
-    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
-
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
 
   def get_data_from_custom_metadata_fields(self):
     field_names = "project_id, field_name, field_units"
@@ -1125,13 +1118,6 @@ class Metadata:
 
 
 
-  def insert_custom_metadata_fields(self):
-    # field_list = "project_id, field_name, field_units, example"
-    field_list   = "project_id, field_name, example"
-
-    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
-
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
 
   def get_data_from_custom_metadata_fields(self):
     field_names = "project_id, field_name, field_units"
@@ -1417,12 +1403,12 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
-  utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls")
+  # utils.benchmarking(metadata.custom_metadata_fields_tbl, "custom_metadata_fields_tbls")
   #
   #
-  # # utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table", pr.project_dict)
-  # # if (args.do_not_insert == True):
-  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
+  if (args.do_not_insert == True):
+    utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   # # utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields")
   # # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   # if (args.do_not_insert == True):
