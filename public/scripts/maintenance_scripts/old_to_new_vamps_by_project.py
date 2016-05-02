@@ -952,93 +952,34 @@ class Metadata:
   # ==== Required metadata =====
   
   def prepare_required_metadata(self):
-    field_list = "dataset_id, " + ", ".join(self.existing_required_metadata_fields.keys())
-    # req_meteadata_values =
-    d = {}
-    all_insert_req_met = []
-    
-    t0 = time.time()
+    required_metadata_dict = {}    
     
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
-    existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}
-    
-    a = self.existing_required_metadata_fields.values()
+    existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}    
+    existing_required_metadata_fields_values_w_dataset = {param_per_dataset['structured_comment_name']: (param_per_dataset['parameterValue'], param_per_dataset['dataset']) for param_per_dataset in self.metadata_w_names}    
 
-    intr = structured_comment_names.intersection(a)
-    # print "III existing_required_metadata_fields_values: "
-    # print existing_required_metadata_fields_values
-    # set(['lat', 'depth', 'envo_biome', 'lon'])
+    intr = structured_comment_names.intersection(self.existing_required_metadata_fields.values())
     
     for b in list(intr):
-      # print "b: "
-      # print b
       key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
-      # print "EEE key: "
-      # print key
-      # print "XXX existing_required_metadata_fields_values[b] "
-      # print existing_required_metadata_fields_values[b]
+      required_metadata_dict[key[0]] = existing_required_metadata_fields_values[b]
 
-      d[key[0]] = existing_required_metadata_fields_values[b]
-    t1 = time.time()
-    total = t1-t0
-    print "time_res 1 = %s s" % total
-    print "QQQ1 d = "
-    print d
-    
-    t0 = time.time()
+  
+    print "DDD required_metadata_dict"
+    print required_metadata_dict
+  
+    field_list = "dataset_id, " + ", ".join(required_metadata_dict.keys())
+    print "FFF field_list"
+    print field_list
 
+    print "MMM existing_required_metadata_fields_values_w_dataset"
+    print existing_required_metadata_fields_values_w_dataset
     
     
-    for param_per_dataset in self.metadata_w_names:
-      #TODO: use intersection and split
-      for key, value in self.existing_required_metadata_fields.items():
-        if param_per_dataset['structured_comment_name'] == value:
-          d[key] = param_per_dataset['parameterValue']
-      d['dataset_id'] = str(param_per_dataset['dataset_id'])
-    # print "QQQ d = "
-    # print d
-    # 
-      all_insert_req_met.append(d)
-    t1 = time.time()
-    total = t1-t0
-    print "time_res 2 = %s s" % total
-    print "EEE self.all_insert_req_met_vals = "
-    print all_insert_req_met
-
-
-    """
-    time_res 1 = 0.000163078308105 s
-    time_res 2 = 0.000370979309082 s
-    time_res 1 = 0.000140905380249 s
-    time_res 2 = 0.00036096572876 s
-
-    time_res 1 = 9.51290130615e-05 s
-    time_res 2 = 0.000287055969238 s
-
-    time_res 1 = 9.70363616943e-05 s
-    0.0000970363616943
-    time_res 2 = 
-    0.000308990478516 s
-    
-    
-    """
-# {'latitude': '70.03694444', 'depth': '3', 'dataset_id': 214, 'env_biome': 'neritic epipelagic zone biome', 'longitude': '-126.3019444'}
-    
-    # field_list   = ", ".join(all_insert_req_met.keys())
-    # req_met_vals = ", ".join(all_insert_req_met.values())
-    #
-    #
-    # print "FFF field_list = "
-    # print field_list
-    # print "FFF1 req_met_vals = "
-    # print req_met_vals
-
-    #
+  
     # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
     #
     # self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
-  
-  
   
   #
   #
