@@ -988,6 +988,13 @@ class Metadata:
     rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
     
+  # ==== Custom metadata =====
+  
+  # add fields per dataset to custom_metadata_fields (project_id, field_name, field_unites, example)
+  # create table per project
+  # add data to the table per project
+  
+  
   
   #
   #
@@ -1407,8 +1414,6 @@ if __name__ == '__main__':
   #
   #
   # utils.benchmarking(metadata.make_requred_metadata_list, "make_requred_metadata_list", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
-  # utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
-  #
   #
   # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
   #
