@@ -869,22 +869,26 @@ class Metadata:
 
   def __init__(self, mysql_util, dataset, project_dict):
     self.utils = Utils()
-    self.project_dict                  = project_dict
-    self.metadata_file_fields          = []
-    self.metadata_file_content         = []
-    self.metadata_w_names              = []
-    self.required_metadata_info_fields = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
-    self.substitute_field_names        = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
-    self.existing_field_names          = set()
+    self.project_dict                    = project_dict
+    self.metadata_file_fields            = []
+    self.metadata_file_content           = []
+    self.metadata_w_names                = []
+    self.required_metadata_info_fields   = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
+    self.substitute_field_names          = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    self.existing_field_names            = set()
+    self.required_metadata               = []
+    self.required_metadata_insert_values = ""
+    self.required_metadata_field_list    = ""
+    self.existing_required_metadata_fields = {}
+    
     
     # self.parameter_name_project_dict   = defaultdict(dict)
     # self.parameter_by_dataset_dict     = defaultdict(dict)
     # defaultdict(list)
-    self.existing_required_metadata_fields     = {}
     # self.required_metadata_by_pr_dict          = defaultdict(dict)
     # self.custom_metadata_fields_insert_values  = ""
     # self.custom_metadata_field_data_by_pr_dict = defaultdict(list)
-    self.all_insert_req_met_vals               = {}
+    # self.all_insert_req_met_vals               = {}
     # self.param_per_dataset_dict                = defaultdict(dict)
 
   def parse_metadata_csv(self, metadata_csv_file_name):
@@ -951,11 +955,7 @@ class Metadata:
   # ==== Required metadata =====
   
   def prepare_required_metadata(self):
-    required_metadata = []    
-    
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
-    existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}    
-    # existing_required_metadata_fields_values_w_dataset = {param_per_dataset['structured_comment_name']: (param_per_dataset['parameterValue'], param_per_dataset['dataset']) for param_per_dataset in self.metadata_w_names}   
     existing_required_metadata_fields_values_per_dataset = defaultdict(dict)
     for param_per_dataset in self.metadata_w_names:
       existing_required_metadata_fields_values_per_dataset[param_per_dataset['dataset']][param_per_dataset['structured_comment_name']] = param_per_dataset['parameterValue']
@@ -969,34 +969,25 @@ class Metadata:
         temp_dict[key[0]] = metadata[field_name]
       temp_dict['dataset_id'] = str(dataset_id)
       
-      required_metadata.append(temp_dict)
-      # print "TTT temp_dict"
-      # print temp_dict
-
-  
-    print "DDD required_metadata"
-    print required_metadata
-  
+      self.required_metadata.append(temp_dict)
+      
+  def required_metadata_for_insert(self):
     all_required_metadata = []
     field_list_temp       = []
-    for required_metadata_dict in required_metadata:      
+    for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
 
-    insert_values = self.utils.make_insert_values(all_required_metadata)
-    print "EEE insert_values"
-    print insert_values
-      
-    # field_list = ", ".join(set(field_list_temp))
-    field_list = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
-    
+    self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
+    self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
   
-    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, insert_values)
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)
     # self.utils.print_array_w_title(sql, "sql")
-      
-    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, insert_values)
-    
+  
+  def insert_required_metadata(self):
+    rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    
   
   #
   #
@@ -1181,31 +1172,7 @@ class Metadata:
 
     """
     
-  # def create_insert_required_metadata_string(self):
-  #   """
-  #   print "MMM self.required_metadata_info_fields"
-  #   print self.required_metadata_info_fields
-  #   dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public,
-  #   """
-  #   for field_name in self.required_metadata_info_fields:
-  #     temp_list = []
-  #     try:
-  #       print "MMM self.required_metadata_list[0][field_name]"
-  #       print self.required_metadata_list[0][field_name]
-  #       temp_list.append(self.required_metadata_list[0][field_name])
-  #     except:
-  #       pass
-        
-      
 
-    #
-    #
-    # for dataset_name, required_metadata in self.required_metadata_list.items():
-    #   temp_list = dataset.add_dataset_id_to_list(required_metadata.values(), project)
-    # self.all_insert_req_met_vals = self.utils.make_insert_values(temp_list)
-
-
-    
   def make_metadata_values_list(self, metadata_dict, field_list):
     insert_values_list = []
     
@@ -1424,8 +1391,10 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.get_existing_required_metadata_fields, "get_existing_required_metadata_fields")
   utils.benchmarking(metadata.get_existing_custom_metadata_fields, "get_existing_custom_metadata_fields")
 
-
   utils.benchmarking(metadata.prepare_required_metadata, "prepare_required_metadata")
+  utils.benchmarking(metadata.required_metadata_for_insert, "required_metadata_for_insert")  
+  if (args.do_not_insert == True):
+    utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
   #  # utils.benchmarking(metadata.create_required_metadata_dict, "create_required_metadata_dict")
 
@@ -1440,8 +1409,6 @@ if __name__ == '__main__':
   # utils.benchmarking(metadata.make_requred_metadata_list, "make_requred_metadata_list", "dataset_id, " + ", ".join(metadata.existing_required_metadata_fields.values()))
   # utils.benchmarking(metadata.create_insert_required_metadata_string, "create_insert_required_metadata_string")
   #
-  # if (args.do_not_insert == True):
-  #   utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
   #
   # utils.benchmarking(metadata.custom_metadata_fields_tbls, "custom_metadata_fields_tbls", pr.project_dict)
   #
