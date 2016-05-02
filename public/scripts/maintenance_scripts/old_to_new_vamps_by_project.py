@@ -60,16 +60,9 @@ silva_taxonomy_info_per_seq
 
 *)
 from metadata.csv
-<<<<<<< HEAD
 required_metadata_info
 custom_metadata_fields
 custom_metadata_#
-
-"""
-=======
-  required_metadata_info
-  custom_metadata_fields
-  custom_metadata_#
 
 """
 import csv
@@ -963,18 +956,40 @@ class Metadata:
     # req_meteadata_values =
     d = {}
     all_insert_req_met = []
-    for param_per_dataset in self.metadata_w_names:
-      #TODO: use intersection and split
-      for key, value in self.existing_required_metadata_fields.items():
-        if param_per_dataset['structured_comment_name'] == value:
-          d[key] = param_per_dataset['parameterValue']
-      d['dataset_id'] = str(param_per_dataset['dataset_id'])
-      print "QQQ d = "
-      print d
+    
+    structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
+    existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}
+    
+    a = self.existing_required_metadata_fields.values()
 
-      all_insert_req_met.append(d)
-    print "EEE self.all_insert_req_met_vals = "
-    print all_insert_req_met
+    intr = structured_comment_names.intersection(a)
+    print "III existing_required_metadata_fields_values: "
+    print existing_required_metadata_fields_values
+    # set(['lat', 'depth', 'envo_biome', 'lon'])
+    
+    for b in list(intr):
+      print "b: "
+      print b
+      key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(b))
+      print "EEE key: "
+      print key
+      print "XXX existing_required_metadata_fields_values[key[0]] "
+      print existing_required_metadata_fields_values[key[0]]
+
+      d[key] = existing_required_metadata_fields_values[key[0]]
+    
+    # for param_per_dataset in self.metadata_w_names:
+    #   #TODO: use intersection and split
+    #   for key, value in self.existing_required_metadata_fields.items():
+    #     if param_per_dataset['structured_comment_name'] == value:
+    #       d[key] = param_per_dataset['parameterValue']
+    #   d['dataset_id'] = str(param_per_dataset['dataset_id'])
+    #   print "QQQ d = "
+    #   print d
+    # 
+    #   all_insert_req_met.append(d)
+    # print "EEE self.all_insert_req_met_vals = "
+    # print all_insert_req_met
 
 
 # {'latitude': '70.03694444', 'depth': '3', 'dataset_id': 214, 'env_biome': 'neritic epipelagic zone biome', 'longitude': '-126.3019444'}
@@ -1472,4 +1487,3 @@ if __name__ == '__main__':
 # done) prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
 # *) combine creation metadata values and then insert required or custom_metadata
 # *) change 108 to 119 in the git db
->>>>>>> origin/old_to_new_vamps
