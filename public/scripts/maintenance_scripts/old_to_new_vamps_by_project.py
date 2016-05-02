@@ -1051,7 +1051,7 @@ class Metadata:
     return field_name.replace("(", "_").replace(")", "_")
     
   def create_custom_metadata_pr_id_table(self):    
-    print self.project_ids
+    # print self.project_ids
     # set([275])
     
     # [(275, 'aux_bec_simulated_nitrate_(um)', 'unknown'), (275, 'depth_end', 'meter'), (275, 'aux_bec_simulated_phosphate_(um)', 'unknown'), (275, 'aux_sunset_hr', 'unknown'), 
@@ -1076,6 +1076,54 @@ class Metadata:
         print mysql_util.execute_no_fetch(q)
 
 
+  def insert_custom_metadata(self):
+    # for project_id in self.project_ids:
+    #   custom_metadata_table_name = "custom_metadata_%s" % project_id
+      field_str = ""
+      insert_values = ""
+    #   
+      custom_metadata_per_project_dataset_dict = defaultdict(dict)
+      for param_per_dataset in self.metadata_w_names:
+        print "param_per_dataset = "
+        print param_per_dataset
+        project_id  = str(param_per_dataset['project_id'])
+        dataset_id  = str(param_per_dataset['dataset_id'])
+        field_name  = self.correct_field_name(param_per_dataset['structured_comment_name'])
+        param_value = str(param_per_dataset['parameterValue'])
+        # print '''
+        # project_id  = %s
+        # dataset_id  = %s
+        # field_name  = %s
+        # param_value = %s
+        # ''' % (project_id, dataset_id, field_name, param_value)
+        try:
+          custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
+        except KeyError:
+          custom_metadata_per_project_dataset_dict[project_id][dataset_id]             = defaultdict(dict)
+          custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
+        except:
+          raise
+
+      # print custom_metadata_per_project_dataset_dict
+        
+        # field_name = param_per_dataset['structured_comment_name']
+        # if field_name in self.custom_metadata_fields:      
+      
+      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      self.utils.print_array_w_title(sql, "sql")
+
+    
+    # for project, project_id in pr.project_dict.items():
+    #   custom_metadata_table_name = "custom_metadata_%s" % project_id
+    #   field_list    = zip(*self.custom_metadata_field_data_by_pr_dict[str(project_id)])[0]
+    #   field_str     = "`" + "`, `".join(("dataset_id",) + field_list) + "`"
+    # 
+    #   insert_values = self.make_custom_metadata_values_list(field_list)
+    # 
+      # rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+      # self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+
+
   '''
   
   def custom_metadata_fields_tbl(self, project_dict):
@@ -1088,31 +1136,6 @@ class Metadata:
     # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
     self.create_custom_metadata_pr_id_table
     
-
-
-
-  def get_data_from_custom_metadata_fields(self):
-    field_names = "project_id, field_name, field_units"
-    table_name  = "custom_metadata_fields"
-    where_part  = "WHERE project_id in (%s)" % (",".join(map(str, pr.project_dict.values())))
-    custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
-
-  def make_data_from_custom_metadata_fields_dict(self, custom_metadata_field_data_res):
-    for entry in custom_metadata_field_data_res:
-      self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))
-  
-  '''
-  
-  
-  
-  
-  ''' 
- 
-    """    # TODO: DRY 
-      self.get_parameter_by_project_dict()
-      self.get_parameter_by_dataset_dict()
-    """
 
   def get_parameters_w_fileds_dict(self):
     print "EEE self.metadata_file_fields"
@@ -1454,7 +1477,7 @@ if __name__ == '__main__':
     utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   # if (args.do_not_insert == True):
-  #   utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
+  utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
 # TODO: 
