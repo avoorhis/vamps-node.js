@@ -886,8 +886,9 @@ class Metadata:
     self.required_metadata               = []
     self.required_metadata_insert_values = ""
     self.required_metadata_field_list    = ""
-    self.existing_required_metadata_fields     = {}
-    self.custom_metadata_fields_insert_values  = ""
+    self.existing_required_metadata_fields      = {}
+    self.custom_metadata_fields_insert_values   = ""
+    self.custom_metadata_fields_uniqued_for_tbl = []
     
     
     # self.parameter_name_project_dict   = defaultdict(dict)
@@ -1003,15 +1004,18 @@ class Metadata:
 
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
   def data_for_custom_metadata_fields_table(self):
-    custom_metadata_fields_for_tbl = []
+    custom_metadata_fields_for_tbl         = []
+    custom_metadata_fields_uniqued_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
       project_id  = param_per_dataset['project_id']
       field_name  = param_per_dataset['structured_comment_name']
       field_units = param_per_dataset['miens_units']
       example     = param_per_dataset['parameterValue']
       custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
-    
+      custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
+      
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
+    self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
     self.custom_metadata_fields_insert_values = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
     
   def insert_custom_metadata_fields(self):
@@ -1040,6 +1044,32 @@ class Metadata:
     # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
 
 
+  def create_custom_metadata_pr_id_table(self):
+    # custom_metadata_field_data_res
+    # ((275L, 'aux_temperature_(t)', 'unknown'), (275L, 'aux_sunset_min', 'unknown'), (275L, 'redox_state', 'Alphanumeric'), (275L, 'salinity', 'psu'), (275L, 'domain', 'Alphanumeric'), ...
+    
+    print "self.custom_metadata_fields_uniqued_for_tbl"
+    print self.custom_metadata_fields_uniqued_for_tbl
+    # [(275, 'domain', 'Alphanumeric', 'Bacteria'), (275, 'environmental_zone', 'Alphanumeric', 'temperate'), (275, 'envo_biome', 'Alphanumeric', 'marine abyssal zone biome'),
+    
+    
+    # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
+    #   field_descriptions  = ""
+    #   table_name          = "custom_metadata_%s" % project_id
+    #   id_name             = "%s_id" % (table_name)
+    #   primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
+    # 
+    #   field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+    #   for field_desc in entry:
+    #     field_descriptions += "`%s` %s,\n" % (field_desc[0], field_desc[1])
+    #   field_descriptions += """
+    #     UNIQUE KEY dataset_id (dataset_id),
+    #     CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
+    #     """ % (table_name)
+    # 
+    #   table_description = "ENGINE=InnoDB"
+    #   q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
+    #   print mysql_util.execute_no_fetch(q)
 
 
   '''
@@ -1416,9 +1446,9 @@ if __name__ == '__main__':
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
     
-  if (metadata.custom_metadata_fields_insert_values == ""):
-    utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
-  # # utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
+  # if (metadata.custom_metadata_fields_insert_values == ""):
+  utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
+  utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   # if (args.do_not_insert == True):
   #   utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
