@@ -977,21 +977,26 @@ class Metadata:
     print "DDD required_metadata"
     print required_metadata
   
+    all_required_metadata = []
+    field_list_temp       = []
     for required_metadata_dict in required_metadata:      
-      field_list = ", ".join(required_metadata_dict.keys())
-      print "FFF field_list"
-      print field_list
+      field_list_temp.append(required_metadata_dict.keys())
+      all_required_metadata.append(required_metadata_dict.values())
+
+    insert_values = self.utils.make_insert_values(all_required_metadata)
+    print "EEE insert_values"
+    print insert_values
       
-      insert_values = ", ".join(required_metadata_dict.values())
-      print "EEE insert_values"
-      print insert_values
+    # field_list = ", ".join(set(field_list_temp))
+    field_list = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
+    
+  
+    # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, insert_values)
+    # self.utils.print_array_w_title(sql, "sql")
       
-      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, insert_values)
-      self.utils.print_array_w_title(sql, "sql")
-      
-      # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, insert_req_met_vals)
-    #
-    # self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, insert_values)
+    
+    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
   
   #
   #
