@@ -3,6 +3,7 @@
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
+<% var portals = JSON.parse(constants).PORTALS %>
 <% if(filtering == undefined){ %>
 <%  filtering = 0 %>
 <% } %>
@@ -83,6 +84,19 @@
                   </select>
                 </td>
               </tr>
+        <% if(hostname.substring(0,6) === 'bpcweb'){ %>
+              <tr>
+                <td>
+                  by Portal:<br>
+                  <select  id='portal_select'>
+                    <option>.....</option>
+                    <% for(n in portals) { %>
+                      <option value='<%= portals[n].id %>'>(<%= portals[n].id %>) <%= portals[n].name %></option>
+                    <% } %>
+                  </select>
+                </td>
+              </tr>
+        <% } %>
               <tr>
                 <td>
                   <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;

@@ -223,15 +223,22 @@ if __name__ == '__main__':
     if not args.pid and not args.project and not args.all:
         print myusage
         sys.exit()
-    args.datetime     = str(datetime.date.today())    
-    print "ARGS: json_dir=",args.json_file_path
+    args.datetime     = str(datetime.date.today()) 
+       
     print "ARGS: dbhost  =",args.dbhost
-    if not os.path.exists(args.json_file_path):
+    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
+        args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+    elif args.dbhost == 'vampsdev':
+        args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+    
+    if os.path.exists(args.json_file_path):
+        print 'Validated: json file path'
+    else:
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
-    else:
-        print 'Validated: json file path'
-    
+    print "ARGS: json_dir=",args.json_file_path 
+
+
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
