@@ -886,10 +886,16 @@ class Metadata:
     self.required_metadata               = []
     self.required_metadata_insert_values = ""
     self.required_metadata_field_list    = ""
-    self.existing_required_metadata_fields      = {}
-    self.custom_metadata_fields_insert_values   = ""
-    self.custom_metadata_fields_uniqued_for_tbl = []
-    self.project_ids                            = set()
+    # multilevel_dict                      = lambda: defaultdict(multilevel_dict)
+    
+    self.existing_required_metadata_fields        = {}
+    self.custom_metadata_fields_insert_values     = ""
+    self.custom_metadata_fields_uniqued_for_tbl   = []
+    self.project_ids                              = set()
+    self.custom_metadata_per_project_dataset_dict = defaultdict(lambda: defaultdict(dict))
+    
+
+    
     
     # self.parameter_name_project_dict   = defaultdict(dict)
     # self.parameter_by_dataset_dict     = defaultdict(dict)
@@ -1075,42 +1081,41 @@ class Metadata:
         # print q    
         print mysql_util.execute_no_fetch(q)
 
-
-  def insert_custom_metadata(self):
-    # for project_id in self.project_ids:
-    #   custom_metadata_table_name = "custom_metadata_%s" % project_id
-      field_str = ""
-      insert_values = ""
-    #   
-      custom_metadata_per_project_dataset_dict = defaultdict(dict)
-      for param_per_dataset in self.metadata_w_names:
-        print "param_per_dataset = "
-        print param_per_dataset
+  def make_custom_metadata_per_project_dataset_dict(self):
+    for param_per_dataset in self.metadata_w_names:
+      field_name  = param_per_dataset['structured_comment_name']
+      if field_name in self.custom_metadata_fields:              
         project_id  = str(param_per_dataset['project_id'])
         dataset_id  = str(param_per_dataset['dataset_id'])
-        field_name  = self.correct_field_name(param_per_dataset['structured_comment_name'])
         param_value = str(param_per_dataset['parameterValue'])
-        # print '''
-        # project_id  = %s
-        # dataset_id  = %s
-        # field_name  = %s
-        # param_value = %s
-        # ''' % (project_id, dataset_id, field_name, param_value)
-        try:
-          custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
-        except KeyError:
-          custom_metadata_per_project_dataset_dict[project_id][dataset_id]             = defaultdict(dict)
-          custom_metadata_per_project_dataset_dict[project_id][dataset_id][field_name] = param_value
-        except:
-          raise
+        self.custom_metadata_per_project_dataset_dict[project_id][dataset_id][self.correct_field_name(field_name)] = param_value
 
-      # print custom_metadata_per_project_dataset_dict
-        
+  def insert_custom_metadata(self):
+    # print self.custom_metadata_fields_uniqued_for_tbl
+    
+    self.make_custom_metadata_per_project_dataset_dict()
+    field_str_all_list = []
+    for project_id, custom_metadata_dict_per_dataset in self.custom_metadata_per_project_dataset_dict.items():
+      custom_metadata_table_name = "custom_metadata_%s" % project_id
+      field_str     = ""
+      insert_values = ""
+      for dataset_id, custom_metadata_dict in custom_metadata_dict_per_dataset.items():
+        print dataset_id
+        print custom_metadata_dict
+        # field_str = custom_metadata_dict.keys()
+        # ("dataset_id",)
+        field_str = "dataset_id, " + "`" + "`, `".join(custom_metadata_dict.keys()) + "`"
+        # field_str = ", ".join(set(self.utils.flatten_2d_list(field_str_all_list)))
+        # wrong order
+        print "field_str"
+        print field_str
+    
+      
         # field_name = param_per_dataset['structured_comment_name']
         # if field_name in self.custom_metadata_fields:      
       
-      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      self.utils.print_array_w_title(sql, "sql")
+      # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+      # self.utils.print_array_w_title(sql, "sql")
 
     
     # for project, project_id in pr.project_dict.items():
