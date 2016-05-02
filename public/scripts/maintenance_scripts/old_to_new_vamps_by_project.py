@@ -889,7 +889,7 @@ class Metadata:
     self.existing_required_metadata_fields      = {}
     self.custom_metadata_fields_insert_values   = ""
     self.custom_metadata_fields_uniqued_for_tbl = []
-    
+    self.project_ids                            = set()
     
     # self.parameter_name_project_dict   = defaultdict(dict)
     # self.parameter_by_dataset_dict     = defaultdict(dict)
@@ -1019,6 +1019,7 @@ class Metadata:
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
     self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
     self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
+    self.project_ids                            = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
     
   def insert_custom_metadata_fields(self):
     field_list = "project_id, field_name, field_units, example"
@@ -1049,19 +1050,12 @@ class Metadata:
   def correct_field_name(self, field_name):
     return field_name.replace("(", "_").replace(")", "_")
     
-  def create_custom_metadata_pr_id_table(self):
-    # custom_metadata_field_data_res
-    # ((275L, 'aux_temperature_(t)', 'unknown'), (275L, 'aux_sunset_min', 'unknown'), (275L, 'redox_state', 'Alphanumeric'), (275L, 'salinity', 'psu'), (275L, 'domain', 'Alphanumeric'), ...
-    
-    print "self.custom_metadata_fields_uniqued_for_tbl"
-    print self.custom_metadata_fields_uniqued_for_tbl
-    
-    project_ids = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
-    # print project_ids
+  def create_custom_metadata_pr_id_table(self):    
+    print self.project_ids
     # set([275])
     
     # [(275, 'aux_bec_simulated_nitrate_(um)', 'unknown'), (275, 'depth_end', 'meter'), (275, 'aux_bec_simulated_phosphate_(um)', 'unknown'), (275, 'aux_sunset_hr', 'unknown'), 
-    for project_id in project_ids:
+    for project_id in self.project_ids:
         field_descriptions  = ""
         table_name          = "custom_metadata_%s" % project_id
         id_name             = "%s_id" % (table_name)
