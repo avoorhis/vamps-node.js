@@ -951,7 +951,7 @@ class Metadata:
   # ==== Required metadata =====
   
   def prepare_required_metadata(self):
-    required_metadata_dict = {}    
+    required_metadata = []    
     
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
     existing_required_metadata_fields_values = {param_per_dataset['structured_comment_name']: param_per_dataset['parameterValue'] for param_per_dataset in self.metadata_w_names}    
@@ -967,29 +967,29 @@ class Metadata:
       for field_name in list(intr):
         key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
         temp_dict[key[0]] = metadata[field_name]
-        print "YYY temp_dict"
-        print temp_dict
-
-      print "TTT dataset_id"
-      print dataset_id
-      temp_dict['dataset_id'] = dataset_id
+      temp_dict['dataset_id'] = str(dataset_id)
       
-      required_metadata_dict[dataset_id] = temp_dict
+      required_metadata.append(temp_dict)
       # print "TTT temp_dict"
       # print temp_dict
 
   
-    print "DDD required_metadata_dict"
-    print required_metadata_dict
+    print "DDD required_metadata"
+    print required_metadata
   
-    # field_list = "dataset_id, " + ", ".join(required_metadata_dict.keys())
-    # print "FFF field_list"
-    # print field_list
-
-    
-    
-  
-    # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, self.all_insert_req_met_vals)
+    for required_metadata_dict in required_metadata:      
+      field_list = ", ".join(required_metadata_dict.keys())
+      print "FFF field_list"
+      print field_list
+      
+      insert_values = ", ".join(required_metadata_dict.values())
+      print "EEE insert_values"
+      print insert_values
+      
+      sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", "required_metadata_info", field_list, insert_values)
+      self.utils.print_array_w_title(sql, "sql")
+      
+      # rows_affected = mysql_util.execute_insert("required_metadata_info", field_list, insert_req_met_vals)
     #
     # self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
   
