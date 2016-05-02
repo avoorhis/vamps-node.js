@@ -1094,29 +1094,67 @@ class Metadata:
     # print self.custom_metadata_fields_uniqued_for_tbl
     
     self.make_custom_metadata_per_project_dataset_dict()
-    field_str_all_list = []
+    field_str_all_list = "dataset_id, "  + "`"   + "`, `".join(self.custom_metadata_fields)   + "`"
+    print "field_str_all_list"
+    print field_str_all_list
     for project_id, custom_metadata_dict_per_dataset in self.custom_metadata_per_project_dataset_dict.items():
       custom_metadata_table_name = "custom_metadata_%s" % project_id
       field_str     = ""
       insert_values = ""
       for dataset_id, custom_metadata_dict in custom_metadata_dict_per_dataset.items():
-        print dataset_id
-        print custom_metadata_dict
-        # field_str = custom_metadata_dict.keys()
-        # ("dataset_id",)
-        field_str = "dataset_id, " + "`" + "`, `".join(custom_metadata_dict.keys()) + "`"
-        # field_str = ", ".join(set(self.utils.flatten_2d_list(field_str_all_list)))
-        # wrong order
-        print "field_str"
-        print field_str
+        # print dataset_id
+        # print custom_metadata_dict
+        field_str     = "dataset_id, "  + "`"   + "`, `".join(custom_metadata_dict.keys())   + "`"
+        insert_values = str(dataset_id) + ", '" + "', '".join(custom_metadata_dict.values()) + "'"
+        # print "insert_values"
+        # print insert_values
     
       
         # field_name = param_per_dataset['structured_comment_name']
         # if field_name in self.custom_metadata_fields:      
       
-      # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
-      # self.utils.print_array_w_title(sql, "sql")
-
+        # sql = "INSERT %s INTO %s (%s) VALUES (%s)" % ("ignore", custom_metadata_table_name, field_str, insert_values)
+        # self.utils.print_array_w_title(sql, "sql")
+        rows_affected = mysql_util.execute_insert(custom_metadata_table_name, field_str, insert_values)
+        self.utils.print_array_w_title(rows_affected, "rows affected by insert_custom_metadata")
+        '''
+        START insert_custom_metadata
+        rows affected by insert_custom_metadata
+        (1L, 1L)
+        rows affected by insert_custom_metadata
+        (1L, 2L)
+        rows affected by insert_custom_metadata
+        (1L, 3L)
+        rows affected by insert_custom_metadata
+        (1L, 4L)
+        rows affected by insert_custom_metadata
+        (1L, 5L)
+        rows affected by insert_custom_metadata
+        (1L, 6L)
+        rows affected by insert_custom_metadata
+        (1L, 7L)
+        rows affected by insert_custom_metadata
+        (1L, 8L)
+        rows affected by insert_custom_metadata
+        (1L, 9L)
+        rows affected by insert_custom_metadata
+        (1L, 10L)
+        rows affected by insert_custom_metadata
+        (1L, 11L)
+        rows affected by insert_custom_metadata
+        (1L, 12L)
+        rows affected by insert_custom_metadata
+        (1L, 13L)
+        rows affected by insert_custom_metadata
+        (1L, 14L)
+        rows affected by insert_custom_metadata
+        (1L, 15L)
+        rows affected by insert_custom_metadata
+        (1L, 16L)
+        time_res: 2.00594305992 s
+        TODO: use maximum fields and insert once, adding empty data =
+        = make a table by all possible field names (self.custom_metadata_fields) and insert at once
+        '''
     
     # for project, project_id in pr.project_dict.items():
     #   custom_metadata_table_name = "custom_metadata_%s" % project_id
@@ -1475,8 +1513,8 @@ if __name__ == '__main__':
   #
   #
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
-  if (args.do_not_insert == True):
-    utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
+  # if (args.do_not_insert == True):
+  utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   
   if not metadata.custom_metadata_fields_uniqued_for_tbl:
     utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
