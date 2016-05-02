@@ -1008,7 +1008,7 @@ class Metadata:
     custom_metadata_fields_uniqued_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
       project_id  = param_per_dataset['project_id']
-      field_name  = param_per_dataset['structured_comment_name']
+      field_name  = self.correct_field_name(param_per_dataset['structured_comment_name'])
       field_units = param_per_dataset['miens_units']
       example     = param_per_dataset['parameterValue']
       custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
@@ -1016,7 +1016,7 @@ class Metadata:
       
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
     self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
-    self.custom_metadata_fields_insert_values = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
+    self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
     
   def insert_custom_metadata_fields(self):
     field_list = "project_id, field_name, field_units, example"
@@ -1044,14 +1044,39 @@ class Metadata:
     print self.custom_metadata_fields_uniqued_for_tbl
     # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
 
+  def correct_field_name(self, field_name):
+    return field_name.replace("(", "_").replace(")", "_")
+    
   def create_custom_metadata_pr_id_table(self):
     # custom_metadata_field_data_res
     # ((275L, 'aux_temperature_(t)', 'unknown'), (275L, 'aux_sunset_min', 'unknown'), (275L, 'redox_state', 'Alphanumeric'), (275L, 'salinity', 'psu'), (275L, 'domain', 'Alphanumeric'), ...
     
     print "self.custom_metadata_fields_uniqued_for_tbl"
     print self.custom_metadata_fields_uniqued_for_tbl
-    # [(275, 'aux_bec_simulated_nitrate_(um)', 'unknown'), (275, 'depth_end', 'meter'), (275, 'aux_bec_simulated_phosphate_(um)', 'unknown'), (275, 'aux_sunset_hr', 'unknown'), 
     
+    project_ids = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
+    # print project_ids
+    # set([275])
+    
+    # [(275, 'aux_bec_simulated_nitrate_(um)', 'unknown'), (275, 'depth_end', 'meter'), (275, 'aux_bec_simulated_phosphate_(um)', 'unknown'), (275, 'aux_sunset_hr', 'unknown'), 
+    for project_id in project_ids:
+        field_descriptions  = ""
+        table_name          = "custom_metadata_%s" % project_id
+        id_name             = "%s_id" % (table_name)
+        primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
+    
+        field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+        for entry in self.custom_metadata_fields_uniqued_for_tbl:
+          field_descriptions += "`%s` varchar(128) DEFAULT NULL,\n" % (entry[1])
+
+        field_descriptions += """
+            UNIQUE KEY dataset_id (dataset_id),
+            CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
+            """ % (table_name)
+        
+        table_description = "ENGINE=InnoDB"
+        q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
+        print q
     
     # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
     #   field_descriptions  = ""
