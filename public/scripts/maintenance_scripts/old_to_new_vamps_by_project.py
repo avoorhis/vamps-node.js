@@ -1034,15 +1034,15 @@ class Metadata:
   #   for entry in custom_metadata_field_data_res:
   #     self.custom_metadata_field_data_by_pr_dict[str(entry[0])].append((entry[1], entry[2]))
 
+  # create table per project
   def get_data_from_custom_metadata_fields(self, project_dict):
     field_names = "project_id, field_name, field_units"
     table_name  = "custom_metadata_fields"
     where_part  = "WHERE project_id in (%s)" % (",".join(map(str, project_dict.values())))
-    custom_metadata_field_data_res = mysql_util.execute_simple_select(field_names, table_name, where_part)
-    print "custom_metadata_field_data_res"
-    print custom_metadata_field_data_res
+    self.custom_metadata_fields_uniqued_for_tbl = mysql_util.execute_simple_select(field_names, table_name, where_part)
+    print "self.custom_metadata_fields_uniqued_for_tbl"
+    print self.custom_metadata_fields_uniqued_for_tbl
     # self.make_data_from_custom_metadata_fields_dict(custom_metadata_field_data_res)
-
 
   def create_custom_metadata_pr_id_table(self):
     # custom_metadata_field_data_res
@@ -1050,7 +1050,7 @@ class Metadata:
     
     print "self.custom_metadata_fields_uniqued_for_tbl"
     print self.custom_metadata_fields_uniqued_for_tbl
-    # [(275, 'domain', 'Alphanumeric', 'Bacteria'), (275, 'environmental_zone', 'Alphanumeric', 'temperate'), (275, 'envo_biome', 'Alphanumeric', 'marine abyssal zone biome'),
+    # [(275, 'aux_bec_simulated_nitrate_(um)', 'unknown'), (275, 'depth_end', 'meter'), (275, 'aux_bec_simulated_phosphate_(um)', 'unknown'), (275, 'aux_sunset_hr', 'unknown'), 
     
     
     # for project_id, entry in self.custom_metadata_field_data_by_pr_dict.items():
@@ -1445,9 +1445,9 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
   if (args.do_not_insert == True):
     utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
-    
-  # if (metadata.custom_metadata_fields_insert_values == ""):
-  utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
+  
+  if not metadata.custom_metadata_fields_uniqued_for_tbl:
+    utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   # if (args.do_not_insert == True):
   #   utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
