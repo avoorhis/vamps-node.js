@@ -212,7 +212,15 @@ class Utils:
             return True
         else:
             return False
-
+            
+    def is_vamps_prod(self):
+        print os.uname()[1]
+        dev_comps = ['bpcweb8', 'bpcweb8.bpcservers.private']
+        if os.uname()[1] in dev_comps:
+            return True
+        else:
+            return False
+            
     def print_both(self, message):
         print message
         logging.debug(message)
@@ -1187,7 +1195,11 @@ if __name__ == '__main__':
 # ========
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
-  mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+  if utils.is_vamps_prod():
+    read_default_file=os.path.expanduser("~/.my.cnf")
+    mysql_util = Mysql_util(host = 'vampsdb', db="vamps2")
+  else:
+    mysql_util = Mysql_util(host = 'localhost', db="vamps2")
   
   # test_query1 = "SHOW tables" 
   # print mysql_util.execute_fetch_select(test_query1)
