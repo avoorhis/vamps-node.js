@@ -248,7 +248,8 @@ class Utils:
       print "START %s" % func_name
       wrapped  = utils.wrapper(func, *args)
       time_res = timeit.timeit(wrapped, number=1)
-      print "time_res: %s s" % time_res
+      print 'time: %.2f s' % time_res
+      
 
     def search_in_2d_list(self, search, data):
       for sublist in data:
