@@ -1042,8 +1042,8 @@ class Metadata:
     '''
 
     # aux_bec_simulated_phosphate__um_
-    print "self.custom_metadata_fields_insert_values VVV"
-    print self.custom_metadata_fields_insert_values
+    # print "self.custom_metadata_fields_insert_values VVV"
+    # print self.custom_metadata_fields_insert_values
     rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
     self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
 
