@@ -302,7 +302,7 @@ class CSV_files:
     pass
   
   def run_csv_dump(self, prod_mysql_util):
-    # TODO: add directory from args?
+    # TODO: add directory from args
     project = args.project
     query = "SELECT * FROM vamps_metadata where project='%s'" % (project)  
     metadata_csv_file_name = "metadata_%s.csv" % project
@@ -1020,7 +1020,7 @@ class Metadata:
 
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
   def data_for_custom_metadata_fields_table(self):
-    # TODO: too long and does more then one thing
+    # TODO: too long and does more then one thing - change!
     custom_metadata_fields_for_tbl         = []
     custom_metadata_fields_uniqued_for_tbl = []
     for param_per_dataset in self.metadata_w_names:
@@ -1318,7 +1318,6 @@ if __name__ == '__main__':
 # done) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
 # done) prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
 # done) combine creation metadata values and then insert required or custom_metadata
-# *) change 108 to 119 in the git db
+# done) change 108 to 119 in the git db
 # *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
-# *) fix Bacteria;Actinobacteria;Kineosporiales;Actinobacteria;Kineosporiaceae;	(wrong!) vs. Bacteria;Actinobacteria;Actinobacteria;Kineosporiales;Kineosporiaceae (OK)
 # *) change print to print_both
