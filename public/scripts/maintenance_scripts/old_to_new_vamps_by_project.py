@@ -1321,3 +1321,4 @@ if __name__ == '__main__':
 # done) change 108 to 119 in the git db
 # *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
 # *) change print to print_both
+# *) use more the one project at once
