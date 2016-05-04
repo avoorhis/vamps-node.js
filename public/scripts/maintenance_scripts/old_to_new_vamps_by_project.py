@@ -545,11 +545,6 @@ class User:
     self.parse_user_contact_csv(self.user_contact_csv_file_name)
     self.user_data = self.utils.search_in_2d_list(self.contact, self.user_contact_file_content)
 
-  # def get_user_id(self, username):
-  #   #TODO: make general for user, project etc.
-  #   user_id_query = "SELECT user_id FROM user WHERE username = '%s'" % (username)
-  #   return mysql_util.execute_fetch_select(user_id_query)[0]
-
   def parse_user_contact_csv(self, user_contact_csv_file_name):
     self.user_contact_file_content = self.utils.read_csv_into_list(user_contact_csv_file_name)[1]
     # self.utils.print_array_w_title(self.user_contact_file_content, "===\nself.user_contact_file_content BBB")
@@ -564,7 +559,11 @@ class User:
     self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]), rows_affected)
     
   def get_user_id(self):
-    self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    try:
+      self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
+    except:
+      print "Please check if insert_user was successful"
+      raise
     
 
 class Project:
@@ -1317,3 +1316,4 @@ if __name__ == '__main__':
 # *) change 108 to 119 in the git db
 # *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
 # *) fix Bacteria;Actinobacteria;Kineosporiales;Actinobacteria;Kineosporiaceae;	(wrong!) vs. Bacteria;Actinobacteria;Actinobacteria;Kineosporiales;Kineosporiaceae (OK)
+# *) change print to print_both
