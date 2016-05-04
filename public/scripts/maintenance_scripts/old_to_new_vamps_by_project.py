@@ -1305,13 +1305,15 @@ if __name__ == '__main__':
 # *) add check if not data from vamps_prod
 # done) move connection with vamps_prod and csv creation out
 # *) use buffer for sequences - hangs mysql
-# *) add what tables are should be preuploaded (rank, classifier, env_sample_source)
+# done) add what tables are should be preuploaded (rank, classifier, env_sample_source)
 # *) choose database from a command line
 # *) add file names from the command line if not created
 # done) add data for _pipe into csv
 # *) if rank table is not there - try: and give a miningful error
 # *) use public='1' from args for public in project!
-# *) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
+# done) /* 12:34:35 PM local_ruby vamps2 */ INSERT INTO `rank` (`rank_id`, `rank`, `rank_number`) VALUES (NULL, 'orderx', '3');
 # done) prepopulate (rank, classifier, env_sample_source), remove custom_metadata 2... and save as schema
-# *) combine creation metadata values and then insert required or custom_metadata
+# done) combine creation metadata values and then insert required or custom_metadata
 # *) change 108 to 119 in the git db
+# *) required_metadata_info -4??? see on vampsprod for pr MBE_1666G_Bv4
+# *) fix Bacteria;Actinobacteria;Kineosporiales;Actinobacteria;Kineosporiaceae;	(wrong!) vs. Bacteria;Actinobacteria;Actinobacteria;Kineosporiales;Kineosporiaceae (OK)
