@@ -554,7 +554,7 @@ class User:
     try:
       insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     except:
-      self.utils.print_both "Please check if contact information from project corresponds with user_contact_PROJECT.csv"
+      self.utils.print_both("\n!!!\nPlease check if contact information from project corresponds with user_contact_PROJECT.csv\n!!!\n")
       raise
     
 
@@ -567,7 +567,7 @@ class User:
     try:
       self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
     except:
-      self.utils.print_both "Please check if insert_user was successful"
+      self.utils.print_both("\n!!!\nPlease check if insert_user was successful\n!!!\n")
       raise
     
 
