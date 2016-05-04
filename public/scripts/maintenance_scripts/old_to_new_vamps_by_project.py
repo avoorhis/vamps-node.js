@@ -551,7 +551,12 @@ class User:
 
   def insert_user(self):
     field_list    = "username, email, institution, first_name, last_name, active, security_level, encrypted_password"
-    insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
+    try:
+      insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
+    except:
+      self.utils.print_both "Please check if contact information from project corresponds with user_contact_PROJECT.csv"
+      raise
+    
 
     rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows affected by insert_user")
@@ -562,7 +567,7 @@ class User:
     try:
       self.user_id  = mysql_util.get_id("user_id", "user", "WHERE username = '%s'" % (self.user_data[1]))
     except:
-      print "Please check if insert_user was successful"
+      self.utils.print_both "Please check if insert_user was successful"
       raise
     
 
