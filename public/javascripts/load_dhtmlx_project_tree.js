@@ -174,13 +174,14 @@ function clear_filters() {
   if(document.getElementById('portal_select')){
     document.getElementById('portal_select').value ='.....'
   }
-  var xmlhttp = new XMLHttpRequest();  
+  var xmlhttp = new XMLHttpRequest();
+  //alert(xmlhttp)  
   xmlhttp.open("GET", target, true);
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
-        
+        //alert('cf')
         if( pcount === 0 ){
             document.getElementById('nodata_span').innerHTML='No Data';
         }else{
@@ -205,7 +206,7 @@ function clear_filters() {
 //  SHOW/FILTER  RESULTS for project/substring Search
 //
 function afterCall(){
-  //alert('set_dataset_count(0)')
+  
     var delay=100; //0.1 second
     setTimeout(function() {
         //your code to be executed after 0.1 second
