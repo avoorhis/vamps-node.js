@@ -2340,7 +2340,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //console.log(PROJECT_TREE_PIDS.length)
     //result = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     //res.send('tree')
-    res.sendStatus(PROJECT_TREE_PIDS.length);
+    res.json(PROJECT_TREE_PIDS.length);
 });
 //
 //

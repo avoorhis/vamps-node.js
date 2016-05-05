@@ -212,7 +212,7 @@ if __name__ == '__main__':
                 help=" ") 
     
     parser.add_argument("-host", "--host",    
-                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
                
     parser.add_argument("-json_file_path", "--json_file_path",        
@@ -226,7 +226,7 @@ if __name__ == '__main__':
     args.datetime     = str(datetime.date.today()) 
        
     print "ARGS: dbhost  =",args.dbhost
-    if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
+    if args.dbhost == 'vampsdb' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'

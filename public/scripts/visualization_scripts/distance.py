@@ -92,7 +92,7 @@ def go_distance(args):
     
     out_fp.close()
     
-    print dm1
+    #print dm1
     #print edited_dataset_list
     #return (dm1, dist, dm2, dm3, edited_dataset_list, edited_did_hash)
     return (dm1, dist, dm2, dm3, edited_dataset_list)
@@ -151,9 +151,9 @@ def get_data_matrix1(dist):
 
 def remove_zero_sum_datasets(mtx):
     bad_rows = np.nonzero(mtx.sum(axis=1) == 0)
-    print mtx
+    #print mtx
     mtx = np.delete(mtx, bad_rows, axis=0)
-    print mtx
+    #print mtx
     return (mtx, bad_rows)
 
 def dendrogram_pdf(args, dm, leafLabels):
@@ -543,7 +543,7 @@ if __name__ == '__main__':
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
         new_ds_list = cluster_datasets(args, dm3)
-        print json.dumps(new_ds_list)
+        #print json.dumps(new_ds_list)
         
 
     if args.function == 'fheatmap':

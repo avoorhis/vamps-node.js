@@ -176,7 +176,7 @@ function clear_filters() {
   }
   var xmlhttp = new XMLHttpRequest();  
   xmlhttp.open("GET", target, true);
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.setRequestHeader("Content-type","application/json");
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
