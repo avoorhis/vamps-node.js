@@ -25,10 +25,10 @@ real	0m3.707s
 
   or
   wrapped = self.utils.wrapper(func, arg)
-  time_res = timeit.timeit(wrapped, number=1)
+  time_res = timeit.timeit(wrapped, number = 1)
 
 *) utils.write_to_csv_file instead 
-mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
+mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
 
 dataset:
 new_dataset
@@ -153,10 +153,10 @@ class Mysql_util:
     """
     Connection to vamps or vampsdev
 
-    Takes parameters from ~/.my.cnf_node, default host = "vampsdev", db="vamps2"
+    Takes parameters from ~/.my.cnf_node, default host = "vampsdev", db = "vamps2"
     if different use my_conn = Mysql_util(host, db)
     """
-    def __init__(self, host="bpcweb7", db="vamps2", read_default_file=os.path.expanduser("~/.my.cnf_node"), port=3306):
+    def __init__(self, host = "bpcweb7", db = "vamps2", read_default_file = os.path.expanduser("~/.my.cnf_node"), port = 3306):
         self.utils     = Utils()
         self.conn      = None
         self.cursor    = None
@@ -167,9 +167,9 @@ class Mysql_util:
         
         if read_default_file == "":
           if self.utils.is_local():
-            read_default_file=os.path.expanduser("~/.my.cnf_local")
+            read_default_file = os.path.expanduser("~/.my.cnf_local")
           else:
-            read_default_file=os.path.expanduser("~/.my.cnf_node")
+            read_default_file = os.path.expanduser("~/.my.cnf_node")
         print "read_default_file = %s" % read_default_file
 
         try:
@@ -177,13 +177,13 @@ class Mysql_util:
             self.utils.print_both("host = " + str(host) + ", db = "  + str(db))
             self.utils.print_both("=" * 40)
 
-            self.conn = MySQLdb.connect(host=host, db=db, read_default_file=read_default_file, port=port)
-            print "host=%s, db=%s, read_default_file = %s" % (host, db, read_default_file)
+            self.conn = MySQLdb.connect(host = host, db = db, read_default_file = read_default_file, port = port)
+            print "host = %s, db = %s, read_default_file = %s" % (host, db, read_default_file)
             
           # else:
-          #   self.conn = MySQLdb.connect(host=host, db=db, read_default_file)
-            # self.db = MySQLdb.connect(host="localhost", # your host, usually localhost
-            #                          read_default_file="~/.my.cnf_node"  )
+          #   self.conn = MySQLdb.connect(host = host, db = db, read_default_file)
+            # self.db = MySQLdb.connect(host = "localhost", # your host, usually localhost
+            #                          read_default_file = "~/.my.cnf_node"  )
             # cur = db.cursor()
             self.cursor = self.conn.cursor()
             # self.escape = self.conn.escape()
@@ -292,11 +292,11 @@ class Utils:
       print message
 
     def read_csv_into_list(self, file_name):
-      csv_file_content_all = list(csv.reader(open(file_name, 'rb'), delimiter=','))
+      csv_file_content_all = list(csv.reader(open(file_name, 'rb'), delimiter = ','))
       csv_file_fields      = csv_file_content_all[0]
       csv_file_content     = csv_file_content_all[1:]
       return (csv_file_fields, csv_file_content)
-      # return list(csv.reader(open(file_name, 'rb'), delimiter=','))[1:]
+      # return list(csv.reader(open(file_name, 'rb'), delimiter = ','))[1:]
 
     def flatten_2d_list(self, list):
       return [item for sublist in list for item in sublist]
@@ -309,7 +309,7 @@ class Utils:
     def benchmarking(self, func, func_name, *args, **kwargs):
       print "START %s" % func_name
       wrapped  = utils.wrapper(func, *args)
-      time_res = timeit.timeit(wrapped, number=1)
+      time_res = timeit.timeit(wrapped, number = 1)
 
       print "time_res: %s" % time_res
 
@@ -369,15 +369,15 @@ class CSV_files:
 
     # TODO: add directory from args?
     project_name = args.project
-    query = "SELECT * FROM vamps_metadata where project='%s'" % (project_name)  
+    query = "SELECT * FROM vamps_metadata where project = '%s'" % (project_name)  
     metadata_csv_file_name = "metadata_%s.csv" % project_name
     utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences where project='%s'" % (project_name)  
+    query = "SELECT * FROM vamps_sequences where project = '%s'" % (project_name)  
     seq_csv_file_name = "sequences_%s.csv" % project_name
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
 
-    query = "SELECT * FROM vamps_sequences_pipe where project='%s'" % (project_name)  
+    query = "SELECT * FROM vamps_sequences_pipe where project = '%s'" % (project_name)  
     seq_csv_file_name = "sequences_%s.csv" % project_name
 
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
@@ -1186,13 +1186,13 @@ if __name__ == '__main__':
     # todo: get file_names and path from args
     """
     Create manually:
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project='ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_metadata where project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > metadata_ICM_SMS_Bv6.csv
 
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences where project = 'ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > sequences_ICM_SMS_Bv6.csv
     
-    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project='ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> sequences_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT * FROM vamps_sequences_pipe where project = 'ICM_SMS_Bv6';" |sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" >> sequences_ICM_SMS_Bv6.csv
 
-    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project='ICM_SMS_Bv6' UNION SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project_name = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
+    mysql -B -h vampsdb vamps -e "SELECT project, title, project_description, funding, env_sample_source_id, contact, email, institution FROM new_project LEFT JOIN new_contact using(contact_id) WHERE project = 'ICM_SMS_Bv6' UNION SELECT project_name AS project, title, description AS project_description, 0 AS funding, env_source_id AS env_sample_source_id, contact, email, institution FROM vamps_upload_info WHERE project_name = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > project_ICM_SMS_Bv6.csv
     
     mysql -B -h vampsdb vamps -e "SELECT distinct dataset, dataset_description, env_sample_source_id, project from new_dataset join new_project using(project_id) WHERE project = 'ICM_SMS_Bv6';" | sed "s/'/\'/;s/\t/\",\"/g;s/^/\"/;s/$/\"/;s/\n//g" > dataset_ICM_SMS_Bv6.csv
 
@@ -1214,7 +1214,7 @@ if __name__ == '__main__':
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
 
-  mysql_util = Mysql_util(host = 'localhost', db="vamps2")
+  mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
 
   
   # test_query1 = "SHOW tables" 
@@ -1306,4 +1306,4 @@ if __name__ == '__main__':
 # *) add file names from the command line if not created
 # *) add data for _pipe into csv
 # *) if rank table is not there - try: and give a miningful error
-# *) use public='1' for public in project!
+# *) use public = '1' for public in project!
