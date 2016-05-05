@@ -9,6 +9,8 @@ public/scripts/*.pyc
 !db_config.sql.gz
 !db_schema_w_test_data.sql
 !db_schema_w_test_data.sql.gz
+*.csv.gz
+*.csv
 
 config/db-connection*
 config/config*
