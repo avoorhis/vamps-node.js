@@ -2341,7 +2341,7 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //result = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     //res.send('tree')
     res.json(PROJECT_TREE_PIDS.length);
-    //res.sendStatus(PROJECT_TREE_PIDS.length);
+
 });
 //
 //

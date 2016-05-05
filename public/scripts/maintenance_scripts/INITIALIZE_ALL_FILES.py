@@ -301,7 +301,7 @@ if __name__ == '__main__':
                 help="")
     args = parser.parse_args() 
 
-
+    print
     warnings = []
     if args.dbhost == 'vampsdev':
         args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')

@@ -313,7 +313,7 @@ def push_taxonomy(args):
     silva = ['domain_id','phylum_id','klass_id','order_id','family_id','genus_id','species_id','strain_id']
     accepted_domains = ['bacteria','archaea','eukarya','fungi','organelle','unknown']
     tax_collector = {}
-    
+    seq_count_sum = 0
     
     logging.debug( 'csv '+args.seqs_file)
     lines = list(csv.reader(open(args.seqs_file, 'rb'), delimiter=','))
@@ -331,6 +331,7 @@ def push_taxonomy(args):
         refhvr_ids=line[5]
         rank = line[6]
         seq_count = line[7]
+        seq_count_sum += int(seq_count)
         distance = line[9]
        
         if pj_file != args.project:
@@ -358,7 +359,7 @@ def push_taxonomy(args):
                               'distance':distance
                               }
         q1 = "SELECT rank_id from rank where rank = '"+rank+"'"
-        logging.debug( q1)
+        logging.debug(q1)
         cur.execute(q1)
         mysql_conn.commit()
 
@@ -373,9 +374,7 @@ def push_taxonomy(args):
 
             rank_id = RANK_COLLECTOR[ranks[i]]
             if len(tax_items) > i:
-
                 taxitem = tax_items[i]
-
             else:
                 taxitem = ranks[i]+'_NA'
             sumtax += taxitem+';'
@@ -465,6 +464,9 @@ def push_taxonomy(args):
 
     logging.debug( 'SUMMED_TAX_COLLECTOR')
     logging.debug( SUMMED_TAX_COLLECTOR)
+    print 'SUMMED_TAX_COLLECTOR'
+    print SUMMED_TAX_COLLECTOR
+    print 'sum seq count',seq_count_sum
              
 def get_config_data(args):
     CONFIG_ITEMS['env_source_id'] = args.env_source_id
@@ -618,10 +620,11 @@ def get_metadata(args):
     else:
         lines = list(csv.reader(open(args.metadata_file, 'rb'), delimiter='\t'))
 
-    print_both_w_text("LLL: lines", lines)
+    #print_both_w_text("LLL: lines", lines)
     TMP_METADATA_ITEMS = {}
     for line in lines:
-        #print line
+        print line
+        #line = line[0]
         if not line:
             continue
         if line[0] == 'dataset' and line[1] == 'parameterName':
@@ -737,7 +740,7 @@ if __name__ == '__main__':
                 required=True,  action="store",   dest = "owner", 
                 help="""VAMPS user name""")
     parser.add_argument("-delim","--delimiter",                   
-                required=False,  action="store",   dest = "delim", default='tab',
+                required=False,  action="store",   dest = "delim", default='comma',
                 help="""METADATA: comma or tab""")
     parser.add_argument("-add","--add_project",                   
                 required=False,  action="store_true",   dest = "add_project", default=False,
