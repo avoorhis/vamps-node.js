@@ -43,7 +43,7 @@ public/tmp_images/*
 !public/tmp_images/.gitignore
 public/blast/*
 !public/blast/.gitignore
-
+public/monitor/*
 # ignore public/databases directory
 public/databases/*
 
