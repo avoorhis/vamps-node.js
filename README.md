@@ -175,6 +175,21 @@ DB
 
 MySQL db schema is included in root dir as: db_schema.sql
 
+To apply a new database schema over an existing schema with data:
+Dump the existing data: mysqldump -h <dbhost> <dbname> > mydb.sql
+Edit mydb.sql:
+  1 Remove the DROP TABLE queries
+    egrep -v "DROP TABLE" mydb.sql > mydb2.sql
+  2 Add 'IF NOT EXISTS' to 'CREATE TABLE' query
+    LC_ALL=C sed "s/CREATE TABLE/CREATE TABLE IF NOT EXISTS/g" mydb2.sql > mydb3.sql
+  3 Add IGNORE to 'INSERT INTO' query
+    LC_ALL=C sed "s/INSERT INTO/INSERT IGNORE INTO/g" mydb3.sql > mydb4.sql
+In Mysql: 
+  use <dbname>
+  source db_schema.sql (creates the new empty database)
+  source mydb.sql to add data
+ 
+
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   

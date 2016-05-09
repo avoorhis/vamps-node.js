@@ -1,3 +1,9 @@
+try{
+    require('public/monitor/newrelic');
+}
+catch (e) {
+  console.log(e);
+}
 // anna's
 // try{
 //   require('nodetime').profile({
