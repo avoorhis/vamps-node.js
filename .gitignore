@@ -27,6 +27,8 @@ colony-npm/
 *log.txt
 *.log
 
+
+
 # keeping empty dirs
 logs/*
 !logs/.gitignore
@@ -44,6 +46,7 @@ public/tmp_images/*
 public/blast/*
 !public/blast/.gitignore
 public/monitor/*
+
 # ignore public/databases directory
 public/databases/*
 
@@ -65,3 +68,4 @@ visuals_testing/
 .DS_Store
 *.pyc
 .~lock.*.csv#
+
