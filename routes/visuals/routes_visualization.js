@@ -2337,10 +2337,11 @@ router.get('/clear_filters', helpers.isLoggedIn, function(req, res) {
     //SHOW_DATA = ALL_DATASETS;
     console.log('in clear filters')
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, SHOW_DATA.projects);
-    //console.log(PROJECT_TREE_PIDS.length)
+    console.log(PROJECT_TREE_PIDS.length)
     //result = get_livesearch_html(SHOW_DATA.projects, PROJECT_INFORMATION_BY_PID, req.user);
     //res.send('tree')
     res.json(PROJECT_TREE_PIDS.length);
+
 });
 //
 //
