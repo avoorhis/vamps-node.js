@@ -439,6 +439,7 @@ if __name__ == '__main__':
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     print "ARGS: json_dir=",args.json_file_path    
+    
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()

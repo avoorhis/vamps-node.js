@@ -322,9 +322,15 @@ if __name__ == '__main__':
     if args.dbpass and args.dbuser:
          db = MySQLdb.connect( host=args.dbhost, user=args.dbuser,passwd=args.dbpass )
     else:
-        db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
-             read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
-           )
+        try:
+            db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
+                read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
+            )
+        except:
+            print "ARGS: json_dir=",args.json_file_path,'[Validated]'
+            print "ARGS: dbhost  =",args.dbhost
+            print usage
+            sys.exit()
     cur = db.cursor()
     cur.execute("SHOW databases")
     dbs = []
