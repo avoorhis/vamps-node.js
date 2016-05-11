@@ -101,7 +101,7 @@ queries = [{"rank":"domain","query":domain_query},
            ]
 
 def go_list(args):
-    counts_lookup = read_original_taxcounts(NODE_DATABASE)
+    counts_lookup = read_original_taxcounts()
     
     q = "SELECT DISTINCT project,project.project_id from dataset"
     q += " JOIN project on(dataset_id)"
@@ -122,7 +122,7 @@ def go_list(args):
     
 def go_delete(args):
     
-    counts_lookup = read_original_taxcounts(NODE_DATABASE)
+    counts_lookup = read_original_taxcounts()
 
     dids = get_dataset_ids(args.pid)  
     print dids  
@@ -429,6 +429,7 @@ if __name__ == '__main__':
     print "ARGS: dbhost  =",args.dbhost
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+        args.dbhost = 'vampsdb'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
     
@@ -438,6 +439,7 @@ if __name__ == '__main__':
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     print "ARGS: json_dir=",args.json_file_path    
+    
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
