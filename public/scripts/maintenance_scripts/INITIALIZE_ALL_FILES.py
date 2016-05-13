@@ -329,7 +329,7 @@ if __name__ == '__main__':
         except:
             print "ARGS: json_dir=",args.json_file_path,'[Validated]'
             print "ARGS: dbhost  =",args.dbhost
-            print usage
+            print myusage
             sys.exit()
     cur = db.cursor()
     cur.execute("SHOW databases")

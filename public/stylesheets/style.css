@@ -262,7 +262,36 @@ td.left_justify {
 .link_black{
   color:black;
 }
+/*  Custom top nav-bar color scheme */
+.navbar-custom {
+    background-color:lightblue;
+    color:black;
+    border-radius:0;
+}
 
-
+.navbar-custom .navbar-nav > li > a {
+    color:black;
+}
+.navbar-custom .navbar-nav > li > a:hover {
+    color:white;
+    background-color:grey;
+}
+.navbar-custom .navbar-nav > li > form > button {
+    color:black;
+}
+.navbar-custom .navbar-nav > li > form > button:hover {
+    color:white;
+    text-decoration:none;
+}
+.navbar-custom .navbar-nav > .active > a {
+    color: blue;    
+}
+.navbar-custom .navbar-nav > .active > form > button {
+    color: blue;    
+}
+.navbar-custom .navbar-nav > li> form:hover {
+    background-color:grey;
+    
+}
 
 
