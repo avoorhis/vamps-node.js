@@ -1842,33 +1842,78 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 //  S E Q U E N C E S
 //
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
+	console.log('in sequences')
 	var myurl = url.parse(req.url, true);
 	var tax = myurl.query.taxa;
-  var seqs_filename = myurl.query.filename;
+    var seqs_filename = myurl.query.filename;
 	var pjds = myurl.query.id;
-  var seq_list = [];
-  var selected_did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
+    var seq_list = [];
+    var selected_did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
 	if(seqs_filename){
-    console.log('found filename')
+    //console.log('found filename',seqs_filename)
     
     fs.readFile(path.join('tmp',seqs_filename), 'utf8', function (err,data) {
       if (err) {
         console.log(err);
         res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
       }
+      //console.log('parsing data')
       var clean_data = JSON.parse(data)
+      
       for(i in clean_data){
         
-          //console.log(clean_data[i])
+          
           var data = clean_data[i]
+          //console.log('data:::',data)
+          //console.log('data.domain_id',data.domain_id)
+          //console.log('cleandata',JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"]))
           var d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
-          var p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
-          var k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
-          var o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
-          var f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
-          var g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
-          var sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
-          var st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+          
+          try{
+                var p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+          }catch(e){
+                console.log(e)
+                var p = 'phylum_NA'
+          }
+          try{
+                var k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+          }catch(e){
+                console.log(e)
+                var k = 'class_NA'
+          }
+          try{
+                var o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+          }catch(e){
+                console.log(e)
+                var o = 'order_NA'
+          }
+          try{
+                var f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+          }catch(e){
+                console.log(e)
+                var f = 'family_NA'
+          }
+          
+          try{
+                var g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+          }catch(e){
+                console.log(e)
+                var g = 'genus_NA'
+          }
+          try{
+                var sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+          }
+          catch(e){
+                console.log(e)
+                var sp = 'species_NA'
+          }
+          try{
+                var st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+          }
+          catch(e){
+                console.log(e)
+                var st = 'strain_NA'
+          }
           var seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
           if(seq_tax.substring(0, tax.length) === tax){
             seq_list.push({seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          

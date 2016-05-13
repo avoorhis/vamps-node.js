@@ -299,8 +299,8 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     //	console.log(JSON.stringify(new_taxonomy.taxa_tree_dict[n]))
     //}
     //console.log("\ntaxa_tree_dict_map_by_id = " + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_id[2266]));
-
-
+//console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
+//console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
 
     //console.log('taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3446_domain"]));
     //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
