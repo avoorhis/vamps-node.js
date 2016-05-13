@@ -558,7 +558,7 @@ class User:
     try:
       insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     except:
-      self.utils.print_both("\n!!!\nPlease check if contact information from project corresponds with user_contact_PROJECT.csv\n!!!\n")
+      self.utils.print_both("\n!!!\nPlease check if contact information from project ("+self.contact+") corresponds with user_contact_PROJECT.csv\n!!!\n")
       raise
     
 

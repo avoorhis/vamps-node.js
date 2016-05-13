@@ -1,7 +1,30 @@
+<% active_class_home    = '' %>
+<% active_class_oview   = '' %>
+<% active_class_visuals = '' %>
+<% active_class_ydata   = '' %>
+<% active_class_search  = '' %>
+<% active_class_contact = '' %>
+<% active_class_admin   = '' %>
+<% active_class_links   = '' %>
 
-    
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+<% if(menu_section=='HOME') { %>
+<%    active_class_home = 'active' %>
+<% }else if(menu_section=='OVERVIEW') { %>
+<%    active_class_oview = 'active' %>
+<% }else if(menu_section=='VISUALS') { %>
+<%    active_class_visuals = 'active' %>
+<% }else if(menu_section=='YOURDATA') { %>
+<%    active_class_ydata = 'active' %>
+<% }else if(menu_section=='SEARCH') { %>
+<%    active_class_search = 'active' %>
+<% }else if(menu_section=='CONTACT') { %>
+<%    active_class_contact = 'active' %>
+<% }else if(menu_section=='ADMIN') { %>
+<%    active_class_admin = 'active' %>
+<% }else if(menu_section=='LINKS') { %>
+<%    active_class_links = 'active' %>
+<% } %>
+    <nav class="navbar navbar-custom navbar-fixed-top  ">
       <div class="container">
         
         <div id="navbar" class="navbar-collapse collapse">
@@ -24,25 +47,27 @@
       
 
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/">VAMPS Home</a></li>
+            <li class='<%= active_class_home %>'><a href="/">VAMPS Home</a></li>
 
 
-			      <li><a href="/help/overview">Overview</a></li>
+			      <li class='<%= active_class_oview %>'><a href="/help/overview">Overview</a></li>
 
-			      <li>
+			      <li class='<%= active_class_visuals %>'>
               <!-- <a href="/visuals/visuals_index">Visualizations</a> -->
+              
               <form action="/visuals/visuals_index" method="POST">
-                <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding-top:14px;'>Visualizations</button>
+                <button type="submit" class='btn btn-md btn-link' name="" value="" style='padding:14px;'>Visualizations</button>
               </form>
+                 
             </li>
 			      
-            <li><a href="/user_data/your_data">Your Data</a></li>
-            <li><a href="/search/search_index">Search</a></li>
-            <li><a href="/help/contact">Contact Us</a></li>
+            <li class='<%= active_class_ydata %>'><a href="/user_data/your_data">Your Data</a></li>
+            <li class='<%= active_class_search %>'><a href="/search/search_index">Search</a></li>
+            <li class='<%= active_class_contact %>'><a href="/help/contact">Contact Us</a></li>
           <% if (user !== undefined && user.security_level === 1) { %>
-              <li><a href="/admin/admin_index">Admin</a></li>
+              <li class='<%= active_class_admin %>'><a href="/admin/admin_index">Admin</a></li>
           <% } %>  
-            <li class="dropdown">
+            <li class="<%= active_class_links %> dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Links<span class="caret"></span></a>
               
 
