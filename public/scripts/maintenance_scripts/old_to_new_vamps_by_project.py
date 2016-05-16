@@ -298,7 +298,6 @@ class Utils:
       
     def slicedict(self, my_dict, key_list):
       return {k: v for k, v in my_dict.items() if k in key_list}
-   
       
 
 class CSV_files:
@@ -558,10 +557,9 @@ class User:
     try:
       insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     except:
-      self.utils.print_both("\n!!!\nPlease check if contact information from project ("+self.contact+") corresponds with user_contact_PROJECT.csv\n!!!\n")
+      self.utils.print_both("\n!!!\nPlease check if contact information from project (" + self.contact + ") corresponds with user_contact_PROJECT.csv\n!!!\n")
       raise
     
-
     rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows affected by insert_user")
     
@@ -1144,6 +1142,9 @@ if __name__ == '__main__':
   parser.add_argument("-ni","--do_not_insert",
       required = False, action = "store_false", dest = "do_not_insert",
       help = """Do not insert data into db, mostly for debugging purposes""")
+  parser.add_argument("-s", "--site",
+        required = False, action = "store", dest = "site", default = 'vampsdev',
+        help = """Site where the script is running""")
 
   args = parser.parse_args()
   
@@ -1157,14 +1158,18 @@ if __name__ == '__main__':
   if (args.write_files == True):
     csv_files = CSV_files()
 
+    read_default_file_prod = "~/.my.cnf"
+    port_prod = 3306
+    to_database = 'vamps2'
+
     if utils.is_local():
       host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
       port_prod = 3308
-    else:
+    elif args.site == 'vamps':
       host_prod = "vampsdb"
-      read_default_file_prod = "~/.my.cnf"
-      port_prod = 3306
+    else:
+      host_prod = "vampsdev"
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
     print "START run_csv_dump"
     t0 = time.time()
@@ -1204,11 +1209,12 @@ if __name__ == '__main__':
 # ========
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
-  if utils.is_vamps_prod():
-    read_default_file = os.path.expanduser("~/.my.cnf")
-    mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
-  else:
-    mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
+  mysql_util = Mysql_util(host = host_prod, db = to_database)
+  # if utils.is_vamps_prod():
+  #   read_default_file = os.path.expanduser("~/.my.cnf")
+  #   mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
+  # else:
+  #   mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
   
   # test_query1 = "SHOW tables" 
   # print mysql_util.execute_fetch_select(test_query1)
