@@ -1126,19 +1126,26 @@ function create_counts_table() {
       }
 
       //html += "<table border='1' class='single_border small_font counts_table' >";
-	    html += "<br><br><br><br><br><table id='counts_table_id' border='1' class='table table-condensed' style=''>";
-      html += "<tr><td></td>"
+	    html += "<br><br><br><br><br><table id='counts_table_id' border='0' class='' >";
+      html += "<tr><td class='no_border'></td>"
       for (t = 0; t < maxrank; t++) {
         if(t==2){
-          html += "<th class=''><small>Class</small></th>";
+          html += "<th class='' valign='bottom'><small>Class</small></th>";
         }else{
-          html += "<th class=''><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
+          html += "<th class='' valign='bottom'><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
         }
       }
       
       for (var n in mtx_local.columns) {
-        html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
+        //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
+        html += "<th class='rotate'><div><span>"+mtx_local.columns[n].id +"</span></div></th>";
       }
+      html += "<th class='right_justify' valign='bottom'><small>Total</small></th>";
+      html += "<th class='right_justify' valign='bottom'><small>Average</small></th>";
+      html += "<th class='right_justify' valign='bottom'><small>Min</small></th>";
+      html += "<th class='right_justify' valign='bottom'><small>Max</small></th>";
+      html += "<th class='right_justify' valign='bottom'><small>Std Dev</small></th>";
+
       html += "</tr>";
       
 
@@ -1157,23 +1164,40 @@ function create_counts_table() {
         }
         //html += "<td class='left_justify'>"+mtx_local.rows[i].id +"</td>";
         
-
+        var tot   = 0;
+        var avg   = 0;
+        var min   = mtx_local.data[i][0];
+        var max   = 0;
+        var sd    = 0;
         for (var da in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][da];
-		  
           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
           var id  = 'frequencies-|-'+mtx_local.rows[i].id+'-|-'+mtx_local.columns[da].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
           html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+cnt.toString()+'</td>';
+          tot += cnt;
+          if(cnt > max){
+            max = cnt
+          }
+          if(cnt < min){
+            min = cnt
+          }
           
         }
+        avg = (tot/(mtx_local.columns).length).toFixed(2)
+        sd = standardDeviation(mtx_local.data[i]).toFixed(2)
+        html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
+        html += "<td title='Average' class='right_justify tax_result'><small>"+avg.toString()+"</small></td>";
+        html += "<td title='Min' class='right_justify tax_result'><small>"+min.toString()+"</small></td>";
+        html += "<td title='Max' class='right_justify tax_result'><small>"+max.toString()+"</small></td>";
+        html += "<td title='Std Deviation' class='right_justify tax_result'><small>"+sd.toString()+"</small></td>";
         html += "</tr>";
       }
       // TOTALS
       html += "<tr><td></td>";
-      html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (t = 0; t < maxrank-1; t++) {
         html += "<td></td>";
       }
+      html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (var m in mtx_local.column_totals){
         var total;
   		  if(pi_local.normalization == 'frequency'){
@@ -1181,7 +1205,7 @@ function create_counts_table() {
   		  }else{
   			  total = mtx_local.column_totals[m];
   		  }
-  		  html += "<td class='right_justify'>" + total + "</td>";
+  		  html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
       }
       html += "</tr>";
       html += "</table>";
@@ -1190,7 +1214,28 @@ function create_counts_table() {
       tax_counts_div.innerHTML = html; 
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
 }
+function standardDeviation(values){
+  var avg = average(values);
+  
+  var squareDiffs = values.map(function(value){
+    var diff = value - avg;
+    var sqrDiff = diff * diff;
+    return sqrDiff;
+  });
+  
+  var avgSquareDiff = average(squareDiffs);
+  var stdDev = Math.sqrt(avgSquareDiff);
+  return stdDev;
+}
 
+function average(data){
+  var sum = data.reduce(function(sum, value){
+    return sum + value;
+  }, 0);
+
+  var avg = sum / data.length;
+  return avg;
+}
 //
 //  CREATE METADATA TABLE
 //

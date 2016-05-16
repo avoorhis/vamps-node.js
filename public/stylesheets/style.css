@@ -99,6 +99,9 @@ vertical-align:top;
 .color_red{
   color:red;
 }
+.right_justify {
+  text-align:right;
+}
 td.right_justify {
   text-align:right;
 }
@@ -263,6 +266,7 @@ td.left_justify {
   color:black;
 }
 /*  Custom top nav-bar color scheme */
+
 .navbar-custom {
     background-color:lightblue;
     color:black;

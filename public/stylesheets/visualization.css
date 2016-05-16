@@ -149,8 +149,20 @@
     margin-right:20px;
     padding-right:20px;
 }
-/*
-#counts_table_id .verticalTableHeader {
+#counts_table_id td {
+    border: 1px solid #ccc;
+    padding:0 3px;
+    
+}
+#counts_table_id .no_border {
+    border: 0px solid #ccc;
+    
+}
+#counts_table_id .tax_result {
+    color:navy;
+    
+}
+/*counts_table_id .verticalTableHeader {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
@@ -159,6 +171,24 @@
     padding: 0 0 0 100px;
     
 }*/
+th.rotate {
+  /* Something you can count on */
+  height: 140px;
+  white-space: nowrap;
+}
+
+th.rotate > div {
+  transform: 
+    /* Magic Numbers */
+    translate(25px, 51px)
+    /* 45 is really 360 - 45 */
+    rotate(300deg);
+  width: 30px;
+}
+th.rotate > div > span {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
+}
 
 
 /* METADATA TABLE */
