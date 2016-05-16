@@ -959,7 +959,11 @@ class Metadata:
       '''
     
   def add_ids_to_params(self):
+    print "DDD dataset.dataset_id_by_name_dict:"
+    print dataset.dataset_id_by_name_dict
     for param_per_dataset in self.metadata_w_names:
+      print "PPP param_per_dataset:"
+      print param_per_dataset
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
           
@@ -1154,13 +1158,15 @@ if __name__ == '__main__':
   print args
   print "args.write_files"
   print args.write_files
+
+  host_prod   = "vampsdev"
+  to_database = 'vamps2'
   
   if (args.write_files == True):
     csv_files = CSV_files()
 
     read_default_file_prod = "~/.my.cnf"
     port_prod = 3306
-    to_database = 'vamps2'
 
     if utils.is_local():
       host_prod = "127.0.0.1"
@@ -1168,8 +1174,8 @@ if __name__ == '__main__':
       port_prod = 3308
     elif args.site == 'vamps':
       host_prod = "vampsdb"
-    else:
-      host_prod = "vampsdev"
+    # else:
+    #   host_prod = "vampsdev"
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
     print "START run_csv_dump"
     t0 = time.time()
@@ -1209,12 +1215,11 @@ if __name__ == '__main__':
 # ========
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
-  mysql_util = Mysql_util(host = host_prod, db = to_database)
-  # if utils.is_vamps_prod():
-  #   read_default_file = os.path.expanduser("~/.my.cnf")
-  #   mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
-  # else:
-  #   mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
+  if utils.is_local():
+    mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
+  else:
+    # mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
+    mysql_util = Mysql_util(host = host_prod, db = to_database)
   
   # test_query1 = "SHOW tables" 
   # print mysql_util.execute_fetch_select(test_query1)
