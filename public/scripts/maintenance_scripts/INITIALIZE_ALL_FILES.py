@@ -81,12 +81,12 @@ def check_files(args):
     db_dids = []
     for row in cur.fetchall():
         db_dids.append(str(row[0]))
-    print db_dids
+    #print db_dids
     did_count = len(db_dids)
+
     ###### INDIVIDUAL JSON FILES ##################
-    print 'Checking for files in:', args.files_prefix
+    print "\nChecking for files in:\n", args.files_prefix
     okay_count = 0
-    
     file_dids = []
     for f in os.listdir(args.files_prefix):
         filename, file_extension = os.path.splitext(f)
@@ -100,16 +100,18 @@ def check_files(args):
     if okay_count == did_count:
         print 'OK1'
     else:
-        print 'counts1',okay_count,did_count
-
-    ######### TAXCOUNTS ###########################
-    with open(args.taxcounts_file) as tax_file:    
-        data = json.load(tax_file)
+        #print 'counts1',okay_count,did_count
+        pass
+    print 'DID presence is REQUIRED'
     
-    print 'Checking:',args.taxcounts_file
+    ######### TAXCOUNTS ###########################
+    print "\nChecking:\n",args.taxcounts_file
+    with open(args.taxcounts_file) as tax_file:    
+        tdata = json.load(tax_file)
+    
     okay_count = 0
     for did in db_dids:
-        if did in data:
+        if did in tdata:
             #print 'found',did
             okay_count += 1
         else:
@@ -117,16 +119,18 @@ def check_files(args):
     if okay_count == did_count:
         print 'OK2'
     else:
-        print 'counts2',okay_count,did_count
-
-    ########## METADATA ##########################
-    with open(args.metadata_file) as md_file:    
-        data = json.load(md_file)
+        #print 'counts2',okay_count,did_count
+        pass
+    print 'DID presence is REQUIRED'
     
-    print 'Checking:',args.metadata_file
+    ########## METADATA ##########################
+    print "\nChecking:\n",args.metadata_file
+    with open(args.metadata_file) as md_file:    
+        mdata = json.load(md_file)
+    
     okay_count = 0
     for did in db_dids:
-        if did in data:
+        if did in mdata:
             #print 'found',did
             okay_count += 1
         else:
@@ -134,8 +138,9 @@ def check_files(args):
     if okay_count == did_count:
         print 'OK3'
     else:
-        print 'counts3',okay_count,did_count
-
+        #print 'counts3',okay_count,did_count
+        pass
+    print 'DID presence is NOT Required'
 def go(args):
     """
         count_lookup_per_dsid[dsid][tax_id_str] = count     
