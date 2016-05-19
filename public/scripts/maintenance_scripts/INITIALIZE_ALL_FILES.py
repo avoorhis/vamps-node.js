@@ -93,7 +93,7 @@ def go(args):
     os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
-        #print q["query"]
+        print q["query"]
         dirs = []
         try:
 
@@ -108,7 +108,8 @@ def go(args):
             #print row
             count = int(row[0])
             ds_id = row[1]
-           
+            #if ds_id=='6189':
+            #    print "FOUND 6189"
             tax_id_str = ''
             for k in range(2,len(row)):
                 tax_id_str += '_' + str(row[k])
