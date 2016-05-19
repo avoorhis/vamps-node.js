@@ -998,8 +998,15 @@ class Metadata:
       dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
       temp_dict = {}
       for field_name in list(intr):
+        print "FFF field_name = %s" % field_name
         key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
-        temp_dict[key[0]] = metadata[field_name]
+        try:
+          temp_dict[key[0]] = metadata[field_name]
+        except KeyError:
+          self.utils.print_both("Warning! A required metadata field '%s' is missing!" % field_name)
+          temp_dict[key[0]] = ''
+        except:
+          raise
       temp_dict['dataset_id'] = str(dataset_id)
       
       self.required_metadata.append(temp_dict)
