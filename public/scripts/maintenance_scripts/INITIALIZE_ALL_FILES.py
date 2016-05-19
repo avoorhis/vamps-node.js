@@ -57,6 +57,7 @@ strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id,
 
 # these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
+dataset_query = "SELECT dataset_id from dataset"
 req_pquery = "SELECT dataset_id, "+','.join(required_metadata_fields)+" from required_metadata_info"
 cust_pquery = "SELECT project_id,field_name from custom_metadata_fields"
 
@@ -74,6 +75,58 @@ queries = [{"rank":"domain","query":domain_query},
 LOG_FILENAME = os.path.join('.','initialize_all_files.log')
 logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+def check_files(args):
+    import codecs
+    cur.execute(dataset_query)
+    dids = []
+    for row in cur.fetchall():
+        dids.append(str(row[0]))
+    print dids
+    did_count = len(dids)
+    ###### INDIVIDUAL JSON FILES ##################
+    print 'Checking for files in:', os.path.basename(args.files_prefix)
+    okay_count = 0
+    for f in os.listdir(args.files_prefix):
+        filename, file_extension = os.path.splitext(f)
+        if filename in dids:
+            #print f,'okay'
+            okay_count += 1
+            
+        else:
+            print f,'missing'
+    if okay_count == did_count:
+        print 'OK1'
+
+    ######### TAXCOUNTS ###########################
+    with open(args.taxcounts_file) as tax_file:    
+        data = json.load(tax_file)
+    
+    print 'Checking:',os.path.basename(args.taxcounts_file)
+    okay_count = 0
+    for did in dids:
+        if did in data:
+            #print 'found',did
+            okay_count += 1
+        else:
+            print 'missing',did 
+    if okay_count == did_count:
+        print 'OK2'
+
+    ########## METADATA ##########################
+    with open(args.metadata_file) as md_file:    
+        data = json.load(md_file)
+    
+    print 'Checking:',os.path.basename(args.metadata_file)
+    okay_count = 0
+    for did in dids:
+        if did in data:
+            #print 'found',did
+            okay_count += 1
+        else:
+            print 'missing',did
+    if okay_count == did_count:
+        print 'OK3'
 
 def go(args):
     """
@@ -266,6 +319,9 @@ if __name__ == '__main__':
     myusage = """
         ./INITIALIZE_ALL_FILES.py  (
         
+        
+
+
         Will ask you to input which database.
         Output will be files ../json/NODE_DATABASE/<dataset>.json
         each containing taxcounts and metadata from the database
@@ -282,23 +338,25 @@ if __name__ == '__main__':
         
         -json_file_path/--json_file_path   json files path Default: ../json
         -host/--host            dbhost:  Default: localhost
+
+        -c/--check_files  Will look for continuity between database(dataset table) and JSON files (no initialization)
+
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)   
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='', 
-                help="")
+                help="Path where JSON files are located")
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
-                help="")
+                help="ONLY: 'vampsdb','vampsdev','localhost'")
     parser.add_argument("-db", "--db",    
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
-                help="")
-    parser.add_argument("-dbuser", "--dbuser",    
-                required=False,  action='store', dest = "dbuser",  default='',
-                help="")
-    parser.add_argument("-dbpass", "--dbpass",    
-                required=False,  action='store', dest = "dbpass",  default='',
-                help="")
+                help="NODE_DATABASE")
+    parser.add_argument("-c", "--check_files",    
+                required=False,  action='store_true', dest = "check_files",  default=False,
+                help="If set will look for continuity between database(dataset table) and JSON files")
+    
+    
     args = parser.parse_args() 
 
     print
@@ -319,18 +377,16 @@ if __name__ == '__main__':
         print "ARGS: dbhost  =",args.dbhost
         
 
-    if args.dbpass and args.dbuser:
-         db = MySQLdb.connect( host=args.dbhost, user=args.dbuser,passwd=args.dbpass )
-    else:
-        try:
-            db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
-                read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
-            )
-        except:
-            print "ARGS: json_dir=",args.json_file_path,'[Validated]'
-            print "ARGS: dbhost  =",args.dbhost
-            print myusage
-            sys.exit()
+    
+    try:
+        db = MySQLdb.connect( host=args.dbhost, # your host, usually localhost
+            read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
+        )
+    except:
+        print "ARGS: json_dir=",args.json_file_path,'[Validated]'
+        print "ARGS: dbhost  =",args.dbhost
+        print myusage
+        sys.exit()
     cur = db.cursor()
     cur.execute("SHOW databases")
     dbs = []
@@ -359,21 +415,25 @@ if __name__ == '__main__':
     out_file = "tax_counts--"+NODE_DATABASE+".json"
     
     print 'DATABASE:',NODE_DATABASE 
-       
-    
+    print 'JSON DIRECTORY:',args.json_file_path 
+    print
 #    args.sql_db_table               = True
     #args.separate_taxcounts_files   = True
     
     if not os.path.exists(args.json_file_path):
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
-    print "This may take awhile...." 
+    
     #args.json_dir = os.path.join("../","json")
     args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets")
     args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
     args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
     #print args.files_prefix , args.taxcounts_file,args.metadata_file
-    go(args)
+    if args.check_files:
+        check_files(args)
+    else:
+        print "This may take awhile...." 
+        go(args)
 
 
 
