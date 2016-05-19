@@ -85,7 +85,7 @@ def check_files(args):
     print dids
     did_count = len(dids)
     ###### INDIVIDUAL JSON FILES ##################
-    print 'Checking for files in:', os.path.basename(args.files_prefix)
+    print 'Checking for files in:', args.files_prefix
     okay_count = 0
     for f in os.listdir(args.files_prefix):
         filename, file_extension = os.path.splitext(f)
@@ -94,39 +94,45 @@ def check_files(args):
             okay_count += 1
             
         else:
-            print f,'missing'
+            print f,'missing from',os.path.basename(args.files_prefix)
     if okay_count == did_count:
         print 'OK1'
+    else:
+        print 'counts1',okay_count,did_count
 
     ######### TAXCOUNTS ###########################
     with open(args.taxcounts_file) as tax_file:    
         data = json.load(tax_file)
     
-    print 'Checking:',os.path.basename(args.taxcounts_file)
+    print 'Checking:',args.taxcounts_file
     okay_count = 0
     for did in dids:
         if did in data:
             #print 'found',did
             okay_count += 1
         else:
-            print 'missing',did 
+            print did, 'missing from', os.path.basename(args.taxcounts_file)
     if okay_count == did_count:
         print 'OK2'
+    else:
+        print 'counts2',okay_count,did_count
 
     ########## METADATA ##########################
     with open(args.metadata_file) as md_file:    
         data = json.load(md_file)
     
-    print 'Checking:',os.path.basename(args.metadata_file)
+    print 'Checking:',args.metadata_file
     okay_count = 0
     for did in dids:
         if did in data:
             #print 'found',did
             okay_count += 1
         else:
-            print 'missing',did
+            print did,'missing from',os.path.basename(args.metadata_file)
     if okay_count == did_count:
         print 'OK3'
+    else:
+        print 'counts3',okay_count,did_count
 
 def go(args):
     """
