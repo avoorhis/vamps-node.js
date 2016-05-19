@@ -96,7 +96,7 @@ def check_files(args):
             #print f,'okay'
             okay_count += 1
         else:
-            print f,'missing from',os.path.basename(args.files_prefix)
+            print did,'missing from',os.path.basename(args.files_prefix)
     if okay_count == did_count:
         print 'OK1'
     else:
