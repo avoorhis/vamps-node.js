@@ -5,9 +5,9 @@ if (typeof reset_order_btn !=="undefined") {
 	});
 }
 alphabetize = document.getElementById('alphabetize');
-if (typeof alphabetize !=="undefined") {
-	alphabetize.addEventListener('click', function() { 
-	  _alphabetize();
+if (typeof alphabetize !== "undefined" ) {
+  alphabetize.addEventListener('click', function() { 
+    alphabetize_datasets();
 	});
 }
 reverse = document.getElementById('reverse');
@@ -19,10 +19,10 @@ if (typeof reverse !=="undefined") {
 //
 //
 //
-function _alphabetize()
+function alphabetize_datasets()
 {
     var args =  "aplhabetize=1";
-    
+    //alert(args)
     reorder_ds_div = document.getElementById('reorder_ds_div');
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", 'alphabetize_ds_order', true);

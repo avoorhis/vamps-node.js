@@ -175,7 +175,11 @@ function login_auth_user(req, username, password, done, db){
 
             // Here on login we delete the users tmp/* files from previous sessions.
             // This seems better than on logout bacause users are less likely to manually logout.
-            delete_previous_tmp_files(username);
+            try{
+                delete_previous_tmp_files(username);
+            }catch(e){
+                console.log(e)
+            }
 
             return done(null, rows[0]); 
         }
@@ -280,6 +284,7 @@ var delete_previous_tmp_files = function(username){
     fs.readdirSync(temp_dir_path1).forEach(function(file,index){
         if(file.substring(0,username.length) === username){
             var curPath = temp_dir_path1 + "/" + file;
+            
             deleteFolderRecursive(curPath);
             fs.readdirSync(temp_dir_path2).forEach(function(file,index){
                 if(file.substring(0,username.length) === username){

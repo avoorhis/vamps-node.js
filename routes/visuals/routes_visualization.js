@@ -2324,7 +2324,7 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
                 } 
                 html += "</tbody>";
                 html += "</table>"; 
-                html += '/////<pre style="font-size:10px">'+metric+'<small>'+ascii_tree_data+'</small></pre>';
+                html += '/////<pre style="font-size:10px">'+metric+'<br><small>'+ascii_tree_data+'</small></pre>';
 
                 res.send(html)
               }
