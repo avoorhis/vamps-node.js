@@ -298,7 +298,6 @@ class Utils:
       
     def slicedict(self, my_dict, key_list):
       return {k: v for k, v in my_dict.items() if k in key_list}
-   
       
 
 class CSV_files:
@@ -558,10 +557,9 @@ class User:
     try:
       insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
     except:
-      self.utils.print_both("\n!!!\nPlease check if contact information from project ("+self.contact+") corresponds with user_contact_PROJECT.csv\n!!!\n")
+      self.utils.print_both("\n!!!\nPlease check if contact information from project (" + self.contact + ") corresponds with user_contact_PROJECT.csv\n!!!\n")
       raise
     
-
     rows_affected = mysql_util.execute_insert("user", field_list, insert_values)
     self.utils.print_array_w_title(rows_affected, "rows affected by insert_user")
     
@@ -961,7 +959,11 @@ class Metadata:
       '''
     
   def add_ids_to_params(self):
+    print "DDD dataset.dataset_id_by_name_dict:"
+    print dataset.dataset_id_by_name_dict
     for param_per_dataset in self.metadata_w_names:
+      print "PPP param_per_dataset:"
+      print param_per_dataset
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
           
@@ -1144,6 +1146,9 @@ if __name__ == '__main__':
   parser.add_argument("-ni","--do_not_insert",
       required = False, action = "store_false", dest = "do_not_insert",
       help = """Do not insert data into db, mostly for debugging purposes""")
+  parser.add_argument("-s", "--site",
+        required = False, action = "store", dest = "site", default = 'vampsdev',
+        help = """Site where the script is running""")
 
   args = parser.parse_args()
   
@@ -1153,18 +1158,24 @@ if __name__ == '__main__':
   print args
   print "args.write_files"
   print args.write_files
+
+  host_prod   = "vampsdev"
+  to_database = 'vamps2'
   
   if (args.write_files == True):
     csv_files = CSV_files()
+
+    read_default_file_prod = "~/.my.cnf"
+    port_prod = 3306
 
     if utils.is_local():
       host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
       port_prod = 3308
-    else:
+    elif args.site == 'vamps':
       host_prod = "vampsdb"
-      read_default_file_prod = "~/.my.cnf"
-      port_prod = 3306
+    # else:
+    #   host_prod = "vampsdev"
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
     print "START run_csv_dump"
     t0 = time.time()
@@ -1204,11 +1215,11 @@ if __name__ == '__main__':
 # ========
 
   print "metadata_csv_file_name = %s, seq_csv_file_name = %s, project_csv_file_name = %s, dataset_csv_file_name = %s, user_contact_csv_file_name = %s" % (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
-  if utils.is_vamps_prod():
-    read_default_file = os.path.expanduser("~/.my.cnf")
-    mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
-  else:
+  if utils.is_local():
     mysql_util = Mysql_util(host = 'localhost', db = "vamps2")
+  else:
+    # mysql_util = Mysql_util(host = 'vampsdb', db = "vamps2")
+    mysql_util = Mysql_util(host = host_prod, db = to_database)
   
   # test_query1 = "SHOW tables" 
   # print mysql_util.execute_fetch_select(test_query1)
