@@ -1188,9 +1188,10 @@ if __name__ == '__main__':
     port_prod = 3306
 
     if utils.is_local():
-      host_prod = "vampsdev"
+      host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
-      port_prod = 3306
+      port_prod = 3308
+
     elif args.site == 'vamps':
       host_prod = "vampsdb"
     # else:
