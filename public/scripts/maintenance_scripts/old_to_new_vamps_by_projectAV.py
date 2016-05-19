@@ -874,8 +874,8 @@ class Metadata:
   custom_metadata fields are per project,
   but data could be by dataset
 
-  csv: "dataset"	"parameterName"	"parameterValue"	"units"	"miens_units"	"project"	"units_id"	"structured_comment_name"	"method"	"other"	"notes"	"ts"	"entry_date"	"parameter_id"	"project_dataset"
-"SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
+  csv: "dataset"  "parameterName" "parameterValue"  "units" "miens_units" "project" "units_id"  "structured_comment_name" "method"  "other" "notes" "ts"  "entry_date"  "parameter_id"  "project_dataset"
+"SMS_0001_2007_09_19" "domain"  "Bacteria"  "Alphanumeric"  "Alphanumeric"  "ICM_SMS_Bv6" "1" "domain"  ""  "0" "sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"  "2012-04-27 08:25:07" ""  "0" "ICM_SMS_Bv6--SMS_0001_2007_09_19"
 
   required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
   custom_metadata_fields (project_id, field_name, field_units, example)
@@ -1191,6 +1191,7 @@ if __name__ == '__main__':
       host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
       port_prod = 3308
+
     elif args.site == 'vamps':
       host_prod = "vampsdb"
     # else:
