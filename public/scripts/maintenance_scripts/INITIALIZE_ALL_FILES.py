@@ -77,22 +77,24 @@ logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="a+",
                            format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 def check_files(args):
-    import codecs
     cur.execute(dataset_query)
-    dids = []
+    db_dids = []
     for row in cur.fetchall():
-        dids.append(str(row[0]))
-    print dids
-    did_count = len(dids)
+        db_dids.append(str(row[0]))
+    print db_dids
+    did_count = len(db_dids)
     ###### INDIVIDUAL JSON FILES ##################
     print 'Checking for files in:', args.files_prefix
     okay_count = 0
+    
+    file_dids = []
     for f in os.listdir(args.files_prefix):
         filename, file_extension = os.path.splitext(f)
-        if filename in dids:
+        file_dids.append(filename)
+    for did in db_dids:
+        if did in file_dids:
             #print f,'okay'
             okay_count += 1
-            
         else:
             print f,'missing from',os.path.basename(args.files_prefix)
     if okay_count == did_count:
@@ -106,7 +108,7 @@ def check_files(args):
     
     print 'Checking:',args.taxcounts_file
     okay_count = 0
-    for did in dids:
+    for did in db_dids:
         if did in data:
             #print 'found',did
             okay_count += 1
@@ -123,7 +125,7 @@ def check_files(args):
     
     print 'Checking:',args.metadata_file
     okay_count = 0
-    for did in dids:
+    for did in db_dids:
         if did in data:
             #print 'found',did
             okay_count += 1
