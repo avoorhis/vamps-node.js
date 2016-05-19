@@ -7,6 +7,13 @@ $(document).ready(function(){
     $("#metadata_local_table_div").on("click", "#metadata_table", function () {
         new Tablesort(document.getElementById('metadata_table'));
     });
+    // capture entire page click -- to cancel(hide) charts
+    //document.body.addEventListener('click', hide_chart(e), true);
+    //$(window).click(function(e){
+    //  e_page_click = window.event
+     // page_click(e_page_click)
+    //});
+    //click_on_graph_icon = false;
 });
 
 $.fn.scrollView = function () {
@@ -39,24 +46,19 @@ var tip = {
         $liveTip.outerHeight()
       ]
     };
- 
     for ( var axis in dimensions ) {
- 
       if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {
         positions[axis] -= dimensions[axis][1] + this.offset;
       } else {
         positions[axis] += this.offset;
       }
- 
     }
- 
     $liveTip.css({
       top: positions.y,
       left: positions.x
     });
   }
 };
-
 
 $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (event) {
       var link = this,
@@ -86,13 +88,10 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           html += "<td>Count: "+id_items[2]+" ("+id_items[3]+"%)</td>";
         }
         html += "</tr><table>";
-
         showTip = setTimeout(function() {
-     
           $link.data('tipActive', true);
-          
           tip.position(event);
-     //alert(event.pageX)
+          //alert(event.pageX)
           $liveTip
           .html('<div>' + html  + '</div>')
           .fadeOut(0)
@@ -100,7 +99,6 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
      
         }, tip.delay);
       }
-     
       if (event.type == 'mouseout') {
         link.id = tip.id || link.id;
         if ($link.data('tipActive')) {
@@ -110,11 +108,9 @@ $("body").delegate(".tooltip_viz", "mouseover mouseout mousemove", function (eve
           clearTimeout(showTip);
         }
       }
-     
       if (event.type == 'mousemove' && $link.data('tipActive')) {
         tip.position(event);
-      }
-              
+      }      
 });              
 
 $("body").delegate(".tooltip_viz_help", "mouseover mouseout mousemove", function (event) {
@@ -1124,8 +1120,7 @@ function create_counts_table() {
           maxrank = taxitems.length;
         }
       }
-
-      //html += "<table border='1' class='single_border small_font counts_table' >";
+      html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
 	    html += "<br><br><br><br><br><table id='counts_table_id' border='0' class='' >";
       html += "<tr><td class='no_border'></td>"
       for (t = 0; t < maxrank; t++) {
@@ -1138,8 +1133,12 @@ function create_counts_table() {
       
       for (var n in mtx_local.columns) {
         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
-        html += "<th class='rotate'><div><span>"+mtx_local.columns[n].id +"</span></div></th>";
+        html += "<th class='rotate'><div><span><a href='bar_single?id="+mtx_local.columns[n].id+"' target='_blank'>"+(parseInt(n)+1).toString()+') '
+        html += mtx_local.columns[n].id+"</a></span></div></th>";
+      
       }
+
+      html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Total</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Average</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Min</small></th>";
@@ -1148,7 +1147,6 @@ function create_counts_table() {
 
       html += "</tr>";
       
-
       for (var i in mtx_local.rows){
         count = parseInt(i)+1;
         taxitems = mtx_local.rows[i].id.split(';');
@@ -1162,7 +1160,6 @@ function create_counts_table() {
             html += "<td class='left_justify'>--</td>";
           }
         }
-        //html += "<td class='left_justify'>"+mtx_local.rows[i].id +"</td>";
         
         var tot   = 0;
         var avg   = 0;
@@ -1183,6 +1180,13 @@ function create_counts_table() {
           }
           
         }
+        counts_string=JSON.stringify(mtx_local.data[i])
+        
+        html += "<td title='Graph' align='center' style='cursor:pointer;'>"
+        graph_link_id = 'flot_graph_link'+i.toString()
+        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
+        html += "</td>";
+        
         avg = (tot/(mtx_local.columns).length).toFixed(2)
         sd = standardDeviation(mtx_local.data[i]).toFixed(2)
         html += "<td title='Total' class='right_justify tax_result'><small>"+tot.toString()+'</small></td>';
@@ -1213,7 +1217,80 @@ function create_counts_table() {
       //document.getElementById('counts_tooltip_div').innerHTML = tooltip_tbl;
       tax_counts_div.innerHTML = html; 
       //$(".verticalTableHeader").each(function(){$(this).height($(this).width())  
+      
 }
+
+function graph_counts(new_id,taxonomy,counts){
+  
+  var e = window.event;
+  
+  if(typeof id !== 'undefined' && id == new_id){
+    // same: hide graph
+    chart_data = []
+    if(document.getElementById('tax_counts_graph_div').style.display=='none'){
+        document.getElementById('tax_counts_graph_div').style.display='block'
+    }
+  }else{
+    // different: -- show graph
+    $('#tax_counts_graph_div').css({'top':e.pageY-200,'left':e.pageX-700, 'position':'absolute', 'border':'1px solid black', 'padding':'55px'});
+    document.getElementById('tax_counts_graph_div').style.display='block'
+    id = new_id
+  }
+  counts = JSON.parse(counts)
+  //alert(typeof data)
+  if(typeof chart_data == 'undefined'){
+    chart_data = []
+  }
+  var myseries = []
+  for(c in counts){
+    myseries.push([parseInt(c)+1,counts[c]])
+  }
+  taxa = taxonomy.split(';')
+  var deepest_tax = taxa[taxa.length-2]+' '+taxa[taxa.length-1]
+  chart_data.push({data:myseries, label:deepest_tax, lines:{show:true}, points:{show:true}})
+  //alert(data.length)
+  var options = {
+    
+    legend:{position:'nw'},
+    grid: {
+        borderWidth: 1,
+        labelMargin: 5,
+        backgroundColor: {
+            colors: ["#fff", "#e4f4f4"]
+        },
+        margin: {
+            top: 40,
+            bottom: 20,
+            left: 5
+        }
+    },
+    
+    xaxis:{
+          min: 1,
+          //max: datasetcount,
+          tickSize: 1,
+          tickDecimals: 0,
+          labelHeight: 30
+      },
+      yaxis:{
+         min: 0,
+         tickDecimals: 0
+      }
+  };
+  
+    $.plot($("#tax_counts_graph_div"), chart_data, options);
+    var xaxisLabel = $("<div class='axisLabel xaxisLabel'></div>").text("Dataset").appendTo($('#tax_counts_graph_div'));
+    var graph_title = $("<div class='graph_title'></div>").text("Sequence Counts").appendTo($('#tax_counts_graph_div'));
+    var close_button = $("<input class='graph_close_btn axisLabel btn btn-xs btn-primary' type='button' value='Close' onclick='close_graph()'>").appendTo($('#tax_counts_graph_div'));
+   
+    graph_title.css("margin-top",  0);
+  
+}
+function close_graph(){
+    chart_data = []
+    document.getElementById('tax_counts_graph_div').style.display = 'none'
+}
+
 function standardDeviation(values){
   var avg = average(values);
   
