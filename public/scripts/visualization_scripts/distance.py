@@ -196,6 +196,7 @@ def dendrogram_svg(args, dm):
     return newick
 
 def cluster_datasets(args, dm):
+        
     new_ds_order =[]
     new_did_order =[]
 
@@ -204,7 +205,7 @@ def cluster_datasets(args, dm):
     #t.populate(15)
     
     ascii = mycluster.asciiArt()
-
+    
     ascii_file = args.prefix+'_'+args.metric+'_tree.txt'
     ascii_file_path = os.path.join(args.outdir,ascii_file)
     fp = open(ascii_file_path,'w')
@@ -212,15 +213,15 @@ def cluster_datasets(args, dm):
     fp.close()
     
     for line in ascii.split():
+        #print line
         if line == '|' or line[:5] == '\edge' or line[:5] == '/edge' or line[:5] == '-root':
             continue
         ds = line[2:]
         #did = did_hash[ds]
         new_ds_order.append(ds)
-        #new_did_order.append(did)
-        #print new_did_order
+    
     return new_ds_order
-    #print mycluster.asciiArt()
+    
         
 
 def write_csv_file(args):
@@ -249,53 +250,6 @@ def construct_cluster(args, dm):
 def construct_pcoa(dist_matrix):
     pass
 #
-#
-#
-# def plot_tree( P, pos=None ):
-#         import matplotlib.pylab as plt
-#         icoord = scipy.array( P['icoord'] )
-#         dcoord = scipy.array( P['dcoord'] )
-#         color_list = scipy.array( P['color_list'] )
-#         xmin, xmax = icoord.min(), icoord.max()
-#         ymin, ymax = dcoord.min(), dcoord.max()
-#         if pos:
-#             icoord = icoord[pos]
-#             dcoord = dcoord[pos]
-#             color_list = color_list[pos]
-#         for xs, ys, color in zip(icoord, dcoord, color_list):
-#             plt.plot(xs, ys,  color)
-#         plt.xlim( xmin-10, xmax + 0.1*abs(xmax) )
-#         plt.ylim( ymin, ymax + 0.1*abs(ymax) )
-#         plt.show()
-# #
-#
-#
-# def get_json(node):
-#     # Read ETE tag for duplication or speciation events
-#     from ete2 import Tree
-#     import random
-#     if not hasattr(node, 'evoltype'):
-#         dup = random.sample(['N','Y'], 1)[0]
-#     elif node.evoltype == "S":
-#         dup = "N"
-#     elif node.evoltype == "D":
-#         dup = "Y"
-     
-#     node.name = node.name.replace("'", '')
-#     json = { "name": node.name,
-#             "display_label": node.name,
-#             "duplication": dup,
-#             "branch_length": str(node.dist),
-#             "common_name": node.name,
-#             "seq_length": 0,
-#             "type": "node" if node.children else "leaf",
-#             "uniprot_name": "Unknown",
-#             }
-#     if node.children:
-#         json["children"] = []
-#         for ch in node.children:
-#             json["children"].append(get_json(ch))
-#     return json
 
 #
 #
@@ -386,6 +340,7 @@ def test_PCoA():
         print result
         #assertEqual(result[7,1], 'a')
         #assertFloatEqual(abs(result[7,2]), 0.240788133045)
+
 def pcoa(args, dist):
     from cogent.cluster.metric_scaling import PCoA
     PCoA_result = PCoA(dist)
@@ -543,7 +498,8 @@ if __name__ == '__main__':
     if args.function == 'cluster_datasets':
         #did_list = cluster_datasets(args, dm3, did_hash)
         new_ds_list = cluster_datasets(args, dm3)
-        #print json.dumps(new_ds_list)
+        # IMPORTANT print the dataset list
+        print json.dumps(new_ds_list)
         
 
     if args.function == 'fheatmap':

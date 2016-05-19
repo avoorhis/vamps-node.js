@@ -2279,18 +2279,20 @@ router.post('/cluster_ds_order', helpers.isLoggedIn,  function(req, res) {
     //var heatmap_process = spawn( 'which' , ['python'], {env:{'PATH':envpath}});
     var output = '';
     cluster_process.stdout.on('data', function (data) {
-      // console.log('stdout: ' + data);
+        //console.log('stdout: ' + data);
       // //data = data.toString().replace(/^\s+|\s+$/g, '');
       // data = data.toString();
-       output += data;
+
+       output += data.toString();
     });
        
     cluster_process.on('close', function (code) {
-      console.log('heatmap_process process exited with code ' + code);
+      console.log('ds cluster process exited with code ' + code);
       
       //var last_line = ary[ary.length - 1];
       if(code === 0){   // SUCCESS        
         try{
+            console.log(output);
             dataset_list = JSON.parse(output);        
             console.log(output);
             potential_chosen_id_name_hash  = COMMON.create_new_chosen_id_name_hash(dataset_list);  
