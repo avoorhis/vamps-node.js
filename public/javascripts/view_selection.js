@@ -1130,7 +1130,7 @@ function create_counts_table() {
           html += "<th class='' valign='bottom'><small>"+cts_local.RANKS[t].toUpperCase().charAt(0)+cts_local.RANKS[t].slice(1)+"</small></th>";
         }
       }
-      
+      html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
       for (var n in mtx_local.columns) {
         //html += "<th class='verticalTableHeader' >"+mtx_local.columns[n].id +"</th>";
         html += "<th class='rotate'><div><span><a href='bar_single?id="+mtx_local.columns[n].id+"' target='_blank'>"+(parseInt(n)+1).toString()+') '
@@ -1138,7 +1138,7 @@ function create_counts_table() {
       
       }
 
-      html += "<th class='right_justify' valign='bottom'><small>Graph</small></th>";
+      
       html += "<th class='right_justify' valign='bottom'><small>Total</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Average</small></th>";
       html += "<th class='right_justify' valign='bottom'><small>Min</small></th>";
@@ -1160,7 +1160,13 @@ function create_counts_table() {
             html += "<td class='left_justify'>--</td>";
           }
         }
-        
+        counts_string=JSON.stringify(mtx_local.data[i])
+        html += "<td title='Graph' align='center' style='cursor:pointer;'>"
+        graph_link_id = 'flot_graph_link'+i.toString()
+        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
+        html += "</td>";
+
+
         var tot   = 0;
         var avg   = 0;
         var min   = mtx_local.data[i][0];
@@ -1180,12 +1186,9 @@ function create_counts_table() {
           }
           
         }
-        counts_string=JSON.stringify(mtx_local.data[i])
         
-        html += "<td title='Graph' align='center' style='cursor:pointer;'>"
-        graph_link_id = 'flot_graph_link'+i.toString()
-        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
-        html += "</td>";
+        
+        
         
         avg = (tot/(mtx_local.columns).length).toFixed(2)
         sd = standardDeviation(mtx_local.data[i]).toFixed(2)
@@ -1232,7 +1235,7 @@ function graph_counts(new_id,taxonomy,counts){
     }
   }else{
     // different: -- show graph
-    $('#tax_counts_graph_div').css({'top':e.pageY-200,'left':e.pageX-700, 'position':'absolute', 'border':'1px solid black', 'padding':'55px'});
+    $('#tax_counts_graph_div').css({'top':e.pageY-200,'left':e.pageX, 'position':'absolute', 'border':'1px solid black', 'padding':'55px'});
     document.getElementById('tax_counts_graph_div').style.display='block'
     id = new_id
   }

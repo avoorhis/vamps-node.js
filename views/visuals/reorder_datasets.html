@@ -15,7 +15,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
 <div id='' class=''>
 <form name='save_ds_order_form' id='' class='' method='POST' action='/visuals/<%= referer %>'>
     <table class='table' >
-      <tr><td>Original order</td><td><span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span></td></tr>
+      <tr><td>Original order</td><td><span id='dragInfoArea' > ** Drag a row to change the dataset order. **</span></td><td></td></tr>
       <tr><td class='td_top'>
         
 		  <table  id='' class='table table-condensed' >
@@ -53,10 +53,9 @@ Here are your <%= items.names.length %> selected datasets:<br>
           <tr>
 			<td class=''>
 			  <div id='ds_save_order_div' class='small_font'>
-				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-primary'>Use this Order</button>
+				  <button type='submit' id='save_order_btn' class='btn btn-xs btn-success'>Use this Order and Return</button>
 				  <input  type='hidden' id='' class='' name='resorted' value='1'>
-				  <button type='button' id='reset_order_btn'class='btn btn-xs btn-primary'>Reset Order</button>
-				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();'   class='btn btn-xs btn-primary'>Cancel</button>
+				  <button type='button' id='cancel_btn'  onclick='javscript:window.history.back();' aria-label="Close"  class='btn btn-xs btn-success'>Cancel</button>
 				
 			  </div>
 			</td>
@@ -70,6 +69,7 @@ Here are your <%= items.names.length %> selected datasets:<br>
         
           <tr>
 			<td class='small_font'>
+					<button type='button' id='reset_order_btn'class='btn btn-xs btn-primary'>Reset Order</button>
 					<button type='button' id='alphabetize' class='btn btn-xs btn-primary'>Alphabetize</button>&nbsp;&nbsp;
 					<button type='button' id='reverse' class='btn btn-xs btn-primary'>Reverse</button>
 			</td>
