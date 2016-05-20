@@ -228,8 +228,10 @@ if __name__ == '__main__':
     print "ARGS: dbhost  =",args.dbhost
     if args.dbhost == 'vampsdb' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+        args.NODE_DATABASE = 'vamps2'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
+        args.NODE_DATABASE = 'vamps2'
     
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
@@ -246,18 +248,21 @@ if __name__ == '__main__':
     dbs = []
     db_str = ''
     i = 0
-    for row in cur.fetchall():
-        if row[0] != 'mysql' and row[0] != 'information_schema':
-            dbs.append(row[0])
-            db_str += str(i)+'-'+row[0]+';  '
-            print str(i)+' - '+row[0]+';  '
-            i += 1
-    
-    db_no = input("\nchoose database number: ")
-    if int(db_no) < len(dbs):
-        NODE_DATABASE = dbs[db_no]
+    if args.NODE_DATABASE:
+        NODE_DATABASE = args.NODE_DATABASE
     else:
-        sys.exit("unrecognized number -- Exiting")
+        for row in cur.fetchall():
+            if row[0] != 'mysql' and row[0] != 'information_schema':
+                dbs.append(row[0])
+                db_str += str(i)+'-'+row[0]+';  '
+                print str(i)+' - '+row[0]+';  '
+                i += 1
+    
+        db_no = input("\nchoose database number: ")
+        if int(db_no) < len(dbs):
+            NODE_DATABASE = dbs[db_no]
+        else:
+            sys.exit("unrecognized number -- Exiting")
         
     print
     cur.execute("USE "+NODE_DATABASE)

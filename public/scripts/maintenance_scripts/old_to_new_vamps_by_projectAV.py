@@ -150,7 +150,7 @@ class Mysql_util:
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:
         sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
-
+        #print sql
         if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
@@ -1002,7 +1002,8 @@ class Metadata:
     self.custom_metadata_fields = self.existing_field_names ^ set(self.existing_required_metadata_fields.values())    
 
   # ==== Required metadata =====
-  
+  ''' AAV:: in many MBE projects found envo_feature, envo_material, and envo_biome which should be changed (by script) to env_feature, env_matter and env_biome '''
+  ''' AAV:: found all capitals in MBE_1798_Bv4v5 causing mis-catagorizing'''
   def prepare_required_metadata(self):
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
     existing_required_metadata_fields_values_per_dataset = defaultdict(dict)
@@ -1015,6 +1016,8 @@ class Metadata:
       temp_dict = {}
       for field_name in list(intr):
         key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
+        print 'metadata',metadata
+        print 'field name',field_name
         if field_name in metadata:
             temp_dict[key[0]] = metadata[field_name]
         else:
@@ -1098,8 +1101,12 @@ class Metadata:
         primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
     
         field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+        wordy_fields = ['experiment_design_description','library_construction_protocol','study_abstract'] # mainly MBE
         for entry in self.custom_metadata_fields_uniqued_for_tbl:
-            field_descriptions += "`%s` varchar(128) DEFAULT NULL,\n" % (entry[1])
+            if entry[1].lower() in wordy_fields:
+                field_descriptions += "`%s` text DEFAULT NULL,\n" % (entry[1])
+            else:
+                field_descriptions += "`%s` varchar(128) DEFAULT NULL,\n" % (entry[1])
 
         field_descriptions += """
             UNIQUE KEY dataset_id (dataset_id),
