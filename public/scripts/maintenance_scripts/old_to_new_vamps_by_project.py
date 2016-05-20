@@ -1167,7 +1167,7 @@ if __name__ == '__main__':
       help = """Do not insert data into db, mostly for debugging purposes""")
   parser.add_argument("-s", "--site",
         required = False, action = "store", dest = "site", default = 'vampsdev',
-        help = """Site where the script is running""")
+        help = """Site where the script is putting data: vamps, vampsdev or local""")
 
   args = parser.parse_args()
   
