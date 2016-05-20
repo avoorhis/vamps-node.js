@@ -88,6 +88,7 @@ def check_files(args):
     print "\nChecking for files in:\n", args.files_prefix
     okay_count = 0
     file_dids = []
+    missing = []
     for f in os.listdir(args.files_prefix):
         filename, file_extension = os.path.splitext(f)
         file_dids.append(filename)
@@ -96,11 +97,13 @@ def check_files(args):
             #print f,'okay'
             okay_count += 1
         else:
-            print did,'missing from',os.path.basename(args.files_prefix)
+            missing.append(did)
+    
     if okay_count == did_count:
         print 'OK1'
     else:
-        #print 'counts1',okay_count,did_count
+        print 'Missing from',os.path.basename(args.files_prefix)
+        print "('" + "','".join(missing) + "')"
         pass
     print 'DID presence is REQUIRED'
     
@@ -110,16 +113,18 @@ def check_files(args):
         tdata = json.load(tax_file)
     
     okay_count = 0
+    missing = []
     for did in db_dids:
         if did in tdata:
             #print 'found',did
             okay_count += 1
         else:
-            print did, 'missing from', os.path.basename(args.taxcounts_file)
+            missing.append(did)
     if okay_count == did_count:
         print 'OK2'
     else:
-        #print 'counts2',okay_count,did_count
+        print 'Missing from',os.path.basename(args.taxcounts_file)
+        print "('" + "','".join(missing) + "')"
         pass
     print 'DID presence is REQUIRED'
     
@@ -129,16 +134,18 @@ def check_files(args):
         mdata = json.load(md_file)
     
     okay_count = 0
+    missing = []
     for did in db_dids:
         if did in mdata:
             #print 'found',did
             okay_count += 1
         else:
-            print did,'missing from',os.path.basename(args.metadata_file)
+            missing.append(did)
     if okay_count == did_count:
         print 'OK3'
     else:
-        #print 'counts3',okay_count,did_count
+        print 'Missing from',os.path.basename(args.metadata_file)
+        print "('" + "','".join(missing) + "')"
         pass
     print 'DID presence is NOT Required'
 def go(args):
@@ -377,8 +384,10 @@ if __name__ == '__main__':
     warnings = []
     if args.dbhost == 'vampsdev':
         args.json_file_path = os.path.join('/','groups','vampsweb','vampsdev_node_data','json')
+        args.NODE_DATABASE = 'vamps2'
     elif args.dbhost == 'vampsdb':
         args.json_file_path = os.path.join('/','groups','vampsweb','vamps_node_data','json')
+        args.NODE_DATABASE = 'vamps2'
     if not args.json_file_path:
         #args.json_file_path = os.path.join(os.path.realpath(__file__),'../','../','json'
         args.json_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','../','json')
@@ -402,21 +411,22 @@ if __name__ == '__main__':
         print myusage
         sys.exit()
     cur = db.cursor()
-    cur.execute("SHOW databases")
-    dbs = []
-    db_str = ''
-    print myusage
-    i = 0
-    for row in cur.fetchall():
-        if row[0] != 'mysql' and row[0] != 'information_schema':
-            dbs.append(row[0])
-            db_str += str(i)+'-'+row[0]+';  '
-            print str(i)+' - '+row[0]+';  '
-            i += 1
+    
     #print db_str
     if args.NODE_DATABASE:
         NODE_DATABASE = args.NODE_DATABASE
     else:
+        cur.execute("SHOW databases")
+        dbs = []
+        db_str = ''
+        print myusage
+        i = 0
+        for row in cur.fetchall():
+            if row[0] != 'mysql' and row[0] != 'information_schema':
+                dbs.append(row[0])
+                db_str += str(i)+'-'+row[0]+';  '
+                print str(i)+' - '+row[0]+';  '
+                i += 1
         db_no = input("\nchoose database number: ")
         if int(db_no) < len(dbs):
             NODE_DATABASE = dbs[db_no]

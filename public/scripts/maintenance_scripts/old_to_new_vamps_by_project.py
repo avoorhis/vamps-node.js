@@ -310,14 +310,17 @@ class CSV_files:
     query = "SELECT * FROM vamps_metadata where project = '%s'" % (project)  
     metadata_csv_file_name = "metadata_%s.csv" % project
     utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
+    print "Dump vamps_metadata for %s" % project
 
     query = "SELECT * FROM vamps_sequences where project = '%s'" % (project)  
     seq_csv_file_name = "sequences_%s.csv" % project
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query))
+    print "Dump vamps_sequences for %s" % project
 
     query = "SELECT * FROM vamps_sequences_pipe where project = '%s'" % (project)  
     seq_csv_file_name = "sequences_%s.csv" % project
     utils.write_to_csv_file(seq_csv_file_name, utils.get_csv_file_calls(query), "ab")
+    print "Dump vamps_sequences_pipe for %s" % project
 
     query = """SELECT DISTINCT project, title, project_description, funding, env_sample_source_id, contact, email, institution 
                 FROM new_project 
@@ -329,6 +332,7 @@ class CSV_files:
                 WHERE project_name = '%s'""" % (project, project)  
     project_csv_file_name = "project_%s.csv" % project
     utils.write_to_csv_file(project_csv_file_name, utils.get_csv_file_calls(query))
+    print "Dump new_project, new_contact & vamps_upload_info for %s" % project
 
     query = """SELECT distinct contact, user as username, email, institution, first_name, last_name, active, security_level, passwd as encrypted_password 
               FROM new_user_contact 
@@ -337,6 +341,7 @@ class CSV_files:
               WHERE first_name is not NULL and first_name <> '';"""
     user_contact_csv_file_name = "user_contact_%s.csv" % project
     utils.write_to_csv_file(user_contact_csv_file_name, utils.get_csv_file_calls(query))
+    print "Dump new_user_contact, new_user & new_contact for %s" % project
 
     query = """SELECT DISTINCT dataset, dataset_description, env_sample_source_id, project 
                   FROM new_dataset 
@@ -350,6 +355,8 @@ class CSV_files:
           ;"""  % (project, project)
     dataset_csv_file_name = "dataset_%s.csv" % project
     utils.write_to_csv_file(dataset_csv_file_name, utils.get_csv_file_calls(query))
+    print "Dump new_dataset, new_project, vamps_projects_datasets_pipe & vamps_upload_info for %s" % project
+
     return (metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name)
   
     
@@ -624,6 +631,8 @@ class Dataset:
 
   def make_dataset_project_dictionary(self):
     self.dataset_project_dict = {val[0]: val[3] for val in self.dataset_file_content}
+    # print "PPP self.dataset_project_dict = "
+    # print self.dataset_project_dict
 
   def parse_dataset_csv(self, dataset_csv_file_name):
   # "dataset","dataset_description","env_sample_source_id","project"
@@ -635,14 +644,16 @@ class Dataset:
     for dl in self.dataset_file_content:
       dl[3] = project_id
 
-  def collect_dataset_ids(self):
+  def collect_dataset_ids(self, project_id):
     for dataset, project in self.dataset_project_dict.items():
-      dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
+      dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s' and project_id = %s" % (dataset, project_id))
+      # print "III dataset_id:"
+      # print dataset_id
       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
-    print "PPP project_dict"
-    print project_dict
+    # print "PPP project_dict"
+    # print project_dict
     for project in set(self.dataset_project_dict.values()):
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
@@ -659,12 +670,12 @@ class Dataset:
   def make_all_dataset_id_by_project_dict(self):
     for dat, proj in sorted(self.dataset_project_dict.items()):
         self.all_dataset_id_by_project_dict[proj].append(self.dataset_id_by_name_dict[dat])
-    print "all_dataset_id_by_project_dict"
-    print self.all_dataset_id_by_project_dict
+    # print "LLL all_dataset_id_by_project_dict"
+    # print self.all_dataset_id_by_project_dict
     # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
 
-  def add_dataset_id_to_list(self, some_list, project):
-    return [([dataset_id] + some_list) for dataset_id in self.all_dataset_id_by_project_dict[project]]
+  # def add_dataset_id_to_list(self, some_list, project):
+  #   return [([dataset_id] + some_list) for dataset_id in self.all_dataset_id_by_project_dict[project]]
 
 
 
@@ -753,6 +764,7 @@ class Seq_csv:
     self.seq_ids_by_name_dict = dict(sequences_w_ids)
     # self.utils.print_array_w_title(self.seq_ids_by_name_dict, "self.seq_ids_by_name_dict = ")
     self.make_sequence_pdr_info_content(dataset_dict)
+    # self.utils.print_array_w_title(dataset_dict, "DDD dataset_dict = ")
 
 # ! silva_taxonomy_info_per_seq (sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id)
   def silva_taxonomy_info_per_seq_from_csv(self, taxonomy):
@@ -959,11 +971,11 @@ class Metadata:
       '''
     
   def add_ids_to_params(self):
-    print "DDD dataset.dataset_id_by_name_dict:"
-    print dataset.dataset_id_by_name_dict
+    # print "TTT dataset.dataset_id_by_name_dict:"
+    # print dataset.dataset_id_by_name_dict
     for param_per_dataset in self.metadata_w_names:
-      print "PPP param_per_dataset:"
-      print param_per_dataset
+      # print "PPP param_per_dataset:"
+      # print param_per_dataset
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
           
@@ -998,8 +1010,15 @@ class Metadata:
       dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
       temp_dict = {}
       for field_name in list(intr):
+        # print "FFF field_name = %s" % field_name
         key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
-        temp_dict[key[0]] = metadata[field_name]
+        try:
+          temp_dict[key[0]] = metadata[field_name]
+        except KeyError:
+          self.utils.print_both("Warning! A required metadata field '%s' is missing!" % field_name)
+          temp_dict[key[0]] = ''
+        except:
+          raise
       temp_dict['dataset_id'] = str(dataset_id)
       
       self.required_metadata.append(temp_dict)
@@ -1148,7 +1167,7 @@ if __name__ == '__main__':
       help = """Do not insert data into db, mostly for debugging purposes""")
   parser.add_argument("-s", "--site",
         required = False, action = "store", dest = "site", default = 'vampsdev',
-        help = """Site where the script is running""")
+        help = """Site where the script is putting data: vamps, vampsdev or local""")
 
   args = parser.parse_args()
   
@@ -1263,7 +1282,7 @@ if __name__ == '__main__':
 
   if (args.do_not_insert == True):
     utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
-  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids", pr.project_id)
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)

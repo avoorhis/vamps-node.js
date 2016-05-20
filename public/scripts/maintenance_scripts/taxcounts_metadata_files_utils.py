@@ -384,10 +384,10 @@ if __name__ == '__main__':
         OR
         -del/--delete       Delete all dids (whole project) from dir  (requires pid) ()
         
-        -l/  --list         List: list all projects in taxcounts files [default]
+        -l/  --list         List: list all projects in the DATABASE [default]
         
         -json_file_path/--json_file_path   json files path Default: ../json
-        -host/--host            dbhost:  Default: localhost
+        -host/--host        vamps, vampsdev    dbhost:  Default: localhost
 
     count_lookup_per_dsid[dsid][rank][taxid] = count
 
@@ -422,7 +422,7 @@ if __name__ == '__main__':
                 help="")
                 # for vampsdev"  /groups/vampsweb/vampsdev_node_data/json
     parser.add_argument("-host", "--host",    
-                required=False,  action='store', choices=['vamps','vampsdev','localhost'], dest = "dbhost",  default='localhost',
+                required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")            
     args = parser.parse_args()
     
@@ -430,12 +430,14 @@ if __name__ == '__main__':
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
         args.dbhost = 'vampsdb'
+        args.NODE_DATABASE = 'vamps2'
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
-    
+        args.NODE_DATABASE = 'vamps2'
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:
+        print usage
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
     print "ARGS: json_dir=",args.json_file_path    
@@ -443,18 +445,22 @@ if __name__ == '__main__':
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
     cur = db.cursor()
-    cur.execute("SHOW databases like 'vamps%'")
-    dbs = []
-    db_str = ''
-    for i, row in enumerate(cur.fetchall()):
-        dbs.append(row[0])
-        db_str += str(i)+'-'+row[0]+';  '
-    print db_str
-    db_no = input("\nchoose database number: ")
-    if int(db_no) < len(dbs):
-        NODE_DATABASE = dbs[db_no]
+    if args.NODE_DATABASE:
+        NODE_DATABASE = args.NODE_DATABASE
     else:
-        sys.exit("unrecognized number -- Exiting")
+        cur.execute("SHOW databases like 'vamps%'")
+        dbs = []
+        print myusage
+        db_str = ''
+        for i, row in enumerate(cur.fetchall()):
+            dbs.append(row[0])
+            db_str += str(i)+'-'+row[0]+';  '
+        print db_str
+        db_no = input("\nchoose database number: ")
+        if int(db_no) < len(dbs):
+            NODE_DATABASE = dbs[db_no]
+        else:
+            sys.exit("unrecognized number -- Exiting")
         
     print
     cur.execute("USE "+NODE_DATABASE)
@@ -489,5 +495,6 @@ if __name__ == '__main__':
         go_add(NODE_DATABASE, args.pid)
     else:
         print usage 
+        print "Maybe you forgot to add '-add' or '-del' to the command line?"
         
 
