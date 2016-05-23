@@ -1174,8 +1174,9 @@ function create_counts_table() {
         var sd    = 0;
         for (var da in mtx_local.data[i]) {
           var cnt = mtx_local.data[i][da];
+          var ds_num = (parseInt(da)+1).toString()
           var pct =  (cnt * 100 / mtx_local.column_totals[da]).toFixed(2);
-          var id  = 'frequencies-|-'+mtx_local.rows[i].id+'-|-'+mtx_local.columns[da].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
+          var id  = 'frequencies-|-'+mtx_local.rows[i].id+'-|-'+ds_num+') '+mtx_local.columns[da].id+'-|-'+cnt.toString()+'-|-'+pct.toString();
           html += "<td id='"+id+"' class='tooltip_viz right_justify'>"+cnt.toString()+'</td>';
           tot += cnt;
           if(cnt > max){
