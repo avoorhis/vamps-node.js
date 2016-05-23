@@ -73,7 +73,8 @@
   
   <!-- Tab panes -->
   <div class="tab-content">
-  
+  	
+  	<!-- PROJECT -->
   	<div role="tabpanel" class="list_style_none tab-pane active" id="project">
 		  <table class="table table-striped">
 		  <tr><td>Project Name: </td><td><%= data.project %></td></tr>
@@ -90,16 +91,19 @@
 		  <tr><td>Primary Investigator:</td><td> <%= data.first %> <%= data.last %> (<%= data.email %>)</td></tr>
 		  <tr><td>Institution:</td><td> <%= data.institution %></li>
 		  <tr><td>Environmental Source:</td><td> <%= data.env_source_name %></td></tr>
+		  <tr><td>Date (Processed or Uploaded):</td><td></td></tr>
 		  <tr><td>Number of samples (datasets):</td><td> <%= dsinfo.length %></td></tr>
 		  </table>
   	</div> <!-- End project div -->
-	
+		
+		<!-- ABSTRACT -->
 		<div role="tabpanel" class="tab-pane" id="abstract">
 		    <table class="table">
 		  		<tr><td><%= abstract.abstract %></td></tr>
 		  	</table>
 		</div> <!-- End abstract div -->
-	
+		
+		<!-- DATASETS -->
   	<div role="tabpanel" class="tab-pane" id="datasets">
 		  <div id='profile_dataset_list' >
 			  <ol>
@@ -114,6 +118,7 @@
 		  </div>
   	</div> <!-- End datasets div -->	
 
+  	<!-- METADATA -->
   	<div role="tabpanel" class="tab-pane" id="metadata">
        
 		    <table class='table sortable'>

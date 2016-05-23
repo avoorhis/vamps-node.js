@@ -1201,7 +1201,7 @@ function create_counts_table() {
       }
       // TOTALS
       html += "<tr><td></td>";
-      for (t = 0; t < maxrank-1; t++) {
+      for (t = 0; t < maxrank; t++) {
         html += "<td></td>";
       }
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
