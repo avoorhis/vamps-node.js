@@ -150,7 +150,7 @@ class Mysql_util:
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:
         sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
-        #print sql
+
         if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
@@ -267,7 +267,7 @@ class Utils:
       for arr in matrix[:-1]:
         insert_dat_vals = ', '.join("'%s'" % key for key in arr)
         all_insert_vals += insert_dat_vals + "), ("
-      
+
       all_insert_vals += ', '.join("'%s'" % key for key in matrix[-1])
 
       # self.print_array_w_title(all_insert_vals, "all_insert_vals from make_insert_values")
@@ -558,6 +558,10 @@ class User:
       insert_values = ', '.join(["'%s'" % key for key in self.user_data[1:]])
       self.user = ''
     except:
+      """
+        If project contact is not in the user database (common for older projects)
+            then we need to supply a fallback contact so the script continues
+      """
       insert_values = ', '.join(["'admin'","'admin@no-reply.edu'","'MBL'","'Ad'","'Min'","'0'","'50'","'@@@@@@@@@'"])
       self.user = 'admin'
       
@@ -874,8 +878,8 @@ class Metadata:
   custom_metadata fields are per project,
   but data could be by dataset
 
-  csv: "dataset"  "parameterName" "parameterValue"  "units" "miens_units" "project" "units_id"  "structured_comment_name" "method"  "other" "notes" "ts"  "entry_date"  "parameter_id"  "project_dataset"
-"SMS_0001_2007_09_19" "domain"  "Bacteria"  "Alphanumeric"  "Alphanumeric"  "ICM_SMS_Bv6" "1" "domain"  ""  "0" "sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"  "2012-04-27 08:25:07" ""  "0" "ICM_SMS_Bv6--SMS_0001_2007_09_19"
+  csv: "dataset"	"parameterName"	"parameterValue"	"units"	"miens_units"	"project"	"units_id"	"structured_comment_name"	"method"	"other"	"notes"	"ts"	"entry_date"	"parameter_id"	"project_dataset"
+"SMS_0001_2007_09_19"	"domain"	"Bacteria"	"Alphanumeric"	"Alphanumeric"	"ICM_SMS_Bv6"	"1"	"domain"	""	"0"	"sms.txt  2009-03-31 PRN  miens update prn 2010_05_19 miens update units --prn 2010_05_19"	"2012-04-27 08:25:07"	""	"0"	"ICM_SMS_Bv6--SMS_0001_2007_09_19"
 
   required_metadata_info (dataset_id, taxon_id, description, common_name, altitude, assigned_from_geo, collection_date, depth, country, elevation, env_biome, env_feature, env_matter, latitude, longitude, public)
   custom_metadata_fields (project_id, field_name, field_units, example)
@@ -1016,6 +1020,9 @@ class Metadata:
       temp_dict = {}
       for field_name in list(intr):
         key = self.utils.find_key_by_value_in_dict(self.existing_required_metadata_fields.items(), str(field_name))
+        """
+          AAV::  If field_name is absent this will add a blank rather than crashing
+        """
         print 'metadata',metadata
         print 'field name',field_name
         if field_name in metadata:
@@ -1101,6 +1108,7 @@ class Metadata:
         primary_key_field   = "%s int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,\n" % (id_name)
     
         field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
+        """AAV:: For common long metadata entries the varchar(128) should get replaced with 'text'        """
         wordy_fields = ['experiment_design_description','library_construction_protocol','study_abstract'] # mainly MBE
         for entry in self.custom_metadata_fields_uniqued_for_tbl:
             if entry[1].lower() in wordy_fields:
@@ -1198,7 +1206,6 @@ if __name__ == '__main__':
       host_prod = "127.0.0.1"
       read_default_file_prod = "~/.my.cnf_server"
       port_prod = 3308
-
     elif args.site == 'vamps':
       host_prod = "vampsdb"
     # else:
