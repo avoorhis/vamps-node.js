@@ -2862,7 +2862,7 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
         var pname = this_project.name 
         for(n in this_project.datasets){
             var did   = this_project.datasets[n].did
-            console.log('didXX',did)
+            //console.log('didXX',did)
             var dname = this_project.datasets[n].dname
             var ddesc = this_project.datasets[n].ddesc
             var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc;

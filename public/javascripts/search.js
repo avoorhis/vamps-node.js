@@ -299,10 +299,12 @@ function showTaxResult(str) {
     document.getElementById("create_fasta_btn").disabled=true;
     document.getElementById("create_fasta_hidden_id").value = ''
     document.getElementById("find_datasets_hidden_id").value = ''
+    document.getElementById("livesearch_tax_dropdown").style.visibility='hidden';
     return;
   }else{
     document.getElementById("find_datasets_btn").disabled=false;
     document.getElementById("create_fasta_btn").disabled=false;
+    document.getElementById("livesearch_tax_dropdown").style.visibility='visible';
   }
   if (window.XMLHttpRequest) {
     // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -330,6 +332,7 @@ function showUserResult(str) {
     document.getElementById("livesearch_user").innerHTML="";
     document.getElementById("livesearch_user").style.border="0px";
     document.getElementById("livesearch_user").style.height="0";
+    document.getElementById("livesearch_user_dropdown").style.visibility='hidden';
     //document.getElementById("livesearch_result_div").value = ''
     //document.getElementById("find_datasets_btn").disabled=true;
     //document.getElementById("create_fasta_btn").disabled=true;
@@ -339,6 +342,7 @@ function showUserResult(str) {
   }else{
     //document.getElementById("find_datasets_btn").disabled=false;
     //document.getElementById("create_fasta_btn").disabled=false;
+    document.getElementById("livesearch_user_dropdown").style.visibility='visible';
   }
   if (window.XMLHttpRequest) {
     // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -362,15 +366,17 @@ function showUserResult(str) {
 //  SHOW  RESULTS for Project Search
 //
 function showProjectResult(str) {
+  //alert(str)
   if (str.length==0) {
     document.getElementById("livesearch_project").innerHTML="";
     document.getElementById("livesearch_project").style.border="0px";
     document.getElementById("livesearch_project").style.height="0";
-    
+    document.getElementById("livesearch_project_dropdown").style.visibility='hidden';
     return;
   }else{
     //document.getElementById("find_datasets_btn").disabled=false;
     //document.getElementById("create_fasta_btn").disabled=false;
+    document.getElementById("livesearch_project_dropdown").style.visibility='visible';
   }
   if (window.XMLHttpRequest) {
     // code for IE7+, Firefox, Chrome, Opera, Safari

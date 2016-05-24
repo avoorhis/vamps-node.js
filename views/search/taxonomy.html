@@ -22,14 +22,14 @@
 					<table class='button_row '>
 							<tr>
 					    <td>    	
-					    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_for_datasets' >	
+					    		<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/search/taxonomy_search_for_datasets' >	
 							  		<button id='find_datasets_btn' class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Find Datasets</button>
 							  		<input type='hidden' id='find_datasets_hidden_id' name='tax_string' value=''>
 							  		<input type='hidden' name='selection' value='custom_taxonomy'>
 							  	</form>
 					    </td>
 					    <td>
-					    	<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
+					    		<form id='taxonomy_search_form_id' name='taxonomy_search_form_name' method='POST' action='/user_data/download_selected_seqs' >	
 							  		<button id='create_fasta_btn'  class="btn btn-xs btn-primary" type="submit" disabled='disabled' >Create Fasta File</button>
 							  		<input type='hidden' id='create_fasta_hidden_id' name='tax_string' value=''>
 							  		<input type='hidden' name='download_type' value='custom_taxonomy'>
@@ -50,7 +50,7 @@
 
 				<div class="dropdown col-md-2">
 				  Type: <input id="tax_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showTaxResult(this.value)"/>
-				  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				  <ul id='livesearch_tax_dropdown' class="dropdown-menu" aria-labelledby="dropdownMenu1" style='visibility:hidden;'>
 				    <div id="livesearch_taxonomy" class=""></div>
 				  </ul>		
 				</div>
@@ -63,12 +63,6 @@
 		<br>TODO: After selecting a unique name should get a list of all strings that are more refined to choose from.
 	
 </div>
-
-
-
-
-
-
 
 	
 <% include ../add_ins/end.ejs %>
