@@ -191,7 +191,7 @@ if __name__ == '__main__':
            -all/--all               Remove ALL Data for fresh install
                                     Be Careful -- will remove ALL data from db
             -json_file_path/--json_file_path   json files path Default: ../json
-            -host/--host            dbhost:  Default: localhost
+            -host/--host            vampsdb vampsdev dbhost:  Default: localhost
 
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 

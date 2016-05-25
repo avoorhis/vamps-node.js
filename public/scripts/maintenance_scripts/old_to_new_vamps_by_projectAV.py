@@ -167,6 +167,7 @@ class Mysql_util:
       my_sql  = """SELECT %s, %s FROM %s %s""" % (field_name, id_name, table_name, where_part)
       # self.utils.print_both(("my_sql from get_all_name_id = %s") % my_sql)
       res     = self.execute_fetch_select(my_sql)
+      
       if res:
         return res[0]
 
@@ -195,6 +196,8 @@ class Mysql_util:
 
 class Utils:
     def __init__(self):
+        self.chunk_split = 100
+        self.min_seqs = 100000
         pass
 
     def is_local(self):
@@ -298,7 +301,9 @@ class Utils:
       
     def slicedict(self, my_dict, key_list):
       return {k: v for k, v in my_dict.items() if k in key_list}
-      
+
+    def chunks(self, data, n=10):
+        return [data[i:i+n] for i in range(0, len(data), n)]
 
 class CSV_files:
   def __init__(self):
@@ -662,7 +667,7 @@ class Dataset:
 
   def insert_dataset(self, project_dict):
     print "PPP project_dict"
-    print project_dict
+    #print project_dict
     for project in set(self.dataset_project_dict.values()):
       project_id = project_dict[project]
       self.put_project_id_into_dataset_file_content(project_id)
@@ -680,7 +685,7 @@ class Dataset:
     for dat, proj in sorted(self.dataset_project_dict.items()):
         self.all_dataset_id_by_project_dict[proj].append(self.dataset_id_by_name_dict[dat])
     print "all_dataset_id_by_project_dict"
-    print self.all_dataset_id_by_project_dict
+    #print self.all_dataset_id_by_project_dict
     # {'ICM_SMS_Bv6': [1062, 1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077]})
 
   def add_dataset_id_to_list(self, some_list, project):
@@ -695,18 +700,40 @@ class Sequence:
     self.sequences  = sequences
 
     self.all_sequences   = set()
-    self.sequences_lists = []
+    self.sequences_lists = [] 
     self.comp_seq        = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in self.sequences])
     self.sequences_w_ids = set()
-
+    
+    
   def get_seq_ids(self):
-    self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
-    self.sequences_w_ids = mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
+    
+    if len(self.sequences) > self.utils.min_seqs:
+        sequences_w_ids = []
+        split = len(self.sequences)/self.utils.chunk_split  # how many pieces
+        for i,seqs in enumerate(self.utils.chunks(self.sequences, split)):
+            print i+1,'/',self.utils.chunk_split,' -- len seqs chunk:',len(seqs)
+            comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in seqs])
+            sequences_w_ids.extend( mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % comp_seq) )
+        self.sequences_w_ids = sequences_w_ids
+    else:
+        self.comp_seq = "COMPRESS(%s)" % '), COMPRESS('.join(["'%s'" % key for key in self.sequences])
+        self.sequences_w_ids = mysql_util.get_all_name_id('sequence', '', 'UNCOMPRESS(sequence_comp)', 'WHERE sequence_comp in (%s)' % self.comp_seq)
     # self.utils.print_array_w_title(sequences_w_ids, "sequences_w_ids from get_seq_ids")
 
   def insert_seq(self):
-    rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
-    self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+    print 'type self.sequences:',type(self.sequences)
+    print 'len self.sequences:',len(self.sequences)  
+    
+    if len(self.sequences) > self.utils.min_seqs:
+        split = len(self.sequences)/self.utils.chunk_split  # how many pieces
+        for i,seqs in enumerate(self.utils.chunks(self.sequences, split)):
+            print i+1,'/',self.utils.chunk_split,' -- len seq chunk:',len(seqs)
+            comp_seq = "COMPRESS(%s)" % ')), (COMPRESS('.join(["'%s'" % key for key in seqs])
+            rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", comp_seq)
+            self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
+    else:
+        rows_affected = mysql_util.execute_insert("sequence", "sequence_comp", self.comp_seq)
+        self.utils.print_array_w_title(rows_affected, "rows affected by mysql_util.execute_insert(sequence, sequence_comp, comp_seq)")
 
 class Seq_csv:
   # id, sequence, project, dataset, taxonomy, refhvr_id, rank, seq_count, frequency, distance, rep_id, project_dataset
@@ -758,10 +785,21 @@ class Seq_csv:
 
   def insert_sequence_pdr_info(self):
     fields = "dataset_id, sequence_id, seq_count, classifier_id"
-    insert_seq_pdr_vals = self.utils.make_insert_values(self.sequence_pdr_info_content)
+    
     # self.utils.print_array_w_title(insert_seq_pdr_vals, "insert_seq_pdr_vals")
-    rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
-    self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
+    
+    if len(self.sequence_pdr_info_content) > self.utils.min_seqs:
+        
+        split = len(self.sequence_pdr_info_content)/self.utils.chunk_split  # how many pieces
+        for i,vals in enumerate(self.utils.chunks(self.sequence_pdr_info_content, split)):
+            insert_seq_pdr_vals = self.utils.make_insert_values(vals)
+            print i+1,'/',self.utils.chunk_split,' -- len vals chunk:',len(insert_seq_pdr_vals) 
+            rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
+            self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
+    else:
+        insert_seq_pdr_vals = self.utils.make_insert_values(self.sequence_pdr_info_content)
+        rows_affected = mysql_util.execute_insert('sequence_pdr_info', fields, insert_seq_pdr_vals)
+        self.utils.print_array_w_title(rows_affected, "rows_affected by insert_seq_pdr_vals")
 
   def sequence_pdr_info(self, dataset_dict, sequences_w_ids):
     # (dataset_id, sequence_id, seq_count, classifier_id)
@@ -812,13 +850,20 @@ class Seq_csv:
   def insert_silva_taxonomy_info_per_seq(self):
     # self.silva_taxonomy_info_per_seq_list = [[8559950L, 2436599, '0.03900', 0, 0, 83],...
     field_list = "sequence_id, silva_taxonomy_id, gast_distance, refssu_id, refssu_count, rank_id"
-
-    all_insert_dat_vals = self.utils.make_insert_values(self.silva_taxonomy_info_per_seq_list)
+    
     # sql = "INSERT %s INTO `%s` (`%s`) VALUES (%s)" % ("IGNORE", "silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
     # self.utils.print_array_w_title(sql, "sql")
-
-    rows_affected = mysql_util.execute_insert("silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
-    self.utils.print_array_w_title(rows_affected, "rows_affected by insert_silva_taxonomy_info_per_seq")
+    if len(self.silva_taxonomy_info_per_seq_list) > self.utils.min_seqs:
+        split = len(self.silva_taxonomy_info_per_seq_list)/self.utils.chunk_split  # how many pieces
+        for i,vals in enumerate(self.utils.chunks(self.silva_taxonomy_info_per_seq_list, split)):
+            all_insert_dat_vals = self.utils.make_insert_values(vals)
+            print i+1,'/',self.utils.chunk_split,' -- len vals chunk:',len(all_insert_dat_vals)
+            rows_affected = mysql_util.execute_insert("silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
+            self.utils.print_array_w_title(rows_affected, "rows_affected by insert_silva_taxonomy_info_per_seq")
+    else:
+        all_insert_dat_vals = self.utils.make_insert_values(self.silva_taxonomy_info_per_seq_list)
+        rows_affected = mysql_util.execute_insert("silva_taxonomy_info_per_seq", field_list, all_insert_dat_vals)
+        self.utils.print_array_w_title(rows_affected, "rows_affected by insert_silva_taxonomy_info_per_seq")
 
   def parse_env_sample_source_id(self):
     # mysql -B -h vampsdb vamps -e "select env_sample_source_id, env_source_name from new_env_sample_source" >env_sample_source_id.csv
@@ -836,13 +881,21 @@ class Seq_csv:
   def sequence_uniq_info_from_csv(self, sequences_w_ids):
     self.get_seq_id_w_silva_taxonomy_info_per_seq_id()
     # ! sequence_uniq_info (sequence_id, silva_taxonomy_info_per_seq_id, gg_otu_id, oligotype_id)
-    self.sequence_uniq_info_values = '), ('.join(str(i1) + "," + str(i2) for i1, i2 in self.seq_id_w_silva_taxonomy_info_per_seq_id)
     # print "sequence_uniq_info_values = %s" % sequence_uniq_info_values
 
   def insert_sequence_uniq_info(self):
     field_list = "sequence_id, silva_taxonomy_info_per_seq_id"
-    rows_affected = mysql_util.execute_insert("sequence_uniq_info", field_list, self.sequence_uniq_info_values)
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_sequence_uniq_info = ")
+    if len(self.seq_id_w_silva_taxonomy_info_per_seq_id) > self.utils.min_seqs:
+        split = len(self.seq_id_w_silva_taxonomy_info_per_seq_id)/self.utils.chunk_split  # how many pieces
+        for i,vals in enumerate(self.utils.chunks(self.seq_id_w_silva_taxonomy_info_per_seq_id, split)):
+            sequence_uniq_info_values = '), ('.join(str(i1) + "," + str(i2) for i1, i2 in vals)
+            print i+1,'/',self.utils.chunk_split,' -- len vals chunk:',len(sequence_uniq_info_values)
+            rows_affected = mysql_util.execute_insert("sequence_uniq_info", field_list, sequence_uniq_info_values)
+            self.utils.print_array_w_title(rows_affected, "rows_affected from insert_sequence_uniq_info = ")
+    else:
+        self.sequence_uniq_info_values = '), ('.join(str(i1) + "," + str(i2) for i1, i2 in self.seq_id_w_silva_taxonomy_info_per_seq_id)
+        rows_affected = mysql_util.execute_insert("sequence_uniq_info", field_list, self.sequence_uniq_info_values)
+        self.utils.print_array_w_title(rows_affected, "rows_affected from insert_sequence_uniq_info = ")
 
 
 
@@ -983,7 +1036,7 @@ class Metadata:
     print dataset.dataset_id_by_name_dict
     for param_per_dataset in self.metadata_w_names:
       print "PPP param_per_dataset:"
-      print param_per_dataset
+      #print param_per_dataset
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
           
@@ -1024,7 +1077,7 @@ class Metadata:
           AAV::  If field_name is absent this will add a blank rather than crashing
         """
         print 'metadata',metadata
-        print 'field name',field_name
+        #print 'field name',field_name
         if field_name in metadata:
             temp_dict[key[0]] = metadata[field_name]
         else:
@@ -1178,7 +1231,7 @@ if __name__ == '__main__':
       required = False, action = "store_true", dest = "write_files",
       help = """Create csv files first""")
   parser.add_argument("-ni","--do_not_insert",
-      required = False, action = "store_false", dest = "do_not_insert",
+      required = False, action = "store_true", dest = "do_not_insert", default = False,
       help = """Do not insert data into db, mostly for debugging purposes""")
   parser.add_argument("-s", "--site",
         required = False, action = "store", dest = "site", default = 'vampsdev',
@@ -1264,22 +1317,22 @@ if __name__ == '__main__':
   refhvr_id      = Refhvr_id(seq_csv_parser.refhvr_id, mysql_util)
   sequence       = Sequence(seq_csv_parser.sequences, mysql_util)
   
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(sequence.insert_seq, "Inserting sequences...")
   utils.benchmarking(sequence.get_seq_ids, "get_seq_ids")
   
   utils.benchmarking(refhvr_id.parse_refhvr_id, "parse_refhvr_id")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   pr = Project(mysql_util)
   utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
   user = User(pr.contact, user_contact_csv_file_name, mysql_util)
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(user.insert_user, "insert_user")
   utils.benchmarking(user.get_user_id, "get_user_id")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(pr.insert_project, "insert_project", user.user_id)
 
   utils.benchmarking(pr.get_project_id, "get_project_id")
@@ -1295,21 +1348,21 @@ if __name__ == '__main__':
 
   seq_csv_parser.utils.print_array_w_title(pr.project_dict, "pr.project_dict main 2")
 
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
   utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(seq_csv_parser.insert_sequence_pdr_info, "insert_sequence_pdr_info")
   utils.benchmarking(taxonomy.parse_taxonomy, "parse_taxonomy")
   utils.benchmarking(taxonomy.get_taxa_by_rank, "get_taxa_by_rank")
   utils.benchmarking(taxonomy.make_uniqued_taxa_by_rank_dict, "make_uniqued_taxa_by_rank_dict")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(taxonomy.insert_taxa, "insert_taxa")
   utils.benchmarking(taxonomy.silva_taxonomy, "silva_taxonomy")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(taxonomy.insert_silva_taxonomy, "insert_silva_taxonomy")
   utils.benchmarking(taxonomy.get_silva_taxonomy_ids, "get_silva_taxonomy_ids")
   utils.benchmarking(taxonomy.make_silva_taxonomy_id_per_taxonomy_dict, "make_silva_taxonomy_id_per_taxonomy_dict")
@@ -1317,11 +1370,11 @@ if __name__ == '__main__':
   # utils.print_array_w_title(taxonomy.all_rank_w_id, "taxonomy.all_rank_w_id from main")
   
   utils.benchmarking(seq_csv_parser.silva_taxonomy_info_per_seq_from_csv, "silva_taxonomy_info_per_seq_from_csv", taxonomy)
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(seq_csv_parser.insert_silva_taxonomy_info_per_seq, "insert_silva_taxonomy_info_per_seq")
   
   utils.benchmarking(seq_csv_parser.sequence_uniq_info_from_csv, "sequence_uniq_info_from_csv", sequence.sequences_w_ids)
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
   metadata = Metadata(mysql_util, dataset, pr.project_dict)
@@ -1335,17 +1388,17 @@ if __name__ == '__main__':
 
   utils.benchmarking(metadata.prepare_required_metadata, "prepare_required_metadata")
   utils.benchmarking(metadata.required_metadata_for_insert, "required_metadata_for_insert")  
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(metadata.insert_required_metadata, "insert_required_metadata")
 
   utils.benchmarking(metadata.data_for_custom_metadata_fields_table, "data_for_custom_metadata_fields_table")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(metadata.insert_custom_metadata_fields, "insert_custom_metadata_fields")
   
   if not metadata.custom_metadata_fields_uniqued_for_tbl:
     utils.benchmarking(metadata.get_data_from_custom_metadata_fields, "get_data_from_custom_metadata_fields", pr.project_dict)
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
-  if (args.do_not_insert == True):
+  if (args.do_not_insert == False):
     utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
 
 
