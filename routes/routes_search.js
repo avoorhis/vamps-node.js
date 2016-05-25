@@ -451,44 +451,139 @@ router.get('/livesearch_project/:q', helpers.isLoggedIn, function(req, res) {
   //console.log('<<params');
   console.log('in livesearch project');
   var q = req.params.q.toLowerCase();
+  console.log('q',q);
   var hint = 'Projects:<br>';
-
+  var plist = []
+  var p_obj = {}
+  var dlist = []
+  var d_obj = {}
   if(q !== ''){
+
+
     //hint += 'projects:<br>'
-    for(var pid in PROJECT_INFORMATION_BY_PID){
+    // for(var pid in PROJECT_INFORMATION_BY_PID){
 
-      pname = PROJECT_INFORMATION_BY_PID[pid].project;
+    //   pname  = PROJECT_INFORMATION_BY_PID[pid].project;
+    //   ptitle = PROJECT_INFORMATION_BY_PID[pid].title;
+    //   pdesc  = PROJECT_INFORMATION_BY_PID[pid].description;
 
-      console.log(PROJECT_INFORMATION_BY_PID);
-      if(pname.toLowerCase().indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-        //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+pname+"</a><br>";
-        hint += "<form method='GET' action='/projects/"+pid+"'>";
-        hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+pname+"</button>";
-        hint += "</form>";
+      
+    //   if(      pname.toLowerCase().indexOf(q) != -1 
+    //         || ptitle.toLowerCase().indexOf(q) != -1 
+    //         || pdesc.toLowerCase().indexOf(q) != -1
+    //     ){
+    //     //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+    //     //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+pname+"</a><br>";
+    //     hint += "<form method='GET' action='/projects/"+pid+"'>";
+    //     hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+pname+"</button>"+ptitle;
+    //     hint += "</form>";
+    //   }
+
+      
+    // }
+
+    // hint += 'Datasets:<br>';
+    // //hint += 'datasets:<br>';
+    // console.log(DATASET_NAME_BY_DID);
+    // for(var n in DATASET_NAME_BY_DID){
+    //   dname = DATASET_NAME_BY_DID[n];
+    //   pid = PROJECT_ID_BY_DID[n];
+    //   pname = PROJECT_INFORMATION_BY_PID[pid].project;
+    //   // dataset descriptition??
+
+    //   //console.log(dname);
+    //   if(dname.toLowerCase().indexOf(q) != -1){
+    //     //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
+    //     //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+dname+" (in project: "+pname+")</a><br>";
+    //     hint += "<form method='GET' action='/projects/"+pid+"'>";
+    //     hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+dname+" (in project: "+pname+")</button>";
+    //     hint += "</form>";
+    //   }
+    //   //ALL_DATASETS.projects.forEach(function(prj) {
+    // }
+    
+    
+    ALL_DATASETS.projects.forEach(function(prj) {
+      
+      pid = prj.pid
+      
+      pname = prj.name;
+      ptitle = PROJECT_INFORMATION_BY_PID[pid].title;
+      pdesc  = PROJECT_INFORMATION_BY_PID[pid].description;
+      datasets = prj.datasets;
+      
+      if(      pname.toLowerCase().indexOf(q) != -1 
+            || ptitle.toLowerCase().indexOf(q) != -1 
+            || pdesc.toLowerCase().indexOf(q) != -1
+        ){
+        console.log(pid)
+        plist.push(pname)
+        p_obj[pname] = {}
+        p_obj[pname].pid   = pid
+        p_obj[pname].title = ptitle
+        p_obj[pname].desc  = pdesc
       }
+
+      datasets.forEach(function(dset) {
+        did = dset.did
+        dname = dset.dname;
+        ddesc = dset.ddesc;
+        
+        if(    dname.toLowerCase().indexOf(q) != -1 
+            || ddesc.toLowerCase().indexOf(q) != -1 
+          ){
+          console.log(dname)
+        dlist.push(dname)
+        d_obj[dname] = {}
+        d_obj[dname].did = did
+        d_obj[dname].desc = ddesc
+        d_obj[dname].project = pname
+        }
+
+      })
+
+
+    })
+    console.log(plist)
+    console.log('a')
+    dlist.sort()
+    plist.sort()
+console.log('b',plist.length)
+    for(i = 0; i < plist.length; i++){
+        pname = plist[i]
+        //console.log(p_obj.pname.pid)
+        console.log(plist[i])
+        hint += "<form method='GET' action='/projects/"+p_obj[pname].pid+"'>";
+        hint += "<button type='submit' id='"+p_obj[pname].pid+"' class='btn btn-xs btn-link' >"+pname+"</button> (title: "+p_obj[pname].title+')'
+        hint += "</form>";
     }
+    console.log('c',dlist.length)
+
     hint += 'Datasets:<br>';
-    //hint += 'datasets:<br>';
-    for(var n in DATASET_NAME_BY_DID){
-      dname = DATASET_NAME_BY_DID[n];
-      pid = PROJECT_ID_BY_DID[n];
-      pname = PROJECT_INFORMATION_BY_PID[pid].project;
-      //console.log(dname);
-      if(dname.toLowerCase().indexOf(q) != -1){
-        //hint += "<a href='' onclick=\"get_user_str('"+taxon+"','domain');return false;\" >"+taxon + "</a> <small>(domain)</small><br>";
-        //hint += "&nbsp;&nbsp;<a id='"+pid+"' href='#'>"+dname+" (in project: "+pname+")</a><br>";
-        hint += "<form method='GET' action='/projects/"+pid+"'>";
-        hint += "<button type='submit' id='"+pid+"' class='btn btn-xs btn-link' >"+dname+" (in project: "+pname+")</button>";
+    for(i = 0; i < dlist.length; i++){
+        console.log('ca')
+        dname = dlist[i]
+        hint += "<form method='GET' action='/projects/"+d_obj[dname].did+"'>";
+        console.log('cb')
+        hint += "<button type='submit' id='"+d_obj[dname].did+"' class='btn btn-xs btn-link' >"+dname+"</button> (desc: "+d_obj[dname].desc+')'
+        console.log('cc')
         hint += "</form>";
-      }
     }
+     console.log('d')
+      //if(dname.toLowerCase().indexOf(q) != -1){
 
-
+      //}
+    //})
+// { name: 'CMP_JJ_ApD1',
+//   pid: 53,
+//   title: 'Title',
+//   datasets: [ { did: 86, dname: 'ApD1', ddesc: 'ApD1_description' } ] }
 
 
   }
-  var result = (hint=="Projects:<br>Datasets:<br>") ? ("No Suggestions") : (hint);
+
+  console.log(q,'hint',hint)
+  var result = (hint == 'Projects:<br>Datasets:<br>') ? ("No Suggestions") : (hint);
   res.send(result);
 });
 //

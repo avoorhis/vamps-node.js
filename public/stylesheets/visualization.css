@@ -159,7 +159,12 @@
     
 }
 #counts_table_id .tax_result {
-    color:navy;
+    
+    
+}
+#counts_table_id .tax_data {
+    
+    background: lightblue;
     
 }
 /*counts_table_id .verticalTableHeader {

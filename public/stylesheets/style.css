@@ -297,5 +297,7 @@ td.left_justify {
     background-color:grey;
     
 }
-
+.btn-primary {
+  color:white !important;
+}
 

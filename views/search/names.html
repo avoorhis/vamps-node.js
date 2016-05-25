@@ -10,45 +10,33 @@
 <% } %>
 
 
-
 <a href='/search/search_index'>Back to Search List</a>
 <!-- NAMES SEARCH --><a name="names"></a>
 <br><br>
-<div id='names_search_div' class='well'><strong>Names (key words)</strong>
-	<ul>
-	<li>project name, title, description
-	<li>dataset name, dataset_description
-	</ul>	
-	<ul>					
-		<li>TODO: search by partial names in titles and descriptions. Maybe combine this with project search??
-	</ul>		
-</div>
+
 
 <!-- PROJECT SEARCH --><a name="project"></a>
 <br><br>
 <div id='project_search_div' class='well'>
-	<strong>Project/Dataset Search</strong>
+	<strong>Names (key words):</strong>
 	
 	
 	</ul>		
+	<li>Project name, title, description
+	<li>Dataset name, dataset description
+		<br><br>
 	<div class="row">	
 			<div class="dropdown col-md-1"></div>
 
 			<div class="dropdown col-md-3">
-			  Type partial name: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
-			  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			  Type Partial Name or Key Word: <input id="project_search_id" class="" autocomplete="off" data-toggle="dropdown" type="text"  onkeyup="showProjectResult(this.value)"/>
+			  <ul id='livesearch_project_dropdown' class="dropdown-menu" aria-labelledby="dropdownMenu1" style='visibility:hidden'>
 			    <div id="livesearch_project" class=""></div>
 			  </ul>		
 			</div>
 	</div>
-	  <ul>					
-		<li>TODO: connect up to project profile
-	</ul>				
+	  	
 </div>
-
-
-
-
 
 	
 <% include ../add_ins/end.ejs %>
