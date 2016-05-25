@@ -706,7 +706,9 @@ class Sequence:
     
     
   def get_seq_ids(self):
-    
+    ''' AAV -- for some large projects the get/insert command was too long and it crashed
+        I break the command up here into chunks. I use this technique 5 times -- maybe make a function??
+    '''
     if len(self.sequences) > self.utils.min_seqs:
         sequences_w_ids = []
         split = len(self.sequences)/self.utils.chunk_split  # how many pieces
