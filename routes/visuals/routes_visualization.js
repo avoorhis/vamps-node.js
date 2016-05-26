@@ -1632,8 +1632,24 @@ router.get('/bar_single', helpers.isLoggedIn, function(req, res) {
               var k_id = rows[s].klass_id
               var o_id = rows[s].order_id
               var f_id = rows[s].family_id
-              var g_id = rows[s].genus_id
-              var sp_id = rows[s].species_id
+              var g_id
+              if(rows[s].hasOwnProperty("genus_id")){
+                if(rows[s].genus_id == 'undefined'){
+                    g_id = 'genus_NA'
+                }else{
+                    g_id = rows[s].genus_id
+                }
+                
+              }else{
+                g_id = ''
+              }
+              
+              
+              if(rows[s].hasOwnProperty("species_id")){
+                var sp_id = rows[s].species_id
+              }else{
+                var sp_id = ''
+              }
               var st_id = rows[s].strain_id
               new_rows[did].push({seq:seq,seq_count:seq_cnt,gast_distance:gast,classifier:classifier,domain_id:d_id,phylum_id:p_id,klass_id:k_id,order_id:o_id,family_id:f_id,genus_id:g_id,species_id:sp_id,strain_id:st_id})
 
@@ -1844,10 +1860,11 @@ router.get('/bar_double', helpers.isLoggedIn, function(req, res) {
 router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	console.log('in sequences')
 	var myurl = url.parse(req.url, true);
-	var tax = myurl.query.taxa;
+	var search_tax = myurl.query.taxa;
     var seqs_filename = myurl.query.filename;
 	var pjds = myurl.query.id;
     var seq_list = [];
+    var d,p,k,o,f,g,sp,st;
     var selected_did = chosen_id_name_hash.ids[chosen_id_name_hash.names.indexOf(pjds)];
 	if(seqs_filename){
     //console.log('found filename',seqs_filename)
@@ -1862,60 +1879,50 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       
       for(i in clean_data){
         
-          
+          seq_tax = ''
           var data = clean_data[i]
-          //console.log('data:::',data)
-          //console.log('data.domain_id',data.domain_id)
-          //console.log('cleandata',JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"]))
-          var d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
+          
+          d  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.domain_id+"_domain"].taxon;
           
           try{
-                var p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
+                p  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.phylum_id+"_phylum"].taxon;
           }catch(e){
-                console.log(e)
-                var p = 'phylum_NA'
+                p = 'phylum_NA'
           }
           try{
-                var k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
+                k  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.klass_id+"_klass"].taxon;
           }catch(e){
-                console.log(e)
-                var k = 'class_NA'
+                k = 'class_NA'
           }
           try{
-                var o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
+                o  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.order_id+"_order"].taxon;
           }catch(e){
-                console.log(e)
-                var o = 'order_NA'
+                o = 'order_NA'
           }
           try{
-                var f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
+                f  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.family_id+"_family"].taxon;
           }catch(e){
-                console.log(e)
-                var f = 'family_NA'
-          }
-          
-          try{
-                var g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
-          }catch(e){
-                console.log(e)
-                var g = 'genus_NA'
+                f = 'family_NA'
           }
           try{
-                var sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
+                g  = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.genus_id+"_genus"].taxon;
+          }catch(e){
+                g = 'genus_NA'
+          }
+          try{
+                sp = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.species_id+"_species"].taxon;
           }
           catch(e){
-                console.log(e)
-                var sp = 'species_NA'
+                sp = 'species_NA'
           }
           try{
-                var st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
+                st = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[data.strain_id+"_strain"].taxon;
           }
           catch(e){
-                console.log(e)
-                var st = 'strain_NA'
+                st = 'strain_NA'
           }
-          var seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-          if(seq_tax.substring(0, tax.length) === tax){
+          seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
+          if(seq_tax.substring(0, search_tax.length) === search_tax){
             seq_list.push({seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
           }
       }
@@ -1923,7 +1930,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
       res.render('visuals/user_viz_data/sequences', {
                     title: 'Sequences',
                     ds : pjds,
-                    tax : tax,
+                    tax : search_tax,
                     //rows : JSON.stringify(rows),
                     seq_list : JSON.stringify(seq_list),
                     user: req.user, hostname: req.CONFIG.hostname,

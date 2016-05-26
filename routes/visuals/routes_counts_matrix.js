@@ -154,9 +154,18 @@ module.exports = {
 									  }
 									  if(this_rank == 'domain'){
 											domain = tax_node.taxon;
+									    }
+										
+										if(tax_node.taxon == undefined){
+											
+											if(this_rank == 'klass'){
+											    tax_long_name += 'class_NA;';
+											}else{
+											    tax_long_name += this_rank+'_NA;';
+											}
+										}else{
+											tax_long_name += tax_node.taxon+';';
 										}
-										//console.log('tax_node3 '+JSON.stringify(tax_node))
-										tax_long_name += tax_node.taxon+';';
                                         //console.log('tax_node3 '+JSON.stringify(tax_node))
 									}
 									
