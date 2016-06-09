@@ -95,7 +95,7 @@ router.get('/:portal', function(req, res) {
             maintitle   = 'VAMPS: MoBEDAC Portal'
             subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
             break;
-        case 'ICM':
+        case 'ICOMM':
             pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
             maintitle = 'VAMPS: ICoMM - Microbis Portal'
             subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
@@ -105,7 +105,7 @@ router.get('/:portal', function(req, res) {
             maintitle = 'VAMPS: HMP Portal'
             subtitle = ''
             break;
-        case 'DCO':
+        case 'CODL':
             pagetitle = 'VAMPS:Census of Deep Life Portal';
             maintitle = 'VAMPS: Census of Deep Life Portal'
             subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
@@ -131,6 +131,7 @@ router.get('/:portal', function(req, res) {
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             break;
         case 'UNIEUK':
+<<<<<<< HEAD
             pagetitle = 'VAMPS:UniEuk';
             maintitle = 'VAMPS: UniEuk Portal'
             subtitle = 'All Things Eukarya'
@@ -139,6 +140,16 @@ router.get('/:portal', function(req, res) {
             pagetitle = 'VAMPS:The Plastisphere';
             maintitle = 'VAMPS: Plastisphere Portal'
             subtitle = 'Bacteria and Plastics'
+=======
+            pagetitle = 'VAMPS:UniEuk Portal';
+            maintitle = 'VAMPS: UniEuk Portal'
+            subtitle = ''
+            break;
+        case 'PSPHERE':
+            pagetitle = 'VAMPS:Plastisphere Portal';
+            maintitle = 'VAMPS: Plastisphere Portal'
+            subtitle = ''
+>>>>>>> 88c818f7e23640ef286eab69e2f8bcbb393d2ff8
             break;
         default:
             console.log('no portal')
@@ -219,7 +230,7 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           portal_info[portal].zoom = 4  // mostly US?
           subtitle = 'Microbiology of the Built Environment Portal'
           break;
-      case 'ICM':
+      case 'ICOMM':
           prefixes = [portal,'KCK'];
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'ICoMM Portal'
@@ -229,7 +240,7 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           portal_info[portal].zoom = 4  // mostly US? Do we even have or want distribution?
           subtitle = 'Human Microbiome Project Portal'
           break;
-      case 'DCO':
+      case 'CODL':
           prefixes = [portal];
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'Census of Deep Life Portal'
@@ -256,6 +267,7 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           break;
       case 'UNIEUK':
           prefixes = [portal];
+<<<<<<< HEAD
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'UniEuk Portal'
           break;
@@ -263,6 +275,15 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           prefixes = [portal];
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'Platisphere Portal'
+=======
+          portal_info[portal].zoom = 2  // worldwide
+          subtitle = 'UniEuk'
+          break;
+        case 'PSPHERE':
+          prefixes = [portal];
+          portal_info[portal].zoom = 5  // mostly US
+          subtitle = 'Plastisphere Portal'
+>>>>>>> 88c818f7e23640ef286eab69e2f8bcbb393d2ff8
           break;
       default:
           console.log('no portal found -- loading all data')

@@ -225,18 +225,18 @@ if (typeof norm_counts_radios[1] !=="undefined") {
   norm_counts_radios[1].addEventListener('click', function () {
     val = norm_counts_radios[1].value
     //alert('1 '+val)
-    document.getElementById('output_choices_submit_btn').disabled = false;
-    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 if (typeof norm_counts_radios[2] !=="undefined") {
   norm_counts_radios[2].addEventListener('click', function () {
     val = norm_counts_radios[2].value
     //alert('2 '+val)
-    document.getElementById('output_choices_submit_btn').disabled = false;
-    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-    document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
   });
 }
 if (typeof norm_counts_radios[3] !=="undefined") {
@@ -268,30 +268,30 @@ if (typeof include_nas_radios[2] !=="undefined") {
 // Distance Metric Select (Combo)
 var selected_distance_combo = document.getElementById('selected_distance');
 if (typeof selected_distance_combo !=="undefined") {
-  $('.selectpicker').on('change', function () {
-      //alert(selected_distance_combo)
+	$('.selectpicker').on('change', function () {
+  	  //alert(selected_distance_combo)
       document.getElementById('output_choices_submit_btn').disabled = false;
-    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
-  });
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
 }
 // MIN Select (Combo)
 var min_range_combo = document.getElementById('min_range') ;
 if (typeof min_range_combo !=="undefined") {
-  min_range_combo.addEventListener('change', function () {
-      document.getElementById('output_choices_submit_btn').disabled = false;
-    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
-  });
+	min_range_combo.addEventListener('change', function () {
+  	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
 }
 // MAX Select (Combo)
 var max_range_combo = document.getElementById('max_range');
 if (typeof max_range_combo !=="undefined") {
-  max_range_combo.addEventListener('change', function () {
-      document.getElementById('output_choices_submit_btn').disabled = false;
-    document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
-      document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
-  });
+	max_range_combo.addEventListener('change', function () {
+  	  document.getElementById('output_choices_submit_btn').disabled = false;
+	  document.getElementById('output_choices_submit_btn').innerHTML='<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Update'
+  	  document.getElementById('output_choices_submit_btn').style.background = '#FF6600';
+	});
 }
 //
 //
@@ -303,11 +303,11 @@ var tax_counts_div = document.getElementById('tax_table_div');
 var counts_table_download_btn = document.getElementById('counts_table_download_btn');
 var pre_counts_table_div = document.getElementById('pre_counts_table_div');
 if (tax_counts_link !== null) {
-    tax_counts_link.addEventListener('click', function () {
+  	tax_counts_link.addEventListener('click', function () {
     
-  if(typeof tax_table_created == "undefined"){
+	if(typeof tax_table_created == "undefined"){
         create_viz('counts_table', pi_local.ts);
-    counts_table_download_btn.disabled = false;
+		counts_table_download_btn.disabled = false;
     }else{
         if(tax_counts_btn.value == 'hide'){
           //toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
@@ -315,11 +315,11 @@ if (tax_counts_link !== null) {
           toggle_visual_element(tax_counts_div,'hide',tax_counts_btn);
         }
     }
-  $(pre_counts_table_div).scrollView();
+	$(pre_counts_table_div).scrollView();
   });
 }
 if (typeof tax_counts_btn !=="undefined") {
-  tax_counts_btn.addEventListener('click', function () {
+	tax_counts_btn.addEventListener('click', function () {
       if(tax_counts_btn.value == 'hide'){
         toggle_visual_element(tax_counts_div,'show',tax_counts_btn);
       }else{
@@ -330,27 +330,27 @@ if (typeof tax_counts_btn !=="undefined") {
 if (typeof counts_table_download_btn !=="undefined") {
   
   counts_table_download_btn.addEventListener('click', function () {
-    
+	  
    //alert(ds_local.ids)
    download_data('matrix', JSON.stringify(ds_local), 'partial_project', pi_local.ts)
 
 
    //  var f = document.createElement("form");
-    // f.setAttribute('method',"POST");
-    // f.setAttribute('action',"/visuals/download_counts_matrix");
-    
+	  // f.setAttribute('method',"POST");
+	  // f.setAttribute('action',"/visuals/download_counts_matrix");
+	  
    //  var s = document.createElement("input"); //input element, text
    //  s.setAttribute('type',"hidden");
    //  s.setAttribute('value',ts_local);   
    //  f.appendChild(s);
 
-    // var s = document.createElement("input"); //input element, text
-    // s.setAttribute('type',"submit");
-    // s.setAttribute('value',"Submit");    
-    // f.appendChild(s);
+	  // var s = document.createElement("input"); //input element, text
+	  // s.setAttribute('type',"submit");
+	  // s.setAttribute('value',"Submit");	  
+	  // f.appendChild(s);
 
-    // document.getElementsByTagName('body')[0].appendChild(f);
-    // f.submit();
+	  // document.getElementsByTagName('body')[0].appendChild(f);
+	  // f.submit();
   });
 }
 //
@@ -402,9 +402,9 @@ var pre_piecharts_table_div = document.getElementById('pre_piecharts_table_div')
 if (piecharts_link !== null) {
   piecharts_link.addEventListener('click', function () {
       
-    if(typeof piecharts_created == "undefined"){
+	  if(typeof piecharts_created == "undefined"){
         create_viz('piecharts', pi_local.ts);
-    piecharts_download_btn.disabled = false;
+		piecharts_download_btn.disabled = false;
       }else{
         if(piecharts_btn.value == 'hide'){
           //toggle_visual_element(piecharts_div,'show',piecharts_btn);
@@ -437,9 +437,9 @@ if (typeof piecharts_btn !=="undefined") {
 // if (dbrowser_link !== null) {
 //   dbrowser_link.addEventListener('click', function () {
       
-//    if(typeof dbrowser_created == "undefined"){
+// 	  if(typeof dbrowser_created == "undefined"){
 //         create_viz('dbrowser', pi_local.ts);
-//    dbrowser_download_btn.disabled = false;
+// 		dbrowser_download_btn.disabled = false;
 //       }else{
 //         if(dbrowser_btn.value == 'hide'){
 //           //toggle_visual_element(piecharts_div,'show',dbrowser_btn);
@@ -472,9 +472,9 @@ var pre_barcharts_table_div = document.getElementById('pre_barcharts_table_div')
 if (barchart_link !== null) {
   barchart_link.addEventListener('click', function () {
       
-    if(typeof barcharts_created == "undefined"){
+	  if(typeof barcharts_created == "undefined"){
         create_viz('barcharts', pi_local.ts);
-        barcharts_download_btn.disabled = false;
+		    barcharts_download_btn.disabled = false;
       }else{
         if(barcharts_btn.value == 'hide'){        
           //toggle_visual_element(barcharts_div,'show',barcharts_btn);
@@ -507,9 +507,9 @@ var pre_dheatmap_div = document.getElementById('pre_dheatmap_div');
 if (dheatmap_link !== null) {
   dheatmap_link.addEventListener('click', function () {
       
-    if(typeof dheatmap_created == "undefined"){
+	  if(typeof dheatmap_created == "undefined"){
         create_viz('dheatmap', pi_local.ts);
-    dheatmap_download_btn.disabled = false;
+		dheatmap_download_btn.disabled = false;
       }else{
         if(dheatmap_btn.value == 'hide'){        
           //toggle_visual_element(dheatmap_div,'show',dheatmap_btn);
@@ -542,9 +542,9 @@ var pre_fheatmap_div = document.getElementById('pre_fheatmap_div');
 if (fheatmap_link !== null) {
   fheatmap_link.addEventListener('click', function () {
       
-    if(typeof fheatmap_created == "undefined"){
+	  if(typeof fheatmap_created == "undefined"){
         create_viz('fheatmap', pi_local.ts);
-    fheatmap_download_btn.disabled = false;
+		fheatmap_download_btn.disabled = false;
       }else{
         if(fheatmap_btn.value == 'hide'){        
           //toggle_visual_element(fheatmap_div,'show',fheatmap_btn);
@@ -552,7 +552,7 @@ if (fheatmap_link !== null) {
           toggle_visual_element(fheatmap_div,'hide',fheatmap_btn);
         }
       }  
-    $(pre_fheatmap_div).scrollView();    
+	  $(pre_fheatmap_div).scrollView();    
   });
 }
 if (typeof fheatmap_btn !== "undefined") {
@@ -577,9 +577,9 @@ var pre_dendrogram1_div = document.getElementById('pre_dendrogram1_div');
 if (dendrogram1_link !== null) {
   dendrogram1_link.addEventListener('click', function () {
       
-    if(typeof dendrogram1_created == "undefined"){
+	  if(typeof dendrogram1_created == "undefined"){
         create_viz('dendrogram1', pi_local.ts);
-    dendrogram1_download_btn.disabled = false;
+		dendrogram1_download_btn.disabled = false;
       }else{
         if(dendrogram1_btn.value == 'hide'){        
           //toggle_visual_element(dendrogram1_div,'show',dendrogram1_btn);
@@ -587,7 +587,7 @@ if (dendrogram1_link !== null) {
           toggle_visual_element(dendrogram1_div,'hide',dendrogram1_btn);
         }
       }
-    $(pre_dendrogram1_div).scrollView();
+	  $(pre_dendrogram1_div).scrollView();
   });
 }
 if (typeof dendrogram1_btn !== "undefined") {
@@ -611,9 +611,9 @@ var pre_dendrogram2_div = document.getElementById('pre_dendrogram2_div');
 if (dendrogram2_link !== null) {
   dendrogram2_link.addEventListener('click', function () {
       
-    if(typeof dendrogram2_created == "undefined"){
+	  if(typeof dendrogram2_created == "undefined"){
         create_viz('dendrogram2', pi_local.ts);
-    dendrogram2_download_btn.disabled = false;
+		dendrogram2_download_btn.disabled = false;
       }else{
         if(dendrogram2_btn.value == 'hide'){        
           //toggle_visual_element(dendrogram_div,'show',dendrogram_btn);
@@ -621,7 +621,7 @@ if (dendrogram2_link !== null) {
           toggle_visual_element(dendrogram2_div,'hide',dendrogram2_btn);
         }
       }
-    $(pre_dendrogram2_div).scrollView();
+	  $(pre_dendrogram2_div).scrollView();
   });
 }
 if (typeof dendrogram2_btn !== "undefined") {
@@ -679,9 +679,9 @@ var pre_dendrogram_pdf_div = document.getElementById('pre_dendrogram_pdf_div');
 if (dendrogram_pdf_link !== null) {
   dendrogram_pdf_link.addEventListener('click', function () {
       
-    if(typeof dendrogram_pdf_created == "undefined"){
+	  if(typeof dendrogram_pdf_created == "undefined"){
         create_viz('dendrogram_pdf', pi_local.ts);
-    dendrogram_pdf_download_btn.disabled = false;
+		dendrogram_pdf_download_btn.disabled = false;
       }else{
         if(dendrogram_pdf_btn.value == 'hide'){        
           //toggle_visual_element(dendrogram_pdf_div,'show',dendrogram_pdf_btn);
@@ -713,9 +713,9 @@ var pre_pcoa_div = document.getElementById('pre_pcoa_div');
 if (pcoa_link !== null) {
   pcoa_link.addEventListener('click', function () {
       
-    if(typeof pcoa_created == "undefined"){
+	  if(typeof pcoa_created == "undefined"){
         create_viz('pcoa', pi_local.ts);
-    pcoa_download_btn.disabled = false;
+		pcoa_download_btn.disabled = false;
       }else{
         if(pcoa_btn.value == 'hide'){        
           //toggle_visual_element(pcoa_div,'show',pcoa_btn);
@@ -723,7 +723,7 @@ if (pcoa_link !== null) {
           toggle_visual_element(pcoa_div,'hide',pcoa_btn);
         }
       } 
-    $(pre_pcoa_div).scrollView();     
+	  $(pre_pcoa_div).scrollView();     
   });
 }
 if (typeof pcoa_btn !== "undefined") {
@@ -747,9 +747,9 @@ var pre_pcoa_3d_div = document.getElementById('pre_pcoa_3d_div');
 if (pcoa_3d_link !== null) {
   pcoa_3d_link.addEventListener('click', function () {
       
-    if(typeof pcoa_3d_created == "undefined"){
+	  if(typeof pcoa_3d_created == "undefined"){
         create_viz('pcoa_3d', pi_local.ts);
-    pcoa_3d_download_btn.disabled = false;
+		pcoa_3d_download_btn.disabled = false;
       }else{
         if(pcoa_3d_btn.value == 'hide'){        
           //toggle_visual_element(pcoa_div,'show',pcoa_btn);
@@ -757,7 +757,7 @@ if (pcoa_3d_link !== null) {
           toggle_visual_element(pcoa_3d_div,'hide',pcoa_3d_btn);
         }
       } 
-    $(pre_pcoa_3d_div).scrollView();     
+	  $(pre_pcoa_3d_div).scrollView();     
   });
 }
 if (typeof pcoa_3d_btn !== "undefined") {
@@ -782,9 +782,9 @@ if (geospatial_link !== null) {
   //google.maps.event.addDomListener(window, 'load', initialize);
   geospatial_link.addEventListener('click', function () {
       
-    if(typeof geospatial_created == "undefined"){
+	  if(typeof geospatial_created == "undefined"){
         create_viz('geospatial', pi_local.ts);
-        geospatial_download_btn.disabled = false;
+		    geospatial_download_btn.disabled = false;
       }else{
         if(geospatial_btn.value == 'hide'){        
          // toggle_visual_element(geospatial_div,'show',geospatial_btn);
@@ -792,7 +792,7 @@ if (geospatial_link !== null) {
           toggle_visual_element(geospatial_div,'hide',geospatial_btn);
         }
       } 
-    $(pre_geospatial_div).scrollView();     
+	  $(pre_geospatial_div).scrollView();     
   });
 }
 if (typeof geospatial_btn !== "undefined") {
@@ -1109,7 +1109,7 @@ function create_counts_table() {
       document.getElementById('counts_table_title').style['font-size'] = 'small';
       var tax_counts_div = document.getElementById('tax_table_div');
       tax_counts_div.innerHTML = '';
-      tax_counts_div.style.display = 'block';
+	    tax_counts_div.style.display = 'block';
       var html = '';
          
       // need the max ranks
@@ -1121,7 +1121,7 @@ function create_counts_table() {
         }
       }
       html += "<div id='tax_counts_graph_div' style='background-color:white;width:600px;height:400px;display:none;'></div>";
-      html += "<br><br><br><br><br><table id='counts_table_id' border='0' class='' >";
+	    html += "<br><br><br><br><br><table id='counts_table_id' border='0' class='' >";
       html += "<tr><td class='no_border'></td>"
       for (t = 0; t < maxrank; t++) {
         if(t==2){
@@ -1163,7 +1163,7 @@ function create_counts_table() {
         counts_string=JSON.stringify(mtx_local.data[i])
         html += "<td title='Graph' align='center' style='cursor:pointer;'>"
         graph_link_id = 'flot_graph_link'+i.toString()
-        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts('"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
+        html += "<img width='25' id='"+graph_link_id+"' src='/images/visuals/graph.png' onclick=\"graph_counts(event,'"+i.toString()+"','"+mtx_local.rows[i].id+"','"+counts_string+"')\">"
         html += "</td>";
 
 
@@ -1208,12 +1208,12 @@ function create_counts_table() {
       html += "<td class='right_justify'><strong>Sums:</strong></td>";
       for (var m in mtx_local.column_totals){
         var total;
-        if(pi_local.normalization == 'frequency'){
-          total = mtx_local.column_totals[m].toFixed(6);
-        }else{
-          total = mtx_local.column_totals[m];
-        }
-        html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
+  		  if(pi_local.normalization == 'frequency'){
+  			  total = mtx_local.column_totals[m].toFixed(6);
+  		  }else{
+  			  total = mtx_local.column_totals[m];
+  		  }
+  		  html += "<td title='Column Sum' class='right_justify'>" + total + "</td>";
       }
       html += "</tr>";
       html += "</table>";
@@ -1224,10 +1224,10 @@ function create_counts_table() {
       
 }
 
-function graph_counts(new_id,taxonomy,counts){
-  
-  var e = window.event;
-  
+function graph_counts(event, new_id, taxonomy, counts){
+  // MS Explorer need window.event
+  e = event || window.event
+  //alert(e)
   if(typeof id !== 'undefined' && id == new_id){
     // same: hide graph
     chart_data = []
@@ -1329,12 +1329,12 @@ function create_metadata_table() {
     document.getElementById('metadata_title').style['font-size'] = 'small';
     var metadata_div = document.getElementById('metadata_local_table_div');
     
-    metadata_div.innerHTML = '';
+	  metadata_div.innerHTML = '';
     metadata_div.style.display = 'block';
     document.getElementById('pre_metadata_table_div').style.display = 'block';
     var html = '';
       //html += "<table border='1' id='metadata_table' class='single_border small_font md_table' >";
-    html += "<table border='1' id='metadata_table' class='table table-condensed' >";
+	  html += "<table border='1' id='metadata_table' class='table table-condensed' >";
     html += "<thead><tr><th>Dataset (click to sort)</th><th>Name (click to sort)</th><th>Value (click to sort)</th></tr></thead><tbody>";
       
     for (var ds in md_local) {
@@ -1369,7 +1369,7 @@ function create_dendrogram(ts, image_type, script) {
         //dendrogram_pdf_created = true;
         var dend_div = document.getElementById('dendrogram_pdf_div');        
         document.getElementById('pre_dendrogram_pdf_div').style.display = 'block';        
-        dend_div.style.display = 'block';
+  	    dend_div.style.display = 'block';
         document.getElementById('dendrogram_pdf_title').innerHTML = info_line;
         document.getElementById('dendrogram_pdf_title').style.color = 'white';
         document.getElementById('dendrogram_pdf_title').style['font-size'] = 'small';
@@ -1377,7 +1377,7 @@ function create_dendrogram(ts, image_type, script) {
         //dendrogram1_created = true;
         var dend_div = document.getElementById('dendrogram1_div');        
         document.getElementById('pre_dendrogram1_div').style.display = 'block';        
-        dend_div.style.display = 'block';
+  	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram1_title').innerHTML = info_line;
         document.getElementById('dendrogram1_title').style.color = 'white';
         document.getElementById('dendrogram1_title').style['font-size'] = 'small';
@@ -1385,7 +1385,7 @@ function create_dendrogram(ts, image_type, script) {
         //dendrogram2_created = true;
         var dend_div = document.getElementById('dendrogram2_div');        
         document.getElementById('pre_dendrogram2_div').style.display = 'block';        
-        dend_div.style.display = 'block';
+  	  	dend_div.style.display = 'block';
         document.getElementById('dendrogram2_title').innerHTML = info_line;
         document.getElementById('dendrogram2_title').style.color = 'white';
         document.getElementById('dendrogram2_title').style['font-size'] = 'small';
@@ -1408,7 +1408,7 @@ function create_dendrogram(ts, image_type, script) {
       var args =  "metric="+pi_local.selected_distance;
       args += "&ts="+ts;
       args += "&image_type="+image_type;
-      args += "&script="+script;
+	    args += "&script="+script;
       
       var xmlhttp = new XMLHttpRequest();  
       xmlhttp.open("POST", '/visuals/dendrogram', true);  // gets newick
@@ -1489,7 +1489,7 @@ function create_pcoa(ts,image_type) {
         //pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_div');        
         info_line = create_header('pcoa', pi_local);        
-        pcoa_div.style.display = 'block';
+  	    pcoa_div.style.display = 'block';
         md1 = document.getElementById('pcoa_md1').value;
         md2 = document.getElementById('pcoa_md2').value;
         document.getElementById('pcoa_title').innerHTML = info_line;
@@ -1503,7 +1503,7 @@ function create_pcoa(ts,image_type) {
         pcoa_created = true;
         pcoa_div = document.getElementById('pcoa_3d_div');        
         info_line = create_header('pcoa_3d', pi_local);        
-        pcoa_div.style.display = 'block';
+  	    pcoa_div.style.display = 'block';
         document.getElementById('pcoa_3d_title').innerHTML = info_line;
         document.getElementById('pcoa_3d_title').style.color = 'white';
         document.getElementById('pcoa_3d_title').style['font-size'] = 'small';
@@ -1575,7 +1575,7 @@ function create_dheatmap(ts) {
       var dhm_div = document.getElementById('dheatmap_div');
       
       dhm_div.innerHTML = '';
-      dhm_div.style.display = 'block';
+	    dhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('dhm', pi_local);
       document.getElementById('dheatmap_title').innerHTML = info_line;
@@ -1609,7 +1609,7 @@ function create_fheatmap(ts) {
       var fhm_div = document.getElementById('fheatmap_div');
       
       fhm_div.innerHTML = '';
-      fhm_div.style.display = 'block';
+	    fhm_div.style.display = 'block';
       //var dist = cnsts.DISTANCECHOICES.choices.id[]
       var info_line = create_header('fhm', pi_local);
       document.getElementById('fheatmap_title').innerHTML = info_line;
@@ -1643,9 +1643,9 @@ function create_geospatial() {
       geospatial_created = true;
       var geo_div = document.getElementById('map-canvas');
       
-      geo_div.innerHTML = '';
+	    geo_div.innerHTML = '';
       geo_div.style.display = 'block';
-      geo_div.style.height = '900px';
+	    geo_div.style.height = '900px';
             
       var info_line = create_header('geo', pi_local);      
       document.getElementById('geospatial_title').innerHTML = info_line;
@@ -1726,9 +1726,9 @@ function bindInfoWindow(marker, map, infowindow, html) {
 function setMarkers(map, loc_data, infowindow) {
   for (var i = 0; i < loc_data.length; i++) {
     // create a marker
-   // alert(locations[0])
+	 // alert(locations[0])
     //var data = loc_data[i];
-  
+	
     var myLatLng = new google.maps.LatLng(loc_data[i][1],loc_data[i][2]); 
     var marker = new google.maps.Marker({
       title: loc_data[i][0],
@@ -1761,11 +1761,11 @@ function create_piecharts(ts) {
     
     var info_line = create_header('pies', pi_local);
     document.getElementById('piecharts_title').innerHTML = info_line;
-    var piecharts_div = document.getElementById('piecharts_div');
+	  var piecharts_div = document.getElementById('piecharts_div');
     document.getElementById('piecharts_title').style.color = 'white';
     document.getElementById('piecharts_title').style['font-size'] = 'small';
     piecharts_div.innerHTML = '';
-    piecharts_div.style.display = 'block';
+	  piecharts_div.style.display = 'block';
     
     document.getElementById('pre_piecharts_table_div').style.display = 'block';
     //d3.select('svg').remove();
@@ -1775,9 +1775,9 @@ function create_piecharts(ts) {
     }
     //var colors = get_colors(unit_list);
     
-  
-  var tmp={};
-  var tmp_names={};
+	
+	var tmp={};
+	var tmp_names={};
     for (var d in mtx_local.columns){
       tmp[mtx_local.columns[d].id]=[]; // data
       //tmp_names[mtx_local.columns[d].id]=mtx_local.columns[d].id; // datasets
@@ -1797,7 +1797,7 @@ function create_piecharts(ts) {
         myjson_obj.values.push(tmp[z]);
         //myjson_obj.dids.push(z);
     }
-  //alert(myjson_obj.names);
+	//alert(myjson_obj.names);
     
     var pies_per_row = 4;
     var m = 20; // margin
@@ -1808,11 +1808,11 @@ function create_piecharts(ts) {
         .innerRadius(0)
         .outerRadius(r);
     var pie = d3.layout.pie();
-  
+	
     var svgContainer = d3.select("#piecharts_div").append("svg")
         .attr("width",image_w)
         .attr("height",image_h);
-    
+		
     var pies = svgContainer.selectAll("svg")
         .data(myjson_obj.values)
         .enter().append("g")
@@ -1825,17 +1825,17 @@ function create_piecharts(ts) {
             return "translate(" + (diam + h_spacer) + "," + (diam + v_spacer) + ")";
         })
         
-    .append("a")
+		.append("a")
         //.attr("xlink:xlink:href", function(d, i) { return 'bar_single?did='+myjson_obj.dids[i]+'&ts='+ts;} )
         .attr("xlink:xlink:href", function(d, i) { return 'bar_single?id='+myjson_obj.names[i]+'&ts='+ts;} )
-    .attr("target", '_blank' );
-  pies.append("text")
+		.attr("target", '_blank' );
+	pies.append("text")
         .attr("dx", -(r+m))
         .attr("dy", r+m)
         .attr("text-anchor", "center")
         .attr("font-size","9px")
         .text(function(d, i) {
-      return mtx_local.columns[i].id;
+			return mtx_local.columns[i].id;
         });
     pies.selectAll("path")
         .data(pie.sort(null))
@@ -1924,13 +1924,13 @@ function create_barcharts_group(ts) {
          document.getElementById('barcharts_title').innerHTML = info_line;
          document.getElementById('barcharts_title').style.color = 'white';
          document.getElementById('barcharts_title').style['font-size'] = 'small';
-         document.getElementById('barcharts_div').innerHTML = '';
-//    barcharts_div.style.display = 'block';
+ 		     document.getElementById('barcharts_div').innerHTML = '';
+// 		barcharts_div.style.display = 'block';
          
          document.getElementById('pre_barcharts_table_div').style.display = 'block';
-     
+		 
          // this fxn is in common_selection.js
-         create_barcharts('group', ts);
+         create_barcharts('group', 'name', ts);
 
 }
 //
