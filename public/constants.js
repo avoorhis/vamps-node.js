@@ -128,7 +128,9 @@ constants.PORTALS = [
                 {id:'ICM', name:'International Census of Marine Microbes'},
                 {id:'MBE', name:'The Built Environment'}, 
                 {id:'RARE',name:'The Rare Biosphere'},
-                {id:'UC',  name:'Ulcerative Colitis'}]
+                {id:'UC',  name:'Ulcerative Colitis'},
+                {id:'PSPHERE',name:'The Plastisphere'},
+                {id:'UNIEUK', name:'UniEuk'}]
 // This List MUST match the fields in sequence_uniq_infos
 constants.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 // blue to red

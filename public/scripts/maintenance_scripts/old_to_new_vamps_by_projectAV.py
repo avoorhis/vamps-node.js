@@ -660,10 +660,16 @@ class Dataset:
     for dl in self.dataset_file_content:
       dl[3] = project_id
 
-  def collect_dataset_ids(self):
-    for dataset, project in self.dataset_project_dict.items():
-      dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
-      self.dataset_id_by_name_dict[dataset] = dataset_id
+  
+  def collect_dataset_ids(self, project_id):
+      for dataset, project in self.dataset_project_dict.items():
+        dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s' and project_id = %s" % (dataset, project_id))
+        self.dataset_id_by_name_dict[dataset] = dataset_id
+    
+ #  def collect_dataset_ids(self):
+#     for dataset, project in self.dataset_project_dict.items():
+#       dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
+#       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
     print "PPP project_dict"
@@ -1118,7 +1124,7 @@ class Metadata:
       if field_name in self.custom_metadata_fields:      
         project_id  = param_per_dataset['project_id']
         field_units = param_per_dataset['miens_units']
-        example     = param_per_dataset['parameterValue']
+        example     = param_per_dataset['parameterValue'].replace("'","")
         custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
         custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
       
@@ -1202,7 +1208,7 @@ class Metadata:
         insert_values_temp = [str(dataset_id)]
         for field_name in self.custom_metadata_fields:
           try:
-            insert_values_temp.append(custom_metadata_dict[field_name])
+            insert_values_temp.append(custom_metadata_dict[field_name].replace("'",""))
           except KeyError: 
             insert_values_temp.append('')
           except:
@@ -1352,7 +1358,7 @@ if __name__ == '__main__':
 
   if (args.do_not_insert == False):
     utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
-  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids", pr.project_dict[args.project])
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)

@@ -7,6 +7,7 @@ var path  = require('path');
 router.get('/portals_index', function(req, res) {
     res.render('portals/portals_index', { 
             title: 'VAMPS:Portals',
+            portals : JSON.stringify(req.CONSTS.PORTALS),
             user: req.user,hostname: req.CONFIG.hostname,
             message:'',
         });
@@ -129,6 +130,16 @@ router.get('/:portal', function(req, res) {
             maintitle = 'VAMPS: MIRADA Portal'
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             break;
+        case 'UNIEUK':
+            pagetitle = 'VAMPS:UniEuk';
+            maintitle = 'VAMPS: UniEuk Portal'
+            subtitle = 'All Things Eukarya'
+            break;
+        case 'PSPHERE':
+            pagetitle = 'VAMPS:The Plastisphere';
+            maintitle = 'VAMPS: Plastisphere Portal'
+            subtitle = 'Bacteria and Plastics'
+            break;
         default:
             console.log('no portal')
             res.render('portals/portals_index', { 
@@ -242,6 +253,16 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           prefixes = [portal];
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'MIRADA Portal'
+          break;
+      case 'UNIEUK':
+          prefixes = [portal];
+          portal_info[portal].zoom = 5  // mostly US
+          subtitle = 'UniEuk Portal'
+          break;
+      case 'PSPHERE':
+          prefixes = [portal];
+          portal_info[portal].zoom = 5  // mostly US
+          subtitle = 'Platisphere Portal'
           break;
       default:
           console.log('no portal found -- loading all data')
