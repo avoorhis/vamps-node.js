@@ -54,8 +54,8 @@ if (download_fasta_btn !== null) {
 
 
 function get_single_bar_html(obj){
-  
-  var total = 0;
+	
+	var total = 0;
   var html ='';
   var tax_col_count = 0;
   var ordered_taxa = [];
@@ -73,22 +73,22 @@ function get_single_bar_html(obj){
     }
   }
   //alert(ordered_taxa)
-  html += "<div class='overflow_500'>click headers to sort";
-  html += "<table id='single_barchart_table_id' class='table table-condensed overflow200 sortable'>";
+	html += "<div class='overflow_500'>click headers to sort";
+	html += "<table id='single_barchart_table_id' class='table table-condensed overflow200 sortable'>";
   html += '<thead>'
-  html += "<tr><th width='25' >color</th>";  //<th>Taxonomy <small>(click to sort)</small></th>
+	html += "<tr><th width='25' >color</th>";  //<th>Taxonomy <small>(click to sort)</small></th>
   for(i=0;i<tax_col_count;i++){
     html += '<th>'+ranks[i]+'</th>'
   }
   html += "<th>Count</th></tr>";
   
   html += '</thead><tbody>'
-  
+	
   //alert(html)
   for(n in obj.rows){
-    if(obj.data[n] > 0){
-      color = string_to_color_code(obj.rows[n].id)
-      link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
+		if(obj.data[n] > 0){
+			color = string_to_color_code(obj.rows[n].id)
+			link = 'sequences?id='+obj.columns[0].id+'&taxa='+encodeURIComponent(obj.rows[n].id)+'&filename='+filename;
       var pct = ((obj.data[n] / total)*100).toFixed(2);
       var id = 'barcharts-|-' + obj.rows[n].id + '-|-'+ obj.data[n] + '-|-' + pct;
       html += "<tr class='tooltip_viz' id='"+id+"' ><td style='background-color:"+color+"'></td>";
@@ -96,12 +96,12 @@ function get_single_bar_html(obj){
         html += "<td><a href='"+link+"'>"+ordered_taxa[n][i]+'</a></td>'
       }
       html += '<td>'+obj.data[n]+"</td></tr>";
-    }
-  }
-  html += '</tbody>'
+		}
+	}
+	html += '</tbody>'
   html += '</table></div>';
-  
-  return html;
+	
+	return html;
 }
 //
 //
@@ -193,4 +193,7 @@ function download_data(type, download_type, ts) {
       }
     };
     xmlhttp.send(args);   
+}
+function change_bar_order(orderby){
+  //alert(orderby)
 }
