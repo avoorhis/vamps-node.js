@@ -125,7 +125,7 @@ router.get('/:portal', function(req, res) {
             maintitle = 'VAMPS: Coral Microbiome Portal'
             subtitle = ''
             break;
-        case 'LTR':
+        case 'LTER':
             pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
             maintitle = 'VAMPS: MIRADA Portal'
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
@@ -214,62 +214,63 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
     portal_info = {}
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
+    project_prefixes = []
+    portal_projects = []
+    portal_suffixes = []
     switch (portal) {
     
       case 'MBE':
-          prefixes = [portal];
+          project_prefixes = ['MBE'];
           portal_info[portal].zoom = 4  // mostly US?
           subtitle = 'Microbiology of the Built Environment Portal'
           break;
       case 'ICOMM':
-          prefixes = [portal,'KCK'];
+          project_prefixes = ['ICM','KCK'];
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'ICoMM Portal'
           break;
       case 'HMP':
-          prefixes = [portal];
+          project_prefixes = ['HMP'];
           portal_info[portal].zoom = 4  // mostly US? Do we even have or want distribution?
           subtitle = 'Human Microbiome Project Portal'
           break;
       case 'CODL':
-          prefixes = [portal];
+          project_prefixes = ['DCO'];
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'Census of Deep Life Portal'
           break;
       case 'UC':
-          prefixes = [portal];
+          project_prefixes = [portal];
           portal_info[portal].zoom = 4  // mostly US?
           subtitle = 'Ulcerative Colitis Portal'
           break;
       case 'RARE':
-          prefixes = [portal];
+          project_prefixes = [portal];
           portal_info[portal].zoom = 13  // mostly Falmouth
           subtitle = 'The Rare Biosphere Portal'
           break;
       case 'CMP':
-          prefixes = [portal];
+          project_prefixes = [portal];
           portal_info[portal].zoom = 3  // mostly Falmouth
           subtitle = 'The Coral Microbiome Project'
           break;
-      case 'LTR':
-          prefixes = [portal];
+      case 'LTER':
+          project_prefixes = ['LTR'];
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'MIRADA Portal'
           break;
       case 'UNIEUK':
-          prefixes = [portal];
-
+          portal_suffixes = ['Ev9'];
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'UniEuk'
           break;
         case 'PSPHERE':
-          prefixes = [portal];
+          portal_projects = ['LAZ_DET_Bv3v4','LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4'];
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'Plastisphere Portal'
           break;
       default:
           console.log('no portal found -- loading all data')
-          prefixes = [];
     }
     if(get_subtitle){
         return subtitle
@@ -285,39 +286,113 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
         pid = PROJECT_ID_BY_DID[did]
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
         pname = PROJECT_INFORMATION_BY_PID[pid].project
-        for(p in prefixes){
-          //console.log('p',p,prefixes[p])
-          if(( pname.indexOf(prefixes[p]) === 0) ){
-              //console.log('FOUND '+pname)
-              pjds = pname+'--'+DATASET_NAME_BY_DID[did]
-              portal_info[portal].metadata[pjds] = {}
-              if(got_lat === false)
-                portal_info[portal].metadata[pjds].latitude = 'notFound'
-              if(got_lon === false)
-                portal_info[portal].metadata[pjds].longitude = 'notFound'
-              portal_info[portal].metadata[pjds].pid = pid
-              portal_info[portal].metadata[pjds].did = did
-              got_lat=false
-              got_lon=false
+        if(portal_prefixes.length > 0){
+            for(p in portal_prefixes){
+              //console.log('p',p,prefixes[p])
+              if( pname.indexOf(portal_prefixes[p]) === 0 ){
+                  //console.log('FOUND '+pname)
+                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  portal_info[portal].metadata[pjds] = {}
+                  if(got_lat === false)
+                    portal_info[portal].metadata[pjds].latitude = 'notFound'
+                  if(got_lon === false)
+                    portal_info[portal].metadata[pjds].longitude = 'notFound'
+                  portal_info[portal].metadata[pjds].pid = pid
+                  portal_info[portal].metadata[pjds].did = did
+                  got_lat=false
+                  got_lon=false
               
-              //collected_metadata[pjds] = all_metadata[did]
-              if(all_metadata[did].hasOwnProperty('lat')){
-                portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
-                got_lat=true
-              }else if(all_metadata[did].hasOwnProperty('latitude')){
-                portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
-                got_lat=true
-              }
+                  //collected_metadata[pjds] = all_metadata[did]
+                  if(all_metadata[did].hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                    got_lat=true
+                  }else if(all_metadata[did].hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                    got_lat=true
+                  }
 
-              if(all_metadata[did].hasOwnProperty('lon')){
-                portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
-                got_lon=true
-              }else if(all_metadata[did].hasOwnProperty('longitude')){
-                portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
-                got_lon=true
-              }
-              //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
-          }       
+                  if(all_metadata[did].hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                    got_lon=true
+                  }else if(all_metadata[did].hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                    got_lon=true
+                  }
+                  //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
+              }       
+            }
+        }else if(portal_projects.length > 0){
+            for(p in portal_projects){
+              //console.log('p',p,prefixes[p])
+              if( pname === portal_projects[p] ){
+                  //console.log('FOUND '+pname)
+                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  portal_info[portal].metadata[pjds] = {}
+                  if(got_lat === false)
+                    portal_info[portal].metadata[pjds].latitude = 'notFound'
+                  if(got_lon === false)
+                    portal_info[portal].metadata[pjds].longitude = 'notFound'
+                  portal_info[portal].metadata[pjds].pid = pid
+                  portal_info[portal].metadata[pjds].did = did
+                  got_lat=false
+                  got_lon=false
+              
+                  //collected_metadata[pjds] = all_metadata[did]
+                  if(all_metadata[did].hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                    got_lat=true
+                  }else if(all_metadata[did].hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                    got_lat=true
+                  }
+
+                  if(all_metadata[did].hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                    got_lon=true
+                  }else if(all_metadata[did].hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                    got_lon=true
+                  }
+                  //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
+              }       
+            }
+        }else  if(portal_suffixes.length > 0){
+            for(p in portal_suffixes){
+              //console.log('p',p,prefixes[p])
+              if( pname.indexOf(portal_suffixes[p]) === (pname.length - portal_suffixes[p].length) ){
+                  //console.log('FOUND '+pname)
+                  pjds = pname+'--'+DATASET_NAME_BY_DID[did]
+                  portal_info[portal].metadata[pjds] = {}
+                  if(got_lat === false)
+                    portal_info[portal].metadata[pjds].latitude = 'notFound'
+                  if(got_lon === false)
+                    portal_info[portal].metadata[pjds].longitude = 'notFound'
+                  portal_info[portal].metadata[pjds].pid = pid
+                  portal_info[portal].metadata[pjds].did = did
+                  got_lat=false
+                  got_lon=false
+              
+                  //collected_metadata[pjds] = all_metadata[did]
+                  if(all_metadata[did].hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                    got_lat=true
+                  }else if(all_metadata[did].hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                    got_lat=true
+                  }
+
+                  if(all_metadata[did].hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                    got_lon=true
+                  }else if(all_metadata[did].hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                    got_lon=true
+                  }
+                  //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
+              }       
+            }
+        }else{
+        
         }
     }
 

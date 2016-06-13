@@ -127,7 +127,7 @@ constants.PORTALS = [
                 {id:'CODL', name:'Census of Deep Life', subtext:'Census of Deep Life'},
                 {id:'HMP', name:'Human Mircrobiome Project', subtext:'Human Microbiome Project'},
                 {id:'ICOMM', name:'ICoMM', subtext:'International Census of Marine Mirobes'},
-                {id:'LTR', name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites'},
+                {id:'LTER', name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites'},
                 {id:'MBE', name:'Microbiology of the Built Environment', subtext:'Microbiology of the Built Environment'}, 
                 {id:'PSPHERE',name:'Plastisphere', subtext:'The Plastisphere'},
                 {id:'RARE',name:'The Rare Biosphere', subtext:'The Rare Biosphere'},
