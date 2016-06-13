@@ -1,4 +1,4 @@
-<% p = JSON.parse(portals) %>
+<% ptls  = JSON.parse(portals) %>
 <!-- Not used -->
 
 <% include ../add_ins/begin.ejs %>
@@ -36,7 +36,7 @@
                     <a href='<%= ptls[p].id %>'>
                         <img src="/images/portals/icomm_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a> - International Census of Marine Microbes</li>
-            <% }else if(ptls[p].id=='LTR'){ %>
+            <% }else if(ptls[p].id=='LTER'){ %>
                 <li>
                     <a href='<%= ptls[p].id %>'><img src="/images/portals/lter_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
@@ -59,7 +59,7 @@
             <% }else if(ptls[p].id=='UNIEUK'){ %>
                 <li>
                     <a href='<%= ptls[p].id %>'><img src="/images/portals/unieuk_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a> - Projects that are primarily Eukaryal.</li>
+                    - <%= ptls[p].name %></a></li>
             <% }else{ %>
                 <li> - <a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
             <% } %>
