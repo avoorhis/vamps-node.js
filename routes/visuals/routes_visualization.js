@@ -286,7 +286,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       catch(err){
         console.log('3-no file '+err.toString()+' Exiting');
         req.flash('Message', "ERROR \
-          Dataset file not found '"+dataset_ids[i] +".json' (run INITIALIZE_ALL_FILES.py in the public/scripts directory)");
+          Dataset file ("+dataset_ids[i]+".json) not found.");
           //res.redirect('visuals_index');
           //return;
       }

@@ -14,6 +14,7 @@
       <div id='view_selection_links'>
         <ul>
           <li><a href='#' class='link_black' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a></li>
+        
         </ul>
       </div>
     
@@ -26,7 +27,7 @@
 
 
 <% if(message){ %>
-  <div class="alert_flash_message"><%= message %></div>
+  <div class="alert_flash_message" style='position:relative;left:-20px;top:-25px'><%= message %></div>
 <% } %> 
 
 <div class='well'>
