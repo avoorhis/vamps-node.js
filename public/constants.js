@@ -134,6 +134,7 @@ constants.PORTALS = [
                 {id:'UC',  name:'Ulcerative Colitis', subtext:'Ulcerative Colitis'},
                 {id:'UNIEUK', name:'UniEuk', subtext:'UniEuk'}
     ]
+
 // This List MUST match the fields in sequence_uniq_infos
 constants.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 // blue to red

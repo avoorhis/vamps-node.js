@@ -1,5 +1,6 @@
-<% ptls = JSON.parse(portals) %>
+<% p = JSON.parse(portals) %>
 <!-- Not used -->
+
 <% include ../add_ins/begin.ejs %>
 
 <div class="container"> 
@@ -13,6 +14,7 @@
 
 
  
+
   <ul class='portal_list'>
     <% for(p in ptls) { %>
         <div class='well'>
@@ -64,6 +66,7 @@
         </div>
     <% } %>
     
+
   </ul>
 
 <% include ../add_ins/end.ejs %>

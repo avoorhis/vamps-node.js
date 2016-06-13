@@ -131,14 +131,16 @@ router.get('/:portal', function(req, res) {
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             break;
         case 'UNIEUK':
-            pagetitle = 'VAMPS:UniEuk Portal';
+
+            pagetitle = 'VAMPS:UniEuk';
             maintitle = 'VAMPS: UniEuk Portal'
-            subtitle = ''
+            subtitle = 'All Things Eukarya'
             break;
         case 'PSPHERE':
-            pagetitle = 'VAMPS:Plastisphere Portal';
+            pagetitle = 'VAMPS:The Plastisphere';
             maintitle = 'VAMPS: Plastisphere Portal'
-            subtitle = ''
+            subtitle = 'Bacteria and Plastics'
+
             break;
         default:
             console.log('no portal')
@@ -256,6 +258,7 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           break;
       case 'UNIEUK':
           prefixes = [portal];
+
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'UniEuk'
           break;

@@ -660,10 +660,16 @@ class Dataset:
     for dl in self.dataset_file_content:
       dl[3] = project_id
 
-  def collect_dataset_ids(self):
-    for dataset, project in self.dataset_project_dict.items():
-      dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
-      self.dataset_id_by_name_dict[dataset] = dataset_id
+  
+  def collect_dataset_ids(self, project_id):
+      for dataset, project in self.dataset_project_dict.items():
+        dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s' and project_id = %s" % (dataset, project_id))
+        self.dataset_id_by_name_dict[dataset] = dataset_id
+    
+ #  def collect_dataset_ids(self):
+#     for dataset, project in self.dataset_project_dict.items():
+#       dataset_id = mysql_util.get_id("dataset_id", "dataset", "WHERE dataset = '%s'" % (dataset))
+#       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
     print "PPP project_dict"
@@ -1094,14 +1100,19 @@ class Metadata:
     for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
-
-    self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
-    self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
-  
+    if len(all_required_metadata) > 0:
+        self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
+        self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
+    else:
+        self.required_metadata_insert_values = []      
+        self.required_metadata_field_list =[]
+        
   def insert_required_metadata(self):
-    rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
-    
+    if self.required_metadata_insert_values:
+        rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
+        self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    else:
+        print 'No required metadata found or entered.'
   # ==== Custom metadata =====
   
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
@@ -1118,15 +1129,21 @@ class Metadata:
       if field_name in self.custom_metadata_fields:      
         project_id  = param_per_dataset['project_id']
         field_units = param_per_dataset['miens_units']
-        example     = param_per_dataset['parameterValue']
+        example     = param_per_dataset['parameterValue'].replace("'","")
         custom_metadata_fields_for_tbl.append((project_id, field_name, field_units, example))
         custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
       
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
-    self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
-    self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
-    self.project_ids                            = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
+    if len(custom_metadata_fields_for_tbl) >0:
+        self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
+        self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
     
+    else:
+        self.custom_metadata_fields_uniqued_for_tbl = []
+        self.custom_metadata_fields_insert_values   = []
+        #self.project_ids = []
+    self.project_ids                            = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
+        
   def insert_custom_metadata_fields(self):
     field_list = "project_id, field_name, field_units, example"
     '''
@@ -1138,8 +1155,11 @@ class Metadata:
     # aux_bec_simulated_phosphate__um_
     # print "self.custom_metadata_fields_insert_values VVV"
     # print self.custom_metadata_fields_insert_values
-    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+    if self.custom_metadata_fields_insert_values:
+        rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+        self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+    else:
+        print 'No custom metadata found or entered.'
 
   # create table per project
   def get_data_from_custom_metadata_fields(self, project_dict):
@@ -1202,7 +1222,7 @@ class Metadata:
         insert_values_temp = [str(dataset_id)]
         for field_name in self.custom_metadata_fields:
           try:
-            insert_values_temp.append(custom_metadata_dict[field_name])
+            insert_values_temp.append(custom_metadata_dict[field_name].replace("'",""))
           except KeyError: 
             insert_values_temp.append('')
           except:
@@ -1352,7 +1372,7 @@ if __name__ == '__main__':
 
   if (args.do_not_insert == False):
     utils.benchmarking(dataset.insert_dataset, "insert_dataset", pr.project_dict)
-  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids")
+  utils.benchmarking(dataset.collect_dataset_ids, "collect_dataset_ids", pr.project_dict[args.project])
   utils.benchmarking(dataset.make_all_dataset_id_by_project_dict, "make_all_dataset_id_by_project_dict")
 
   utils.benchmarking(seq_csv_parser.sequence_pdr_info, "sequence_pdr_info", dataset.dataset_id_by_name_dict, sequence.sequences_w_ids)

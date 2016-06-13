@@ -99,25 +99,45 @@ queries = [{"rank":"domain","query":domain_query},
            {"rank":"species","query":species_query},
            {"rank":"strain","query":strain_query}
            ]
-
+def convert_keys_to_string(dictionary):
+    """Recursively converts dictionary keys to strings."""
+    if not isinstance(dictionary, dict):
+        return dictionary
+    return dict((str(k), convert_keys_to_string(v)) 
+        for k, v in dictionary.items())
 def go_list(args):
-    counts_lookup = read_original_taxcounts()
+    counts_lookup = convert_keys_to_string(read_original_taxcounts())
+    file_dids = counts_lookup.keys()
+    #print file_dids
+    #print len(file_dids)           
+    q =  "SELECT dataset_id,dataset.project_id,project from project"
+    q += " JOIN dataset using(project_id)"
+    #q += " WHERE dataset_id in('%s')"
     
-    q = "SELECT DISTINCT project,project.project_id from dataset"
-    q += " JOIN project on(dataset_id)"
-    q += " WHERE dataset_id in('%s')"
-    dids = []
-    for did in counts_lookup:
-        dids.append(did)
-    did_sql = "','".join(dids)
-    q = q % (did_sql)
-    print q
+    #did_sql = "','".join(file_dids)
+    #q = q % (did_sql)
+    #print q
     num = 0
     cur.execute(q)
     #print 'List of projects in: '+in_file
+    projects = {}
+    missing = {}
     for row in cur.fetchall():
-        print 'project:',row[0],' --project_id:',row[1]
+        did = str(row[0])
+        pid = row[1]
+        project = row[2]
+        projects[project] = pid
+        if did not in file_dids:
+            missing[project] = pid
+        #print 'project:',row[0],' --project_id:',row[1]
+    for project in projects:  
+        if project not in missing:
+            print 'ID:',projects[project],"-",project
         num += 1
+    print
+    print 'MISSING from files:'
+    for project in missing:
+        print 'ID:',missing[project],"project:",project
     print 'Number of Projects:',num
     
 def go_delete(args):
@@ -142,7 +162,7 @@ def go_delete(args):
     #write_json_file(out_file,counts_lookup)
     
 def go_add(NODE_DATABASE, pid):
-    
+    from random import randrange
     counts_lookup = {}
     prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
@@ -196,36 +216,44 @@ def go_add(NODE_DATABASE, pid):
     
     write_json_files(prefix, metadata_lookup, counts_lookup)
     
-    print 'writing metadata file'
-    write_all_metadata_file(metadata_lookup)
-    print 'writing taxcount file'
-    write_all_taxcounts_file(counts_lookup)
+    rando = randrange(10000,99999)
+    write_all_metadata_file(metadata_lookup,rando)
+    write_all_taxcounts_file(counts_lookup,rando)
     # print 'DONE (must now move file into place)'
 
-def write_all_metadata_file(metadata_lookup):
+def write_all_metadata_file(metadata_lookup,rando):
     original_metadata_lookup = read_original_metadata()
     md_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
-    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata"+today+".json")
+    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata_"+today+'_'+str(rando)+".json")
+    print 'Backing up metadata file to',bu_file
     shutil.copy(md_file, bu_file)
     #print md_file
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
-    json_str = json.dumps(original_metadata_lookup, ensure_ascii=False)     
+        
     #print(json_str)
     f = open(md_file,'w')
+    try:
+        json_str = json.dumps(original_metadata_lookup, ensure_ascii=False) 
+        
+    except:
+        json_str = json.dumps(original_metadata_lookup) 
+    print 'writing metadata file'
     f.write(json_str.encode('utf-8').strip()+"\n")
     f.close() 
     
-def write_all_taxcounts_file(counts_lookup):
+def write_all_taxcounts_file(counts_lookup,rando):
     original_counts_lookup = read_original_taxcounts()
     tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
-    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts"+today+".json")
+    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+today+'_'+str(rando)+".json")
+    print 'Backing up taxcount file to',bu_file
     shutil.copy(tc_file, bu_file)
     for did in counts_lookup:
         original_counts_lookup[did] = counts_lookup[did]
     json_str = json.dumps(original_counts_lookup)       
     #print(json_str)
     f = open(tc_file,'w')  # this will delete taxcounts file!
+    print 'writing taxcount file'
     f.write(json_str+"\n")
     f.close()
       
@@ -249,7 +277,10 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
          #print did, counts_lookup[did]
          my_counts_str = json.dumps(counts_lookup[did]) 
          if did in metadata_lookup:
-             my_metadata_str = json.dumps(metadata_lookup[did]) 
+             try:
+                my_metadata_str = json.dumps(metadata_lookup[did])
+             except:
+                my_metadata_str = json.dumps(metadata_lookup[did], ensure_ascii=False)
          else:
              print 'WARNING -- no metadata for dataset:',did
              my_metadata_str = json.dumps({})
@@ -285,13 +316,19 @@ def go_required_metadata(did_sql):
 def go_custom_metadata(did_list,pid,metadata_lookup):
     
     
+    
+    custom_table = 'custom_metadata_'+ pid
+    q = "show tables like '"+custom_table+"'"
+    cur.execute(q)
+    table_exists = cur.fetchall()
+    if not table_exists:
+        return metadata_lookup
+    
     field_collection = ['dataset_id']
+    cust_metadata_lookup = {}
     query = cust_pquery % (pid)
     cur.execute(query)
-    cust_metadata_lookup = {}
-    table = 'custom_metadata_'+ pid
     for row in cur.fetchall():
-            
         pid = str(row[0])
         field = row[1]
         if field != 'dataset_id':
@@ -301,7 +338,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
     print 'did_list',did_list
     print 'field_collection',field_collection
 
-    cust_dquery = "SELECT `" + '`,`'.join(field_collection) + "` from " + table
+    cust_dquery = "SELECT `" + '`,`'.join(field_collection) + "` from " + custom_table
     print cust_dquery
     #try:
     cur.execute(cust_dquery)
@@ -429,18 +466,22 @@ if __name__ == '__main__':
     print "ARGS: dbhost  =",args.dbhost
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
+        
         args.dbhost = 'vampsdb'
         args.NODE_DATABASE = 'vamps2'
+        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
+        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:
         print usage
         print "Could not find json directory: '",args.json_file_path,"'-Exiting"
         sys.exit(-1)
-    print "ARGS: json_dir=",args.json_file_path    
+    print "ARGS: json_dir=",args.json_file_path 
+      
     
     db = MySQLdb.connect(host=args.dbhost, # your host, usually localhost
                              read_default_file="~/.my.cnf_node"  )
