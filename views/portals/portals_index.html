@@ -10,15 +10,61 @@
  although some of the data may still be private.</p>    
 
 <br><br>
-<div class='well'>
+
 
  
-  <ul>
+  <ul class='portal_list'>
     <% for(p in ptls) { %>
-        <li><a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
+        <div class='well'>
+            
+            <% if(ptls[p].id=='CMP'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/cmp_thumbnail.jpg"  height='60'> 
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='CODL'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/dco_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='HMP'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/hmp_logo_NIH_retina.png"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='ICOMM'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'>
+                        <img src="/images/portals/icomm_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a> - International Census of Marine Microbes</li>
+            <% }else if(ptls[p].id=='LTR'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/lter_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='MBE'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/mbe_thumbnail.png"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='PSPHERE'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/psphere_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='RARE'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/rare_thumbnail.png"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='UC'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/uc_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else if(ptls[p].id=='UNIEUK'){ %>
+                <li>
+                    <a href='<%= ptls[p].id %>'><img src="/images/portals/unieuk_thumbnail.jpg"  height='60'>
+                    - <%= ptls[p].name %></a></li>
+            <% }else{ %>
+                <li> - <a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
+            <% } %>
+        </div>
     <% } %>
     
   </ul>
-</div>
+
 <% include ../add_ins/end.ejs %>
 
