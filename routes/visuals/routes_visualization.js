@@ -58,16 +58,17 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
       var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
       try{
         var jsonfile = require(path_to_file);
+        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
       }
       catch(err){
-        console.log('no file '+err.toString()+' Exiting');
-        req.flash('nodataMessage', "ERROR \
+        console.log('1- no file '+err.toString()+' Exiting');
+        req.flash('Message', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
           //res.redirect('visuals_index');
-          return;
+          //return;
       }
-      TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-      METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+      
     }
     BIOM_MATRIX = MTX.get_biom_matrix(chosen_id_name_hash, visual_post_items);
     var metadata = META.write_mapping_file(chosen_id_name_hash, visual_post_items);
@@ -84,7 +85,7 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
                                 hostname  :           req.CONFIG.hostname,
                                 gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
 	                          //locals: {flash: req.flash('infomessage')},
-                                message   :           req.flash('message')
+                                message   :           req.flash('Message')
     });
     
 });
@@ -143,16 +144,17 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
       var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
       try{
         var jsonfile = require(path_to_file);
+        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
       }
       catch(err){
-        console.log('no file '+err.toString()+' Exiting');
-        req.flash('nodataMessage', "ERROR \
+        console.log('2-no file '+err.toString()+' Exiting');
+        req.flash('Message', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
           //res.redirect('visuals_index');
-          return;
+          //return;
       }
-      TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-      METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+      
     }
   }else{
     // GLOBAL Variable
@@ -212,7 +214,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
                                 hostname  :           req.CONFIG.hostname,
                                 gekey     : req.CONFIG.GOOGLE_EARTH_KEY,
 	                          //locals: {flash: req.flash('infomessage')},
-                                message   :           req.flash('message')
+                                message   :           req.flash('Message')
                  });
 
 });
@@ -278,16 +280,17 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       //console.log('path',path_to_file)
       try{
         var jsonfile = require(path_to_file);
+        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
       }
       catch(err){
-        console.log('no file '+err.toString()+' Exiting');
-        req.flash('nodataMessage', "ERROR \
+        console.log('3-no file '+err.toString()+' Exiting');
+        req.flash('Message', "ERROR \
           Dataset file not found '"+dataset_ids[i] +".json' (run INITIALIZE_ALL_FILES.py in the public/scripts directory)");
           //res.redirect('visuals_index');
-          return;
+          //return;
       }
-		  TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-		  METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+		  
 	  }
 	  //console.log(JSON.stringify(METADATA))
 	  //console.log(JSON.stringify(TAXCOUNTS))
@@ -333,7 +336,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
                       unit_choice:unit_choice,
-		  				        message      : req.flash(),
+		  				        message      : req.flash('Message'),
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
   }
