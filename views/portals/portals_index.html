@@ -1,5 +1,6 @@
-<% ptls = JSON.parse(portals) %>
+<% p = JSON.parse(portals) %>
 <!-- Not used -->
+
 <% include ../add_ins/begin.ejs %>
 
 <div class="container"> 
@@ -14,10 +15,14 @@
 
  
   <ul>
-    <% for(p in ptls) { %>
-        <li><a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
-    <% } %>
-    
+    <li><a href='MBE'>MoBE</a> (Microbiology of the Built Environment)</li>
+    <li><a href='ICM'>ICoMM</a> (International Census of Marine Mirobes)</li>
+    <li><a href='DCO'>CoDL</a> (Census of Deep Life)</li>
+    <li><a href='HMP'>HMP</a> (Human Microbiome Project)</li>
+    <li><a href='UC'>UC</a> (Ulcerative Colitis)</li>
+    <li>The <a href='RARE'>Rare Biosphere</a></li>
+    <li><a href='CMP'>CMP</a> (Coral Microbiome Project)</li>
+    <li><a href='LTR'>MIRADA</a> (Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites )</li> 
   </ul>
 </div>
 <% include ../add_ins/end.ejs %>

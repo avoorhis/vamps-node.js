@@ -123,16 +123,6 @@ constants.DISTANCECHOICES = { choices: [
 
     ]};
 constants.PORTALS = [
-<<<<<<< HEAD
-                {id:'CMP', name:'Coral Microbiome Project'},
-                {id:'HMP', name:'The Human Mircrobiome Project'},
-                {id:'ICM', name:'International Census of Marine Microbes'},
-                {id:'MBE', name:'The Built Environment'}, 
-                {id:'RARE',name:'The Rare Biosphere'},
-                {id:'UC',  name:'Ulcerative Colitis'},
-                {id:'PSPHERE',name:'The Plastisphere'},
-                {id:'UNIEUK', name:'UniEuk'}]
-=======
                 {id:'CMP', name:'Coral Microbiome Project', subtext:'Coral Microbiome Project'},
                 {id:'CODL', name:'Census of Deep Life', subtext:'Census of Deep Life'},
                 {id:'HMP', name:'Human Mircrobiome Project', subtext:'Human Microbiome Project'},
@@ -144,7 +134,7 @@ constants.PORTALS = [
                 {id:'UC',  name:'Ulcerative Colitis', subtext:'Ulcerative Colitis'},
                 {id:'UNIEUK', name:'UniEuk', subtext:'UniEuk'}
     ]
->>>>>>> 88c818f7e23640ef286eab69e2f8bcbb393d2ff8
+
 // This List MUST match the fields in sequence_uniq_infos
 constants.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 // blue to red

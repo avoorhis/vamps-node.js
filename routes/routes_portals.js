@@ -131,7 +131,7 @@ router.get('/:portal', function(req, res) {
             subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             break;
         case 'UNIEUK':
-<<<<<<< HEAD
+
             pagetitle = 'VAMPS:UniEuk';
             maintitle = 'VAMPS: UniEuk Portal'
             subtitle = 'All Things Eukarya'
@@ -140,16 +140,7 @@ router.get('/:portal', function(req, res) {
             pagetitle = 'VAMPS:The Plastisphere';
             maintitle = 'VAMPS: Plastisphere Portal'
             subtitle = 'Bacteria and Plastics'
-=======
-            pagetitle = 'VAMPS:UniEuk Portal';
-            maintitle = 'VAMPS: UniEuk Portal'
-            subtitle = ''
-            break;
-        case 'PSPHERE':
-            pagetitle = 'VAMPS:Plastisphere Portal';
-            maintitle = 'VAMPS: Plastisphere Portal'
-            subtitle = ''
->>>>>>> 88c818f7e23640ef286eab69e2f8bcbb393d2ff8
+
             break;
         default:
             console.log('no portal')
@@ -267,15 +258,7 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           break;
       case 'UNIEUK':
           prefixes = [portal];
-<<<<<<< HEAD
-          portal_info[portal].zoom = 5  // mostly US
-          subtitle = 'UniEuk Portal'
-          break;
-      case 'PSPHERE':
-          prefixes = [portal];
-          portal_info[portal].zoom = 5  // mostly US
-          subtitle = 'Platisphere Portal'
-=======
+
           portal_info[portal].zoom = 2  // worldwide
           subtitle = 'UniEuk'
           break;
@@ -283,7 +266,6 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
           prefixes = [portal];
           portal_info[portal].zoom = 5  // mostly US
           subtitle = 'Plastisphere Portal'
->>>>>>> 88c818f7e23640ef286eab69e2f8bcbb393d2ff8
           break;
       default:
           console.log('no portal found -- loading all data')

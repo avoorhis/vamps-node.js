@@ -1100,14 +1100,19 @@ class Metadata:
     for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
-
-    self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
-    self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
-  
+    if len(all_required_metadata) > 0:
+        self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
+        self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
+    else:
+        self.required_metadata_insert_values = []      
+        self.required_metadata_field_list =[]
+        
   def insert_required_metadata(self):
-    rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
-    
+    if self.required_metadata_insert_values:
+        rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
+        self.utils.print_array_w_title(rows_affected, "rows_affected from insert_required_metadata")
+    else:
+        print 'No required metadata found or entered.'
   # ==== Custom metadata =====
   
   # add fields per dataset to custom_metadata_fields (project_id, field_name, field_units, example)
@@ -1129,10 +1134,16 @@ class Metadata:
         custom_metadata_fields_uniqued_for_tbl.append((project_id, field_name, field_units))
       
     # just slightly faster: custom_metadata_fields_for_tbl = [(param_per_dataset['project_id'], param_per_dataset['structured_comment_name'], param_per_dataset['miens_units'], param_per_dataset['parameterValue']) for param_per_dataset in self.metadata_w_names]
-    self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
-    self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
-    self.project_ids                            = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
+    if len(custom_metadata_fields_for_tbl) >0:
+        self.custom_metadata_fields_uniqued_for_tbl = list(set(custom_metadata_fields_uniqued_for_tbl))
+        self.custom_metadata_fields_insert_values   = self.utils.make_insert_values(list(set(custom_metadata_fields_for_tbl)))
     
+    else:
+        self.custom_metadata_fields_uniqued_for_tbl = []
+        self.custom_metadata_fields_insert_values   = []
+        #self.project_ids = []
+    self.project_ids                            = set([e[0] for e in self.custom_metadata_fields_uniqued_for_tbl])
+        
   def insert_custom_metadata_fields(self):
     field_list = "project_id, field_name, field_units, example"
     '''
@@ -1144,8 +1155,11 @@ class Metadata:
     # aux_bec_simulated_phosphate__um_
     # print "self.custom_metadata_fields_insert_values VVV"
     # print self.custom_metadata_fields_insert_values
-    rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
-    self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+    if self.custom_metadata_fields_insert_values:
+        rows_affected = mysql_util.execute_insert("custom_metadata_fields", field_list, self.custom_metadata_fields_insert_values)
+        self.utils.print_array_w_title(rows_affected, "rows_affected from insert_custom_metadata_fields")
+    else:
+        print 'No custom metadata found or entered.'
 
   # create table per project
   def get_data_from_custom_metadata_fields(self, project_dict):
