@@ -2660,7 +2660,9 @@ router.get('/livesearch_portal/:q', function(req, res) {
           }
           break;
         case 'CMP':
-          if(split[0] === q){
+
+          if(split[0] === q || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
+
             PROJECT_TREE_OBJ.push(prj);        
           }
           break;
@@ -2676,7 +2678,9 @@ router.get('/livesearch_portal/:q', function(req, res) {
           }
           break;
         case 'PSPHERE':
-          if(req.CONST.PORTALS.projects.indexOf(prj.name) > 0){
+
+          if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
+
             PROJECT_TREE_OBJ.push(prj);        
           }
           break;

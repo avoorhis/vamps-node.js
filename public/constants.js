@@ -122,6 +122,7 @@ constants.DISTANCECHOICES = { choices: [
         // {id: 'chisq',         show: 'Chisq'     }
 
     ]};
+<<<<<<< HEAD
 constants.PORTALS = [
                 {id:'CMP', name:'Coral Microbiome Project', subtext:'Coral Microbiome Project'},
                 {id:'CODL', name:'Census of Deep Life', subtext:'Census of Deep Life'},
@@ -135,6 +136,32 @@ constants.PORTALS = [
                 {id:'UNIEUK', name:'UniEuk', subtext:'UniEuk'}
     ]
 
+=======
+// constants.PORTALS = [
+//                 {id:'CMP', name:'Coral Microbiome Project', subtext:'Coral Microbiome Project'},
+//                 {id:'CODL', name:'Census of Deep Life', subtext:'Census of Deep Life'},
+//                 {id:'HMP', name:'Human Mircrobiome Project', subtext:'Human Microbiome Project'},
+//                 {id:'ICOMM', name:'ICoMM', subtext:'International Census of Marine Mirobes'},
+//                 {id:'LTER', name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites'},
+//                 {id:'MBE', name:'Microbiology of the Built Environment', subtext:'Microbiology of the Built Environment'}, 
+//                 {id:'PSPHERE',name:'Plastisphere', subtext:'The Plastisphere'},
+//                 {id:'RARE',name:'The Rare Biosphere', subtext:'The Rare Biosphere'},
+//                 {id:'UC',  name:'Ulcerative Colitis', subtext:'Ulcerative Colitis'},
+//                 {id:'UNIEUK', name:'UniEuk', subtext:'UniEuk'}
+//     ]
+constants.PORTALS = {
+    'CMP':{name:'Coral Microbiome Project', subtext:'Coral Microbiome Project', projects:['LTR_MCR_Bv6','LTR_MCR_Av6','LTR_MCR_Ev9','ICM_CCB_Bv6','ICM_CCB_Av6']},
+    'CODL':{ name:'Census of Deep Life', subtext:'Census of Deep Life', projects:[]},
+    'HMP': {name:'Human Mircrobiome Project', subtext:'Human Microbiome Project', projects:[]},
+    'ICOMM': {name:'ICoMM', subtext:'International Census of Marine Mirobes', projects:[]},
+    'LTER': {name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites', projects:[]},
+    'MBE': {name:'Microbiology of the Built Environment', subtext:'Microbiology of the Built Environment', projects:[]}, 
+    'PSPHERE':{name:'Plastisphere', subtext:'The Plastisphere', projects:['LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4','LAZ_DET_Bv3v4'] },
+    'RARE':{name:'The Rare Biosphere', subtext:'The Rare Biosphere', projects:[]},
+    'UC':  {name:'Ulcerative Colitis', subtext:'Ulcerative Colitis', projects:[]},
+    'UNIEUK': {name:'UniEuk', subtext:'UniEuk', projects:[]}
+    }
+>>>>>>> 01ab468cc897df0a2536d39c50c54cd0854a091e
 // This List MUST match the fields in sequence_uniq_infos
 constants.AVAILABLE_UNITS = ['silva_taxonomy_info_per_seq_id', 'oligotype_id', 'gg_otu_id'];
 // blue to red

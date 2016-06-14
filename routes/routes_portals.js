@@ -55,11 +55,64 @@ router.get('/projects/:portal', function(req, res) {
     var portal = req.params.portal;
     some_datasets = []
     ALL_DATASETS.projects.forEach(function(prj) {
-      //project = PROJECT_INFORMATION_BY_PID[pid].project
-      if(prj.name.indexOf(portal) === 0 ){  // UC, ICM, HMP, MBE ....
-        some_datasets.push(prj.pid);        
-      }
-    });
+    split = prj.name.split('_')
+    switch (q) {
+        case 'MBE':
+          if(split[0] === q){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'ICOMM':
+          if(split[0] === 'ICM' || split[0] === 'KCK'){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'HMP':
+          if(split[0] === q){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'CODL':
+          if(split[0] === 'DCO'){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'UC':
+          if(split[0] === q){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'RARE':
+          if(split[0] === q){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'CMP':
+          if(split[0] === q || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'LTER':
+          if(split[0] === 'LTR'){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'UNIEUK':
+          if(split[split.length - 1] === 'Ev9' ){
+            some_datasets.push(prj);        
+          }
+          break;
+        case 'PSPHERE':
+          if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
+            some_datasets.push(prj);        
+          }
+          break;
+        default:
+            if(prj.name.split('_')[0] === q){
+            some_datasets.push(prj);        
+          }     
+    }  
+  });
     console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',

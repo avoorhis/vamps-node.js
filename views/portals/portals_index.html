@@ -21,46 +21,46 @@
     <% for(p in ptls) { %>
         <div class='well'>
             
-            <% if(ptls[p].id=='CMP'){ %>
+            <% if(p =='CMP'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/cmp_thumbnail.jpg"  height='60'> 
+                    <a href='<%= p %>'><img src="/images/portals/cmp_thumbnail.jpg"  height='60'> 
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='CODL'){ %>
+            <% }else if(p =='CODL'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/dco_thumbnail.jpg"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/dco_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='HMP'){ %>
+            <% }else if(p =='HMP'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/hmp_logo_NIH_retina.png"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/hmp_logo_NIH_retina.png"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='ICOMM'){ %>
+            <% }else if(p =='ICOMM'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'>
+                    <a href='<%= p %>'>
                         <img src="/images/portals/icomm_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a> - International Census of Marine Microbes</li>
-            <% }else if(ptls[p].id=='LTER'){ %>
+            <% }else if(p =='LTER'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/lter_thumbnail.jpg"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/lter_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='MBE'){ %>
+            <% }else if(p =='MBE'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/mbe_thumbnail.png"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/mbe_thumbnail.png"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='PSPHERE'){ %>
+            <% }else if(p =='PSPHERE'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/psphere_thumbnail.jpg"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/psphere_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='RARE'){ %>
+            <% }else if(p =='RARE'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/rare_thumbnail.png"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/rare_thumbnail.png"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='UC'){ %>
+            <% }else if(p =='UC'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/uc_thumbnail.jpg"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/uc_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
-            <% }else if(ptls[p].id=='UNIEUK'){ %>
+            <% }else if(p =='UNIEUK'){ %>
                 <li>
-                    <a href='<%= ptls[p].id %>'><img src="/images/portals/unieuk_thumbnail.jpg"  height='60'>
+                    <a href='<%= p %>'><img src="/images/portals/unieuk_thumbnail.jpg"  height='60'>
                     - <%= ptls[p].name %></a></li>
             <% }else{ %>
                 <li> - <a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
