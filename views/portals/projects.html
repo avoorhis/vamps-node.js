@@ -1,5 +1,4 @@
 <% include ../add_ins/begin.ejs %>
-<% var project_info = JSON.parse(pinfo) %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -18,7 +17,8 @@
 				
 					<table class='table'>
 						<% for(n in data){ %>
-									<tr><td>(<%= project_info[data[n]].pid %>) <%= project_info[data[n]].project %></td><td><%= project_info[data[n]].title %></td></tr>
+									<tr><td>(<%= data[n].pid %>) <%= data[n].name %></td><td><%= data[n].title %></td></tr>
+									
 						<% } %>
 
 					</table>

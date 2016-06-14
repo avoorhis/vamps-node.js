@@ -56,9 +56,10 @@ router.get('/projects/:portal', function(req, res) {
     some_datasets = []
     ALL_DATASETS.projects.forEach(function(prj) {
     split = prj.name.split('_')
-    switch (q) {
+    console.log(req.CONSTS.PORTALS)
+    switch (portal) {
         case 'MBE':
-          if(split[0] === q){
+          if(split[0] === portal){
             some_datasets.push(prj);        
           }
           break;
@@ -68,7 +69,7 @@ router.get('/projects/:portal', function(req, res) {
           }
           break;
         case 'HMP':
-          if(split[0] === q){
+          if(split[0] === portal){
             some_datasets.push(prj);        
           }
           break;
@@ -78,17 +79,17 @@ router.get('/projects/:portal', function(req, res) {
           }
           break;
         case 'UC':
-          if(split[0] === q){
+          if(split[0] === portal){
             some_datasets.push(prj);        
           }
           break;
         case 'RARE':
-          if(split[0] === q){
+          if(split[0] === portal){
             some_datasets.push(prj);        
           }
           break;
         case 'CMP':
-          if(split[0] === q || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
+          if(split[0] === portal || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
             some_datasets.push(prj);        
           }
           break;
@@ -108,17 +109,18 @@ router.get('/projects/:portal', function(req, res) {
           }
           break;
         default:
-            if(prj.name.split('_')[0] === q){
+            if(prj.name.split('_')[0] === portal){
             some_datasets.push(prj);        
           }     
     }  
   });
-    console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
+    //console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
+    //console.log('data'+JSON.stringify(some_datasets));
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : portal,
-            pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+            //pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             data      : some_datasets,
             message   : '',
         });
