@@ -2627,11 +2627,65 @@ router.get('/livesearch_portal/:q', function(req, res) {
   //console.log(q)
   PROJECT_TREE_OBJ = []
   SHOW_DATA.projects.forEach(function(prj) {
-          
-          if(prj.name.split('_')[0] === q){
+    split = prj.name.split('_')
+    switch (q) {
+        case 'MBE':
+          if(split[0] === q){
             PROJECT_TREE_OBJ.push(prj);        
           }
-      });
+          break;
+        case 'ICOMM':
+          if(split[0] === 'ICM' || split[0] === 'KCK'){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'HMP':
+          if(split[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'CODL':
+          if(split[0] === 'DCO'){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'UC':
+          if(split[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'RARE':
+          if(split[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'CMP':
+          if(split[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'LTER':
+          if(split[0] === 'LTR'){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'UNIEUK':
+          
+          if(split[split.length - 1] === 'Ev9' ){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        case 'PSPHERE':
+          if(req.CONST.PORTALS.projects.indexOf(prj.name) > 0){
+            PROJECT_TREE_OBJ.push(prj);        
+          }
+          break;
+        default:
+            if(prj.name.split('_')[0] === q){
+            PROJECT_TREE_OBJ.push(prj);        
+          }     
+    }  
+  });
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 

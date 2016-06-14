@@ -129,7 +129,7 @@ constants.PORTALS = [
                 {id:'ICOMM', name:'ICoMM', subtext:'International Census of Marine Mirobes'},
                 {id:'LTER', name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites'},
                 {id:'MBE', name:'Microbiology of the Built Environment', subtext:'Microbiology of the Built Environment'}, 
-                {id:'PSPHERE',name:'Plastisphere', subtext:'The Plastisphere'},
+                {id:'PSPHERE',name:'Plastisphere', subtext:'The Plastisphere', projects:['LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4','LAZ_DET_Bv3v4']},
                 {id:'RARE',name:'The Rare Biosphere', subtext:'The Rare Biosphere'},
                 {id:'UC',  name:'Ulcerative Colitis', subtext:'Ulcerative Colitis'},
                 {id:'UNIEUK', name:'UniEuk', subtext:'UniEuk'}
