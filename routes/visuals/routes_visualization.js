@@ -304,7 +304,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 
 	  var custom_metadata_headers   = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'custom');
 	  var required_metadata_headers = COMMON.get_metadata_selection(chosen_id_name_hash.ids,METADATA,'required');
-	  //console.log('chosen_id_name_hash')
+	  console.log(required_metadata_headers)
 	  //console.log(chosen_id_name_hash)
 	  // // benchmarking
 	  // var start = process.hrtime();
