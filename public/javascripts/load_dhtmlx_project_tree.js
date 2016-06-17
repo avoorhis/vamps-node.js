@@ -183,7 +183,7 @@ function clear_filters() {
         pcount = xmlhttp.responseText;
         //alert('cf')
         if( pcount === 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }
@@ -239,7 +239,7 @@ function showLiveProjectNames(str) {
     if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }
@@ -279,7 +279,7 @@ function filter_by_env() {
     if ( xmlhttp.readyState == 4 ) {
       pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }  
@@ -318,7 +318,7 @@ function filter_by_target() {
     if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }     
@@ -356,7 +356,7 @@ function filter_by_portal() {
     if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }     
@@ -393,7 +393,7 @@ function filter_by_status(pub_status) {
     if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }     
@@ -433,7 +433,7 @@ function filter_by_metadata() {
     if ( xmlhttp.readyState == 4 ) {
        pcount = xmlhttp.responseText;
         if( pcount == 0 ){
-            document.getElementById('nodata_span').innerHTML='No Data';
+            document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{
             document.getElementById('nodata_span').innerHTML='';
         }     
