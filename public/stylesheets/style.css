@@ -34,10 +34,13 @@ a {
     text-align:center;
     margin:1em 0 .5em 0
 }
-.title_color {
+.title_color_viz {
   background:#1E90FF;
 }
 
+.title_color_exp {
+  background:#8FBC8F;
+}
 .subtitle {
     font-size:medium;
     text-align:center;
