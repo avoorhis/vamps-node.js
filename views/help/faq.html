@@ -19,7 +19,8 @@
 		  	<a href="#processing" 			class="list-group-item list-group-item-warning">Sequence Processing</a>
 		  	<a href="#export_counts" 		class="list-group-item list-group-item-warning">Exporting Taxonomic Counts</a>
 		  	<a href="#export_sequences" class="list-group-item list-group-item-warning">Exporting Sequences</a>
-		    <a href="#import_data" 			class="list-group-item list-group-item-warning">Importing Data</a>		    
+		    <a href="#import_data" 			class="list-group-item list-group-item-warning">Importing Data</a>
+		    <a href="#phyloseq" 				class="list-group-item list-group-item-warning">What are the Phyloseq Files</a>
 		    <a href="#databases" 				class="list-group-item list-group-item-warning">Reference Databases</a>
 		    <a href="#submissions" 			class="list-group-item list-group-item-warning">Sample Submission Process</a>
 		    <a href="#tag_generation" 	class="list-group-item list-group-item-warning">Tag Generation</a>
@@ -126,7 +127,36 @@ or
        		</p>     
         </div>        
       </div>
+<!-- PHYLOSEQ -->      <a name='phyloseq'></a>
+	<hr>
+      <div class="row">
+        <div class="col-md-12">      
+          <h4><center>Phyloseq</center></h4><a class='btn btn-sm pull-right' href='faq'><span class="glyphicon glyphicon-menu-up" aria-hidden="true">top</a>
+            
+					<p class='standard'><strong>What is Phyloseq?</strong></p>
+					<p>Phyloseq is an R library for microbiome data: (<a href='https://joey711.github.io/phyloseq/' target='_blank'>https://joey711.github.io/phyloseq/</a>).
+						<br>VAMPS uses R (<a href='https://www.r-project.org/' target='_blank'>https://www.r-project.org/</a>) and Python (<a href='https://www.python.org/' target='_blank'>https://www.python.org/</a>) scripts to produce some of the visualizations.
+						<br><br>
+						To use the Phyloseq library with your VAMPS data download the three Phyloseq files from the 'Display Choices' Page: 
+						<br>Import them directly into R (or R-script) as shown below to create a Phyloseq Object:
+						<ul>
+							<li>biom_file <- 'phyloseq.biom'
+							<li>tax_file <- 'phyloseq_taxonomy.txt'
+							<li>map_file <- 'phyloseq_metadata.txt'
 
+							<li>library(phyloseq)
+							<li>library(ggplot2)
+							<li>TAX<-as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
+							<li>OTU <- import_biom(biom_file)
+							<li>MAP <- import_qiime_sample_data(map_file)
+							<li>TAX <- tax_table(TAX)
+							<li>OTU <- otu_table(OTU)
+							<li>physeq <- phyloseq(OTU,TAX,MAP)
+						</ul>
+					</p>
+					<p>See the Phloseq website for more help and examples.</p>
+        </div>        
+      </div>
 <!-- DATABASES -->      <a name='databases'></a>
       <hr>
       <div class="row">
