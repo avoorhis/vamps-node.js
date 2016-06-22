@@ -64,7 +64,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
         var pts = files[f].split('-');
-        if(file_formats.indexOf(pts[0]) > 0){
+        if(file_formats.indexOf(pts[0]) != -1){
           stat = fs.statSync(export_dir+'/'+files[f]);          
           file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
       		modify_times.push(stat.mtime.getTime());
