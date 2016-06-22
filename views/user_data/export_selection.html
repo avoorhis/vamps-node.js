@@ -26,7 +26,10 @@
 <% if(messages){ %>
   <div class="alert_flash_message"><%- message %></div>
 <% } %>
-<span style='color:red'>These Export Functions are BETA - not yet working properly.</span>
+Normalization:
+                <input type="radio" checked name='normalization' value="not_normalized"> None
+                <input type="radio" name='normalization' value="normalized_to_maximum"> To Max Count Value
+                <input type="radio" name='normalization' value="normailzed_by_percent"> By Percent
 <table class='table'>
   <tr>
     <td>
@@ -36,28 +39,44 @@
                 <td>                
                  <input type="checkbox" name='fasta' value="1"> Sequences File (fasta)                
                 </td>
-                <td>Unique sequences with frequency count in defline: ">read_id|dataset|frequency"</td>
-              </tr>    
+                <td></td>
+                <td>Unique sequences with raw frequency count in defline: ">read_id|dataset|frequency"</td>
+              </tr>
+              <tr>
+                <td>                
+                 <input type="checkbox" name='biom' value="1"> Biom-Format File (json)  (<span style='color:red'>not available yet</span>)
+                </td>
+                <td></td>
+                <td>See <a href='http://biom-format.org/documentation/format_versions/biom-1.0.html' target='_blank'>http://biom-format.org/documentation/format_versions/biom-1.0.html</a></td>
+              </tr>       
               <tr>
                 <td>
-                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File
-                </td><td>Reads having the same taxonomic assignment are grouped (coarsest grouping).</td>
+                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File (csv counts matrix)
+                </td>
+                <td>
+                </td>
+                <td>Reads having the same taxonomic assignment are grouped (coarsest grouping).</td>
               </tr>        
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyref' value="1"> TaxByRef File</td>
+                    <input type="checkbox" disabled name='taxbyref' value="1"> TaxByRef File (<span style='color:red'>not available</span>)
+                </td>
+                <td></td>
                 <td>Reads with the best match to the same reference are grouped (medium grouping).</td>
               </tr>        
               <tr>
                 <td>
-                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File</td>
+                <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File (csv counts matrix)</td>
+                <td></td>
+                
                 <td>Reads having the exact same sequence are grouped (finest grouping).
                 </td>
               </tr>        
               <tr>
                 <td>
                 <input type="checkbox" name='metadata' value="1"> Metadata File (csv)</td>
-                <td>Tab-separated metadata (mapping) file.              </td>
+                <td></td>
+                <td>Tab-separated metadata (mapping) file.</td>
               </tr>
               <!-- 
               <tr>
@@ -68,13 +87,13 @@
                -->
               <tr>
                 <td>
-                <button class='btn btn-link'>Filter Datasets using Taxonomy</button></td>
-                <td>                </td>
+                <button disabled class='btn btn-link'>Filter Datasets using Taxonomy</button> <span style='color:red'>not available</span></td>
+                <td></td><td></td>
               </tr>        
               <tr>
                 <td>
-                <button class='btn btn-link'>Filter Datasets using Metadata</button></td>
-                <td>              </td>
+                <button disabled class='btn btn-link'>Filter Datasets using Metadata</button> <span style='color:red'>not available</span></td>
+                <td></td><td></td>
               </tr>
             </tbody>
           </table>

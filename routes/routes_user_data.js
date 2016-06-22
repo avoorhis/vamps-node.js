@@ -12,6 +12,7 @@ var iniparser = require('iniparser');
 var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
+
 //var progress = require('progress-stream');
 var upload = multer({ dest: '/tmp',	limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }	});
 
@@ -29,7 +30,7 @@ var COMMON  = require('./visuals/routes_common');
 //   done=true;
 // }
 // }));
-
+var spawn = require('child_process').spawn;
 //
 // YOUR DATA
 //
@@ -103,7 +104,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		    });
 		    return;
 		}
-		var dids = req.body.dids;
+		var dids = req.body.dids.split(',');
 		var requested_files = [];
 
 		if(req.body.fasta){
@@ -113,22 +114,28 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);   
 		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE); // create dir if not exists
 		helpers.mkdirSync(user_dir);  
-		for(var format in req.body){
-			if(format === 'fasta'){
-				requested_files.push(create_fasta_file(req, user_dir, timestamp, dids));
+		
+		for(var key in req.body){
+			if(key === 'fasta'){
+				requested_files.push('-fasta_file');
 			}
-			if(format === 'taxbytax'){
-				requested_files.push(create_taxbytax_file(req, user_dir, timestamp, dids));
+			if(key === 'taxbytax'){
+				requested_files.push('-taxbytax_file');
 			}
-			if(format === 'taxbyref'){
-				requested_files.push(create_taxbyref_file(req, user_dir, timestamp, dids));
+			if(key === 'taxbyref'){
+				requested_files.push('-taxbyref_file');
 			}
-			if(format === 'taxbyseq'){
-				requested_files.push(create_taxbyseq_file(req, user_dir, timestamp, dids));
+			if(key === 'taxbyseq'){
+				requested_files.push('-taxbyseq_file');
 			}
-			if(format === 'metadata'){
-				requested_files.push(create_metadata_file(req, user_dir, timestamp, dids));
+			if(key === 'metadata'){
+				requested_files.push('-metadata_file');
 			}
+			
+			
+		}
+		if(requested_files.length >0){
+			create_export_files(req, user_dir, timestamp, dids, requested_files, req.body.normalization )
 		}
 		//console.log(requested_files);
 
@@ -343,7 +350,7 @@ router.post('/validate_file', [helpers.isLoggedIn, upload.single('upload_file', 
 		    			};
 
 		console.log(options.scriptPath+'/vamps_script_validate.py '+options.args.join(' '));
-		var spawn = require('child_process').spawn;
+		
 		var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 		var validate_process = spawn( options.scriptPath+'/vamps_script_validate.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 		var output = '';
@@ -515,7 +522,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 	    return;
 		}
     console.log(options.args.join(' '));
-			var spawn = require('child_process').spawn;
+			
 			var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 			// script will remove data from mysql and datset taxfile
 
@@ -657,7 +664,7 @@ router.get('/assign_taxonomy/:project/', helpers.isLoggedIn,  function(req,res){
 //
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn,  function(req,res){
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  function(req,res){
-	var spawn = require('child_process').spawn;
+	
 	var exec = require('child_process').exec;
 
 	console.log(req.params.project);
@@ -1257,7 +1264,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 						options.args = options.args.concat(['--has_tax']);
 					}
 					console.log(options.scriptPath+'/metadata_utils.py '+options.args.join(' '));
-					var spawn = require('child_process').spawn;
+					
 					var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 					var output = '';
@@ -1455,7 +1462,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 				    
 
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
-				    var spawn = require('child_process').spawn;
+				    
 						var log = fs.openSync(path.join(data_repository,'visualization.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
 						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
@@ -1667,7 +1674,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 				//console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir,'tax_by_seq.txt'))
 
 		    console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
-		    var spawn = require('child_process').spawn;
+		    
 				var log = fs.openSync(path.join(process.env.PWD,'logs','visualization.log'), 'a');
 
 				
@@ -2194,40 +2201,178 @@ function update_dataset_names(config_info){
 
 		}
 }
-function create_metadata_file(req, user_dir, ts, pids){
+
+/////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
+function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
+    	var db = req.db;
+		//file_name = 'fasta-'+ts+'_custom.fa.gz';
+		var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'export_log.txt');
+		//var log = path.join(user_dir,'export_log.txt');
+		
+		var site = req.CONFIG.site;
+		var code = 'NVexport'
+		var pid_lookup = {}
+		console.log('dids',dids)
+		export_cmd = 'vamps_export_data.py';
+		for(n=0;n<dids.length;n++){
+		    console.log('did',dids[n])
+		    pid_lookup[PROJECT_ID_BY_DID[dids[n]]] = 1
+		}
+		
+		var dids_str = JSON.stringify(dids.join(','));
+		var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
+		console.log('pids',pids_str)
+		var file_tags = file_tags.join(' ')
+		var export_cmd_options = {
+                         scriptPath : path.join(req.CONFIG.SYSTEM_FILES_BASE,'scripts'),
+                         args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids', dids_str, '-pids',pids_str, file_tags, '-compress','-norm', normalization ] // '-compress'
+                     };
+		var cmd_list = []
+		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
+		
+		if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
+            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
+            
+            fs.writeFile(qsub_file_path, qsub_script_text, function(err) {
+                if(err) {
+                    return console.log(err);
+                }else{
+                    console.log("The file was saved!");
+               
+                    console.log(qsub_script_text)
+                    fs.chmod(qsub_file_path, '0775', function(err) {
+                        if(err) {
+                            return console.log(err);
+                        }else{
+                            var pcoa_process = spawn( qsub_file_path, {}, {
+                              env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                              detached: true, 
+                              stdio:['pipe', 'pipe', 'pipe']
+                                //stdio: [ 'ignore', null, log ]
+                            });  // stdin, stdout, stderr1  
+                            
+                            
+                        }
+                    });
+                 }
+            }); 
+        
+        }else{
+            console.log('No Cluster Available')
+        }
+		return 'file_name';
+		
+}
+function create_metadata_file(req, user_dir, ts, dids){
     
 		var file_name, out_file_path;
 		file_name = 'metadata-'+ts+'_custom.gz';
 		out_file_path = path.join(user_dir,file_name);
-
+		pids = []
+		
+        if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            
+        }else{
+        
+        }
 		return file_name;
 }
-function create_taxbytax_file(req, user_dir, ts, pids){
+function create_taxbytax_file(req, user_dir, ts, dids){
     
 		var file_name, out_file_path;
 		file_name = 'taxbytax-'+ts+'_custom.gz';
 		out_file_path = path.join(user_dir,file_name);
-
+        if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            
+        }else{
+        
+        }
 		return file_name;
 }
-function create_taxbyref_file(req, user_dir, ts, pids){
+function create_taxbyref_file(req, user_dir, ts, dids){
     
 		var file_name, out_file_path;
 		file_name = 'taxbyref-'+ts+'_custom.gz';
 		out_file_path = path.join(user_dir,file_name);
-
+        if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            
+        }else{
+        
+        }
 		return file_name;
 }
-function create_taxbyseq_file(req, user_dir, ts, pids){
+function create_taxbyseq_file(req, user_dir, ts, dids){
     
 		var file_name, out_file_path;
 		file_name = 'taxbyseq-'+ts+'_custom.gz';
 		out_file_path = path.join(user_dir,file_name);
-
+        if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            
+        }else{
+        
+        }
 		return file_name;
 }
-function create_fasta_file(req, user_dir, ts, pids){
+function create_fasta_file(req, user_dir, ts, dids){
 		var db = req.db;
+		file_name = 'fasta-'+ts+'_custom.fa.gz';
+		var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'export_log.txt');
+		//var log = path.join(user_dir,'export_log.txt');
+		
+		var site = req.CONFIG.site;
+		var code = 'NVtest'
+		export_cmd = 'vamps_export_data.py';
+		
+		dids = JSON.stringify(dids)
+		
+		var export_cmd_options = {
+                         scriptPath : path.join(req.CONFIG.SYSTEM_FILES_BASE,'scripts'),
+                         args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids',dids,'--fasta_file','-compress' ] // '-compress'
+                     };
+		var cmd_list = []
+		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
+		
+		if(req.CONFIG.cluster_available == true){
+            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
+            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
+            
+            fs.writeFile(qsub_file_path, qsub_script_text, function(err) {
+                if(err) {
+                    return console.log(err);
+                }else{
+                    console.log("The file was saved!");
+               
+                    console.log(qsub_script_text)
+                    fs.chmod(qsub_file_path, '0775', function(err) {
+                        if(err) {
+                            return console.log(err);
+                        }else{
+                            var pcoa_process = spawn( qsub_file_path, {}, {
+                              env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
+                              detached: true, 
+                              stdio:['pipe', 'pipe', 'pipe']
+                                //stdio: [ 'ignore', null, log ]
+                            });  // stdin, stdout, stderr1  
+                            
+                            
+                        }
+                    });
+                 }
+            }); 
+        
+        }else{
+            console.log('No Cluster Available')
+        }
+		return file_name;
+		
+		
 		var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
 		//var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
 		qSelect += " JOIN sequence using (sequence_id)\n";
@@ -2237,7 +2382,7 @@ function create_fasta_file(req, user_dir, ts, pids){
 		var file_name, out_file_path;
 
 		//var pids = JSON.parse(req.body.datasets).ids;
-		file_name = 'fasta-'+ts+'_custom.fa.gz';
+		
 		out_file_path = path.join(user_dir,file_name);
 		qSelect += " where dataset_id in ("+pids+")";
 
@@ -2287,6 +2432,7 @@ function create_fasta_file(req, user_dir, ts, pids){
 		return file_name;
 
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
 function get_local_script_text(log, site, code, cmd_list) {
 	    //### Create Cluster Script
     script_text = "#!/bin/sh\n\n";
@@ -2311,11 +2457,11 @@ function get_local_script_text(log, site, code, cmd_list) {
 //
 //
 //
-function get_qsub_script_text(log, site, code, cmd_list){
+function get_qsub_script_text(log, site, name, cmd_list){
     
     //### Create Cluster Script
     script_text = "#!/bin/sh\n\n";
-    script_text += "# CODE:\t$code\n\n";
+    script_text += "# CODE:\t"+name+"\n\n";
     script_text += "# source environment:\n";  
     script_text += "source /groups/vampsweb/"+site+"/seqinfobin/vamps_environment.sh\n\n";    
     script_text += 'TSTAMP=`date "+%Y%m%d%H%M%S"`'+"\n\n";
@@ -2333,8 +2479,7 @@ function get_qsub_script_text(log, site, code, cmd_list){
     script_text += "#!/bin/bash\n";
     script_text += "#$ -j y\n";
     script_text += "#$ -o "+log+"\n";
-    script_text += "#$ -e "+log+"\n";
-    script_text += "#$ -N vp"+code+"\n";
+    script_text += "#$ -N "+name+"\n";
     script_text += "#$ -cwd\n";
     script_text += "#$ -V\n";
     script_text += 'echo -n "Hostname: "'+"\n";
@@ -2345,7 +2490,7 @@ function get_qsub_script_text(log, site, code, cmd_list){
     for(i in cmd_list){
         script_text += cmd_list[i]+"\n"; 
     }
-    script_text += "chmod 666 "+log+"\n";
+    //script_text += "chmod 666 "+log+"\n";
     //$script_text .= "sleep 120\n";   # for testing
     script_text += "END\n";
     script_text += "}\n";
