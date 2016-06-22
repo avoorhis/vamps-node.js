@@ -283,6 +283,7 @@ var delete_previous_tmp_files = function(req, username){
     var temp_dir_path2 = path.join(process.env.PWD,'views','tmp');
     // for vamps and vampsdev qsub scripts:
     var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp');
+    console.log(temp_dir_path3)
     fs.readdir(temp_dir_path1, function(err,files){
         for (var i=0; i<files.length; i++) {
             if(files[i].substring(0,username.length) === username){
