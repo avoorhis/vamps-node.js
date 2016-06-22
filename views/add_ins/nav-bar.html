@@ -76,7 +76,7 @@
                 <% if (user === undefined) { %>
                   <li><a href="/users/signup">Register</a></li>
                 <% }else{ %>
-                  <li><a href="/users/profile">Account</a></li>
+                  <li><a href="/users/profile">Your Account</a></li>
                 <% } %>
 
 
@@ -95,9 +95,15 @@
                   <button type="submit" class='btn btn-md btn-link' name="" value="" style='color:black;padding-left:20px;'>Export Data</button>
                 </form>
                 </li>
+                
                 <li class="divider"></li>
-
-
+                <li class="dropdown-header">Resources</li>
+                <li><a href='/resources/reference_data'>Reference Data</a></li>
+                <li><a href="/resources/methods_pubs">Methods Publications</a></li>
+                <li><a href='/resources/research_pubs' target='_blank'>Research Publications</a></li>
+                <li><a href='/resources/software'>Software and Links</a></li>
+                
+                <li class="divider"></li>
                 <li class="dropdown-header">Help</li>
                 <li><a href="/help/overview">Overview</a></li>
                 <li><a href='/help/faq' target='_blank'>FAQ</a></li>

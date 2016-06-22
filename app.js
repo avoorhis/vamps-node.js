@@ -47,6 +47,7 @@ var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
+var resources      = require('./routes/routes_resources');
 var admin     = require('./routes/routes_admin');
 
 var portals   = require('./routes/routes_portals');
@@ -138,6 +139,7 @@ app.use(function(req, res, next){
 // ROUTES:
 app.use('/', routes);
 app.use('/help', help);
+app.use('/resources', resources);
 app.use('/tmp', tmp);
 app.use('/admin', admin);
 app.use('/users', users);
