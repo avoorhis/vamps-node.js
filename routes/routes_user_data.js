@@ -52,7 +52,7 @@ router.get('/your_data',  function(req,res){
 router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 
     var export_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
-    
+    var file_formats = req.CONSTS.download_file_formats
     
     var mtime = {};
     var size = {};
@@ -64,7 +64,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
         var pts = files[f].split('-');
-        if(pts[0] === 'metadata' || pts[0] === 'fasta' || pts[0] === 'matrix'){
+        if(file_formats.indexOf(pts[0]) > 0){
           stat = fs.statSync(export_dir+'/'+files[f]);          
           file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
       		modify_times.push(stat.mtime.getTime());
@@ -93,7 +93,8 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 				&& req.body.taxbyseq === undefined
 				&& req.body.taxbyref === undefined
 				&& req.body.taxbytax === undefined
-				&& req.body.metadata === undefined ){
+				&& req.body.metadata === undefined
+				&& req.body.biom === undefined ){
 				req.flash('failMessage', 'Select one or more file formats');
 				res.render('user_data/export_selection', {
 		      title: 'VAMPS: Export Choices',
@@ -130,6 +131,9 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 			}
 			if(key === 'metadata'){
 				requested_files.push('-metadata_file');
+			}
+			if(key === 'biom'){
+				requested_files.push('-biom_file');
 			}
 			
 			
@@ -2110,6 +2114,35 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		res.send(file_name);
 
 });
+router.post('/download_phyloseq_file', helpers.isLoggedIn, function(req, res) {
+    console.log('phyloseq req.body-->>');
+  	console.log(req.body);
+  	old_ts = req.body.ts
+  	file_type = req.body.file_type
+  	var timestamp = +new Date();
+    if(file_type == 'phyloseq-biom'){
+      old_file_name = old_ts+'_count_matrix.biom';  
+      file_path = path.join(process.env.PWD, 'tmp', old_file_name);  
+    }else if(file_type == 'phyloseq-tax'){
+      old_file_name = old_ts+'_taxonomy.txt';
+      file_path = path.join(process.env.PWD, 'tmp', old_file_name);   
+    }else if(file_type == 'phyloseq-meta'){
+      old_file_name = old_ts+'_metadata.txt';
+      file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    }
+    var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
+	helpers.mkdirSync(user_dir);  // create dir if not exists
+    var new_file_name = file_type+'_'+timestamp+'.txt'
+    var destination = path.join( user_dir, new_file_name )
+    fs.copy(file_path, destination, function(err){
+        if (err) return console.error(err)
+        console.log("copy success!")
+    })   
+    
+    res.send(new_file_name);  
+});
+
 //
 // <<<< FUNCTIONS >>>>
 //
@@ -2265,60 +2298,60 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		return 'file_name';
 		
 }
-function create_metadata_file(req, user_dir, ts, dids){
-    
-		var file_name, out_file_path;
-		file_name = 'metadata-'+ts+'_custom.gz';
-		out_file_path = path.join(user_dir,file_name);
-		pids = []
-		
-        if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-            
-        }else{
-        
-        }
-		return file_name;
-}
-function create_taxbytax_file(req, user_dir, ts, dids){
-    
-		var file_name, out_file_path;
-		file_name = 'taxbytax-'+ts+'_custom.gz';
-		out_file_path = path.join(user_dir,file_name);
-        if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-            
-        }else{
-        
-        }
-		return file_name;
-}
-function create_taxbyref_file(req, user_dir, ts, dids){
-    
-		var file_name, out_file_path;
-		file_name = 'taxbyref-'+ts+'_custom.gz';
-		out_file_path = path.join(user_dir,file_name);
-        if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-            
-        }else{
-        
-        }
-		return file_name;
-}
-function create_taxbyseq_file(req, user_dir, ts, dids){
-    
-		var file_name, out_file_path;
-		file_name = 'taxbyseq-'+ts+'_custom.gz';
-		out_file_path = path.join(user_dir,file_name);
-        if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
-            
-        }else{
-        
-        }
-		return file_name;
-}
+// function create_metadata_file(req, user_dir, ts, dids){
+//     
+// 		var file_name, out_file_path;
+// 		file_name = 'metadata-'+ts+'_custom.gz';
+// 		out_file_path = path.join(user_dir,file_name);
+// 		pids = []
+// 		
+//         if(req.CONFIG.cluster_available == true){
+//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+//             
+//         }else{
+//         
+//         }
+// 		return file_name;
+// }
+// function create_taxbytax_file(req, user_dir, ts, dids){
+//     
+// 		var file_name, out_file_path;
+// 		file_name = 'taxbytax-'+ts+'_custom.gz';
+// 		out_file_path = path.join(user_dir,file_name);
+//         if(req.CONFIG.cluster_available == true){
+//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+//             
+//         }else{
+//         
+//         }
+// 		return file_name;
+// }
+// function create_taxbyref_file(req, user_dir, ts, dids){
+//     
+// 		var file_name, out_file_path;
+// 		file_name = 'taxbyref-'+ts+'_custom.gz';
+// 		out_file_path = path.join(user_dir,file_name);
+//         if(req.CONFIG.cluster_available == true){
+//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+//             
+//         }else{
+//         
+//         }
+// 		return file_name;
+// }
+// function create_taxbyseq_file(req, user_dir, ts, dids){
+//     
+// 		var file_name, out_file_path;
+// 		file_name = 'taxbyseq-'+ts+'_custom.gz';
+// 		out_file_path = path.join(user_dir,file_name);
+//         if(req.CONFIG.cluster_available == true){
+//             qsub_script_text = get_qsub_script_text(log, site, code, cmd_list)
+//             
+//         }else{
+//         
+//         }
+// 		return file_name;
+// }
 function create_fasta_file(req, user_dir, ts, dids){
 		var db = req.db;
 		file_name = 'fasta-'+ts+'_custom.fa.gz';

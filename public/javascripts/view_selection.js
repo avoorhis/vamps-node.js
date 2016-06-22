@@ -183,7 +183,7 @@ if (save_config !== null) {
   });
 }
 
-// download fasta
+// create fasta
 var download_fasta_btn = document.getElementById('download_fasta_btn') || null;
 if (download_fasta_btn !== null) {
   download_fasta_btn.addEventListener('click', function () {
@@ -195,7 +195,7 @@ if (download_fasta_btn !== null) {
   });
 }
 
-// download metadata
+// create metadata
 var download_metadata_btn = document.getElementById('download_metadata_btn') || null;
 if (download_metadata_btn !== null) {
   download_metadata_btn.addEventListener('click', function () {
@@ -206,7 +206,7 @@ if (download_metadata_btn !== null) {
       download_data('metadata', download_type, ts);
   });
 }
-
+// create counts matrix
 var download_matrix_btn = document.getElementById('download_matrix_btn') || null;
 if (download_matrix_btn !== null) {
   download_matrix_btn.addEventListener('click', function () {
@@ -217,7 +217,39 @@ if (download_matrix_btn !== null) {
       download_data('matrix', download_type, ts);
   });
 }
-
+///// create phyloseq biom
+var download_plyloseq_biom_btn = document.getElementById('download_plyloseq_biom_btn') || null;
+if (download_plyloseq_biom_btn !== null) {
+  download_plyloseq_biom_btn.addEventListener('click', function () {
+      
+      form = document.getElementById('download_plyloseq_biom_form_id');
+      download_type = '';       
+      ts =  form.ts.value;    
+      download_data('phyloseq-biom', download_type, ts);
+  });
+}
+// create phyloseq tax
+var download_plyloseq_tax_btn = document.getElementById('download_plyloseq_tax_btn') || null;
+if (download_plyloseq_tax_btn !== null) {
+  download_plyloseq_tax_btn.addEventListener('click', function () {
+      
+      form = document.getElementById('download_plyloseq_tax_form_id');
+      download_type = '';       
+      ts =  form.ts.value;    
+      download_data('phyloseq-tax', download_type, ts);
+  });
+}
+// download phyloseq meta
+var download_plyloseq_meta_btn = document.getElementById('download_plyloseq_meta_btn') || null;
+if (download_plyloseq_meta_btn !== null) {
+  download_plyloseq_meta_btn.addEventListener('click', function () {
+      
+      form = document.getElementById('download_plyloseq_meta_form_id');
+      download_type = '';       
+      ts =  form.ts.value;    
+      download_data('phyloseq-meta', download_type, ts);
+  });
+}
 
 // normalization radio-buttons
 var norm_counts_radios = document.getElementsByName('normalization');
@@ -2176,19 +2208,28 @@ function create_header(viz, pi) {
 function download_data(type, download_type, ts) {
     var html = '';
     var args =  "download_type="+download_type;
-    
+    args += '&ts='+ts;
     var xmlhttp = new XMLHttpRequest(); 
     if(type == 'metadata'){
       target = '/user_data/download_selected_metadata';      
     } else if(type == 'fasta'){
       target = '/user_data/download_selected_seqs'
-    }else if(type == 'matrix'){
-//alert(ts)
-      args += '&ts='+ts;
+    }else if(type == 'matrix'){    
       target = '/user_data/download_selected_matrix'
-    }else{
+    } else if(type == 'phyloseq-biom'){
+      target = '/user_data/download_phyloseq_file'
+      args += '&file_type='+type;
+    } else if(type == 'phyloseq-tax'){
+      target = '/user_data/download_phyloseq_file'
+      args += '&file_type='+type;
+    } else if(type == 'phyloseq-meta'){
+      target = '/user_data/download_phyloseq_file'
+      args += '&file_type='+type;
+    }
+    else{
 
     }
+    //alert(type)
     xmlhttp.open("POST", target, true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {

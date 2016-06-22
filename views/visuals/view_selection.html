@@ -132,7 +132,7 @@
 <% }else{ %>
     <div style='float:left;'>
       <table class='button_row'><tr>
-      	
+      	<td>Downloads:</td>
       	  <td>
                 
             </td>
@@ -165,40 +165,31 @@
               </form> 
             
           </td>
-          <td><div id='download_confirm_id'></div></td>
+          
      	
-      </tr></table>  <!-- button.row -->
-
-    </div>
-
-<a name='top_o_viz'></a>
-<div style='float:right'>
-
-    <table class=''>
-
-    <tr><td><a href='https://joey711.github.io/phyloseq/' target='_blank'>Phyloseq</a> Input File Downloads:&nbsp;</td>
-      <td>       
-              <form id='download_biom_form_id'  method='POST' action='download_file'>
-                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Biom Matrix File</button>
-                <input type='hidden' name='file_type' value='biom' />           
-                <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                <input type='hidden' name='referer' value='/visuals/view_selection' />
-              </form>     
-          </td><td>
-              <form id='download_tax_form_id'  method='POST' action='download_file'>
-                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Tax File</button>
-                <input type='hidden' name='file_type' value='tax' />           
-                <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                <input type='hidden' name='referer' value='/visuals/view_selection' />
-              </form> 
-          </td><td>
-              <form id='download_meta_form_id'  method='POST' action='download_file'>
-                <button type='submit' id='download_matrix_btn' class="btn btn-xs btn-primary">Metadata File</button>
-                <input type='hidden' name='file_type' value='meta' />          
-                <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                <input type='hidden' name='referer' value='/visuals/view_selection' />
-              </form>       
-    </td></tr>
+         <td>Phyloseq <a href='https://joey711.github.io/phyloseq/' target='_blank'>(?)</a> Files:&nbsp;</td>
+          <td>       
+                  <form id='download_plyloseq_biom_form_id'  method='POST' action=''>
+                    <button type='button' id='download_plyloseq_biom_btn' class="btn btn-xs btn-primary">Biom Matrix File</button>
+                    <input type='hidden' name='file_type' value='biom' />           
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>     
+              </td><td>
+                  <form id='download_plyloseq_tax_form_id'  method='POST' action=''>
+                    <button type='button' id='download_plyloseq_tax_btn' class="btn btn-xs btn-primary">Tax File</button>
+                    <input type='hidden' name='file_type' value='tax' />           
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form> 
+              </td><td>
+                  <form id='download_plyloseq_meta_form_id'  method='POST' action=''>
+                    <button type='button' id='download_plyloseq_meta_btn' class="btn btn-xs btn-primary">Metadata File</button>
+                    <input type='hidden' name='file_type' value='meta' />          
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form>       
+        </td><td><div id='download_confirm_id'></div></td></tr>
     </table>
 
 </div>

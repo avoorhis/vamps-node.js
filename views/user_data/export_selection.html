@@ -11,7 +11,9 @@
 
 <a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
 
-
+<% if(messages){ %>
+  <div class="alert_flash_message"><%- message %></div>
+<% } %>
 <div class='well'>
   <div class="row">
     <div  id='show_selected_datasets_div'  class="col-md-6">
@@ -23,9 +25,7 @@
 <button type='submit' class='btn pull-right btn-sm btn-warning' id="" >
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
 </button>
-<% if(messages){ %>
-  <div class="alert_flash_message"><%- message %></div>
-<% } %>
+
 Normalization:
                 <input type="radio" checked name='normalization' value="not_normalized"> None
                 <input type="radio" name='normalization' value="normalized_to_maximum"> To Max Count Value
@@ -44,7 +44,7 @@ Normalization:
               </tr>
               <tr>
                 <td>                
-                 <input type="checkbox" name='biom' value="1"> Biom-Format File (json)  (<span style='color:red'>not available yet</span>)
+                 <input type="checkbox" name='biom' value="1"> Biom-Format File (json)
                 </td>
                 <td></td>
                 <td>See <a href='http://biom-format.org/documentation/format_versions/biom-1.0.html' target='_blank'>http://biom-format.org/documentation/format_versions/biom-1.0.html</a></td>
@@ -76,7 +76,7 @@ Normalization:
                 <td>
                 <input type="checkbox" name='metadata' value="1"> Metadata File (csv)</td>
                 <td></td>
-                <td>Tab-separated metadata (mapping) file.</td>
+                <td>Comma-separated metadata (mapping) file.</td>
               </tr>
               <!-- 
               <tr>

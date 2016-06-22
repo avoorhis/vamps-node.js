@@ -181,6 +181,7 @@ td.left_justify {
 	color:orange;
   position:absolute;
   left:30px;
+  /* top:65px; */
   top:25px;
 }
 #project_profile_div ul{

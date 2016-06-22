@@ -176,7 +176,7 @@ function login_auth_user(req, username, password, done, db){
             // Here on login we delete the users tmp/* files from previous sessions.
             // This seems better than on logout bacause users are less likely to manually logout.
             try{
-                delete_previous_tmp_files(username);
+                delete_previous_tmp_files(req, username);
             }catch(e){
                 console.log(e)
             }
@@ -275,24 +275,40 @@ function signup_user(req, username, password, done, db){
 //
 //
 //
-var delete_previous_tmp_files = function(username){
+var delete_previous_tmp_files = function(req, username){
     var path = require('path');
     var fs   = require('fs-extra');
     // dirs to delete from on login::
     var temp_dir_path1 = path.join(process.env.PWD,'tmp');
     var temp_dir_path2 = path.join(process.env.PWD,'views','tmp');
-    fs.readdirSync(temp_dir_path1).forEach(function(file,index){
-        if(file.substring(0,username.length) === username){
-            var curPath = temp_dir_path1 + "/" + file;
-            
-            deleteFolderRecursive(curPath);
-            fs.readdirSync(temp_dir_path2).forEach(function(file,index){
-                if(file.substring(0,username.length) === username){
-                    var curPath = temp_dir_path2 + "/" + file;
+    // for vamps and vampsdev qsub scripts:
+    var temp_dir_path3 = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp');
+    fs.readdir(temp_dir_path1, function(err,files){
+        for (var i=0; i<files.length; i++) {
+            if(files[i].substring(0,username.length) === username){
+                var curPath = temp_dir_path1 + "/" + files[i];
+                deleteFolderRecursive(curPath);
+            }
+        }
+        fs.readdir(temp_dir_path2, function(err,files){
+            for (var i=0; i<files.length; i++) {
+                if(files[i].substring(0,username.length) === username){
+                    var curPath = temp_dir_path2 + "/" + files[i];
                     deleteFolderRecursive(curPath);
                 }
+            }
+            fs.readdir(temp_dir_path3, function(err,files){
+                for (var i=0; i<files.length; i++) {
+                    if(files[i].substring(0,username.length) === username){
+                        var curPath = temp_dir_path3 + "/" + files[i];
+                        deleteFolderRecursive(curPath);
+            
+                    }
+                }
             });
-        }
+                            
+        });
+        
     });
 };
 var deleteFolderRecursive = function(path) {
