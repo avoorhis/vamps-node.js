@@ -1924,7 +1924,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
               to : req.user.email,
               from : "vamps@mbl.edu",
               subject : "fasta file is ready",
-              text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
             };
         helpers.send_mail(info);
 
@@ -1934,11 +1934,7 @@ router.post('/download_selected_seqs', helpers.isLoggedIn, function(req, res) {
   });
 
   res.send(file_name);
-  //console.log('message', 'success '+referer)
-  //req.flash('message', 'success '+referer);
-	//res.redirect(referer);
-	//res.redirect('/visuals/sequences');
-
+  
 
 });
 
@@ -1950,8 +1946,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
   console.log('meta req.body-->>');
   console.log(req.body);
   var timestamp = +new Date();  // millisecs since the epoch!
-
-
+  
 	var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 	helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
 	helpers.mkdirSync(user_dir);  // create dir if not exists
@@ -1977,15 +1972,6 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
 	  console.log(dids);
 
 
-	  // check if custom metadata table exists
-	  //var qSelect = "SHOW tables like 'custom_metadata_"+pid+"'";
-
-	  // get the fields from required_metadata_info as they may vary
-	  //var qSelect = "SHOW columns from required_metadata_info";
-	  //console.log('in projects-->');
-	  //console.log(MetadataValues);
-	  //console.log('<--in projects');
-	  // we have all the metadata in MetadataValues by did
 	  var gzip = zlib.createGzip();
 	  var myrows = {}; // myrows[mdname] == [] list of values
 	  
@@ -2042,7 +2028,7 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
               to : req.user.email,
               from : "vamps@mbl.edu",
               subject : "metadata is ready",
-              text : "Your metadata file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+              text : "Your metadata file is ready here:\n\nhttps://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
         };
         helpers.send_mail(info);
         //req.flash('Done')
@@ -2062,17 +2048,13 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
   	console.log('matrix req.body-->>');
   	console.log(req.body);
   	//var timestamp = +new Date();  // millisecs since the epoch!
-		for (var i in biom_matrix.rows){
- 			row_txt = '';
- 			row_txt += biom_matrix.rows[i].name;
- 			console.log(row_txt);
- 		}
+		
  		var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
 		//var user_dir = path.join('user_data',NODE_DATABASE,req.user.username);
 		helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
 		helpers.mkdirSync(user_dir);  // create dir if not exists
 
-		console.log(biom_matrix)
+		//console.log(biom_matrix)
 		dids = chosen_id_name_hash.ids
 		var timestamp = +new Date();
 		var file_name = 'matrix-'+timestamp+'.csv';
@@ -2114,6 +2096,9 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 		res.send(file_name);
 
 });
+//
+// DOWNLOAD PHYLOSEQ FILES
+//
 router.post('/download_phyloseq_file', helpers.isLoggedIn, function(req, res) {
     console.log('phyloseq req.body-->>');
   	console.log(req.body);
@@ -2453,7 +2438,7 @@ function create_fasta_file(req, user_dir, ts, dids){
 		            to : req.user.email,
 		            from : "vamps@mbl.edu",
 		            subject : "fasta file is ready",
-		            text : "Your fasta file is ready here:\n\nhttp://localhost:3000/"+"export_data/"
+		            text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
 		          };
 		      helpers.send_mail(info);
 
