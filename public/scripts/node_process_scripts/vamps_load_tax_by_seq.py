@@ -63,7 +63,7 @@ def write_seqfiles(args,collector):
     stats = {}
     for pj in collector:
         project_dir = os.path.join(args.process_dir,'user_data',args.NODE_DATABASE,args.owner,'project-'+pj)
-        print project_dir
+        
         #datasets[pj] = {}
         #files = {}
         stats[pj] = {}

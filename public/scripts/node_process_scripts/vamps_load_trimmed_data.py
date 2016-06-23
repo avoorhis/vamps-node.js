@@ -24,9 +24,8 @@ import random
 import csv
 from time import sleep
 import ConfigParser
-import gzip
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'../','bin')
+script_path = os.path.dirname(os.path.realpath(__file__))
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
@@ -81,27 +80,27 @@ class FastaReader:
     #def close(self):
     #    self.close()
     
-# def start_upload(args):
-#     if args.upload_type == 'single' and not args.dataset:
-#         print 'Requires dataset for single mode'
-#         sys.exit(1)
-#     args.fafile = os.path.join(args.project_dir,'fasta.fa')
-#     args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
-#     args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
-#     if args.site == 'vamps':
-#         args.site_grp = 'vampshttpd'
-#     elif args.site == 'vampsdev':
-#         args.site_grp = 'vampsdevhttpd'
-#     else:
-#         args.site_grp = 'staff'
+def start_upload(args):
+    if args.upload_type == 'single' and not args.dataset:
+        print 'Requires dataset for single mode'
+        sys.exit(1)
+    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+    args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
+    if args.site == 'vamps':
+        args.site_grp = 'vampshttpd'
+    elif args.site == 'vampsdev':
+        args.site_grp = 'vampsdevhttpd'
+    else:
+        args.site_grp = 'staff'
     
-#     create_dirs(args)    
-#     stats = write_seqfiles(args)
-#     print stats
-#     unique_seqs(args,stats)
-#     write_metafile(args,stats)
-#     write_config(args,stats)
-#     update_dir_permissions(args)
+    create_dirs(args)    
+    stats = write_seqfiles(args)
+    print stats
+    unique_seqs(args,stats)
+    write_metafile(args,stats)
+    write_config(args,stats)
+    update_dir_permissions(args)
 
 def create_dirs(args):
     outdir = args.project_dir
@@ -128,7 +127,7 @@ def write_seqfiles(args):
     analysis_dir = os.path.join(outdir,'analysis')
     gast_dir = os.path.join(analysis_dir,'gast')
     #gast_dir = os.path.join(outdir,'analysis/gast')
-    mainfafile = os.path.join(outdir,'fasta.fa')
+    
     if args.upload_type == 'single':
         ds = args.dataset
         datasets[ds] = 0
@@ -140,17 +139,8 @@ def write_seqfiles(args):
         files[ds] = fp
     seq_count = 0
     ds_count = 0
-    if args.fa_comp:
-        # uncompress then copy
-        with gzip.open(args.fafile, 'rb') as infile:
-            with open(mainfafile, 'w') as outfile:
-                for line in infile:
-                    outfile.write(line)
-    else:
-        # copy args.fafile to outdir
-        shutil.copy(args.fafile, mainfafile)
-
-    f = fastalib.SequenceSource(mainfafile)
+    
+    f = fastalib.SequenceSource(args.fafile)
     #f = FastaReader(fafile)
     while f.next():
         defline = f.id
@@ -217,27 +207,12 @@ def write_seqfiles(args):
 def write_metafile(args,stats):
     
     #f = open(args.mdfile_clean, 'wt')
-    outdir = args.project_dir
+    
     req_metadata = ['altitude','assigned_from_geo','collection_date','common_name','country','depth','description','elevation','env_biome','env_feature','env_matter','latitude','longitude','public','taxon_id']
     req_first_col = ['#SampleID','sample_name','dataset_name']
-    mainmdfile = os.path.join(outdir,'metadata_original.csv')
-    if not os.path.isfile(args.mdfile):
-        print 'No metadata file found'
-        return
-    if args.md_comp:
-        # uncompress then copy
-        with gzip.open(args.mdfile, 'rb') as infile:
-            with open(mainmdfile, 'w') as outfile:
-                for line in infile:
-                    outfile.write(line)
-    else:
-        # copy args.fafile to outdir
-        shutil.copy(args.mdfile, mainmdfile)
-
-    mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
-    with open(mainmdfile, mode='r') as infile:
+    with open(args.mdfile, mode='r') as infile:
         reader = csv.reader(infile, delimiter='\t')  # TAB Only delimiter
-        with open(mdfile_clean, mode='w') as outfile:
+        with open(args.mdfile_clean, mode='w') as outfile:
             writer = csv.writer(outfile, delimiter='\t')  # TAB Only delimiter
         
             md_datasets = []
@@ -263,7 +238,7 @@ def write_metafile(args,stats):
                         dataset_index = 0
                     else:
                         ds_in_headers = False
-                        print "METADATA: No dataset column found in first column (allowed column names: "+','.join(req_first_col);
+                        print "No dataset column found in first column (allowed column names: "+','.join(req_first_col);
                         sys.exit(1)
                 else:
                     if args.upload_type == 'multi':
@@ -280,7 +255,7 @@ def write_metafile(args,stats):
                         print '1-Missing Data: '+','.join(items)
                         sys.exit(1)
                     
-                    print "writing clean metadata file "+mdfile_clean
+                    print "writing clean metadata file "+args.mdfile_clean
                     writer.writerow(items)
             if args.upload_type == 'multi':
             # check for datasets column in metadata -- needed to assign metadata to datasets
@@ -417,16 +392,6 @@ if __name__ == '__main__':
     parser.add_argument("-site", "--site",    
                 required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
                 help="")
-    parser.add_argument('-infile', '--infile',         
-                required=True,   action="store",  dest = "fafile",            
-                help = '')
-    parser.add_argument('-md_file', '--md_file',         
-                required=False,   action="store",  dest = "mdfile", default='',           
-                help = '')
-    parser.add_argument('-fa_comp', '--fa_comp',         
-                required=False,   action="store_true",  dest = "fa_comp",  help = '')
-    parser.add_argument('-md_comp', '--md_comp',         
-                required=False,   action="store_true",  dest = "md_comp",   help = '')
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -436,7 +401,9 @@ if __name__ == '__main__':
     if args.upload_type == 'single' and not args.dataset:
         print 'Requires dataset for single mode'
         sys.exit(1)
-    
+    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+    args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
     if args.site == 'vamps':
         args.site_grp = 'vampshttpd'
     elif args.site == 'vampsdev':
@@ -448,7 +415,6 @@ if __name__ == '__main__':
     stats = write_seqfiles(args)
     print stats
     unique_seqs(args,stats)
-
     write_metafile(args,stats)
     write_config(args,stats)
     update_dir_permissions(args)

@@ -2210,12 +2210,20 @@ function download_data(type, download_type, ts) {
     var args =  "download_type="+download_type;
     args += '&ts='+ts;
     var xmlhttp = new XMLHttpRequest(); 
+    
     if(type == 'metadata'){
-      target = '/user_data/download_selected_metadata';      
+      //target = '/user_data/download_selected_metadata'; 
+      target = '/user_data/download_file'  
+      args += '&file_type='+type;   
     } else if(type == 'fasta'){
-      target = '/user_data/download_selected_seqs'
+      //target = '/user_data/download_selected_seqs'
+      target = '/user_data/download_file'
+      args += '&file_type='+type;
     }else if(type == 'matrix'){    
-      target = '/user_data/download_selected_matrix'
+      //target = '/user_data/download_selected_matrix'
+      target = '/user_data/download_file'
+      args += '&file_type='+type;
+    
     } else if(type == 'phyloseq-biom'){
       target = '/user_data/download_phyloseq_file'
       args += '&file_type='+type;
@@ -2229,14 +2237,15 @@ function download_data(type, download_type, ts) {
     else{
 
     }
-    //alert(type)
+    
+   
     xmlhttp.open("POST", target, true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4 ) {
          var filename = xmlhttp.responseText; 
-         html += "<div class='pull-right'>Your file is being compiled.<br>The filename is: "+filename;
-         html += "<br>When ready your file can be downloaded from the <a href='/user_data/file_retrieval'>file retrieval page.</a></div>"
+         html += "<div class='pull-right'>Your file is being compiled and can be downloaded from the"
+         html += "<br><a href='/user_data/file_retrieval'>file retrieval page when ready.</a></div>"
          document.getElementById('download_confirm_id').innerHTML = html;
       }
     };

@@ -103,8 +103,8 @@ def start_rdp(args):
             print 'running rdp on',dataset
             print 'uniques file',unique_file
             print 'rdp_out file',rdp_out_file
-            print 'ref db dir', args.ref_db
-            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.path_to_classifier, args.ref_db )
+            print 'ref db dir', args.ref_db_dir
+            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.path_to_classifier, args.ref_db_dir )
     
 
             
@@ -138,9 +138,6 @@ if __name__ == '__main__':
                 help = '') 
     parser.add_argument("-ref_db", "--reference_db",    
                 required=True,  action="store",   dest = "ref_db", 
-                help = '') 
-    parser.add_argument("-site", "--site",    
-                required=True,  action="store",   dest = "site", 
                 help = '') 
     parser.add_argument("-path_to_classifier", "--path_to_classifier",    
                 required=True,  action="store",   dest = "path_to_classifier", 

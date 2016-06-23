@@ -142,27 +142,27 @@
       	          The user should get an email when its ready.
       	     -->
             <td>
-        			<form id='download_fasta_form_id' method='POST' action=''>
+        		<form id='download_fasta_form_id' method='POST' action=''>
         		    <button type='button' id='download_fasta_btn' class="btn btn-xs btn-success">Create Fasta File</button>
         		    <input type='hidden' name='download_type' value='partial_project' />
-        			  <input type='hidden' name='referer' value='/visuals/view_selection' />
+        			<input type='hidden' name='referer' value='/visuals/view_selection' />
       		  	</form>
               
       		</td><td>
       		    <form id='download_metadata_form_id' method='POST' action=''>
-                <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
-      		      <input type='hidden' name='download_type' value='partial_project' />
+                    <button type='button' id='download_metadata_btn' class="btn btn-xs btn-success">Create Metadata File</button>
+      		        <input type='hidden' name='download_type' value='partial_project' />
       			    <input type='hidden' name='referer' value='/visuals/view_selection' />
       		    </form>	
               
       		</td><td>
               
-              <form id='download_matrix_form_id'  method='POST' action=''>
-                <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Counts Matrix File</button>
-                <input type='hidden' name='download_type' value='partial_project' />
-                <input type='hidden' name='ts' value='<%= pi.ts %>' />
-                <input type='hidden' name='referer' value='/visuals/view_selection' />
-              </form> 
+                  <form id='download_matrix_form_id'  method='POST' action=''>
+                    <button type='button' id='download_matrix_btn' class="btn btn-xs btn-success">Create Counts Matrix File</button>
+                    <input type='hidden' name='download_type' value='partial_project' />
+                    <input type='hidden' name='ts' value='<%= pi.ts %>' />
+                    <input type='hidden' name='referer' value='/visuals/view_selection' />
+                  </form> 
             
           </td>
           

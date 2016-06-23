@@ -91,7 +91,7 @@ def start_gast(args):
     site            = 'new_vamps'
     load_db         = True
     steps           = 'gast,new_vamps'
-    fasta_file_from_cl  = '' 
+    fasta_file_from_cl  = '' #args.fasta_file
     
     mobedac         = False # True or False
     gast_input_source = 'file'
@@ -153,7 +153,7 @@ def start_gast(args):
                             'dna_region':           general_config_items['dna_region'],
                             'domain':               general_config_items['domain'],
                             'env_source_id':        general_config_items['env_source_id'],
-                            'classifier':           'GAST',
+                            'classifier':           args.classifier,
                             'user':                 general_config_items['owner'],
                             'site':                 args.site, 
                             'load_vamps_database':  load_db,
@@ -168,7 +168,7 @@ def start_gast(args):
                             'node_db':              args.NODE_DATABASE,
                             'process_dir':          args.process_dir,
                             
-                            'ref_db_dir':           args.ref_db,
+                            'ref_db_dir':           args.ref_db_dir,
                             'config_file':          args.config
                             
                             
@@ -285,27 +285,4 @@ if __name__ == '__main__':
     
     
     """
-
-    parser = argparse.ArgumentParser(description="" ,usage=myusage) 
-    parser.add_argument("-c", "--config",             
-                required=True,  action="store",   dest = "config",
-                help="config file with path")
-    parser.add_argument("-project_dir", "--project_dir",    
-                required=True,  action="store",   dest = "project_dir", 
-                help = '') 
-    parser.add_argument("-ref_db", "--reference_db",    
-                required=True,  action="store",   dest = "ref_db", 
-                help = '')
-    parser.add_argument("-db", "--node_db",    
-                required=True,  action="store",   dest = "NODE_DATABASE", 
-                help = '') 
-    parser.add_argument("-site", "--site",    
-                required=True,  action="store",   dest = "site", 
-                help = '') 
-    parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/',
-                help = '')
-    args = parser.parse_args() 
-
-    start_gast(args)
  

@@ -125,61 +125,61 @@ def start(args):
     cur = mysql_conn.cursor()
     
     
-    logging.info("Database Loader:running get_config_data")
-    print "Database Loader:running get_config_data"
+    logging.info("running get_config_data")
+    print "running get_config_data"
     get_config_data(args.project_dir)
     
-    logging.info("Database Loader:checking user")
-    print "Database Loader:checking user"
+    logging.info("checking user")
+    print "checking user"
     check_user()  ## script dies if user not in db
     
-    logging.info("Database Loader:checking project")
-    print "Database Loader:checking project"
+    logging.info("checking project")
+    print "checking project"
     res = check_project()  ## script dies if project is in db
     
     if res[0]=='ERROR':
         print "ERROR res[0] -- Exiting (project name already taken)"
         sys.exit(res[1])
     else:
-        logging.info("Database Loader:recreating ranks")
-        print "Database Loader:recreating ranks"
+        logging.info("recreating ranks")
+        print "recreating ranks"
         recreate_ranks()
     
-        logging.info("Database Loader:env sources")
-        print "Database Loader:env sources"
+        logging.info("env sources")
+        print "env sources"
         create_env_source()
     
-        logging.info("Database Loader:classifier")
-        print "Database Loader:classifier"
+        logging.info("classifier")
+        print "classifier"
         create_classifier()
     
-        logging.info("Database Loader:starting taxonomy")
-        print "Database Loader:starting taxonomy"
+        logging.info("starting taxonomy")
+        print "starting taxonomy"
         push_taxonomy(args)
     
-        logging.info("Database Loader:starting sequences")
-        print "Database Loader:starting sequences"
+        logging.info("starting sequences")
+        print "starting sequences"
         push_sequences(args)
     
-        logging.info("Database Loader:projects")
-        print "Database Loader:projects"
+        logging.info("projects")
+        print "projects"
         push_project()
     
-        logging.info("Database Loader:datasets")
-        print "Database Loader:datasets"
+        logging.info("datasets")
+        print "datasets"
         push_dataset()
     
         #push_summed_counts()
-        logging.info("Database Loader:starting push_pdr_seqs")
-        print "Database Loader:starting push_pdr_seqs"
+        logging.info("starting push_pdr_seqs")
+        print "starting push_pdr_seqs"
         push_pdr_seqs(args)
     
         #print SEQ_COLLECTOR
         #pp.pprint(CONFIG_ITEMS)
-        logging.info("Database Loader:Finished "+os.path.basename(__file__))
-        print "Database Loader:Finished "+os.path.basename(__file__)
+        logging.info("Finished "+os.path.basename(__file__))
+        print "Finished "+os.path.basename(__file__)
         print CONFIG_ITEMS['project_id']
-        print 'Database Loader:Writing pid to pid.txt'
+        print 'Writing pid to pid.txt'
         fp = open(os.path.join(args.project_dir,'pid.txt'),'w')
         fp.write(str(CONFIG_ITEMS['project_id']))
         fp.close()
@@ -268,7 +268,7 @@ def push_project():
     q = "INSERT into project ("+(',').join(fields)+")"
     q += " VALUES('%s','%s','%s','%s','%s','%s','%s')"
     q = q % (proj,title,desc,rev,fund,id,pub)
-    print q
+    #print q
     logging.info(q)
     #print cur.lastrowid
     try:
@@ -339,7 +339,7 @@ def push_pdr_seqs(args):
             #     q += " VALUES ('%s','%s','%s','1')"
             # else:
             #     q += " VALUES ('%s','%s','%s','3')"   # 3 is 'unknown'
-            #print q
+            print q
             #print
             logging.info(q)
             try:
@@ -525,30 +525,15 @@ def run_rdp_tax_file(args,ds, tax_file, seq_file):
     with open(tax_file,'r') as fh:
         for line in fh:
             tax_items = []
-            line = line.strip()
-            if not line:
-                continue
+            items = line.strip().split("\t")
+            
             # ['21|frequency:1', '', 'Bacteria', 'domain', '1.0', '"Firmicutes"', 'phylum', '1.0', '"Clostridia"', 'class', '1.0', 'Clostridiales', 'order', '1.0', '"Ruminococcaceae"', 'family', '1.0', 'Faecalibacterium', 'genus', '1.0']
-            # OR
-            # 4|frequency:1, '-','','','', Bacteria  domain 1.0 Firmicutes  phylum  1.0     Clostridia      class   1.0     Clostridiales   order   1.0     Clostridiaceae  family  1.0     Clostridium     genus   1.0
- 
-            good_items = []
-            items = line.split("\t")
-            for i,item in enumerate(items):
-                if i < 6: 
-                    if item !='' and item != '-':
-                        good_items.append(item.strip('"').strip("'"))
-                else:
-                    good_items.append(item.strip('"').strip("'"))
-            items = good_items
-            # 4|frequency:1,  Bacteria  domain 1.0 Firmicutes  phylum  1.0     Clostridia      class   1.0     Clostridiales   order   1.0     Clostridiaceae  family  1.0   ... 
             # if boot_value > minboot add to tax_string
-            #print items
             tmp = items[0].split('|')
             seq_id = tmp[0]
             seq_count = tmp[1].split(':')[1]
             #seq_count =1
-            tax_line = items[1:]
+            tax_line = items[2:]
             print 'id',seq_id
             print 'cnt',seq_count
             print tax_line

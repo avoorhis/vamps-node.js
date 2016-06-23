@@ -116,19 +116,11 @@ def go_add(args):
     
     mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
-    
-    process_dir = args.process_dir
-    
-    pid_file = os.path.join(args.project_dir,'pid.txt')
-    try:
-        with open(pid_file, 'r') as f:
-            args.pid = f.readline().strip()
-    except:
-        print 'Could not find PID -- Exiting'
-        sys.exit(-270)
-    
+
     
     pid = args.pid
+    process_dir = args.process_dir
+    
     counts_lookup = {}
     prefix = os.path.join(args.process_dir,'public','json',NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
@@ -232,8 +224,6 @@ def write_json_files(prefix, metadata_lookup, counts_lookup):
     for did in counts_lookup:
          file_path = os.path.join(prefix,str(did)+'.json')
          logging.info('file_path: '+file_path)
-         print 'file_path: '+file_path
-         print 'writing '+str(did)+'.json'
          f = open(file_path,'w') 
         
          my_counts_str = json.dumps(counts_lookup[did]) 
@@ -405,7 +395,7 @@ if __name__ == '__main__':
 
     """
     parser.add_argument("-pid","--pid",                   
-               required=False,  action="store",   dest = "pid", default='',
+               required=False,  action="store",   dest = "pid", default='0',
                help="""ProjectID""") 
    
     # parser.add_argument("-del","--del",                   
@@ -441,7 +431,7 @@ if __name__ == '__main__':
     except:
         fp.write('ERROR')
     fp.close()
-    # PID is from pid.txt in project_dir
+    #
     # THIS MUST BE THE LAST PRINT!!!!
     print "PID="+str(args.pid)
     ##

@@ -1989,17 +1989,16 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
         	pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         	header += pname+'--'+dname+"\t";
         }
-	        for (var k in AllMetadata[did]){
-	          nm = k;
-	          val = AllMetadata[did][k];
-	          if(nm in myrows){
-	            myrows[nm].push(val);
-	          }else{
-	            myrows[nm] = [];
-	            myrows[nm].push(val);
-	          }
-	        }
-      	
+        for (var k in AllMetadata[did]){
+          nm = k;
+          val = AllMetadata[did][k];
+          if(nm in myrows){
+            myrows[nm].push(val);
+          }else{
+            myrows[nm] = [];
+            myrows[nm].push(val);
+          }
+        }
       }
 
     // print
@@ -2097,10 +2096,25 @@ router.post('/download_selected_matrix', helpers.isLoggedIn, function(req, res) 
 
 });
 //
+//
+//
+router.post('/download_file', helpers.isLoggedIn, function(req, res) {
+    console.log('in download_file');
+    // file_type - fasta, metadata, or matrix
+    console.log(req.body);
+    var user_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
+    var timestamp = +new Date();  // millisecs since the epoch!
+    var file_tag = ['-'+req.body.file_type+'_file']  
+    
+    create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization)
+    res.send(req.body.file_type);
+});
+//
 // DOWNLOAD PHYLOSEQ FILES
 //
 router.post('/download_phyloseq_file', helpers.isLoggedIn, function(req, res) {
     console.log('phyloseq req.body-->>');
+    
   	console.log(req.body);
   	old_ts = req.body.ts
   	file_type = req.body.file_type
@@ -2226,7 +2240,14 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		//file_name = 'fasta-'+ts+'_custom.fa.gz';
 		var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'export_log.txt');
 		//var log = path.join(user_dir,'export_log.txt');
-		
+		if(normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum'){
+		    norm = 'normalized_to_maximum'
+		}else if(normalization == 'percent'){
+		    norm = 'normailzed_by_percent'
+		}else{
+		    norm = 'not_normalized'
+		}
+		var rank = visual_post_items.tax_depth || 'genus'
 		var site = req.CONFIG.site;
 		var code = 'NVexport'
 		var pid_lookup = {}
@@ -2243,7 +2264,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		var file_tags = file_tags.join(' ')
 		var export_cmd_options = {
                          scriptPath : path.join(req.CONFIG.SYSTEM_FILES_BASE,'scripts'),
-                         args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids', dids_str, '-pids',pids_str, file_tags, '-compress','-norm', normalization ] // '-compress'
+                         args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids', dids_str, '-pids',pids_str, file_tags, '-compress','-norm', norm,'-rank',rank ] // '-compress'
                      };
 		var cmd_list = []
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
@@ -2280,7 +2301,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
         }else{
             console.log('No Cluster Available')
         }
-		return 'file_name';
+		return
 		
 }
 // function create_metadata_file(req, user_dir, ts, dids){

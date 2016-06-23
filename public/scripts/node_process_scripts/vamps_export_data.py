@@ -65,7 +65,7 @@ def run_fasta(args):
 		
 		"""
     # args.datasets is a list of p--d pairs
-    out_file = os.path.join(args.base,'fasta-'+args.runcode+'_custom.fa')
+    out_file = os.path.join(args.base,'fasta-'+args.runcode+'.fasta')
     cursor = args.obj.get_cursor()  
     pids = "','".join(args.dids)
     
@@ -88,6 +88,7 @@ def run_fasta(args):
     cursor.execute(sql)
 
     rows = cursor.fetchall()
+        
     if args.compress:
         with GZipWriter(out_file+'.gz') as gz:
             for row in rows:
@@ -100,9 +101,211 @@ def run_fasta(args):
                 seq = row['seq']
                 id = str(row['sequence_id'])+'|'+row['project']+'--'+row['dataset']+'|'+str(row['seq_count'])                
                 f.write('>'+str(id)+'\n'+str(seq)+'\n')
+
+def run_matrix(args):
+    print '''running matrix'''
+    out_file = os.path.join(args.base,'matrix-'+args.runcode+'.csv')
+    cursor = args.obj.get_cursor()  
+    dids = "','".join(args.dids)
+    allowed_ranks = ('domain','phylum','klass','order','family','genus','species','strain')
+    if args.rank not in allowed_ranks:
+        args.rank = 'species'
+    
+    sql = "SELECT project,dataset, SUM(seq_count) as knt, concat_ws(';',\n"
+    tmp = ''
+    for rank  in allowed_ranks:
+        tmp += " IF(LENGTH(`"+rank+"`),`"+rank+"`,NULL),\n"
+        if rank == args.rank:
+            break
+    sql += tmp[:-2]+"\n"
+    sql += " ) as taxonomy\n"
+    
+    sql += " from sequence_pdr_info as A\n"
+    sql += " JOIN dataset as D on (A.dataset_id=D.dataset_id)\n"
+    sql += " JOIN project as P on (D.project_id=P.project_id)\n"
+    sql += " JOIN sequence_uniq_info as B on(A.sequence_id=B.sequence_id)\n"
+    sql += " JOIN sequence as S on(S.sequence_id=B.sequence_id)\n"
+    sql += " JOIN silva_taxonomy_info_per_seq as C on(B.silva_taxonomy_info_per_seq_id=C.silva_taxonomy_info_per_seq_id)\n"
+    sql += " JOIN silva_taxonomy as T on (C.silva_taxonomy_id=T.silva_taxonomy_id)\n"
+    for rank  in allowed_ranks:
+        sql += " JOIN `"+rank+"` using ("+rank+"_id)\n"
+        if rank == args.rank:
+            break
+    
+    sql += " WHERE D.dataset_id in ('"+dids+"') \n"
+    sql += " GROUP BY taxonomy, dataset\n"
+    sql += " ORDER BY taxonomy\n"
+    print sql
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    
+    collector = {}
+    sample_order_dict = {}
+    for row in rows:
+        samp = row['project']+'--'+row['dataset']
+        sample_order_dict[samp]=1
+        knt = row['knt']
+        tax   = row['taxonomy']
+        
+        if args.normalization == 'not_normalized':
+            count = knt
+        else:
+            if args.dataset_counts[pjds] <= 0:
+                dataset_count = 1;
+            else:
+                dataset_count = args.dataset_counts[pjds]
+            if args.normalization == 'normailzed_by_percent':
+                count = round((knt /  dataset_count ),8)
+            elif args.normalization == 'normalized_to_maximum':
+                count = int(( knt /  dataset_count ) * args.max)
+            else:
+                count = knt  # should never get here
+        
+        
+        if tax not in collector:
+            collector[tax] = {}
+        collector[tax][samp] = count
+        
+    #print collector
+    sample_order = sorted(sample_order_dict.keys())  
+    tax_order    = sorted(collector.keys())
+    file_txt = 'VAMPS Taxonomy Matrix\tRank:'+rank+'\tNormalization:'+args.normalization+'\n'
+    for pjds in sample_order:
+        file_txt += "\t"+pjds
+    file_txt += "\n"
+    for tax in tax_order:
+        tmp = tax+"\t"
+        for pjds in sample_order:
+            if pjds in collector[tax]:
+                tmp += str(collector[tax][pjds])+"\t"
+            else:
+                tmp += "0\t"
+        file_txt += tmp[:-1]+"\n"
+    file_txt += "\n"
+    
+    if args.compress:
+        with GZipWriter(out_file+'.gz') as gz:
+            gz.write(file_txt)                
+    else:
+        with open(out_file, 'w') as f:
+            f.write(file_txt)
+        
+        
+    
 def run_biom(args):
     print '''running biom'''
-       
+    cursor = args.obj.get_cursor() 
+    out_file = os.path.join(args.base,'biom-'+args.runcode+'.biom') 
+    dids = "','".join(args.dids)
+    
+    sql = "SELECT project, dataset, sum(seq_count) as knt, concat_ws(';',\n"
+    sql += " IF(LENGTH(`domain`),`domain`,NULL),\n"
+    sql += " IF(LENGTH(`phylum`),`phylum`,NULL),\n"
+    sql += " IF(LENGTH(`klass`),`klass`,NULL),\n"
+    sql += " IF(LENGTH(`order`),`order`,NULL),\n"
+    sql += " IF(LENGTH(`family`),`family`,NULL),\n"
+    sql += " IF(LENGTH(`genus`),`genus`,NULL),\n"
+    sql += " IF(LENGTH(`species`),`species`,NULL),\n"
+    sql += " IF(LENGTH(`strain`),`strain`,NULL)\n"
+    sql += " ) as taxonomy\n"
+    sql += " FROM sequence_pdr_info as A\n"
+    sql += " JOIN dataset as D on (A.dataset_id=D.dataset_id)\n"
+    sql += " JOIN project as P on (D.project_id=P.project_id)\n"
+    sql += " JOIN sequence_uniq_info as B on(A.sequence_id=B.sequence_id)\n"
+    sql += " JOIN silva_taxonomy_info_per_seq as C on(B.silva_taxonomy_info_per_seq_id=C.silva_taxonomy_info_per_seq_id)\n"
+    sql += " JOIN silva_taxonomy as T on (C.silva_taxonomy_id=T.silva_taxonomy_id)\n"
+    sql += " JOIN `domain` using (domain_id)\n"
+    sql += " JOIN `phylum` using (phylum_id)\n"
+    sql += " JOIN `klass` using (klass_id)\n"
+    sql += " JOIN `order` using (order_id)\n"
+    sql += " JOIN `family` using (family_id)\n"
+    sql += " JOIN `genus` using (genus_id)\n"
+    sql += " JOIN `species` using (species_id)\n"
+    sql += " JOIN `strain`  using (strain_id)\n"
+    sql += " WHERE D.dataset_id in('"+dids+"')\n"
+    sql += " GROUP BY taxonomy, dataset\n"
+    sql += " ORDER BY taxonomy\n"
+    print sql
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    
+    tax_array = {}
+    boilerplate_text = "{\n"
+    boilerplate_text += '"id":null,'+"\n"
+    boilerplate_text += '"format": "Biological Observation Matrix 1.0.0",'+"\n"
+    boilerplate_text += '"format_url": "http://biom-format.org/documentation/format_versions/biom-1.0.html",'+"\n"
+    boilerplate_text += '"type": "OTU table",'+"\n"
+    boilerplate_text += '"generated_by": "VAMPS-Node.js",'+"\n"
+    boilerplate_text += '"date": "'+args.today+'",'+"\n"
+    
+    collector = {}
+    sample_order_dict = {}
+    for row in rows:
+        samp = row['project']+'--'+row['dataset']
+        sample_order_dict[samp]=1
+        knt = row['knt']
+        tax = row['taxonomy']
+        if args.normalization == 'not_normalized':
+            count = knt
+        else:
+            if args.dataset_counts[pjds] <= 0:
+                dataset_count = 1;
+            else:
+                dataset_count = args.dataset_counts[pjds]
+            if args.normalization == 'normailzed_by_percent':
+                count = round((knt /  dataset_count ),8)
+            elif args.normalization == 'normalized_to_maximum':
+                count = int(( knt /  dataset_count ) * args.max)
+            else:
+                count = knt  # should never get here
+        if tax not in collector:
+            collector[tax] = {}
+        collector[tax][samp] = count
+        
+    print collector
+    sample_order = sorted(sample_order_dict.keys())  
+    tax_order = sorted(collector.keys())
+    file_txt = boilerplate_text
+    file_txt += '"rows":['+"\n"
+    txt = ''
+    for tax in tax_order:
+        #f.write("\t"+'{"id":"'+tax+'","metadata":null},'+"\n")
+        txt += "\t"+'{"id":"'+tax+'","metadata":null},'+"\n"
+    file_txt += txt[:-2]+"\n],\n"
+    file_txt += '"columns":['+"\n"
+    txt = ''
+    for pjds in sample_order:                
+        #f.write("\t"+'{"id":"'+pjds+'","metadata":null},'+"\n")
+        txt += "\t"+'{"id":"'+pjds+'","metadata":null},'+"\n"
+    
+    file_txt += txt[:-2]+"\n],\n"
+    file_txt += '"matrix_type":"dense",'+"\n"
+    file_txt += '"matrix_element_type":"int",'+"\n"
+    file_txt += '"shape":['+str(len(tax_order))+','+str(len(sample_order))+'],'+"\n"
+    file_txt += '"normalization":"'+args.normalization+'",'+"\n"
+    file_txt += '"data":['+"\n"
+    txt = ''
+    for tax in tax_order:
+        line_txt = "\t["
+        for pjds in sample_order:
+            if pjds in collector[tax]:
+                line_txt += str(collector[tax][pjds])+','
+            else:
+                line_txt += '0,'
+        line_txt = line_txt[:-1]+"],\n"
+        txt += line_txt
+    file_txt += txt[:-2]+"\n"
+    
+    file_txt += "]\n"
+    file_txt += "}\n"
+      
+    if args.compress:
+        with GZipWriter(out_file+'.gz') as gz:
+            gz.write(file_txt)                
+    else:
+        with open(out_file, 'w') as f:
+            f.write(file_txt)
+        
 def run_metadata(args):
     print 'running metadata'
     # args.datasets is a list of p--d pairs
@@ -160,41 +363,58 @@ def run_metadata(args):
             if str(did) in args.dids:
                 for key in row:
                     if key != custom_table+'_id':
-                        data[pjds][key]= row[key]
+                        #print 'pjds',pjds
+                        #print 'key',key
+                        if pjds in data:
+                            data[pjds][key]= row[key]
                         headers_collector[key] = 1
-    print headers_collector
+    #print headers_collector
     # convert to a list and sort
     headers_collector_keys = sorted(headers_collector.keys())
-              
+    file_txt = ''
+    file_txt += "VAMPS Metadata\n"
+    file_txt += 'dataset'
+    for header in headers_collector_keys:
+        file_txt += ','+header
+    file_txt += '\n'
+    for pjds in data:
+        file_txt += pjds
+        for header in headers_collector_keys:
+            #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
+                file_txt += ','+str(data[pjds][header])
+        file_txt += '\n'
+    file_txt += '\n'       
     if args.compress:
         with GZipWriter(out_file+'.gz') as gz:
-            gz.write("VAMPS Metadata\n")
-            f.write('dataset')
-            for header in headers_collector_keys:
-                gz.write(','+header)
-            gz.write('\n')
-            for pjds in data:
-                gz.write(pjds)
-                for header in headers_collector_keys:
-                    #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
-                        gz.write(','+str(data[pjds][header]))
-                gz.write('\n')
-            gz.write('\n')
+            gz.write(file_txt)
+#             gz.write("VAMPS Metadata\n")
+#             f.write('dataset')
+#             for header in headers_collector_keys:
+#                 gz.write(','+header)
+#             gz.write('\n')
+#             for pjds in data:
+#                 gz.write(pjds)
+#                 for header in headers_collector_keys:
+#                     #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
+#                         gz.write(','+str(data[pjds][header]))
+#                 gz.write('\n')
+#             gz.write('\n')
                 
     else:
         with open(out_file, 'w') as f:
-            f.write("VAMPS Metadata\n")
-            f.write('dataset')
-            for header in headers_collector_keys:
-                f.write(','+header)
-            f.write('\n')
-            for pjds in data:
-                f.write(pjds)
-                for header in headers_collector_keys:
-                    #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
-                        f.write(','+str(data[pjds][header]))
-                f.write('\n')
-            f.write('\n')
+            f.write(file_txt)
+#             f.write("VAMPS Metadata\n")
+#             f.write('dataset')
+#             for header in headers_collector_keys:
+#                 f.write(','+header)
+#             f.write('\n')
+#             for pjds in data:
+#                 f.write(pjds)
+#                 for header in headers_collector_keys:
+#                     #if header not in ['custom_metadata_273_id','custom_metadata_517_id']:
+#                         f.write(','+str(data[pjds][header]))
+#                 f.write('\n')
+#             f.write('\n')
     
     #with GZipWriter(out_file+'.gz') as gz:
 #     if args.compress:
@@ -274,14 +494,14 @@ def run_taxbytax(args):
     sql += " JOIN sequence_uniq_info as B on(A.sequence_id=B.sequence_id)\n"
     sql += " JOIN silva_taxonomy_info_per_seq as C on(B.silva_taxonomy_info_per_seq_id=C.silva_taxonomy_info_per_seq_id)\n"
     sql += " JOIN silva_taxonomy as T on (C.silva_taxonomy_id=T.silva_taxonomy_id)\n"
-    sql += " JOIN domain using (domain_id)\n"
-    sql += " JOIN phylum using (phylum_id)\n"
-    sql += " JOIN klass using (klass_id)\n"
+    sql += " JOIN `domain` using (domain_id)\n"
+    sql += " JOIN `phylum` using (phylum_id)\n"
+    sql += " JOIN `klass` using (klass_id)\n"
     sql += " JOIN `order` using (order_id)\n"
-    sql += " JOIN family using (family_id)\n"
-    sql += " JOIN genus using (genus_id)\n"
-    sql += " JOIN species using (species_id)\n"
-    sql += " JOIN strain  using (strain_id)\n"
+    sql += " JOIN `family` using (family_id)\n"
+    sql += " JOIN `genus` using (genus_id)\n"
+    sql += " JOIN `species` using (species_id)\n"
+    sql += " JOIN `strain`  using (strain_id)\n"
     sql += " WHERE D.dataset_id in('"+dids+"')\n"
     sql += " GROUP BY taxonomy, dataset\n"
     sql += " ORDER BY taxonomy\n"
@@ -295,18 +515,20 @@ def run_taxbytax(args):
         knt = row['knt']
         taxonomy = row['taxonomy']
         
-        
-        if args.normalization == 'Not_Normalized':
+        if args.normalization == 'not_normalized':
             count = knt
         else:
-            dataset_count = args.dataset_counts[pjds]
+            if args.dataset_counts[pjds] <= 0:
+                dataset_count = 1;
+            else:
+                dataset_count = args.dataset_counts[pjds]
             if args.normalization == 'normailzed_by_percent':
                 count = round((knt /  dataset_count ),8)
             elif args.normalization == 'normalized_to_maximum':
                 count = int(( knt /  dataset_count ) * args.max)
             else:
                 count = knt  # should never get here
-        print 'count',count
+        #print 'count',count
         #print knt,args.dataset_counts[pjds],args.max,count
         if taxonomy in tax_array:
             if pjds in tax_array[taxonomy]:
@@ -405,14 +627,14 @@ def run_taxbyseq(args):
     sql += " JOIN sequence as S on(S.sequence_id=B.sequence_id)\n"
     sql += " JOIN silva_taxonomy_info_per_seq as C on(B.silva_taxonomy_info_per_seq_id=C.silva_taxonomy_info_per_seq_id)\n"
     sql += " JOIN silva_taxonomy as T on (C.silva_taxonomy_id=T.silva_taxonomy_id)\n"
-    sql += " JOIN domain using (domain_id)\n"
-    sql += " JOIN phylum using (phylum_id)\n"
-    sql += " JOIN klass using (klass_id)\n"
+    sql += " JOIN `domain` using (domain_id)\n"
+    sql += " JOIN `phylum` using (phylum_id)\n"
+    sql += " JOIN `klass` using (klass_id)\n"
     sql += " JOIN `order` using (order_id)\n"
-    sql += " JOIN family using (family_id)\n"
-    sql += " JOIN genus using (genus_id)\n"
-    sql += " JOIN species using (species_id)\n"
-    sql += " JOIN strain  using (strain_id)\n"
+    sql += " JOIN `family` using (family_id)\n"
+    sql += " JOIN `genus` using (genus_id)\n"
+    sql += " JOIN `species` using (species_id)\n"
+    sql += " JOIN `strain`  using (strain_id)\n"
     sql += " WHERE D.dataset_id in ('"+dids+"') \n"
     sql += " ORDER BY taxonomy\n"
     print sql
@@ -431,7 +653,7 @@ def run_taxbyseq(args):
         seq        = row['sequence'].encode('zlib')
         taxonomy   = row['taxonomy']
         
-        if args.normalization == 'Not_Normalized':
+        if args.normalization == 'not_normalized':
             count = seq_count
         else:
             if args.dataset_counts[pjds] <= 0:
@@ -445,7 +667,7 @@ def run_taxbyseq(args):
                 count = int(( seq_count /  dataset_count ) * args.max)
             else:
                 count = seq_count  # should never get here
-        print 'count',count
+        #print 'count',count
 #         if args.tax_string:            
 #             if taxonomy.find(args.tax_string) == 0:  # must be found at start of string
 #                 
@@ -480,45 +702,65 @@ def write_taxbytax_file(args, tax_array):
 
     out_file = os.path.join(args.base,'taxbytax-'+args.runcode+'.csv')
     ranks = ('domain','phylum','class','order','family','genus','species','strain')
+    file_txt = 'VAMPS TaxByTax\tNormalization: '+args.normalization+'\n'
+    for d in args.datasets:
+        file_txt += d+'\t'
+    file_txt += "Rank\tTaxonomy\n";
+    
+
+    for tax in tax_array:
+        line = ''
+        for d in args.datasets:
+            if d in tax_array[tax]:
+                line += str(tax_array[tax][d])+"\t"
+            else:
+                line += "0\t"
+        
+        rank = ranks[len(tax.split(';'))-1]
+        line += rank+"\t"+tax+"\n"
+        file_txt += line
+                
     if args.compress:
         with GZipWriter(out_file+'.gz') as gz:
+            gz.write(file_txt)
     
-            txt = 'VAMPS TaxByTax\n'
-            for d in args.datasets:
-                txt += d+'\t'
-            txt += "Rank\tTaxonomy\n";
-            gz.write(txt)
-        
-            for tax in tax_array:
-                line = ''
-                for d in args.datasets:
-                    if d in tax_array[tax]:
-                        line += str(tax_array[tax][d])+"\t"
-                    else:
-                        line += "0\t"
-                
-                rank = ranks[len(tax.split(';'))-1]
-                line += rank+"\t"+tax+"\n"
-                gz.write(line)
+#             txt = 'VAMPS TaxByTax\n'
+#             for d in args.datasets:
+#                 txt += d+'\t'
+#             txt += "Rank\tTaxonomy\n";
+#             gz.write(txt)
+#         
+#             for tax in tax_array:
+#                 line = ''
+#                 for d in args.datasets:
+#                     if d in tax_array[tax]:
+#                         line += str(tax_array[tax][d])+"\t"
+#                     else:
+#                         line += "0\t"
+#                 
+#                 rank = ranks[len(tax.split(';'))-1]
+#                 line += rank+"\t"+tax+"\n"
+#                 gz.write(line)
     else:
         with open(out_file, 'w') as f:
-            txt = 'VAMPS TaxByTax\n'
-            for d in args.datasets:
-                txt += d+'\t'
-            txt += "Rank\tTaxonomy\n";
-            f.write(txt)
-        
-            for tax in tax_array:
-                line = ''
-                for d in args.datasets:
-                    if d in tax_array[tax]:
-                        line += str(tax_array[tax][d])+"\t"
-                    else:
-                        line += "0\t"
-                
-                rank = ranks[len(tax.split(';'))-1]
-                line += rank+"\t"+tax+"\n"
-                f.write(line)
+            f.write(file_txt)
+#             txt = 'VAMPS TaxByTax\n'
+#             for d in args.datasets:
+#                 txt += d+'\t'
+#             txt += "Rank\tTaxonomy\n";
+#             f.write(txt)
+#         
+#             for tax in tax_array:
+#                 line = ''
+#                 for d in args.datasets:
+#                     if d in tax_array[tax]:
+#                         line += str(tax_array[tax][d])+"\t"
+#                     else:
+#                         line += "0\t"
+#                 
+#                 rank = ranks[len(tax.split(';'))-1]
+#                 line += rank+"\t"+tax+"\n"
+#                 f.write(line)
     
 # def write_taxbyref_file(args, ref_array, ref_tax_array):
 # 
@@ -549,61 +791,89 @@ def write_taxbytax_file(args, tax_array):
 def write_taxbyseq_file(args, seqs_array, seqs_tax_array,  seqs_dist_array):
     out_file = os.path.join(args.base,'taxbyseq-'+args.runcode+'.csv')
     ranks = ('domain','phylum','class','order','family','genus','species','strain')
-   
+    file_txt = 'VAMPS TaxBySeq\tNormalization: '+args.normalization+'\n\t'
+    
+    for d in args.datasets:
+        file_txt += d+'\t'
+    file_txt += "Distance\tSequence\tRank\tTaxonomy\n"
+    
+
+    for seq in seqs_array:
+        line = ''
+        tax = seqs_tax_array[seq]
+        rank = ranks[len(tax.split(';'))-1]
+        #refhvr_ids = seqs_refhvrs_array[seq]
+        dist = seqs_dist_array[seq]
+        show_seq = seq.decode("zlib")
+    
+        #txt += refhvr_ids+'\t'
+        #line += refhvr_ids+'\t'
+        for d in args.datasets:
+            if d in seqs_array[seq]:
+                #txt += str(seqs_array[seq][d])+"\t"
+                line += str(seqs_array[seq][d])+"\t"
+            else:
+                #txt += "0\t"
+                line += "0\t"
+        line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
+        file_txt += line
+    
     if args.compress: 
         with GZipWriter(out_file+'.gz') as gz:
-            txt = 'TaxBySeq\nrefhvr_ids\t'
-            for d in args.datasets:
-                txt += d+'\t'
-            txt += "Distance\tSequence\tRank\tTaxonomy\n"
-            gz.write(txt)
-        
-            for seq in seqs_array:
-                line = ''
-                tax = seqs_tax_array[seq]
-                rank = ranks[len(tax.split(';'))-1]
-                #refhvr_ids = seqs_refhvrs_array[seq]
-                dist = seqs_dist_array[seq]
-                show_seq = seq.decode("zlib")
-            
-                #txt += refhvr_ids+'\t'
-                #line += refhvr_ids+'\t'
-                for d in args.datasets:
-                    if d in seqs_array[seq]:
-                        txt += str(seqs_array[seq][d])+"\t"
-                        line += str(seqs_array[seq][d])+"\t"
-                    else:
-                        txt += "0\t"
-                        line += "0\t"
-                line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
-                gz.write(line)
+            gz.write(file_txt)
+#             txt = 'TaxBySeq\nrefhvr_ids\t'
+#             for d in args.datasets:
+#                 txt += d+'\t'
+#             txt += "Distance\tSequence\tRank\tTaxonomy\n"
+#             gz.write(txt)
+#         
+#             for seq in seqs_array:
+#                 line = ''
+#                 tax = seqs_tax_array[seq]
+#                 rank = ranks[len(tax.split(';'))-1]
+#                 #refhvr_ids = seqs_refhvrs_array[seq]
+#                 dist = seqs_dist_array[seq]
+#                 show_seq = seq.decode("zlib")
+#             
+#                 #txt += refhvr_ids+'\t'
+#                 #line += refhvr_ids+'\t'
+#                 for d in args.datasets:
+#                     if d in seqs_array[seq]:
+#                         txt += str(seqs_array[seq][d])+"\t"
+#                         line += str(seqs_array[seq][d])+"\t"
+#                     else:
+#                         txt += "0\t"
+#                         line += "0\t"
+#                 line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
+#                 gz.write(line)
     else:
         with open(out_file, 'w') as f:
-            txt = 'TaxBySeq\nrefhvr_ids\t'
-            for d in args.datasets:
-                txt += d+'\t'
-            txt += "Distance\tSequence\tRank\tTaxonomy\n"
-            f.write(txt)
-        
-            for seq in seqs_array:
-                line = ''
-                tax = seqs_tax_array[seq]
-                rank = ranks[len(tax.split(';'))-1]
-                #refhvr_ids = seqs_refhvrs_array[seq]
-                dist = seqs_dist_array[seq]
-                show_seq = seq.decode("zlib")
-            
-                #txt += refhvr_ids+'\t'
-                #line += refhvr_ids+'\t'
-                for d in args.datasets:
-                    if d in seqs_array[seq]:
-                        txt += str(seqs_array[seq][d])+"\t"
-                        line += str(seqs_array[seq][d])+"\t"
-                    else:
-                        txt += "0\t"
-                        line += "0\t"
-                line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
-                f.write(line)
+            f.write(file_txt)
+#             txt = 'TaxBySeq\nrefhvr_ids\t'
+#             for d in args.datasets:
+#                 txt += d+'\t'
+#             txt += "Distance\tSequence\tRank\tTaxonomy\n"
+#             f.write(txt)
+#         
+#             for seq in seqs_array:
+#                 line = ''
+#                 tax = seqs_tax_array[seq]
+#                 rank = ranks[len(tax.split(';'))-1]
+#                 #refhvr_ids = seqs_refhvrs_array[seq]
+#                 dist = seqs_dist_array[seq]
+#                 show_seq = seq.decode("zlib")
+#             
+#                 #txt += refhvr_ids+'\t'
+#                 #line += refhvr_ids+'\t'
+#                 for d in args.datasets:
+#                     if d in seqs_array[seq]:
+#                         txt += str(seqs_array[seq][d])+"\t"
+#                         line += str(seqs_array[seq][d])+"\t"
+#                     else:
+#                         txt += "0\t"
+#                         line += "0\t"
+#                 line += str(dist)+"\t"+show_seq+"\t"+rank+"\t"+tax+"\n"
+#                 f.write(line)
     
 def clean_samples(samples):
     pjds = samples.strip().split(';')
@@ -682,8 +952,7 @@ if __name__ == '__main__':
                                                     help="dataset_ids")
     parser.add_argument("-pids", "--pids",         required=True,  action="store",   dest = "pids", 
                                                     help="project_ids")
-    #parser.add_argument("-tax", "--tax_string",      required=False,  action="store",   dest = "tax_string", default='unknown',
-    #                                                help="") 
+     
     parser.add_argument("-base", "--file_base",      required=True,  action="store",   dest = "base", help="Path without user or file")   
     
     parser.add_argument("-taxbytax_file", "--taxbytax_file",  required=False,  action="store_true",   dest = "taxbytax", default=False,
@@ -698,8 +967,11 @@ if __name__ == '__main__':
                                                     help="") 
     parser.add_argument("-biom_file", "--biom_file",           required=False,  action="store_true",   dest = "biom", default=False,
                                                     help="") 
-                                                    
-    parser.add_argument("-norm", "--normalization",  required=False,  action="store",   dest = "normalization", default='Not_Normalized',
+    parser.add_argument("-matrix_file", "--matrix_file",           required=False,  action="store_true",   dest = "matrix", default=False,
+                                                    help="")
+    parser.add_argument("-rank", "--rank",      required=False,  action="store",   dest = "rank", default='',
+                                                    help="This is for matrix file only")                                               
+    parser.add_argument("-norm", "--normalization",  required=False,  action="store",   dest = "normalization", default='not_normalized',
                                                     help="not_normalized, normalized_to_maximum or normailzed_by_percent")                                                 
     parser.add_argument("-compress", "--compress",        required=False,  action="store_true",   dest = "compress", default=False,
                                                     help="")
@@ -744,8 +1016,8 @@ if __name__ == '__main__':
     args.pids = args.pids.split(',')
     (args.max, args.dataset_counts) = get_dataset_counts(args)
     args.datasets = args.dataset_counts.keys()
-    print 'max',args.max
-    print 'max2',args.dataset_counts
+    #print 'max',args.max
+    #print 'max2',args.dataset_counts
     #sys.exit()
     print args.datasets
     #args.compress = True
@@ -771,7 +1043,9 @@ if __name__ == '__main__':
     if args.taxbyseq:
         run_taxbyseq(args) 
     if args.biom:
-        run_biom(args) 
+        run_biom(args)
+    if args.matrix:
+        run_matrix(args) 
         
     print 'Finished'
    
