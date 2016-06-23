@@ -140,14 +140,16 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		}
 		if(requested_files.length >0){
 			create_export_files(req, user_dir, timestamp, dids, requested_files, req.body.normalization )
+			var msg = "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>"
+		}else{
+			var msg = "No Files Selected"
 		}
-		//console.log(requested_files);
 
 		res.render('user_data/export_selection', {
 		      title: 'VAMPS: Export Choices',
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-		      message: "Your file(s) are being created -- when ready they will be accessible <a href='/user_data/file_retrieval' >here</a>",
+		      message: msg,
 		      user: req.user, hostname: req.CONFIG.hostname
 		});
 
@@ -2238,7 +2240,7 @@ function update_dataset_names(config_info){
 function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
     	var db = req.db;
 		//file_name = 'fasta-'+ts+'_custom.fa.gz';
-		var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'export_log.txt');
+		var log = path.join(req.CONFIG.USER_FILES_BASE,'export_log.txt');
 		//var log = path.join(user_dir,'export_log.txt');
 		if(normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum'){
 		    norm = 'normalized_to_maximum'
@@ -2247,7 +2249,12 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		}else{
 		    norm = 'not_normalized'
 		}
-		var rank = visual_post_items.tax_depth || 'genus'
+		if(typeof visual_post_items != 'undefined'){
+			var rank = visual_post_items.tax_depth || 'genus'
+		}else{
+			var rank = 'genus'
+		}
+		
 		var site = req.CONFIG.site;
 		var code = 'NVexport'
 		var pid_lookup = {}
@@ -2263,10 +2270,11 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		console.log('pids',pids_str)
 		var file_tags = file_tags.join(' ')
 		var export_cmd_options = {
-                         scriptPath : path.join(req.CONFIG.SYSTEM_FILES_BASE,'scripts'),
+                         scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
                          args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids', dids_str, '-pids',pids_str, file_tags, '-compress','-norm', norm,'-rank',rank ] // '-compress'
                      };
 		var cmd_list = []
+		
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
 		
 		if(req.CONFIG.cluster_available == true){
@@ -2285,7 +2293,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
                         if(err) {
                             return console.log(err);
                         }else{
-                            var pcoa_process = spawn( qsub_file_path, {}, {
+                            var export_process = spawn( qsub_file_path, {}, {
                               env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
                               detached: true, 
                               stdio:['pipe', 'pipe', 'pipe']
@@ -2298,9 +2306,15 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
                  }
             }); 
         
-        }else{
-            console.log('No Cluster Available')
-        }
+    }else{
+        console.log('No Cluster Available');
+        var cmd = path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' ')
+        console.log('RUNNING:',cmd)
+        var export_process = spawn( path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
+															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
+						    							detached: true, stdio: [ 'ignore', null, log ]
+														});  // stdin, stdout, stderr
+    }
 		return
 		
 }
