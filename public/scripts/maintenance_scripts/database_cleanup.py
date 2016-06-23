@@ -175,7 +175,42 @@ def clean_all(args):
     
     db.commit()
     
+def delete_metadata(args):
+    # metadata
+    if args.pid:
+        q = "select dataset_id,project_id from dataset where project_id='"+args.pid+"'"
+    else:
+        sys.exit('No PID found')
+    
+    print q
+    cur.execute(q)
+    db.commit()
+    dids = []
+    if not cur.rowcount:
 
+        print "No datasets found -- This might not work"
+        pid = args.pid
+
+    for row in cur.fetchall():
+        did = str(row[0])
+        dids.append(did)
+        
+        
+    
+    q = "DELETE from required_metadata_info"
+    q += " WHERE dataset_id in ('"+ "','".join(dids) + "')"
+    print q
+    cur.execute(q)
+
+    q_drop = "DROP TABLE if exists %s"
+    q = q_drop % ('custom_metadata_'+str(args.pid))
+    print q
+    cur.execute(q)
+
+    q = "DELETE from custom_metadata_fields"
+    q += " WHERE project_id = '"+str(args.pid)+"'"
+    print q
+    cur.execute(q)
 if __name__ == '__main__':
     import argparse
     
@@ -203,14 +238,16 @@ if __name__ == '__main__':
                 help="""ProjectID""")  
     
          
-    parser.add_argument("-p", "--project_name",          
-                required=False,  action='store', dest = "project",  default='',
-                help="Project name") 
+    # parser.add_argument("-p", "--project_name",          
+#                 required=False,  action='store', dest = "project",  default='',
+#                 help="Project name") 
     
     parser.add_argument("-all", "--all",          
                 required=False,  action='store_true', dest = "all",  default=False,
                 help=" ") 
-    
+    parser.add_argument("-mo", "--metadata_only",          
+                required=False,  action='store_true', dest = "metadata_only",  default=False,
+                help=" ") 
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
@@ -278,7 +315,9 @@ if __name__ == '__main__':
         else:
             print 'No Delete --Exiting' 
             sys.exit(-1) 
-            
+    elif args.metadata_only:
+        print 'Deleting Metadata only'
+        delete_metadata(args)        
     else:
         print 'Database:',NODE_DATABASE
         if not args.pid and not args.project:

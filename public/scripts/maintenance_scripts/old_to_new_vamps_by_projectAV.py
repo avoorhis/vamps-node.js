@@ -150,7 +150,9 @@ class Mysql_util:
     def execute_insert(self, table_name, field_name, val_list, ignore = "IGNORE"):
       try:
         sql = "INSERT %s INTO %s (%s) VALUES (%s)" % (ignore, table_name, field_name, val_list)
-
+        #print 'sql',sql
+        #if table_name == 'dataset':
+        #    print 'sql',sql
         if self.cursor:
           self.cursor.execute(sql)
           self.conn.commit()
@@ -197,7 +199,7 @@ class Mysql_util:
 class Utils:
     def __init__(self):
         self.chunk_split = 100
-        self.min_seqs = 100000
+        self.min_seqs = 300000
         pass
 
     def is_local(self):
@@ -309,12 +311,17 @@ class CSV_files:
   def __init__(self):
     pass
   
-  def run_csv_dump(self, prod_mysql_util):
-    # TODO: add directory from args
+  def run_md_dump(self, prod_mysql_util):
     project = args.project
     query = "SELECT * FROM vamps_metadata where project = '%s'" % (project)  
     metadata_csv_file_name = "metadata_%s.csv" % project
     utils.write_to_csv_file(metadata_csv_file_name, utils.get_csv_file_calls(query))
+    return metadata_csv_file_name
+    
+  def run_csv_dump(self, prod_mysql_util):
+    # TODO: add directory from args
+    project = args.project
+    metadata_csv_file_name = self.run_md_dump(prod_mysql_util)
 
     query = "SELECT * FROM vamps_sequences where project = '%s'" % (project)  
     seq_csv_file_name = "sequences_%s.csv" % project
@@ -672,7 +679,7 @@ class Dataset:
 #       self.dataset_id_by_name_dict[dataset] = dataset_id
 
   def insert_dataset(self, project_dict):
-    print "PPP project_dict"
+    #print "PPP project_dict"
     #print project_dict
     for project in set(self.dataset_project_dict.values()):
       project_id = project_dict[project]
@@ -976,8 +983,24 @@ class Metadata:
     self.metadata_file_fields            = []
     self.metadata_file_content           = []
     self.metadata_w_names                = []
-    self.required_metadata_info_fields   = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
-    self.substitute_field_names          = {"latitude" : ["lat"], "longitude": ["long", "lon"], "env_biome": ["envo_biome"]}
+    self.required_metadata_info_fields   = ["dataset_id", "taxon_id", "description", "common_name", "altitude", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public"]
+    self.substitute_field_names          = { \
+                                            "latitude" : ["lat","LATITUDE"], \
+                                            "longitude": ["long", "lon","LONGITUDE"], \
+                                            "env_biome": ["envo_biome","ENV_BIOME","ENVO_BIOME"], \
+                                            "env_matter":["envo_matter","envo_material","env_meterial","ENV_MATTER","ENVO_MATTER"], \
+                                            "env_feature":["envo_feature","ENV_FEATURE","ENVO_FEATURE"], \
+                                            "depth":["DEPTH"], \
+                                            "public":["PUBLIC"], \
+                                            "dataset_id":["DATASET_ID"], \
+                                            "taxon_id":["TAXON_ID"], \
+                                            "description":["DESCRIPTION"], \
+                                            "common_name":["COMMON_NAME"], \
+                                            "altitude":["ALTITUDE"], \
+                                            "collection_date":["COLLECTION_DATE"], \
+                                            "country":["COUNTRY"], \
+                                            "dataset_id":["DATASET_ID"], \
+                                            }
     self.existing_field_names            = set()
     self.required_metadata               = []
     self.required_metadata_insert_values = ""
@@ -1043,7 +1066,7 @@ class Metadata:
     print "DDD dataset.dataset_id_by_name_dict:"
     print dataset.dataset_id_by_name_dict
     for param_per_dataset in self.metadata_w_names:
-      print "PPP param_per_dataset:"
+      #print "PPP param_per_dataset:"
       #print param_per_dataset
       param_per_dataset['dataset_id'] = dataset.dataset_id_by_name_dict[param_per_dataset['dataset']]
       param_per_dataset['project_id'] = self.project_dict[param_per_dataset['project']]
@@ -1051,10 +1074,12 @@ class Metadata:
 
   # ==== Fields =====
   def get_existing_field_names(self):
-    self.existing_field_names = set([self.correct_field_name(param_per_dataset['structured_comment_name']) for param_per_dataset in self.metadata_w_names])
-
+    self.existing_field_names = set([(self.correct_field_name(param_per_dataset['structured_comment_name'])) for param_per_dataset in self.metadata_w_names])
+    #self.existing_field_names_for_required_match = set([(self.correct_field_name(param_per_dataset['structured_comment_name'])).lower() for param_per_dataset in self.metadata_w_names])
   def get_existing_required_metadata_fields(self):
+    
     intersect_field_names = self.existing_field_names.intersection(self.required_metadata_info_fields) 
+    
     for field_name in intersect_field_names:
       self.existing_required_metadata_fields[field_name] = field_name
 
@@ -1062,20 +1087,21 @@ class Metadata:
       bad_and_exist_intersection = self.existing_field_names.intersection(bad_name_list) 
       for existing_field_name in bad_and_exist_intersection:
         self.existing_required_metadata_fields[good_name] = existing_field_name
-        
+    
   def get_existing_custom_metadata_fields(self):
     self.custom_metadata_fields = self.existing_field_names ^ set(self.existing_required_metadata_fields.values())    
 
   # ==== Required metadata =====
-  ''' AAV:: in many MBE projects found envo_feature, envo_material, and envo_biome which should be changed (by script) to env_feature, env_matter and env_biome '''
-  ''' AAV:: found all capitals in MBE_1798_Bv4v5 causing mis-catagorizing'''
   def prepare_required_metadata(self):
+    
     structured_comment_names = set([param_per_dataset['structured_comment_name'] for param_per_dataset in self.metadata_w_names])
     existing_required_metadata_fields_values_per_dataset = defaultdict(dict)
+    
     for param_per_dataset in self.metadata_w_names:
       existing_required_metadata_fields_values_per_dataset[param_per_dataset['dataset']][param_per_dataset['structured_comment_name']] = param_per_dataset['parameterValue']
     
     intr = structured_comment_names.intersection(self.existing_required_metadata_fields.values())
+    #print 'existing_required_metadata_fields_values_per_dataset',existing_required_metadata_fields_values_per_dataset
     for dataset_name, metadata in existing_required_metadata_fields_values_per_dataset.items():    
       dataset_id = dataset.dataset_id_by_name_dict[dataset_name]
       temp_dict = {}
@@ -1084,7 +1110,7 @@ class Metadata:
         """
           AAV::  If field_name is absent this will add a blank rather than crashing
         """
-        print 'metadata',metadata
+        #print 'metadata',metadata
         #print 'field name',field_name
         if field_name in metadata:
             temp_dict[key[0]] = metadata[field_name]
@@ -1093,6 +1119,7 @@ class Metadata:
       temp_dict['dataset_id'] = str(dataset_id)
       
       self.required_metadata.append(temp_dict)
+    #print 'self.required_metadata',self.required_metadata 
       
   def required_metadata_for_insert(self):
     all_required_metadata = []
@@ -1100,13 +1127,20 @@ class Metadata:
     for required_metadata_dict in self.required_metadata:      
       field_list_temp.append(required_metadata_dict.keys())
       all_required_metadata.append(required_metadata_dict.values())
+    #print 'field_list_temp:',field_list_temp
+    #print
     if len(all_required_metadata) > 0:
         self.required_metadata_insert_values = self.utils.make_insert_values(all_required_metadata)      
-        self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
+        #self.required_metadata_field_list    = ", ".join(set(self.utils.flatten_2d_list(field_list_temp)))
+        self.required_metadata_field_list    = ", ".join(field_list_temp[0])
+        #print 'self.required_metadata_insert_values:',self.required_metadata_insert_values 
+        #print
+        #print 'self.required_metadata_field_list:',self.required_metadata_field_list
     else:
         self.required_metadata_insert_values = []      
         self.required_metadata_field_list =[]
-        
+    
+    
   def insert_required_metadata(self):
     if self.required_metadata_insert_values:
         rows_affected = mysql_util.execute_insert("required_metadata_info", self.required_metadata_field_list, self.required_metadata_insert_values)    
@@ -1184,7 +1218,7 @@ class Metadata:
     
         field_descriptions  = primary_key_field + "`dataset_id` int(11) unsigned NOT NULL,\n"
         """AAV:: For common long metadata entries the varchar(128) should get replaced with 'text'        """
-        wordy_fields = ['experiment_design_description','library_construction_protocol','study_abstract'] # mainly MBE
+        wordy_fields = ['experiment_design_description','library_construction_protocol','study_abstract','STUDY_DESCRIPTION','study_description'] # mainly MBE
         for entry in self.custom_metadata_fields_uniqued_for_tbl:
             if entry[1].lower() in wordy_fields:
                 field_descriptions += "`%s` text DEFAULT NULL,\n" % (entry[1])
@@ -1196,8 +1230,12 @@ class Metadata:
             CONSTRAINT %s_ibfk_1 FOREIGN KEY (dataset_id) REFERENCES dataset (dataset_id) ON UPDATE CASCADE
             """ % (table_name)
         
+        """AAV - Want to start with a clean table"""
+        q = "DROP TABLE IF EXISTS %s" % (table_name)
+        print mysql_util.execute_no_fetch(q)
+        
         table_description = "ENGINE=InnoDB"
-        q = "CREATE table IF NOT EXISTS %s (%s) %s" % (table_name, field_descriptions, table_description)
+        q = "CREATE table %s (%s) %s" % (table_name, field_descriptions, table_description)
         # print q    
         print mysql_util.execute_no_fetch(q)
 
@@ -1255,6 +1293,9 @@ if __name__ == '__main__':
   parser.add_argument("-ni","--do_not_insert",
       required = False, action = "store_true", dest = "do_not_insert", default = False,
       help = """Do not insert data into db, mostly for debugging purposes""")
+  parser.add_argument("-mo","--metadata_only",
+      required = False, action = "store_true", dest = "metadata_only", default = False,
+      help = """No seqs or taxonomy - just metadata""")    
   parser.add_argument("-s", "--site",
         required = False, action = "store", dest = "site", default = 'vampsdev',
         help = """Site where the script is running""")
@@ -1288,7 +1329,10 @@ if __name__ == '__main__':
     prod_mysql_util = Mysql_util(host = host_prod, db = "vamps", read_default_file = read_default_file_prod, port = port_prod)
     print "START run_csv_dump"
     t0 = time.time()
-    metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
+    if args.metadata_only:
+        metadata_csv_file_name = csv_files.run_md_dump(prod_mysql_util)
+    else:
+        metadata_csv_file_name, seq_csv_file_name, project_csv_file_name, dataset_csv_file_name, user_contact_csv_file_name = csv_files.run_csv_dump(prod_mysql_util)
     t1 = time.time()
     total = t1-t0
     print "time_res = %s s" % total
@@ -1348,6 +1392,7 @@ if __name__ == '__main__':
     utils.benchmarking(refhvr_id.insert_refhvr_id, "insert_refhvr_id")
   
   pr = Project(mysql_util)
+  
   utils.benchmarking(pr.parse_project_csv, "parse_project_csv", project_csv_file_name)
 
   user = User(pr.contact, user_contact_csv_file_name, mysql_util)
@@ -1399,6 +1444,9 @@ if __name__ == '__main__':
   if (args.do_not_insert == False):
     utils.benchmarking(seq_csv_parser.insert_sequence_uniq_info, "insert_sequence_uniq_info")
   
+  
+  
+  
   metadata = Metadata(mysql_util, dataset, pr.project_dict)
   utils.benchmarking(metadata.parse_metadata_csv, "parse_metadata_csv", metadata_csv_file_name)
   utils.benchmarking(metadata.add_names_to_params, "add_names_to_params")
@@ -1422,7 +1470,7 @@ if __name__ == '__main__':
   utils.benchmarking(metadata.create_custom_metadata_pr_id_table, "create_custom_metadata_pr_id_table")
   if (args.do_not_insert == False):
     utils.benchmarking(metadata.insert_custom_metadata, "insert_custom_metadata")
-
+  print "** Finished ** ",args.project,"--ProjectID:",pr.project_id
 
 # TODO: 
 # *) make "run all in class" methods in client

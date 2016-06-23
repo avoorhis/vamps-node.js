@@ -107,11 +107,13 @@ def convert_keys_to_string(dictionary):
         for k, v in dictionary.items())
 def go_list(args):
     counts_lookup = convert_keys_to_string(read_original_taxcounts())
+    metadata_lookup = convert_keys_to_string(read_original_metadata())
+    metadata_dids = metadata_lookup.keys()
     file_dids = counts_lookup.keys()
     #print file_dids
     #print len(file_dids)           
     q =  "SELECT dataset_id,dataset.project_id,project from project"
-    q += " JOIN dataset using(project_id)"
+    q += " JOIN dataset using(project_id) order by project"
     #q += " WHERE dataset_id in('%s')"
     
     #did_sql = "','".join(file_dids)
@@ -122,44 +124,40 @@ def go_list(args):
     #print 'List of projects in: '+in_file
     projects = {}
     missing = {}
+    missing_metadata = {}
     for row in cur.fetchall():
         did = str(row[0])
         pid = row[1]
         project = row[2]
         projects[project] = pid
+        if did not in metadata_dids:
+            missing_metadata[project] = pid
         if did not in file_dids:
             missing[project] = pid
+        file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets',did+'.json')
+        if not os.path.isfile(file_path):
+            missing[project] = pid
         #print 'project:',row[0],' --project_id:',row[1]
-    for project in projects:  
+    sort_p = sorted(projects.keys())
+    for project in sort_p:  
         if project not in missing:
             print 'ID:',projects[project],"-",project
         num += 1
     print
-    print 'MISSING from files:'
-    for project in missing:
+    print 'MISSING from metadata file:'
+    sort_md = sorted(missing_metadata.keys())
+    for project in sort_md:
+        print 'ID:',missing_metadata[project],"project:",project
+    print
+    print 'MISSING from taxcount or json files:'
+    sort_m = sorted(missing.keys())
+    for project in sort_m:
         print 'ID:',missing[project],"project:",project
+    print
+    
     print 'Number of Projects:',num
     
-def go_delete(args):
-    
-    counts_lookup = read_original_taxcounts()
 
-    dids = get_dataset_ids(args.pid)  
-    print dids  
-    # just delete files 
-    prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--taxcounts')
-    print prefix
-    #files = os.listdir(base)
-    #for infile in files:
-    #    file_path = os.path.join(base,infile)
-    
-    for did in dids:
-        if did in counts_lookup:
-            
-            file_path = os.path.join(prefix,did+'.json')
-            print 'Deleting '+file_path
-            os.remove(file_path)
-    #write_json_file(out_file,counts_lookup)
     
 def go_add(NODE_DATABASE, pid):
     from random import randrange
@@ -224,9 +222,11 @@ def go_add(NODE_DATABASE, pid):
 def write_all_metadata_file(metadata_lookup,rando):
     original_metadata_lookup = read_original_metadata()
     md_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
-    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata_"+today+'_'+str(rando)+".json")
-    print 'Backing up metadata file to',bu_file
-    shutil.copy(md_file, bu_file)
+    
+    if not args.no_backup:
+        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata_"+today+'_'+str(rando)+".json")
+        print 'Backing up metadata file to',bu_file
+        shutil.copy(md_file, bu_file)
     #print md_file
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
@@ -235,25 +235,25 @@ def write_all_metadata_file(metadata_lookup,rando):
     f = open(md_file,'w')
     try:
         json_str = json.dumps(original_metadata_lookup, ensure_ascii=False) 
-        
     except:
         json_str = json.dumps(original_metadata_lookup) 
-    print 'writing metadata file'
+    print 'writing new metadata file'
     f.write(json_str.encode('utf-8').strip()+"\n")
     f.close() 
     
 def write_all_taxcounts_file(counts_lookup,rando):
     original_counts_lookup = read_original_taxcounts()
     tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
-    bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+today+'_'+str(rando)+".json")
-    print 'Backing up taxcount file to',bu_file
-    shutil.copy(tc_file, bu_file)
+    if not args.no_backup:
+        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+today+'_'+str(rando)+".json")
+        print 'Backing up taxcount file to',bu_file
+        shutil.copy(tc_file, bu_file)
     for did in counts_lookup:
         original_counts_lookup[did] = counts_lookup[did]
     json_str = json.dumps(original_counts_lookup)       
     #print(json_str)
     f = open(tc_file,'w')  # this will delete taxcounts file!
-    print 'writing taxcount file'
+    print 'writing new taxcount file'
     f.write(json_str+"\n")
     f.close()
       
@@ -414,13 +414,12 @@ def get_dataset_ids(pid):
 if __name__ == '__main__':
 
     usage = """
-        -pid/--project_id  ID  Must be combined with --add or --delete
+        -pid/--project_id  ID  Must be combined with --add 
         
-        This script only add/deletes to taxcounts files NOT MySQL
+        This script only add to taxcounts files NOT MySQL
         -add/--add          Add project (will delete and overwrite if already present)
         OR
-        -del/--delete       Delete all dids (whole project) from dir  (requires pid) ()
-        
+                
         -l/  --list         List: list all projects in the DATABASE [default]
         
         -json_file_path/--json_file_path   json files path Default: ../json
@@ -442,14 +441,14 @@ if __name__ == '__main__':
                 required=False,  action="store",   dest = "pid", default='',
                 help="""ProjectID""") 
     
-    parser.add_argument("-del","--del",                   
-                required=False,  action="store_true",   dest = "delete", default='',
-                help="""ProjectID""") 
+    
                 
     parser.add_argument("-add","--add",                   
                 required=False,  action="store_true",   dest = "add", default='',
                 help="""ProjectID""")
-                
+    parser.add_argument("-no_backup","--no_backup",                   
+                required=False,  action="store_true",   dest = "no_backup", default=False,
+                help="""no_backup""")            
     parser.add_argument("-list","--list",                   
                 required=False,  action="store_true",   dest = "list", default='',
                 help="""ProjectID""")
@@ -512,30 +511,24 @@ if __name__ == '__main__':
     print 'DATABASE:',NODE_DATABASE
     
     
-    if not args.list and not args.pid and not args.delete and not args.add:
+    if not args.list and not args.pid and  not args.add:
         print usage        
         sys.exit('need command line parameter(s)')
         
-    if args.delete and not args.pid:
-        print usage        
-        sys.exit('need pid to delete') 
+    
            
     if args.add and not args.pid:
         print usage        
         sys.exit('need pid to add')
     
-    if args.delete and args.add:
-        print usage        
-        sys.exit('cannot add AND delete')
+    
          
     if args.list:
         go_list(args)
-    elif args.delete and args.pid:
-        go_delete(args)
     elif args.add and args.pid:
         go_add(NODE_DATABASE, args.pid)
     else:
         print usage 
-        print "Maybe you forgot to add '-add' or '-del' to the command line?"
+        print "Maybe you forgot to add '-add' to the command line?"
         
 

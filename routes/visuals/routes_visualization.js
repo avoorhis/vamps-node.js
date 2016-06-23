@@ -1878,7 +1878,20 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
         res.send('No file found: '+seqs_filename+"; Use the browsers 'Back' button and try again")
       }
       //console.log('parsing data')
-      var clean_data = JSON.parse(data)
+      try{
+        var clean_data = JSON.parse(data)
+      }catch(e){
+        console.log(e);
+        res.render('visuals/user_viz_data/sequences', {
+                    title: 'Sequences',
+                    ds : pjds,
+                    tax : search_tax,
+                    //rows : JSON.stringify(rows),
+                    seq_list : 'Error Retrieving Sequences',
+                    user: req.user, hostname: req.CONFIG.hostname,
+        });
+        return
+      }
       
       for(i in clean_data){
         
