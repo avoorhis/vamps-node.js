@@ -12,15 +12,18 @@
 <a href='' onclick='javascript:window.history.back();return false;'>&lt;&lt;--back</a>
 
 
+<form method='POST' name='export_data_form' action='/user_data/export_confirm'>
 <div class='well'>
   <div class="row">
     <div  id='show_selected_datasets_div'  class="col-md-6">
-                  <% include ../visuals/partials/show_selected_datasets.html %>   
+                  <% include ../visuals/partials/show_selected_datasets.html %> 
+    </div> <!-- End  show_selected_datasets_div -->
+    <div  id=''  class="col-md-6">
+                  <div class='' style=''><% include partials/tax_simple.html %></div>  
     </div> <!-- End  show_selected_datasets_div -->
   </div>
 </div>  <!-- /well -->
 
-<form method='POST' name='export_data_form' action='/user_data/export_confirm'>
 <button type='submit' class='btn pull-right btn-sm btn-warning' id="" >
     Get Files <span class="glyphicon glyphicon-circle-arrow-right" ></span> 
 </button>

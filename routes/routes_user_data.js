@@ -100,6 +100,9 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		      title: 'VAMPS: Export Choices',
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+		      constants: JSON.stringify(req.CONSTS),
+		      selected_rank:req.body.tax_depth,
+              selected_domains:JSON.stringify(req.body.domains),
 		      message: 'Select one or more file formats',
 		      user: req.user, hostname: req.CONFIG.hostname
 		    });
@@ -139,17 +142,20 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 			
 		}
 		if(requested_files.length >0){
-			create_export_files(req, user_dir, timestamp, dids, requested_files, req.body.normalization )
-			var msg = "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>"
-		}else{
-			var msg = "No Files Selected"
+			if(req.body.tax_depth=='class'){var td='klass'}
+			else{var td=req.body.tax_depth}
+			create_export_files(req, user_dir, timestamp, dids, requested_files, req.body.normalization,td,req.body.domains )
 		}
+		//console.log(requested_files);
 
 		res.render('user_data/export_selection', {
 		      title: 'VAMPS: Export Choices',
 		      referer: 'export_data',
 		      chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
-		      message: msg,
+		      constants: JSON.stringify(req.CONSTS),
+		      selected_rank:req.body.tax_depth,
+              selected_domains:JSON.stringify(req.body.domains),
+		      message: "Your file(s) are being created -- <a href='/user_data/file_retrieval' >when ready they will be accessible here</a>",
 		      user: req.user, hostname: req.CONFIG.hostname
 		});
 
@@ -196,15 +202,19 @@ router.post('/export_selection', helpers.isLoggedIn, function(req, res) {
      return;
   }else{
    // GLOBAL Variable
-	  chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
+	chosen_id_name_hash           = COMMON.create_chosen_id_name_hash(dataset_ids);
     console.log('chosen_id_name_hash-->');
-	  console.log(chosen_id_name_hash);
-	  console.log(chosen_id_name_hash.ids.length);
-	  console.log('<--chosen_id_name_hash');
+	console.log(chosen_id_name_hash);
+	console.log(chosen_id_name_hash.ids.length);
+	console.log('<--chosen_id_name_hash');
+    
     res.render('user_data/export_selection', {
           title: 'VAMPS: Export Choices',
           referer: 'export_data',
+          constants: JSON.stringify(req.CONSTS),
           chosen_id_name_hash: JSON.stringify(chosen_id_name_hash),
+          selected_rank:'phylum',  // initial condition
+          selected_domains:JSON.stringify(req.CONSTS.DOMAINS.domains), // initial condition
           message: req.flash('successMessage'),
           failmessage: req.flash('failMessage'),
           user: req.user, hostname: req.CONFIG.hostname
@@ -2108,7 +2118,7 @@ router.post('/download_file', helpers.isLoggedIn, function(req, res) {
     var timestamp = +new Date();  // millisecs since the epoch!
     var file_tag = ['-'+req.body.file_type+'_file']  
     
-    create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization)
+    create_export_files(req, user_dir, timestamp, chosen_id_name_hash.ids, file_tag, visual_post_items.normalization,visual_post_items.tax_depth,visual_post_items.domains)
     res.send(req.body.file_type);
 });
 //
@@ -2237,10 +2247,10 @@ function update_dataset_names(config_info){
 }
 
 /////////////////// EXPORTS ///////////////////////////////////////////////////////////////////////
-function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
+function create_export_files(req, user_dir, ts, dids, file_tags, normalization,rank,domains){
     	var db = req.db;
 		//file_name = 'fasta-'+ts+'_custom.fa.gz';
-		var log = path.join(req.CONFIG.USER_FILES_BASE,'export_log.txt');
+		var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'export_log.txt');
 		//var log = path.join(user_dir,'export_log.txt');
 		if(normalization == 'max' || normalization == 'maximum' || normalization == 'normalized_to_maximum'){
 		    norm = 'normalized_to_maximum'
@@ -2248,11 +2258,6 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		    norm = 'normailzed_by_percent'
 		}else{
 		    norm = 'not_normalized'
-		}
-		if(typeof visual_post_items != 'undefined'){
-			var rank = visual_post_items.tax_depth || 'genus'
-		}else{
-			var rank = 'genus'
 		}
 		
 		var site = req.CONFIG.site;
@@ -2267,9 +2272,11 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		
 		var dids_str = JSON.stringify(dids.join(','));
 		var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
+		var domain_str = JSON.stringify(domains.join(','));
 		console.log('pids',pids_str)
 		var file_tags = file_tags.join(' ')
 		var export_cmd_options = {
+
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
                          args :       ['-s',site,
                          								'-u',req.user.username,
@@ -2281,9 +2288,9 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
                          								'-rank',rank,
                          								'-db',NODE_DATABASE
                          								] // '-compress'
+
                      };
 		var cmd_list = []
-		
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
 		
 		if(req.CONFIG.cluster_available == true){
@@ -2302,7 +2309,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
                         if(err) {
                             return console.log(err);
                         }else{
-                            var export_process = spawn( qsub_file_path, {}, {
+                            var dwnld_process = spawn( qsub_file_path, {}, {
                               env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
                               detached: true, 
                               stdio:['pipe', 'pipe', 'pipe']
@@ -2315,6 +2322,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
                  }
             }); 
         
+
     }else{
         console.log('No Cluster Available');
         var cmd = path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' ')
@@ -2327,6 +2335,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
           stdio: 'pipe'  // stdin, stdout, stderr
         });
     }
+
 		return
 		
 }
