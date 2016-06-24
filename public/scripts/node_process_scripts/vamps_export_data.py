@@ -193,6 +193,10 @@ def run_matrix(args):
                 count = knt  # should never get here
         
         tax   = row['taxonomy']
+<<<<<<< HEAD
+=======
+        
+>>>>>>> a1f807916b136384ab506335bedfda1a4750778f
         if tax.split(';')[0] in args.domains:
             if tax not in collector:
                 collector[tax] = {}
@@ -589,12 +593,17 @@ if __name__ == '__main__':
             --file_base         Where the files will go and where is the INFO file
             --normalization     user choice: not_normalized, normalized_to_maximum or normailzed_by_percent
             --compress          Compress files in gzip format
+
+            --rank              used only for taxbytax, biom and matrix  [ DEFAULT:phylum ]
+            --domains           [ DEFAULT:"Archaea,Bacteria,Eukarya,Organelle,Unknown" ]
             
             --taxbytax_file     if present will create TaxByTax file
-            --taxbyref_file     if present will create TaxByRef file
+            --taxbyref_file     if present will create TaxByRef file  NOT YET WORKING
             --taxbyseq_file     if present will create TaxBySeq file
             --fasta_file        if present will create Fasta file
-         
+            --matrix_file       if present will create Count Matrix file
+            --biom_file         if present will create Biom file
+
     
     
     """
@@ -632,7 +641,8 @@ if __name__ == '__main__':
                                                     help="")
     parser.add_argument("-rank", "--rank",      required=False,  action="store",   dest = "rank", default='genus',
                                                     help="This is for matrix file only")  
-    parser.add_argument("-domains", "--domains",      required=False,  action="store",   dest = "domains", default='genus',
+    parser.add_argument("-domains", "--domains",      required=False,  action="store",   dest = "domains", default="Archaea,Bacteria,Eukarya,Organelle,Unknown",
+
                                                     help="This is for matrix file only")                                             
     parser.add_argument("-norm", "--normalization",  required=False,  action="store",   dest = "normalization", default='not_normalized',
                                                     help="not_normalized, normalized_to_maximum or normailzed_by_percent")                                                 
@@ -656,6 +666,8 @@ if __name__ == '__main__':
         db_home = '~/'
     db_name = args.NODE_DATABASE
 #    try:
+
+    print db_host,db_name
     args.obj = MySQLdb.connect( host=db_host, db=db_name, cursorclass=MySQLdb.cursors.DictCursor, # your host, usually localhost
         read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
     )
@@ -668,7 +680,8 @@ if __name__ == '__main__':
     #args.obj=Conn(db_host, db_name, db_home)
     output_dir = args.base
     
-    print args.domains
+
+    print args.normalization
     args.dids = args.dids.split(',')
     args.pids = args.pids.split(',')
     args.domains = args.domains.split(',')
