@@ -2280,12 +2280,15 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
                          args :       ['-s',site,
                          								'-u',req.user.username,
-                         								'-r',ts,'-base',user_dir,
+                         								'-r',ts,
+                         								'-base',user_dir,
                          								'-dids', dids_str, 
-                         								'-pids',pids_str, file_tags, 
+                         								'-pids',pids_str, 
+                         								file_tags, 
                          								'-compress',
                          								'-norm', norm,
                          								'-rank',rank,
+                         								'-domains',domain_str,
                          								'-db',NODE_DATABASE
                          								] // '-compress'
 
