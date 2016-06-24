@@ -2271,7 +2271,16 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
 		var file_tags = file_tags.join(' ')
 		var export_cmd_options = {
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
-                         args :       ['-s',site,'-u',req.user.username,'-r',ts,'-base',user_dir,'-dids', dids_str, '-pids',pids_str, file_tags, '-compress','-norm', norm,'-rank',rank ] // '-compress'
+                         args :       ['-s',site,
+                         								'-u',req.user.username,
+                         								'-r',ts,'-base',user_dir,
+                         								'-dids', dids_str, 
+                         								'-pids',pids_str, file_tags, 
+                         								'-compress',
+                         								'-norm', norm,
+                         								'-rank',rank,
+                         								'-db',NODE_DATABASE
+                         								] // '-compress'
                      };
 		var cmd_list = []
 		
@@ -2310,10 +2319,13 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization){
         console.log('No Cluster Available');
         var cmd = path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' ')
         console.log('RUNNING:',cmd)
+        
         var export_process = spawn( path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
 															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
-						    							detached: true, stdio: [ 'ignore', null, log ]
-														});  // stdin, stdout, stderr
+						    							detached: true, 
+          //stdio: [ 'ignore', null, log ]
+          stdio: 'pipe'  // stdin, stdout, stderr
+        });
     }
 		return
 		
