@@ -1,0 +1,66 @@
+
+<% if (typeof doms === 'undefined') { %>
+<%   var domains = JSON.parse(constants).DOMAINS.domains; %>
+<% } else { %>
+<%   domains = doms.domains %>
+<% } %>
+
+  <table class='table' >
+  
+  <tr><td>These apply only to the Biom and TaxByTax files:</td><td></td></tr>
+  <tr><td>
+  <ul class='medium_font'>
+    <li class='bold_font'>Domains to Include:
+    <span class='small_font normal_weight' >
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle'  value='all' \> Toggle
+    </span>
+    </li>
+    <% for (i in domains) { %>
+      <% domain = domains[i].name %>
+      <li class='normal_weight'>
+        <% if(selected_domains.indexOf(domain) != -1){ %>
+            <input type='checkbox' class='simple_taxa_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
+        
+        <% }else{ %>
+            <input type='checkbox' class='simple_taxa_ckbx'  value='<%= domain %>' name='domains[]' \>
+        <% } %>
+        <%= domain %>
+      </li>
+    <% } %>
+    <br>
+<!--
+    <li><span class='bold_font'>Include NAs</span> <span class='small_font'>(taxonomy not available):</span></li>
+    <li><input type='radio' id='' name='include_nas' value='no'    \> Do Not Include NAs</li>
+    <li><input type='radio' id='' checked='checked' name='include_nas' value='yes'   \> Include NAs</li>
+-->
+  </ul>
+  </td>
+  
+  <td>
+  <ul class='medium_font'>
+    <% ranks = ['Domain','Phylum','Class','Order','Family','Genus','Species','Strain'] %>
+    
+    <% if(selected_rank == ''){ %>
+    <%   selected_rank ='phylum' %>
+    <% } %>
+    <li class='bold_font'>Taxonomic Depth:</li>
+    <% for(i=0; i<ranks.length; i++){ %>
+        <% if(ranks[i].toLowerCase() == selected_rank){ %>
+                <li><input type='radio' id='' checked name='tax_depth' value='<%= ranks[i].toLowerCase() %>'  \> <%= ranks[i] %></li>
+    <%      }else{ %>
+                <li><input type='radio' id='' name='tax_depth' value='<%= ranks[i].toLowerCase() %>'  \> <%= ranks[i] %></li>
+     <%     } %>
+    <% } %>
+    <!-- 
+<li><input type='radio' id='' name='tax_depth' value='phylum' checked='checked'  \> Phylum</li>
+    <li><input type='radio' id='' name='tax_depth' value='klass'   \> Class</li>
+    <li><input type='radio' id='' name='tax_depth' value='order'   \> Order</li>
+    <li><input type='radio' id='' name='tax_depth' value='family'  \> Family</li>
+    <li><input type='radio' id='' name='tax_depth' value='genus'   \> Genus</li>
+    <li><input type='radio' id='' name='tax_depth' value='species' \> Species</li>
+    <li><input type='radio' id='' name='tax_depth' value='strain'  \> Strain</li>
+ -->
+  </ul>
+  </td></tr>
+  </table>
+  
