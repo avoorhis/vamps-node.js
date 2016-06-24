@@ -2274,7 +2274,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
 		var pids_str = JSON.stringify((Object.keys(pid_lookup)).join(','));
 		var domain_str = JSON.stringify(domains.join(','));
 		console.log('pids',pids_str)
-		var file_tags = file_tags.join(' ')
+		//var file_tags = file_tags.join(' ')
 		var export_cmd_options = {
 
                          scriptPath : path.join(req.CONFIG.PATH_TO_NODE_SCRIPTS),
@@ -2284,7 +2284,6 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
                          								'-base',user_dir,
                          								'-dids', dids_str, 
                          								'-pids',pids_str, 
-                         								file_tags, 
                          								'-compress',
                          								'-norm', norm,
                          								'-rank',rank,
@@ -2293,6 +2292,9 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
                          								] // '-compress'
 
                      };
+    for(t in file_tags){
+    		export_cmd_options.args.push(file_tags[t])
+    }
 		var cmd_list = []
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
 		
@@ -2327,16 +2329,34 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
         
 
     }else{
-        console.log('No Cluster Available');
+        console.log('No Cluster Available according to req.CONFIG.cluster_available');
         var cmd = path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' ')
         console.log('RUNNING:',cmd)
-        
-        var export_process = spawn( path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
-															env:{ 'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH },
+        //var log = path.join(req.CONFIG.SYSTEM_FILES_BASE,'tmp_log.log')
+        var dwnld_process = spawn( path.join(export_cmd_options.scriptPath, export_cmd), export_cmd_options.args, {
+															env:{ 'PATH':req.CONFIG.PATH,'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH },
 						    							detached: true, 
-          //stdio: [ 'ignore', null, log ]
-          stdio: 'pipe'  // stdin, stdout, stderr
+          										stdio: ['pipe', 'pipe', 'pipe']  // stdin, stdout, stderr
         });
+        stdout = '';
+			  dwnld_process.stdout.on('data', function (data) {
+			      stdout += data;    
+			  });
+        stderr = '';
+			  dwnld_process.stderr.on('data', function (data) {
+			      stderr += data;    
+			  }); 
+        dwnld_process.on('close', function (code) {
+        		console.log('dwnld_process process exited with code ' + code);
+        		//console.log('stdout',stdout);
+        		//console.log('stderr',stderr);
+        		if(code === 0){   // SUCCESS  
+
+        		}else{
+        			console.log('ERROR',stderr);
+          		//res.send('Frequency Heatmap R Script Error:'+stderr);
+        		}
+      	});
     }
 
 		return

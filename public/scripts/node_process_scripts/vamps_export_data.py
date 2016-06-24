@@ -23,6 +23,7 @@ from time import sleep
 sys.path.append( '/groups/vampsweb/vampsdev' )
 import MySQLdb
 import MySQLdb.cursors
+from os.path import expanduser
 #from apps.ConDictMySQL import Conn
 import datetime
 import subprocess as subp
@@ -157,7 +158,7 @@ def run_fasta(args):
     
 
 def run_matrix(args):
-    print '''running matrix'''
+    print '''running matrix --->>>'''
     out_file = os.path.join(args.base,'matrix-'+args.runcode+'.csv')
     cursor = args.obj.cursor()  
     dids = "','".join(args.dids)
@@ -193,10 +194,7 @@ def run_matrix(args):
                 count = knt  # should never get here
         
         tax   = row['taxonomy']
-<<<<<<< HEAD
-=======
-        
->>>>>>> a1f807916b136384ab506335bedfda1a4750778f
+
         if tax.split(';')[0] in args.domains:
             if tax not in collector:
                 collector[tax] = {}
@@ -223,7 +221,7 @@ def run_matrix(args):
     
     
 def run_biom(args):
-    print '''running biom'''
+    print '''running biom --->>>'''
     cursor = args.obj.cursor() 
     out_file = os.path.join(args.base,'biom-'+args.runcode+'.biom') 
     dids = "','".join(args.dids)
@@ -310,7 +308,7 @@ def run_biom(args):
     
         
 def run_metadata(args):
-    print 'running metadata'
+    print 'running metadata --->>>'
     # args.datasets is a list of p--d pairs
     out_file = os.path.join(args.base,'metadata-'+args.runcode+'.csv')
     cursor = args.obj.cursor()  
@@ -378,7 +376,7 @@ def run_metadata(args):
     write_file_txt(args, out_file, file_txt)
 
 def run_taxbytax(args):
-    print 'running taxbytax'
+    print 'running taxbytax --->>>'
     
     cursor = args.obj.cursor()  
     dids = "','".join(args.dids)
@@ -451,7 +449,7 @@ def run_taxbytax(args):
     write_file_txt(args, out_file, file_txt)    
     
 def run_taxbyseq(args):
-    print 'running taxbyseq'
+    print 'running taxbyseq --->>>'
     cursor = args.obj.cursor()  
     dids = "','".join(args.dids)
     sql = get_taxbyseq_sql(args, dids)
@@ -547,7 +545,7 @@ def clean_samples(samples):
 
     
 def get_dataset_counts(args):
-    print ''' getting dataset_counts '''
+    print '''getting dataset_counts --->>>'''
     cursor = args.obj.cursor()
     dids = "','".join(args.dids)
     #pd = "') OR\n(project='".join(["' and dataset='".join(p.split('--')) for p in args.datasets])
@@ -665,26 +663,19 @@ if __name__ == '__main__':
         db_host = 'localhost'
         db_home = '~/'
     db_name = args.NODE_DATABASE
-#    try:
-
+    
     print db_host,db_name
-    args.obj = MySQLdb.connect( host=db_host, db=db_name, cursorclass=MySQLdb.cursors.DictCursor, # your host, usually localhost
-        read_default_file="~/.my.cnf_node" # you can use another ini file, for example .my.cnf_node
-    )
-#    except:
-        
-     #   print "ARGS: dbhost  =",db_host
-     #   print myusage
-     #   sys.exit()
-        
-    #args.obj=Conn(db_host, db_name, db_home)
+    
+    home = expanduser("~")
+    args.obj = MySQLdb.connect( host=db_host, db=db_name,  read_default_file=home+'/.my.cnf_node', cursorclass=MySQLdb.cursors.DictCursor    )
+   
     output_dir = args.base
     
-
     print args.normalization
-    args.dids = args.dids.split(',')
-    args.pids = args.pids.split(',')
-    args.domains = args.domains.split(',')
+    args.dids = args.dids.strip('"').split(',')
+    args.pids = args.pids.strip('"').split(',')
+    args.domains = args.domains.strip('"').split(',')
+
     (args.max, args.dataset_counts) = get_dataset_counts(args)
     args.datasets = args.dataset_counts.keys()
     #print 'max',args.max
