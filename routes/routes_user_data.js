@@ -61,22 +61,34 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
     file_info.size = {};
     file_info.files = [];
     var modify_times = [];
+    var modify_times2 = [];
+    var filename_lookup = {};
+    
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
+        
         var pts = files[f].split('-');
         if(file_formats.indexOf(pts[0]) != -1){
           stat = fs.statSync(export_dir+'/'+files[f]);          
+          
+          filename_lookup[files[f]] = {  'size':stat.size, 'mtime':stat.mtime }
           file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
       		modify_times.push(stat.mtime.getTime());
+      		modify_times2.push({ 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.getTime(), 'stime':stat.mtime.toString()});
+
         }
       }
       //console.log(file_info)
-      modify_times.sort().reverse();
-
+      //modify_times.sort().reverse();
+      modify_times2.sort(function(a, b){
+          return helpers.compareStrings_int(a.mtime, b.mtime);
+    	});
+    	console.log(modify_times2)
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
               user: req.user, hostname: req.CONFIG.hostname,
-              finfo: JSON.stringify(file_info),
-              times: modify_times,
+              finfo: JSON.stringify(modify_times2),
+
+              //finfo: modify_times2,
 							message : req.flash('message'),
             });
     });
@@ -2600,3 +2612,4 @@ function get_qsub_script_text(log, site, name, cmd_list){
 }
 
 module.exports = router;
+

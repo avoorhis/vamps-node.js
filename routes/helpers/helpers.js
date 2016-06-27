@@ -559,6 +559,11 @@ module.exports.compareStrings_alpha = function(a, b) {
   // Assuming you want case-insensitive comparison
   a = a.toLowerCase();
   b = b.toLowerCase();
-
+  return (a < b) ? -1 : (a > b) ? 1 : 0;
+}
+module.exports.compareStrings_int = function(a, b) {
+  // Assuming you want case-insensitive comparison
+  a = parseInt(a);
+  b = parseInt(b);
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 }

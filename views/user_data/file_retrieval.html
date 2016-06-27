@@ -12,9 +12,9 @@
 	<tr><th></th><th>File Name</th><th>Size</th><th>Creation Time</th><th></th></tr>
   </thead>
   <tbody>
-	<% for(t in times){ %>
-		<% var filename = file_info[times[t]].filename %>
-		<% var fileSizeInBytes = file_info[times[t]].size %>
+	<% for(t in file_info){ %>
+		<% var filename = file_info[t].filename %>
+		<% var fileSizeInBytes = file_info[t].size %>
 		<% var fileSize = (fileSizeInBytes).toFixed(1) %>
 		<% var sizer = 'Bytes' %>
 		<% if(fileSizeInBytes > 1000) { %>
@@ -41,7 +41,7 @@
 					<%= fileSize %> <%= sizer %>
 				</td>
 				<td>
-					<%= file_info[times[t]].mtime %>
+					<%= file_info[t].stime %>
 				</td>
 				<td>	 
 					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>
