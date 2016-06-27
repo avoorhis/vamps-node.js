@@ -41,7 +41,7 @@
 					<%= fileSize %> <%= sizer %>
 				</td>
 				<td>
-					<%= file_info[t].stime %>
+					<%= file_info[t].time.toString().replace(/T/,' ').replace(/.000Z$/,'') %>
 				</td>
 				<td>	 
 					<a href='file_utils?fxn=delete&user=<%= user.username %>&filename=<%= filename %>' >delete from the server</a>

@@ -53,42 +53,24 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
 
     var export_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username);
     var file_formats = req.CONSTS.download_file_formats
-    
-    var mtime = {};
-    var size = {};
-    var file_info = {};
-    file_info.mtime ={};
-    file_info.size = {};
-    file_info.files = [];
-    var modify_times = [];
-    var modify_times2 = [];
-    var filename_lookup = {};
+    var file_info = [];
     
     fs.readdir(export_dir, function(err, files){
       for (var f in files){
-        
         var pts = files[f].split('-');
         if(file_formats.indexOf(pts[0]) != -1){
-          stat = fs.statSync(export_dir+'/'+files[f]);          
-          
-          filename_lookup[files[f]] = {  'size':stat.size, 'mtime':stat.mtime }
-          file_info[stat.mtime.getTime()] = { 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.toString() }
-      		modify_times.push(stat.mtime.getTime());
-      		modify_times2.push({ 'filename':files[f], 'size':stat.size, 'mtime':stat.mtime.getTime(), 'stime':stat.mtime.toString()});
-
+          stat = fs.statSync(export_dir+'/'+files[f]);              
+      		file_info.push({ 'filename':files[f], 'size':stat.size, 'time':stat.mtime});
         }
       }
-      //console.log(file_info)
-      //modify_times.sort().reverse();
-      modify_times2.sort(function(a, b){
-          return helpers.compareStrings_int(a.mtime, b.mtime);
+      file_info.sort(function(a, b){
+          //reverse sort: recent-->oldest
+          return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     	});
-    	console.log(modify_times2)
+    	console.log(file_info)
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
               user: req.user, hostname: req.CONFIG.hostname,
-              finfo: JSON.stringify(modify_times2),
-
-              //finfo: modify_times2,
+              finfo: JSON.stringify(file_info),
 							message : req.flash('message'),
             });
     });
