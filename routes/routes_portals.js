@@ -54,66 +54,9 @@ router.get('/visuals_index/:portal', function(req, res) {
 router.get('/projects/:portal', function(req, res) {
     var portal = req.params.portal;
     some_datasets = []
-    ALL_DATASETS.projects.forEach(function(prj) {
-    split = prj.name.split('_')
-    console.log(req.CONSTS.PORTALS)
-    switch (portal) {
-        case 'MBE':
-          if(split[0] === portal){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'ICOMM':
-          if(split[0] === 'ICM' || split[0] === 'KCK'){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'HMP':
-          if(split[0] === portal){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'CODL':
-          if(split[0] === 'DCO'){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'UC':
-          if(split[0] === portal){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'RARE':
-          if(split[0] === portal){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'CMP':
-          if(split[0] === portal || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'LTER':
-          if(split[0] === 'LTR'){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'UNIEUK':
-          if(split[split.length - 1] === 'Ev9' ){
-            some_datasets.push(prj);        
-          }
-          break;
-        case 'PSPHERE':
-          if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
-            some_datasets.push(prj);        
-          }
-          break;
-        default:
-            if(prj.name.split('_')[0] === portal){
-            some_datasets.push(prj);        
-          }     
-    }  
-  });
+    
+    pi = get_portinfo(req, portal)
+
     //console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
     //console.log('data'+JSON.stringify(some_datasets));
     res.render('portals/projects', { 
@@ -121,7 +64,7 @@ router.get('/projects/:portal', function(req, res) {
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : portal,
             //pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            data      : some_datasets,
+            data      : pi.some_datasets,
             message   : '',
         });
 });
@@ -143,75 +86,12 @@ router.get('/:portal', function(req, res) {
     
     var portal = req.params.portal;
     var pagetitle, maintitle, subtitle;
-    switch (portal) {
-    
-        case 'MBE':
-            pagetitle = 'VAMPS:Microbiology Of the Built Environment Portal';
-            maintitle   = 'VAMPS: MoBEDAC Portal'
-            subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
-            break;
-        case 'ICOMM':
-            pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
-            maintitle = 'VAMPS: ICoMM - Microbis Portal'
-            subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
-            break;
-        case 'HMP':
-            pagetitle = 'VAMPS:Human Microbiome Project Portal';
-            maintitle = 'VAMPS: HMP Portal'
-            subtitle = ''
-            break;
-        case 'CODL':
-            pagetitle = 'VAMPS:Census of Deep Life Portal';
-            maintitle = 'VAMPS: Census of Deep Life Portal'
-            subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
-            break;
-        case 'UC':
-            pagetitle = 'VAMPS:Ulcerative Colitis Portal';
-            maintitle = 'VAMPS Ulcerative Colitis Portal'
-            subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
-            break;
-        case 'RARE':
-            pagetitle = 'VAMPS:The Rare Biosphere Portal';
-            maintitle = 'VAMPS: Rare Biosphere Portal'
-            subtitle = 'A New Paradigm for Microbiology.'
-            break;
-        case 'CMP':
-            pagetitle = 'VAMPS:Coral Microbe Project Portal';
-            maintitle = 'VAMPS: Coral Microbiome Portal'
-            subtitle = ''
-            break;
-        case 'LTER':
-            pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
-            maintitle = 'VAMPS: MIRADA Portal'
-            subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
-            break;
-        case 'UNIEUK':
-
-            pagetitle = 'VAMPS:UniEuk';
-            maintitle = 'VAMPS: UniEuk Portal'
-            subtitle = 'All Things Eukarya'
-            break;
-        case 'PSPHERE':
-            pagetitle = 'VAMPS:The Plastisphere';
-            maintitle = 'VAMPS: Plastisphere Portal'
-            subtitle = 'Bacteria and Plastics'
-
-            break;
-        default:
-            console.log('no portal')
-            res.render('portals/portals_index', { 
-                title: 'VAMPS:Portals',                
-                user: req.user,hostname: req.CONFIG.hostname,
-                message:'',
-            });
-            return
-            
-    }
+    pi = get_portinfo(req, portal)
     
     res.render('portals/home', { 
-            title       : pagetitle,
-            maintitle   : maintitle,
-            subtitle    : subtitle,
+            title       : pi.pagetitle,
+            maintitle   : pi.maintitle,
+            subtitle    : pi.subtitle,
             portal      : portal,
             user: req.user,hostname: req.CONFIG.hostname,
             message:'',
@@ -269,64 +149,9 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
     portal_info = {}
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
-    project_prefixes = []
-    portal_projects = []
-    portal_suffixes = []
-    switch (portal) {
+
+    pi = get_portinfo(req, portal)
     
-      case 'MBE':
-          project_prefixes = ['MBE'];
-          portal_info[portal].zoom = 4  // mostly US?
-          subtitle = 'Microbiology of the Built Environment Portal'
-          break;
-      case 'ICOMM':
-          project_prefixes = ['ICM','KCK'];
-          portal_info[portal].zoom = 2  // worldwide
-          subtitle = 'ICoMM Portal'
-          break;
-      case 'HMP':
-          project_prefixes = ['HMP'];
-          portal_info[portal].zoom = 4  // mostly US? Do we even have or want distribution?
-          subtitle = 'Human Microbiome Project Portal'
-          break;
-      case 'CODL':
-          project_prefixes = ['DCO'];
-          portal_info[portal].zoom = 2  // worldwide
-          subtitle = 'Census of Deep Life Portal'
-          break;
-      case 'UC':
-          project_prefixes = [portal];
-          portal_info[portal].zoom = 4  // mostly US?
-          subtitle = 'Ulcerative Colitis Portal'
-          break;
-      case 'RARE':
-          project_prefixes = [portal];
-          portal_info[portal].zoom = 13  // mostly Falmouth
-          subtitle = 'The Rare Biosphere Portal'
-          break;
-      case 'CMP':
-          project_prefixes = [portal];
-          portal_info[portal].zoom = 3  // mostly Falmouth
-          subtitle = 'The Coral Microbiome Project'
-          break;
-      case 'LTER':
-          project_prefixes = ['LTR'];
-          portal_info[portal].zoom = 5  // mostly US
-          subtitle = 'MIRADA Portal'
-          break;
-      case 'UNIEUK':
-          portal_suffixes = ['Ev9'];
-          portal_info[portal].zoom = 2  // worldwide
-          subtitle = 'UniEuk'
-          break;
-        case 'PSPHERE':
-          portal_projects = ['LAZ_DET_Bv3v4','LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4'];
-          portal_info[portal].zoom = 5  // mostly US
-          subtitle = 'Plastisphere Portal'
-          break;
-      default:
-          console.log('no portal found -- loading all data')
-    }
     if(get_subtitle){
         return subtitle
     }
@@ -341,10 +166,10 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
         pid = PROJECT_ID_BY_DID[did]
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
         pname = PROJECT_INFORMATION_BY_PID[pid].project
-        if(portal_prefixes.length > 0){
-            for(p in portal_prefixes){
+        if(pi.project_prefixes.length > 0){
+            for(p in pi.project_prefixes){
               //console.log('p',p,prefixes[p])
-              if( pname.indexOf(portal_prefixes[p]) === 0 ){
+              if( pname.indexOf(pi.project_prefixes[p]) === 0 ){
                   //console.log('FOUND '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
@@ -376,10 +201,10 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
                   //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
               }       
             }
-        }else if(portal_projects.length > 0){
-            for(p in portal_projects){
+        }else if(pi.project_names.length > 0){
+            for(p in pi.project_names){
               //console.log('p',p,prefixes[p])
-              if( pname === portal_projects[p] ){
+              if( pname === pi.project_names[p] ){
                   //console.log('FOUND '+pname)
                   pjds = pname+'--'+DATASET_NAME_BY_DID[did]
                   portal_info[portal].metadata[pjds] = {}
@@ -454,4 +279,160 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
     return portal_info;
 }
 
-
+function get_portinfo(req, portal){
+    info = {}
+    info.some_datasets = []
+    info.portal_info = {}
+    info.project_prefixes = []
+    info.project_names = []
+    info.project_suffixes = []
+    switch (portal) {
+        
+        case 'MBE':
+            info.pagetitle = 'VAMPS:Microbiology Of the Built Environment Portal';
+            info.maintitle   = 'VAMPS: MoBEDAC Portal'
+            info.subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
+            info.project_prefixes = ['MBE'];
+            info.zoom = 4  // mostly US?
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'ICOMM':
+            info.pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
+            info.maintitle = 'VAMPS: ICoMM - Microbis Portal'
+            info.subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
+            info.project_prefixes = ['ICM','KCK'];
+            info.zoom = 2  // worldwide
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === 'ICM' || split[0] === 'KCK'){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'HMP':
+            info.pagetitle = 'VAMPS:Human Microbiome Project Portal';
+            info.maintitle = 'VAMPS: HMP Portal'
+            info.subtitle = ''
+            info.project_prefixes = ['HMP'];
+            info.zoom = 4  // mostly US? Do we even have or want distribution?
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'CODL':
+            info.pagetitle = 'VAMPS:Census of Deep Life Portal';
+            info.maintitle = 'VAMPS: Census of Deep Life Portal'
+            info.subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
+            info.project_prefixes = ['DCO'];
+            info.zoom = 2  // worldwide
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === 'DCO'){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'UC':
+            info.pagetitle = 'VAMPS:Ulcerative Colitis Portal';
+            info.maintitle = 'VAMPS Ulcerative Colitis Portal'
+            info.subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
+            info.project_prefixes = [portal];
+            info.zoom = 4  // mostly US?
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'RARE':
+            info.pagetitle = 'VAMPS:The Rare Biosphere Portal';
+            info.maintitle = 'VAMPS: Rare Biosphere Portal'
+            info.subtitle = 'A New Paradigm for Microbiology.'
+            info.project_prefixes = [portal];
+            info.zoom = 13  // mostly Falmouth
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'CMP':
+            info.pagetitle = 'VAMPS:Coral Microbe Project Portal';
+            info.maintitle = 'VAMPS: Coral Microbiome Portal'
+            info.subtitle = ''
+            info.project_prefixes = [portal];
+            info.zoom = 3  
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'LTER':
+            info.pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
+            info.maintitle = 'VAMPS: MIRADA Portal'
+            info.subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
+            info.project_prefixes = ['LTR'];
+            info.zoom = 5  // mostly US
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === 'LTR'){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'UNIEUK':
+            info.pagetitle = 'VAMPS:UniEuk';
+            info.maintitle = 'VAMPS: UniEuk Portal'
+            info.subtitle = 'All Things Eukarya'
+            info.project_suffixes = ['Ev9'];
+            info.zoom = 2  // worldwide
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[split.length - 1] === 'Ev9'){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        case 'PSPHERE':
+            info.pagetitle = 'VAMPS:The Plastisphere';
+            info.maintitle = 'VAMPS: Plastisphere Portal'
+            info.subtitle = 'Bacteria and Plastics'
+            info.project_names = ['LAZ_DET_Bv3v4','LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4'];
+            info.zoom = 5  // mostly US
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
+                info.some_datasets.push(prj);        
+              }
+            })
+            break;
+        default:
+            console.log('no portal')
+            info.pagetitle = 'VAMPS:';
+            info.maintitle = 'VAMPS:'
+            info.subtitle = ''
+            info.project_names = [];
+            info.zoom = 2
+            ALL_DATASETS.projects.forEach(function(prj) {
+              split = prj.name.split('_')
+              if(split[0] === portal){
+                info.some_datasets.push(prj);        
+              }
+            })
+            return
+            
+    }
+    return info;
+}
