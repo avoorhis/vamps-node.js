@@ -67,7 +67,7 @@ router.get('/file_retrieval', helpers.isLoggedIn, function(req, res) {
           //reverse sort: recent-->oldest
           return helpers.compareStrings_int(b.time.getTime(), a.time.getTime());
     	});
-    	console.log(file_info)
+    	//console.log(file_info)
       res.render('user_data/file_retrieval', { title: 'VAMPS:Export Data',
               user: req.user, hostname: req.CONFIG.hostname,
               finfo: JSON.stringify(file_info),

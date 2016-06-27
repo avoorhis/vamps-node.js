@@ -26,10 +26,17 @@
 <% } %>
     <nav class="navbar navbar-custom navbar-fixed-top  ">
     <!-- <nav class="navbar navbar-inverse navbar-fixed-top  "> -->
+      <% if(hostname.substring(0,6) != 'bpcweb'){ %> 
+        <div class="navbar-text pull-left" style='padding:5px; background:orange;font-size:9px;border:1px solid red;'>
+          local version
+
+        </div>    
+      <% } %>
+       
       <div class="container">
         
         <div id="navbar" class="navbar-collapse collapse">
-			
+
           
           <div class="navbar-text pull-right" >
             <small>
@@ -85,10 +92,12 @@
                 <li><a href='/projects/projects_index'>Public Project List</a></li>
                 <li><a href='/geodistribution'>Distribution Map</a></li>
                 <li><a href='/metadata/metadata'>Metadata</a></li>
-               <% //if(hostname.substring(0,6) === 'bpcweb'){ %> 
-                  <li><a href='/portals/portals_index'>Portals</a></li>
+               <% if(hostname.substring(0,6) === 'bpcweb'){ %> 
+                    <li><a href='/portals/portals_index'>Portals</a></li>
                
-                <% //} %>
+                <% }else{ %>
+                    <li><a href='https://vamps.mbl.edu:8124'>VAMPS online</a></li>
+                <% } %>
 				         
                 <li>
                 <form action="/user_data/export_data" method="POST">

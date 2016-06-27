@@ -554,13 +554,14 @@ module.exports.generateHash = function(password) {
     cipher.update(password, 'utf8', 'base64');
     return cipher.final('base64');
 };
-
+// Sort list of json objects alphabetically
 module.exports.compareStrings_alpha = function(a, b) {
   // Assuming you want case-insensitive comparison
   a = a.toLowerCase();
   b = b.toLowerCase();
   return (a < b) ? -1 : (a > b) ? 1 : 0;
 }
+// Sort list of json objects numerically
 module.exports.compareStrings_int = function(a, b) {
   // Assuming you want case-insensitive comparison
   a = parseInt(a);
