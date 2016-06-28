@@ -573,8 +573,8 @@ module.exports.get_portal_projects = function(req, portal) {
   projects = []
   var basis = req.CONSTS.PORTALS[portal]
   //switch (portal) {
-  console.log('ALL_DATASETS',ALL_DATASETS)
-
+  console.log('ALL_DATASETS-PORTAL',ALL_DATASETS)
+  console.log(JSON.stringify(basis))
   ALL_DATASETS.projects.forEach(function(prj) {
           split = prj.name.split('_')
           
@@ -584,7 +584,8 @@ module.exports.get_portal_projects = function(req, portal) {
           if(basis.prefixes.indexOf(split[0]) != -1){
             projects.push(prj);
           }
-          if(basis.suffixes.indexOf(split[-1]) != -1){
+          if(basis.suffixes.indexOf(split[split.length-1]) != -1){
+            console.log('UniEuk',JSON.stringify(prj))
             projects.push(prj);
           }
   });
