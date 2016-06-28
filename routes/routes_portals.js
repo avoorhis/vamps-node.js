@@ -21,21 +21,25 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     var portal = req.params.portal;
     console.log('visuals_index: '+portal);
-    var some_datasets = {}
-    some_datasets.projects = []
-    var subtitle = get_portal_metadata(portal, {}, true)
-    ALL_DATASETS.projects.forEach(function(prj) {
+    
+    var project_list = helpers.get_portal_projects(req, portal)
+    
+    var pi = get_portinfo(req, portal)
+
+    console.log('pi',pi)
+    
+    // ALL_DATASETS.projects.forEach(function(prj) {
       
-      if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
-        some_datasets.projects.push(prj);        
-      }
-    });
+    //   if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
+    //     some_datasets.projects.push(prj);        
+    //   }
+    // });
     // GLOBAL
-    SHOW_DATA = some_datasets;
+    SHOW_DATA = project_list;
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
-            subtitle  : subtitle+' - Dataset Selection Page',
+            subtitle  : pi.subtitle+' - Dataset Selection Page',
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
@@ -52,11 +56,12 @@ router.get('/visuals_index/:portal', function(req, res) {
 // PROJECTS
 //
 router.get('/projects/:portal', function(req, res) {
+    console.log('in projects/:portal')
     var portal = req.params.portal;
-    some_datasets = []
+    var project_list = helpers.get_portal_projects(req, portal)
+    //var pi = get_portinfo(req, portal)
     
-    pi = get_portinfo(req, portal)
-
+    //console.log('pi',pi)
     //console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
     //console.log('data'+JSON.stringify(some_datasets));
     res.render('portals/projects', { 
@@ -64,7 +69,7 @@ router.get('/projects/:portal', function(req, res) {
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : portal,
             //pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            data      : pi.some_datasets,
+            data      : project_list,
             message   : '',
         });
 });
@@ -83,11 +88,12 @@ router.get('/metadata/:portal', function(req, res) {
 });
 
 router.get('/:portal', function(req, res) {
-    
+    console.log('in /:portal')
     var portal = req.params.portal;
     var pagetitle, maintitle, subtitle;
-    pi = get_portinfo(req, portal)
-    
+
+    var pi = get_portinfo(req, portal)
+    console.log('pi',pi)
     res.render('portals/home', { 
             title       : pi.pagetitle,
             maintitle   : pi.maintitle,
@@ -125,7 +131,7 @@ router.get('/geomap/:portal', function(req, res) {
 //  }
 
     //console.log(AllMetadata)
-    var portal_info = get_portal_metadata(portal, AllMetadata, false)
+    var portal_info = get_portal_metadata(req, portal, AllMetadata)
     //console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
@@ -143,18 +149,16 @@ module.exports = router;
 //
 //  FUNCTIONS
 //
-function get_portal_metadata(portal, all_metadata, get_subtitle){
+function get_portal_metadata(req, portal, all_metadata){
     // all_metadata is by did
     
     portal_info = {}
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
-
-    pi = get_portinfo(req, portal)
+    var project_list = helpers.get_portal_projects(req, portal)
+    var pi = get_portinfo(req, portal)
+  
     
-    if(get_subtitle){
-        return subtitle
-    }
     //console.log('all_metadata 1361 RARE_EFF--EFF_20090112')
     //console.log(all_metadata[1361])
     //console.log(all_metadata[1361].hasOwnProperty('latitude'))
@@ -278,10 +282,12 @@ function get_portal_metadata(portal, all_metadata, get_subtitle){
 
     return portal_info;
 }
-
+//
+//
+//
 function get_portinfo(req, portal){
     info = {}
-    info.some_datasets = []
+    info.projects = []
     info.portal_info = {}
     info.project_prefixes = []
     info.project_names = []
@@ -294,12 +300,7 @@ function get_portinfo(req, portal){
             info.subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
             info.project_prefixes = ['MBE'];
             info.zoom = 4  // mostly US?
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'ICOMM':
             info.pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
@@ -307,12 +308,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
             info.project_prefixes = ['ICM','KCK'];
             info.zoom = 2  // worldwide
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === 'ICM' || split[0] === 'KCK'){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'HMP':
             info.pagetitle = 'VAMPS:Human Microbiome Project Portal';
@@ -320,12 +316,7 @@ function get_portinfo(req, portal){
             info.subtitle = ''
             info.project_prefixes = ['HMP'];
             info.zoom = 4  // mostly US? Do we even have or want distribution?
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'CODL':
             info.pagetitle = 'VAMPS:Census of Deep Life Portal';
@@ -333,12 +324,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
             info.project_prefixes = ['DCO'];
             info.zoom = 2  // worldwide
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === 'DCO'){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'UC':
             info.pagetitle = 'VAMPS:Ulcerative Colitis Portal';
@@ -346,12 +332,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
             info.project_prefixes = [portal];
             info.zoom = 4  // mostly US?
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'RARE':
             info.pagetitle = 'VAMPS:The Rare Biosphere Portal';
@@ -359,12 +340,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'A New Paradigm for Microbiology.'
             info.project_prefixes = [portal];
             info.zoom = 13  // mostly Falmouth
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'CMP':
             info.pagetitle = 'VAMPS:Coral Microbe Project Portal';
@@ -372,12 +348,7 @@ function get_portinfo(req, portal){
             info.subtitle = ''
             info.project_prefixes = [portal];
             info.zoom = 3  
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'LTER':
             info.pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
@@ -385,12 +356,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
             info.project_prefixes = ['LTR'];
             info.zoom = 5  // mostly US
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === 'LTR'){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'UNIEUK':
             info.pagetitle = 'VAMPS:UniEuk';
@@ -398,12 +364,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'All Things Eukarya'
             info.project_suffixes = ['Ev9'];
             info.zoom = 2  // worldwide
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[split.length - 1] === 'Ev9'){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         case 'PSPHERE':
             info.pagetitle = 'VAMPS:The Plastisphere';
@@ -411,12 +372,7 @@ function get_portinfo(req, portal){
             info.subtitle = 'Bacteria and Plastics'
             info.project_names = ['LAZ_DET_Bv3v4','LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4'];
             info.zoom = 5  // mostly US
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             break;
         default:
             console.log('no portal')
@@ -425,12 +381,7 @@ function get_portinfo(req, portal){
             info.subtitle = ''
             info.project_names = [];
             info.zoom = 2
-            ALL_DATASETS.projects.forEach(function(prj) {
-              split = prj.name.split('_')
-              if(split[0] === portal){
-                info.some_datasets.push(prj);        
-              }
-            })
+            
             return
             
     }

@@ -2438,6 +2438,7 @@ function filter_project_tree_for_permissions(req, obj){
 //
 router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     var portal = req.params.portal;
+
     console.log('in load_portal: '+portal)
     SHOW_DATA = ALL_DATASETS;
     PROJECT_TREE_OBJ = [];
@@ -2456,6 +2457,7 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
       });
       //result = get_livesearch_html(all_pr_dat, info, req.user);
     }
+    console.log('PROJECT_TREE_OBJ',PROJECT_TREE_OBJ)
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
     res.json(PROJECT_TREE_PIDS.length);
 });
@@ -2979,14 +2981,14 @@ function get_portal_prefixes(portal){
       case 'MBE':
           prefixes = [portal];
           break;
-      case 'ICM':
-          prefixes = [portal,'KCK'];
+      case 'ICOMM':
+          prefixes = ['ICM','KCK'];
           break;
       case 'HMP':
           prefixes = [portal];
           break;
-      case 'DCO':
-          prefixes = [portal];
+      case 'CODL':
+          prefixes = ['DCO'];
           break;
       case 'UC':
           prefixes = [portal];
@@ -2997,8 +2999,14 @@ function get_portal_prefixes(portal){
       case 'CMP':
           prefixes = [portal];
           break;
-      case 'LTR':
-          prefixes = [portal];
+      case 'LTER':
+          prefixes = ['LTR'];
+          break;
+      case 'PSPHERE':
+          prefixes = ['LTR'];
+          break;
+      case 'UNIEUK':
+          prefixes = ['LTR'];
           break;
       default:
           console.log('no portal found -- loading all data')

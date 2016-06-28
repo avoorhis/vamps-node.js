@@ -560,11 +560,39 @@ module.exports.compareStrings_alpha = function(a, b) {
   a = a.toLowerCase();
   b = b.toLowerCase();
   return (a < b) ? -1 : (a > b) ? 1 : 0;
-}
+};
 // Sort list of json objects numerically
 module.exports.compareStrings_int = function(a, b) {
   // Assuming you want case-insensitive comparison
   a = parseInt(a);
   b = parseInt(b);
   return (a < b) ? -1 : (a > b) ? 1 : 0;
+};
+module.exports.get_portal_projects = function(req, portal) {
+  
+  projects = []
+  var basis = req.CONSTS.PORTALS[portal]
+  //switch (portal) {
+  console.log('ALL_DATASETS',ALL_DATASETS)
+
+  ALL_DATASETS.projects.forEach(function(prj) {
+          split = prj.name.split('_')
+          
+          if(basis.projects.indexOf(prj.name) != -1){    
+              projects.push(prj);
+          }
+          if(basis.prefixes.indexOf(split[0]) != -1){
+            projects.push(prj);
+          }
+          if(basis.suffixes.indexOf(split[-1]) != -1){
+            projects.push(prj);
+          }
+  });
+
+  console.log('INFO',projects)       
+            
+      
+   
+    return projects;
+
 }
