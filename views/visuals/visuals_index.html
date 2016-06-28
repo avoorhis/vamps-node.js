@@ -18,7 +18,7 @@
 <% if(subtitle == 'Dataset Selection Page'){ %>
   <div class='subtitle' style=''><%= subtitle %></div>
 <% }else{ %>
-  <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%= subtitle %></div>
+  <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- subtitle %></div>
 <% }%>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
@@ -84,17 +84,19 @@
                 </td>
               </tr>
         <% //if(hostname.substring(0,6) === 'bpcweb'){ %>
-              <tr>
-                <td>
-                  by Portal:<br>
-                  <select  id='portal_select'>
-                    <option>.....</option>
-                    <% for(n in portals) { %>
-                      <option value='<%= n %>'>(<%= n %>) <%= portals[n].name %></option>
-                    <% } %>
-                  </select>
-                </td>
-              </tr>
+              <% if(portal_to_show == ''){ %>  
+                <tr>
+                  <td>
+                    by Portal:<br>
+                    <select  id='portal_select'>
+                      <option>.....</option>
+                      <% for(n in portals) { %>
+                        <option value='<%= n %>'>(<%= n %>) <%= portals[n].name %></option>
+                      <% } %>
+                    </select>
+                  </td>
+                </tr>
+              <% } %>
         <% //} %>
               <tr>
                 <td>

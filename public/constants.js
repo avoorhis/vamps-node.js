@@ -127,52 +127,92 @@ constants.PORTALS = {
     'CMP':{ name:'Coral Microbiome Project', subtext:'Coral Microbiome Project', 
             projects:['LTR_MCR_Bv6','LTR_MCR_Av6','LTR_MCR_Ev9','ICM_CCB_Bv6','ICM_CCB_Av6'],
             prefixes:['CMP'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle:'Coral Microbe Project Portal',
+            maintitle:'Coral Microbiome Portal',
+            subtitle: '',
+            zoom:3  
         },
     'CODL':{name:'Census of Deep Life', subtext:'Census of Deep Life', 
             projects:[],
             prefixes:['DCO'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle:'Census of Deep Life Portal',
+            maintitle:'Census of Deep Life Portal',
+            subtitle: 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.',
+            zoom:2  // worldwide
         },
     'HMP': {name:'Human Mircrobiome Project', subtext:'Human Microbiome Project', 
             projects:[],
             prefixes:['HMP'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle:'Human Microbiome Project Portal',
+            maintitle:'HMP Portal',
+            subtitle: '',
+            zoom:4  // mostly US? Do we even have or want distribution?
         },
     'ICOMM': {name:'ICoMM', subtext:'International Census of Marine Mirobes', 
             projects:[],
-            prefixes:['ICM'],
-            suffixes:[]
+            prefixes:['ICM','KCK'],
+            suffixes:[],
+            pagetitle: 'International Census of Marine Microbes Portal',
+            maintitle: 'ICoMM - Microbis Portal',
+            subtitle: 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.',
+            zoom: 2  // worldwide
         },
     'LTER': {name:'Long Term Ecological Research (LTER) Sites', subtext:'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites', 
             projects:[],
             prefixes:['LTR'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle: 'Microbial Inventory Research Across Diverse Aquatic Sites Portal',
+            maintitle: 'MIRADA Portal',
+            subtitle: 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.',
+            zoom: 5  // mostly US
         },
     'MBE': {name:'Microbiology of the Built Environment', subtext:'Microbiology of the Built Environment', 
             projects:[],
             prefixes:['MBE'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle: 'Microbiology Of the Built Environment Portal',
+            maintitle: 'MoBEDAC Portal',
+            subtitle: 'Microbiome of the Built Environment -Data Analysis Core.',
+            zoom: 4  // mostly US?
         }, 
     'PSPHERE':{name:'Plastisphere', subtext:'The Plastisphere', 
             projects:['LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4','LAZ_DET_Bv3v4'],
             prefixes:[],
-            suffixes:[]
+            suffixes:[],
+            pagetitle: 'The Plastisphere',
+            maintitle: 'Plastisphere Portal',
+            subtitle: 'Bacteria and Plastics',
+            zoom: 5  // mostly US
         },
     'RARE':{name:'The Rare Biosphere', subtext:'The Rare Biosphere', 
             projects:[],
             prefixes:['RARE'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle: 'The Rare Biosphere Portal',
+            maintitle: 'Rare Biosphere Portal',
+            subtitle: 'A New Paradigm for Microbiology.',
+            zoom: 13  // mostly Falmouth
         },
     'UC':  {name:'Ulcerative Colitis', subtext:'Ulcerative Colitis', 
             projects:[],
             prefixes:['UC'],
-            suffixes:[]
+            suffixes:[],
+            pagetitle: 'Ulcerative Colitis Portal',
+            maintitle: 'Ulcerative Colitis Portal',
+            subtitle: 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.',
+            zoom: 4  // mostly US?
         },
     'UNIEUK': {name:'UniEuk', subtext:'UniEuk', 
             projects:[],
             prefixes:[],
-            suffixes:['Ev4','Ev9']
+            suffixes:['Ev4','Ev9'],
+            pagetitle: 'UniEuk',
+            maintitle: 'UniEuk Portal',
+            subtitle: 'All Things Eukarya',
+            zoom: 2  // worldwide
         }
     }
 

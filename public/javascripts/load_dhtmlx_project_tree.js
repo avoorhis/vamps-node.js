@@ -181,7 +181,7 @@ function clear_filters() {
   xmlhttp.onreadystatechange=function() {
     if ( xmlhttp.readyState == 4 ) {
         pcount = xmlhttp.responseText;
-        //alert('cf')
+        //alert(pcount)
         if( pcount === 0 ){
             document.getElementById('nodata_span').innerHTML='No Projects Found';
         }else{

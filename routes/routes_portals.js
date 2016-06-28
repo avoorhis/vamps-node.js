@@ -24,10 +24,10 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     var project_list = helpers.get_portal_projects(req, portal)
     
-    var pi = get_portinfo(req, portal)
+    var pi = req.CONSTS.PORTALS[portal]
 
     console.log('pi',pi)
-    
+    console.log('project_list',project_list)
     // ALL_DATASETS.projects.forEach(function(prj) {
       
     //   if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
@@ -39,7 +39,7 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
-            subtitle  : pi.subtitle+' - Dataset Selection Page',
+            subtitle  : pi.subtitle+"<br>- Dataset Selection Page",
             //rows     : JSON.stringify(some_datasets),
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
@@ -59,11 +59,7 @@ router.get('/projects/:portal', function(req, res) {
     console.log('in projects/:portal')
     var portal = req.params.portal;
     var project_list = helpers.get_portal_projects(req, portal)
-    //var pi = get_portinfo(req, portal)
     
-    //console.log('pi',pi)
-    //console.log('pinfo'+JSON.stringify(PROJECT_INFORMATION_BY_PID));
-    //console.log('data'+JSON.stringify(some_datasets));
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
@@ -92,7 +88,7 @@ router.get('/:portal', function(req, res) {
     var portal = req.params.portal;
     var pagetitle, maintitle, subtitle;
 
-    var pi = get_portinfo(req, portal)
+    var pi = req.CONSTS.PORTALS[portal]
     console.log('pi',pi)
     res.render('portals/home', { 
             title       : pi.pagetitle,
@@ -156,7 +152,7 @@ function get_portal_metadata(req, portal, all_metadata){
     portal_info[portal] = {}
     portal_info[portal].metadata = {}
     var project_list = helpers.get_portal_projects(req, portal)
-    var pi = get_portinfo(req, portal)
+    var pi = req.CONSTS.PORTALS[portal]
   
     
     //console.log('all_metadata 1361 RARE_EFF--EFF_20090112')
@@ -285,105 +281,4 @@ function get_portal_metadata(req, portal, all_metadata){
 //
 //
 //
-function get_portinfo(req, portal){
-    info = {}
-    info.projects = []
-    info.portal_info = {}
-    info.project_prefixes = []
-    info.project_names = []
-    info.project_suffixes = []
-    switch (portal) {
-        
-        case 'MBE':
-            info.pagetitle = 'VAMPS:Microbiology Of the Built Environment Portal';
-            info.maintitle   = 'VAMPS: MoBEDAC Portal'
-            info.subtitle    = 'Microbiome of the Built Environment -Data Analysis Core.'
-            info.project_prefixes = ['MBE'];
-            info.zoom = 4  // mostly US?
-            
-            break;
-        case 'ICOMM':
-            info.pagetitle = 'VAMPS:International Census of Marine Microbes Portal';
-            info.maintitle = 'VAMPS: ICoMM - Microbis Portal'
-            info.subtitle = 'The role of the International Census of Marine Microbes (ICoMM) is to promote an agenda and an environment that will accelerate discovery,<br>understanding, and awareness of the global significance of marine microbes.'
-            info.project_prefixes = ['ICM','KCK'];
-            info.zoom = 2  // worldwide
-            
-            break;
-        case 'HMP':
-            info.pagetitle = 'VAMPS:Human Microbiome Project Portal';
-            info.maintitle = 'VAMPS: HMP Portal'
-            info.subtitle = ''
-            info.project_prefixes = ['HMP'];
-            info.zoom = 4  // mostly US? Do we even have or want distribution?
-            
-            break;
-        case 'CODL':
-            info.pagetitle = 'VAMPS:Census of Deep Life Portal';
-            info.maintitle = 'VAMPS: Census of Deep Life Portal'
-            info.subtitle = 'The mandate of the Census of Deep Life is to perform a global survey of life in continental and marine subsurface environments using deep DNA sequencing technology.'
-            info.project_prefixes = ['DCO'];
-            info.zoom = 2  // worldwide
-            
-            break;
-        case 'UC':
-            info.pagetitle = 'VAMPS:Ulcerative Colitis Portal';
-            info.maintitle = 'VAMPS Ulcerative Colitis Portal'
-            info.subtitle = 'The Role of the Gut Microbiota in Ulcerative Colitis<br>NIH Human Microbiome Demonstration Project.'
-            info.project_prefixes = [portal];
-            info.zoom = 4  // mostly US?
-            
-            break;
-        case 'RARE':
-            info.pagetitle = 'VAMPS:The Rare Biosphere Portal';
-            info.maintitle = 'VAMPS: Rare Biosphere Portal'
-            info.subtitle = 'A New Paradigm for Microbiology.'
-            info.project_prefixes = [portal];
-            info.zoom = 13  // mostly Falmouth
-            
-            break;
-        case 'CMP':
-            info.pagetitle = 'VAMPS:Coral Microbe Project Portal';
-            info.maintitle = 'VAMPS: Coral Microbiome Portal'
-            info.subtitle = ''
-            info.project_prefixes = [portal];
-            info.zoom = 3  
-            
-            break;
-        case 'LTER':
-            info.pagetitle = 'VAMPS:Microbial Inventory Research Across Diverse Aquatic Sites Portal';
-            info.maintitle = 'VAMPS: MIRADA Portal'
-            info.subtitle = 'Microbial Inventory Research Across Diverse Aquatic Long Term Ecological Research (LTER) Sites.'
-            info.project_prefixes = ['LTR'];
-            info.zoom = 5  // mostly US
-            
-            break;
-        case 'UNIEUK':
-            info.pagetitle = 'VAMPS:UniEuk';
-            info.maintitle = 'VAMPS: UniEuk Portal'
-            info.subtitle = 'All Things Eukarya'
-            info.project_suffixes = ['Ev9'];
-            info.zoom = 2  // worldwide
-            
-            break;
-        case 'PSPHERE':
-            info.pagetitle = 'VAMPS:The Plastisphere';
-            info.maintitle = 'VAMPS: Plastisphere Portal'
-            info.subtitle = 'Bacteria and Plastics'
-            info.project_names = ['LAZ_DET_Bv3v4','LAZ_SEA_Bv6','LAZ_SEA_Ev9','LAZ_SEA_Bv6v4'];
-            info.zoom = 5  // mostly US
-            
-            break;
-        default:
-            console.log('no portal')
-            info.pagetitle = 'VAMPS:';
-            info.maintitle = 'VAMPS:'
-            info.subtitle = ''
-            info.project_names = [];
-            info.zoom = 2
-            
-            return
-            
-    }
-    return info;
-}
+    

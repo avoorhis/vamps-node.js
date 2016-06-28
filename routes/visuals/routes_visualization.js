@@ -28,9 +28,13 @@ var MTX     = require('./routes_counts_matrix');
 //var PythonShell = require('python-shell');
 var spawn = require('child_process').spawn;
 var app = express();
-// GLOBAL
+// GLOBALS
 PROJECT_TREE_PIDS = []
 PROJECT_TREE_OBJ = []
+DATA_TO_OPEN = {};
+TAXCOUNTS = {};
+METADATA  = {}; 
+BIOM_MATRIX = {};
 //var xmldom = require('xmldom');
 
 // // init_node var node_class =
@@ -51,8 +55,7 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
     visual_post_items = file_data_to_open.post_items
     dataset_ids = chosen_id_name_hash.ids;
     //http://localhost:3000/visuals/view_selection/configuration-1459886135939.json
-    TAXCOUNTS = {};
-    METADATA  = {}; 
+    
     var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
     for(var i in dataset_ids){
       var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
@@ -2443,54 +2446,34 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
     SHOW_DATA = ALL_DATASETS;
     PROJECT_TREE_OBJ = [];
     //var all_pr_dat = []
-    prefixes = get_portal_prefixes(portal);    
-    if(prefixes.length === 0){
-      //result = get_livesearch_html(SHOW_DATA.projects, info, req.user);
-    }else{
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if(ucname.indexOf(prefixes[p]) != -1){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-        }
-      });
-      //result = get_livesearch_html(all_pr_dat, info, req.user);
-    }
+    
+    PROJECT_TREE_OBJ = helpers.get_portal_projects(req,portal)
+    
     console.log('PROJECT_TREE_OBJ',PROJECT_TREE_OBJ)
     PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
+    console.log('PROJECT_TREE_OBJ-PIDS',PROJECT_TREE_PIDS)
     res.json(PROJECT_TREE_PIDS.length);
 });
 //
-//  LIVESEARCH PROJECTS FILTER
+//  LIVESEARCH PROJECTS (substring) FILTER
 //
 router.get('/livesearch_projects/:q', function(req, res) {
   var q = req.params.q.toUpperCase();
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
-  console.log(q)
+  //console.log('livesearch_projects',q)
   PROJECT_TREE_OBJ = []
-  //var all_pr_dat = []
   if(portal){
-    prefixes = get_portal_prefixes(portal);  // all uppercase
-    console.log('got prefixes')
-    if(q === '----'){
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if(ucname.indexOf(prefixes[p]) != -1){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-        }
-      });
+    var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
+    //console.log('got ALL_PORTAL_PROJECTS',ALL_PORTAL_PROJECTS)
+    if(q === '----'){   // revert to all portal projects
+      PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
     }else{
-      SHOW_DATA.projects.forEach(function(prj) {
+      ALL_PORTAL_PROJECTS.forEach(function(prj) {
         ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if((ucname.indexOf(prefixes[p]) != -1) && ucname.indexOf(q) != -1){
+        if(ucname.indexOf(q) != -1){
               PROJECT_TREE_OBJ.push(prj); 
-          }       
-        }
+        }       
       });
     }
   }else{
@@ -2523,45 +2506,29 @@ router.get('/livesearch_env/:q', function(req, res) {
   console.log(q)
   var envid_lst = []
   // if q == 40 (human) then pull all from 40-49
-  //var all_pr_dat = []
+  if(q === '40'){
+    envid_lst = [40,41,42,43,44,45,46,47,48,49];
+  }else{
+    envid_lst = [parseInt(q)]
+  }
   PROJECT_TREE_OBJ = []
   if(portal){
-      prefixes = get_portal_prefixes(portal);    // all uppercase
-      console.log('got prefixes')
-      if(q === '.....'){
-        SHOW_DATA.projects.forEach(function(prj) {
-          ucname = prj.name.toUpperCase();
-          for(p in prefixes){
-            if(ucname.indexOf(prefixes[p]) != -1){
-              PROJECT_TREE_OBJ.push(prj);        
-            }
-          }
-        });
+      var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
+      if(q === '.....'){  // revert to all portal projects
+        PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
       }else{
-        SHOW_DATA.projects.forEach(function(prj) {
-          ucname = prj.name.toUpperCase();
-          for(p in prefixes){
-            if(q === '40'){
-              envid_lst = [40,41,42,43,44,45,46,47,48,49];
-            }else{
-              envid_lst = [parseInt(q)]
-            }
-            if((ucname.indexOf(prefixes[p]) != -1) && envid_lst.indexOf(parseInt(info[prj.pid].env_source_id)) != -1){
+        ALL_PORTAL_PROJECTS.forEach(function(prj) {
+            ucname = prj.name.toUpperCase();
+            if( envid_lst.indexOf(parseInt(info[prj.pid].env_source_id)) != -1){
                 PROJECT_TREE_OBJ.push(prj); 
             }       
-          }
         });
       }
   }else{
       if(q === '.....'){          
           PROJECT_TREE_OBJ = SHOW_DATA.projects
       }else{
-          if(q === '40'){
-              //console.log('found forty')
-              envid_lst = [40,41,42,43,44,45,46,47,48,49];
-            }else{
-              envid_lst = [parseInt(q)]
-            }
+          
             //console.log('lst ',envid_lst)
             SHOW_DATA.projects.forEach(function(prj) {
               if(envid_lst.indexOf(parseInt(info[prj.pid].env_source_id)) != -1){
@@ -2585,30 +2552,19 @@ router.get('/livesearch_target/:q', function(req, res) {
   //var info = PROJECT_INFORMATION_BY_PID;
   //console.log(q)
   PROJECT_TREE_OBJ = []
-  //var all_pr_dat = []
 
   if(portal){
-    prefixes = get_portal_prefixes(portal);    // all uppercase
-    console.log('got prefixes')
-    if(q === '.....'){
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        for(p in prefixes){
-          if(ucname.indexOf(prefixes[p]) != -1){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-        }
-      });
+    var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
+    if(q === '.....'){ // revert to all portal projects
+        PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
     }else{
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        pparts = prj.name.split('_');
-        last_el = pparts[pparts.length - 1]
-        for(p in prefixes){
-          if((ucname.indexOf(prefixes[p]) != -1) && last_el === q){
+      ALL_PORTAL_PROJECTS.forEach(function(prj) {
+          ucname = prj.name.toUpperCase();
+          pparts = prj.name.split('_');
+          last_el = pparts[pparts.length - 1]
+          if( last_el === q ){
               PROJECT_TREE_OBJ.push(prj); 
           }       
-        }
       });
     }
   }else{
@@ -2640,71 +2596,11 @@ router.get('/livesearch_portal/:q', function(req, res) {
   //var portal = myurl.query.portal;
   //var info = PROJECT_INFORMATION_BY_PID;
   //console.log(q)
+
   PROJECT_TREE_OBJ = []
-  SHOW_DATA.projects.forEach(function(prj) {
-    split = prj.name.split('_')
-    switch (q) {
-        case 'MBE':
-          if(split[0] === q){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'ICOMM':
-          if(split[0] === 'ICM' || split[0] === 'KCK'){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'HMP':
-          if(split[0] === q){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'CODL':
-          if(split[0] === 'DCO'){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'UC':
-          if(split[0] === q){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'RARE':
-          if(split[0] === q){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'CMP':
+  PROJECT_TREE_OBJ = helpers.get_portal_projects(req,q)
+  //console.log(PROJECT_TREE_OBJ)
 
-          if(split[0] === q || req.CONSTS.PORTALS['CMP'].projects.indexOf(prj.name) > 0){
-
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'LTER':
-          if(split[0] === 'LTR'){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'UNIEUK':
-          
-          if(split[split.length - 1] === 'Ev9' ){
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        case 'PSPHERE':
-
-          if(req.CONSTS.PORTALS['PSPHERE'].projects.indexOf(prj.name) > 0){
-
-            PROJECT_TREE_OBJ.push(prj);        
-          }
-          break;
-        default:
-            if(prj.name.split('_')[0] === q){
-            PROJECT_TREE_OBJ.push(prj);        
-          }     
-    }  
-  });
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 
@@ -2726,18 +2622,13 @@ router.get('/livesearch_status/:q', function(req, res) {
   //var all_pr_dat = []
 
   if(portal){
-      prefixes = get_portal_prefixes(portal);    // all uppercase
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        pparts = prj.name.split('_');
-        last_el = pparts[pparts.length - 1]
-        for(p in prefixes){
-          if((ucname.indexOf(prefixes[p]) != -1) && PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(q)){
-              PROJECT_TREE_OBJ.push(prj); 
-          }       
-        }
+      var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
+      ALL_PORTAL_PROJECTS.forEach(function(prj) {
+        
+        if( PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(q) ){
+            PROJECT_TREE_OBJ.push(prj); 
+        }       
       });
-   
   }else{
       SHOW_DATA.projects.forEach(function(prj) {
           if(PROJECT_INFORMATION_BY_PID[prj.pid].public === parseInt(q)){
@@ -2745,7 +2636,6 @@ router.get('/livesearch_status/:q', function(req, res) {
           }
       });
   }
-  
   
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
@@ -2779,21 +2669,15 @@ router.get('/livesearch_metadata/:q', function(req, res) {
   //var all_pr_dat = []
 
   if(portal){
-      prefixes = get_portal_prefixes(portal);    // all uppercase
-      SHOW_DATA.projects.forEach(function(prj) {
-        ucname = prj.name.toUpperCase();
-        pparts = prj.name.split('_');
-        last_el = pparts[pparts.length - 1]
+      var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
+      ALL_PORTAL_PROJECTS.forEach(function(prj) {
+        //ucname = prj.name.toUpperCase();
         dids = DATASET_IDS_BY_PID[prj.pid]
-        for(p in prefixes){
-          if((ucname.indexOf(prefixes[p]) != -1)){
-            for(i in dids){
-              md = AllMetadata[dids[i]]
-              if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
-                PROJECT_TREE_OBJ.push(prj); 
-              }
-            }
-          }       
+        for(i in dids){
+          md = AllMetadata[dids[i]]
+          if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
+            PROJECT_TREE_OBJ.push(prj); 
+          }
         }
       });
    
@@ -2884,44 +2768,44 @@ router.get('/project_dataset_tree_dhtmlx', function(req, res) {
     var json = {}
     json.id = id;
     json.item = []
-    //console.log(DATA_TO_OPEN)
-  
-
+    //console.log('PROJECT_TREE_PIDS2',PROJECT_TREE_PIDS)
+    
     if(id==0){
         //console.log(PROJECT_INFORMATION_BY_PID)
         
-        for( i in PROJECT_TREE_PIDS ){
+        for( i=0;i<PROJECT_TREE_PIDS.length;i++ ){
             
             var pid = PROJECT_TREE_PIDS[i];
             var node = PROJECT_INFORMATION_BY_PID[pid];
-    
+            //console.log('node',node)
             var tt_pj_id = 'project-|-'+node.project+'-|-'+node.title;
             if(node.public) {
               tt_pj_id += '-|-public'; 
             }else{
               tt_pj_id += '-|-private'; 
             }
-            
+            var pid_str = pid.toString()
             var itemtext = "<span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>"+node.project+"</span>";
-            itemtext    += " <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-            
+            itemtext    += " <a href='/projects/"+pid_str+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
             if(node.public) {
-              itemtext += "<small> <i>(public)</i></small>"                
+              itemtext += "<small> <i>(public)</i></small>"  
+                            
             }else{
               if(req.user.security_level == 1){
                 itemtext += "<small> <i>(PI: "+node.username +")</i></small>"
-              }                
+              }  
+                           
             }
-            //console.log('Object.keys(data_to_open)')
-            //console.log(Object.keys(data_to_open))
-            if(Object.keys(DATA_TO_OPEN).indexOf(pid.toString()) >= 0){
-              json.item.push({id:'p'+pid, text:itemtext, checked:false, open:'1',child:1, item:[]});
+            
+            if(Object.keys(DATA_TO_OPEN).indexOf(pid_str) >= 0){
+              json.item.push({id:'p'+pid_str, text:itemtext, checked:false, open:'1',child:1, item:[]});
             }else{
-              json.item.push({id:'p'+pid, text:itemtext, checked:false,  child:1, item:[]});
+              json.item.push({id:'p'+pid_str, text:itemtext, checked:false,  child:1, item:[]});
             }
             
                 
         }
+        //console.log(JSON.stringify(json, null, 4))
         
     }else{
         //console.log(JSON.stringify(ALL_DATASETS))
@@ -2975,117 +2859,5 @@ module.exports = router;
 //
 //
 
-function get_portal_prefixes(portal){
-    switch (portal) {
-    
-      case 'MBE':
-          prefixes = [portal];
-          break;
-      case 'ICOMM':
-          prefixes = ['ICM','KCK'];
-          break;
-      case 'HMP':
-          prefixes = [portal];
-          break;
-      case 'CODL':
-          prefixes = ['DCO'];
-          break;
-      case 'UC':
-          prefixes = [portal];
-          break;
-      case 'RARE':
-          prefixes = [portal];
-          break;
-      case 'CMP':
-          prefixes = [portal];
-          break;
-      case 'LTER':
-          prefixes = ['LTR'];
-          break;
-      case 'PSPHERE':
-          prefixes = ['LTR'];
-          break;
-      case 'UNIEUK':
-          prefixes = ['LTR'];
-          break;
-      default:
-          console.log('no portal found -- loading all data')
-          prefixes = [];
-    }
-    return prefixes;
-}
-//
-//
-//
-// function get_livesearch_html(all_pr_dat, info, user)
-// {
-
-//   var html = '';
-//   html += "<ul>";
-//   var project_count = 0;
-//   for (i in all_pr_dat) { 
-      
-//           var pid = all_pr_dat[i].pid 
-      
-//           if(user.security_level === 1 || (info[pid].permissions.length === 0) || (info[pid].permissions.indexOf(user.user_id) !== -1) ) { 
-        
-//             pname = all_pr_dat[i].name;
-//             title = all_pr_dat[i].title;
-//             datasets = all_pr_dat[i].datasets;
-//             if(info[pid].public  === 1 || info[pid].public  === '1') { 
-//               var status='public'; 
-//             } else { 
-//               var status = 'private'; 
-//             } 
-//             var tt_pj_id  = 'project-|-'+pname+'-|-'+title+'-|-'+status; 
-          
-//             html += "<li>";
-//             html += "  <label id='"+pname+"' class='project-select'>";
-//             html += "    <a href='#'  id='"+ pname +"_toggle' class='project_toggle'>";
-//             html += "      <img alt='plus' src='/images/tree_plus.gif'/>";
-//             html += "    </a>";
-              
-//             html += "    <input type='checkbox' class='project_toggle' id='"+ pname+"--pj-id'  name='project_names[]' value='"+ pname +"'/>";
-//             //html += "    <a href='/projects/"+pid+"'>";
-//             html += "      <span id='"+ tt_pj_id +"' class='tooltip_pjds_list'>";
-//             if(status == 'public') {     
-//               html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a><small> <i>(public)</i></small>";
-//             }else{ 
-//                 if(user.security_level === 1 ){
-//                     html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a><small> <i>(PI: "+info[pid].username +")</i></small>";
-//                 }else{ 
-//                     html += pname+"</span> <a href='/projects/"+pid+"'><span title='profile' class='glyphicon glyphicon-question-sign'></span></a>";
-//                 }
-//             }
-//             html += "  </label>";
-//             //html += " <small>"+title+"</small></label>";
-//             html += "  <ul>";
-//             html += "    <div id='"+ pname +"_ds_div' class='datasets_per_pr'>";
-//            //     <!--  class='display_none' -->
-//             for (k in datasets) { 
-//               did = datasets[k].did; 
-//               dname = datasets[k].dname;
-//               ddesc = datasets[k].ddesc; 
-//               pd = pname + '--' + dname; 
-//               //pass_thru_value = did + '--' + pname + '--' + dname;
-//               var tt_ds_id  = 'dataset-|-'+pname+'-|-'+dname+'-|-'+ddesc;
-//               html += "       <li>";
-//               html += "         <label id='"+pd+"' class='dataset-select'  >";
-//               html += "            <input type='checkbox' id='"+pd+"' name='dataset_ids[]' class='dataset_check' value='"+did+"' onclick='checkme()'/>";
-//               html += "           <span id='"+tt_ds_id+"' class='tooltip_pjds_list'>"+ dname +"</span>";
-//               html += "        </label>";
-//               html += "      </li>";
-//             }
-//             html += "  </div>";
-//             html += "</ul>";
-//             html += "</li>"
-//             project_count += 1;
-
-//           }
-     
-//   }
-//   html += "</ul>";  
-//   return {'html':html,'count':project_count};
-// }
 
 
