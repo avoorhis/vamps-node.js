@@ -14,11 +14,16 @@
 
 </script>
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
-<div class='title title_color_viz' id='comm_viz_title_div' >Community Visualization</div>
-<% if(subtitle == 'Dataset Selection Page'){ %>
+
+
+
+<% if(portal_to_show == ''){ %>
+  <div class='title title_color_viz' id='comm_viz_title_div' >Community Visualization</div>
   <div class='subtitle' style=''><%= subtitle %></div>
 <% }else{ %>
-  <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- subtitle %></div>
+  <div class='title title_color_portal' id='comm_viz_title_div' ><%= portals[portal_to_show].subtext %> Portal: Community Visualization</div>
+  <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- portals[portal_to_show].subtitle %><br><%= subtitle %></div>
+
 <% }%>
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>

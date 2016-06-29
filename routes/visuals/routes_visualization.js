@@ -2457,8 +2457,8 @@ router.get('/load_portal/:portal', helpers.isLoggedIn, function(req, res) {
 //
 //  LIVESEARCH PROJECTS (substring) FILTER
 //
-router.get('/livesearch_projects/:q', function(req, res) {
-  var q = req.params.q.toUpperCase();
+router.get('/livesearch_projects/:substring', function(req, res) {
+  var substring = req.params.substring.toUpperCase();
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
   //console.log('livesearch_projects',q)
@@ -2466,23 +2466,23 @@ router.get('/livesearch_projects/:q', function(req, res) {
   if(portal){
     var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
     //console.log('got ALL_PORTAL_PROJECTS',ALL_PORTAL_PROJECTS)
-    if(q === '----'){   // revert to all portal projects
+    if(substring === '----'){   // revert to all portal projects
       PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
     }else{
       ALL_PORTAL_PROJECTS.forEach(function(prj) {
         ucname = prj.name.toUpperCase();
-        if(ucname.indexOf(q) != -1){
+        if(ucname.indexOf(substring) != -1){
               PROJECT_TREE_OBJ.push(prj); 
         }       
       });
     }
   }else{
-      if(q === '----'){  // this is value         
+      if(substring === '----'){  // this is value         
           PROJECT_TREE_OBJ = SHOW_DATA.projects
       }else{
           SHOW_DATA.projects.forEach(function(prj) {
             ucname = prj.name.toUpperCase();
-            if(ucname.indexOf(q) != -1){
+            if(ucname.indexOf(substring) != -1){
               PROJECT_TREE_OBJ.push(prj);        
             }
           });
@@ -2497,24 +2497,24 @@ router.get('/livesearch_projects/:q', function(req, res) {
 //
 //  LIVESEARCH ENV PROJECTS FILTER
 //
-router.get('/livesearch_env/:q', function(req, res) {
-  var q = req.params.q;
+router.get('/livesearch_env/:envid', function(req, res) {
+  var envid = req.params.envid;
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
   var info = PROJECT_INFORMATION_BY_PID;
   console.log(portal)
-  console.log(q)
+  console.log(envid)
   var envid_lst = []
   // if q == 40 (human) then pull all from 40-49
-  if(q === '40'){
+  if(envid === '40'){
     envid_lst = [40,41,42,43,44,45,46,47,48,49];
   }else{
-    envid_lst = [parseInt(q)]
+    envid_lst = [parseInt(envid)]
   }
   PROJECT_TREE_OBJ = []
   if(portal){
       var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
-      if(q === '.....'){  // revert to all portal projects
+      if(envid === '.....'){  // revert to all portal projects
         PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
       }else{
         ALL_PORTAL_PROJECTS.forEach(function(prj) {
@@ -2525,7 +2525,7 @@ router.get('/livesearch_env/:q', function(req, res) {
         });
       }
   }else{
-      if(q === '.....'){          
+      if(envid === '.....'){          
           PROJECT_TREE_OBJ = SHOW_DATA.projects
       }else{
           
@@ -2545,8 +2545,8 @@ router.get('/livesearch_env/:q', function(req, res) {
 //
 //  LIVESEARCH TARGET PROJECTS FILTER
 //
-router.get('/livesearch_target/:q', function(req, res) {
-  var q = req.params.q;
+router.get('/livesearch_target/:gene_target', function(req, res) {
+  var gene_target = req.params.gene_target;
   var myurl = url.parse(req.url, true);  
   var portal = myurl.query.portal;
   //var info = PROJECT_INFORMATION_BY_PID;
@@ -2555,26 +2555,26 @@ router.get('/livesearch_target/:q', function(req, res) {
 
   if(portal){
     var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
-    if(q === '.....'){ // revert to all portal projects
+    if(gene_target === '.....'){ // revert to all portal projects
         PROJECT_TREE_OBJ = ALL_PORTAL_PROJECTS
     }else{
       ALL_PORTAL_PROJECTS.forEach(function(prj) {
           ucname = prj.name.toUpperCase();
           pparts = prj.name.split('_');
           last_el = pparts[pparts.length - 1]
-          if( last_el === q ){
+          if( last_el === gene_target ){
               PROJECT_TREE_OBJ.push(prj); 
           }       
       });
     }
   }else{
-      if(q === '.....'){          
+      if(gene_target === '.....'){          
           PROJECT_TREE_OBJ = SHOW_DATA.projects
       }else{
           SHOW_DATA.projects.forEach(function(prj) {
             pparts = prj.name.split('_');
             last_el = pparts[pparts.length - 1]
-            if(last_el === q){
+            if(last_el === gene_target){
               PROJECT_TREE_OBJ.push(prj);        
             }
           });
@@ -2589,16 +2589,16 @@ router.get('/livesearch_target/:q', function(req, res) {
 //
 //
 //
-router.get('/livesearch_portal/:q', function(req, res) {
+router.get('/livesearch_portal/:portal', function(req, res) {
   console.log('in livesearch portal')
-  var q = req.params.q;
+  var portal = req.params.portal;
   var myurl = url.parse(req.url, true);  
   //var portal = myurl.query.portal;
   //var info = PROJECT_INFORMATION_BY_PID;
   //console.log(q)
 
   PROJECT_TREE_OBJ = []
-  PROJECT_TREE_OBJ = helpers.get_portal_projects(req,q)
+  PROJECT_TREE_OBJ = helpers.get_portal_projects(req,portal)
   //console.log(PROJECT_TREE_OBJ)
 
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);

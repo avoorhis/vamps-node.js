@@ -24,10 +24,10 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     var project_list = helpers.get_portal_projects(req, portal)
     
-    var pi = req.CONSTS.PORTALS[portal]
+    //var pi = req.CONSTS.PORTALS[portal]
 
-    console.log('pi',pi)
-    console.log('project_list',project_list)
+    //console.log('pi',pi)
+    //console.log('project_list',project_list)
     // ALL_DATASETS.projects.forEach(function(prj) {
       
     //   if(prj.name.indexOf(portal) === 0){  // UC, ICM, HMP, MBE ....
@@ -39,15 +39,13 @@ router.get('/visuals_index/:portal', function(req, res) {
     
     res.render('visuals/visuals_index', { 
             title     : 'VAMPS:Portals:Dataset Selection',
-            subtitle  : pi.subtitle+"<br>- Dataset Selection Page",
-            //rows     : JSON.stringify(some_datasets),
+            subtitle  : "Dataset Selection Page",
             proj_info : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             constants : JSON.stringify(req.CONSTS),
             md_names    : AllMetadataNames,
             filtering : 0,
             portal_to_show : portal,
             data_to_open : JSON.stringify({}),
-            //portal_name: portal,
             user      : req.user,hostname: req.CONFIG.hostname,
             message   :'',
         });

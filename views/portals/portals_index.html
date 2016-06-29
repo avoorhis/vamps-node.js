@@ -8,66 +8,27 @@
 <div class="container"> 
    
 <p class='title'>Portals</p>  
-    <p class='subtitle'>Portals are areas of the site dedicated to specific umbrella projects or initiatives
- that contain many VAMPS projects. <br>They typically involve more than one primary investigator and strive to make the data publicly available
- although some of the data may still be private.</p>    
+    <p class='subtitle'>Portals are areas of the VAMPS site dedicated to specific umbrella projects or initiatives
+        that contain many VAMPS projects. <br>They typically involve more than one primary investigator and strive to make the data publicly available.
+    </p>    
 <br><br>
-
-
- 
 
   <ul class='portal_list'>
     <% for(p in ptls) { %>
         <div class='well'>
-            
-            <% if(p =='CMP'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/cmp_thumbnail.jpg"  height='60'> 
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='CODL'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/dco_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='HMP'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/hmp_logo_NIH_retina.png"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='ICOMM'){ %>
-                <li>
-                    <a href='<%= p %>'>
-                        <img src="/images/portals/icomm_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a> - International Census of Marine Microbes</li>
-            <% }else if(p =='LTER'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/lter_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='MBE'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/mbe_thumbnail.gif"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='PSPHERE'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/psphere_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='RARE'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/rare_thumbnail.png"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='UC'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/uc_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else if(p =='UNIEUK'){ %>
-                <li>
-                    <a href='<%= p %>'><img src="/images/portals/unieuk_thumbnail.jpg"  height='60'>
-                    - <%= ptls[p].name %></a></li>
-            <% }else{ %>
-                <li> - <a href='<%= ptls[p].id %>'><%= ptls[p].name %></a></li>
-            <% } %>
+        <a href='<%= p %>'>
+            <table><tr>
+            <td>
+                    <img src="<%= ptls[p].thumb %>"  height='60'>
+            </td>
+            <td style='padding:10px;'>- <%= ptls[p].name %><br>
+                    <div style='font-style:italic;font-size:small;'><%= ptls[p].subtitle %></div>
+            </td>
+            </tr></table>
+        </a>
         </div>
     <% } %>
     
-
   </ul>
 
 <% include ../add_ins/end.ejs %>

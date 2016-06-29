@@ -37,7 +37,10 @@ a {
 .title_color_viz {
   background:#1E90FF;
 }
-
+.title_color_portal {
+  background:#800080;
+  color:#E5E4E2;
+}
 .title_color_exp {
   background:#8FBC8F;
 }
