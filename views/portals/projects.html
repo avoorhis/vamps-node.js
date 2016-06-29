@@ -8,7 +8,7 @@
 	<div class="container">
 
 	<div class="hero-unit">
-	       <h2>VAMPS portal: <%= portal %></h2>
+	       <h2><%= portal %></h2>
 				<h3>Project listing</h3>       
 	</div>
 	
@@ -18,7 +18,6 @@
 					<table class='table'>
 						<% for(n in data){ %>
 									<tr><td>(<%= data[n].pid %>) <%= data[n].name %></td><td><%= data[n].title %></td></tr>
-									
 						<% } %>
 
 					</table>
@@ -29,10 +28,6 @@
 	</div>
 
 </div>
-
-
-
-
 
 	
 <% include ../add_ins/end.ejs %>

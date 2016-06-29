@@ -61,7 +61,7 @@ router.get('/projects/:portal', function(req, res) {
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
-            portal    : portal,
+            portal    : req.CONSTS.PORTALS[portal].pagetitle,
             //pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
             data      : project_list,
             message   : '',
