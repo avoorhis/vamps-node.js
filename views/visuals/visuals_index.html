@@ -8,42 +8,39 @@
 <%  filtering = 0 %>
 <% } %>
 <script>
-
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = "<%= portal_to_show %>";
-
 </script>
+
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
-
-
-
 <% if(portal_to_show == ''){ %>
   <div class='title title_color_viz' id='comm_viz_title_div' >Community Visualization</div>
   <div class='subtitle' style=''><%= subtitle %></div>
 <% }else{ %>
   <div class='title title_color_portal' id='comm_viz_title_div' ><%= portals[portal_to_show].subtext %> Portal: Community Visualization</div>
   <div class='subtitle' style='padding:3px;background:#BDEDFF;'><%- portals[portal_to_show].subtitle %><br><%= subtitle %></div>
-
 <% }%>
+
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
-
-    <!-- autocomplete="off" clears the checkboxes on page refresh -->
     
-      <table class='table table-bordered'>
-        <tr>
+      <table class='table' border='1'>
+      <tr>
+        
         <td>
            <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Projects</a> 
         </td>
+        
         <td>
           <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >View Saved Datasets</a>
-          <small>
-            showing <span id='project_count_id'>0</span> projects;
-            selected dataset count: <span id='selected_ds_count_id'>0</span>
-          </small><br>
-          <strong>Select Datasets Below:</strong>
-          
+          <div class='pull-left'><br><strong>Select Datasets Below:</strong></div>
+          <div class='pull-left' style='margin:0 10px;padding:0 10px;border:1px solid gray;'>
+            <small>
+              Showing <span id='project_count_id'>0</span> projects<br>
+              Selected dataset count: <span id='selected_ds_count_id'>0</span>
+            </small>
+          </div>
         </td>
         
         <td>            
@@ -54,85 +51,21 @@
                 <span class="label label-default">To save your dataset selections go to the next page.</span>  
             </h4>
         </td>
-        </tr>
 
-        <tr>
-        <td style='width:100px;'>Filter Projects
-          <!-- FILTER -->
-          <div id='' class=''>
-            <table id='filters_table' class='table table-striped' border='1' width=''>
-              <tr>
-                <td>by Substring:<br>
-                  <input id="pname_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  by ENV Source:<br>
-                  <select id='env_source_select' >
-                    <option>.....</option>
-                    <% for(n in env_sources) { %>
-                      <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
-                    <% } %>
-                  </select>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  by Domain/Target:<br>
-                  <select  id='target_select'>
-                    <option>.....</option>
-                    <% for(n in targets) { %>
-                      <option value='<%= targets[n] %>'><%= targets[n] %></option>
-                    <% } %>
-                  </select>
-                </td>
-              </tr>
-        <% //if(hostname.substring(0,6) === 'bpcweb'){ %>
-              <% if(portal_to_show == ''){ %>  
-                <tr>
-                  <td>
-                    by Portal:<br>
-                    <select  id='portal_select'>
-                      <option>.....</option>
-                      <% for(n in portals) { %>
-                        <option value='<%= n %>'>(<%= n %>) <%= portals[n].name %></option>
-                      <% } %>
-                    </select>
-                  </td>
-                </tr>
-              <% } %>
-        <% //} %>
-              <tr>
-                <td>
-                  <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
-                  <input type='radio' id='status_priv' name='pub_priv' value='0'> private
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  by Metadata:<br>
-                  <select  id='metadata_select'>
-                    <option>.....</option>
-                    <% for(n in md_names) { %>
-                      <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
-                    <% } %>
-                  </select>
-                </td>
-              </tr>
-            </table>
-            
-          </div>
+      </tr>
+      <tr>
+        
+        <td style='width:100px;'>
+          <% include ../add_ins/filters.html %>
         </td>
-<form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">
 
-            <td>
-                <div id='projects_select_div'>
-                  <span id='nodata_span' style='visiblity:hidden'></span>
-                </div>
-            </td>
+        <td>
+            <div id='projects_select_div'>
+              <span id='nodata_span' style='visiblity:hidden'></span>
+            </div>
+        </td>
       
-		    <td class='td_top'>
+		    <td class='td_top' width="50%">
                 - The projects to the left include all the public projects and any
             <br>&nbsp;&nbsp;&nbsp;others that you have permissions to access. 
             <br><br>- Selecting the project name will take you to that project's profile.
@@ -142,11 +75,13 @@
             <br>&nbsp;&nbsp;&nbsp;and metadata for the visualizations.
             <br><br>- Move to the next page
             <br>&nbsp;&nbsp;&nbsp;by selecting the orange 'next' button in the upper right.
-			  
 		    </td>
-        </tr>
+
+      </tr>
       </table>
-	  
+
+<!-- autocomplete="off" clears the checkboxes on page refresh -->
+<form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='/visuals/unit_selection' autocomplete="off">	  
        <input type='hidden' name='Next2' value='Next: Unit Selection2' id="unit_selection2" >
 </form>
    

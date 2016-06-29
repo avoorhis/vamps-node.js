@@ -3,39 +3,42 @@
 <% var info = JSON.parse(proj_info) %>
 <% var env_sources = JSON.parse(constants).ENV_SOURCE %>
 <% var targets = JSON.parse(constants).TARGETS %>
+<% var portals = JSON.parse(constants).PORTALS %>
 <% filtering = 0 %>
+<% portal_to_show = '' %>
 
 <script>
   var filtering  =  <%= filtering  %> 
   var datasets_local  = JSON.parse('<%- data_to_open %>');
   var portal_local  = ""; // no portal stuff here
 </script>
+
 <link rel="stylesheet" href="/stylesheets/dhtmlx/dhtmlxtree.css" >
 <div class='title title_color_exp' id='export_data_title_div'>Export Data</div>
-
 <div class='subtitle'>Dataset Selection Page</div>
+
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 
-    <!-- autocomplete="off" clears the checkboxes on page refresh -->
-    <form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='export_selection' autocomplete="off">
-
-      <table class='table table-bordered'>
-        <tr>
+      <table class='table' border='1'>
+      <tr>
+          
           <td>
             <a  id='clear_filters_btn_id' type='button' value='' class='btn btn-xs btn-primary' >Clear Filters/Reset Projects</a> 
           </td>
-          <td>
-          <a href='/visuals/saved_elements' type="button" class="btn btn-xs btn-primary pull-right"  id="">View Saved Datasets</a>
-          <small>
-            showing <span id='project_count_id'>0</span> projects;
-            selected dataset count: <span id='selected_ds_count_id'>0</span>
-          </small><br>
-          <strong>Select Datasets Below:</strong>
           
+          <td>
+            <a  href='/visuals/saved_elements'  type="button" value='' class="btn btn-xs btn-primary pull-right"  role='button' >View Saved Datasets</a>
+            <div class='pull-left'><br><strong>Select Datasets Below:</strong></div>
+            <div class='pull-left' style='margin:0 10px;padding:0 10px;border:1px solid gray;'>
+              <small>
+                Showing <span id='project_count_id'>0</span> projects<br>
+                Selected dataset count: <span id='selected_ds_count_id'>0</span>
+              </small>
+            </div>
           </td>
-          <td></td>
+          
           <td>            
       			<button type="button" class="btn btn-sm btn-warning pull-right" name='Next' id="unit_selection_btn_exports" > 
       			  next: File Format Selection <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span> 
@@ -45,89 +48,20 @@
             </h4>
           </td>
           
-          </tr>
-          <tr>
-            <td style='width:100px;'>Filter Projects
-              <!-- FILTER -->
-              <div id='' class=''>
-                <table id='filters_table' border='1' width=''>
-                  <tr>
-                    <td>by substring:<br>
-                      <input id="pname_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      by env source<br>
-                      <select id='env_source_select' >
-                        <option>.....</option>
-                        <% for(n in env_sources) { %>
-                          <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
-                        <% } %>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      by domain/target<br>
-                      <select  id='target_select'>
-                        <option>.....</option>
-                        <% for(n in targets) { %>
-                          <option value='<%= targets[n] %>'><%= targets[n] %></option>
-                        <% } %>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                  <td>
-                    <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
-                    <input type='radio' id='status_priv' name='pub_priv' value='0'> private
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    by Metadata:<br>
-                    <select  id='metadata_select'>
-                      <option>.....</option>
-                      <% for(n in md_names) { %>
-                        <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
-                      <% } %>
-                    </select>
-                  </td>
-                </tr>
-                </table>
-                
-              </div>
-            </td>
+        </tr>
+        <tr>
 
-
-
-          
+          <td style='width:100px;'>
+              <% include ../add_ins/filters.html %>
+          </td>
+ 
           <td>
-            <!-- 
-            <div id='projects_only_div'>
-              <% for(i in info){ %>
-                <li><input title='<%= i %>' type='checkbox' name='project[]' value='<%= i %>'> <%= info[i].project %></li>
-              <% } %>
-            </div> -->
-
-           <!--  <div style='position:relative; left: 50%;'> 
-              <input type='radio' checked id='project_tree_id'  name='tree_view' value='projects_only_tree' onclick="change_tree('projects')"> projects only
-              <input type='radio' id='dataset_tree_id' name='tree_view' value='datasets_tree' onclick="change_tree('datasets')"> datasets
-            </div> -->
-            <!-- <div id='projects_only_select_div'>              </div>  -->
             <div id='projects_select_div'>              
               <span id='nodata_span' style='visiblity:hidden'></span>
             </div> 
-
           </td>
-          <td>
-         
-          </td>
-
-
-		      <td class='td_top'>			  
-			  
+          
+		      <td class='td_top' width="50%">			  
               See the next page for a list of choices:
               <ul>
                 <li>-- Download sequences (fasta)
@@ -135,11 +69,14 @@
                 <li>-- Metadata (csv)
               </ul>
 		      </td>
+
         </tr>
       </table>
-	  
+
+<!-- autocomplete="off" clears the checkboxes on page refresh -->
+<form id='project_dataset_select_form' class='' name='project_dataset_select_form' method='POST' action='export_selection' autocomplete="off">	  
        <input type='hidden' name='Next' value='Next: Export Selection' id="export_selection" >
-    </form>
+</form>
    
 
 <% include ../add_ins/end.ejs %>

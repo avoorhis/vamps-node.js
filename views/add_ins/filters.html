@@ -1,0 +1,66 @@
+Filter Projects
+          <!-- FILTER -->
+          <div id='' class=''>
+            <table id='filters_table' class='table table-striped' border='1' width=''>
+              <tr>
+                <td>by Substring:<br>
+                  <input id="pname_search_id" class="" autocomplete="off"  type="text"  onkeyup="showLiveProjectNames(this.value)"/>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by ENV Source:<br>
+                  <select id='env_source_select' >
+                    <option>.....</option>
+                    <% for(n in env_sources) { %>
+                      <option value='<%= n %>'>(<%= n %>) <%= env_sources[n] %></option>
+                    <% } %>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by Domain/Target:<br>
+                  <select  id='target_select'>
+                    <option>.....</option>
+                    <% for(n in targets) { %>
+                      <option value='<%= targets[n] %>'><%= targets[n] %></option>
+                    <% } %>
+                  </select>
+                </td>
+              </tr>
+        <% //if(hostname.substring(0,6) === 'bpcweb'){ %>
+              <% if(portal_to_show == ''){ %>  
+                <tr>
+                  <td>
+                    by Portal:<br>
+                    <select  id='portal_select'>
+                      <option>.....</option>
+                      <% for(n in portals) { %>
+                        <option value='<%= n %>'>(<%= n %>) <%= portals[n].name %></option>
+                      <% } %>
+                    </select>
+                  </td>
+                </tr>
+              <% } %>
+        <% //} %>
+              <tr>
+                <td>
+                  <input type='radio' id='status_pub'  name='pub_priv' value='1' > public&nbsp;&nbsp;
+                  <input type='radio' id='status_priv' name='pub_priv' value='0'> private
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  by Metadata:<br>
+                  <select  id='metadata_select'>
+                    <option>.....</option>
+                    <% for(n in md_names) { %>
+                      <option value='<%= md_names[n] %>'><%= md_names[n] %></option>
+                    <% } %>
+                  </select>
+                </td>
+              </tr>
+            </table>
+            
+          </div>

@@ -66,7 +66,8 @@ a {
 .normal_weight {
    font-weight:normal;
 }
-.table {
+
+/*.table {
     border:1px solid black;
     list-style-type: none;
     padding:10px;
@@ -74,7 +75,7 @@ a {
 .table ul {
     text-align:left;
     list-style-type: none;
-}
+}*/
 .div_border {
   border:1px solid black;
   
