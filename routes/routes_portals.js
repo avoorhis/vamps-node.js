@@ -58,12 +58,15 @@ router.get('/projects/:portal', function(req, res) {
     var portal = req.params.portal;
     var project_list = helpers.get_portal_projects(req, portal)
     
+    project_list.sort(function(a, b){
+          return helpers.compareStrings_alpha(a.project, b.project);
+    });
+    console.log(project_list)
     res.render('portals/projects', { 
             title     : 'VAMPS:'+portal+'Portals',
             user      : req.user,hostname: req.CONFIG.hostname,
             portal    : req.CONSTS.PORTALS[portal].pagetitle,
-            //pinfo     : JSON.stringify(PROJECT_INFORMATION_BY_PID),
-            data      : project_list,
+            projects  : JSON.stringify(project_list),
             message   : '',
         });
 });

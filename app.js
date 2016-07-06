@@ -1,5 +1,5 @@
 try{
-    require('./public/monitor/newrelic');
+    require('newrelic');
     console.log('Starting newrelic module: logging to ./newrelic_agent.log')
 }
 catch (e) {

@@ -86,7 +86,7 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 		if(req.body.fasta === undefined
 				&& req.body.taxbyseq === undefined
 				&& req.body.taxbyref === undefined
-				&& req.body.taxbytax === undefined
+				&& req.body.matrix === undefined
 				&& req.body.metadata === undefined
 				&& req.body.biom === undefined ){
 				req.flash('failMessage', 'Select one or more file formats');
@@ -117,12 +117,12 @@ router.post('/export_confirm', helpers.isLoggedIn, function(req, res) {
 			if(key === 'fasta'){
 				requested_files.push('-fasta_file');
 			}
-			if(key === 'taxbytax'){
-				requested_files.push('-taxbytax_file');
+			if(key === 'matrix'){
+				requested_files.push('-matrix_file');
 			}
-			if(key === 'taxbyref'){
-				requested_files.push('-taxbyref_file');
-			}
+			//if(key === 'taxbyref'){
+			//	requested_files.push('-taxbyref_file');
+			//}
 			if(key === 'taxbyseq'){
 				requested_files.push('-taxbyseq_file');
 			}

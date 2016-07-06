@@ -18,13 +18,19 @@ router.get('/projects_index', function(req, res) {
   	
    // var info = PROJECT_INFORMATION_BY_PID
   // console.log(info);
-    var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
-    keys.sort();
+    //var keys = Object.keys(PROJECT_INFORMATION_BY_PNAME);
+    //keys.sort();
+    var project_list = helpers.get_public_projects(req)
+    project_list.sort(function(a, b){
+          return helpers.compareStrings_alpha(a.project, b.project);
+    });
+    console.log(project_list)
     res.render('projects/projects_index', { 
                         title          : 'VAMPS Projects',
-                        projects    : JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+                        //projects    : JSON.stringify(PROJECT_INFORMATION_BY_PNAME),
+                        projects  : JSON.stringify(project_list),
                         //data: JSON.stringify(info),
-                        sorted_keys : keys,
+                        //sorted_keys : keys,
                         user: req.user,hostname: req.CONFIG.hostname,
                 });
     
