@@ -1,10 +1,11 @@
-try{
-    require('newrelic');
-    console.log('Starting newrelic module: logging to ./newrelic_agent.log')
-}
-catch (e) {
-  console.log(e);
-}
+// try{
+//     require('newrelic');
+//     console.log('Starting newrelic module: logging to ./newrelic_agent.log')
+// }
+// catch (e) {
+//   console.log(e);
+// }
+
 // anna's
 // try{
 //   require('nodetime').profile({
@@ -42,13 +43,13 @@ connection = require('./config/database').pool;
 
 var routes    = require('./routes/index');  // This grabs ALL_DATASETS from routes/load_all_datasets.js
 var users     = require('./routes/routes_users');
-var tmp     = require('./routes/routes_tmp');
+var tmp       = require('./routes/routes_tmp');
 var user_data = require('./routes/routes_user_data');
 var search    = require('./routes/routes_search');
 var projects  = require('./routes/routes_projects');
 var datasets  = require('./routes/routes_datasets');
 var help      = require('./routes/routes_help');
-var resources      = require('./routes/routes_resources');
+var resources = require('./routes/routes_resources');
 var admin     = require('./routes/routes_admin');
 
 var portals   = require('./routes/routes_portals');
