@@ -1,34 +1,30 @@
 <% include ../add_ins/begin.ejs %>
+<% proj = JSON.parse(projects) %>
 
 <% if (message) { %>
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 	<a href='/portals/portals_index'>&lt;&lt;-portals</a>
 	
-	<div class="container">
-
-	<div class="hero-unit">
-	       <h2><%= portal %></h2>
-				<h3>Project listing</h3>       
-	</div>
-	
-  <div class="row">  
-      <div class="col-lg-12">
-				
-					<table class='table'>
-						<% for(n in data){ %>
-									<tr><td>(<%= data[n].pid %>) <%= data[n].name %></td><td><%= data[n].title %></td></tr>
-						<% } %>
-
-					</table>
-
-
-			</div>
-			
-	</div>
-
+<div class="container">
+		<div class="hero-unit">
+		       <h2><%= portal %></h2>
+					<h3>Project listing</h3>       
+		</div>
+		
+	  <div class="row">  
+	      <div class="col-lg-12">
+						<div id='project_list_div' class='left_justify table' ><% include ../projects/project_listing %></div>
+				</div>
+		</div>
 </div>
 
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+    
+  });
+</script>
 	
 <% include ../add_ins/end.ejs %>
    

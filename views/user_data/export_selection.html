@@ -55,25 +55,27 @@ Normalization:
               </tr>       
               <tr>
                 <td>
-                <input type="checkbox" name='taxbytax' value="1"> TaxByTax File (csv counts matrix)
+                <input type="checkbox" name='matrix' value="1"> Taxonomy Matrix File (csv counts matrix)
                 </td>
                 <td>
                 </td>
-                <td>Reads having the same taxonomic assignment are grouped (coarsest grouping).</td>
-              </tr>        
+                <td>Reads having the same taxonomic assignment are grouped (--coarsest grouping).</td>
+              </tr>
+<!--
               <tr>
                 <td>
                     <input type="checkbox" disabled name='taxbyref' value="1"> TaxByRef File (<span style='color:red'>not available</span>)
                 </td>
                 <td></td>
                 <td>Reads with the best match to the same reference are grouped (medium grouping).</td>
-              </tr>        
+              </tr> 
+-->
               <tr>
                 <td>
                 <input type="checkbox" name='taxbyseq' value="1"> TaxBySeq File (csv counts matrix)</td>
                 <td></td>
                 
-                <td>Reads having the exact same sequence are grouped (finest grouping).
+                <td>Includes full taxonomy and sequences (Reads having the exact same sequence are grouped--finest grouping).
                 </td>
               </tr>        
               <tr>

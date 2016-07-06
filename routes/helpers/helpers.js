@@ -576,18 +576,43 @@ module.exports.get_portal_projects = function(req, portal) {
   console.log('ALL_DATASETS-PORTAL',ALL_DATASETS)
   console.log(JSON.stringify(basis))
   ALL_DATASETS.projects.forEach(function(prj) {
-          split = prj.name.split('_')
+          var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid]
+          var split = prj.name.split('_')
           
           if(basis.projects.indexOf(prj.name) != -1){    
-              projects.push(prj);
+              projects.push(pinfo);
           }
           if(basis.prefixes.indexOf(split[0]) != -1){
-            projects.push(prj);
+            projects.push(pinfo);
           }
           if(basis.suffixes.indexOf(split[split.length-1]) != -1){
-            console.log('UniEuk',JSON.stringify(prj))
-            projects.push(prj);
+            //console.log('UniEuk',JSON.stringify(pinfo))
+            projects.push(pinfo);
           }
+  });
+
+  console.log('INFO',projects)       
+            
+      
+   
+    return projects;
+
+};
+module.exports.get_public_projects = function(req) {
+  
+  projects = []
+  //var basis = req.CONSTS.PORTALS[portal]
+  //switch (portal) {
+  console.log('ALL_DATASETS--get_public_projects',ALL_DATASETS)
+  //console.log(JSON.stringify(basis))
+  ALL_DATASETS.projects.forEach(function(prj) {
+           
+          var pinfo = PROJECT_INFORMATION_BY_PID[prj.pid]
+          //var public = pinfo.public
+          if(pinfo.public == 1){    
+              projects.push(pinfo);
+          }
+          
   });
 
   console.log('INFO',projects)       

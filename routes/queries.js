@@ -75,7 +75,7 @@ get_select_sequences_queryPID: function(pid){
 		return qSequenceCounts;
 	
 },	
-get_taxonomy_query: function( db, uitems, chosen_id_name_hash, post_items) {
+get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
     //console.log(body);
     //selection_obj = selection_obj;
     //selection_obj = body.selection_obj;
