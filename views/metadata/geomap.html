@@ -11,16 +11,17 @@
 	<div class="alert_flash_message"><%= message %></div>
 <% } %>
 	Distribution of datasets that have "<%= md_item %>" as a metadata item. Hover over the map markers to see the values.
-	
-	<div class="container">
+	<div id="map-canvas" style="height:800px;"></div>
+	<!-- <div class="container">
 
       <div id='map-canvas' class='map'></div>
 	
-	</div>
+	</div> -->
 
 
 <% include ../add_ins/end.ejs %>
 <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=<%= gekey %>&callback=create_geospatial"></script>
+
 <script src="/javascripts/metadata.js"></script>
 
 
