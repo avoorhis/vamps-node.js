@@ -11,7 +11,9 @@ public/scripts/*.pyc
 !db_schema_w_test_data.sql.gz
 *.csv.gz
 *.csv
-
+newrelic.js
+bin/versions.sh
+version.log
 config/db-connection*
 config/config*
 config/config.js

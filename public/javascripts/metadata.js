@@ -144,28 +144,28 @@ function setMarkers(map, loc_data, pid_collector, infowindow) {
     // add an event listener for this marker
     lines = data[0].split(':::')
     
-    if(lines.length > 10){
-      var html = "<div style='height:200px;width:300px;overflow:auto;'>";
-    }else{
-      var html = "<div style='width:300px;'>";
-    }
-    for(l in lines){
-      var pid = pid_collector[lines[l]].pid;
-      var val = pid_collector[lines[l]].value;
-      html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a>"+val.toString()+"<br>"
-    }
-    html += "</div>";
-
-
-    // var html = '';
-    // html += "<table  class='table table_striped' >"
-    // html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
+    // if(lines.length > 10){
+    //   var html = "<div style='height:200px;width:300px;overflow:auto;'>";
+    // }else{
+    //   var html = "<div style='width:300px;'>";
+    // }
     // for(l in lines){
     //   var pid = pid_collector[lines[l]].pid;
     //   var val = pid_collector[lines[l]].value;
-    //   html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
+    //   html += "<a href='/projects/"+pid+"'>" + lines[l] + "</a>"+val.toString()+"<br>"
     // }
-    // html += '</table>'
+    // html += "</div>";
+
+
+    var html = '';
+    html += "<table  class='table table_striped' >"
+    html += '<tr><th>Dataset</th><th>'+mditem+'</th></tr>';
+    for(l in lines){
+      var pid = pid_collector[lines[l]].pid;
+      var val = pid_collector[lines[l]].value;
+      html += "<tr><td><a href='/projects/"+pid+"'>" + lines[l] + "</a></td><td>"+val+"</td></tr>"
+    }
+    html += '</table>'
     
     bindInfoWindow(marker, map, infowindow, "<p>"+html+"</p>"); 
 
