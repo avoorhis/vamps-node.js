@@ -292,7 +292,8 @@ var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcoun
 var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
 ////////////////////////////////////////////////////////
 /////// hdf5 Code //////////////
-var h5 = require('hdf5')
+try{
+    var h5 = require('hdf5')
 //var hdf5 = require('hdf5').hdf5; // File; Filters
 //var h5lt = require('hdf5').h5lt; // dataset
 //var h5tb = require('hdf5').h5tb; // table
@@ -357,6 +358,10 @@ var h5 = require('hdf5')
 //}
 //console.log('g88',h5lt.get_num_attrs(group88.id))
 //console.log('group88',group88['latitude'] )
+}
+catch(err){
+    console.log(err)
+}
 ////////// END hdf5 Code ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
