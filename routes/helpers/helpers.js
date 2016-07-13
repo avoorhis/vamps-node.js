@@ -142,6 +142,17 @@ module.exports.mkdirSync = function (path) {
   }
 };
 
+module.exports.fileExists = function (path) {
+    try
+    {
+        return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
+    }
+    catch (err)
+    {
+        return false;
+    }
+};
+
 module.exports.send_mail = function(mail_info) {
   var to_addr = mail_info.addr;
   var from_addr = mail_info.from;

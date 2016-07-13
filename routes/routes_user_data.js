@@ -1354,29 +1354,33 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   console.log(req.files);
   console.log('2-req.body upload_data');
   //console.log(project);
-  
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   var fs_old   = require('fs');
   if(project === '' || req.body.project === undefined){
 		req.flash('failMessage', 'A project name is required.');
-		res.redirect("/user_data/import_data");
+		res.redirect("/user_data/import_data?import_type="+req.body.type);
 		return;
   }else if(project in PROJECT_INFORMATION_BY_PNAME){
 		req.flash('failMessage', 'That project name is already taken.');
-		res.redirect("/user_data/import_data");
+		res.redirect("/user_data/import_data?import_type="+req.body.type);
 		return;
   }else if(req.files[0].filename === undefined || req.files[0].size === 0){
   	req.flash('failMessage', 'A fasta file is required.');
-		res.redirect("/user_data/import_data");
+		res.redirect("/user_data/import_data?import_type="+req.body.type);
 		return;
-  }
+  }else if(helpers.fileExists(data_repository)){
+		req.flash('failMessage', 'That project name is already taken.');
+		res.redirect("/user_data/import_data?import_type="+req.body.type);
+		return;
+	}
   // else if(req.files[1].filename === undefined || req.files[1].size === 0){
   // 	req.flash('failMessage', 'A metadata csv file is required.');
 		// res.redirect("/user_data/import_data");
 		// return;
   // }
   else{
-		  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
+		  
 		    
 		  console.log(data_repository);
 
@@ -1412,7 +1416,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			if(req.body.type == 'simple_fasta'){
 			    if(req.body.dataset === '' || req.body.dataset === undefined){
 				  	req.flash('failMessage', 'A dataset name is required.');
-				  	res.redirect("/user_data/import_data");
+				  	res.redirect("/user_data/import_data?import_type="+req.body.type);
 				  	return;
 					}
 					options.args = options.args.concat(['-upload_type', 'single', '-d', req.body.dataset ]);
@@ -1420,11 +1424,12 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					options.args = options.args.concat(['-upload_type', 'multi' ]);
 		  }else{
 					req.flash('failMessage', 'No file type info found');
-					res.redirect("/user_data/import_data");
+					res.redirect("/user_data/import_data?import_type="+req.body.type);
 					return;
 		  }
 			
-		options.args = options.args.concat(['-q' ]);   // QUIET
+		  options.args = options.args.concat(['-q' ]);   // QUIET
+
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1459,6 +1464,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			// 				res.redirect("/user_data/import_data");
 			// 				return;
 			// 			}
+			
+			
 			
 			fs.ensureDir(data_repository, function (err) {
     		if(err) {console.log('ensureDir err:',err);} // => null
