@@ -561,7 +561,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn,  function(req,r
 			    var last_line = ary[ary.length - 1];
 			    if(code === 0){
 				   //console.log('PID last line: '+last_line)
-              status_params = {'type':'delete', 'user':req.user.username,
+              status_params = {'type':'delete', 'user_id':req.user.user_id,
                                 'project':project, 'status':'delete',	'msg':'delete' };
               helpers.update_status(status_params );                            
 			    }else{
@@ -691,7 +691,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  fun
 	//var ref_db_dir = req.params.ref_db;
 	var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
 	console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
-	status_params = {'type':'update', 'user':req.user.username, 'project':project, 'status':'',	'msg':'' };
+	status_params = {'type':'update', 'user_id':req.user.user_id, 'project':project, 'status':'',	'msg':'' };
 	var data_dir = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
 	var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 	
@@ -1353,7 +1353,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
   console.log(req.body);
   console.log(req.files);
   console.log('2-req.body upload_data');
-  console.log(project);
+  //console.log(project);
+  
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   var fs_old   = require('fs');
   if(project === '' || req.body.project === undefined){
@@ -1384,9 +1385,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			if(req.files[0].mimetype === 'application/x-gzip'){
 				fasta_compressed = true;
 			}
-			status_params = {'type':'new', 'user':req.user.username,
+			status_params = {'type':'new', 'user_id':req.user.user_id,
 											'project':project, 'status':'OK',	'msg':'Upload Started'  };
-			helpers.update_status(status_params);
+			//helpers.update_status(status_params);
 			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args :       [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site, '-infile',original_fastafile]
 		    			};
@@ -1397,7 +1398,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		  try{
 				//original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename); 
 				original_metafile  = path.join('/tmp',req.files[1].filename); 
-				options.args = options.args.concat(['-md_file', original_metafile ]);
+				options.args = options.args.concat(['-mdfile', original_metafile ]);
 				if(req.files[1].mimetype === 'application/x-gzip'){
 					metadata_compressed = true;
 					options.args = options.args.concat(['-md_comp' ]);
@@ -1423,7 +1424,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 					return;
 		  }
 			
-			
+		options.args = options.args.concat(['-q' ]);   // QUIET
 			//console.log(original_fastafile);
 			//console.log(original_metafile);
 		 	// move files to user_data/<username>/ and rename
@@ -1443,7 +1444,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			// fs.move(original_fastafile, path.join(data_repository,'fasta.fa'), function (err) {
 		 //    	if (err) {
 			// 			req.flash('failMessage', '1-File move failure  '+err);
-			// 			status_params = {'type':'update', 'user':req.user.username,
+			// 			status_params = {'type':'update', 'user_id':req.user.user_id,
 			// 								'project':project, 'status':'FAIL-1',	'msg':'1-File move failure'  };
 			// 			helpers.update_status(status_params);
 			// 			res.redirect("/user_data/import_data");
@@ -1452,7 +1453,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			//   	fs.move(original_metafile,  path.join(data_repository,'meta_original.csv'), function (err) {
 			//     	if (err) {
 			// 				req.flash('failMessage', '2-File move failure '+err);
-			// 				status_params = {'type':'update', 'user':req.user.username,
+			// 				status_params = {'type':'update', 'user_id':req.user.user_id,
 			// 								'project':project, 'status':'FAIL-2',	'msg':'2-File move failure'  };
 			// 				helpers.update_status(status_params);
 			// 				res.redirect("/user_data/import_data");
@@ -1460,20 +1461,18 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			// 			}
 			
 			fs.ensureDir(data_repository, function (err) {
-    		if(err) {console.log(err);} // => null
+    		if(err) {console.log('ensureDir err:',err);} // => null
     		else{
             fs.chmod(data_repository, 0775, function (err) {
 						    if (err) {
-						        console.log(err)
+						        console.log('chmod err:',err)
 						        return;
 						    }
 						
             
-				    
-
 				    console.log(options.scriptPath+'/vamps_load_trimmed_data.py '+options.args.join(' '));
 				    
-						var log = fs.openSync(path.join(data_repository,'visualization.log'), 'a');
+						var log = fs.openSync(path.join(data_repository,'upload.log'), 'a');
 						var load_trim_process = spawn( options.scriptPath+'/vamps_load_trimmed_data.py', options.args, {
 						    env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH, 'PATH':req.CONFIG.PATH},
 						    detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
@@ -1492,9 +1491,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 						   	var last_line = ary[ary.length - 1];
 						   	if(code === 0){
 							   	console.log('Load Success');
-							   	status_params = {'type':'update', 'user':req.user.username,
+							   	status_params = {'type':'update', 'user_id':req.user.user_id,
 								 			'project':project, 'status':'LOADED',	'msg':'Project is loaded --without tax assignments'  };
-						   		helpers.update_status(status_params);
+						   		//helpers.update_status(status_params);
 						   		console.log('Finished loading '+project);
 						   		LoadDataFinishRequest();
 							 	}else{
@@ -1502,9 +1501,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 			    					if (err) { console.log(err);  }
 			    					else{
 											 	req.flash('failMessage', 'Script Failure: '+last_line);
-											  status_params = {'type':'update', 'user':req.user.username,
+											  status_params = {'type':'update', 'user_id':req.user.user_id,
 															'project':project, 'status':'Script Failure',	'msg':'Script Failure'  };
-											  helpers.update_status(status_params);
+											  //helpers.update_status(status_params);
 											  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
 											  return;
 										}
@@ -1512,9 +1511,9 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 							 	}  // end else
 						}); // end load trim on close
 
-			  	}); // 	END chmod
-					} // end else
-				}); // 	END ensuredir
+			  	});     // 	END chmod
+			  }         // end else
+			});         // 	END ensuredir
 //			}); // 			END move 2
 //			});  // 		END move 1
 
@@ -1737,7 +1736,7 @@ router.post('/upload_data_tax_by_seq',  [helpers.isLoggedIn, upload.array('uploa
 					        				   		if (err)  {
 					        				 		  	console.log('2-TAXBYSEQ-Query error: ' + err);        				 		  
 					        				    	} else {
-					                      	status_params = {'type':'update', 'user':req.user.username,
+					                      	status_params = {'type':'update', 'user_id':req.user.user_id,
 					                                        'pid':pid,'status':'TAXBYSEQ-SUCCESS','msg':'TAXBYSEQ -Tax assignments' };
 													   
 																	helpers.assignment_finish_request(res,rows1,rows2,status_params);

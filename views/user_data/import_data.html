@@ -21,23 +21,25 @@
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
     
 	<h4>Import Simple (single dataset) Form: <small>(All fields are required)</small></h4>
-  <div class="form-group">
+  <!-- 
+<div class="form-group">
         <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
         <div class="col-sm-2 btn">
           <a href='validate_format?file_type=fasta' >Validate Fasta File</a> | <a href='validate_format?file_type=metadata' >Validate Metadata File</a>
         </div> 
   </div>
+ -->
 	<div class="form-group">
       <label class="control-label col-sm-3" for="project">Project Name:</label>
 	  <div class="col-sm-3">
-        <input type="text" name='project' class="form-control" id="project" placeholder="Enter New Project Name">
+        <input type="text" name='project' class="form-control" id="project" placeholder="Enter a New Project Name">
       </div>
 	  <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-3" for="meta">Dataset Name:</label>
       <div class="col-sm-3">          
-        <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter Dataset Name">
+        <input type="text" name='dataset' class="form-control" id="dset" placeholder="Enter a Dataset Name">
       </div>
 	  <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
     This will overwrite dataset name in metadata file
@@ -50,7 +52,7 @@
         <input type="file" name='upload_files' class="" id="fasta">
 
 
-      </div>Format: gzipped or uncompressed 
+      </div>Format: fasta (gzipped or uncompressed) 
 	       <a href='/help/faq#formats' target='_blank' title='format'><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
 	<div class="form-group">
@@ -61,7 +63,7 @@
         <input type="file" name='upload_files' class="" id="meta">
 
 
-      </div>Format: gzipped or uncompressed <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
+      </div>Format: TAB-delimited csv (gzipped or uncompressed) <a href='/help/faq#formats' target='_blank' title='formats'><span class="glyphicon glyphicon-question-sign"></span></a>
       <br><small>(<a href='/user_data/file_utils?fxn=download&template=1&filename=/public/scripts/metadata_template.csv'>template of recommended metadata</a>)</small>
     </div>
     <div class="form-group">        
@@ -76,12 +78,16 @@
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
 	<h4>Import Multi-Dataset Form: <small>(All fields are required)</small></h4>
-	<div class="form-group">
+	
+	<!-- 
+  <div class="form-group">
         <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
         <div class="col-sm-2 btn">
           <a href='validate_format?file_type=fasta' >Validate Fasta File</a> | <a href='validate_format?file_type=metadata' >Validate Metadata File</a>
         </div> 
   </div>
+ -->
+  
   <div class="form-group">
       <label class="control-label col-sm-3" for="project">Project Name:</label>
       
@@ -116,12 +122,16 @@
 
   <form class="form-horizontal" role="form" method='POST' action='upload_metadata' enctype="multipart/form-data">
   	<h4>Add Metadata to a Project: <small>(All fields are required)</small></h4>
-  	<div class="form-group">
+  	
+  	<!-- 
+<div class="form-group">
         <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
         <div class="col-sm-2 btn">
           <a href='validate_format?file_type=metadata' >Validate Metadata File</a>   
         </div> 
     </div>
+ -->
+    
     <div class="form-group">
         <label class="control-label col-sm-3" for="project">Project Name:</label>      
         <div class="col-sm-2 btn">
@@ -171,12 +181,16 @@
  
   <form class="form-horizontal" role="form" method='POST' action='upload_data' enctype="multipart/form-data">
   	<h4>TODO: Import New Datasets to Project: <small>(All fields are required)</small></h4>
-  	<div class="form-group">
+  	
+  	<!-- 
+<div class="form-group">
         <label class="control-label col-sm-3" for="project">RECOMMENDED:</label>         
         <div class="col-sm-2 btn">
           <a href='validate_format?file_type=fasta' >Validate Fasta File</a>
         </div> 
-  </div>
+   </div>
+ -->
+   
     <div class="form-group">
         <label class="control-label col-sm-3" for="project">Project Name:</label>      
         <div class="col-sm-3">

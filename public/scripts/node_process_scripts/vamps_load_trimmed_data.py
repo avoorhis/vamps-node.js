@@ -25,7 +25,7 @@ import csv
 from time import sleep
 import ConfigParser
 #sys.path.append( '/bioware/python/lib/python2.7/site-packages/' )
-script_path = os.path.dirname(os.path.realpath(__file__))
+#script_path = os.path.dirname(os.path.realpath(__file__))
 from IlluminaUtils.lib import fastalib
 import datetime
 today     = str(datetime.date.today())
@@ -80,27 +80,28 @@ class FastaReader:
     #def close(self):
     #    self.close()
     
-def start_upload(args):
-    if args.upload_type == 'single' and not args.dataset:
-        print 'Requires dataset for single mode'
-        sys.exit(1)
-    args.fafile = os.path.join(args.project_dir,'fasta.fa')
-    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
-    args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
-    if args.site == 'vamps':
-        args.site_grp = 'vampshttpd'
-    elif args.site == 'vampsdev':
-        args.site_grp = 'vampsdevhttpd'
-    else:
-        args.site_grp = 'staff'
-    
-    create_dirs(args)    
-    stats = write_seqfiles(args)
-    print stats
-    unique_seqs(args,stats)
-    write_metafile(args,stats)
-    write_config(args,stats)
-    update_dir_permissions(args)
+# def start_upload(args):
+#     if args.upload_type == 'single' and not args.dataset:
+#         print 'Requires dataset for single mode'
+#         sys.exit(1)
+#     args.fafile = os.path.join(args.project_dir,'fasta.fa')
+#     args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+#     args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
+#     if args.site == 'vamps':
+#         args.site_grp = 'vampshttpd'
+#     elif args.site == 'vampsdev':
+#         args.site_grp = 'vampsdevhttpd'
+#     else:
+#         args.site_grp = 'staff'
+#     
+#     create_dirs(args)    
+#     stats = write_seqfiles(args)
+#     if not args.quiet:
+#         print stats
+#     unique_seqs(args,stats)
+#     write_metafile(args,stats)
+#     write_config(args,stats)
+#     update_dir_permissions(args)
 
 def create_dirs(args):
     outdir = args.project_dir
@@ -115,6 +116,13 @@ def create_dirs(args):
     #    shutil.rmtree(gast_dir)
     #os.makedirs(gast_dir)
 
+def move_files(args):
+    outdir = args.project_dir
+    analysis_dir = os.path.join(outdir,'analysis')
+    gast_dir = os.path.join(analysis_dir,'gast')
+    shutil.move(args.fafile, os.path.join(outdir,'fasta.fa'))
+    if args.mdfile:
+        shutil.move(args.mdfile, os.path.join(outdir,'meta_original.csv'))
 def update_permissions(args):
     os.system('chgrp -R '+ args.site_grp +' '+args.project_dir)
             
@@ -249,13 +257,14 @@ def write_metafile(args,stats):
                 
                 if len(items) > 0:
                     #print items
-                    print items
-                    print headers
+                    if not args.quiet:
+                        print items
+                        print headers
                     if len(items) != header_count:
                         print '1-Missing Data: '+','.join(items)
                         sys.exit(1)
-                    
-                    print "writing clean metadata file "+args.mdfile_clean
+                    if not args.quiet:
+                        print "writing clean metadata file "+args.mdfile_clean
                     writer.writerow(items)
             if args.upload_type == 'multi':
             # check for datasets column in metadata -- needed to assign metadata to datasets
@@ -272,7 +281,8 @@ def write_metafile(args,stats):
             
 def write_config(args,stats):
     ini_file = os.path.join(args.project_dir,'config.ini') 
-    print 'Writing config.ini file:',ini_file  
+    if not args.quiet:
+        print 'Writing config.ini file:',ini_file  
     f = open(ini_file, 'w')
     f.write('[GENERAL]'+"\n")
     f.write('project='+args.project+"\n")
@@ -295,7 +305,8 @@ def write_config(args,stats):
     f.write('has_tax=0'+"\n")
     f.write("\n")
     f.write('[DATASETS]'+"\n")
-    print stats
+    if not args.quiet:
+        print stats
     for ds in stats['datasets']:
         f.write(ds+'='+str(stats['datasets'][ds])+"\n")
         
@@ -303,13 +314,16 @@ def write_config(args,stats):
     f.close()
     
 def unique_seqs(args,stats):
-    fastaunique_cmd = script_path+'/fastaunique'
-    print fastaunique_cmd
+    #fastaunique_cmd = script_path+'/fastaunique'
+    fastaunique_cmd = 'fastaunique'
+    if not args.quiet:
+        print 'fastaunique:',fastaunique_cmd
     #fastaunique_cmd = 'fastaunique'
-    print args
+    #print args
     try:
         for dataset in stats["datasets"]:
-            print dataset
+            if not args.quiet:
+                print dataset
             ds_dir = os.path.join(args.project_dir, 'analysis','gast', dataset)
             fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
             unique_file = os.path.join(ds_dir, 'unique.fa')
@@ -362,15 +376,32 @@ if __name__ == '__main__':
     parser.add_argument("-project_dir","--project_dir",                   
                 required=True,  action="store",   dest = "project_dir", 
                 help="""Directory to output ini and dir structure""")     
-    
+    parser.add_argument("-p", "--project",        
+                required=True,  action='store', dest = "project", 
+                help="Project Name")
     parser.add_argument("-d", "--dataset",        
                 required=False,  action='store', dest = "dataset",  default='',
                 help="Dataset Name")                                                  
     parser.add_argument("-upload_type", "--upload_type",
                 required=True,  action='store', dest = "upload_type",  default='multi',
                 choices=['multi','single'], help="multi or single dataset")
+    parser.add_argument("-owner", "--owner",        
+                required=True,  action='store', dest = "owner",  
+                help="Owner of Data - VAMPS username")
+    parser.add_argument("-site", "--site",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+                help="")
 
-    
+    parser.add_argument("-infile", "--infile",        
+                required=True,  action='store', dest = "fafile",  
+                help="")
+    parser.add_argument("-mdfile", "--mdfile",        
+                required=False,  action='store', dest = "mdfile",  default='', 
+                help="")
+    parser.add_argument("-q", "--quiet",        
+                required=False,  action='store_true', dest = "quiet",  default=False, 
+                help="")
+    ## Rarely Used::::
     parser.add_argument("-dna_region", "--dna_region",    
                 required=False,  action='store', dest = "dna_region",  default='v6',
                 help="")
@@ -383,15 +414,9 @@ if __name__ == '__main__':
     parser.add_argument("-public", "--public",        
                 required=False,  action='store_true', dest = "public",  default=False, 
                 help="")
-    parser.add_argument("-owner", "--owner",        
-                required=True,  action='store', dest = "owner",  default=False, 
-                help="")
-    parser.add_argument("-p", "--project",        
-                required=True,  action='store', dest = "project",  default=False, 
-                help="")
-    parser.add_argument("-site", "--site",    
-                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
-                help="")
+    
+    
+    
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
@@ -401,8 +426,7 @@ if __name__ == '__main__':
     if args.upload_type == 'single' and not args.dataset:
         print 'Requires dataset for single mode'
         sys.exit(1)
-    args.fafile = os.path.join(args.project_dir,'fasta.fa')
-    args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
+    
     args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
     if args.site == 'vamps':
         args.site_grp = 'vampshttpd'
@@ -411,9 +435,15 @@ if __name__ == '__main__':
     else:
         args.site_grp = 'staff'
     
-    create_dirs(args)    
+    create_dirs(args)
+    move_files(args) 
+    # named files AFTER move   
+    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    if args.mdfile:
+        args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
     stats = write_seqfiles(args)
-    print stats
+    if not args.quiet:
+        print stats
     unique_seqs(args,stats)
     write_metafile(args,stats)
     write_config(args,stats)
