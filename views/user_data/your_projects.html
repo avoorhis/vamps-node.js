@@ -21,23 +21,31 @@
 <% } else { %>
 
 	<% for(t in pnames){ %>
-		<% var project = project_info[pnames[t]].config.GENERAL.project %>
-		<% var number_of_datasets = project_info[pnames[t]].config.GENERAL.number_of_datasets %>
-		<% var total_number_of_sequences = project_info[pnames[t]].config.GENERAL.project_sequence_count %>
-		<% var public = project_info[pnames[t]].config.GENERAL.public %>
-		<% var env_source_id = project_info[pnames[t]].config.GENERAL.env_source_id %>
+		<% p =pnames[t] %>
+		<% var project = project_info[p].project %>
+		<% var number_of_datasets = project_info[p].number_of_datasets %>
+		<% var total_number_of_sequences = project_info[p].project_sequence_count %>
+		<% var public = project_info[p].public %>
+		<% var env_source_id = project_info[p].env_source_id %>
 		<% var env_source = env[env_source_id] %>
-		
-		<% var datasets = project_info[pnames[t]].config.DATASETS %>
-		<% var tax_status = project_info[pnames[t]].tax_status %>
-		<% var classified_by = project_info[pnames[t]].classified_by %>
-	
+		<% var datasets = project_info[p].DATASETS %>
+		<% var tax_status = project_info[p].tax_status %>
+		<% var classified_by = project_info[p].classified_by %>
+		<% var validation_codes = project_info[p].validation %>
+	    <% var pass_fail = 'pass' %>
+	    <% var missing_files = [] %>
+	    <% for(n in validation_codes){ %>
+	    <%      if(validation_codes[n] == false) { %>
+	    <%          pass_fail = 'fail' %>
+	    <%          missing_files.push(n)  %>
+	    <%      } %>
+	    <% } %>
 		<div class='well'>			
 
 
     		<table class='table table-condensed'>
     			<tr>	
-    				<% if(project_info[pnames[t]].pid == 0){ %> 
+    				<% if(project_info[p].pid == 0){ %> 
                         <td>
                             Project name: <strong><%= project %></strong>  <small>( <%= number_of_datasets %> datasets )</small> 
                         </td>
@@ -58,7 +66,32 @@
 				        </td>   
                         
 				   <% } %>
+                        
+                        <% if(pass_fail == 'fail') { %>
+                            <td>
+                                
+                                
+                                <div class="dropdown pull-right">
+                                <button class="btn btn-sm btn-default dropdown-toggle" type="button" style='color:red' id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                    FAILED VALIDATION
+                                    <span class="caret"></span>
+                                </button>
+                                
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="label" > Missing Files:</li>
+                                <% for(n in missing_files){ %>
+                                    <li role="presentation" role="menuitem"> <%= missing_files[n] %></li>
+                                <% } %>
+                                <li role="presentation" class="divider"></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li> 
+                                </ul>
+                                </div>
+                                
+                            </td>
+                        <% }else{ %>
                         <td>
+                            
+                            
                             <div class="dropdown pull-right">
                               <button class="btn btn-sm btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                 Options
@@ -68,6 +101,7 @@
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="edit_project/<%= project %>">View/Edit Project Information</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_info/<%= project %>">View Datasets and Counts</a></li> 
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_metadata/<%= project %>">View Metadata</a></li>
+                                <!-- <li role="presentation"><a role="menuitem" tabindex="-1" href="user_project_validation/<%= project %>">Validate Project</a></li> -->
                                 <li role="presentation" class="divider"></li>                               
                                 <% if(classified_by == 'none'){ %>
                                     <li role="presentation">
@@ -88,8 +122,10 @@
                                         <a role="menuitem" tabindex="-1" href="delete_project/<%= project %>/all">Delete this Project from Server</a></li>                       
                               </ul>
                             </div>
+                            <div style='color:green;font-size:x-small;'>Validation:OK</div>
+                            
                         </td>   
-
+                        <% } %>
     			</tr><tr>
     				<td>Raw Sequence Count: <strong><%= total_number_of_sequences %></strong></td>
     				<td>Public: 

@@ -84,7 +84,7 @@ class FastaReader:
 #     if args.upload_type == 'single' and not args.dataset:
 #         print 'Requires dataset for single mode'
 #         sys.exit(1)
-#     args.fafile = os.path.join(args.project_dir,'fasta.fa')
+#     args.fafile = os.path.join(args.project_dir,'infile.fna')
 #     args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
 #     args.mdfile_clean = os.path.join(args.project_dir,'metadata_clean.csv')
 #     if args.site == 'vamps':
@@ -120,7 +120,7 @@ def move_files(args):
     outdir = args.project_dir
     analysis_dir = os.path.join(outdir,'analysis')
     gast_dir = os.path.join(analysis_dir,'gast')
-    shutil.move(args.fafile, os.path.join(outdir,'fasta.fa'))
+    shutil.move(args.fafile, os.path.join(outdir,'infile.fna'))
     if args.mdfile:
         shutil.move(args.mdfile, os.path.join(outdir,'meta_original.csv'))
 def update_permissions(args):
@@ -438,7 +438,7 @@ if __name__ == '__main__':
     create_dirs(args)
     move_files(args) 
     # named files AFTER move   
-    args.fafile = os.path.join(args.project_dir,'fasta.fa')
+    args.fafile = os.path.join(args.project_dir,'infile.fna') # dont name *.fa or else
     if args.mdfile:
         args.mdfile = os.path.join(args.project_dir,'meta_original.csv') 
     stats = write_seqfiles(args)
