@@ -22,7 +22,9 @@
 
 	<% for(t in pnames){ %>
 		<% p =pnames[t] %>
+		<% var pass_fail = 'pass' %>
 		<% var project = project_info[p].project %>
+		
 		<% var number_of_datasets = project_info[p].number_of_datasets %>
 		<% var total_number_of_sequences = project_info[p].project_sequence_count %>
 		<% var public = project_info[p].public %>
@@ -32,7 +34,7 @@
 		<% var tax_status = project_info[p].tax_status %>
 		<% var classified_by = project_info[p].classified_by %>
 		<% var validation_codes = project_info[p].validation %>
-	    <% var pass_fail = 'pass' %>
+	    
 	    <% var missing_files = [] %>
 	    <% for(n in validation_codes){ %>
 	    <%      if(validation_codes[n] == false) { %>

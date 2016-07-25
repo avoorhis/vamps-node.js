@@ -50,21 +50,27 @@ req_first_col = ['#SampleID','sample_name','dataset_name']
 
 
 
-def start_pipeline_load(args):
+def start_metadata_load_from_file(args):
     global mysql_conn, cur
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
-    NODE_DATABASE = args.NODE_DATABASE
+    
+    if args.site == 'vamps':
+        hostname = 'vampsdb'
+    elif args.site == 'vampsdev':
+        hostname = 'vampsdev'
+    else:
+        hostname = 'localhost'
     
     
-    mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
-    indir = args.project_dir
-    csv_infile =   os.path.join(indir,'metadata_clean.csv')
+    
+    csv_infile =   os.path.join(args.project_dir,'metadata_clean.csv')
     if os.path.isfile(csv_infile):
-        cur.execute("USE "+NODE_DATABASE)    
-        get_config_data(indir)    
-        get_metadata(indir,csv_infile)
+        cur.execute("USE "+args.NODE_DATABASE)    
+        get_config_data(args.project_dir)    
+        get_metadata(args.project_dir,csv_infile)
         put_required_metadata()
         put_custom_metadata()
     else:
@@ -74,8 +80,6 @@ def start_pipeline_load(args):
     print
     print CUST_METADATA_ITEMS
 
-def start_additional_upload(args):
-    pass
 
 def put_required_metadata():
     global mysql_conn, cur
@@ -108,11 +112,11 @@ def put_custom_metadata():
     print 'REQ_METADATA_ITEMS',REQ_METADATA_ITEMS
     for key in CUST_METADATA_ITEMS:
         logging.debug(key)
-        q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,field_type,example)"
+        q2 = "INSERT IGNORE into custom_metadata_fields(project_id,field_name,example)"
         q2 += " VALUES("
         q2 += "'"+str(CONFIG_ITEMS['project_id'])+"',"
         q2 += "'"+key+"',"
-        q2 += "'varchar(128)',"
+        
         q2 += "'"+str(CUST_METADATA_ITEMS[key][0])+"')"
         logging.info(q2)
         cur.execute(q2)
@@ -285,49 +289,7 @@ def get_config_data(indir):
     
 
     
-# def combine(indir):
-#     if not args.infile:
-#         sys.exit('need first file')
-#     if not args.other_file:
-#         sys.exit('need second file')
-#
-#     outfile = os.path.join(args.indir,'combined_metadata.txt')
-#     fp = open(outfile,'w')
-#     csv_infile1 = args.infile
-#     lol = list(csv.reader(open(csv_infile1, 'rb'), delimiter='\t'))
-#     #print lol
-#     keys = lol[0]
-#     TMP_METADATA_ITEMS = {}
-#     for i,key in enumerate(keys):
-#         TMP_METADATA_ITEMS[key] = []
-#         for line in lol[1:]:
-#             TMP_METADATA_ITEMS[key].append(line[i])
-#
-#
-#     csv_infile2 = args.other_file
-#     lol = list(csv.reader(open(csv_infile2, 'rb'), delimiter='\t'))
-#     keys = lol[0]
-#     for i,key in enumerate(keys):
-#         TMP_METADATA_ITEMS[key] = []
-#         for line in lol[1:]:
-#             TMP_METADATA_ITEMS[key].append(line[i])
-#
-#     headers =  TMP_METADATA_ITEMS.keys()
-#     txt = ''
-#     for key in headers:
-#         txt += key + "\t"
-#     txt = txt.strip() + "\n"
-#     fp.write(txt)
-#
-#     for i,line in enumerate(lol[1:]):
-#         txt = ''
-#         for key in headers:
-#             txt +=  TMP_METADATA_ITEMS[key][i] + "\t"
-#         txt = txt.strip() + "\n"
-#         fp.write(txt)
-#
-#     print outfile,'has been written'
-#     fp.close()
+
     
 if __name__ == '__main__':
     import argparse
@@ -353,38 +315,27 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-    parser.add_argument('-load_type', '--load_type',         
-                required=False,   action="store",  dest = "load_type",   default='normal_vamps_pipeline_load',         
-                choices=['normal_vamps_pipeline_load','additional_upload_to_db'], help = 'node database')      
-    
+       
     parser.add_argument('-db', '--NODE_DATABASE',         
-                required=True,   action="store",  dest = "NODE_DATABASE",            
-                help = 'node database') 
-
-    
+                required=False,   action="store",  dest = "NODE_DATABASE",    default='vamps2',       
+                help = 'node database')  
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
-                help = '')         
-    
-    parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='',
-                help = '') 
-
-    parser.add_argument("-infile", "--infile",    
-                required=False,  action="store",   dest = "infile", default='',
-                help = '') 
-    parser.add_argument("-host", "--host",    
-                required=False,  action="store",   dest = "hostname", default='localhost',
+                help = '')          
+    parser.add_argument("-p", "--project",    
+                required=True,  action="store",   dest = "project", 
+                help = '')     
+    parser.add_argument("-site", "--site",    
+                required=False,  action="store",   dest = "site", default='local',
                 help = '')
+    
     args = parser.parse_args()    
    
     args.datetime     = str(datetime.date.today())    
     
     
-    if args.load_type == 'normal_vamps_pipeline_load':
-        start_pipeline_load(args)
-    else:
-        start_additional_upload(args)
+    start_metadata_load_from_file(args)
+    
     
         
     

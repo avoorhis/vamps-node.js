@@ -782,15 +782,25 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  fun
                                 //options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
                             ]
 		 }else if(classifier.toUpperCase() == 'RDP' ){
-		 		run_cmd = options.scriptPath + '/vamps_script_rdp_run.py ' + options.rdp_run_args.join(' '),
+		 		// These are from the RDP README
+		 		var gene = '16srrna'  // default
+		 		if(classifier_id == 'refRDP_2.12-ITS'){
+		 		    gene = 'fungalits_unite'
+		 		}
+		 		var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER+'_'+ref_db_dir
+		 		rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' -path_to_classifier '+path2classifier+' -gene '+gene
+		 		rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' --classifier RDP'
+		 		rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site
+		 		rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' --jsonfile_dir '+ req.CONFIG.JSON_FILES_BASE
+		 		
 		 		script_name = 'rdp_script.sh';
 		 		status_params.statusOK = 'OK-RDP';status_params.statusSUCCESS = 'RDP-SUCCESS';
 		 		status_params.msgOK = 'Finished RDP';status_params.msgSUCCESS = 'RDP -Tax assignments';
-		 		var cmd_list = [ run_cmd ]
+		 		var cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ]
 		 }
 		 
 		
-        if(req.CONFIG.dbhost == 'vampsdev'){
+        if(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb'){
             var scriptlog = path.join(data_dir,'cluster.log');
             //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
             var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
@@ -834,7 +844,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn,  fun
 											console.log('pid line '+lines[n]);
 										}
 								  }
-							});
+						});
 			    		run_process.on('close', function (code) {
 							   console.log('run_process process exited with code ' + code);
 							   var ary = output.split("\n");

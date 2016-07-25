@@ -57,6 +57,8 @@ constants.UNITSELECT = { units: [
         {id : 'med_nodes',          file: 'unit_selectors/med_nodes.html',            name : "TODO-MED Nodes",        subtext: ''}
     ]};
 constants.UNIT_ASSIGNMENT_CHOICES = { 
+        'refRDP_2.12-16S': { taxonomy_curator:'RDP (2.12) 16S-rRNA', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
+        'refRDP_2.12-ITS': { taxonomy_curator:'RDP (2.12) ITS-UNITE', method:'RDP',  reference_db:'Default (no training)', availability:'available',     refdb:'2.12' },
         'refssu':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'refssu (full-length)',  availability:'available',     refdb:'refssu' },
         'refv1v3':  { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv1v3 (Bacterial)',     availability:'available', refdb:'refv1v3' },
         'refv3a':   { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Av3 (Archaeal)',        availability:'available', refdb:'refv3a' },
@@ -74,8 +76,8 @@ constants.UNIT_ASSIGNMENT_CHOICES = {
         'refv6':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Bv6 (Bacterial)',       availability:'available', refdb:'refv6' },
         'refv9':    { taxonomy_curator:'SILVA (v119)', method:'GAST', reference_db:'Ev9 (Eukaryal)',        availability:'available', refdb:'refv9' },
         'refits1':  { taxonomy_curator:'UNITE', method:'GAST', reference_db:'ITS1',                         availability:'available', refdb:'refits1' },
-        'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' },
-        'refRDP_2.10.1': { taxonomy_curator:'RDP (2.10.1)', method:'RDP',  reference_db:'Default (no training)', availability:'not available',     refdb:'2.10.1' }
+        'refGG_MAY2013': { taxonomy_curator:'GreenGenes (May2013)', method:'GAST', reference_db:'refssu',        availability:'not available', refdb:'GG_MAY2013' }
+        
         
     };
 constants.VISUALOUTPUTCHOICES = { choices: [
