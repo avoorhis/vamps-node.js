@@ -151,7 +151,8 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
         //TAXCOUNTS[did] = jsonfile['taxcounts'];
         //METADATA[did]  = jsonfile['metadata'];
         TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-        METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        METADATA[did]  = AllMetadata[did]
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
@@ -289,7 +290,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
         //TAXCOUNTS[did] = AllTaxCounts[did]
         TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-        METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        METADATA[did]  = AllMetadata[did]
 
         //if(did=='49'){
           
