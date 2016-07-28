@@ -95,6 +95,7 @@ metadata_lookup = {}
     //console.log(ids)
 async.waterfall(
     [
+        
         function(callback){
             q0 = "SELECT dataset_id,project_id from dataset where project_id='"+pid+"'" 
             conn.query(q0, function(err, rows, fields){
@@ -111,7 +112,7 @@ async.waterfall(
                 }
             });
         },
-
+// domain
         function(dsrows, callback){
             console.log(dsrows)
             sql = queries[0].query1+"('"+dsrows.dids.join("','")+"')"+queries[0]["query2"]
@@ -353,7 +354,7 @@ async.waterfall(
                         }
                         
                     }
-                    //console.log(counts_lookup)
+                    console.log('counts_lookup',counts_lookup)
                     callback(null, dsrows)
                 }
             });
@@ -367,9 +368,9 @@ async.waterfall(
     function(err, status, rows) {
         conn.end();
         file_path = path.join(json_dir,NODE_DATABASE+'--hdf5NEW.h5')
-        console.log(file_path)
+        //console.log('metadata_lookup',metadata_lookup)
         var Access = require('../../../node_modules/hdf5/lib/globals').Access;
-        console.log(Access)
+        //console.log(Access)
         var hdf5 = require('hdf5').hdf5;
         var f      = new hdf5.File(file_path, Access.ACC_TRUNC);
         //f = hdf5.File(file_path, "w")
@@ -385,15 +386,16 @@ async.waterfall(
                 //#print i.strip('_'), counts_lookup[did][i]
                 //#subgrp1.create_dataset(i.strip('_'), counts_lookup[did][i], dtype='i')
                 //#f[did+"/taxcounts/"+i.strip('_')] = counts_lookup[did][i]
-                subgrp1[i] = counts_lookup[did][i]
+                //subgrp1[i] = counts_lookup[did][i]
             }  
             subgrp1.flush(); 
             if(did in metadata_lookup){
-                for(i in metadata_lookup[did]){
-                    //#print i,metadata_lookup[did][i]
-                    //console.log(i,metadata_lookup[did][i])
-                    if(metadata_lookup[did].hasOwnProperty(i)){
-                        console.log('got it',i,counts_lookup[did][i])
+                for(mdname in metadata_lookup[did]){
+                    //#print mdname,metadata_lookup[did][mdname]
+                    //console.log(mdname,metadata_lookup[did][mdname])
+                    if(metadata_lookup[did].hasOwnProperty(mdname)){
+                        console.log('got it',did,mdname,metadata_lookup[did][mdname])
+                        val = metadata_lookup[did][mdname]
                         //x = numpy.string_(metadata_lookup[did][i], dtype=dt)
                         //#x = "{:10}".format(metadata_lookup[did][i])
                         //print len(x),x
@@ -402,13 +404,17 @@ async.waterfall(
                         //#dset.attrs['temperature'] = 99.5
                         //#f[did+"/metadata/"+i] = metadata_lookup[did][i]
                         //#subgrp2.create_dataset(i, metadata_lookup[did][i], dtype='S10')
-                        subgrp2[i] = metadata_lookup[did][i]
+                        if(val){
+                            subgrp2[mdname] = val;
+                        }   
+                        
                     }
                     
                 }
-                subgrp2.flush()
+                
 
             }
+            subgrp2.flush()
             
         }
         f.close() 
@@ -448,7 +454,7 @@ function RANK_SELECT(dsrows,rank_num,callback){
                         }
                         
                     }
-                    console.log(counts_lookup)
+                    //console.log(counts_lookup)
                     callback(null, dsrows)
                 }
             });
@@ -494,7 +500,7 @@ function CUSTOM_METADATA(dsrows,callback){
                                         }
                                     }
                                 }
-                                console.log(metadata_lookup)
+                                //console.log(metadata_lookup)
                                 callback(null, 'FINISHED',dsrows)
                             }
                         })
@@ -528,7 +534,7 @@ function REQUIRED_METADATA(dsrows,callback){
                             }
                         }
                     }
-                    console.log(metadata_lookup)
+                    //console.log(metadata_lookup)
                     callback(null, dsrows)
                 }
             });

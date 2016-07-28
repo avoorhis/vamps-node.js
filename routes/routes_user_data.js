@@ -448,7 +448,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function(req, res) 
 	   console.log('config found')
 	   var config = ini.parse(fs.readFileSync(config_file, 'utf-8'));
 	}else{
-		console.log('config NOT found')
+		//console.log('config NOT found')
 		 config = {'config file NOT AVAILABLE':1}
 	}
 	var metadata_file = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project,'metadata_clean.csv');
@@ -987,7 +987,7 @@ router.get('/your_projects', helpers.isLoggedIn,  function(req,res){
                         project_info[project_name].DATASETS = config.DATASETS;
 			  		}
 			  		catch (err) {
-			  			console.log('nofile ',err);
+			  			//console.log('nofile ',err);
 			  		}
 			  
 			  	}

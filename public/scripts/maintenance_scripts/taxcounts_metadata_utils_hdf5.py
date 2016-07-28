@@ -14,6 +14,7 @@ import shutil
 import datetime
 import numpy
 import h5py
+import numpy as np
 
 today     = str(datetime.date.today())
 
@@ -107,14 +108,19 @@ def convert_keys_to_string(dictionary):
         return dictionary
     return dict((str(k), convert_keys_to_string(v)) 
         for k, v in dictionary.items())
+
 def go_list(args):
-    counts_lookup = convert_keys_to_string(read_original_taxcounts())
-    metadata_lookup = convert_keys_to_string(read_original_metadata())
-    metadata_dids = metadata_lookup.keys()
-    file_dids = counts_lookup.keys()
+    
+    #counts_lookup = convert_keys_to_string(read_original_taxcounts())
+    #metadata_lookup = convert_keys_to_string(read_original_metadata())
+    h5_file_path = os.path.join(args.json_file_path, NODE_DATABASE+'--hdf5.h5')
+    f = h5py.File(h5_file_path, "r")
+
+    h5_file_dids = f.keys()
+    #print 'keys',h5_file_dids
     #print file_dids
     #print len(file_dids)           
-    q =  "SELECT dataset_id,dataset.project_id,project from project"
+    q =  "SELECT dataset_id, dataset.project_id, project from project"
     q += " JOIN dataset using(project_id) order by project"
     #q += " WHERE dataset_id in('%s')"
     
@@ -132,50 +138,35 @@ def go_list(args):
         pid = row[1]
         project = row[2]
         projects[project] = pid
-        if did not in metadata_dids:
-            missing_metadata[project] = pid
-        if did not in file_dids:
+        if did not in h5_file_dids:
             missing[project] = pid
-        file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets',did+'.json')
-        if not os.path.isfile(file_path):
-            missing[project] = pid
+        
         #print 'project:',row[0],' --project_id:',row[1]
     sort_p = sorted(projects.keys())
+    print "FOUND in db:"
     for project in sort_p:  
         if project not in missing:
-            print 'ID:',projects[project],"-",project
+            print 'PID:',projects[project],' -> ', project
         num += 1
     print
-    print 'MISSING from metadata file:'
-    sort_md = sorted(missing_metadata.keys())
-    for project in sort_md:
-        print 'ID:',missing_metadata[project],"project:",project
-    print
-    print 'MISSING from taxcount or json files:'
+    
+    print 'MISSING from hdf5 file:'
     sort_m = sorted(missing.keys())
     for project in sort_m:
-        print 'ID:',missing[project],"project:",project
+        print 'PID:',missing[project],"project:",project
     print
     
-    print 'Number of Projects:',num
+    print 'Number of Projects in db:',num
     
 
     
 def go_add(NODE_DATABASE, pid):
     from random import randrange
     counts_lookup = {}
-    prefix = os.path.join(args.json_file_path,NODE_DATABASE+'--datasets')
-    if not os.path.exists(prefix):
-        os.makedirs(prefix)
-    print prefix
+    
     (dids,pids) = get_dataset_ids(args, pid) 
     # delete old did files if any
-    for did in dids:        
-        pth = os.path.join(prefix,did+'.json')
-        try:            
-            os.remove(pth)
-        except:
-            pass
+    
     did_sql = "','".join(dids)
     #print counts_lookup
     for q in queries:
@@ -215,107 +206,72 @@ def go_add(NODE_DATABASE, pid):
     metadata_lookup = go_custom_metadata(dids, pids.keys(), metadata_lookup)
     
     #write_json_files(prefix, metadata_lookup, counts_lookup)
-    write_hdf5_file(prefix, metadata_lookup, counts_lookup)
-    rando = randrange(10000,99999)
-    #write_all_metadata_file(metadata_lookup,rando)
-    #write_all_taxcounts_file(counts_lookup,rando)
-    # print 'DONE (must now move file into place)'
-
-def write_all_metadata_file(metadata_lookup,rando):
-    original_metadata_lookup = read_original_metadata()
-    md_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")
+    write_hdf5_taxfile(dids, counts_lookup)
+    write_hdf5_mdfile(dids, metadata_lookup)
     
-    if not args.no_backup:
-        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata_"+today+'_'+str(rando)+".json")
-        print 'Backing up metadata file to',bu_file
-        shutil.copy(md_file, bu_file)
-    #print md_file
-    for did in metadata_lookup:
-        original_metadata_lookup[did] = metadata_lookup[did]
+def write_hdf5_taxfile(dids, counts_lookup):  
+    
+    h5_taxfile_path = os.path.join(args.json_file_path,NODE_DATABASE+'--taxdata.h5')
+    
+    f = h5py.File(h5_taxfile_path, "w")
+    #dt1 = h5py.special_dtype(vlen=str)  # str bytes unicode
+    #dt2 = h5py.special_dtype(vlen=bytes)
+    #dt3 = np.dtype(str)
+
+    #taxgrp = f.create_group("taxcounts")
+    #mdgrp = f.create_group("metadata")
+
+    for did in dids:
+        #tax_ds = taxgrp.create_dataset(did, (100,))
+        #md_ds = mdgrp.create_dataset(did, (100,))
         
-    #print(json_str)
-    f = open(md_file,'w')
-    try:
-        json_str = json.dumps(original_metadata_lookup, ensure_ascii=False) 
-    except:
-        json_str = json.dumps(original_metadata_lookup) 
-    print 'writing new metadata file'
-    f.write(json_str.encode('utf-8').strip()+"\n")
-    f.close() 
-    
-def write_all_taxcounts_file(counts_lookup,rando):
-    original_counts_lookup = read_original_taxcounts()
-    tc_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
-    if not args.no_backup:
-        bu_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts_"+today+'_'+str(rando)+".json")
-        print 'Backing up taxcount file to',bu_file
-        shutil.copy(tc_file, bu_file)
-    for did in counts_lookup:
-        original_counts_lookup[did] = counts_lookup[did]
-    json_str = json.dumps(original_counts_lookup)       
-    #print(json_str)
-    f = open(tc_file,'w')  # this will delete taxcounts file!
-    print 'writing new taxcount file'
-    f.write(json_str+"\n")
-    f.close()
-
-
-
-def write_hdf5_file(prefix, metadata_lookup, counts_lookup):  
-    file_path = os.path.join(args.json_file_path,NODE_DATABASE+'--hdf5.h5')
-    f = h5py.File(file_path, "w")
-    dt = h5py.special_dtype(vlen=str)
-    for did in counts_lookup:
         didgrp = f.create_group(did)
-        subgrp1 = didgrp.create_group("taxcounts")
-        subgrp2 = didgrp.create_group("metadata")
+        subgrp = didgrp.create_group("taxcounts")
+        
 
         for i in counts_lookup[did]:
             #print i.strip('_'), counts_lookup[did][i]
             #subgrp1.create_dataset(i.strip('_'), counts_lookup[did][i], dtype='i')
             #f[did+"/taxcounts/"+i.strip('_')] = counts_lookup[did][i]
-            subgrp1.attrs[i.strip('_')] = counts_lookup[did][i]
-            pass
+            subgrp.attrs[i.strip('_')] = counts_lookup[did][i]
+
+    f.close() 
+    print 'Finished writing', h5_taxfile_path
+    
+
+def write_hdf5_mdfile(dids, metadata_lookup):  
+    h5_mdfile_path = os.path.join(args.json_file_path,NODE_DATABASE+'--metadata.h5')
+    f = h5py.File(h5_mdfile_path, "w")
+    
+    #dt1 = h5py.special_dtype(vlen=str)  # str bytes unicode
+    #dt2 = h5py.special_dtype(vlen=bytes)
+    #dt3 = np.dtype(str)
+
+    #taxgrp = f.create_group("taxcounts")
+    #mdgrp = f.create_group("metadata")
+
+    for did in dids:
+        #tax_ds = taxgrp.create_dataset(did, (100,))
+        #md_ds = mdgrp.create_dataset(did, (100,))
+        didgrp = f.create_group(did)
+        subgrp = didgrp.create_group("metadata")
+
+        
+
         if did in metadata_lookup:
-            for i in metadata_lookup[did]:
-                #print i,metadata_lookup[did][i]
-                if metadata_lookup[did][i]:
-                    x = numpy.string_(metadata_lookup[did][i], dtype=dt)
-                    #x = "{:10}".format(metadata_lookup[did][i])
-                    print len(x),x
-                    subgrp2.attrs[i] = x
-                    #subgrp2.attrs[i] = metadata_lookup[did][i]
-                #dset.attrs['temperature'] = 99.5
-                #f[did+"/metadata/"+i] = metadata_lookup[did][i]
-                #subgrp2.create_dataset(i, metadata_lookup[did][i], dtype='S10')
+            for mdname in metadata_lookup[did]:
+                #print mdname,metadata_lookup[did][mdname]
+                val = metadata_lookup[did][mdname]
+                if val:
+                    x = numpy.string_(val)
+                    
+                    subgrp.attrs.create(mdname, val)
+                    
         
     f.close() 
-
-    print 'Finished writing', file_path
-
+    print 'Finished writing', h5_mdfile_path
 
 
-
-
-def write_json_files(prefix, metadata_lookup, counts_lookup):
-    
-    for did in counts_lookup:
-        file_path = os.path.join(prefix,str(did)+'.json')
-        f = open(file_path,'w') 
-        
-        my_counts_str = json.dumps(counts_lookup[did]) 
-         
-        if did in metadata_lookup:
-             try:
-                my_metadata_str = json.dumps(metadata_lookup[did])
-             except:
-                my_metadata_str = json.dumps(metadata_lookup[did], ensure_ascii=False)
-        else:
-             print 'WARNING -- no metadata for dataset:',did
-             my_metadata_str = json.dumps({})
-        #f.write('{"'+str(did)+'":'+mystr+"}\n") 
-        f.write('{"taxcounts":'+my_counts_str+',"metadata":'+my_metadata_str+'}'+"\n")
-         
            
 def go_required_metadata(did_sql):
     """
@@ -554,7 +510,8 @@ if __name__ == '__main__':
     
            
     if args.add and not args.pid:
-        print usage        
+        print usage  
+        print '-pid 46'      
         sys.exit('need pid to add')
     
     
@@ -565,6 +522,6 @@ if __name__ == '__main__':
         go_add(NODE_DATABASE, args.pid)
     else:
         print usage 
-        print "Maybe you forgot to add '-add' to the command line?"
+        print "Maybe you forgot to add '-add ' to the command line?"
         
 

@@ -56,7 +56,7 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
     dataset_ids = chosen_id_name_hash.ids;
     //http://localhost:3000/visuals/view_selection/configuration-1459886135939.json
     
-    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+    //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
     for(var i in dataset_ids){
       var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
       try{
@@ -136,19 +136,22 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {}; 
-    var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
-    var file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
-    var file_data = JSON.parse(fs.readFileSync(file_path, 'utf8'))
+    //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+    var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
+    var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     //console.log(file_data)
-    visual_post_items = file_data.post_items;
-    chosen_id_name_hash = file_data.id_name_hash;
+    visual_post_items = config_file_data.post_items;
+    chosen_id_name_hash = config_file_data.id_name_hash;
     dataset_ids = chosen_id_name_hash.ids;
     for(var i in dataset_ids){
-      var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+      var did = dataset_ids[i]
+      //var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
       try{
-        var jsonfile = require(path_to_file);
-        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+        //var jsonfile = require(path_to_file);
+        //TAXCOUNTS[did] = jsonfile['taxcounts'];
+        //METADATA[did]  = jsonfile['metadata'];
+        TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+        METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
@@ -268,35 +271,50 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   }else{
 	  // Global TAXCOUNTS, METADATA
 	  TAXCOUNTS = {};
+    
 	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
-	  var file_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+	  //var file_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
 
-    // if(req.CONFIG.hostname.substring(0,6) == 'bpcweb'){
-    //   var file_prefix = path.join('/','groups','vampsweb','vampsdev_user_data',"VAMPS--datasets");
-    // }else{
-    //   var file_prefix = path.join(process.env.PWD,'public','json',NODE_DATABASE+"--datasets");
-    // }
+    
     for(var i in dataset_ids){
       //console.log('ds',dataset_ids[i])
-      var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
+      var did = dataset_ids[i]
+      //var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
       //console.log('path',path_to_file)
-      try{
-        var jsonfile = require(path_to_file);
-        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
-      }
-      catch(err){
-        console.log('3-no file '+err.toString()+' Exiting');
-        req.flash('Message', "ERROR \
-          Dataset file ("+dataset_ids[i]+".json) not found.");
+
+      
+      //try{
+        //var jsonfile = require(path_to_file);
+        //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
+        //TAXCOUNTS[did] = AllTaxCounts[did]
+        TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+        METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+
+        //if(did=='49'){
+          
+        //}
+        //TAXCOUNTS[did] = AllTaxCounts[did]
+        //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+        //METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+        //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
+        
+        
+        //METADATA[did]  = AllMetadata[did]
+
+      //}
+      //catch(err){
+      //  console.log('3-no file '+err.toString()+' Exiting');
+      //  req.flash('Message', "ERROR \
+       //   Dataset file ("+dataset_ids[i]+".json) not found.");
           //res.redirect('visuals_index');
           //return;
-      }
+      //}
 		  
 	  }
 	  //console.log(JSON.stringify(METADATA))
-	  //console.log(JSON.stringify(TAXCOUNTS))
+	  console.log('49x',JSON.stringify(TAXCOUNTS['49']))
+    //console.log(JSON.stringify(TAXCOUNTS2[49]))
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
     //console.log('METADATA= '+JSON.stringify(METADATA));
