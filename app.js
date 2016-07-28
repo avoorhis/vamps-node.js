@@ -288,101 +288,125 @@ var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 // 	.on('end', function() {
 // 		    console.log('Finished reading TAXCOUNTS');
 // 	});
-var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
-var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
+
 ////////////////////////////////////////////////////////
 /////// hdf5 Code //////////////
+AllMetadata = {}
+
 try{
-    var h5 = require('hdf5')
-//var hdf5 = require('hdf5').hdf5; // File; Filters
-//var h5lt = require('hdf5').h5lt; // dataset
-//var h5tb = require('hdf5').h5tb; // table
-//var h5pt = require('hdf5').h5pt; // table
-//var h5im = require('hdf5').h5im; // image
-//var h5ds = require('hdf5').h5ds; // scale
-//var h5g  = require('hdf5/lib/globals');
-//var THE_FILE      = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--hdf5NEW.h5' ));
-//var THE_TEST_FILE = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--hdf5NEW.h5' ), h5g.Access.ACC_TRUNC);
-//var groupTargets=THE_TEST_FILE.createGroup('test/sodium-icosanoate');
-//groupTargets['Computed Heat of Formation' ] = -221.78436098572274;
-//groupTargets['Computed Ionization Potential' ] = 9.57689311885752;
-//groupTargets['Computed Total Energy' ] = -3573.674399276322;
-//groupTargets.Status = 256;
-//groupTargets.Information = "\"There are no solutions; there are only trade-offs.\" -- Thomas Sowell";
-//groupTargets.flush();
-//var group = THE_TEST_FILE.openGroup('test/sodium-icosanoate')
-//var attrs = group.getDatasetAttributes("sodium-icosanoate");
-//Object.getOwnPropertyNames(attrs).forEach(function(val, idx, array) {
-    //console.log(val,attrs[val])
-//});
-//group.close()
-//THE_TEST_FILE.close()
-//var group88 = THE_FILE.openGroup('53')
-//group88.refresh();
-//for(n in hdf5){
-    //console.log(n)
-//}
+    //var h5 = require('hdf5')
+    var hdf5 = require('hdf5').hdf5; // File; Filters
+    // var h5lt = require('hdf5').h5lt; // dataset
+    // var h5tb = require('hdf5').h5tb; // table
+    // var h5pt = require('hdf5').h5pt; // table
+    // var h5im = require('hdf5').h5im; // image
+    // var h5ds = require('hdf5').h5ds; // scale
+    var h5g  = require('hdf5/lib/globals');
+    // GLOBAL:
+    HDF5_MDDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5' ),  h5g.Access.ACC_RDONLY);
+    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxdata.h5' ), h5g.Access.ACC_RDONLY);
+    //var groupTest = HDF5test_data.openGroup('test');
+    //var group51 = HDF5_data.openGroup("86");
+    var did_list = HDF5_MDDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
+    //console.log(mdgroup86['temp'])
+    //console.log('group56',group56.id)
+    // var groupTargets=THE_TEST_FILE.createGroup('test/sodium-icosanoate');
+    // groupTargets['Computed Heat of Formation' ] = -221.78436098572274;
+    // groupTargets['Computed Ionization Potential' ] = 9.57689311885752;
+    // groupTargets['Computed Total Energy' ] = -3573.674399276322;
+    // groupTargets.Status = 256;
+    // groupTargets.Information = "\"There are no solutions; there are only trade-offs.\" -- Thomas Sowell";
+    //group56.flush();
+    // var group = THE_TEST_FILE.openGroup('test/sodium-icosanoate')
+    //var metadata = group56.getDatasetAttributes("metadata");
+    //console.log(metadata)
+    //var taxcounts = group56.getDatasetAttributes("taxcounts");
+    //console.log(HDF5_DATA.getMemberNamesByCreationOrder())
+    //att = testattr['temp']
+    for(i in did_list){
+        var did = did_list[i]
+        AllMetadata[did] = {}
+        var group = HDF5_MDDATA.openGroup(did+"/metadata");
+        group.refresh()
+        Object.getOwnPropertyNames(group).forEach(function(mdname, idx, array) {
+            if(mdname != 'id'){
+              //console.log(mdname, group[mdname])
+              AllMetadata[did][mdname] = group[mdname]
+            }         
+            
+            
+        });
+    }
+    //console.log('aux_corrected_sample_depth',metadata['aux_corrected_sample_depth'])
+    //console.log(h5g)
+    // group.close()
+    // THE_TEST_FILE.close()
+    // var group88 = THE_FILE.openGroup('53')
+    // group88.refresh();
+    // for(n in hdf5){
+    //     console.log(n)
+    // }
 
-//var tax_attrs = group88.getDatasetAttributes("taxcounts");
-//var meta_attrs = group88.getDatasetAttributes("metadata");
-//group88.refresh();
-//attrText = '';
-//console.log(group88['longitude'])
-//Object.getOwnPropertyNames(tax_attrs).forEach(function(val, idx, array) {
-//    console.log(val,tax_attrs[val])
-//   if (val !=  'id') {
-//     if (meta_attrs[val].constructor.name === Array) {
-//       attrText += val + ' :  ';
-//       for (var mIndex = 0; mIndex < attrs[val].Length(); mIndex++) {
-//         attrText += meta_attrs[val][mIndex];
-//         if (mIndex < meta_attrs[val].Length() - 1) {
-//           attrText += ',';
-//         }
-//       }
-//     }
-//     else{
-//       attrText += val + ' :  ' + meta_attrs[val] + '\n';
-//     }
-//   }
-//   console.log(attrText)
-//});
-//var readAsBuffer = h5lt.readDatasetAsBuffer(  group88.id, 'metadata', {});
+    // var tax_attrs = group88.getDatasetAttributes("taxcounts");
+    // var meta_attrs = group88.getDatasetAttributes("metadata");
+    // group88.refresh();
+    // attrText = '';
+    // console.log(group88['longitude'])
+    // Object.getOwnPropertyNames(tax_attrs).forEach(function(val, idx, array) {
+    //    console.log(val,tax_attrs[val])
+    //   if (val !=  'id') {
+    //     if (meta_attrs[val].constructor.name === Array) {
+    //       attrText += val + ' :  ';
+    //       for (var mIndex = 0; mIndex < attrs[val].Length(); mIndex++) {
+    //         attrText += meta_attrs[val][mIndex];
+    //         if (mIndex < meta_attrs[val].Length() - 1) {
+    //           attrText += ',';
+    //         }
+    //       }
+    //     }
+    //     else{
+    //       attrText += val + ' :  ' + meta_attrs[val] + '\n';
+    //     }
+    //   }
+    //   console.log(attrText)
+    // });
+    // var readAsBuffer = h5lt.readDatasetAsBuffer(  group88.id, 'metadata', {});
 
-//console.log(readAsBuffer)
-//for(n in tax_attrs){
-    //console.log(tax_attrs[n])
-//}
-//for(n in meta_attrs){
-    //console.log("\n",n)
-    //console.log(meta_attrs[n].toString())
-//}
-//console.log('g88',h5lt.get_num_attrs(group88.id))
-//console.log('group88',group88['latitude'] )
-}
-catch(err){
+    // console.log(readAsBuffer)
+    // for(n in tax_attrs){
+    //     console.log(tax_attrs[n])
+    // }
+    // for(n in meta_attrs){
+    //     console.log("\n",n)
+    //     console.log(meta_attrs[n].toString())
+    // }
+    // console.log('g88',h5lt.get_num_attrs(group88.id))
+    // console.log('group88',group88['latitude'] )
+}catch(err){
     console.log(err)
 }
 ////////// END hdf5 Code ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
+//var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
+//var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
+// try {
+//     //AllTaxCounts   = require(taxcounts_file);
+// }
+// catch (e) {
+//   console.log(e);
+//   AllTaxCounts = {}
+// }
+//console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
 
 try {
-    AllTaxCounts   = require(taxcounts_file);
-}
-catch (e) {
-  console.log(e);
-  AllTaxCounts = {}
-}
-console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-
-try {
-    AllMetadata        = require(meta_file);
+    //AllMetadata        = require(meta_file);
 }
 catch (e) {
   console.log(e);
   AllMetadata = {}
 }
-console.log('Loading METADATA as AllMetadata from: '+meta_file);
+//console.log('Loading METADATA as AllMetadata from: '+meta_file);
 
 
 //see file models/silva_taxonomy.js

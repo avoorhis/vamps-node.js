@@ -633,3 +633,22 @@ module.exports.get_public_projects = function(req) {
     return projects;
 
 }
+
+module.exports.get_attributes_from_hdf5_group =function(did, type){
+    var hash = {}
+    var h5group
+    if(type == 'metadata'){
+        h5group = HDF5_MDDATA.openGroup(did+"/"+type);
+    }else{
+        h5group = HDF5_TAXDATA.openGroup(did+"/"+type);
+    }
+    
+    h5group.refresh()
+    Object.getOwnPropertyNames(h5group).forEach(function(str, idx, array) {
+        if(str != 'id'){
+          hash[str] = h5group[str]
+        }        
+    });
+    return hash;
+}
+

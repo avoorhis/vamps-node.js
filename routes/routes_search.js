@@ -8,7 +8,7 @@ var path  = require('path');
 /* GET Search page. */
 router.get('/search_index', helpers.isLoggedIn, function(req, res) {
 
-   
+    AllMetadata_names = ''
     
     //console.log(metadata_fields)
     res.render('search/search_index', { title: 'VAMPS:Search',
@@ -88,6 +88,29 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
       var tmp_metadata_fields = {};
       var metadata_fields = {};
       var metadata_fields_array = [];
+      //var group = HDF5_DATA.openGroup("/");
+
+      // for(did in DATASET_NAME_BY_DID){
+      //   var group = HDF5_DATA.openGroup(did+"/metadata");
+      //   group.refresh()
+      //   Object.getOwnPropertyNames(group).forEach(function(mdname, idx, array) {
+      //     if(mdname == 'id'){
+      //       //console.log('Skipping [ID]',mdname,group[mdname])
+      //     }else{
+      //       val = group[mdname]
+      //       if(mdname in tmp_metadata_fields){
+      //         tmp_metadata_fields[mdname].push(val);
+      //       }else{
+      //         if(IsNumeric(val)){
+      //           tmp_metadata_fields[mdname]=[];
+      //         }else{
+      //           tmp_metadata_fields[mdname]=['non-numeric'];
+      //         }
+      //         tmp_metadata_fields[mdname].push(val);
+      //       }
+      //     }        
+      //   });
+      // }
       for (var did in AllMetadata){
         for (var name in AllMetadata[did]){
             val = AllMetadata[did][name];
@@ -107,7 +130,7 @@ router.get('/metadata/:type', helpers.isLoggedIn, function(req, res) {
     
       for (var tmp_name in tmp_metadata_fields){
         metadata_fields_array.push(tmp_name);
-      if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
+        if(tmp_metadata_fields[tmp_name][0] == 'non-numeric'){
           tmp_metadata_fields[tmp_name].shift(); //.filter(onlyUnique);
           metadata_fields[tmp_name] = tmp_metadata_fields[tmp_name].filter(onlyUnique);
         }else{

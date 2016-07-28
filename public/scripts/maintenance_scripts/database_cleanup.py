@@ -269,6 +269,9 @@ if __name__ == '__main__':
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
+    else:
+        args.json_file_path = '../../json'
+        args.NODE_DATABASE = 'vamps_development'
     
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
