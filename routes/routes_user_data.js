@@ -15,6 +15,35 @@ var iniparser = require('iniparser');
 var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
+  
+var util = require('../bin/a_util');
+var is_local = util.IsLocal();
+console.log("IsLocal?");
+console.log(is_local);
+
+// var os = require("os");
+// var hostname = os.hostname();
+//
+// SERVER_NAMES = ["local"]
+//
+// console.log("HHH");
+// console.log(hostname);
+//
+// // if (SERVER_NAMES.indexOf(hostname) >= 0) {
+// //     console.log("Found");
+// // } else {
+// //     console.log("Not found");
+// // }
+//
+// SERVER_NAMES.forEach(function(entry) {
+//     console.log(entry);
+//     if(hostname.indexOf(entry) >= 0) {
+//       console.log("Found");
+//     } else {
+//       console.log("Not found");
+//     }
+// });
+
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: '/groups/vampsweb/tmp',   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
