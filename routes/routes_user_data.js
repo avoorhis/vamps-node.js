@@ -14,7 +14,7 @@ var config = require('../config/config');
 var multer = require('multer');
 
 //var progress = require('progress-stream');
-var upload = multer({ dest: '/groups/vampsweb/tmp',	limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }	});
+var upload = multer({ dest: config.TMP,	limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }	});
 
 var Readable = require('readable-stream').Readable;
 var COMMON  = require('./visuals/routes_common');
@@ -1499,7 +1499,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		
 		  console.log(data_repository);
 
-		  var original_fastafile = path.join('/','groups','vampsweb','tmp', req.files[0].filename);
+		  var original_fastafile = path.join(req.CONFIG.TMP, req.files[0].filename);
 		  fasta_compressed = metadata_compressed = false;
 			if(req.files[0].mimetype === 'application/x-gzip'){
 				fasta_compressed = true;
@@ -1516,7 +1516,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 		  var original_metafile  = '';
 		  try{
 				//original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename);
-				original_metafile  = path.join('/','groups','vampsweb','tmp',req.files[1].filename);
+				original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
 				options.args = options.args.concat(['-mdfile', original_metafile ]);
 				if(req.files[1].mimetype === 'application/x-gzip'){
 					metadata_compressed = true;
@@ -1587,11 +1587,28 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 
                         script_name = 'load_script.sh';
-                        var qsublog = path.join(data_repository,'cluster.log');
+                        
                         var nodelog = fs.openSync(path.join(data_repository,'assignment.log'), 'a');
                         //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-                        var script_text = get_qsub_script_text(qsublog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list)
-                        var script_path = path.join(data_repository, script_name);
+                        
+												if(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+												 {
+												   var qsublog = path.join(data_repository,'cluster.log');
+												   var script_text = get_qsub_script_text(qsublog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list)
+												   
+												 }
+												 else
+												 {
+												   var scriptlog = path.join(data_repository, 'script.log');
+												   var script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
+
+												 }
+
+												var script_path = path.join(data_repository, script_name);
+
+                        
+
+
                         fs.writeFile(script_path, script_text, function (err) {
                             if (err) return console.log(err);
                             child = exec( 'chmod ug+rwx '+script_path, function (error, stdout, stderr) {
@@ -2438,7 +2455,7 @@ function create_export_files(req, user_dir, ts, dids, file_tags, normalization,r
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
 		
 		if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, '/groups/vampsweb/tmp', site, code, cmd_list)
+            qsub_script_text = get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list)
             qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
             qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
 
@@ -2575,7 +2592,7 @@ function create_fasta_file(req, user_dir, ts, dids){
 		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
 		
 		if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, '/groups/vampsweb/tmp', site, code, cmd_list)
+            qsub_script_text = get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list)
             qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
             qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
 
@@ -2609,63 +2626,63 @@ function create_fasta_file(req, user_dir, ts, dids){
 		return file_name;
 		
 		
-		var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
-		//var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
-		qSelect += " JOIN sequence using (sequence_id)\n";
-		qSelect += " JOIN dataset using (dataset_id)\n";
-		qSelect += " JOIN project using (project_id)\n";
-		var seq, seqid, seq_count, pjds;
-		var file_name, out_file_path;
+		// var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
+		// //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
+		// qSelect += " JOIN sequence using (sequence_id)\n";
+		// qSelect += " JOIN dataset using (dataset_id)\n";
+		// qSelect += " JOIN project using (project_id)\n";
+		// var seq, seqid, seq_count, pjds;
+		// var file_name, out_file_path;
 
-		//var pids = JSON.parse(req.body.datasets).ids;
+		// //var pids = JSON.parse(req.body.datasets).ids;
 		
-		out_file_path = path.join(user_dir,file_name);
-		qSelect += " where dataset_id in ("+pids+")";
+		// out_file_path = path.join(user_dir,file_name);
+		// qSelect += " where dataset_id in ("+pids+")";
 
-		var gzip = zlib.createGzip();
-		console.log(qSelect);
+		// var gzip = zlib.createGzip();
+		// console.log(qSelect);
 
-		var wstream = fs.createWriteStream(out_file_path);
-		var rs = new Readable();
-		var collection = db.query(qSelect, function (err, rows, fields){
-		  if (err) {
-		      throw err;
-		  } else {
-		    for (var i in rows){
-		      seq = rows[i].seq.toString();
-		      //var buffer = new Buffer(rows[i].seq, 'base64');
-		      //console.log(seq);
-		      seq_id = rows[i].sequence_id.toString();
-		      seq_count = rows[i].seq_count.toString();
-		      //project = rows[i].project;
-		      pjds = rows[i].project+'--'+rows[i].dataset;
-		      entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
-		      //console.log(entry);
-		      rs.push(entry);
-		    }
+		// var wstream = fs.createWriteStream(out_file_path);
+		// var rs = new Readable();
+		// var collection = db.query(qSelect, function (err, rows, fields){
+		//   if (err) {
+		//       throw err;
+		//   } else {
+		//     for (var i in rows){
+		//       seq = rows[i].seq.toString();
+		//       //var buffer = new Buffer(rows[i].seq, 'base64');
+		//       //console.log(seq);
+		//       seq_id = rows[i].sequence_id.toString();
+		//       seq_count = rows[i].seq_count.toString();
+		//       //project = rows[i].project;
+		//       pjds = rows[i].project+'--'+rows[i].dataset;
+		//       entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
+		//       //console.log(entry);
+		//       rs.push(entry);
+		//     }
 
-		    rs.push(null);
-		  }
-		  rs
-		    .pipe(gzip)
-		    .pipe(wstream)
-		    .on('finish', function () {  // finished
-		      console.log('done compressing and writing file');
-		      console.log(JSON.stringify(req.user));
-		      var info = {
-		            to : req.user.email,
-		            from : "vamps@mbl.edu",
-		            subject : "fasta file is ready",
-		            text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
-		          };
-		      helpers.send_mail(info);
+		//     rs.push(null);
+		//   }
+		//   rs
+		//     .pipe(gzip)
+		//     .pipe(wstream)
+		//     .on('finish', function () {  // finished
+		//       console.log('done compressing and writing file');
+		//       console.log(JSON.stringify(req.user));
+		//       var info = {
+		//             to : req.user.email,
+		//             from : "vamps@mbl.edu",
+		//             subject : "fasta file is ready",
+		//             text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
+		//           };
+		//       helpers.send_mail(info);
 
 
-		    });
+		//     });
 
-		});
+		// });
 
-		return file_name;
+		// return file_name;
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////

@@ -386,6 +386,7 @@ if __name__ == '__main__':
     parser.add_argument("-project_dir","--project_dir",                   
                 required=True,  action="store",   dest = "project_dir", 
                 help="""Directory to output ini and dir structure""")     
+    
     parser.add_argument("-p", "--project",        
                 required=True,  action='store', dest = "project", 
                 help="Project Name")
