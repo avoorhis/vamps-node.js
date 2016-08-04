@@ -3,7 +3,7 @@
 <% dnamesbydid = JSON.parse(names_by_did) %>
 <% pidbydid   = JSON.parse(pid_by_did) %>
 <% pinfobypid = JSON.parse(pinfo_by_pid) %>
-<% allmetadata  = JSON.parse(all_metadata) %>
+<% vals  = JSON.parse(vals) %>
 
 <p class='title'>Metadata Values</p>
 <p class='subtitle'>'<%= item %>'</p>
@@ -13,12 +13,12 @@
 		<tr><th>Project</th><th>Dataset</th><th>Value</th></tr>
 	</thead>
 	<tbody>	
-		<% for(i in dids){ %>
-			<% did = dids[i] %>
+		<% for(did in vals){ %>
+			
 			<% ds  = dnamesbydid[did] %>
 			<% pid = pidbydid[did] %>
 			<% pj  = pinfobypid[pid].project %>
-			<% val = allmetadata[did][item] %>
+			<% val = vals[did] %>
 			<tr><td><%= pj %></td><td><%= ds %></td><td><%= val %></td></tr>
 		<% } %>
 	</tbody>

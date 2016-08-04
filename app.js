@@ -303,11 +303,11 @@ try{
     // var h5ds = require('hdf5').h5ds; // scale
     var h5g  = require('hdf5/lib/globals');
     // GLOBAL:
-    HDF5_MDDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5' ),  h5g.Access.ACC_RDONLY);
-    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxdata.h5' ), h5g.Access.ACC_RDONLY);
+    HDF5_MDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5' ),  h5g.Access.ACC_RDONLY);
+    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.h5' ), h5g.Access.ACC_RDONLY);
     //var groupTest = HDF5test_data.openGroup('test');
     //var group51 = HDF5_data.openGroup("86");
-    var did_list = HDF5_MDDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
+    var did_list = HDF5_MDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
     //console.log(mdgroup86['temp'])
     //console.log('group56',group56.id)
     // var groupTargets=THE_TEST_FILE.createGroup('test/sodium-icosanoate');
@@ -316,27 +316,25 @@ try{
     // groupTargets['Computed Total Energy' ] = -3573.674399276322;
     // groupTargets.Status = 256;
     // groupTargets.Information = "\"There are no solutions; there are only trade-offs.\" -- Thomas Sowell";
-    //group56.flush();
+    // group56.flush();
     // var group = THE_TEST_FILE.openGroup('test/sodium-icosanoate')
-    //var metadata = group56.getDatasetAttributes("metadata");
-    //console.log(metadata)
-    //var taxcounts = group56.getDatasetAttributes("taxcounts");
-    //console.log(HDF5_DATA.getMemberNamesByCreationOrder())
-    //att = testattr['temp']
-    for(i in did_list){
-        var did = did_list[i]
-        AllMetadata[did] = {}
-        var group = HDF5_MDDATA.openGroup(did+"/metadata");
-        group.refresh()
-        Object.getOwnPropertyNames(group).forEach(function(mdname, idx, array) {
-            if(mdname != 'id'){
-              //console.log(mdname, group[mdname])
-              AllMetadata[did][mdname] = group[mdname]
-            }         
-            
-            
-        });
-    }
+    // var metadata = group56.getDatasetAttributes("metadata");
+    // console.log(metadata)
+    // var taxcounts = group56.getDatasetAttributes("taxcounts");
+    // console.log(HDF5_DATA.getMemberNamesByCreationOrder())
+    // att = testattr['temp']
+    // for(i in did_list){
+    //     var did = did_list[i]
+    //     AllMetadata[did] = {}
+    //     var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+    //     mdgroup.refresh()
+    //     Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+    //         if(mdname != 'id'){
+    //           //console.log(mdname, group[mdname])
+    //           //AllMetadata[did][mdname] = mdgroup[mdname]
+    //         }         
+    //     });
+    // }
     //console.log('aux_corrected_sample_depth',metadata['aux_corrected_sample_depth'])
     //console.log(h5g)
     // group.close()
@@ -399,13 +397,13 @@ try{
 // }
 //console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
 
-try {
-    //AllMetadata        = require(meta_file);
-}
-catch (e) {
-  console.log(e);
-  AllMetadata = {}
-}
+// try {
+//     //AllMetadata        = require(meta_file);
+// }
+// catch (e) {
+//   console.log(e);
+//   AllMetadata = {}
+// }
 //console.log('Loading METADATA as AllMetadata from: '+meta_file);
 
 

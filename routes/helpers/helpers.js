@@ -252,45 +252,50 @@ module.exports.run_select_datasets_query = function(rows){
       ALL_DATASETS.projects.push(tmp);
     }
 	 //console.log(JSON.stringify(ALL_DATASETS))
-    console.log('Cleaning Metadata');
-    var clean_metadata = {};
-    for(did in AllMetadata){
-          if(did in DATASET_NAME_BY_DID){
-              clean_metadata[did] = AllMetadata[did];        
-              for(var mdname in AllMetadata[did] ){
-          		//console.log(mdname)
-          		if(AllMetadataNames.indexOf(mdname) == -1){
-          			AllMetadataNames.push(mdname);
-          		}
-          		if(mdname == 'latitude' || mdname == 'longitude'){
-  			
-          			if(did in DatasetsWithLatLong){
-          				if(mdname == 'latitude'){				
-          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-          				}else{
-          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-          				}
-          			}else{
-          				DatasetsWithLatLong[did]={};
-        				
-          				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-          				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+    console.log('Getting md-names and those w/ lat/lon');
+    //var clean_metadata = {};
+    for(did in DATASET_NAME_BY_DID){
+        //console.log(did)
+        //clean_metadata[did] = {}
+        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        mdgroup.refresh()
+        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+            if(mdname != 'id'){
+              //console.log(mdname, group[mdname])
+              //clean_metadata[did][mdname] = mdgroup[mdname]
+              if(AllMetadataNames.indexOf(mdname) == -1){
+                AllMetadataNames.push(mdname);
+              }
+              if(mdname == 'latitude' || mdname == 'longitude'){
+                if(did in DatasetsWithLatLong){
+                  if(mdname == 'latitude'){       
+                    DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                  }else{
+                    DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                  }
+                }else{
+                  DatasetsWithLatLong[did]={};
+                
+                  var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+                  DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
                   DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did]
-          				if(mdname == 'latitude'){				
-          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
-          				}else{
-          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
-          				}
-          			}
-          		}
-          	  }
-         }
+                  if(mdname == 'latitude'){       
+                    DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                  }else{
+                    DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                  }
+                }
+              }
+            }         
+        });
     }
-    AllMetadata = clean_metadata;
+    //}
+    //AllMetadata = clean_metadata;
+    
     AllMetadataNames.sort(function(a, b){
           return module.exports.compareStrings_alpha(a, b);
     });
-
+    //console.log(AllMetadataNames)
     connection.query(queries.get_project_permissions(), function(err, rows, fields){ 
       //console.log(qSequenceCounts)
       if (err)  {
@@ -518,16 +523,16 @@ module.exports.clean_string = function (str) {
   // this replaces everything that is not letter,number or underscore (\w) with underscore 
   return str.replace(/[^\w]/gi, '_');
 };
-module.exports.update_metadata_from_file = function (){
-    var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
-    try {
-      AllMetadata        = require(meta_file);
-    }
-    catch (e) {
-      console.log(e);
-      AllMetadata = {};
-    }
-};
+// module.exports.update_metadata_from_file = function (){
+//     var meta_file      = path.join(process.env.PWD,'public','json',NODE_DATABASE+'--metadata.json');
+//     try {
+//       AllMetadata        = require(meta_file);
+//     }
+//     catch (e) {
+//       console.log(e);
+//       AllMetadata = {};
+//     }
+// };
 module.exports.mysql_real_escape_string = function (str) {
     return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
         switch (char) {
@@ -634,11 +639,11 @@ module.exports.get_public_projects = function(req) {
 
 }
 
-module.exports.get_attributes_from_hdf5_group =function(did, type){
+module.exports.get_attributes_from_hdf5_group =function(did, type) {
     var hash = {}
     var h5group
     if(type == 'metadata'){
-        h5group = HDF5_MDDATA.openGroup(did+"/"+type);
+        h5group = HDF5_MDATA.openGroup(did+"/"+type);
     }else{
         h5group = HDF5_TAXDATA.openGroup(did+"/"+type);
     }
@@ -650,5 +655,25 @@ module.exports.get_attributes_from_hdf5_group =function(did, type){
         }        
     });
     return hash;
+}
+module.exports.get_PTREE_metadata = function(OBJ, q) {
+    project_list = []
+
+    OBJ.forEach(function(prj) {
+      dids = DATASET_IDS_BY_PID[prj.pid]
+      for(i in dids){
+        var did = dids[i]
+        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        mdgroup.refresh()
+        //console.log(q, mdgroup[q])
+        if(mdgroup.hasOwnProperty(q) && project_list.indexOf(prj) < 0){
+          //console.log(prj)
+          project_list.push(prj); 
+        }
+      }
+    });
+    
+    
+    return project_list;
 }
 

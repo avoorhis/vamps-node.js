@@ -1313,7 +1313,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		  
 			        				    	} else {
 			                      												   
-															helpers.update_metadata_from_file();
+															//helpers.update_metadata_from_file();  // need to update to hdf5 file??
 															req.flash('successMessage', 'Metadata Upload in Progress');
 			       									res.redirect("/user_data/import_choices");
 			        				    	}
@@ -2001,16 +2001,23 @@ router.post('/download_selected_metadata', helpers.isLoggedIn, function(req, res
         	pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
         	header += pname+'--'+dname+"\t";
         }
-        for (var k in AllMetadata[did]){
-          nm = k;
-          val = AllMetadata[did][k];
-          if(nm in myrows){
-            myrows[nm].push(val);
-          }else{
-            myrows[nm] = [];
-            myrows[nm].push(val);
-          }
-        }
+        
+        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        mdgroup.refresh()
+        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+            if(mdname != 'id'){
+            	val = mdgroup[mdname]
+            	if(mdname in myrows){
+		            myrows[mdname].push(val);
+		          }else{
+		            myrows[mdname] = [];
+		            myrows[mdname].push(val);
+		          }
+            }
+        });
+        
+
+
       }
 
     // print
