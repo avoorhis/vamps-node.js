@@ -151,8 +151,16 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
         //TAXCOUNTS[did] = jsonfile['taxcounts'];
         //METADATA[did]  = jsonfile['metadata'];
         TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+        METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
         //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        METADATA[did]  = AllMetadata[did]
+        // var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        // mdgroup.refresh()
+        // METADATA[did] = {}
+        // Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+        //     if(mdname != 'id'){
+        //       METADATA[did][mdname]  = mdgroup[mdname]
+        //     }
+        // });
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
@@ -290,32 +298,22 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
         //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
         //TAXCOUNTS[did] = AllTaxCounts[did]
         TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+        METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
         //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        METADATA[did]  = AllMetadata[did]
+        // var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        // mdgroup.refresh()
+        // METADATA[did] = {}
+        // Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+        //     if(mdname != 'id'){
+        //       METADATA[did][mdname]  = mdgroup[mdname]
+        //     }
+        // });
 
-        //if(did=='49'){
-          
-        //}
-        //TAXCOUNTS[did] = AllTaxCounts[did]
-        //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-        //METADATA[dataset_ids[i]]  = jsonfile['metadata'];
-        //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
-        
-        
-        //METADATA[did]  = AllMetadata[did]
-
-      //}
-      //catch(err){
-      //  console.log('3-no file '+err.toString()+' Exiting');
-      //  req.flash('Message', "ERROR \
-       //   Dataset file ("+dataset_ids[i]+".json) not found.");
-          //res.redirect('visuals_index');
-          //return;
-      //}
+     
 		  
 	  }
 	  //console.log(JSON.stringify(METADATA))
-	  console.log('49x',JSON.stringify(TAXCOUNTS['49']))
+	  //console.log('49x',JSON.stringify(TAXCOUNTS['49']))
     //console.log(JSON.stringify(TAXCOUNTS2[49]))
 	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
@@ -2690,31 +2688,11 @@ router.get('/livesearch_metadata/:q', function(req, res) {
 
   if(portal){
       var ALL_PORTAL_PROJECTS = helpers.get_portal_projects(req,portal)
-      ALL_PORTAL_PROJECTS.forEach(function(prj) {
-        //ucname = prj.name.toUpperCase();
-        dids = DATASET_IDS_BY_PID[prj.pid]
-        for(i in dids){
-          md = AllMetadata[dids[i]]
-          if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
-            PROJECT_TREE_OBJ.push(prj); 
-          }
-        }
-      });
-   
+      PROJECT_TREE_OBJ = helpers.get_PTREE_metadata(ALL_PORTAL_PROJECTS, q)
   }else{
-
-      SHOW_DATA.projects.forEach(function(prj) {
-          dids = DATASET_IDS_BY_PID[prj.pid]
-          for(i in dids){
-            md = AllMetadata[dids[i]]
-            if(md && md.hasOwnProperty(q) && PROJECT_TREE_OBJ.indexOf(prj) < 0){
-              PROJECT_TREE_OBJ.push(prj); 
-            }
-          }
-      });
+      PROJECT_TREE_OBJ = helpers.get_PTREE_metadata(SHOW_DATA.projects, q)
   }
-  
-  //console.log(AllMetadata)
+  console.log(PROJECT_TREE_OBJ)
   PROJECT_TREE_PIDS = filter_project_tree_for_permissions(req, PROJECT_TREE_OBJ);
   res.json(PROJECT_TREE_PIDS.length);
 

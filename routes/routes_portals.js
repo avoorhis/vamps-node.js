@@ -127,8 +127,7 @@ router.get('/geomap/:portal', function(req, res) {
 //      dataset: 'CNE_0004_2004_01_22' } 
 //  }
 
-    //console.log(AllMetadata)
-    var portal_info = get_portal_metadata(req, portal, AllMetadata)
+    var portal_info = get_portal_metadata(req, portal)
     //console.log('FOUND '+JSON.stringify(portal_info))
     res.render('portals/geomap', { 
             title       : 'VAMPS: Geomap',
@@ -146,7 +145,7 @@ module.exports = router;
 //
 //  FUNCTIONS
 //
-function get_portal_metadata(req, portal, all_metadata){
+function get_portal_metadata(req, portal){
     // all_metadata is by did
     
     portal_info = {}
@@ -160,13 +159,13 @@ function get_portal_metadata(req, portal, all_metadata){
     //console.log(all_metadata[1361])
     //console.log(all_metadata[1361].hasOwnProperty('latitude'))
     var got_lat, got_lon
-    for(did in all_metadata){
+    for(did in DATASET_NAME_BY_DID){
         //did = all_metadata[i]
-
-        //all_metadata.forEach(function(did) {
         pid = PROJECT_ID_BY_DID[did]
         //console.log(PROJECT_INFORMATION_BY_PID[pid])
         pname = PROJECT_INFORMATION_BY_PID[pid].project
+        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        mdgroup.refresh()
         if(pi.project_prefixes.length > 0){
             for(p in pi.project_prefixes){
               //console.log('p',p,prefixes[p])
@@ -184,19 +183,19 @@ function get_portal_metadata(req, portal, all_metadata){
                   got_lon=false
               
                   //collected_metadata[pjds] = all_metadata[did]
-                  if(all_metadata[did].hasOwnProperty('lat')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                  if(mdgroup.hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.lat
                     got_lat=true
-                  }else if(all_metadata[did].hasOwnProperty('latitude')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                  }else if(mdgroup.hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
                     got_lat=true
                   }
 
-                  if(all_metadata[did].hasOwnProperty('lon')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                  if(mdgroup.hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.lon
                     got_lon=true
-                  }else if(all_metadata[did].hasOwnProperty('longitude')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                  }else if(mdgroup.hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
                     got_lon=true
                   }
                   //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
@@ -219,19 +218,19 @@ function get_portal_metadata(req, portal, all_metadata){
                   got_lon=false
               
                   //collected_metadata[pjds] = all_metadata[did]
-                  if(all_metadata[did].hasOwnProperty('lat')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                  if(mdgroup.hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.lat
                     got_lat=true
-                  }else if(all_metadata[did].hasOwnProperty('latitude')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                  }else if(mdgroup.hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
                     got_lat=true
                   }
 
-                  if(all_metadata[did].hasOwnProperty('lon')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                  if(mdgroup.hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.lon
                     got_lon=true
-                  }else if(all_metadata[did].hasOwnProperty('longitude')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                  }else if(mdgroup.hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
                     got_lon=true
                   }
                   //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }
@@ -254,19 +253,19 @@ function get_portal_metadata(req, portal, all_metadata){
                   got_lon=false
               
                   //collected_metadata[pjds] = all_metadata[did]
-                  if(all_metadata[did].hasOwnProperty('lat')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].lat
+                  if(mdgroup.hasOwnProperty('lat')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.lat
                     got_lat=true
-                  }else if(all_metadata[did].hasOwnProperty('latitude')){
-                    portal_info[portal].metadata[pjds].latitude = all_metadata[did].latitude
+                  }else if(mdgroup.hasOwnProperty('latitude')){
+                    portal_info[portal].metadata[pjds].latitude = mdgroup.latitude
                     got_lat=true
                   }
 
-                  if(all_metadata[did].hasOwnProperty('lon')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].lon
+                  if(mdgroup.hasOwnProperty('lon')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.lon
                     got_lon=true
-                  }else if(all_metadata[did].hasOwnProperty('longitude')){
-                    portal_info[portal].metadata[pjds].longitude = all_metadata[did].longitude
+                  }else if(mdgroup.hasOwnProperty('longitude')){
+                    portal_info[portal].metadata[pjds].longitude = mdgroup.longitude
                     got_lon=true
                   }
                   //collected_metadata[pjds] = { 'lat':all_metadata[did].lat, 'lon':all_metadata[did].lon }

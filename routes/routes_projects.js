@@ -42,7 +42,7 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
     var dsinfo = []; 
     var mdata = {}
     var dscounts = {};  
-    
+    console.log('in PJ:id');
 	  if(req.params.id in PROJECT_INFORMATION_BY_PID){
       var info = PROJECT_INFORMATION_BY_PID[req.params.id]
       var project_count = ALL_PCOUNTS_BY_PID[req.params.id]
@@ -57,7 +57,14 @@ router.get('/:id', helpers.isLoggedIn, function(req, res) {
       for(n in dsinfo){
         var did = dsinfo[n].did;
         dscounts[did] = ALL_DCOUNTS_BY_DID[did];
-        mdata[dsinfo[n].dname] = AllMetadata[did]; 
+        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+        mdgroup.refresh()
+        mdata[dsinfo[n].dname] = {}
+        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+            if(mdname != 'id'){
+              mdata[dsinfo[n].dname][mdname] = mdgroup[mdname] 
+            }
+        });
 
       }
       //console.log('MD: '+JSON.stringify(mdata));
