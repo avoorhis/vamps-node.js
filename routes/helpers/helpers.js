@@ -256,43 +256,87 @@ module.exports.run_select_datasets_query = function(rows){
 	 //console.log(JSON.stringify(ALL_DATASETS))
     console.log('Getting md-names and those w/ lat/lon');
     //var clean_metadata = {};
-    for(did in DATASET_NAME_BY_DID){
-        //console.log(did)
-        //clean_metadata[did] = {}
-        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh()
-        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-            if(mdname != 'id'){
-              //console.log(mdname, group[mdname])
-              //clean_metadata[did][mdname] = mdgroup[mdname]
-              if(AllMetadataNames.indexOf(mdname) == -1){
-                AllMetadataNames.push(mdname);
-              }
-              if(mdname == 'latitude' || mdname == 'longitude'){
-                if(did in DatasetsWithLatLong){
-                  if(mdname == 'latitude'){       
-                    DatasetsWithLatLong[did].latitude = mdgroup[mdname];
-                  }else{
-                    DatasetsWithLatLong[did].longitude = mdgroup[mdname];
-                  }
-                }else{
-                  DatasetsWithLatLong[did]={};
-                
-                  var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
-                  DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+    if(HDF5_MDATA == ''){
+        var clean_metadata = {};
+        for(did in AllMetadata){
+          if(did in DATASET_NAME_BY_DID){
+              clean_metadata[did] = AllMetadata[did];        
+              for(var mdname in AllMetadata[did] ){
+          		//console.log(mdname)
+          		if(AllMetadataNames.indexOf(mdname) == -1){
+          			AllMetadataNames.push(mdname);
+          		}
+          		if(mdname == 'latitude' || mdname == 'longitude'){
+  			
+          			if(did in DatasetsWithLatLong){
+          				if(mdname == 'latitude'){				
+          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+          				}else{
+          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+          				}
+          			}else{
+          				DatasetsWithLatLong[did]={};
+        				
+          				var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+          				DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
                   DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did]
-                  if(mdname == 'latitude'){       
-                    DatasetsWithLatLong[did].latitude = mdgroup[mdname];
-                  }else{
-                    DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+          				if(mdname == 'latitude'){				
+          					DatasetsWithLatLong[did].latitude = AllMetadata[did].latitude;
+          				}else{
+          					DatasetsWithLatLong[did].longitude = AllMetadata[did].longitude;
+          				}
+          			}
+          		}
+          	  }
+         }
+        }
+    }else{
+    
+    
+        for(did in DATASET_NAME_BY_DID){
+            //console.log(did)
+            //clean_metadata[did] = {}
+        
+            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+            mdgroup.refresh()
+            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+                if(mdname != 'id'){
+                  //console.log(mdname, group[mdname])
+                  //clean_metadata[did][mdname] = mdgroup[mdname]
+              
+              
+              
+                  if(AllMetadataNames.indexOf(mdname) == -1){
+                    AllMetadataNames.push(mdname);
                   }
-                }
-              }
-            }         
-        });
+                  if(mdname == 'latitude' || mdname == 'longitude'){
+                    if(did in DatasetsWithLatLong){
+                      if(mdname == 'latitude'){       
+                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                      }else{
+                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                      }
+                    }else{
+                      DatasetsWithLatLong[did]={};
+                
+                      var pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
+                      DatasetsWithLatLong[did].proj_dset = pname+'--'+DATASET_NAME_BY_DID[did];
+                      DatasetsWithLatLong[did].pid = PROJECT_ID_BY_DID[did]
+                      if(mdname == 'latitude'){       
+                        DatasetsWithLatLong[did].latitude = mdgroup[mdname];
+                      }else{
+                        DatasetsWithLatLong[did].longitude = mdgroup[mdname];
+                      }
+                    }
+                  }
+              
+              
+              
+                }         
+            });
+        }
     }
-    //}
-    //AllMetadata = clean_metadata;
+    
     
     AllMetadataNames.sort(function(a, b){
           return module.exports.compareStrings_alpha(a, b);
@@ -313,6 +357,7 @@ module.exports.run_select_datasets_query = function(rows){
 	
 
 };
+
 //
 //
 //

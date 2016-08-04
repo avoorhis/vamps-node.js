@@ -15,42 +15,9 @@ var iniparser = require('iniparser');
 var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
-  
-var util = require('../bin/a_util');
-var is_local = util.IsLocal();
-console.log("IsLocal?");
-console.log(is_local);
-
-// var os = require("os");
-// var hostname = os.hostname();
-//
-// SERVER_NAMES = ["local"]
-//
-// console.log("HHH");
-// console.log(hostname);
-//
-// // if (SERVER_NAMES.indexOf(hostname) >= 0) {
-// //     console.log("Found");
-// // } else {
-// //     console.log("Not found");
-// // }
-//
-// SERVER_NAMES.forEach(function(entry) {
-//     console.log(entry);
-//     if(hostname.indexOf(entry) >= 0) {
-//       console.log("Found");
-//     } else {
-//       console.log("Not found");
-//     }
-// });
-
 
 //var progress = require('progress-stream');
-
-
-var upload = multer({ dest: config.TMP_FILES_BASE,   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
-
-// var upload = multer({ dest: '/groups/vampsweb/tmp',   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+var upload = multer({ dest: config.TMP,   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
 var Readable = require('readable-stream').Readable;
 var COMMON = require('./visuals/routes_common');
@@ -2168,19 +2135,33 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+'--'+dname+"\t";
         } 
-        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh();
-        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-            if(mdname != 'id'){
-            	val = mdgroup[mdname];
-            	if(mdname in myrows){
-		            myrows[mdname].push(val);
-		          }else{
-		            myrows[mdname] = [];
-		            myrows[mdname].push(val);
-		          }
+        
+        if(HDF5_MDATA == ''){
+            for (var k in AllMetadata[did]){
+              nm = k;
+              val = AllMetadata[did][k];
+              if(nm in myrows){
+                myrows[nm].push(val);
+              }else{
+                myrows[nm] = [];
+                myrows[nm].push(val);
+              }
             }
-        });
+        }else{
+            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+            mdgroup.refresh();
+            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+                if(mdname != 'id'){
+                    val = mdgroup[mdname];
+                    if(mdname in myrows){
+                        myrows[mdname].push(val);
+                      }else{
+                        myrows[mdname] = [];
+                        myrows[mdname].push(val);
+                      }
+                }
+            });
+        }
         
 
 
