@@ -380,32 +380,32 @@ try{
     // }
     // console.log('g88',h5lt.get_num_attrs(group88.id))
     // console.log('group88',group88['latitude'] )
+    ////////// END hdf5 Code ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 }catch(err){
     console.log(err)
+    HDF5_MDATA  = ''
+    HDF5_TAXDATA = ''
+    var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
+    var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
+    try {
+        AllTaxCounts   = require(taxcounts_file);
+    }
+    catch (e) {
+      console.log(e);
+      AllTaxCounts = {}
+    }
+    console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
+
+    try {
+        AllMetadata        = require(meta_file);
+    }
+    catch (e) {
+      console.log(e);
+      AllMetadata = {}
+    }
+    console.log('Loading METADATA as AllMetadata from: '+meta_file);
 }
-////////// END hdf5 Code ///////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////
-
-//var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
-//var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
-// try {
-//     //AllTaxCounts   = require(taxcounts_file);
-// }
-// catch (e) {
-//   console.log(e);
-//   AllTaxCounts = {}
-// }
-//console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-
-// try {
-//     //AllMetadata        = require(meta_file);
-// }
-// catch (e) {
-//   console.log(e);
-//   AllMetadata = {}
-// }
-//console.log('Loading METADATA as AllMetadata from: '+meta_file);
-
 
 //see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {

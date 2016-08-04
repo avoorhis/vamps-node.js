@@ -54,15 +54,21 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
     chosen_id_name_hash = file_data_to_open.id_name_hash
     visual_post_items = file_data_to_open.post_items
     dataset_ids = chosen_id_name_hash.ids;
-    //http://localhost:3000/visuals/view_selection/configuration-1459886135939.json
     
-    //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
     for(var i in dataset_ids){
-      var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+      var did = dataset_ids[i]
       try{
-        var jsonfile = require(path_to_file);
-        TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
-        METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+          if(HDF5_TAXDATA == ''){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            var path_to_file = path.join(files_prefix, did +'.json');
+            var jsonfile = require(path_to_file);
+            TAXCOUNTS[did] = jsonfile['taxcounts'];
+            METADATA[did]  = jsonfile['metadata'];
+            
+          }else{
+            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+          }
       }
       catch(err){
         console.log('1- no file '+err.toString()+' Exiting');
@@ -136,7 +142,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     req.flash('message', 'Using data from configuration file.');
     TAXCOUNTS = {};
     METADATA  = {}; 
-    //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+    //
     var config_file_path = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, req.body.filename);
     var config_file_data = JSON.parse(fs.readFileSync(config_file_path, 'utf8'))
     //console.log(file_data)
@@ -145,22 +151,21 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
     dataset_ids = chosen_id_name_hash.ids;
     for(var i in dataset_ids){
       var did = dataset_ids[i]
-      //var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+     
       try{
-        //var jsonfile = require(path_to_file);
-        //TAXCOUNTS[did] = jsonfile['taxcounts'];
-        //METADATA[did]  = jsonfile['metadata'];
-        TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-        METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        // var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        // mdgroup.refresh()
-        // METADATA[did] = {}
-        // Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-        //     if(mdname != 'id'){
-        //       METADATA[did][mdname]  = mdgroup[mdname]
-        //     }
-        // });
+       
+        
+        if(HDF5_TAXDATA == ''){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+            var jsonfile = require(path_to_file);
+            TAXCOUNTS[did] = jsonfile['taxcounts'];
+            METADATA[did]  = jsonfile['metadata'];
+        }else{
+            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        }
+        
       }
       catch(err){
         console.log('2-no file '+err.toString()+' Exiting');
@@ -283,31 +288,27 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
     
 	  METADATA  = {}; 
 	  // Gather just the tax data of selected datasets
-	  //var file_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+	  //
 
     
     for(var i in dataset_ids){
       //console.log('ds',dataset_ids[i])
       var did = dataset_ids[i]
-      //var path_to_file = path.join(file_prefix, dataset_ids[i] +'.json');
-      //console.log('path',path_to_file)
-
       
-      //try{
-        //var jsonfile = require(path_to_file);
-        //console.log(dataset_ids[i], AllTaxCounts[dataset_ids[i]])
-        //TAXCOUNTS[did] = AllTaxCounts[did]
-        TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
-        METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        //METADATA[did]  = helpers.get_attributes_from_hdf5_group(did, 'metadata')
-        // var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        // mdgroup.refresh()
-        // METADATA[did] = {}
-        // Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-        //     if(mdname != 'id'){
-        //       METADATA[did][mdname]  = mdgroup[mdname]
-        //     }
-        // });
+        
+        if(HDF5_TAXDATA == ''){
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+            var jsonfile = require(path_to_file);
+            TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+            METADATA[dataset_ids[i]]  = jsonfile['metadata'];
+        }else{
+            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        }
+        
+        
+
 
      
 		  
