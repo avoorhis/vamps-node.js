@@ -15,40 +15,9 @@ var iniparser = require('iniparser');
 var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
-  
-var util = require('../bin/a_util');
-var is_local = util.IsLocal();
-console.log("IsLocal?");
-console.log(is_local);
-
-// var os = require("os");
-// var hostname = os.hostname();
-//
-// SERVER_NAMES = ["local"]
-//
-// console.log("HHH");
-// console.log(hostname);
-//
-// // if (SERVER_NAMES.indexOf(hostname) >= 0) {
-// //     console.log("Found");
-// // } else {
-// //     console.log("Not found");
-// // }
-//
-// SERVER_NAMES.forEach(function(entry) {
-//     console.log(entry);
-//     if(hostname.indexOf(entry) >= 0) {
-//       console.log("Found");
-//     } else {
-//       console.log("Not found");
-//     }
-// });
-
 
 //var progress = require('progress-stream');
-
-var upload = multer({ dest: config.TMP,	limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }	});
-
+var upload = multer({ dest: config.TMP,   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
 var Readable = require('readable-stream').Readable;
 var COMMON = require('./visuals/routes_common');
@@ -1527,80 +1496,78 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     // res.redirect("/user_data/import_data");
     // return;
   // }
+  else {
 
-  else{
-		
-		
-		  console.log(data_repository);
 
-		  var original_fastafile = path.join(req.CONFIG.TMP, req.files[0].filename);
-		  fasta_compressed = metadata_compressed = false;
-			if(req.files[0].mimetype === 'application/x-gzip'){
-				fasta_compressed = true;
-			}
-			status_params = {'type':'new', 'user_id':req.user.user_id,
-											'project':project, 'status':'OK',	'msg':'Upload Started'  };
-			//helpers.update_status(status_params);
-			var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-		        			args :       [ '-project_dir', data_repository, '-owner', username, '-p', project, '-site', req.CONFIG.site, '-infile',original_fastafile]
-		    			};
-			if(req.files[0].mimetype === 'application/x-gzip'){
-				options.args = options.args.concat(['-fa_comp' ]);
-			}
-		  var original_metafile  = '';
-		  try{
-				//original_metafile  = path.join(process.env.PWD, 'tmp',req.files[1].filename);
-				original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
-				options.args = options.args.concat(['-mdfile', original_metafile ]);
-				if(req.files[1].mimetype === 'application/x-gzip'){
-					metadata_compressed = true;
-					options.args = options.args.concat(['-md_comp' ]);
-				}
-			}
-			catch(err){
-				console.log('No Metadata file: '+err+'; Continuing on');
-				original_metafile  = '';
-			}
+      console.log(data_repository);
 
-			if(req.body.type == 'simple_fasta'){
-			    if(req.body.dataset === '' || req.body.dataset === undefined){
-				  	req.flash('failMessage', 'A dataset name is required.');
-				  	res.redirect("/user_data/import_data");
-				  	return;
-					}
-					options.args = options.args.concat(['-upload_type', 'single', '-d', req.body.dataset ]);
-		  }else if(req.body.type == 'multi_fasta') {
-					options.args = options.args.concat(['-upload_type', 'multi' ]);
-		  }else{
-					req.flash('failMessage', 'No file type info found');
-					res.redirect("/user_data/import_data");
-					return;
-		  }
-			
-		  options.args = options.args.concat(['-q' ]);   // QUIET
-		
-			//console.log(original_fastafile);
-			//console.log(original_metafile);
-		 	// move files to user_data/<username>/ and rename
-			var LoadDataFinishRequest = function () {
-					// START STATUS //
-					req.flash('successMessage', "Upload in Progress: '"+ project+"'");
+      var original_fastafile = path.join('/', 'groups', 'vampsweb', 'tmp',  req.files[0].filename);
+      fasta_compressed = metadata_compressed = false;
+      if (req.files[0].mimetype === 'application/x-gzip') {
+        fasta_compressed = true;
+      }
+      status_params = {'type':'new',  'user_id':req.user.user_id,
+                      'project':project,  'status':'OK',   'msg':'Upload Started'  };
+      //helpers.update_status(status_params);
+      var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+                  args :       [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+              };
+      if (req.files[0].mimetype === 'application/x-gzip') {
+        options.args = options.args.concat(['-fa_comp' ]);
+      }
+      var original_metafile  = '';
+      try{
+        //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
+        original_metafile  = path.join('/', 'groups', 'vampsweb', 'tmp', req.files[1].filename);
+        options.args = options.args.concat(['-mdfile',  original_metafile ]);
+        if (req.files[1].mimetype === 'application/x-gzip') {
+          metadata_compressed = true;
+          options.args = options.args.concat(['-md_comp' ]);
+        }
+      }
+      catch(err) {
+        console.log('No Metadata file: '+err+'; Continuing on');
+        original_metafile  = '';
+      }
 
-					// type, user, project, status, msg
+      if (req.body.type == 'simple_fasta') {
+          if (req.body.dataset === '' || req.body.dataset === undefined) {
+            req.flash('failMessage',  'A dataset name is required.');
+            res.redirect("/user_data/import_data");
+            return;
+          }
+          options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
+      } else if (req.body.type == 'multi_fasta') {
+          options.args = options.args.concat(['-upload_type',  'multi' ]);
+      } else {
+          req.flash('failMessage',  'No file type info found');
+          res.redirect("/user_data/import_data");
+          return;
+      }
 
-					res.render('success', {  title   : 'VAMPS: Import Success',
-								            message : req.flash('successMessage'),
-					                        display : "Import_Success",
-						                    user    : req.user, hostname: req.CONFIG.hostname
-						        });
-			};
-			// MOVE FILES: Using python to move files rather than node.js:::
-			
-			fs.ensureDir(data_repository, function (err) {
-    		    if(err) {console.log('ensureDir err:',err);} // => null
-    		    else{
-                    fs.chmod(data_repository, 0775, function (err) {
+      options.args = options.args.concat(['-q' ]);   // QUIET
 
+      //console.log(original_fastafile);
+      //console.log(original_metafile);
+       // move files to user_data/<username>/ and rename
+      var LoadDataFinishRequest = function () {
+          // START STATUS //
+          req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
+
+          // type,  user,  project,  status,  msg
+
+          res.render('success',  {  title   : 'VAMPS: Import Success',
+                            message : req.flash('successMessage'),
+                                  display : "Import_Success",
+                                user    : req.user,  hostname: req.CONFIG.hostname
+                    });
+      };
+      // MOVE FILES: Using python to move files rather than node.js:::
+
+      fs.ensureDir(data_repository,  function (err) {
+            if (err) {console.log('ensureDir err:', err);} // => null
+            else {
+                    fs.chmod(data_repository,  0775,  function (err) {
                         if (err) {
                           console.log('chmod err:', err);
                           return;
@@ -1622,31 +1589,12 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
 
                         script_name = 'load_script.sh';
-
-                        
-                        var nodelog = fs.openSync(path.join(data_repository,'assignment.log'), 'a');
-                        //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-                        
-												if(req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-												 {
-												   var qsublog = path.join(data_repository,'cluster.log');
-												   var script_text = get_qsub_script_text(qsublog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list)
-												   
-												 }
-												 else
-												 {
-												   var scriptlog = path.join(data_repository, 'script.log');
-												   var script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
-
-												 }
-
-												var script_path = path.join(data_repository, script_name);
-
-                        
-
-
-                        fs.writeFile(script_path, script_text, function (err) {
-
+                        var qsublog = path.join(data_repository, 'cluster.log');
+                        var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
+                        //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
+                        var script_text = get_qsub_script_text(qsublog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+                        var script_path = path.join(data_repository,  script_name);
+                        fs.writeFile(script_path,  script_text,  function (err) {
                             if (err) return console.log(err);
                             child = exec( 'chmod ug+rwx '+script_path,  function (error,  stdout,  stderr) {
                                 if (error !== null) {
@@ -2502,18 +2450,16 @@ function create_export_files(req,  user_dir,  ts,  dids,  file_tags,  normalizat
     for (var t in file_tags) {
         export_cmd_options.args.push(file_tags[t]);
     }
+    var cmd_list = [];
+    cmd_list.push(path.join(export_cmd_options.scriptPath,  export_cmd)+' '+export_cmd_options.args.join(' '));
 
-		var cmd_list = []
-		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
-		
-		if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list)
-            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
-            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
+    if (req.CONFIG.cluster_available === true) {
+            qsub_script_text = get_qsub_script_text(log,  '/groups/vampsweb/tmp',  site,  code,  cmd_list);
+            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
+            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,  'tmp',  qsub_file_name);
 
-            fs.writeFile(qsub_file_path, qsub_script_text, function (err) {
-                if(err) {
-
+            fs.writeFile(qsub_file_path,  qsub_script_text,  function (err) {
+                if (err) {
                     return console.log(err);
                 } else {
                     console.log("The file was saved!");
@@ -2641,18 +2587,16 @@ function create_fasta_file(req,  user_dir,  ts,  dids) {
                          scriptPath : path.join(req.CONFIG.SYSTEM_FILES_BASE, 'scripts'),
                          args :       ['-s', site, '-u', req.user.username, '-r', ts, '-base', user_dir, '-dids', dids, '--fasta_file', '-compress' ] // '-compress'
                      };
+    var cmd_list = [];
+    cmd_list.push(path.join(export_cmd_options.scriptPath,  export_cmd)+' '+export_cmd_options.args.join(' '));
 
-		var cmd_list = []
-		cmd_list.push(path.join(export_cmd_options.scriptPath, export_cmd)+' '+export_cmd_options.args.join(' '))
-		
-		if(req.CONFIG.cluster_available == true){
-            qsub_script_text = get_qsub_script_text(log, req.CONFIG.TMP, site, code, cmd_list)
-            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh'
-            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE, 'tmp', qsub_file_name)
+    if (req.CONFIG.cluster_available === true) {
+            qsub_script_text = get_qsub_script_text(log,  '/groups/vampsweb/tmp',  site,  code,  cmd_list);
+            qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
+            qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,  'tmp',  qsub_file_name);
 
-            fs.writeFile(qsub_file_path, qsub_script_text, function (err) {
-                if(err) {
-
+            fs.writeFile(qsub_file_path,  qsub_script_text,  function (err) {
+                if (err) {
                     return console.log(err);
                 } else {
                     console.log("The file was saved!");
@@ -2716,67 +2660,28 @@ function create_fasta_file(req,  user_dir,  ts,  dids) {
           rs.push(entry);
         }
 
-		return file_name;
-		
-		
-		// var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq, sequence_id, seq_count, project, dataset from sequence_pdr_info\n";
-		// //var qSelect = "select sequence_comp as seq, sequence_id, seq_count, dataset from sequence_pdr_info\n";
-		// qSelect += " JOIN sequence using (sequence_id)\n";
-		// qSelect += " JOIN dataset using (dataset_id)\n";
-		// qSelect += " JOIN project using (project_id)\n";
-		// var seq, seqid, seq_count, pjds;
-		// var file_name, out_file_path;
-
-		// //var pids = JSON.parse(req.body.datasets).ids;
-		
-		// out_file_path = path.join(user_dir,file_name);
-		// qSelect += " where dataset_id in ("+pids+")";
-
-		// var gzip = zlib.createGzip();
-		// console.log(qSelect);
-
-		// var wstream = fs.createWriteStream(out_file_path);
-		// var rs = new Readable();
-		// var collection = db.query(qSelect, function (err, rows, fields){
-		//   if (err) {
-		//       throw err;
-		//   } else {
-		//     for (var i in rows){
-		//       seq = rows[i].seq.toString();
-		//       //var buffer = new Buffer(rows[i].seq, 'base64');
-		//       //console.log(seq);
-		//       seq_id = rows[i].sequence_id.toString();
-		//       seq_count = rows[i].seq_count.toString();
-		//       //project = rows[i].project;
-		//       pjds = rows[i].project+'--'+rows[i].dataset;
-		//       entry = '>'+seq_id+'|'+pjds+'|'+seq_count+"\n"+seq+"\n";
-		//       //console.log(entry);
-		//       rs.push(entry);
-		//     }
-
-		//     rs.push(null);
-		//   }
-		//   rs
-		//     .pipe(gzip)
-		//     .pipe(wstream)
-		//     .on('finish', function () {  // finished
-		//       console.log('done compressing and writing file');
-		//       console.log(JSON.stringify(req.user));
-		//       var info = {
-		//             to : req.user.email,
-		//             from : "vamps@mbl.edu",
-		//             subject : "fasta file is ready",
-		//             text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
-		//           };
-		//       helpers.send_mail(info);
+        rs.push(null);
+      }
+      rs
+        .pipe(gzip)
+        .pipe(wstream)
+        .on('finish',  function () {  // finished
+          console.log('done compressing and writing file');
+          console.log(JSON.stringify(req.user));
+          var info = {
+                to : req.user.email,
+                from : "vamps@mbl.edu",
+                subject : "fasta file is ready",
+                text : "Your fasta file is ready here:https://vamps.mbl.edu:8124\n\nAfter you log in go to the 'Your Data/File Retrieval' Page."
+              };
+          helpers.send_mail(info);
 
 
-		//     });
+        });
 
-		// });
+    });
 
-		// return file_name;
-
+    return file_name;
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
