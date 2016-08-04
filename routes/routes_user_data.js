@@ -46,7 +46,11 @@ console.log(is_local);
 
 
 //var progress = require('progress-stream');
-var upload = multer({ dest: '/groups/vampsweb/tmp',   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+
+
+var upload = multer({ dest: config.TMP_FILES_BASE,   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
+
+// var upload = multer({ dest: '/groups/vampsweb/tmp',   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
 
 var Readable = require('readable-stream').Readable;
 var COMMON = require('./visuals/routes_common');
