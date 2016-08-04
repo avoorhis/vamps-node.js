@@ -161,7 +161,7 @@ def go_list(args):
     
 
     
-def go_add(NODE_DATABASE, pid):
+def go_create(NODE_DATABASE, pid):
     from random import randrange
     
     #dids_by_pid = {}
@@ -234,8 +234,6 @@ def go_add(NODE_DATABASE, pid):
 def write_taxfile(f, dids, counts_lookup):  
     
     
-    
-    #f = h5py.File(h5_taxfile_path, "a")
     #dt1 = h5py.special_dtype(vlen=str)  # str bytes unicode
     #dt2 = h5py.special_dtype(vlen=bytes)
     #dt3 = np.dtype(str)
@@ -261,9 +259,16 @@ def write_taxfile(f, dids, counts_lookup):
             subgrp.attrs[i.strip('_')] = counts_lookup[did][i]
 
     
-def write_mdfile(f, dids, metadata_lookup):  
-    
-    #f = h5py.File(h5_mdfile_path, "a")
+
+def write_mdfile(f, dids, metadata_lookup): 
+
+    h5_mdfile_path = os.path.join(args.json_file_path,NODE_DATABASE+'--metadata.h5')
+    if args.all:
+        mode = "w" # create or truncate if exists
+    else:
+        mode = "a" # read/write if exists, create otherwise
+    f = h5py.File(h5_mdfile_path, mode)  # read/write if exists, create otherwise (default)
+
     
     #dt1 = h5py.special_dtype(vlen=str)  # str bytes unicode
     #dt2 = h5py.special_dtype(vlen=bytes)
@@ -482,19 +487,19 @@ if __name__ == '__main__':
                 help="")            
     args = parser.parse_args()
     
-    print "ARGS: dbhost  =",args.dbhost
+    print "ARGS: dbhost  =", args.dbhost
     if args.dbhost == 'vamps' or args.dbhost == 'vampsdb':
         args.json_file_path = '/groups/vampsweb/vamps_node_data/json'
-        
         args.dbhost = 'vampsdb'
         args.NODE_DATABASE = 'vamps2'
-        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
     elif args.dbhost == 'vampsdev':
         args.json_file_path = '/groups/vampsweb/vampsdev_node_data/json'
         args.NODE_DATABASE = 'vamps2'
-        args.files_prefix   = os.path.join(args.json_file_path, args.NODE_DATABASE+"--datasets") 
+        
     else:
         args.NODE_DATABASE = 'vamps_development'
+        
+        
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'
     else:
@@ -549,7 +554,7 @@ if __name__ == '__main__':
     if args.list:
         go_list(args)
     elif args.all or (args.add and args.pid):
-        go_add(NODE_DATABASE, args.pid)
+        go_create(NODE_DATABASE, args.pid)
     else:
         print usage 
         print "Maybe you forgot to add '-add ' to the command line?"

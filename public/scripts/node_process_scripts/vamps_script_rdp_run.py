@@ -37,21 +37,22 @@ def start_rdp(args):
       Doc string
     """
     
-    sys.path.append(os.path.join(args.process_dir,'public','scripts'))
+    
 
     import rdp.rdp as rdp
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
     
     datasets = {}
-    info_load_infile = args.config
-    if not os.path.isfile(info_load_infile):
-        print( "Could not find config file ("+info_load_infile+") **Exiting**")
+    
+    config_infile =   os.path.join(args.project_dir,'config.ini')
+    if not os.path.isfile(config_infile):
+        print( "Could not find config file ("+config_infile+") **Exiting**")
         sys.exit()
    
     config = ConfigParser.ConfigParser()
     config.optionxform=str
-    config.read(info_load_infile)
+    config.read(config_infile)
     general_config_items = {}
     # CL take precedence for domain and dna_region
     
@@ -62,49 +63,22 @@ def start_rdp(args):
     file_prefix = 'testing-fp'
     dir_prefix  = general_config_items['baseoutputdir']
             
-    logging.warning(   'FROM config.INI-->'      )  
-    logging.warning(   general_config_items) 
-    logging.warning(   '<<--FROM INI'    )
     
     #global_gast_dir = os.path.join(args.basedir,'analysis','gast')
-    analysis_dir = os.path.join(args.project_dir,'analysis')
-    
+    rdp_dir = os.path.join(args.project_dir,'rdp')
+    if not os.path.exists(rdp_dir):
+        os.makedirs(rdp_dir)
+        
     total_uniques = 0
     for dataset_item in config.items('DATASETS'):
             dataset = dataset_item[0]
             dscount = dataset_item[1]  # raw count
-            #print "\nUnique-ing",dataset
-            rdp_dir = os.path.join(analysis_dir, 'rdp')
-            ds_dir = os.path.join(rdp_dir, dataset)
-            if not os.path.exists(rdp_dir):
-                os.makedirs(rdp_dir)
-            if not os.path.exists(ds_dir):
-                os.makedirs(ds_dir)
-        
-            fasta_file  = os.path.join(ds_dir, 'seqfile.fa')
-            unique_file = os.path.join(ds_dir, 'unique.fa')
-            names_file  = os.path.join(ds_dir, 'names')
+            print "\nDS KNT",dataset,dscount
+            unique_file = os.path.join(args.project_dir, dataset+'.fa.unique')
+         
+            rdp_out_file = os.path.join(rdp_dir, dataset+'.rdp') # to be created
 
-            if not os.path.exists(unique_file):                
-                fasta_file_gast  = os.path.join(analysis_dir, 'gast', dataset, 'seqfile.fa')
-                unique_file_gast = os.path.join(analysis_dir, 'gast', dataset, 'unique.fa')
-                names_file_gast  = os.path.join(analysis_dir, 'gast', dataset, 'names')
-                try:
-                    shutil.copyfile(fasta_file_gast, fasta_file)
-                    shutil.copyfile(unique_file_gast, unique_file)
-                    shutil.copyfile(names_file_gast, names_file)
-                except:
-                    print "Could not find unique.fa file - ",ds_dir
-                    sys.exit(1)
-
-            rdp_out_file = os.path.join(ds_dir, 'rdp_out.txt') # to be created
-
-            logging.info("starting RDP")
-            print 'running rdp on',dataset
-            print 'uniques file',unique_file
-            print 'rdp_out file',rdp_out_file
-            print 'ref db dir', args.ref_db_dir
-            rdp.run_rdp( unique_file, rdp_out_file, args.process_dir, args.path_to_classifier, args.ref_db_dir )
+            rdp.run_rdp( unique_file, rdp_out_file, args.path_to_classifier, args.gene, args.site )
     
 
             
@@ -121,30 +95,31 @@ if __name__ == '__main__':
          
          where
             
-            -c/--config    REQUIRED path to config file.
-                            
-                    SHOULD be the only thing needed
-                    (create config file with 1-vamps-load.py   )   
+            FILL THIS IN! 
            
     
     
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage) 
-    parser.add_argument("-c", "--config",             
-                required=True,  action="store",   dest = "config",
-                help="config file with path")
+    
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
-                help = '') 
-    parser.add_argument("-ref_db", "--reference_db",    
-                required=True,  action="store",   dest = "ref_db", 
-                help = '') 
+                help = '')
+    parser.add_argument("-p", "--project",        
+                required=True,  action='store', dest = "project", 
+                help="Project Name")
+    parser.add_argument("-site", "--site",    
+                required=False,  action='store', choices=['vamps','vampsdev','local'], dest = "site",  default='local',
+                help="")            
+                 
+    parser.add_argument("-gene", "--gene",    
+                 required=False,  action="store",   dest = "gene", default="16srrna",
+                 help = 'See RDP README: 16srrna, fungallsu, fungalits_warcup, fungalits_unite') 
+                 
     parser.add_argument("-path_to_classifier", "--path_to_classifier",    
                 required=True,  action="store",   dest = "path_to_classifier", 
                 help = '') 
-    parser.add_argument("-process_dir", "--process_dir",    
-                required=False,  action="store",   dest = "process_dir", default='/',
-                help = '')
+    
     args = parser.parse_args() 
 
     start_rdp(args)

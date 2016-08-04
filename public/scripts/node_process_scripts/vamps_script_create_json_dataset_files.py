@@ -11,7 +11,7 @@ import argparse
 import MySQLdb
 import json
 import logging
-
+import ConfigParser
 
 """
 SELECT sum(seq_count), dataset_id, domain_id,domain
@@ -100,8 +100,9 @@ queries = [{"rank":"domain","query":domain_query},
 		   ]
 
 
-
-
+# Globals
+CONFIG_ITEMS = {}
+DATASET_ID_BY_NAME = {}
 
 #
 #
@@ -111,22 +112,32 @@ def go_add(args):
     
     logging.info('CMD> '+' '.join(sys.argv))
     print 'CMD> ',sys.argv
-    NODE_DATABASE = args.NODE_DATABASE
+    
     global mysql_conn, cur
     
-    mysql_conn = MySQLdb.connect(db = NODE_DATABASE, host=args.hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
+    if args.site == 'vamps':
+        hostname = 'vampsdb'
+    elif args.site == 'vampsdev':
+        hostname = 'vampsdev'
+    else:
+        hostname = 'localhost'
+    
+    mysql_conn = MySQLdb.connect(db = args.NODE_DATABASE, host=hostname, read_default_file=os.path.expanduser("~/.my.cnf_node")  )
     cur = mysql_conn.cursor()
 
+    get_config_data(args.project_dir)
     
-    pid = args.pid
-    process_dir = args.process_dir
+    pid = CONFIG_ITEMS['project_id']
     
     counts_lookup = {}
-    prefix = os.path.join(args.process_dir,'public','json',NODE_DATABASE+'--datasets')
+    prefix = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--datasets')
     if not os.path.exists(prefix):
         os.makedirs(prefix)
     print prefix
-    dids = get_dataset_ids(pid) 
+    #DATASET_ID_BY_NAME[ds] = did
+    dids = [str(x) for x in DATASET_ID_BY_NAME.values()]
+    print 'dids',dids
+    #dids = get_dataset_ids(pid) 
     # delete old did files if any
     for did in dids:        
         pth = os.path.join(prefix,did+'.json')
@@ -185,7 +196,7 @@ def go_add(args):
 
 def write_all_metadata_file(args,metadata_lookup):
     original_metadata_lookup = read_original_metadata(args)
-    md_file = os.path.join(args.process_dir,'public','json',args.NODE_DATABASE+"--metadata.json")
+    md_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--metadata.json")
     #print md_file
     for did in metadata_lookup:
         original_metadata_lookup[did] = metadata_lookup[did]
@@ -197,7 +208,7 @@ def write_all_metadata_file(args,metadata_lookup):
     
 def write_all_taxcounts_file(args,counts_lookup):
     original_counts_lookup = read_original_taxcounts(args)
-    tc_file = os.path.join(args.process_dir,'public','json',args.NODE_DATABASE+"--taxcounts.json")
+    tc_file = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+"--taxcounts.json")
     for did in counts_lookup:
         original_counts_lookup[did] = counts_lookup[did]
     json_str = json.dumps(original_counts_lookup)		
@@ -321,7 +332,7 @@ def go_custom_metadata(did_list,pid,metadata_lookup):
 def read_original_taxcounts(args):
     
 
-    file_path = os.path.join(args.process_dir,'public','json',args.NODE_DATABASE+'--taxcounts.json')
+    file_path = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--taxcounts.json')
     if os.path.exists(file_path):
         with open(file_path) as data_file:    
             data = json.load(data_file)
@@ -330,7 +341,7 @@ def read_original_taxcounts(args):
     return data  
 def read_original_metadata(args):
     
-    file_path = os.path.join(args.process_dir,'public','json',args.NODE_DATABASE+'--metadata.json')
+    file_path = os.path.join(args.jsonfile_dir,args.NODE_DATABASE+'--metadata.json')
     if os.path.exists(file_path):
         with open(file_path) as data_file:    
             data = json.load(data_file)
@@ -346,28 +357,59 @@ def read_original_metadata(args):
 #         sys.exit("Could not find taxcounts file: "+infile)
 #     return counts_lookup
     
-def get_dataset_ids(pid):
-    # print str(db)
-    # print str(cur)
-    # cur.execute('SELECT DATABASE()')
-    # dbase= cur.fetchone()
-    # print 'dbase',dbase[0]
+# def get_dataset_ids(pid):
+#     # print str(db)
+#     # print str(cur)
+#     # cur.execute('SELECT DATABASE()')
+#     # dbase= cur.fetchone()
+#     # print 'dbase',dbase[0]
+#     global mysql_conn, cur
+#     q = "SELECT dataset_id from dataset where project_id='%s'"  % (pid) 
+#     print q
+#     cur.execute(q)
+#     mysql_conn.commit()
+#     dids = []
+#     numrows = cur.rowcount
+#     if numrows == 0:
+#          sys.exit('No data found for pid '+str(pid))
+#     
+#     for row in cur.fetchall():
+#         print 'DS ROW',row
+#         dids.append(str(row[0]))
+#     
+#     return dids
+
+def get_config_data(indir):
     global mysql_conn, cur
-    q = "SELECT dataset_id from dataset where project_id='%s'"  % (pid) 
-    print q
+    config_infile =   os.path.join(indir,'config.ini') 
+    print config_infile
+    logging.info(config_infile)
+    config = ConfigParser.ConfigParser()
+    config.optionxform=str
+    config.read(config_infile)    
+    for name, value in  config.items('GENERAL'):
+        #print '  %s = %s' % (name, value)  
+        CONFIG_ITEMS[name] = value
+    CONFIG_ITEMS['datasets'] = []
+    for dsname, count in  config.items('DATASETS'):        
+        CONFIG_ITEMS['datasets'].append(dsname)   
+    #print 'project',CONFIG_ITEMS['project']
+    q = "SELECT project_id FROM project"
+    q += " WHERE project = '"+CONFIG_ITEMS['project']+"'" 
+    logging.info(q)
     cur.execute(q)
-    mysql_conn.commit()
-    dids = []
-    numrows = cur.rowcount
-    if numrows == 0:
-         sys.exit('No data found for pid '+str(pid))
     
-    for row in cur.fetchall():
-        print 'DS ROW',row
-        dids.append(str(row[0]))
-    
-    return dids
-    
+    row = cur.fetchone()     
+    CONFIG_ITEMS['project_id'] = row[0]
+        
+    q = "SELECT dataset,dataset_id from dataset"
+    q += " WHERE dataset in('"+"','".join(CONFIG_ITEMS['datasets'])+"')"
+    logging.info(q)
+    cur.execute(q)     
+    for row in cur.fetchall():        
+        DATASET_ID_BY_NAME[row[0]] = row[1]
+        
+    mysql_conn.commit()    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="") 
@@ -394,30 +436,24 @@ if __name__ == '__main__':
          use py_mbl_sequencing_pipeline custom scripts
 
     """
-    parser.add_argument("-pid","--pid",                   
-               required=False,  action="store",   dest = "pid", default='0',
-               help="""ProjectID""") 
-   
-    # parser.add_argument("-del","--del",                   
-    #            required=False,  action="store_true",   dest = "delete", default='',
-    #            help="""ProjectID""") 
-               
-    parser.add_argument("-add","--add",                   
-               required=False,  action="store_true",   dest = "add", default='',
-               help="""ProjectID""")
-               
-    parser.add_argument("-host", "--host",    
-                required=False,  action="store",   dest = "hostname", default='localhost',
+    
+         
+    parser.add_argument("-site", "--site",    
+                required=False,  action="store",   dest = "site", default='local',
                 help = '')
     parser.add_argument("-db","--database",                   
-               required=True,  action="store",   dest = "NODE_DATABASE", default='',
-               help="""ProjectID""")  
+               required=False,  action="store",   dest = "NODE_DATABASE", default='vamps2',
+               help="""NODE_DATABASE [default:vamps2]""")  
     parser.add_argument("-project_dir", "--project_dir",    
                 required=True,  action="store",   dest = "project_dir", 
-                help = '')
-    parser.add_argument("-process_dir", "--process_dir",                   
-               required=False,  action="store",   dest = "process_dir", default='/',
-               help="""ProjectID""")          
+                help = 'ProjectDirectory')
+    parser.add_argument("-p", "--project",                   
+               required=True,  action="store",   dest = "project",
+               help="""ProjectName""") 
+    parser.add_argument("-o", "--jsonfile_dir",                   
+               required=True,  action="store",   dest = "jsonfile_dir",
+               help="""JSON Files Directory""")
+                                   
     args = parser.parse_args()
    
     
@@ -427,15 +463,15 @@ if __name__ == '__main__':
     print "DONE"
     fp = open(os.path.join(args.project_dir,'ASSIGNMENT_COMPLETE.txt'),'w')
     try:
-        fp.write(str(args.pid))
+        fp.write(str(CONFIG_ITEMS['project_id']))
     except:
         fp.write('ERROR')
     fp.close()
     #
     # THIS MUST BE THE LAST PRINT!!!!
-    print "PID="+str(args.pid)
+    print "PID="+str(CONFIG_ITEMS['project_id'])
     ##
-    logging.info("ALL DONE: (PID="+str(args.pid)+')')
+    logging.info("ALL DONE: (PID="+str(CONFIG_ITEMS['project_id'])+')')
     
 
         
