@@ -18,10 +18,8 @@ var multer = require('multer');
   
 var util = require('../bin/a_util');
 var is_local = util.IsLocal();
-console.log("EEE");
-// console.log(typeof util.IsLocal); // => 'function'
+console.log("IsLocal?");
 console.log(is_local);
-console.log("EEE1");
 
 // var os = require("os");
 // var hostname = os.hostname();
