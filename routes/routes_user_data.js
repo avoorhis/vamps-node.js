@@ -1391,7 +1391,7 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 					var log = fs.openSync(path.join(process.env.PWD,'logs','upload.log'), 'a');
 					var upload_metadata_process = spawn( options.scriptPath+'/metadata_utils.py', options.args, {detached: true, stdio: [ 'ignore', null, log ]} );  // stdin, stdout, stderr
 					var output = '';
-					console.log('py process pid='+upload_metadata_process.pid)
+					console.log('py process pid='+upload_metadata_process.pid);
 					upload_metadata_process.stdout.on('data', function (data) {
 					  console.log('stdout: ' + data);
 					  data = data.toString().replace(/^\s+|\s+$/g, '');
@@ -2136,10 +2136,10 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
           header += pname+'--'+dname+"\t";
         } 
         var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh()
+        mdgroup.refresh();
         Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
             if(mdname != 'id'){
-            	val = mdgroup[mdname]
+            	val = mdgroup[mdname];
             	if(mdname in myrows){
 		            myrows[mdname].push(val);
 		          }else{
