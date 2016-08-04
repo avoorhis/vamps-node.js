@@ -2135,19 +2135,33 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+'--'+dname+"\t";
         } 
-        var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
-        mdgroup.refresh();
-        Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
-            if(mdname != 'id'){
-            	val = mdgroup[mdname];
-            	if(mdname in myrows){
-		            myrows[mdname].push(val);
-		          }else{
-		            myrows[mdname] = [];
-		            myrows[mdname].push(val);
-		          }
+        
+        if(HDF5_MDATA == ''){
+            for (var k in AllMetadata[did]){
+              nm = k;
+              val = AllMetadata[did][k];
+              if(nm in myrows){
+                myrows[nm].push(val);
+              }else{
+                myrows[nm] = [];
+                myrows[nm].push(val);
+              }
             }
-        });
+        }else{
+            var mdgroup = HDF5_MDATA.openGroup(did+"/metadata");
+            mdgroup.refresh();
+            Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
+                if(mdname != 'id'){
+                    val = mdgroup[mdname];
+                    if(mdname in myrows){
+                        myrows[mdname].push(val);
+                      }else{
+                        myrows[mdname] = [];
+                        myrows[mdname].push(val);
+                      }
+                }
+            });
+        }
         
 
 
