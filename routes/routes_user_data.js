@@ -1481,7 +1481,7 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 //  UPLOAD DATA
 //
 // TODO: Andy, how to make it fail? For testing?
-function ProjectNameGiven(project, req)
+function ProjectNameGiven(project, req, res)
 {
   if (project === '' || req.body.project === undefined) {
     req.flash('failMessage',  'A project name is required.');
@@ -1490,7 +1490,7 @@ function ProjectNameGiven(project, req)
   }
 }
 
-function ProjectNameExists(project, req)
+function ProjectNameExists(project, req, res)
 {
   // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
   // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
@@ -1504,7 +1504,7 @@ function ProjectNameExists(project, req)
   }
 }
 
-function FastaExists(req)
+function FastaExists(req, res)
 {
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage',  'A fasta file is required.');
@@ -1513,21 +1513,23 @@ function FastaExists(req)
   }
 }
 
-function FilePathExists(req, data_repository)
+function FilePathExists(req, data_repository, res)
 {
-  // } else if (helpers.fileExists(data_repository)) {
-  //   req.flash('failMessage',  'That project name is already taken.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  // }
   console.log("DDD55 FilePathExists: ");
   console.log("AAA3 data_repository: " + data_repository);
   console.log("===");
+ 
+  if (helpers.fileExists(data_repository)) {
+    req.flash('failMessage',  'That project name is already taken.');
+    res.redirect("/user_data/import_data?import_type=" + req.body.type);
+    return;
+  }
+ 
   
 }
 
 
-function ProjectValidation(req, project, data_repository)
+function ProjectValidation(req, project, data_repository, res)
 {
   console.log("AAA2 data_repository");
   console.log(data_repository);
@@ -1538,10 +1540,10 @@ function ProjectValidation(req, project, data_repository)
 
   console.log('EEE: req.body.type: ' + req.body.type);
   console.log('EEE: project: ' + project);
-  ProjectNameGiven(project, req);
-  ProjectNameExists(project, req);
-  FastaExists(req);
-  FilePathExists(req, data_repository);
+  ProjectNameGiven(project, req, res);
+  ProjectNameExists(project, req, res);
+  FastaExists(req, res);
+  FilePathExists(req, data_repository, res);
   
 // if (project === '' || req.body.project === undefined) {
 //   req.flash('failMessage',  'A project name is required.');
@@ -1566,7 +1568,6 @@ function ProjectValidation(req, project, data_repository)
   // return;
 }
 
-
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
     var exec = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
@@ -1585,7 +1586,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   console.log("AAA1 data_repository");
   console.log(data_repository);
   
-  if (ProjectValidation(req, project, data_repository) === false)
+  if (ProjectValidation(req, project, data_repository, res) === false)
   {
     return;
   // if (project === '' || req.body.project === undefined) {
