@@ -1551,6 +1551,20 @@ function IsFileCompressed(file)
   return file_compressed
 }
 
+var LoadDataFinishRequest = function (req, res, project) {
+    // START STATUS //
+    req.flash('successMessage',  "Upload in Progress: '"+ project + "'");
+
+    // type,  user,  project,  status,  msg
+
+    res.render('success',  {  title   : 'VAMPS: Import Success',
+                              message : req.flash('successMessage'),
+                              display : "Import_Success",
+                              user    : req.user,  hostname: req.CONFIG.hostname
+              });
+};
+
+
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
     var exec = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
@@ -1595,7 +1609,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     
   }
   catch(err) {
-    console.log('No Metadata file: '+err+'; Continuing on');
+    console.log('No Metadata file: ' + err + '; Continuing on');
     original_metafile  = '';
   }
 
@@ -1619,18 +1633,18 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //console.log(original_fastafile);
     //console.log(original_metafile);
      // move files to user_data/<username>/ and rename
-    var LoadDataFinishRequest = function () {
-        // START STATUS //
-        req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
-
-        // type,  user,  project,  status,  msg
-
-        res.render('success',  {  title   : 'VAMPS: Import Success',
-                          message : req.flash('successMessage'),
-                                display : "Import_Success",
-                              user    : req.user,  hostname: req.CONFIG.hostname
-                  });
-    };
+    // var LoadDataFinishRequest = function () {
+    //     // START STATUS //
+    //     req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
+    // 
+    //     // type,  user,  project,  status,  msg
+    // 
+    //     res.render('success',  {  title   : 'VAMPS: Import Success',
+    //                       message : req.flash('successMessage'),
+    //                             display : "Import_Success",
+    //                           user    : req.user,  hostname: req.CONFIG.hostname
+    //               });
+    // };
     // MOVE FILES: Using python to move files rather than node.js:::
 
     fs.ensureDir(data_repository,  function (err) {
@@ -1716,8 +1730,9 @@ else
                                                   'project':project,  'status':'LOADED',   'msg':'Project is loaded --without tax assignments'
                                                 };
                                               //helpers.update_status(status_params);
-                                              console.log('Finished loading '+project);
-                                              LoadDataFinishRequest();
+                                              LoadDataFinishRequest(req, res, project);
+                                              console.log('Finished loading ' + project);
+                                              // ();
                                          } else {
                                           fs.move(data_repository,   path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project),  function (err) {
                                               if (err) { console.log(err);  }
