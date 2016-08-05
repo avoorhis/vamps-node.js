@@ -1494,7 +1494,7 @@ function ProjectNameExists(project, req, res)
 {
   // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
   // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
-  // 
+  //
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
@@ -1523,7 +1523,7 @@ function FilePathExists(req, data_repository, res)
 }
 
 function MetadataFileExists(req, res)
-{ 
+{
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage',  'A metadata csv file is required.');
     res.redirect("/user_data/import_data");
@@ -1544,7 +1544,7 @@ function ProjectValidation(req, project, data_repository, res)
 function IsFileCompressed(file)
 {
   var file_compressed = false;
-  if (file.mimetype === 'application/x-gzip') 
+  if (file.mimetype === 'application/x-gzip')
   {
     file_compressed = true;
   }
@@ -1553,15 +1553,15 @@ function IsFileCompressed(file)
 
 var LoadDataFinishRequest = function (req, res, project) {
     // START STATUS //
-    req.flash('successMessage',  "Upload in Progress: '"+ project + "'");
+  req.flash('successMessage',  "Upload in Progress: '"+ project + "'");
 
-    // type,  user,  project,  status,  msg
+  // type,  user,  project,  status,  msg
 
-    res.render('success',  {  title   : 'VAMPS: Import Success',
-                              message : req.flash('successMessage'),
-                              display : "Import_Success",
-                              user    : req.user,  hostname: req.CONFIG.hostname
-              });
+  res.render('success',  {  title   : 'VAMPS: Import Success',
+                            message : req.flash('successMessage'),
+                            display : "Import_Success",
+                            user    : req.user,  hostname: req.CONFIG.hostname
+            });
 };
 
 
@@ -1579,14 +1579,14 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
   var fs_old   = require('fs');
-  
+
   ProjectValidation(req, project, data_repository, res);
 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0])
   console.log("FFF1 fasta_compressed = " + fasta_compressed);
-  
+
   status_params = {'type':'new',  'user_id':req.user.user_id,
                   'project':project,  'status':'OK',   'msg':'Upload Started'  };
   //helpers.update_status(status_params);
@@ -1594,19 +1594,19 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
           };
   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
-  
+
   var original_metafile  = '';
   try{
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
     original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args = options.args.concat(['-mdfile',  original_metafile ]);
     metadata_compressed = IsFileCompressed(req.files[1])
-    
+
     if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
     // console.log('FFF3 metadata_compressed: ' + metadata_compressed);
     // console.log('FFF4 options.args: ' + options.args);
-    //     
-    
+    //
+
   }
   catch(err) {
     console.log('No Metadata file: ' + err + '; Continuing on');
@@ -1636,9 +1636,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     // var LoadDataFinishRequest = function () {
     //     // START STATUS //
     //     req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
-    // 
+    //
     //     // type,  user,  project,  status,  msg
-    // 
+    //
     //     res.render('success',  {  title   : 'VAMPS: Import Success',
     //                       message : req.flash('successMessage'),
     //                             display : "Import_Success",
@@ -1673,24 +1673,20 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
                       script_name = 'load_script.sh';
                       var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
-if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-{
- var scriptlog = path.join(data_repository,  'cluster.log');
- //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
- var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
-}
-else
-{
- var scriptlog = path.join(data_repository,  'script.log');
- var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
-}
+                      if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+                      {
+                       var scriptlog = path.join(data_repository,  'cluster.log');
+                       //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
+                       var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+                      }
+                      else
+                      {
+                       var scriptlog = path.join(data_repository,  'script.log');
+                       var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
+                      }
 
 
                       var script_path = path.join(data_repository,  script_name);
-
-
-
-
 
 
                       fs.writeFile(script_path,  script_text,  function (err) {
@@ -1721,32 +1717,35 @@ else
                                             }
                                   });
                                   run_process.on('close',  function (code) {
-                                         console.log('run_process process exited with code ' + code);
-                                         var ary = output.split("\n");
-                                         var last_line = ary[ary.length - 1];
-                                         console.log('last_line:', last_line);
-                                         if (code === 0) {
+                                     console.log('run_process process exited with code ' + code);
+                                     var ary = output.split("\n");
+                                     var last_line = ary[ary.length - 1];
+                                     console.log('last_line:', last_line);
+                                     if (code === 0) {
+                                        status_params = {'type':'update',
+                                                          'user_id':req.user.user_id,
+                                                          'project':project,
+                                                          'status':'LOADED',
+                                                          'msg':'Project is loaded --without tax assignments'
+                                            };
+                                          //helpers.update_status(status_params);
+                                          LoadDataFinishRequest(req, res, project);
+                                          console.log('Finished loading ' + project);
+                                          // ();
+                                     } else {
+                                      fs.move(data_repository,   path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project),  function (err) {
+                                          if (err) { console.log(err);  }
+                                          else {
+                                              req.flash('failMessage',  'Script Failure: '+last_line);
                                               status_params = {'type':'update',  'user_id':req.user.user_id,
-                                                  'project':project,  'status':'LOADED',   'msg':'Project is loaded --without tax assignments'
-                                                };
-                                              //helpers.update_status(status_params);
-                                              LoadDataFinishRequest(req, res, project);
-                                              console.log('Finished loading ' + project);
-                                              // ();
-                                         } else {
-                                          fs.move(data_repository,   path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project),  function (err) {
-                                              if (err) { console.log(err);  }
-                                              else {
-                                                  req.flash('failMessage',  'Script Failure: '+last_line);
-                                                  status_params = {'type':'update',  'user_id':req.user.user_id,
-                                                      'project':project,  'status':'Script Failure',   'msg':'Script Failure'
-                                                  };
-                                                      //helpers.update_status(status_params);
-                                                  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-                                                  return;
-                                              }
-                                          });
-                                         }
+                                                  'project':project,  'status':'Script Failure',   'msg':'Script Failure'
+                                              };
+                                                  //helpers.update_status(status_params);
+                                              res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+                                              return;
+                                          }
+                                      });
+                                     }
                                   });
                               } // end if/else
                           }); // end exec
@@ -1838,7 +1837,7 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
       console.log(original_taxbyseqfile);
       // TODO: test
       taxbyseq_compressed = IsFileCompressed(req.files[0])
-      // 
+      //
       // taxbyseq_compressed = metadata_compressed = false;
       // if (req.files[0].mimetype === 'application/x-gzip') {
       //   taxbyseq_compressed = true;
@@ -1849,7 +1848,7 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
         original_metafile  = path.join('/tmp', req.files[1].filename);
         // TODO: test
         metadata_compressed = IsFileCompressed(req.files[1])
-        
+
         // if (req.files[1].mimetype === 'application/x-gzip') {
         //   metadata_compressed = true;
         // }
