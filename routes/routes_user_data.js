@@ -1540,15 +1540,15 @@ function ProjectValidation(req, project, data_repository, res)
   MetadataFileExists(req, res);
 }
 
-function IsFastaCompressed(req)
+function IsFileCompressed(file)
 {
-  var fasta_compressed = false;
-  if (req.files[0].mimetype === 'application/x-gzip') {
-    fasta_compressed = true;
+  var file_compressed = false;
+  if (file.mimetype === 'application/x-gzip') 
+  {
+    file_compressed = true;
   }
-  return fasta_compressed
+  return file_compressed
 }
-
 
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
     var exec = require('child_process').exec;
@@ -1568,8 +1568,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   ProjectValidation(req, project, data_repository, res);
 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-  metadata_compressed = false;
-  fasta_compressed = IsFastaCompressed(req)
+  // metadata_compressed = false;
+  fasta_compressed = IsFileCompressed(req.files[0])
+  console.log("FFF1 fasta_compressed = " + fasta_compressed);
   
   status_params = {'type':'new',  'user_id':req.user.user_id,
                   'project':project,  'status':'OK',   'msg':'Upload Started'  };
@@ -1585,10 +1586,18 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
     original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args = options.args.concat(['-mdfile',  original_metafile ]);
+    metadata_compressed = false;
+    console.log('FFF0 metadata_compressed: ' + metadata_compressed);
+    metadata_compressed = IsFileCompressed(req.files[1])
+    console.log("FFF2 metadata_compressed = " + metadata_compressed);
+    
     if (req.files[1].mimetype === 'application/x-gzip') {
       metadata_compressed = true;
       options.args = options.args.concat(['-md_comp' ]);
     }
+    console.log('FFF3 metadata_compressed: ' + metadata_compressed);
+    
+    
   }
   catch(err) {
     console.log('No Metadata file: '+err+'; Continuing on');
