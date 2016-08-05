@@ -690,9 +690,10 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
 //
 // START_ASSIGNMENT
 //
-//router.get('/start_assignment/:project/:classifier/:ref_db',  helpers.isLoggedIn,   function (req, res) {
-router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  function (req,  res) {
-
+//router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
+router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
+  var scriptlog = "";
+  var cmd_list = [];
   var exec = require('child_process').exec;
   console.log('in start_assignment--->');
   console.log(req.params);
@@ -717,74 +718,74 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
   var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
-  console.log('start: '+project+' - '+classifier+' - '+ref_db_dir);
-  status_params = {'type':'update',  'user_id':req.user.user_id,  'project':project,  'status':'',   'msg':'' };
-  var data_dir = path.join(req.CONFIG.USER_FILES_BASE,  req.user.username,  'project-'+project);
+  console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
+  status_params = {'type':'update', 'user_id':req.user.user_id, 'project':project, 'status':'', 'msg':'' };
+  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
-  var config_file = path.join(data_dir,  'config.ini');
+  var config_file = path.join(data_dir, 'config.ini');
   try
   {
     //var stat_config = fs.statSync(config_file);
-    // console.log('1 ',  config_file)
+    // console.log('1 ', config_file)
     var project_config = iniparser.parseSync(config_file);
-    console.log('project_config',  project_config);
-    console.log('project_config2',  project_config['GENERAL'].fasta_type);
+    console.log('project_config', project_config);
+    console.log('project_config2', project_config['GENERAL'].fasta_type);
   }
   catch (err)
   {
-    console.log('no read config file ',  err);
+    console.log('no read config file ', err);
   }
 
- var options = {
+  var options = {
     scriptPath : qsub_script_path,
-    gast_run_args : [ '-c',  config_file,  '-process_dir',  process.env.PWD,
-    '-project_dir',  data_dir,  '-db',  NODE_DATABASE,  '-ref_db_dir',  ref_db_dir,  '-site',  req.CONFIG.site ],
-    rdp_run_args :  [ '-c',  config_file,  '-process_dir',  process.env.PWD,  '-site',  req.CONFIG.site,
-    '-project_dir',  data_dir,  '-ref_db',  ref_db_dir,  '-path_to_classifier',  req.CONFIG.PATH_TO_CLASSIFIER ],
-    database_loader_args : [ '-class',  classifier,  '-host',  req.CONFIG.dbhost,  '-process_dir',  process.env.PWD,  '-project_dir',  data_dir,  '-db',  NODE_DATABASE,  '-ref_db_dir',  ref_db_dir],
-    upload_metadata_args : [ '-project_dir',  data_dir,  '-host',  req.CONFIG.dbhost,  '-db',  NODE_DATABASE ],
-    create_json_args : [ '-process_dir',  process.env.PWD,  '-host',  req.CONFIG.dbhost,  '-project_dir',  data_dir,  '-db',  NODE_DATABASE ]
+    gast_run_args : [ '-c', config_file, '-process_dir', process.env.PWD,
+    '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir, '-site', req.CONFIG.site ],
+    rdp_run_args :  [ '-c', config_file, '-process_dir', process.env.PWD, '-site', req.CONFIG.site,
+    '-project_dir', data_dir, '-ref_db', ref_db_dir, '-path_to_classifier', req.CONFIG.PATH_TO_CLASSIFIER ],
+    database_loader_args : [ '-class', classifier, '-host', req.CONFIG.dbhost, '-process_dir', process.env.PWD, '-project_dir', data_dir, '-db', NODE_DATABASE, '-ref_db_dir', ref_db_dir],
+    upload_metadata_args : [ '-project_dir', data_dir, '-host', req.CONFIG.dbhost, '-db', NODE_DATABASE ],
+    create_json_args : [ '-process_dir', process.env.PWD, '-host', req.CONFIG.dbhost, '-project_dir', data_dir, '-db', NODE_DATABASE ]
  };
 
   if (classifier.toUpperCase() == 'GAST')
   {
     if (project_config['GENERAL'].fasta_type == 'multi')
     {
-      //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh '+data_dir+' infile.fna'
+      //unique_cmd = options.scriptPath + '1-demultiplex_fna.sh ' + data_dir + ' infile.fna'
     }
     else
     {
       var single_dataset_name = Object.keys(project_config.DATASETS)[0];
-    //unique_cmd = options.scriptPath + '1-single_fna.sh '+data_dir+' infile.fna ' + single_dataset_name
+    //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
     }
     // try: check project name and enter empty project (just to create pid)
-    project_init = options.scriptPath + 'project_initialization.py -site '+req.CONFIG.site + ' -indir '+ data_dir + ' -p ' +project+ ' -uid '+req.user.user_id;
+    project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
 
     // metadata must go in after the projects and datasets:
     // Should go into db after we have project and datasets in the db
     // Should go in as entire project (w all datasets) -- not dataset by dataset
     // PROBLEM: Here we dont have datasets yet in db
-    metadata_cmd = options.scriptPath + 'metadata_loader.py -site '+req.CONFIG.site + ' -indir '+ data_dir + ' -p ' +project;
+    metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
 
     // Command is split to run once for each dataset on the cluster:
-    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x '+data_dir+' -s '+project+' -d gast -v -e fa.unique -r '+classifier_id+' -f -p both -w '+ req.CONFIG.site;
-    //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in "+data_dir+"/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/"+classifier_id+".fa -rtax /groups/g454/blastdbs/gast_distributions/"+classifier_id+".tax -out "+data_dir+"/gast/fasta_out.gast -uc "+data_dir+"/gast/fasta_out.uc -threads 0 -strand both"
+    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+    //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
-    //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site '+req.CONFIG.site + ' -indir '+ data_dir + ' -ds ' +single_dataset_name
+    //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
 
     //run_cmd = options.scriptPath + '/vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
     script_name = 'gast_script.sh';
     status_params.statusOK = 'OK-GAST';status_params.statusSUCCESS = 'GAST-SUCCESS';
     status_params.msgOK = 'Finished GAST';status_params.msgSUCCESS = 'GAST -Tax assignments';
-    var cmd_list = [
+    cmd_list = [
         //unique_cmd,
         project_init,
         metadata_cmd,
         run_gast_cmd
 
         //options.scriptPath + '/vamps_script_database_loader.py ' + options.database_loader_args.join(' '),
-        //  "pid=$(head -n 1 "+data_dir+"/pid.txt)",  // pid is in a file pid.txt written by database loader
+        //  "pid=$(head -n 1 " + data_dir + "/pid.txt)", // pid is in a file pid.txt written by database loader
         //options.scriptPath + '/vamps_script_load_metadata.py ' + options.upload_metadata_args.join(' '),
         //options.scriptPath + '/vamps_script_create_json_dataset_files.py ' + options.create_json_args.join(' ')
       ];
@@ -797,37 +798,37 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
       {
         gene = 'fungalits_unite';
       }
-      var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER+'_'+ref_db_dir;
-      rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' -path_to_classifier '+path2classifier+' -gene '+gene;
-      rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' --classifier RDP';
-      rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site;
-      rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir '+data_dir+' -p '+ project+' -site '+ req.CONFIG.site+' --jsonfile_dir '+ req.CONFIG.JSON_FILES_BASE;
+      var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + '_' + ref_db_dir;
+      rdp_cmd1 = options.scriptPath + '/vamps_script_rdp_run.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' -path_to_classifier ' + path2classifier + ' -gene ' + gene;
+      rdp_cmd2 = options.scriptPath + '/vamps_script_rdp_database_loader.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --classifier RDP';
+      rdp_cmd3 = options.scriptPath + '/vamps_script_upload_metadata.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site;
+      rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
       script_name = 'rdp_script.sh';
       status_params.statusOK = 'OK-RDP';status_params.statusSUCCESS = 'RDP-SUCCESS';
       status_params.msgOK = 'Finished RDP';status_params.msgSUCCESS = 'RDP -Tax assignments';
-      var cmd_list = [ rdp_cmd1,  rdp_cmd2,  rdp_cmd3,  rdp_cmd4 ];
+      cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
   }
 
+  var script_text = "";
+  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+  {
+   scriptlog = path.join(data_dir, 'cluster.log');
+   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
+   script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list);
+  }
+  else
+  {
+   scriptlog = path.join(data_dir, 'script.log');
+   script_text = get_local_script_text(scriptlog, 'local', classifier, cmd_list);
+  }
+  var script_path = path.join(data_dir, script_name);
 
- if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
- {
-   var scriptlog = path.join(data_dir,  'cluster.log');
-   //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
-   var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list);
- }
- else
- {
-   var scriptlog = path.join(data_dir,  'script.log');
-   var script_text = get_local_script_text(scriptlog,  'local',  classifier,  cmd_list);
- }
-  var script_path = path.join(data_dir,  script_name);
-
-  fs.writeFile(script_path,  script_text,  function (err) {
+  fs.writeFile(script_path, script_text, function (err) {
     if (err) return console.log(err);
     // Make script executable
-    child = exec( 'chmod ug+rwx '+script_path,
-    function (error,  stdout,  stderr) {
+    child = exec( 'chmod ug + rwx ' + script_path,
+    function (error, stdout, stderr) {
       console.log('1stdout: ' + stdout);
       console.log('1stderr: ' + stderr);
       if (error !== null)
@@ -837,68 +838,68 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
       else
       {
         // run script
-        var nodelog = fs.openSync(path.join(data_dir,  'assignment.log'),  'a');
+        var nodelog = fs.openSync(path.join(data_dir, 'assignment.log'), 'a');
 
-        console.log('RUNNING: '+script_path);
-        var run_process = spawn( script_path,  [],  {
+        console.log('RUNNING: ' + script_path);
+        var run_process = spawn( script_path, [], {
           // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
           // 'PATH':req.CONFIG.PATH,
           // 'PERL5LIB':req.CONFIG.PERL5LIB,
-          // 'SGE_ROOT':req.CONFIG.SGE_ROOT,  'SGE_CELL':req.CONFIG.SGE_CELL,  'SGE_ARCH':req.CONFIG.SGE_ARCH
+          // 'SGE_ROOT':req.CONFIG.SGE_ROOT, 'SGE_CELL':req.CONFIG.SGE_CELL, 'SGE_ARCH':req.CONFIG.SGE_ARCH
           // },
-          detached: true,  stdio: [ 'ignore',  null,  nodelog ]
-        }); // stdin,  s
+          detached: true, stdio: [ 'ignore', null, nodelog ]
+        }); // stdin, s
         var output = '';
-        run_process.stdout.on('data',  function (data) {
+        run_process.stdout.on('data', function (data) {
           //console.log('stdout: ' + data);
-          data = data.toString().replace(/^\s+|\s+$/g,  '');
+          data = data.toString().replace(/^\s + |\s + $/g, '');
           output += data;
           var lines = data.split('\n');
           for (var n in lines)
           {
             //console.log('line: ' + lines[n]);
-            if (lines[n].substring(0,  4) == 'PID=')
+            if (lines[n].substring(0, 4) == 'PID=')
             {
-              console.log('pid line '+lines[n]);
+              console.log('pid line ' + lines[n]);
             }
           }
         });
-        run_process.on('close',  function (code) {
+        run_process.on('close', function (code) {
           console.log('run_process process exited with code ' + code);
           var ary = output.split("\n");
           var last_line = ary[ary.length - 1];
-          console.log('last_line:',  last_line);
+          console.log('last_line:', last_line);
           if (code === 0)
           {
-            console.log(classifier.toUpperCase()+' Success');
-            //console.log('PID last line: '+last_line)
+            console.log(classifier.toUpperCase() + ' Success');
+            //console.log('PID last line: ' + last_line)
             var ll = last_line.split('=');
             var pid = ll[1];
-            console.log('NEW PID=: '+pid);
-            //console.log('ALL_DATASETS: '+JSON.stringify(ALL_DATASETS));
+            console.log('NEW PID=: ' + pid);
+            //console.log('ALL_DATASETS: ' + JSON.stringify(ALL_DATASETS));
             if (helpers.isInt(pid))
             {
-              connection.query(queries.get_select_datasets_queryPID(pid),  function (err,  rows1,  fields) {
+              connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
                 if (err)
                 {
                   console.log('1-GAST/RDP-Query error: ' + err);
                 }
                 else
                 {
-                  connection.query(queries.get_select_sequences_queryPID(pid),  function (err,  rows2,  fields) {
-                    if (err)
-                    {
-                      console.log('2-GAST/RDP-Query error: ' + err);
-                    }
-                    else
-                    {
-                      helpers.assignment_finish_request(res,  rows1,  rows2,  status_params);
-                      status_params.status = status_params.statusOK;
-                      status_params.msg = status_params.msgOK;
-                      helpers.update_status(status_params);
+                  connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+                  if (err)
+                  {
+                    console.log('2-GAST/RDP-Query error: ' + err);
+                  }
+                  else
+                  {
+                    helpers.assignment_finish_request(res, rows1, rows2, status_params);
+                    status_params.status = status_params.statusOK;
+                    status_params.msg = status_params.msgOK;
+                    helpers.update_status(status_params);
 
-                      ALL_CLASSIFIERS_BY_PID[pid] = classifier+'_'+ref_db_dir;
-                    }
+                    ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
+                  }
 
                 });
                 } // end else
@@ -908,14 +909,14 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
             }
             else
             { // end if int
-              console.log('ERROR pid is not an integer: ',  pid);
+              console.log('ERROR pid is not an integer: ', pid);
             }
           }
           else
           {
             // ERROR
-            console.log('ERROR last line: '+last_line);
-            //req.flash('message',  'Script Error');
+            console.log('ERROR last line: ' + last_line);
+            //req.flash('message', 'Script Error');
             //res.redirect("/user_data/your_projects");
           }
         }); // end gast_process ON Close
@@ -927,7 +928,7 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
   status_params.status = status_params.statusSUCCESS;
   status_params.msg = status_params.msgSUCCESS;
   helpers.update_status(status_params);
-  req.flash('successMessage',  classifier+" has been started for project: '"+project+"'");
+  req.flash('successMessage', classifier + " has been started for project: '" + project + "'");
   res.redirect("/user_data/your_projects");
 
 });
