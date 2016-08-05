@@ -1515,18 +1515,25 @@ function FastaExists(req, res)
 
 function FilePathExists(req, data_repository, res)
 {
-  console.log("DDD55 FilePathExists: ");
-  console.log("AAA3 data_repository: " + data_repository);
-  console.log("===");
- 
   if (helpers.fileExists(data_repository)) {
     req.flash('failMessage',  'That project name is already taken.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
     return;
   }
- 
-  
 }
+
+function MetadataFileExists(req, res)
+{
+  console.log("DDD55 MetadataFileExists: ");
+  console.log("===");
+ 
+  if (req.files[1].filename === undefined || req.files[1].size === 0) {
+    req.flash('failMessage',  'A metadata csv file is required.');
+    res.redirect("/user_data/import_data");
+    return;
+  }
+}
+
 
 
 function ProjectValidation(req, project, data_repository, res)
@@ -1544,6 +1551,7 @@ function ProjectValidation(req, project, data_repository, res)
   ProjectNameExists(project, req, res);
   FastaExists(req, res);
   FilePathExists(req, data_repository, res);
+  MetadataFileExists(req, res);
   
 // if (project === '' || req.body.project === undefined) {
 //   req.flash('failMessage',  'A project name is required.');
