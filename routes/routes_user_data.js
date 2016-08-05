@@ -1492,14 +1492,30 @@ function ProjectNameGiven(project, req)
 
 function ProjectNameExists(project, req)
 {
-  console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
-  console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
-  
-  console.log('BBB: ProjectNameExists: project: ' + project);
+  // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
+  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  // 
+  // console.log('BBB: ProjectNameExists: project: ' + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
       req.flash('failMessage',  'That project name is already taken.');
       res.redirect("/user_data/import_data?import_type="+req.body.type);
+    return;
+  }
+}
+
+function FastaExists(req)
+{
+  // } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
+  //   req.flash('failMessage',  'A fasta file is required.');
+  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
+  //   return;
+  console.log("DDD FastaExists: ");
+  console.log(util.inspect(req.files, false, null));
+  
+  if (req.files[0].filename === undefined || req.files[0].size === 0) {
+    req.flash('failMessage',  'A fasta file is required.');
+    res.redirect("/user_data/import_data?import_type=" + req.body.type);
     return;
   }
 }
@@ -1514,6 +1530,7 @@ function ProjectValidation(req, res, project)
   console.log('EEE: project: ' + project);
   ProjectNameGiven(project, req);
   ProjectNameExists(project, req);
+  FastaExists(req);
 
 // if (project === '' || req.body.project === undefined) {
 //   req.flash('failMessage',  'A project name is required.');
