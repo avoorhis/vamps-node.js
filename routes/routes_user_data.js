@@ -1506,13 +1506,6 @@ function ProjectNameExists(project, req)
 
 function FastaExists(req)
 {
-  // } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
-  //   req.flash('failMessage',  'A fasta file is required.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  console.log("DDD FastaExists: ");
-  console.log(util.inspect(req.files, false, null));
-  
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage',  'A fasta file is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
@@ -1520,18 +1513,36 @@ function FastaExists(req)
   }
 }
 
-function ProjectValidation(req, res, project)
+function FilePathExists(req, data_repository)
 {
+  // } else if (helpers.fileExists(data_repository)) {
+  //   req.flash('failMessage',  'That project name is already taken.');
+  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
+  //   return;
+  // }
+  console.log("DDD55 FilePathExists: ");
+  console.log("AAA3 data_repository: " + data_repository);
+  console.log("===");
+  
+}
+
+
+function ProjectValidation(req, project, data_repository)
+{
+  console.log("AAA2 data_repository");
+  console.log(data_repository);
+  
+  
   console.log('EEE: req.flash: ' + req.flash);
   console.log('EEE: req.body.project: ' + req.body.project);
 
   console.log('EEE: req.body.type: ' + req.body.type);
-  console.log('EEE: res.redirect: ' + res.redirect);
   console.log('EEE: project: ' + project);
   ProjectNameGiven(project, req);
   ProjectNameExists(project, req);
   FastaExists(req);
-
+  FilePathExists(req, data_repository);
+  
 // if (project === '' || req.body.project === undefined) {
 //   req.flash('failMessage',  'A project name is required.');
 //   res.redirect("/user_data/import_data?import_type="+req.body.type);
@@ -1570,7 +1581,11 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
   var fs_old   = require('fs');
-  if (ProjectValidation(req, res, project) === false)
+  
+  console.log("AAA1 data_repository");
+  console.log(data_repository);
+  
+  if (ProjectValidation(req, project, data_repository) === false)
   {
     return;
   // if (project === '' || req.body.project === undefined) {
