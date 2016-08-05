@@ -899,6 +899,9 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
                     helpers.update_status(status_params);
 
                     ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
+                    console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
+                    console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
+                    
                   }
 
                 });

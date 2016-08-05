@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - /Users/ashipunova/Dropbox/mix/today_ch/vamps-node.js_local/tax_assign.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>/Users/ashipunova/Dropbox/mix/today_ch/vamps-node.js_local/tax_assign.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">52.60</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">241</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">27.11</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.81</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">//
+// START_ASSIGNMENT
+//
+//router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.isLoggedIn, function (req, res) {
+router.get(&#039;/start_assignment/:project/:classifier_id&#039;, helpers.isLoggedIn, function (req, res) {
+  var scriptlog = &quot;&quot;;
+  var cmd_list = [];
+  var exec = require(&#039;child_process&#039;).exec;
+  console.log(&#039;in start_assignment---&gt;&#039;);
+  console.log(req.params);
+  console.log(&#039;&lt;--- in start_assignment&#039;);
+  var project = req.params.project;
+  var classifier_id = req.params.classifier_id;
+  // /GAST/SILVA108_FULL_LENGTH&quot;&gt;Assign Taxonomy - GAST (Silva108)&lt;/a&gt;&lt;/li&gt;
+  // /GAST/GG_MAY2013&quot;&gt;Assign Taxonomy - GAST (GreenGenes May2013)&lt;/a&gt;&lt;/li&gt;
+  // /RDP/2.10.1&quot;&gt;Assign Taxonomy - RDP (2.10.1)&lt;/a&gt;&lt;/li&gt;
+  // /RDP/GG_MAY2013&quot;&gt;Assign Taxonomy - RDP (GreenGenes May2013)&lt;/a&gt;&lt;/li&gt;
+  // /RDP/ITS1&quot;
+  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
+  {
+    console.log(&#039;This project name is already taken&#039;);
+    return;
+  }
+  else
+  {
+    console.log(&#039;Project name validated&#039;);
+  }
+  //var classifier = req.params.classifier;
+  var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
+  //var ref_db_dir = req.params.ref_db;
+  var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
+  console.log(&#039;start: &#039; + project + &#039; - &#039; + classifier + &#039; - &#039; + ref_db_dir);
+  status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user_id&#039;:req.user.user_id, &#039;project&#039;:project, &#039;status&#039;:&#039;&#039;, &#039;msg&#039;:&#039;&#039; };
+  var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, &#039;project-&#039; + project);
+  var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
+
+  var config_file = path.join(data_dir, &#039;config.ini&#039;);
+  try
+  {
+    //var stat_config = fs.statSync(config_file);
+    // console.log(&#039;1 &#039;, config_file)
+    var project_config = iniparser.parseSync(config_file);
+    console.log(&#039;project_config&#039;, project_config);
+    console.log(&#039;project_config2&#039;, project_config[&#039;GENERAL&#039;].fasta_type);
+  }
+  catch (err)
+  {
+    console.log(&#039;no read config file &#039;, err);
+  }
+
+  var options = {
+    scriptPath : qsub_script_path,
+    gast_run_args : [ &#039;-c&#039;, config_file, &#039;-process_dir&#039;, process.env.PWD,
+    &#039;-project_dir&#039;, data_dir, &#039;-db&#039;, NODE_DATABASE, &#039;-ref_db_dir&#039;, ref_db_dir, &#039;-site&#039;, req.CONFIG.site ],
+    rdp_run_args :  [ &#039;-c&#039;, config_file, &#039;-process_dir&#039;, process.env.PWD, &#039;-site&#039;, req.CONFIG.site,
+    &#039;-project_dir&#039;, data_dir, &#039;-ref_db&#039;, ref_db_dir, &#039;-path_to_classifier&#039;, req.CONFIG.PATH_TO_CLASSIFIER ],
+    database_loader_args : [ &#039;-class&#039;, classifier, &#039;-host&#039;, req.CONFIG.dbhost, &#039;-process_dir&#039;, process.env.PWD, &#039;-project_dir&#039;, data_dir, &#039;-db&#039;, NODE_DATABASE, &#039;-ref_db_dir&#039;, ref_db_dir],
+    upload_metadata_args : [ &#039;-project_dir&#039;, data_dir, &#039;-host&#039;, req.CONFIG.dbhost, &#039;-db&#039;, NODE_DATABASE ],
+    create_json_args : [ &#039;-process_dir&#039;, process.env.PWD, &#039;-host&#039;, req.CONFIG.dbhost, &#039;-project_dir&#039;, data_dir, &#039;-db&#039;, NODE_DATABASE ]
+ };
+
+  if (classifier.toUpperCase() == &#039;GAST&#039;)
+  {
+    if (project_config[&#039;GENERAL&#039;].fasta_type == &#039;multi&#039;)
+    {
+      //unique_cmd = options.scriptPath + &#039;1-demultiplex_fna.sh &#039; + data_dir + &#039; infile.fna&#039;
+    }
+    else
+    {
+      var single_dataset_name = Object.keys(project_config.DATASETS)[0];
+    //unique_cmd = options.scriptPath + &#039;1-single_fna.sh &#039; + data_dir + &#039; infile.fna &#039; + single_dataset_name
+    }
+    // try: check project name and enter empty project (just to create pid)
+    project_init = options.scriptPath + &#039;project_initialization.py -site &#039; + req.CONFIG.site + &#039; -indir &#039; + data_dir + &#039; -p &#039; + project + &#039; -uid &#039; + req.user.user_id;
+
+    // metadata must go in after the projects and datasets:
+    // Should go into db after we have project and datasets in the db
+    // Should go in as entire project (w all datasets) -- not dataset by dataset
+    // PROBLEM: Here we dont have datasets yet in db
+    metadata_cmd = options.scriptPath + &#039;metadata_loader.py -site &#039; + req.CONFIG.site + &#039; -indir &#039; + data_dir + &#039; -p &#039; + project;
+
+    // Command is split to run once for each dataset on the cluster:
+    run_gast_cmd = options.scriptPath + &#039;2-vamps_nodejs_gast.sh -x &#039; + data_dir + &#039; -s &#039; + project + &#039; -d gast -v -e fa.unique -r &#039; + classifier_id + &#039; -f -p both -w &#039; + req.CONFIG.site;
+    //run_cmd2 = &quot;/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in &quot; + data_dir + &quot;/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/&quot; + classifier_id + &quot;.fa -rtax /groups/g454/blastdbs/gast_distributions/&quot; + classifier_id + &quot;.tax -out &quot; + data_dir + &quot;/gast/fasta_out.gast -uc &quot; + data_dir + &quot;/gast/fasta_out.uc -threads 0 -strand both&quot;
+
+    //run_cmd3 = options.scriptPath + &#039;3-vamps_nodejs_database_loader.py -site &#039; + req.CONFIG.site + &#039; -indir &#039; + data_dir + &#039; -ds &#039; + single_dataset_name
+
+    //run_cmd = options.scriptPath + &#039;/vamps_script_gast_run.py &#039; + options.gast_run_args.join(&#039; &#039;),
+    script_name = &#039;gast_script.sh&#039;;
+    status_params.statusOK = &#039;OK-GAST&#039;;status_params.statusSUCCESS = &#039;GAST-SUCCESS&#039;;
+    status_params.msgOK = &#039;Finished GAST&#039;;status_params.msgSUCCESS = &#039;GAST -Tax assignments&#039;;
+    cmd_list = [
+        //unique_cmd,
+        project_init,
+        metadata_cmd,
+        run_gast_cmd
+
+        //options.scriptPath + &#039;/vamps_script_database_loader.py &#039; + options.database_loader_args.join(&#039; &#039;),
+        //  &quot;pid=$(head -n 1 &quot; + data_dir + &quot;/pid.txt)&quot;, // pid is in a file pid.txt written by database loader
+        //options.scriptPath + &#039;/vamps_script_load_metadata.py &#039; + options.upload_metadata_args.join(&#039; &#039;),
+        //options.scriptPath + &#039;/vamps_script_create_json_dataset_files.py &#039; + options.create_json_args.join(&#039; &#039;)
+      ];
+    }
+    else if (classifier.toUpperCase() == &#039;RDP&#039; )
+    {
+      // These are from the RDP README
+      var gene = &#039;16srrna&#039;; // default
+      if (classifier_id == &#039;refRDP_2.12-ITS&#039;)
+      {
+        gene = &#039;fungalits_unite&#039;;
+      }
+      var path2classifier = req.CONFIG.PATH_TO_CLASSIFIER + &#039;_&#039; + ref_db_dir;
+      rdp_cmd1 = options.scriptPath + &#039;/vamps_script_rdp_run.py -project_dir &#039; + data_dir + &#039; -p &#039; + project + &#039; -site &#039; + req.CONFIG.site + &#039; -path_to_classifier &#039; + path2classifier + &#039; -gene &#039; + gene;
+      rdp_cmd2 = options.scriptPath + &#039;/vamps_script_rdp_database_loader.py -project_dir &#039; + data_dir + &#039; -p &#039; + project + &#039; -site &#039; + req.CONFIG.site + &#039; --classifier RDP&#039;;
+      rdp_cmd3 = options.scriptPath + &#039;/vamps_script_upload_metadata.py -project_dir &#039; + data_dir + &#039; -p &#039; + project + &#039; -site &#039; + req.CONFIG.site;
+      rdp_cmd4 = options.scriptPath + &#039;/vamps_script_create_json_dataset_files.py -project_dir &#039; + data_dir + &#039; -p &#039; + project + &#039; -site &#039; + req.CONFIG.site + &#039; --jsonfile_dir &#039; + req.CONFIG.JSON_FILES_BASE;
+
+      script_name = &#039;rdp_script.sh&#039;;
+      status_params.statusOK = &#039;OK-RDP&#039;;status_params.statusSUCCESS = &#039;RDP-SUCCESS&#039;;
+      status_params.msgOK = &#039;Finished RDP&#039;;status_params.msgSUCCESS = &#039;RDP -Tax assignments&#039;;
+      cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
+  }
+
+  var script_text = &quot;&quot;;
+  if (req.CONFIG.dbhost == &#039;vampsdev&#039; || req.CONFIG.dbhost == &#039;vampsdb&#039;)
+  {
+   scriptlog = path.join(data_dir, &#039;cluster.log&#039;);
+   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
+   script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list);
+  }
+  else
+  {
+   scriptlog = path.join(data_dir, &#039;script.log&#039;);
+   script_text = get_local_script_text(scriptlog, &#039;local&#039;, classifier, cmd_list);
+  }
+  var script_path = path.join(data_dir, script_name);
+
+  fs.writeFile(script_path, script_text, function (err) {
+    if (err) return console.log(err);
+    // Make script executable
+    child = exec( &#039;chmod ug + rwx &#039; + script_path,
+    function (error, stdout, stderr) {
+      console.log(&#039;1stdout: &#039; + stdout);
+      console.log(&#039;1stderr: &#039; + stderr);
+      if (error !== null)
+      {
+        console.log(&#039;1exec error: &#039; + error);
+      }
+      else
+      {
+        // run script
+        var nodelog = fs.openSync(path.join(data_dir, &#039;assignment.log&#039;), &#039;a&#039;);
+
+        console.log(&#039;RUNNING: &#039; + script_path);
+        var run_process = spawn( script_path, [], {
+          // env:{&#039;LD_LIBRARY_PATH&#039;:req.CONFIG.LD_LIBRARY_PATH,
+          // &#039;PATH&#039;:req.CONFIG.PATH,
+          // &#039;PERL5LIB&#039;:req.CONFIG.PERL5LIB,
+          // &#039;SGE_ROOT&#039;:req.CONFIG.SGE_ROOT, &#039;SGE_CELL&#039;:req.CONFIG.SGE_CELL, &#039;SGE_ARCH&#039;:req.CONFIG.SGE_ARCH
+          // },
+          detached: true, stdio: [ &#039;ignore&#039;, null, nodelog ]
+        }); // stdin, s
+        var output = &#039;&#039;;
+        run_process.stdout.on(&#039;data&#039;, function (data) {
+          //console.log(&#039;stdout: &#039; + data);
+          data = data.toString().replace(/^\s + |\s + $/g, &#039;&#039;);
+          output += data;
+          var lines = data.split(&#039;\n&#039;);
+          for (var n in lines)
+          {
+            //console.log(&#039;line: &#039; + lines[n]);
+            if (lines[n].substring(0, 4) == &#039;PID=&#039;)
+            {
+              console.log(&#039;pid line &#039; + lines[n]);
+            }
+          }
+        });
+        run_process.on(&#039;close&#039;, function (code) {
+          console.log(&#039;run_process process exited with code &#039; + code);
+          var ary = output.split(&quot;\n&quot;);
+          var last_line = ary[ary.length - 1];
+          console.log(&#039;last_line:&#039;, last_line);
+          if (code === 0)
+          {
+            console.log(classifier.toUpperCase() + &#039; Success&#039;);
+            //console.log(&#039;PID last line: &#039; + last_line)
+            var ll = last_line.split(&#039;=&#039;);
+            var pid = ll[1];
+            console.log(&#039;NEW PID=: &#039; + pid);
+            //console.log(&#039;ALL_DATASETS: &#039; + JSON.stringify(ALL_DATASETS));
+            if (helpers.isInt(pid))
+            {
+              connection.query(queries.get_select_datasets_queryPID(pid), function (err, rows1, fields) {
+                if (err)
+                {
+                  console.log(&#039;1-GAST/RDP-Query error: &#039; + err);
+                }
+                else
+                {
+                  connection.query(queries.get_select_sequences_queryPID(pid), function (err, rows2, fields) {
+                  if (err)
+                  {
+                    console.log(&#039;2-GAST/RDP-Query error: &#039; + err);
+                  }
+                  else
+                  {
+                    helpers.assignment_finish_request(res, rows1, rows2, status_params);
+                    status_params.status = status_params.statusOK;
+                    status_params.msg = status_params.msgOK;
+                    helpers.update_status(status_params);
+
+                    ALL_CLASSIFIERS_BY_PID[pid] = classifier + &#039;_&#039; + ref_db_dir;
+                  }
+
+                });
+                } // end else
+
+              });
+
+            }
+            else
+            { // end if int
+              console.log(&#039;ERROR pid is not an integer: &#039;, pid);
+            }
+          }
+          else
+          {
+            // ERROR
+            console.log(&#039;ERROR last line: &#039; + last_line);
+            //req.flash(&#039;message&#039;, &#039;Script Error&#039;);
+            //res.redirect(&quot;/user_data/your_projects&quot;);
+          }
+        }); // end gast_process ON Close
+      }
+    });
+
+  });
+
+  status_params.status = status_params.statusSUCCESS;
+  status_params.msg = status_params.msgSUCCESS;
+  helpers.update_status(status_params);
+  req.flash(&#039;successMessage&#039;, classifier + &quot; has been started for project: &#039;&quot; + project + &quot;&#039;&quot;);
+  res.redirect(&quot;/user_data/your_projects&quot;);
+
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
