@@ -1501,7 +1501,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
       console.log(data_repository);
 
-      var original_fastafile = path.join('/', 'groups', 'vampsweb', 'tmp',  req.files[0].filename);
+      var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
       fasta_compressed = metadata_compressed = false;
       if (req.files[0].mimetype === 'application/x-gzip') {
         fasta_compressed = true;
@@ -1518,7 +1518,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
       var original_metafile  = '';
       try{
         //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
-        original_metafile  = path.join('/', 'groups', 'vampsweb', 'tmp', req.files[1].filename);
+        original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
         options.args = options.args.concat(['-mdfile',  original_metafile ]);
         if (req.files[1].mimetype === 'application/x-gzip') {
           metadata_compressed = true;
@@ -1589,11 +1589,27 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
 
                         script_name = 'load_script.sh';
-                        var qsublog = path.join(data_repository, 'cluster.log');
                         var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
-                        //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
-                        var script_text = get_qsub_script_text(qsublog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+ if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+ {
+   var scriptlog = path.join(data_repository,  'cluster.log');
+   //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
+   var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+ }
+ else
+ {
+   var scriptlog = path.join(data_repository,  'script.log');
+   var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
+ }
+
+                       
                         var script_path = path.join(data_repository,  script_name);
+                        
+
+
+
+
+
                         fs.writeFile(script_path,  script_text,  function (err) {
                             if (err) return console.log(err);
                             child = exec( 'chmod ug+rwx '+script_path,  function (error,  stdout,  stderr) {
@@ -2454,7 +2470,7 @@ function create_export_files(req,  user_dir,  ts,  dids,  file_tags,  normalizat
     cmd_list.push(path.join(export_cmd_options.scriptPath,  export_cmd)+' '+export_cmd_options.args.join(' '));
 
     if (req.CONFIG.cluster_available === true) {
-            qsub_script_text = get_qsub_script_text(log,  '/groups/vampsweb/tmp',  site,  code,  cmd_list);
+            qsub_script_text = get_qsub_script_text(log,  req.CONFIG.TMP,  site,  code,  cmd_list);
             qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
             qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,  'tmp',  qsub_file_name);
 
@@ -2591,7 +2607,7 @@ function create_fasta_file(req,  user_dir,  ts,  dids) {
     cmd_list.push(path.join(export_cmd_options.scriptPath,  export_cmd)+' '+export_cmd_options.args.join(' '));
 
     if (req.CONFIG.cluster_available === true) {
-            qsub_script_text = get_qsub_script_text(log,  '/groups/vampsweb/tmp',  site,  code,  cmd_list);
+            qsub_script_text = get_qsub_script_text(log,  req.CONFIG.TMP,  site,  code,  cmd_list);
             qsub_file_name = req.user.username+'_qsub_export_'+ts+'.sh';
             qsub_file_path = path.join(req.CONFIG.SYSTEM_FILES_BASE,  'tmp',  qsub_file_name);
 
