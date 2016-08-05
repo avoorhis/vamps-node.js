@@ -15,6 +15,7 @@ var iniparser = require('iniparser');
 var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
+var util = require('util');
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP,   limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -701,7 +702,7 @@ function ProjectNameExists(project_name) {
     console.log('Project name validated');
     return false;
   }
-  
+
 }
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
@@ -719,7 +720,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /RDP/2.10.1">Assign Taxonomy - RDP (2.10.1)</a></li>
   // /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
   // /RDP/ITS1"
-  
+
   // if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
   // {
   //   console.log('This project name is already taken');
@@ -916,7 +917,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
                     ALL_CLASSIFIERS_BY_PID[pid] = classifier + '_' + ref_db_dir;
                     console.log('FROM func. ALL_CLASSIFIERS_BY_PID: ' + ALL_CLASSIFIERS_BY_PID);
                     console.log('FROM func. ALL_CLASSIFIERS_BY_PID[pid]: ' + ALL_CLASSIFIERS_BY_PID[pid]);
-                    
+
                   }
 
                 });
@@ -1445,7 +1446,7 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 			        				 		  	console.log('2-Upload METADATA-Query error: ' + err);        				 		
 			        				    	} else {
 
-			                      												   
+			                      												
 															//helpers.update_metadata_from_file();  // need to update to hdf5 file??
 
 															req.flash('successMessage', 'Metadata Upload in Progress');
@@ -1482,25 +1483,38 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 // TODO: Andy, how to make it fail? For testing?
 function ProjectNameGiven(project, req)
 {
-  console.log('BBB: ProjectNameGiven: project: ' + project);
-  
   if (project === '' || req.body.project === undefined) {
     req.flash('failMessage',  'A project name is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
     return;
-  }  
+  }
+}
+
+function ProjectNameExists(project, req)
+{
+  console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
+  console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  
+  console.log('BBB: ProjectNameExists: project: ' + project);
+
+  if (project in PROJECT_INFORMATION_BY_PNAME) {
+      req.flash('failMessage',  'That project name is already taken.');
+      res.redirect("/user_data/import_data?import_type="+req.body.type);
+    return;
+  }
 }
 
 function ProjectValidation(req, res, project)
 {
   console.log('EEE: req.flash: ' + req.flash);
   console.log('EEE: req.body.project: ' + req.body.project);
-  
+
   console.log('EEE: req.body.type: ' + req.body.type);
   console.log('EEE: res.redirect: ' + res.redirect);
   console.log('EEE: project: ' + project);
   ProjectNameGiven(project, req);
-  
+  ProjectNameExists(project, req);
+
 // if (project === '' || req.body.project === undefined) {
 //   req.flash('failMessage',  'A project name is required.');
 //   res.redirect("/user_data/import_data?import_type="+req.body.type);
@@ -1648,7 +1662,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                             cmd_list.push(demultiplex_cmd);
                         }
                         var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-                        cmd_list.push(fnaunique_cmd);                        
+                        cmd_list.push(fnaunique_cmd);
                         //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');
 
                         //////////////////////////////
@@ -1668,9 +1682,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
    var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
  }
 
-                       
+
                         var script_path = path.join(data_repository,  script_name);
-                        
+
 
 
 
@@ -2216,8 +2230,8 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
         } else {
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+'--'+dname+"\t";
-        } 
-        
+        }
+
         if(HDF5_MDATA == ''){
             for (var k in AllMetadata[did]){
               nm = k;
@@ -2244,7 +2258,7 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
                 }
             });
         }
-        
+
 
 
       }
