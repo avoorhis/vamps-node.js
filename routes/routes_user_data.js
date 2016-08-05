@@ -1540,6 +1540,7 @@ function ProjectValidation(req, project, data_repository, res)
   MetadataFileExists(req, res);
 }
 
+// TODO: move to helpers
 function IsFileCompressed(file)
 {
   var file_compressed = false;
@@ -1576,14 +1577,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                   'project':project,  'status':'OK',   'msg':'Upload Started'  };
   //helpers.update_status(status_params);
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-              args :       [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+              args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
           };
   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
-
-  // if (req.files[0].mimetype === 'application/x-gzip') {
-  //   options.args = options.args.concat(['-fa_comp' ]);
-  // }
-  console.log("FFFAAA options.args = " + options.args);
   
   var original_metafile  = '';
   try{
@@ -1825,18 +1821,23 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
       //var original_taxbyseqfile = path.join(process.env.PWD,  'tmp', req.files[0].filename);
       var original_taxbyseqfile = path.join('/tmp', req.files[0].filename);
       console.log(original_taxbyseqfile);
-      taxbyseq_compressed = metadata_compressed = false;
-      if (req.files[0].mimetype === 'application/x-gzip') {
-        taxbyseq_compressed = true;
-      }
+      // TODO: test
+      taxbyseq_compressed = IsFileCompressed(req.files[0])
+      // 
+      // taxbyseq_compressed = metadata_compressed = false;
+      // if (req.files[0].mimetype === 'application/x-gzip') {
+      //   taxbyseq_compressed = true;
+      // }
       var original_metafile  = '';
-      try{
+      try {
         //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
         original_metafile  = path.join('/tmp', req.files[1].filename);
-
-        if (req.files[1].mimetype === 'application/x-gzip') {
-          metadata_compressed = true;
-        }
+        // TODO: test
+        metadata_compressed = IsFileCompressed(req.files[1])
+        
+        // if (req.files[1].mimetype === 'application/x-gzip') {
+        //   metadata_compressed = true;
+        // }
       }
       catch(err) {
         console.log('No Metadata file: '+err+'; Continuing on');
