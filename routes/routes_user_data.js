@@ -1585,10 +1585,10 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                             var demultiplex_cmd = options.scriptPath +'/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
                             cmd_list.push(demultiplex_cmd);
                         }
-                        var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH_TO_ADDITIONAL_SCRIPTS + " " + data_repository;
+                        var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
                         cmd_list.push(fnaunique_cmd);
                         console.log('FFF0 req.CONFIG:', req.CONFIG);
-                        console.log('FFF1 req.CONFIG.PATH_TO_ADDITIONAL_SCRIPTS:', req.CONFIG.PATH_TO_ADDITIONAL_SCRIPTS);
+                        console.log('FFF1 req.CONFIG.PATH:', req.CONFIG.PATH);
                         console.log('FFF fnaunique_cmd:', fnaunique_cmd);
                         
                         //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');

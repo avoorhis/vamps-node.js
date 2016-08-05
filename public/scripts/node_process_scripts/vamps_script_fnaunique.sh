@@ -6,9 +6,14 @@
 cd $1
 echo "Single file to unique"
 
+PATH="$PATH:$1"
 
-echo "for file in *.fa; do $1/fastaunique $2/$file; done"
-for file in $2/*.fa; do $1/fastaunique $2/$file; done
+echo "PPPATH\n"
+
+echo "$PATH\n"
+
+echo "for file in $2/*.fa; do fastaunique $file; done\n"
+for file in $2/*.fa; do fastaunique $file; done
 
 
 #grendel
