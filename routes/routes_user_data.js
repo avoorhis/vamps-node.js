@@ -690,6 +690,20 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
 //
 // START_ASSIGNMENT
 //
+function ProjectNameExists(project_name) {
+  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+  {
+    console.log('This project name is already taken AAA');
+    return true;
+  }
+  else
+  {
+    console.log('Project name validated');
+    return false;
+  }
+  
+}
+
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
   var scriptlog = "";
@@ -705,15 +719,16 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /RDP/2.10.1">Assign Taxonomy - RDP (2.10.1)</a></li>
   // /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
   // /RDP/ITS1"
-  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
-  {
-    console.log('This project name is already taken');
-    return;
-  }
-  else
-  {
-    console.log('Project name validated');
-  }
+  
+  // if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
+  // {
+  //   console.log('This project name is already taken');
+  //   return;
+  // }
+  // else
+  // {
+  //   console.log('Project name validated');
+  // }
   //var classifier = req.params.classifier;
   var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
@@ -1482,10 +1497,17 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     req.flash('failMessage',  'A project name is required.');
     res.redirect("/user_data/import_data?import_type="+req.body.type);
     return;
-  } else if (project in PROJECT_INFORMATION_BY_PNAME) {
-    req.flash('failMessage',  'That project name is already taken.');
+  } else if (ProjectNameExists(project))
+  { 
+    req.flash('failMessage',  'That project name is already taken BBB.');    
     res.redirect("/user_data/import_data?import_type="+req.body.type);
     return;
+  // }
+  // 
+  // if (project in PROJECT_INFORMATION_BY_PNAME) {
+  //   req.flash('failMessage',  'That project name is already taken.');
+  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
+  //   return;
   } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage',  'A fasta file is required.');
     res.redirect("/user_data/import_data?import_type="+req.body.type);
@@ -1501,8 +1523,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     // return;
   // }
   else {
-
-
       console.log(data_repository);
 
       var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
