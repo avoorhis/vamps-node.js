@@ -1558,11 +1558,13 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   console.log("AAA1 data_repository");
   console.log(data_repository);
   
-  if (ProjectValidation(req, project, data_repository, res) === false)
-  {
-    return;
-  }
-  else {
+  ProjectValidation(req, project, data_repository, res);
+  // if (ProjectValidation(req, project, data_repository, res) === false)
+  // {
+  //   return;
+  // }
+  // else 
+  // {
       console.log(data_repository);
 
       var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
@@ -1738,7 +1740,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 //      }); //       END move 2
 //      });  //     END move 1
 
-  }
+  // }
 
 
 });
