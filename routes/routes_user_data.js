@@ -1586,17 +1586,12 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
     original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args = options.args.concat(['-mdfile',  original_metafile ]);
-    metadata_compressed = false;
-    console.log('FFF0 metadata_compressed: ' + metadata_compressed);
     metadata_compressed = IsFileCompressed(req.files[1])
-    console.log("FFF2 metadata_compressed = " + metadata_compressed);
     
-    if (req.files[1].mimetype === 'application/x-gzip') {
-      metadata_compressed = true;
-      options.args = options.args.concat(['-md_comp' ]);
-    }
-    console.log('FFF3 metadata_compressed: ' + metadata_compressed);
-    
+    if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
+    // console.log('FFF3 metadata_compressed: ' + metadata_compressed);
+    // console.log('FFF4 options.args: ' + options.args);
+    //     
     
   }
   catch(err) {
