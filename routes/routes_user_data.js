@@ -1540,6 +1540,16 @@ function ProjectValidation(req, project, data_repository, res)
   MetadataFileExists(req, res);
 }
 
+function IsFastaCompressed(req)
+{
+  var fasta_compressed = false;
+  if (req.files[0].mimetype === 'application/x-gzip') {
+    fasta_compressed = true;
+  }
+  return fasta_compressed
+}
+
+
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
     var exec = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
@@ -1555,193 +1565,186 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
   var fs_old   = require('fs');
   
-  console.log("AAA1 data_repository");
-  console.log(data_repository);
-  
   ProjectValidation(req, project, data_repository, res);
-  // if (ProjectValidation(req, project, data_repository, res) === false)
-  // {
-  //   return;
-  // }
-  // else 
-  // {
-      console.log(data_repository);
 
-      var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-      fasta_compressed = metadata_compressed = false;
-      if (req.files[0].mimetype === 'application/x-gzip') {
-        fasta_compressed = true;
+  var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
+  fasta_compressed = metadata_compressed = false;
+  console.log('FFF0 fasta_compressed: ' + fasta_compressed);
+  if (req.files[0].mimetype === 'application/x-gzip') {
+    fasta_compressed = true;
+  }
+  console.log('FFF1 fasta_compressed: ' + fasta_compressed);
+  fasta_compressed = IsFastaCompressed(req)
+  console.log('FFF2 fasta_compressed: ' + fasta_compressed);
+  
+  
+  status_params = {'type':'new',  'user_id':req.user.user_id,
+                  'project':project,  'status':'OK',   'msg':'Upload Started'  };
+  //helpers.update_status(status_params);
+  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+              args :       [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+          };
+  if (req.files[0].mimetype === 'application/x-gzip') {
+    options.args = options.args.concat(['-fa_comp' ]);
+  }
+  var original_metafile  = '';
+  try{
+    //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
+    original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
+    options.args = options.args.concat(['-mdfile',  original_metafile ]);
+    if (req.files[1].mimetype === 'application/x-gzip') {
+      metadata_compressed = true;
+      options.args = options.args.concat(['-md_comp' ]);
+    }
+  }
+  catch(err) {
+    console.log('No Metadata file: '+err+'; Continuing on');
+    original_metafile  = '';
+  }
+
+  if (req.body.type == 'simple_fasta') {
+      if (req.body.dataset === '' || req.body.dataset === undefined) {
+        req.flash('failMessage',  'A dataset name is required.');
+        res.redirect("/user_data/import_data");
+        return;
       }
-      status_params = {'type':'new',  'user_id':req.user.user_id,
-                      'project':project,  'status':'OK',   'msg':'Upload Started'  };
-      //helpers.update_status(status_params);
-      var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                  args :       [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
-              };
-      if (req.files[0].mimetype === 'application/x-gzip') {
-        options.args = options.args.concat(['-fa_comp' ]);
-      }
-      var original_metafile  = '';
-      try{
-        //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
-        original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
-        options.args = options.args.concat(['-mdfile',  original_metafile ]);
-        if (req.files[1].mimetype === 'application/x-gzip') {
-          metadata_compressed = true;
-          options.args = options.args.concat(['-md_comp' ]);
-        }
-      }
-      catch(err) {
-        console.log('No Metadata file: '+err+'; Continuing on');
-        original_metafile  = '';
-      }
+      options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
+    } else if (req.body.type == 'multi_fasta') {
+        options.args = options.args.concat(['-upload_type',  'multi' ]);
+    } else {
+        req.flash('failMessage',  'No file type info found');
+        res.redirect("/user_data/import_data");
+        return;
+    }
 
-      if (req.body.type == 'simple_fasta') {
-          if (req.body.dataset === '' || req.body.dataset === undefined) {
-            req.flash('failMessage',  'A dataset name is required.');
-            res.redirect("/user_data/import_data");
-            return;
-          }
-          options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
-      } else if (req.body.type == 'multi_fasta') {
-          options.args = options.args.concat(['-upload_type',  'multi' ]);
-      } else {
-          req.flash('failMessage',  'No file type info found');
-          res.redirect("/user_data/import_data");
-          return;
-      }
+    options.args = options.args.concat(['-q' ]);   // QUIET
 
-      options.args = options.args.concat(['-q' ]);   // QUIET
+    //console.log(original_fastafile);
+    //console.log(original_metafile);
+     // move files to user_data/<username>/ and rename
+    var LoadDataFinishRequest = function () {
+        // START STATUS //
+        req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
 
-      //console.log(original_fastafile);
-      //console.log(original_metafile);
-       // move files to user_data/<username>/ and rename
-      var LoadDataFinishRequest = function () {
-          // START STATUS //
-          req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
+        // type,  user,  project,  status,  msg
 
-          // type,  user,  project,  status,  msg
+        res.render('success',  {  title   : 'VAMPS: Import Success',
+                          message : req.flash('successMessage'),
+                                display : "Import_Success",
+                              user    : req.user,  hostname: req.CONFIG.hostname
+                  });
+    };
+    // MOVE FILES: Using python to move files rather than node.js:::
 
-          res.render('success',  {  title   : 'VAMPS: Import Success',
-                            message : req.flash('successMessage'),
-                                  display : "Import_Success",
-                                user    : req.user,  hostname: req.CONFIG.hostname
-                    });
-      };
-      // MOVE FILES: Using python to move files rather than node.js:::
+    fs.ensureDir(data_repository,  function (err) {
+          if (err) {console.log('ensureDir err:', err);} // => null
+          else {
+                  fs.chmod(data_repository,  0775,  function (err) {
+                      if (err) {
+                        console.log('chmod err:', err);
+                        return;
+                      }
 
-      fs.ensureDir(data_repository,  function (err) {
-            if (err) {console.log('ensureDir err:', err);} // => null
-            else {
-                    fs.chmod(data_repository,  0775,  function (err) {
-                        if (err) {
-                          console.log('chmod err:', err);
-                          return;
-                        }
+                      console.log(options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' '));
+                      var load_cmd = options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' ');
+                      var cmd_list = [load_cmd];
+                      if (req.body.type == 'multi_fasta') {
+                          var new_fasta_file_name = 'infile.fna';
+                          var demultiplex_cmd = options.scriptPath +'/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+                          cmd_list.push(demultiplex_cmd);
+                      }
+                      var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+                      cmd_list.push(fnaunique_cmd);
+                      //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');
 
-                        console.log(options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' '));
-                        var load_cmd = options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' ');
-                        var cmd_list = [load_cmd];
-                        if (req.body.type == 'multi_fasta') {
-                            var new_fasta_file_name = 'infile.fna';
-                            var demultiplex_cmd = options.scriptPath +'/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
-                            cmd_list.push(demultiplex_cmd);
-                        }
-                        var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-                        cmd_list.push(fnaunique_cmd);
-                        //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');
-
-                        //////////////////////////////
+                      //////////////////////////////
 
 
-                        script_name = 'load_script.sh';
-                        var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
- if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
- {
-   var scriptlog = path.join(data_repository,  'cluster.log');
-   //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
-   var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
- }
- else
- {
-   var scriptlog = path.join(data_repository,  'script.log');
-   var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
- }
+                      script_name = 'load_script.sh';
+                      var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
+if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+{
+ var scriptlog = path.join(data_repository,  'cluster.log');
+ //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
+ var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+}
+else
+{
+ var scriptlog = path.join(data_repository,  'script.log');
+ var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
+}
 
 
-                        var script_path = path.join(data_repository,  script_name);
+                      var script_path = path.join(data_repository,  script_name);
 
 
 
 
 
 
-                        fs.writeFile(script_path,  script_text,  function (err) {
-                            if (err) return console.log(err);
-                            child = exec( 'chmod ug+rwx '+script_path,  function (error,  stdout,  stderr) {
-                                if (error !== null) {
-                                  console.log('1exec chmod error: ' + error);
-                                } else {
-                                    var run_process = spawn( script_path,  [],  {
-                                       //  env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
-    //                                             'PATH':req.CONFIG.PATH,
-    //                                             'PERL5LIB':req.CONFIG.PERL5LIB,
-    //                                             'SGE_ROOT':req.CONFIG.SGE_ROOT,  'SGE_CELL':req.CONFIG.SGE_CELL,  'SGE_ARCH':req.CONFIG.SGE_ARCH
-    //                                             },
-                                        detached: true,  stdio: [ 'ignore',  null,  nodelog ]
-                                    } );  // stdin,  s
-                                    var output = '';
-                                    run_process.stdout.on('data',  function (data) {
-                                              //console.log('stdout: ' + data);
-                                              data = data.toString().replace(/^\s+|\s+$/g,  '');
-                                              output += data;
-                                              var lines = data.split('\n');
-                                              for (var n in lines) {
-                                                //console.log('line: ' + lines[n]);
-                                                    if (lines[n].substring(0, 4) == 'PID=') {
-                                                        console.log('pid line '+lines[n]);
-                                                    }
-                                              }
-                                    });
-                                    run_process.on('close',  function (code) {
-                                           console.log('run_process process exited with code ' + code);
-                                           var ary = output.split("\n");
-                                           var last_line = ary[ary.length - 1];
-                                           console.log('last_line:', last_line);
-                                           if (code === 0) {
-                                                status_params = {'type':'update',  'user_id':req.user.user_id,
-                                                    'project':project,  'status':'LOADED',   'msg':'Project is loaded --without tax assignments'
+                      fs.writeFile(script_path,  script_text,  function (err) {
+                          if (err) return console.log(err);
+                          child = exec( 'chmod ug+rwx '+script_path,  function (error,  stdout,  stderr) {
+                              if (error !== null) {
+                                console.log('1exec chmod error: ' + error);
+                              } else {
+                                  var run_process = spawn( script_path,  [],  {
+                                     //  env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
+  //                                             'PATH':req.CONFIG.PATH,
+  //                                             'PERL5LIB':req.CONFIG.PERL5LIB,
+  //                                             'SGE_ROOT':req.CONFIG.SGE_ROOT,  'SGE_CELL':req.CONFIG.SGE_CELL,  'SGE_ARCH':req.CONFIG.SGE_ARCH
+  //                                             },
+                                      detached: true,  stdio: [ 'ignore',  null,  nodelog ]
+                                  } );  // stdin,  s
+                                  var output = '';
+                                  run_process.stdout.on('data',  function (data) {
+                                            //console.log('stdout: ' + data);
+                                            data = data.toString().replace(/^\s+|\s+$/g,  '');
+                                            output += data;
+                                            var lines = data.split('\n');
+                                            for (var n in lines) {
+                                              //console.log('line: ' + lines[n]);
+                                                  if (lines[n].substring(0, 4) == 'PID=') {
+                                                      console.log('pid line '+lines[n]);
+                                                  }
+                                            }
+                                  });
+                                  run_process.on('close',  function (code) {
+                                         console.log('run_process process exited with code ' + code);
+                                         var ary = output.split("\n");
+                                         var last_line = ary[ary.length - 1];
+                                         console.log('last_line:', last_line);
+                                         if (code === 0) {
+                                              status_params = {'type':'update',  'user_id':req.user.user_id,
+                                                  'project':project,  'status':'LOADED',   'msg':'Project is loaded --without tax assignments'
+                                                };
+                                              //helpers.update_status(status_params);
+                                              console.log('Finished loading '+project);
+                                              LoadDataFinishRequest();
+                                         } else {
+                                          fs.move(data_repository,   path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project),  function (err) {
+                                              if (err) { console.log(err);  }
+                                              else {
+                                                  req.flash('failMessage',  'Script Failure: '+last_line);
+                                                  status_params = {'type':'update',  'user_id':req.user.user_id,
+                                                      'project':project,  'status':'Script Failure',   'msg':'Script Failure'
                                                   };
-                                                //helpers.update_status(status_params);
-                                                console.log('Finished loading '+project);
-                                                LoadDataFinishRequest();
-                                           } else {
-                                            fs.move(data_repository,   path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project),  function (err) {
-                                                if (err) { console.log(err);  }
-                                                else {
-                                                    req.flash('failMessage',  'Script Failure: '+last_line);
-                                                    status_params = {'type':'update',  'user_id':req.user.user_id,
-                                                        'project':project,  'status':'Script Failure',   'msg':'Script Failure'
-                                                    };
-                                                        //helpers.update_status(status_params);
-                                                    res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
-                                                    return;
-                                                }
-                                            });
-                                           }
-                                    });
-                                } // end if/else
-                            }); // end exec
-                        });  // end writeFile
+                                                      //helpers.update_status(status_params);
+                                                  res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
+                                                  return;
+                                              }
+                                          });
+                                         }
+                                  });
+                              } // end if/else
+                          }); // end exec
+                      });  // end writeFile
 
-          });     //   END chmod
-        }         // end else
-      });         //   END ensuredir
+        });     //   END chmod
+      }         // end else
+    });         //   END ensuredir
 //      }); //       END move 2
 //      });  //     END move 1
-
-  // }
-
 
 });
 
