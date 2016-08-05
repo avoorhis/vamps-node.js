@@ -1578,9 +1578,13 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
               args :       [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
           };
-  if (req.files[0].mimetype === 'application/x-gzip') {
-    options.args = options.args.concat(['-fa_comp' ]);
-  }
+  if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
+
+  // if (req.files[0].mimetype === 'application/x-gzip') {
+  //   options.args = options.args.concat(['-fa_comp' ]);
+  // }
+  console.log("FFFAAA options.args = " + options.args);
+  
   var original_metafile  = '';
   try{
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
