@@ -1523,10 +1523,7 @@ function FilePathExists(req, data_repository, res)
 }
 
 function MetadataFileExists(req, res)
-{
-  console.log("DDD55 MetadataFileExists: ");
-  console.log("===");
- 
+{ 
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage',  'A metadata csv file is required.');
     res.redirect("/user_data/import_data");
@@ -1534,46 +1531,13 @@ function MetadataFileExists(req, res)
   }
 }
 
-
-
 function ProjectValidation(req, project, data_repository, res)
 {
-  console.log("AAA2 data_repository");
-  console.log(data_repository);
-  
-  
-  console.log('EEE: req.flash: ' + req.flash);
-  console.log('EEE: req.body.project: ' + req.body.project);
-
-  console.log('EEE: req.body.type: ' + req.body.type);
-  console.log('EEE: project: ' + project);
   ProjectNameGiven(project, req, res);
   ProjectNameExists(project, req, res);
   FastaExists(req, res);
   FilePathExists(req, data_repository, res);
   MetadataFileExists(req, res);
-  
-// if (project === '' || req.body.project === undefined) {
-//   req.flash('failMessage',  'A project name is required.');
-//   res.redirect("/user_data/import_data?import_type="+req.body.type);
-//   return;
-// } else if (project in PROJECT_INFORMATION_BY_PNAME) {
-//   req.flash('failMessage',  'That project name is already taken.');
-//   res.redirect("/user_data/import_data?import_type="+req.body.type);
-//   return;
-// } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
-//   req.flash('failMessage',  'A fasta file is required.');
-//   res.redirect("/user_data/import_data?import_type="+req.body.type);
-//   return;
-// } else if (helpers.fileExists(data_repository)) {
-//   req.flash('failMessage',  'That project name is already taken.');
-//   res.redirect("/user_data/import_data?import_type="+req.body.type);
-//   return;
-// }
-// else if (req.files[1].filename === undefined || req.files[1].size === 0) {
-//   req.flash('failMessage',  'A metadata csv file is required.');
-  // res.redirect("/user_data/import_data");
-  // return;
 }
 
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
@@ -1597,27 +1561,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   if (ProjectValidation(req, project, data_repository, res) === false)
   {
     return;
-  // if (project === '' || req.body.project === undefined) {
-  //   req.flash('failMessage',  'A project name is required.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  // } else if (project in PROJECT_INFORMATION_BY_PNAME) {
-  //   req.flash('failMessage',  'That project name is already taken.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  // } else if (req.files[0].filename === undefined || req.files[0].size === 0) {
-  //   req.flash('failMessage',  'A fasta file is required.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  // } else if (helpers.fileExists(data_repository)) {
-  //   req.flash('failMessage',  'That project name is already taken.');
-  //   res.redirect("/user_data/import_data?import_type="+req.body.type);
-  //   return;
-  // }
-  // else if (req.files[1].filename === undefined || req.files[1].size === 0) {
-  //   req.flash('failMessage',  'A metadata csv file is required.');
-    // res.redirect("/user_data/import_data");
-    // return;
   }
   else {
       console.log(data_repository);
