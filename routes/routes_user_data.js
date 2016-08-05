@@ -1568,15 +1568,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   ProjectValidation(req, project, data_repository, res);
 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-  fasta_compressed = metadata_compressed = false;
-  console.log('FFF0 fasta_compressed: ' + fasta_compressed);
-  if (req.files[0].mimetype === 'application/x-gzip') {
-    fasta_compressed = true;
-  }
-  console.log('FFF1 fasta_compressed: ' + fasta_compressed);
+  metadata_compressed = false;
   fasta_compressed = IsFastaCompressed(req)
-  console.log('FFF2 fasta_compressed: ' + fasta_compressed);
-  
   
   status_params = {'type':'new',  'user_id':req.user.user_id,
                   'project':project,  'status':'OK',   'msg':'Upload Started'  };
