@@ -1551,9 +1551,7 @@ function IsFileCompressed(file)
   return file_compressed
 }
 
-var LoadDataFinishRequest = function (req, res, project) {
-  console.log("NNN In LoadDataFinishRequest");
-  
+var LoadDataFinishRequest = function (req, res, project) {  
     // START STATUS //
   req.flash('successMessage',  "Upload in Progress: '" + project + "'");
 
@@ -1728,8 +1726,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                                             };
                                           //helpers.update_status(status_params);
                                           LoadDataFinishRequest(req, res, project);
-                                          console.log("NNN1 after LoadDataFinishRequest");
-                                          
                                           console.log('Finished loading ' + project);
                                           // ();
                                      } else {
