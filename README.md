@@ -77,6 +77,11 @@ to create the helper files that reside in the /public/json directory.
 to various programs on your computer. Have a look at the bottom of the constants.py file
 in the /public directory and change the paths to match your system. 
 
+CREATE a CONFIG file
+----------------
+Change config/config_example.js to your environment and save as config/config.js
+
+
 START the SERVER
 ----------------
 
