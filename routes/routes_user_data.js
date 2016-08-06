@@ -843,7 +843,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   fs.writeFile(script_path, script_text, function (err) {
     if (err) return console.log(err);
     // Make script executable
-    child = exec( 'chmod ug + rwx ' + script_path,
+    child = exec( 'chmod ug+rwx ' + script_path,
     function (error, stdout, stderr) {
       console.log('1stdout: ' + stdout);
       console.log('1stderr: ' + stderr);
@@ -1552,8 +1552,10 @@ function IsFileCompressed(file)
 }
 
 var LoadDataFinishRequest = function (req, res, project) {
+  console.log("NNN In LoadDataFinishRequest");
+  
     // START STATUS //
-  req.flash('successMessage',  "Upload in Progress: '"+ project + "'");
+  req.flash('successMessage',  "Upload in Progress: '" + project + "'");
 
   // type,  user,  project,  status,  msg
 
@@ -1585,7 +1587,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0])
-  console.log("FFF1 fasta_compressed = " + fasta_compressed);
 
   status_params = {'type':'new',  'user_id':req.user.user_id,
                   'project':project,  'status':'OK',   'msg':'Upload Started'  };
@@ -1603,9 +1604,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     metadata_compressed = IsFileCompressed(req.files[1])
 
     if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
-    // console.log('FFF3 metadata_compressed: ' + metadata_compressed);
-    // console.log('FFF4 options.args: ' + options.args);
-    //
 
   }
   catch(err) {
@@ -1730,6 +1728,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                                             };
                                           //helpers.update_status(status_params);
                                           LoadDataFinishRequest(req, res, project);
+                                          console.log("NNN1 after LoadDataFinishRequest");
+                                          
                                           console.log('Finished loading ' + project);
                                           // ();
                                      } else {
