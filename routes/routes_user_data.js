@@ -735,7 +735,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
-  status_params = {'type':'update', 'user_id':req.user.user_id, 'project':project, 'status':'', 'msg':'' };
+  status_params = {'type': 'insert', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 

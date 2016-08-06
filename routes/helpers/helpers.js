@@ -460,6 +460,7 @@ module.exports.update_global_variables = function(pid,type){
     // ERROR
   }
 };
+
 module.exports.get_status = function(user, project){
   var statQuery = "SELECT status, message from user_project_status";
   statQuery += " join user USING(user_id)";
@@ -487,6 +488,20 @@ MakeDeleteStatusQ = function(status_params) {
   }
 };
 
+GetProjectId = function(project) {
+  var ProjectQuery = "SELECT project_id FROM project";
+  ProjectQuery += " WHERE project ='" + project + "' ";
+  console.log('GetProjectId query: ' + ProjectQuery);
+  connection.query(ProjectQuery, function(err, rows, fields) {
+    if(err) {
+      console.log('ERROR-in ProjectQuery: ' + err);
+    } else {
+      console.log('ProjectQuery rows: ' + rows);
+      return rows;
+    }
+  });
+};
+
 MakeUpdateStatusQ = function(status_params)
 {
   var statQuery2 = "UPDATE user_project_status";
@@ -506,8 +521,54 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
+// TODO:
+// MakeInsertProjectQ = function(project)
+// {
+//
+// }
+
+MakeInsertStatusQ = function(status_params)
+{
+  console.log("MakeInsertStatusQ WWW");
+  console.log(util.inspect(status_params, false, null));
+  
+  if ('project' in status_params) {
+    project_id = GetProjectId(status_params.project)
+  }
+  else
+  {
+    project_id = status_params.pid
+  }
+  console.log("WWW1 project_id = ") + project_id;
+  
+  var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
+      statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
+
+  console.log("WWW2 statQuery1 = ") + statQuery1;
+
+  return statQuery1;
+  
+  
+  // ---
+  // var statQuery1 = '';
+  //   if('pid' in status_params && 'project' in status_params){
+  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)";
+  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+  //   }else if('pid' in status_params){
+  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project_id,status,message)";
+  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+  //   }else if('project' in status_params){
+  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,status,message)";
+  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
+  //   }else{
+  //     // ERROR
+  //   }
+};
+
 module.exports.update_status = function(status_params) {
-  console.log('in update_status 1');
+  console.log('in update_status');
+  console.log(util.inspect(status_params, false, null));
+  
   if (status_params.type === 'delete') {
     statQuery = MakeDeleteStatusQ(status_params);
     console.log('in update_status, after delete_status');
@@ -517,29 +578,35 @@ module.exports.update_status = function(status_params) {
   } else if(status_params.type == 'update') {
     statQuery2 = MakeUpdateStatusQ(status_params);
     console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2 , function(err, rows, fields){
-    if(err) {
-      console.log('ERROR2-in status update: ' + err);
-    } else {
-      console.log('status update2');
-    }
-  });
+    connection.query(statQuery2 , function(err, rows, fields) {
+      if(err) {
+        console.log('ERROR2-in status update: ' + err);
+      } else {
+        console.log('status update2');
+        console.log(rows);
+        //TODO: Why doesn't work?
+      }
+    });
 
   } else {  // Type::New
-    var statQuery1 = '';
-      if('pid' in status_params && 'project' in status_params){
-        statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)";
-        statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-      }else if('pid' in status_params){
-        statQuery1 += "INSERT IGNORE into user_project_status (user_id,project_id,status,message)";
-        statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-      }else if('project' in status_params){
-        statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,status,message)";
-        statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
-      }else{
-        // ERROR
-      }
-      console.log('query1: '+statQuery1);
+    statQuery1 = MakeInsertStatusQ(status_params);
+    console.log('statQuery1 111');
+    console.log(statQuery1);
+    
+    // var statQuery1 = '';
+      // if('pid' in status_params && 'project' in status_params){
+      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)";
+      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+      // }else if('pid' in status_params){
+      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project_id,status,message)";
+      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
+      // }else if('project' in status_params){
+      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,status,message)";
+      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
+      // }else{
+      //   // ERROR
+      // }
+      console.log('query1: ' + statQuery1);
 
       connection.query(statQuery1 , function(err, rows, fields){
             if(err) {
