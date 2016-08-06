@@ -1,0 +1,2 @@
+#SampleID	smoker	altitude	assigned_from_geo	collection_date	common_name	country	depth	description	elevation	env_biome	env_feature	env_matter	latitude	longitude	public	taxon_id
+ds1	no	10	Y	2015-03-21	MY_COMMON_NAME	GAZ:United States of America	14	Description of dataset	72	ENVO:urban biome	ENVO:brewery	ENVO:surface	10.45	-135	n	1256227
