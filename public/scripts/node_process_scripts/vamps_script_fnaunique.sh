@@ -3,7 +3,7 @@
 # see routes_user_data.js
 #  USAGE: $0 fastaunique_dir (or PATH) project_dir
 
-cd $1
+# cd $1
 echo "Single file to unique"
 
 PATH="$PATH:$1"
