@@ -2235,15 +2235,9 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
         } else {
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+'--'+dname+"\t";
-<<<<<<< HEAD
         } 
         
         if(HDF5_MDATA === ''){
-=======
-        }
-
-        if(HDF5_MDATA == ''){
->>>>>>> dcfdfe5ddad7bfadffdc2d43cb29ba1eec03e3d5
             for (var k in AllMetadata[did]){
               nm = k;
               val = AllMetadata[did][k];
