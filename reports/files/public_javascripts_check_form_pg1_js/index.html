@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">85.26</p>
+      <p class="stat">56.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">13</p>
+      <p class="stat">68</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">6.67</p>
+      <p class="stat">17.94</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.06</p>
+      <p class="stat">0.41</p>
     </div>
   </div>
 </div>
@@ -95,19 +95,77 @@
 * alerts and returns if not.
 */
 
-var dataset_select_form = document.getElementById(&#039;dataset_select_form&#039;);
-var unit_selection = document.getElementById(&#039;unit_selection&#039;);
-if (typeof unit_selection !==&quot;undefined&quot;) 
+
+//function initialize_form(){
+var unit_selection_btn_exports = document.getElementById(&#039;unit_selection_btn_exports&#039;) || null;
+var unit_selection_btn_visuals = document.getElementById(&#039;unit_selection_btn_visuals&#039;) || null;
+
+if (unit_selection_btn_visuals !== null)
 {
-  unit_selection.addEventListener(&#039;click&#039;, function () {
-	  form = document.getElementById(&#039;dataset_select_form&#039;);
-	  form.submit();
-	// this message is replaced with a flash message when datasets are empty
-	//msg = &#039;You must select some datasets&#039;;
-    //checkbox_name = &quot;dataset_ids[]&quot;;
-    //check_form(dataset_select_form, msg, checkbox_name);
+  unit_selection_btn_visuals.addEventListener(&#039;click&#039;, function () {
+
+    //c = count_checked_datasets();
+    
+      var form = document.getElementById(&#039;project_dataset_select_form&#039;);
+    
+      dids = projectTree.getAllChecked();
+      //alert(dids)
+      if(dids){
+          didArray = dids.split(&#039;,&#039;);
+          
+          var input = document.createElement(&#039;input&#039;);
+          input.type = &#039;hidden&#039;;
+          input.name = &#039;dataset_ids&#039;;
+          input.value = JSON.stringify(didArray);
+          form.appendChild(input);
+
+          var input = document.createElement(&#039;input&#039;);
+          input.type = &#039;hidden&#039;;
+          input.name = &#039;retain_data&#039;;
+          input.value = &#039;1&#039;;
+          form.appendChild(input);
+
+          form.submit();
+      }else{
+          alert(&#039;Select some data&#039;);
+          return;
+      }
+    
   });
-}</textarea>
+}
+if (unit_selection_btn_exports !== null) 
+{
+  unit_selection_btn_exports.addEventListener(&#039;click&#039;, function () {
+
+  	//c = count_checked_datasets();
+	  var form = document.getElementById(&#039;project_dataset_select_form&#039;);
+    //if(show_dataset_tree){
+      dids = projectTree.getAllChecked();
+      //alert(checked)
+      if(dids){
+          didArray = dids.split(&#039;,&#039;);
+          
+          var input = document.createElement(&#039;input&#039;);
+          input.type = &#039;hidden&#039;;
+          input.name = &#039;dataset_ids&#039;;
+          input.value = JSON.stringify(didArray);
+          form.appendChild(input);
+
+          var input = document.createElement(&#039;input&#039;);
+          input.type = &#039;hidden&#039;;
+          input.name = &#039;retain_data&#039;;
+          input.value = &#039;1&#039;;
+          form.appendChild(input);
+
+          form.submit();
+      }else{
+          alert(&#039;Select some data&#039;);
+          return;
+      }
+
+  });
+}
+//}</textarea>
   </div>
 </div>
 

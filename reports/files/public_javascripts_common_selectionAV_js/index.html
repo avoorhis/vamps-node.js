@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - public/javascripts/common_selectionAV.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>public/javascripts/common_selectionAV.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">70.21</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">568</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">66.23</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">6.75</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var save_datasets_btn = document.getElementById(&#039;save_datasets_btn&#039;) || null;
+if (save_datasets_btn !== null) {
+  save_datasets_btn.addEventListener(&#039;click&#039;, function () {
+	  save_datasets_list(ds_local,user_local);
+  });
+}
+
+var reorder_datasets_btn = document.getElementById(&#039;reorder_datasets_btn&#039;) || null;
+if (reorder_datasets_btn !== null) {
+  
+  reorder_datasets_btn.addEventListener(&#039;click&#039;, function () {
+	  //window.location=&#039;reorder_datasets&#039;;
+	  // form = 
+  });
+}
+// var change_datasets_btn = document.getElementById(&#039;change_datasets_btn&#039;) || null;
+// if (change_datasets_btn !== null) {
+//   change_datasets_btn.addEventListener(&#039;click&#039;, function () {
+// 	  // referer
+//     //window.location=&#039;visuals_index&#039;;
+//     window.location=document.referrer;
+//   });
+// }
+
+//
+// SAVE DATASET LIST
+//
+var save_datasets_list = function(ds_local, user)
+{
+	  if(user==&#039;guest&#039;){
+      document.getElementById(&#039;save_ds_result&#039;).innerHTML = &quot;The &#039;guest&#039; user is not permitted to save datasets.&quot;;
+      return;
+    }
+    var timestamp = +new Date();  // millisecs since the epoch!
+    
+	  var filename = &#039;datasets-&#039; + timestamp + &#039;.json&#039;;
+    
+    var args =  &quot;datasets=&quot;+JSON.stringify(ds_local);
+    args += &quot;&amp;filename=&quot;+filename;
+    args += &quot;&amp;user=&quot;+user;
+	  //console.log(&#039;args &#039;+args);
+	  var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open(&quot;POST&quot;, &#039;/visuals/save_datasets&#039;, true);
+	  xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+    xmlhttp.onreadystatechange = function() {
+
+       if (xmlhttp.readyState == 4 ) {
+         var response = xmlhttp.responseText;
+		 //alert(string);
+		 if(response == &#039;OK&#039;){
+		 	document.getElementById(&#039;save_ds_result&#039;).innerHTML = &quot;Saved as: &lt;a href=&#039;/visuals/saved_elements&#039;&gt;&quot;+ filename+ &quot;&lt;/a&gt;&quot;
+		 }else{
+		 	document.getElementById(&#039;save_ds_result&#039;).innerHTML = &#039;Problem: Not Saved&#039;
+		 }
+       }
+    };
+    xmlhttp.send(args);
+ 	
+}
+
+//
+// PIES and BARS
+//
+function create_barcharts(imagetype, orderby, ts) {
+        //alert(imagetype)
+        //var ts = pi_local.ts;
+       
+		    var barcharts_div = document.getElementById(&#039;barcharts_div&#039;);
+		    barcharts_div.style.display = &#039;block&#039;;
+        
+        
+        // TAXONOMY
+        var unit_list = [];
+        var new_unit_hash = []
+        var data_list = [];
+        // rows == taxa // for orderby==&#039;name&#039;
+        for (var o in mtx_local.rows){
+            unit_list.push(mtx_local.rows[o].id);
+            //new_unit_hash.push({tax:mtx_local.rows[o].id, cnt:mtx_local.data[o]})
+        }
+
+        // reorder by count
+        //new_unit_hash.sort(sort_by(&#039;cnt&#039;,false, parseInt))
+        //alert(new_unit_hash.toSource())
+        // colors is a list -- will need rordering
+        // make as colors[taxname] = color
+        // or **colors = [{tax:taxname,color:color},{},{}]
+        //var colors = get_colors(unit_list);
+        //var colors = get_colors2(unit_list);
+        // DATASETS
+        data = [];
+        for (var p in mtx_local.columns){  
+          tmp={};
+          tmp.datasetName = mtx_local.columns[p].id;
+          tmp.did = mtx_local.columns[p].did;
+		      //did_by_names[tmp.datasetName]=mtx_local.columns[p].did;
+          for (var t in mtx_local.rows){
+            // taxonomy - no order
+            tmp[mtx_local.rows[t].id] = mtx_local.data[t][p];
+            
+          }
+          data.push(tmp);
+        }
+        
+
+        var ds_count = mtx_local.shape[1];      
+        
+        var props = get_image_properties(imagetype, ds_count); 
+        
+        var ul = d3.scale.ordinal().range( unit_list );
+
+        ul.domain(d3.keys(data[0]).filter(function(key) { return key !== &quot;datasetName&quot; &amp;&amp; key !== &quot;did&quot;; }));
+
+        
+        data.forEach(function(d) {
+          var x0 = 0;
+          d.unitObj = ul.domain().map(function(name) { 
+            return { name: name, x0: x0, x1: x0 += +d[name], did: d.did, dsname: d.datasetName, cnt: d[name] }; 
+          });
+          //console.log(d.unitObj);
+          d.total = d.unitObj[d.unitObj.length - 1].x1;
+          //console.log(d.total);
+        });
+
+
+        data.forEach(function(d) {
+          // normalize to 100%
+          tot = d.total;
+          d.unitObj.forEach(function(o) {
+              //console.log(o);
+              o.total = tot
+              o.x0 = (o.x0*100)/tot;
+              o.x1 = (o.x1*100)/tot;
+          });
+        });
+      
+	  //alert(data.toSource())
+		var svg = d3.select(&quot;#barcharts_div&quot;).append(&quot;svg&quot;)
+            .attr(&quot;width&quot;,  props.width)
+            .attr(&quot;height&quot;, props.height)
+          .append(&quot;g&quot;)
+            .attr(&quot;transform&quot;, &quot;translate(&quot; + props.margin.left + &quot;,&quot; + props.margin.top + &quot;)&quot;);
+  	      // axis legends -- would like to rotate dataset names
+  	      props.y.domain(data.map(function(d) { return d.datasetName; }));
+  	      props.x.domain([0, 100]);	
+			
+    if(imagetype==&#039;single&#039;){
+        //create_singlebar_svg_object(svg, props, data, orderby, filename);
+    }else if(imagetype==&#039;double&#039;){
+        create_doublebar_svg_object(svg, props, data, ts);
+    }else{
+        // FOR BARCHART STACK:
+        create_stacked_svg_object(svg, props, data, ts);
+    }
+}
+//
+//
+//
+function create_singlebar_svg_object(orderby, dataset, filename) {
+  //bar_type, &#039;name&#039;,
+        //alert(data[0].unitObj.toSource())
+        //alert(data.toSource())
+// data:
+//  [{
+//   datasetName:&quot;CMP_JJ_Bv5v6--ApD1&quot;, 
+//   did:&quot;71&quot;, 
+//   &#039;Archaea;Euryarchaeota&#039;:1, &#039;Bacteria;Acidobacteria&#039;:1, &#039;Bacteria;Bacteroidetes&#039;:1449, &#039;Bacteria;Cyanobacteria&#039;:1, 
+//   &#039;Bacteria;Proteobacteria&#039;:1040894, &#039;Bacteria;Spirochaetes&#039;:1, &#039;Bacteria;phylum_NA&#039;:925, &#039;Organelle;Chloroplast&#039;:114, 
+//   &#039;Unknown;phylum_NA&#039;:204218, 
+//   unitObj:[
+//     {name:&quot;Archaea;Euryarchaeota&quot;, x0:0, x1:0.0000801536384942658, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1, total:1247604}, 
+//     {name:&quot;Bacteria;Acidobacteria&quot;, x0:0.0000801536384942658, x1:0.0001603072769885316, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1, total:1247604}, {name:&quot;Bacteria;Bacteroidetes&quot;, x0:0.0001603072769885316, x1:0.11630292945517968, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1449, total:1247604}, {name:&quot;Bacteria;Cyanobacteria&quot;, x0:0.11630292945517968, x1:0.11638308309367396, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1, total:1247604}, {name:&quot;Bacteria;Proteobacteria&quot;, x0:0.11638308309367396, x1:83.54782446994399, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1040894, total:1247604}, {name:&quot;Bacteria;Spirochaetes&quot;, x0:83.54782446994399, x1:83.54790462358248, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:1, total:1247604}, 
+//     {name:&quot;Bacteria;phylum_NA&quot;, x0:83.54790462358248, x1:83.62204673918968, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:925, total:1247604}, 
+//     {name:&quot;Organelle;Chloroplast&quot;, x0:83.62204673918968, x1:83.63118425397802, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:114, total:1247604}, 
+//     {name:&quot;Unknown;phylum_NA&quot;, x0:83.63118425397802, x1:100, did:&quot;71&quot;, dsname:&quot;CMP_JJ_Bv5v6--ApD1&quot;, cnt:204218, total:1247604}
+//     ], 
+//   total:1247604
+// }]
+        
+        var barcharts_div = document.getElementById(&#039;barcharts_div&#039;);
+        barcharts_div.style.display = &#039;block&#039;;
+        
+        
+        // TAXONOMY
+        var unit_list = [];
+        var new_unit_hash = []
+        var data_list = [];
+        // rows == taxa // for orderby==&#039;name&#039;
+        
+        for (var o in mtx_local.rows){
+            unit_list.push(mtx_local.rows[o].id);
+            new_unit_hash.push({tax:mtx_local.rows[o].id, cnt:mtx_local.data[o][0]})
+        }
+        //alert(new_unit_hash.toSource())
+        // for(n in mtx_local.columns){
+        //   alert(dataset, mtx_local.columns[n].id)
+        //   if(mtx_local.columns[n].id === dataset){
+        //     dataset_index = n;
+        //     did = mtx_local.columns[n].did
+        //   }
+        // }
+        //alert(mtx_local.toSource())
+
+        new_object = {}
+        
+        //new_object.did = data[0].did
+        //data[0].unitObj = data[0].unitObj.sort(sort_by(&#039;name&#039;,false,function(a){return a.toUpperCase()}))
+        orderby = &#039;bycount&#039;;
+        if(orderby == &#039;byname&#039;){
+          new_object = new_unit_hash.sort(sort_by(&#039;name&#039;,false, function(a){return a.toUpperCase()}))
+        }else{
+          new_object = new_unit_hash.sort(sort_by(&#039;cnt&#039;,false, parseInt))
+        }
+
+        
+        // list data[0].unitObj
+        var ul = d3.scale.ordinal().range( unit_list );
+        var x0 = 0;
+        new_object.forEach(function(d) {
+          
+          // d = new_object.domain().map(function(name) { 
+          //   return { name: d.tax, x0: x0, x1: x0 += +d[cnt], did: 10, dsname: dataset, cnt: d[cnt] }; 
+          // });
+          d.x0 = x0
+          x1 = x0 + d.cnt
+          d.x1 = x1
+          x0 = x1
+        });
+
+//alert(new_object.toSource())
+        var props = get_image_properties(&#039;single&#039;, 1); 
+        var svg = d3.select(&quot;#barcharts_div&quot;).append(&quot;svg&quot;)
+            .attr(&quot;width&quot;,  props.width)
+            .attr(&quot;height&quot;, props.height)
+          .append(&quot;g&quot;)
+            .attr(&quot;transform&quot;, &quot;translate(&quot; + props.margin.left + &quot;,&quot; + props.margin.top + &quot;)&quot;);
+          // axis legends -- would like to rotate dataset names
+          props.y.domain(new_object.map(function(d) { return dataset; }));
+          props.x.domain([0, 100]); 
+
+        
+        // data[0].unitObj.sort(function(a, b) {
+        //     //return parseFloat(a.price) - parseFloat(b.price);
+        //     return a.name.localeCompare(bname)
+        // });
+         // var datasetBar = svg.selectAll(&quot;.bar&quot;)
+         //    .data(data)
+         //  .enter() .append(&quot;g&quot;)
+         //    .attr(&quot;class&quot;, &quot;g&quot;)
+         //    .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.dsname) + &quot;)&quot;; })
+
+        var datasetBar = svg.selectAll(&quot;.bar&quot;)
+            .data(new_object)
+          .enter() .append(&quot;g&quot;)
+            .attr(&quot;class&quot;, &quot;g&quot;)
+            .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, 0)&quot;; })
+
+         var gnodes = datasetBar.selectAll(&quot;rect&quot;)
+             .data(function(d) { 
+              //alert(props.x(d.x0))
+              return d
+            })
+             .enter()
+              
+
+           .append(&quot;rect&quot;)
+               .attr(&quot;x&quot;, function(d) { return props.x(d.x0); })
+               .attr(&quot;y&quot;, 15)  // adjust where first bar starts on x-axis
+               .attr(&quot;width&quot;, function(d) { return props.x(d.x1) - props.x(d.x0); })
+               .attr(&quot;height&quot;,  25)
+
+               .attr(&quot;id&quot;,function(d,i) {
+                  
+                  var cnt =  d.cnt; //mtx_local.data[i];
+                  var total = d.total;  //mtx_local.total;
+                  var pct = (cnt * 100 / total).toFixed(2);
+                  var id = &#039;barcharts-|-&#039; + d.name + &#039;-|-&#039;+ cnt.toString() + &#039;-|-&#039; + pct;
+                  return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+                })
+          .attr(&quot;class&quot;,&quot;tooltip_viz&quot;);
+}
+var sort_by = function(field, reverse, primer){
+  
+   var key = primer ? 
+       function(x) {return primer(x[field])} : 
+       function(x) {return x[field]};
+
+   reverse = !reverse ? 1 : -1;
+
+   return function (a, b) {
+       return a = key(a), b = key(b), reverse * ((a &gt; b) - (b &gt; a));
+     } 
+}
+//
+//
+//
+function create_doublebar_svg_object(svg, props, data, ts) {
+        svg.append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;x axis&quot;)
+          .style({&#039;stroke-width&#039;: &#039;1px&#039;})
+          .call(props.xAxis)
+        .append(&quot;text&quot;)
+          .attr(&quot;x&quot;, props.plot_width)
+          .attr(&quot;dy&quot;, &quot;.8em&quot;)
+          .style(&quot;text-anchor&quot;, &quot;end&quot;)
+          .text(&quot;Percent&quot;);
+     
+     
+       var datasetBar = svg.selectAll(&quot;.bar&quot;)
+          .data(data)
+        .enter() .append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;g&quot;)
+          .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.datasetName) + &quot;)&quot;; }) 
+          // .append(&quot;a&quot;)
+          // .attr(&quot;xlink:xlink:href&quot;,  function(d) { 
+          //   return &#039;sequences?id=&#039;+d.datasetName+&#039;&amp;taxa=&#039;+encodeURIComponent(d.name)+&#039;&amp;filename=&#039;+filename;
+          // })
+
+          // .attr(&quot;target&quot;, &#039;_blank&#039; );
+
+  
+    var labels = datasetBar.append(&quot;text&quot;)
+      .attr(&quot;class&quot;, &quot;y label&quot;)
+      .attr(&quot;text-anchor&quot;, &quot;end&quot;)
+        .style({&quot;font-size&quot;:  &quot;13px&quot;,&quot;font-weight&quot;:  &quot;normal&quot; })
+      .attr(&quot;x&quot;, &quot;-2&quot;)
+      .attr(&quot;y&quot;, props.bar_height*2)
+      .text(function(d) { return d.datasetName; })
+      
+      
+    var gnodes = datasetBar.selectAll(&quot;rect&quot;)
+          .data(function(d) { return d.unitObj; })
+        .enter()
+        .append(&#039;a&#039;).attr(&quot;xlink:href&quot;,  function(d,i) {
+             //return &#039;sequences?did=&#039;+mtx_local.did+&#039;&amp;taxa=&#039;+encodeURIComponent(d.id);
+             //alert(d.dsname)
+             var filename = user_local+&#039;_&#039;+d.did+&#039;_&#039;+ts+&#039;_sequences.json&#039;
+             return &#039;sequences?id=&#039;+d.dsname+&#039;&amp;taxa=&#039;+encodeURIComponent(d.name)+&#039;&amp;filename=&#039;+filename;
+          }).style(&quot;fill&quot;,   function(d) { return string_to_color_code(d.name); })
+    
+        .append(&quot;rect&quot;)
+          .attr(&quot;x&quot;, function(d) { return props.x(d.x0); })
+          .attr(&quot;y&quot;, 15)  // adjust where first bar starts on x-axis
+          .attr(&quot;width&quot;, function(d) { return props.x(d.x1) - props.x(d.x0); })
+          .attr(&quot;height&quot;,  18)
+          .attr(&quot;id&quot;,function(d,i) { 
+            //console.log(this.parentNode.__data__);
+            var cnt =  d.cnt;  //this.parentNode.__data__[d.name];
+            var total = d.total;  //this.parentNode.__data__[&#039;total&#039;];
+            
+            //console.log(this._parentNode.__data__[&#039;total&#039;]);
+            var ds = &#039;&#039;; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = &#039;barcharts-|-&#039; + d.name + &#039;-|-&#039;+ cnt.toString() + &#039;-|-&#039; + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            //return this._parentNode.__data__.DatasetName + &#039;-|-&#039; + d.id + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+          }) 
+
+          .attr(&quot;class&quot;,&quot;tooltip_viz&quot;)
+          .style(&quot;fill&quot;,   function(d,i) { return string_to_color_code(d.name); });
+}
+//
+//
+//
+
+function create_stacked_svg_object(svg, props, data, ts) {
+             
+             
+      svg.append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;x axis&quot;)
+          .style({&#039;stroke-width&#039;: &#039;1px&#039;})
+          .call(props.xAxis)
+        .append(&quot;text&quot;)
+          .attr(&quot;x&quot;, props.plot_width)
+          .attr(&quot;dy&quot;, &quot;.8em&quot;)
+          .style(&quot;text-anchor&quot;, &quot;end&quot;)
+          .text(&quot;Percent&quot;);
+     
+     
+       var datasetBar = svg.selectAll(&quot;.bar&quot;)
+          .data(data)
+        .enter() .append(&quot;g&quot;)
+          .attr(&quot;class&quot;, &quot;g&quot;)
+          .attr(&quot;transform&quot;, function(d) { return  &quot;translate(0, &quot; + props.y(d.datasetName) + &quot;)&quot;; }) 
+          .append(&quot;a&quot;)
+          .attr(&quot;xlink:xlink:href&quot;,  function(d) { return &#039;bar_single?id=&#039;+d.datasetName+&#039;&amp;ts=&#039;+ts;} )
+
+		      .attr(&quot;target&quot;, &#039;_blank&#039; );
+
+  
+  var labels = datasetBar.append(&quot;text&quot;)
+      .attr(&quot;class&quot;, &quot;y label&quot;)
+			.attr(&quot;text-anchor&quot;, &quot;end&quot;)
+		    .style({&quot;font-size&quot;:  &quot;13px&quot;,&quot;font-weight&quot;:  &quot;normal&quot; })
+      .attr(&quot;x&quot;, &quot;-2&quot;)
+      .attr(&quot;y&quot;, props.bar_height*2)
+			.text(function(d) { return d.datasetName; })
+			
+			
+      var gnodes = datasetBar.selectAll(&quot;rect&quot;)
+          .data(function(d) { return d.unitObj; })
+        .enter()
+        
+		
+		.append(&quot;rect&quot;)
+          .attr(&quot;x&quot;, function(d) { return props.x(d.x0); })
+          .attr(&quot;y&quot;, 15)  // adjust where first bar starts on x-axis
+          .attr(&quot;width&quot;, function(d) { return props.x(d.x1) - props.x(d.x0); })
+          .attr(&quot;height&quot;,  18)
+          .attr(&quot;id&quot;,function(d,i) { 
+            if(i==1){
+              //alert(d.toSource())
+              // ({name:&quot;Archaea;Euryarchaeota&quot;, x0:0.12423702263274455, x1:0.14314265651164046, did:&quot;53&quot;, dsname:&quot;ICM_AGW_Bv6--AGW_0001_2005_06_15&quot;, cnt:7, total:37026})
+            }
+            
+            var cnt =  this.parentNode.__data__[d.name];
+            var total = this.parentNode.__data__[&#039;total&#039;];
+            
+            //console.log(this._parentNode.__data__[&#039;total&#039;]);
+            var ds = &#039;&#039;; // PLACEHOLDER for TT
+            var pct = (cnt * 100 / total).toFixed(2);
+            var id = &#039;barcharts-|-&#039; + d.name + &#039;-|-&#039;+ cnt.toString() + &#039;-|-&#039; + pct; 
+            return id;    // ip of each rectangle should be datasetname-|-unitname-|-count
+            //return this._parentNode.__data__.DatasetName + &#039;-|-&#039; + d.id + &#039;-|-&#039; + cnt.toString() + &#039;-|-&#039; + pct;    // ip of each rectangle should be datasetname-|-unitname-|-count
+          }) 
+
+          .attr(&quot;class&quot;,&quot;tooltip_viz&quot;)
+          .style(&quot;fill&quot;,   function(d,i) { return string_to_color_code(d.name); });
+
+
+       //rect.append(&quot;svg:a&quot;).attr(&quot;xlink:href&quot;,  &#039;http://www.google.com&#039;)
+}
+
+function get_image_properties(imagetype, ds_count) {
+  var props = {};
+  var gap = 2;  // gap on each side of bar
+  if(imagetype==&#039;single&#039;){
+	  props.bar_height = 20;
+	  props.margin = {top: 20, right: 0, bottom: 20, left: 0};   
+	  props.plot_width = 900;
+	  props.width = props.plot_width + props.margin.left + props.margin.right;
+	  props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
+  
+	  props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
+    
+	  props.y = d3.scale.ordinal()
+	      .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
+    
+	  // props.xAxis = d3.svg.axis()
+ // 	          .scale(props.x)
+ // 	          .orient(&quot;top&quot;);
+ //
+ // 	  props.yAxis = d3.svg.axis()
+ // 	          .scale(props.y)
+ // 	          .orient(&quot;left&quot;);
+  }else{
+	  props.bar_height = 15;
+	  //props.margin = {top: 20, right: 20, bottom: 300, left: 50};
+	  props.margin = {top: 20, right: 100, bottom: 20, left: 300};
+	  props.plot_width = 650;
+	  props.width = props.plot_width + props.margin.left + props.margin.right;
+	  props.height = (ds_count * (props.bar_height + 2 * gap)) + 125;
+  
+	  props.x = d3.scale.linear().rangeRound([0, props.plot_width]);
+    
+	  props.y = d3.scale.ordinal()
+	      .rangeBands([0, (props.bar_height + 2 * gap) * ds_count]);
+    
+	  props.xAxis = d3.svg.axis()
+	          .scale(props.x)
+	          .orient(&quot;top&quot;);
+  
+	  props.yAxis = d3.svg.axis()
+	          .scale(props.y)
+	          .orient(&quot;left&quot;);
+  }
+  
+  
+  return props;
+}
+function get_colors(unit_names){
+  var colors = [];
+  for(var n in unit_names){
+    //alert(unit_names[n]);
+    col = string_to_color_code(unit_names[n]);
+    //console.log(col);
+    colors.push(col);
+  }
+  return colors;
+}
+function get_colors2(unit_names){
+  var colors = [];
+  for(var n in unit_names){
+    //alert(unit_names[n]);
+    col = string_to_color_code(unit_names[n]);
+    //console.log(col);
+    colors.push({tax:unit_names[n],color:col});
+  }
+  return colors;
+}
+function string_to_color_code(str){
+    var hash = 0;
+    for(var i=0; i &lt; str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash &lt;&lt; 3) - hash);
+    }
+    var color = Math.abs(hash).toString(16).substring(0, 6);
+    return &quot;#&quot; + &#039;000000&#039;.substring(0, 6 - color.length) + color;
+}
+
+//////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+$(function() {
+    $(&quot;#files&quot;).load(&quot;filelist&quot;);
+    $(&quot;input[type=&#039;button&#039;]&quot;).click(function() {
+      var formData = new FormData();
+      if($(&#039;#myFile&#039;).val()==&#039;&#039;) {
+        alert(&quot;Please choose file!&quot;);
+        return false;
+      }
+      $(&#039;div.progress&#039;).show();
+      var file = document.getElementById(&#039;myFile&#039;).files[0];
+      formData.append(&#039;uploadfile&#039;, file);
+      var xhr = new XMLHttpRequest();
+      xhr.open(&#039;post&#039;, &#039;visuals/fileUpload/&#039;, true);
+      xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+          var percentage = (e.loaded / e.total) * 100;
+          $(&#039;div.progress div&#039;).css(&#039;width&#039;, percentage.toFixed(0) + &#039;%&#039;);
+          $(&#039;div.progress div&#039;).html(percentage.toFixed(0) + &#039;%&#039;);
+        }
+      };
+      xhr.onerror = function(e) {
+        alert(&#039;An error occurred while submitting the form. Maybe your file is too big&#039;);
+      };
+      xhr.onload = function() {
+        var file = xhr.responseText;
+        $(&#039;div.progress div&#039;).css(&#039;width&#039;,&#039;0%&#039;);
+        $(&#039;div.progress&#039;).hide();
+        showMsg(&quot;alert alert-success&quot;, &quot;File uploaded successfully!&quot;);
+        $(&#039;#myFile&#039;).val(&#039;&#039;);
+      };
+      xhr.send(formData);
+      return false;
+    });
+
+  function showMsg(className, msg) {
+    $(&quot;#msg&quot;).fadeIn();
+    $(&quot;#files&quot;).load(&quot;filelist&quot;);
+    $(&quot;#msg&quot;).addClass(className);
+    $(&quot;#msg&quot;).html(msg);
+    $(&quot;#msg&quot;).fadeOut(3000,function() {
+      $(&quot;#msg&quot;).removeClass(className);
+    });
+  }
+  $(document).on(&#039;click&#039;,&#039;#delete&#039;,function() {
+    $(this).attr(&#039;href&#039;,&#039;javascript:void(0)&#039;);
+    $(this).html(&quot;deleting..&quot;);
+    var file = $(this).attr(&quot;file&quot;);
+    $.ajax({
+      url:&#039;deleteFile/&#039;+file,
+      type:&#039;GET&#039;,
+      data:{},
+      success:function(res){
+        showMsg(&quot;alert alert-danger&quot;, &quot;File deleted successfully!&quot;)
+      }
+    });
+  });
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

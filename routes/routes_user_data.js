@@ -736,7 +736,7 @@ router.get('/start_assignment/:project/:classifier_id',  helpers.isLoggedIn,  fu
     console.log('no read config file ',  err);
   }
 
- var options = {
+  var options = {
     scriptPath : qsub_script_path,
     gast_run_args : [ '-c',  config_file,  '-process_dir',  process.env.PWD,
     '-project_dir',  data_dir,  '-db',  NODE_DATABASE,  '-ref_db_dir',  ref_db_dir,  '-site',  req.CONFIG.site ],
@@ -2136,7 +2136,7 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
           header += pname+'--'+dname+"\t";
         } 
         
-        if(HDF5_MDATA == ''){
+        if(HDF5_MDATA === ''){
             for (var k in AllMetadata[did]){
               nm = k;
               val = AllMetadata[did][k];
