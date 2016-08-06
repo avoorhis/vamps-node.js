@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">65.62</p>
+      <p class="stat">65.11</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">224</p>
+      <p class="stat">257</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">33.73</p>
+      <p class="stat">35.31</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.69</p>
+      <p class="stat">1.96</p>
     </div>
   </div>
 </div>
@@ -113,21 +113,48 @@
       });
     }
 
-    grant_access_btn = document.getElementById(&#039;grant_access_btn&#039;) || null;
-    if (grant_access_btn !== null) {
-      grant_access_btn.addEventListener(&#039;click&#039;, function () {
-          grant_access();
-      });
-    }
+    // grant_access_btn = document.getElementById(&#039;grant_access_btn&#039;) || null;
+    // if (grant_access_btn !== null) {
+    //   grant_access_btn.addEventListener(&#039;click&#039;, function () {
+    //       grant_access();
+    //   });
+    // }
     
 
 });
 //
 //
 //
+function update_dataset(did, pid)
+{
+  //alert(did+&#039; - &#039;+pid)
+      response_div = document.getElementById(&#039;msg_div_&#039;+did);
+      name = document.getElementById(&#039;new_dname_edit_&#039;+did).value;
+      desc = document.getElementById(&#039;new_ddesc_edit_&#039;+did).value;
+      
+      var xmlhttp = new XMLHttpRequest();  
+      xmlhttp.open(&quot;POST&quot;, &#039;/admin/update_dataset_info&#039;, true);
+      xmlhttp.setRequestHeader(&quot;Content-type&quot;,&quot;application/x-www-form-urlencoded&quot;);
+      xmlhttp.setRequestHeader(&quot;data-type&quot;,&quot;html&quot;);
+      var args = &#039;pid=&#039;+pid+&#039;&amp;did=&#039;+did+&#039;&amp;name=&#039;+name+&#039;&amp;desc=&#039;+desc;
+
+      xmlhttp.onreadystatechange = function() {        
+        if (xmlhttp.readyState == 4 ) {
+            
+            var response = xmlhttp.responseText;            
+            response_div.innerHTML = response;  
+            
+        }
+      };
+      xmlhttp.send(args);
+
+
+}
+//
+//
+//
 function update_project(item_to_update, pid)
 {
-    
     
     switch(item_to_update){
       case &#039;pname&#039;:
@@ -146,6 +173,10 @@ function update_project(item_to_update, pid)
           response_div = document.getElementById(&#039;new_pdesc_response_id&#039;);
           new_value = document.getElementById(&#039;new_pdesc&#039;).value;
           break;
+      case &#039;penv&#039;:
+          response_div = document.getElementById(&#039;new_penv_response_id&#039;);
+          new_value = document.getElementById(&#039;new_penv&#039;).value;
+          break;
       default:
           response_div = document.getElementById(&#039;new_pname_response_id&#039;);
           new_value = document.getElementById(&#039;new_pname&#039;).value;
@@ -158,12 +189,9 @@ function update_project(item_to_update, pid)
     xmlhttp.setRequestHeader(&quot;data-type&quot;,&quot;html&quot;);
     var args = &#039;item=&#039;+item_to_update+&#039;&amp;value=&#039;+new_value+&#039;&amp;pid=&#039;+pid;
     xmlhttp.onreadystatechange = function() {        
-      if (xmlhttp.readyState == 4 ) {
-          
+      if (xmlhttp.readyState == 4 ) {          
           var response = xmlhttp.responseText;            
-          response_div.innerHTML = response;  
-          
-         
+          response_div.innerHTML = response;         
       }
     };
     xmlhttp.send(args);
@@ -212,28 +240,34 @@ function show_access_button()
 }
 function grant_access(type, id)
 {
+  
     var info_div = document.getElementById(&#039;response_info&#039;);
     
-    form = document.getElementById(type+&#039;_&#039;+id);
+    //form = document.getElementById(type+&#039;_&#039;+id);
 
-    
+    //alert(&#039;1&#039;)
     var selected_pid, selected_uid;
-     //alert(type+&quot; &quot;+id)   
-    if(type===&#039;by_user&#039;){ 
-      selected_pid = form.by_user_select.value
+    var select_name = type+&#039;_&#039;+id+&#039;_select&#039;
+    //alert(type+&quot; &quot;+id) 
+    //alert(select_name)
+    if(type === &#039;by_user&#039;){ 
+      selected_pid = document.getElementById(select_name).value
       selected_uid = id
-    }else if(type===&#039;by_project&#039;){
-      selected_uid = form.by_project_select.value
+    }else if(type === &#039;by_project&#039;){
+      selected_uid = document.getElementById(select_name).value
       selected_pid = id
-   }else{
+    }else{
+      
       info_div.innerHTML = &#039;Error-1&#039;; 
       return;
-   }
-   //alert(selected_pid+&quot; &quot;+selected_uid)  
-   if(selected_uid === &#039;0&#039; || selected_pid === &#039;0&#039;){
+    }
+    
+    //alert(selected_pid+&quot; &quot;+selected_uid)  
+
+    if(selected_uid === &#039;0&#039; || selected_pid === &#039;0&#039;){
       info_div.innerHTML = &#039;Choose a name&#039;; 
       return;
-   }
+    }
    //return
     
     var xmlhttp = new XMLHttpRequest();  
@@ -275,8 +309,7 @@ function change_public(pid)
     var args = &#039;public=&#039;+public+&#039;&amp;pid=&#039;+pid;
     xmlhttp.onreadystatechange = function() {        
       if (xmlhttp.readyState == 4 ) {
-          
-          var response = xmlhttp.responseText;            
+          var response = xmlhttp.responseText;           
           info_div.innerHTML = response;      
          
       }

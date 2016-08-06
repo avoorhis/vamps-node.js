@@ -559,7 +559,7 @@ router.post('/new_user', [helpers.isLoggedIn, helpers.isAdmin], function(req, re
                                         " 1,"+
                                         " 1,"+
                                         " CURRENT_TIMESTAMP(), "+
-                                        " '' )";
+                                        " CURRENT_TIMESTAMP() )";
 
                     console.log(insertQuery);
                     req.db.query(insertQuery, function(err,rows){

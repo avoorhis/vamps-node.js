@@ -240,7 +240,8 @@ function signup_user(req, username, password, done, db){
                 newUserMysql.email          = email;
                 newUserMysql.institution    = inst;
                 newUserMysql.security_level = 50;  //reg user
-
+                
+                // todo: why this is in two places? See routes/routes_admin.js:552
                 var insertQuery = "INSERT INTO user (username, encrypted_password, first_name, last_name, email, institution, active, sign_in_count, current_sign_in_at,last_sign_in_at)";
                 insertQuery +=    " VALUES ('" + username +"', '"+ 
                                     newUserMysql.password +"', '"+ 
@@ -251,7 +252,7 @@ function signup_user(req, username, password, done, db){
                                     " 1,"+
                                     " 1,"+
                                     " CURRENT_TIMESTAMP(), "+
-                                    " '' )";
+                                    " CURRENT_TIMESTAMP() )";
 
 
                 console.log(insertQuery);
