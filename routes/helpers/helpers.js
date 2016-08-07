@@ -496,8 +496,14 @@ GetProjectId = function(project) {
     if(err) {
       console.log('ERROR-in ProjectQuery: ' + err);
     } else {
-      console.log('ProjectQuery rows: ' + rows);
-      return rows;
+      // console.log('ProjectQuery: ') + ProjectQuery;
+      // console.log('ProjectQuery rows: ');
+      // console.log(util.inspect(rows, false, null));
+      // console.log(util.inspect(rows[0], false, null));
+      console.log(util.inspect(rows[0]['project_id'], false, null));
+      console.log('PPP: ');
+      project_id = rows[0]['project_id'];
+      return project_id;
     }
   });
 };
@@ -534,6 +540,8 @@ MakeInsertStatusQ = function(status_params)
   
   if ('project' in status_params) {
     project_id = GetProjectId(status_params.project)
+    console.log("WWW0 project_id = ") + project_id;
+    console.log(util.inspect(project_id, false, null));
   }
   else
   {
@@ -547,27 +555,14 @@ MakeInsertStatusQ = function(status_params)
   console.log("WWW2 statQuery1 = ") + statQuery1;
 
   return statQuery1;
-  
-  
-  // ---
-  // var statQuery1 = '';
-  //   if('pid' in status_params && 'project' in status_params){
-  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)";
-  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-  //   }else if('pid' in status_params){
-  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project_id,status,message)";
-  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-  //   }else if('project' in status_params){
-  //     statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,status,message)";
-  //     statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
-  //   }else{
-  //     // ERROR
-  //   }
 };
 
 module.exports.update_status = function(status_params) {
   console.log('in update_status');
   console.log(util.inspect(status_params, false, null));
+  project_id = GetProjectId(status_params.project)
+  console.log("WWW111 project_id = ") + project_id;
+  //Doesn't work because acynchronus
   
   if (status_params.type === 'delete') {
     statQuery = MakeDeleteStatusQ(status_params);
@@ -583,7 +578,7 @@ module.exports.update_status = function(status_params) {
         console.log('ERROR2-in status update: ' + err);
       } else {
         console.log('status update2');
-        console.log(rows);
+        console.log(util.inspect(rows, false, null));
         //TODO: Why doesn't work?
       }
     });
@@ -592,31 +587,17 @@ module.exports.update_status = function(status_params) {
     statQuery1 = MakeInsertStatusQ(status_params);
     console.log('statQuery1 111');
     console.log(statQuery1);
-    
-    // var statQuery1 = '';
-      // if('pid' in status_params && 'project' in status_params){
-      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)";
-      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-      // }else if('pid' in status_params){
-      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project_id,status,message)";
-      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.pid+"','"+status_params.status+"','"+status_params.msg+"')";
-      // }else if('project' in status_params){
-      //   statQuery1 += "INSERT IGNORE into user_project_status (user_id,project,status,message)";
-      //   statQuery1 += " VALUES ('"+status_params.user_id+"','"+status_params.project+"','"+status_params.status+"','"+status_params.msg+"')";
-      // }else{
-      //   // ERROR
-      // }
-      console.log('query1: ' + statQuery1);
+    console.log('query1: ' + statQuery1);
 
-      connection.query(statQuery1 , function(err, rows, fields){
-            if(err) {
-              console.log('ERROR1-in status update: '+err);
-            }else{
-              console.log('status update1');
-            }
-      });
+    connection.query(statQuery1 , function(err, rows, fields){
+      if(err) {
+        console.log('ERROR1-in status insert: ' + err);
+      } else {
+        console.log('status insert query1');
+        console.log(util.inspect(rows, false, null));
+      }
+    });
   }
-
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
