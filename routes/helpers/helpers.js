@@ -467,7 +467,7 @@ module.exports.get_status = function(user, project){
   statQuery += " join project USING(project_id)";
   statQuery += " WHERE user = '" + user + "' and project ='" + project + "' ";
   console.log('get_status query: ' + statQuery);
-  connection.query(statQuery, function(err, rows, fields) {
+  connection.query(statQuery, function(err, rows) {
     if(err) {
       console.log('ERROR-in status query: ' + err);
     } else {
@@ -556,7 +556,9 @@ InsertStatusQ = function(status_params)
     if(err) {
       console.log('ERROR-in ProjectQuery: ' + err);
     } else {
-      project_id = rows[0]['project_id'];
+      // project_id = rows[0]['project_id'];
+      project_id = rows[0].project_id;
+      // console.log('TTT project_id in ProjectQuery: ' + project_id);
       var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
           statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
       connection.query(statQuery1, function(err, rows){
@@ -578,13 +580,18 @@ module.exports.update_status = function(status_params) {
   if (status_params.type === 'delete') {
     statQuery = MakeDeleteStatusQ(status_params);
     console.log('in update_status, after delete_status');
-    connection.query(statQuery , function(err, rows, fields) {
-      if(err) { console.log('ERROR1-in status update: ' + err); }
+    connection.query(statQuery , function(err, rows) {
+      if(err) { console.log('ERROR1-in status update: ' + err); 
+      }
+      else {
+        console.log('in statQuery');
+        console.log(util.inspect(rows, false, null));
+      }
     });
   } else if(status_params.type == 'update') {
     statQuery2 = MakeUpdateStatusQ(status_params);
     console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2 , function(err, rows, fields) {
+    connection.query(statQuery2 , function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
       } else {

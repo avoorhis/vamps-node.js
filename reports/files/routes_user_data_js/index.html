@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.35</p>
+      <p class="stat">54.26</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">2930</p>
+      <p class="stat">2947</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">106.06</p>
+      <p class="stat">106.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">41.58</p>
+      <p class="stat">41.45</p>
     </div>
   </div>
 </div>
@@ -782,19 +782,19 @@ router.get(&#039;/assign_taxonomy/:project/&#039;,  helpers.isLoggedIn,   functi
 //
 // START_ASSIGNMENT
 //
-function ProjectNameExists(project_name) {
-  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-  {
-    console.log(&#039;This project name is already taken AAA&#039;);
-    return true;
-  }
-  else
-  {
-    console.log(&#039;Project name validated&#039;);
-    return false;
-  }
-
-}
+// function ProjectNameExists(project_name) {
+//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+//   {
+//     console.log(&#039;This project name is already taken AAA&#039;);
+//     return true;
+//   }
+//   else
+//   {
+//     console.log(&#039;Project name validated&#039;);
+//     return false;
+//   }
+//
+// }
 
 //router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.isLoggedIn, function (req, res) {
 router.get(&#039;/start_assignment/:project/:classifier_id&#039;, helpers.isLoggedIn, function (req, res) {
@@ -1581,6 +1581,19 @@ function ProjectNameGiven(project, req, res)
   }
 }
 
+// function ProjectNameExists(project_name) {
+//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+//   {
+//     console.log(&#039;This project name is already taken AAA&#039;);
+//     return true;
+//   }
+//   else
+//   {
+//     console.log(&#039;Project name validated&#039;);
+//     return false;
+//   }
+//
+// }
 function ProjectNameExists(project, req, res)
 {
   // console.log(&#039;BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME &#039;);
@@ -1589,12 +1602,15 @@ function ProjectNameExists(project, req, res)
   // console.log(&#039;BBB: ProjectNameExists: project: &#039; + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
-      var project_id = helpers.GetProjectId(project)
-      console.log(&#039;BBB from ProjectNameExists: project_id: project_id &#039;);
-      console.log(util.inspect(project_id, false, null));
       req.flash(&#039;failMessage&#039;, &#039;That project name is already taken.&#039;);
-      res.redirect(&quot;/user_data/import_data?import_type=&quot;+req.body.type);
-    return;
+      res.redirect(&quot;/user_data/import_data?import_type=&quot; + req.body.type);
+      console.log(&#039;This project name is already taken&#039;);
+      return true;
+  }
+  else
+  {
+    console.log(&#039;Project name does not exist&#039;);
+    return false;
   }
 }
 
@@ -1642,7 +1658,7 @@ function IsFileCompressed(file)
   {
     file_compressed = true;
   }
-  return file_compressed
+  return file_compressed;
 }
 
 var LoadDataFinishRequest = function (req, res, project) {
@@ -1678,7 +1694,7 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
   // metadata_compressed = false;
-  fasta_compressed = IsFileCompressed(req.files[0])
+  fasta_compressed = IsFileCompressed(req.files[0]);
 
   status_params = {&#039;type&#039;:&#039;new&#039;,
                    &#039;user_id&#039;: req.user.user_id,
@@ -1696,7 +1712,7 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
     //original_metafile  = path.join(process.env.PWD,  &#039;tmp&#039;, req.files[1].filename);
     original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args = options.args.concat([&#039;-mdfile&#039;,  original_metafile ]);
-    metadata_compressed = IsFileCompressed(req.files[1])
+    metadata_compressed = IsFileCompressed(req.files[1]);
 
     if (metadata_compressed) options.args = options.args.concat([&#039;-md_comp&#039; ]);
 
@@ -1765,16 +1781,17 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
 
 
                       script_name = &#039;load_script.sh&#039;;
+                      var scriptlog = &quot;&quot;
                       var nodelog = fs.openSync(path.join(data_repository, &#039;assignment.log&#039;),  &#039;a&#039;);
                       if (req.CONFIG.dbhost == &#039;vampsdev&#039; || req.CONFIG.dbhost == &#039;vampsdb&#039;)
                       {
-                       var scriptlog = path.join(data_repository,  &#039;cluster.log&#039;);
+                       scriptlog = path.join(data_repository,  &#039;cluster.log&#039;);
                        //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
                        var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  &#039;vampsupld&#039;,  cmd_list);
                       }
                       else
                       {
-                       var scriptlog = path.join(data_repository,  &#039;script.log&#039;);
+                       scriptlog = path.join(data_repository,  &#039;script.log&#039;);
                        var script_text = get_local_script_text(scriptlog,  &#039;local&#039;,  &#039;vampsupld&#039;,  cmd_list);
                       }
 
@@ -1927,7 +1944,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,   [helpers.isLoggedIn,  upload.
       var original_taxbyseqfile = path.join(&#039;/tmp&#039;, req.files[0].filename);
       console.log(original_taxbyseqfile);
       // TODO: test
-      taxbyseq_compressed = IsFileCompressed(req.files[0])
+      taxbyseq_compressed = IsFileCompressed(req.files[0]);
       //
       // taxbyseq_compressed = metadata_compressed = false;
       // if (req.files[0].mimetype === &#039;application/x-gzip&#039;) {
@@ -1938,7 +1955,7 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,   [helpers.isLoggedIn,  upload.
         //original_metafile  = path.join(process.env.PWD,  &#039;tmp&#039;, req.files[1].filename);
         original_metafile  = path.join(&#039;/tmp&#039;, req.files[1].filename);
         // TODO: test
-        metadata_compressed = IsFileCompressed(req.files[1])
+        metadata_compressed = IsFileCompressed(req.files[1]);
 
         // if (req.files[1].mimetype === &#039;application/x-gzip&#039;) {
         //   metadata_compressed = true;

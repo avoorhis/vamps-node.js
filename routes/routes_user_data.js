@@ -691,19 +691,19 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
 //
 // START_ASSIGNMENT
 //
-function ProjectNameExists(project_name) {
-  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-  {
-    console.log('This project name is already taken AAA');
-    return true;
-  }
-  else
-  {
-    console.log('Project name validated');
-    return false;
-  }
-
-}
+// function ProjectNameExists(project_name) {
+//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+//   {
+//     console.log('This project name is already taken AAA');
+//     return true;
+//   }
+//   else
+//   {
+//     console.log('Project name validated');
+//     return false;
+//   }
+//
+// }
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -1490,6 +1490,19 @@ function ProjectNameGiven(project, req, res)
   }
 }
 
+// function ProjectNameExists(project_name) {
+//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+//   {
+//     console.log('This project name is already taken AAA');
+//     return true;
+//   }
+//   else
+//   {
+//     console.log('Project name validated');
+//     return false;
+//   }
+//
+// }
 function ProjectNameExists(project, req, res)
 {
   // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
@@ -1498,12 +1511,15 @@ function ProjectNameExists(project, req, res)
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
-      var project_id = helpers.GetProjectId(project)
-      console.log('BBB from ProjectNameExists: project_id: project_id ');
-      console.log(util.inspect(project_id, false, null));
       req.flash('failMessage', 'That project name is already taken.');
-      res.redirect("/user_data/import_data?import_type="+req.body.type);
-    return;
+      res.redirect("/user_data/import_data?import_type=" + req.body.type);
+      console.log('This project name is already taken');
+      return true;
+  }
+  else
+  {
+    console.log('Project name does not exist');
+    return false;
   }
 }
 
@@ -1551,7 +1567,7 @@ function IsFileCompressed(file)
   {
     file_compressed = true;
   }
-  return file_compressed
+  return file_compressed;
 }
 
 var LoadDataFinishRequest = function (req, res, project) {
@@ -1587,7 +1603,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
   // metadata_compressed = false;
-  fasta_compressed = IsFileCompressed(req.files[0])
+  fasta_compressed = IsFileCompressed(req.files[0]);
 
   status_params = {'type':'new',
                    'user_id': req.user.user_id,
@@ -1605,7 +1621,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
     original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
     options.args = options.args.concat(['-mdfile',  original_metafile ]);
-    metadata_compressed = IsFileCompressed(req.files[1])
+    metadata_compressed = IsFileCompressed(req.files[1]);
 
     if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
 
@@ -1674,17 +1690,19 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
 
                       script_name = 'load_script.sh';
+                      var scriptlog = "";
+                      var script_text = ""
                       var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
                       if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
                       {
-                       var scriptlog = path.join(data_repository,  'cluster.log');
+                       scriptlog = path.join(data_repository,  'cluster.log');
                        //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
-                       var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
+                       script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  'vampsupld',  cmd_list);
                       }
                       else
                       {
-                       var scriptlog = path.join(data_repository,  'script.log');
-                       var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
+                       scriptlog = path.join(data_repository,  'script.log');
+                       script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
                       }
 
                       var script_path = path.join(data_repository,  script_name);
@@ -1836,7 +1854,7 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
       var original_taxbyseqfile = path.join('/tmp', req.files[0].filename);
       console.log(original_taxbyseqfile);
       // TODO: test
-      taxbyseq_compressed = IsFileCompressed(req.files[0])
+      taxbyseq_compressed = IsFileCompressed(req.files[0]);
       //
       // taxbyseq_compressed = metadata_compressed = false;
       // if (req.files[0].mimetype === 'application/x-gzip') {
@@ -1847,7 +1865,7 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
         //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
         original_metafile  = path.join('/tmp', req.files[1].filename);
         // TODO: test
-        metadata_compressed = IsFileCompressed(req.files[1])
+        metadata_compressed = IsFileCompressed(req.files[1]);
 
         // if (req.files[1].mimetype === 'application/x-gzip') {
         //   metadata_compressed = true;

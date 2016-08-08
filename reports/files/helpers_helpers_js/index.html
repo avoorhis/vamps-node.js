@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">63.59</p>
+      <p class="stat">63.52</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">783</p>
+      <p class="stat">790</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">73.73</p>
+      <p class="stat">73.97</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.23</p>
+      <p class="stat">8.26</p>
     </div>
   </div>
 </div>
@@ -558,7 +558,7 @@ module.exports.get_status = function(user, project){
   statQuery += &quot; join project USING(project_id)&quot;;
   statQuery += &quot; WHERE user = &#039;&quot; + user + &quot;&#039; and project =&#039;&quot; + project + &quot;&#039; &quot;;
   console.log(&#039;get_status query: &#039; + statQuery);
-  connection.query(statQuery, function(err, rows, fields) {
+  connection.query(statQuery, function(err, rows) {
     if(err) {
       console.log(&#039;ERROR-in status query: &#039; + err);
     } else {
@@ -643,14 +643,16 @@ InsertStatusQ = function(status_params)
   console.log(&quot;ProjectQuery XXX&quot;);
   console.log(ProjectQuery);
 
-  connection.query(ProjectQuery, function(err, rows, fields) {
+  connection.query(ProjectQuery, function(err, rows) {
     if(err) {
       console.log(&#039;ERROR-in ProjectQuery: &#039; + err);
     } else {
-      project_id = rows[0][&#039;project_id&#039;];
+      // project_id = rows[0][&#039;project_id&#039;];
+      project_id = rows[0].project_id;
+      // console.log(&#039;TTT project_id in ProjectQuery: &#039; + project_id);
       var statQuery1  = &quot;INSERT IGNORE into user_project_status (user_id, project_id, status, message)&quot;;
           statQuery1 += &quot; VALUES (&#039;&quot; + status_params.user_id + &quot;&#039;, &#039;&quot; + project_id + &quot;&#039;, &#039;&quot; + status_params.status + &quot;&#039;, &#039;&quot; + status_params.msg + &quot;&#039;)&quot;;
-      connection.query(statQuery1, function(err, rows, fields){
+      connection.query(statQuery1, function(err, rows){
         if(err) {
           console.log(&#039;ERROR1-in status insert: &#039; + err);
         } else {
@@ -669,13 +671,18 @@ module.exports.update_status = function(status_params) {
   if (status_params.type === &#039;delete&#039;) {
     statQuery = MakeDeleteStatusQ(status_params);
     console.log(&#039;in update_status, after delete_status&#039;);
-    connection.query(statQuery , function(err, rows, fields) {
-      if(err) { console.log(&#039;ERROR1-in status update: &#039; + err); }
+    connection.query(statQuery , function(err, rows) {
+      if(err) { console.log(&#039;ERROR1-in status update: &#039; + err); 
+      }
+      else {
+        console.log(&#039;in statQuery&#039;);
+        console.log(util.inspect(rows, false, null));
+      }
     });
   } else if(status_params.type == &#039;update&#039;) {
     statQuery2 = MakeUpdateStatusQ(status_params);
     console.log(&#039;statQuery2: &#039; + statQuery2);
-    connection.query(statQuery2 , function(err, rows, fields) {
+    connection.query(statQuery2 , function(err, rows) {
       if(err) {
         console.log(&#039;ERROR2-in status update: &#039; + err);
       } else {
