@@ -489,7 +489,7 @@ MakeDeleteStatusQ = function(status_params) {
 };
 
 // GetProjectId = function(project) {
-module.exports.GetProjectId = function(status_params) {
+module.exports.GetProjectId = function(project) {
   var ProjectQuery = "SELECT project_id FROM project";
   ProjectQuery += " WHERE project ='" + project + "' ";
   console.log('GetProjectId query: ' + ProjectQuery);
