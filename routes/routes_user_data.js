@@ -425,7 +425,7 @@ router.post('/validate_file',  [helpers.isLoggedIn,  upload.single('upload_file'
 router.get('/user_project_info/:id',  helpers.isLoggedIn,  function (req,  res) {
   console.log(req.params.id);
   var project = req.params.id;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'config.ini');
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project, 'config.ini');
 
   var config = ini.parse(fs.readFileSync(config_file,  'utf-8'));
   console.log(config);
@@ -491,6 +491,7 @@ router.get('/user_project_metadata/:id',  helpers.isLoggedIn,  function (req,  r
   }
 
 });
+
 router.get('/user_project_validation/:id',  helpers.isLoggedIn,  function (req,  res) {
         // THIS IS FOR UNLOADED PROJECTS (After upload and before tax assignment)
         //will only show up if config.ini is present
@@ -688,22 +689,11 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
      });
 
 });
+
 //
 // START_ASSIGNMENT
 //
-function ProjectNameExists(project_name) {
-  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-  {
-    console.log('This project name is already taken AAA');
-    return true;
-  }
-  else
-  {
-    console.log('Project name validated');
-    return false;
-  }
 
-}
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -1490,17 +1480,19 @@ function ProjectNameGiven(project, req, res)
   }
 }
 
-function ProjectNameExists(project, req, res)
-{
-  // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
-  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
-  //
-  // console.log('BBB: ProjectNameExists: project: ' + project);
-
-  if (project in PROJECT_INFORMATION_BY_PNAME) {
-      req.flash('failMessage',  'That project name is already taken.');
-      res.redirect("/user_data/import_data?import_type="+req.body.type);
-    return;
+// TODO: we should be able to add and process datasets to an existing project!
+function ProjectNameExists(project, req, res) {
+  if (project in PROJECT_INFORMATION_BY_PNAME)
+  {
+    req.flash('failMessage', 'That project name is already taken.');
+    res.redirect("/user_data/import_data?import_type=" + req.body.type);
+    console.log('This project name is already taken');
+    return true;
+  }
+  else
+  {
+    console.log('Project name validated');
+    return false;
   }
 }
 
