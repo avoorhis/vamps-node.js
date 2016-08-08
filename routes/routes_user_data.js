@@ -1471,25 +1471,43 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 //  UPLOAD DATA
 //
 
-function ProjectIdIsInDB(project, req, res)
-{
-  var lock = 1;
-  var result = {};
-  result.project_ids_arr = [];
-  // http://stackoverflow.com/questions/6597493/synchronous-database-queries-with-node-js
-  // var finishRequest = function() {
-  //     res.render('home.ejs', {layout: false, locals: { user_name: user_array, title: title_array }});
-  // }
-  
-    var finishRequest = function() {
-      console.log('WWW result = ');
-      console.log(util.inspect(result, false, null));
-    }
-    
-    var ProjectQuery = "SELECT project_id FROM project";
-    ProjectQuery += " WHERE project ='" + project + "' ";
-    console.log('GetProjectId query: ' + ProjectQuery);
-    
+// function handleResultset (err, result) {
+//     var i, len;
+//     if (err) {
+//         throw err;
+//     }
+//     len = result.length;
+//     for (i = 0; i < len; i += 1) {
+//         console.log("SSS result[i]");
+//         console.log(result[i]);
+//     }
+//     console.log("AFTER AAA");
+// }
+//
+// function ProjectIdIsInDB(project, req, res)
+// {
+//   var ProjectQuery = "SELECT project_id FROM project";
+//   ProjectQuery += " WHERE project ='" + project + "' ";
+//   console.log('GetProjectId query: ' + ProjectQuery);
+//
+//   connection.query(ProjectQuery, handleResultset)
+  // var lock = 1;
+  // var result = {};
+  // result.project_ids_arr = [];
+  // // http://stackoverflow.com/questions/6597493/synchronous-database-queries-with-node-js
+  // // var finishRequest = function() {
+  // //     res.render('home.ejs', {layout: false, locals: { user_name: user_array, title: title_array }});
+  // // }
+  //
+  //   var finishRequest = function() {
+  //     console.log('WWW result = ');
+  //     console.log(util.inspect(result, false, null));
+  //   }
+  //
+  //   var ProjectQuery = "SELECT project_id FROM project";
+  //   ProjectQuery += " WHERE project ='" + project + "' ";
+  //   console.log('GetProjectId query: ' + ProjectQuery);
+  //
     // db.execute(sql)
 //     .addListener('row', function(r) {
 //         user_array.push( { user_name: r.user_name } );
@@ -1504,38 +1522,38 @@ function ProjectIdIsInDB(project, req, res)
 //     });
     
     
-    connection.query(ProjectQuery, function(err, rows, fields) {
-      if(err) {
-        console.log('ERROR-in ProjectQuery: ' + err);
-      } else {
-        // console.log('ProjectQuery: ') + ProjectQuery;
-        console.log('ProjectQuery rows: ');
-        console.log(util.inspect(rows, false, null));
-        // console.log(util.inspect(rows[0], false, null));
-        // console.log(util.inspect(rows[0]['project_id'], false, null));
-        console.log('PPP1: ');
-        // project_id = rows[0]['project_id'];
-        // return project_id;
-      }
-    }).addListener('row', function(r) {      
-        project_ids_arr.push( { project_id: r.project_id } );
-        console.log('JJJ ProjectQuery project_ids_arr: ');
-        console.log(util.inspect(project_ids_arr, false, null));
-        
-    }).addListener('result', function(r) {
-        console.log('JJJ1 ProjectQuery req: ');
-        console.log(util.inspect(req, false, null));
-        req.session.project_ids_arr = project_ids_arr;
-        lock -= 1;
-        console.log('JJJ2 ProjectQuery lock: ');
-        console.log(util.inspect(lock, false, null));
-
-        if (lock === 0) {
-          finishRequest();
-        }
-    });
-    
-    ;
+    // connection.query(ProjectQuery, function(err, rows, fields) {
+    //   if(err) {
+    //     console.log('ERROR-in ProjectQuery: ' + err);
+    //   } else {
+    //     // console.log('ProjectQuery: ') + ProjectQuery;
+    //     console.log('ProjectQuery rows: ');
+    //     console.log(util.inspect(rows, false, null));
+    //     // console.log(util.inspect(rows[0], false, null));
+    //     // console.log(util.inspect(rows[0]['project_id'], false, null));
+    //     console.log('PPP1: ');
+    //     // project_id = rows[0]['project_id'];
+    //     // return project_id;
+    //   }
+    // }).addListener('row', function(r) {
+    //     project_ids_arr.push( { project_id: r.project_id } );
+    //     console.log('JJJ ProjectQuery project_ids_arr: ');
+    //     console.log(util.inspect(project_ids_arr, false, null));
+    //
+    // }).addListener('result', function(r) {
+    //     console.log('JJJ1 ProjectQuery req: ');
+    //     console.log(util.inspect(req, false, null));
+    //     req.session.project_ids_arr = project_ids_arr;
+    //     lock -= 1;
+    //     console.log('JJJ2 ProjectQuery lock: ');
+    //     console.log(util.inspect(lock, false, null));
+    //
+    //     if (lock === 0) {
+    //       finishRequest();
+    //     }
+    // });
+    //
+    // ;
   // project_id = helpers.GetProjectId(project);
   // console.log('WWW project_id = ' + project_id);
   
@@ -1544,9 +1562,13 @@ function ProjectIdIsInDB(project, req, res)
   //   res.redirect("/user_data/import_data?import_type=" + req.body.type);
   //   return;
   // }
+// }
+
+function ProjectIdIsInDB(project, req, res)
+{
+  project_id = helpers.handleResultset(project);
+  console.log('DDD project_id = ' + project_id);  
 }
-
-
 
 // TODO: Andy, how to make it fail? For testing?
 function ProjectNameGiven(project, req, res)
