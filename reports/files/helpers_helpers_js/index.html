@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">63.06</p>
+      <p class="stat">63.59</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">737</p>
+      <p class="stat">783</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">74.72</p>
+      <p class="stat">73.73</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.21</p>
+      <p class="stat">8.23</p>
     </div>
   </div>
 </div>
@@ -551,6 +551,7 @@ module.exports.update_global_variables = function(pid,type){
     // ERROR
   }
 };
+
 module.exports.get_status = function(user, project){
   var statQuery = &quot;SELECT status, message from user_project_status&quot;;
   statQuery += &quot; join user USING(user_id)&quot;;
@@ -578,6 +579,36 @@ MakeDeleteStatusQ = function(status_params) {
   }
 };
 
+// module.exports.GetProjectId = function(project) {
+//   var ProjectQuery = &quot;SELECT project_id FROM project&quot;;
+//   ProjectQuery    += &quot; WHERE project =&#039;&quot; + project + &quot;&#039; &quot;;
+//   console.log(&#039;GetProjectId query: &#039; + ProjectQuery);
+//   aa = connection.query(ProjectQuery, function(err, rows, fields) {
+//     if(err) {
+//       console.log(&#039;ERROR-in ProjectQuery: &#039; + err);
+//     } else {
+//       // console.log(&#039;ProjectQuery: &#039;) + ProjectQuery;
+//       // console.log(&#039;ProjectQuery rows: &#039;);
+//       // console.log(util.inspect(rows, false, null));
+//       // console.log(util.inspect(rows[0], false, null));
+//       console.log(&#039;PPP: &#039;);
+//       console.log(util.inspect(rows[0][&#039;project_id&#039;], false, null));
+//       // project_id = rows[0][&#039;project_id&#039;];
+//       // return project_id;
+//       return rows;
+//     }
+//   });
+//   // return project_id;
+//   console.log(&#039;GGG GetProjectId&#039;);
+//   console.log(&#039;aa: &#039;);
+//   console.log(util.inspect(aa, false, null));
+//   console.log(&#039;ProjectQuery rows: &#039;);
+//   console.log(util.inspect(rows, false, null));
+//   console.log(&#039;ProjectQuery fields: &#039;);
+//   console.log(util.inspect(fields, false, null));
+//
+// };
+
 MakeUpdateStatusQ = function(status_params)
 {
   var statQuery2 = &quot;UPDATE user_project_status&quot;;
@@ -597,8 +628,44 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
+// TODO:
+// MakeInsertProjectQ = function(project)
+// {
+//
+// }
+
+InsertStatusQ = function(status_params)
+{
+  var project = status_params.project;
+  var ProjectQuery = &quot;SELECT project_id FROM project&quot;;
+  ProjectQuery    += &quot; WHERE project =&#039;&quot; + project + &quot;&#039; &quot;;
+
+  console.log(&quot;ProjectQuery XXX&quot;);
+  console.log(ProjectQuery);
+
+  connection.query(ProjectQuery, function(err, rows, fields) {
+    if(err) {
+      console.log(&#039;ERROR-in ProjectQuery: &#039; + err);
+    } else {
+      project_id = rows[0][&#039;project_id&#039;];
+      var statQuery1  = &quot;INSERT IGNORE into user_project_status (user_id, project_id, status, message)&quot;;
+          statQuery1 += &quot; VALUES (&#039;&quot; + status_params.user_id + &quot;&#039;, &#039;&quot; + project_id + &quot;&#039;, &#039;&quot; + status_params.status + &quot;&#039;, &#039;&quot; + status_params.msg + &quot;&#039;)&quot;;
+      connection.query(statQuery1, function(err, rows, fields){
+        if(err) {
+          console.log(&#039;ERROR1-in status insert: &#039; + err);
+        } else {
+          console.log(&#039;status insert query1&#039;);
+          console.log(util.inspect(rows, false, null));
+        } // statQuery1 else
+      }); // connection.query(statQuery1 
+    } // connection.query(ProjectQuery else
+  }); // connection.query(ProjectQuery
+};
+
 module.exports.update_status = function(status_params) {
-  console.log(&#039;in update_status 1&#039;);
+  console.log(&#039;in update_status&#039;);
+  console.log(util.inspect(status_params, false, null));
+  
   if (status_params.type === &#039;delete&#039;) {
     statQuery = MakeDeleteStatusQ(status_params);
     console.log(&#039;in update_status, after delete_status&#039;);
@@ -608,39 +675,18 @@ module.exports.update_status = function(status_params) {
   } else if(status_params.type == &#039;update&#039;) {
     statQuery2 = MakeUpdateStatusQ(status_params);
     console.log(&#039;statQuery2: &#039; + statQuery2);
-    connection.query(statQuery2 , function(err, rows, fields){
-    if(err) {
-      console.log(&#039;ERROR2-in status update: &#039; + err);
-    } else {
-      console.log(&#039;status update2&#039;);
-    }
-  });
-
-  } else {  // Type::New
-    var statQuery1 = &#039;&#039;;
-      if(&#039;pid&#039; in status_params &amp;&amp; &#039;project&#039; in status_params){
-        statQuery1 += &quot;INSERT IGNORE into user_project_status (user_id,project,project_id,status,message)&quot;;
-        statQuery1 += &quot; VALUES (&#039;&quot;+status_params.user_id+&quot;&#039;,&#039;&quot;+status_params.project+&quot;&#039;,&#039;&quot;+status_params.pid+&quot;&#039;,&#039;&quot;+status_params.status+&quot;&#039;,&#039;&quot;+status_params.msg+&quot;&#039;)&quot;;
-      }else if(&#039;pid&#039; in status_params){
-        statQuery1 += &quot;INSERT IGNORE into user_project_status (user_id,project_id,status,message)&quot;;
-        statQuery1 += &quot; VALUES (&#039;&quot;+status_params.user_id+&quot;&#039;,&#039;&quot;+status_params.pid+&quot;&#039;,&#039;&quot;+status_params.status+&quot;&#039;,&#039;&quot;+status_params.msg+&quot;&#039;)&quot;;
-      }else if(&#039;project&#039; in status_params){
-        statQuery1 += &quot;INSERT IGNORE into user_project_status (user_id,project,status,message)&quot;;
-        statQuery1 += &quot; VALUES (&#039;&quot;+status_params.user_id+&quot;&#039;,&#039;&quot;+status_params.project+&quot;&#039;,&#039;&quot;+status_params.status+&quot;&#039;,&#039;&quot;+status_params.msg+&quot;&#039;)&quot;;
-      }else{
-        // ERROR
+    connection.query(statQuery2 , function(err, rows, fields) {
+      if(err) {
+        console.log(&#039;ERROR2-in status update: &#039; + err);
+      } else {
+        console.log(&#039;status update2&#039;);
+        console.log(util.inspect(rows, false, null));
+        //TODO: Why doesn&#039;t work?
       }
-      console.log(&#039;query1: &#039;+statQuery1);
-
-      connection.query(statQuery1 , function(err, rows, fields){
-            if(err) {
-              console.log(&#039;ERROR1-in status update: &#039;+err);
-            }else{
-              console.log(&#039;status update1&#039;);
-            }
-      });
-  }
-
+    });
+  } else {  // Type::New
+    InsertStatusQ(status_params);
+  } // Type::New
 };
 
 module.exports.assignment_finish_request = function(res, rows1, rows2, status_params) {
@@ -809,7 +855,7 @@ module.exports.get_attributes_from_hdf5_group =function(did, type) {
 };
 
 module.exports.get_PTREE_metadata = function(OBJ, q) {
-    project_list = []
+  project_list = [];
 
     OBJ.forEach(function(prj) {
       dids = DATASET_IDS_BY_PID[prj.pid];

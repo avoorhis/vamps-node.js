@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.37</p>
+      <p class="stat">54.35</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">2926</p>
+      <p class="stat">2930</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">106.24</p>
+      <p class="stat">106.06</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">41.48</p>
+      <p class="stat">41.58</p>
     </div>
   </div>
 </div>
@@ -826,7 +826,7 @@ router.get(&#039;/start_assignment/:project/:classifier_id&#039;, helpers.isLogg
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log(&#039;start: &#039; + project + &#039; - &#039; + classifier + &#039; - &#039; + ref_db_dir);
-  status_params = {&#039;type&#039;:&#039;update&#039;, &#039;user_id&#039;:req.user.user_id, &#039;project&#039;:project, &#039;status&#039;:&#039;&#039;, &#039;msg&#039;:&#039;&#039; };
+  status_params = {&#039;type&#039;: &#039;insert&#039;, &#039;user_id&#039;: req.user.user_id, &#039;project&#039;: project, &#039;status&#039;: &#039;&#039;, &#039;msg&#039;: &#039;&#039; };
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, &#039;project-&#039; + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
@@ -1589,7 +1589,10 @@ function ProjectNameExists(project, req, res)
   // console.log(&#039;BBB: ProjectNameExists: project: &#039; + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
-      req.flash(&#039;failMessage&#039;,  &#039;That project name is already taken.&#039;);
+      var project_id = helpers.GetProjectId(project)
+      console.log(&#039;BBB from ProjectNameExists: project_id: project_id &#039;);
+      console.log(util.inspect(project_id, false, null));
+      req.flash(&#039;failMessage&#039;, &#039;That project name is already taken.&#039;);
       res.redirect(&quot;/user_data/import_data?import_type=&quot;+req.body.type);
     return;
   }
@@ -1642,7 +1645,7 @@ function IsFileCompressed(file)
   return file_compressed
 }
 
-var LoadDataFinishRequest = function (req, res, project) {  
+var LoadDataFinishRequest = function (req, res, project) {
     // START STATUS //
   req.flash(&#039;successMessage&#039;,  &quot;Upload in Progress: &#039;&quot; + project + &quot;&#039;&quot;);
 
@@ -1657,7 +1660,7 @@ var LoadDataFinishRequest = function (req, res, project) {
 
 
 router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;upload_files&#039;,  12)],  function (req, res) {
-    var exec = require(&#039;child_process&#039;).exec;
+  var exec = require(&#039;child_process&#039;).exec;
   var project = helpers.clean_string(req.body.project);
   var username = req.user.username;
   console.log(&#039;1-req.body upload_data&#039;);
@@ -1677,8 +1680,11 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0])
 
-  status_params = {&#039;type&#039;:&#039;new&#039;,  &#039;user_id&#039;:req.user.user_id,
-                  &#039;project&#039;:project,  &#039;status&#039;:&#039;OK&#039;,   &#039;msg&#039;:&#039;Upload Started&#039;  };
+  status_params = {&#039;type&#039;:&#039;new&#039;,
+                   &#039;user_id&#039;: req.user.user_id,
+                   &#039;project&#039;: project,
+                   &#039;status&#039;: &#039;OK&#039;,
+                   &#039;msg&#039;: &#039;Upload Started&#039;};
   //helpers.update_status(status_params);
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
               args : [ &#039;-project_dir&#039;,  data_repository,  &#039;-owner&#039;,  username,  &#039;-p&#039;,  project,  &#039;-site&#039;,  req.CONFIG.site,  &#039;-infile&#039;, original_fastafile]
@@ -1737,14 +1743,14 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log(&#039;ensureDir err:&#039;, err);} // =&gt; null
           else {
-                  fs.chmod(data_repository,  0775,  function (err) {
+                  fs.chmod(data_repository, 0775, function (err) {
                       if (err) {
                         console.log(&#039;chmod err:&#039;, err);
                         return;
                       }
 
-                      console.log(options.scriptPath+&#039;/vamps_script_load_trimmed_data.py &#039;+options.args.join(&#039; &#039;));
-                      var load_cmd = options.scriptPath+&#039;/vamps_script_load_trimmed_data.py &#039;+options.args.join(&#039; &#039;);
+                      console.log(options.scriptPath + &#039;/vamps_script_load_trimmed_data.py &#039;+options.args.join(&#039; &#039;));
+                      var load_cmd = options.scriptPath + &#039;/vamps_script_load_trimmed_data.py &#039;+options.args.join(&#039; &#039;);
                       var cmd_list = [load_cmd];
                       if (req.body.type == &#039;multi_fasta&#039;) {
                           var new_fasta_file_name = &#039;infile.fna&#039;;
@@ -1772,9 +1778,7 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
                        var script_text = get_local_script_text(scriptlog,  &#039;local&#039;,  &#039;vampsupld&#039;,  cmd_list);
                       }
 
-
                       var script_path = path.join(data_repository,  script_name);
-
 
                       fs.writeFile(script_path,  script_text,  function (err) {
                           if (err) return console.log(err);
@@ -2322,8 +2326,8 @@ router.post(&#039;/download_selected_metadata&#039;,  helpers.isLoggedIn,  funct
         } else {
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+&#039;--&#039;+dname+&quot;\t&quot;;
-        } 
-        
+        }
+
         if(HDF5_MDATA === &#039;&#039;){
             for (var k in AllMetadata[did]){
               nm = k;
