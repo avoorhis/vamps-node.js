@@ -1549,38 +1549,47 @@ function IsFileCompressed(file)
   return file_compressed;
 }
 
-var LoadDataFinishRequest = function (req, res, project) {
-    // START STATUS //
+var LoadDataFinishRequest = function (req, res, project, display) {
+  console.log('display from LoadDataFinishRequest: ' + "display");
+  
+  // START STATUS //
   req.flash('successMessage',  "Upload in Progress: '" + project + "'");
 
   // type,  user,  project,  status,  msg
-
   res.render('success',  {  title   : 'VAMPS: Import Success',
                             message : req.flash('successMessage'),
-                            display : "Import_Success",
+                            display : display,
                             user    : req.user,  hostname: req.CONFIG.hostname
-            });
+  });
 };
 
-function UploadOptions(req, options)
-{
-    var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-                args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
-    };
-            
-    fasta_compressed = IsFileCompressed(req.files[0]);
-    if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
-    return options;
-}
+// var LoadDataFinishRequest = function () {
+//     // START STATUS //
+//     req.flash('successMessage',  "Upload in Progress");
+//
+//     // type,  user,  project,  status,  msg
+//
+//     res.render('success',  {  title   : 'VAMPS: Import Success',
+//                               message : req.flash('successMessage'),
+//                               display : "TaxBySeq_Import_Success",
+//                               user    : req.user,  hostname: req.CONFIG.hostname
+//         });
+// };
+//
+
+// function UploadOptions(req, options)
+// {
+//     options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+//                 args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+//     };
+//
+//     fasta_compressed = IsFileCompressed(req.files[0]);
+//     if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
+//     return options;
+// }
 
 function OriginalMetafileUpload(req, options)
 {
-  // console.log("In OriginalMetafileUpload. req:");
-  // console.log(util.inspect(req.CONFIG.TMP, false, null));
-  // console.log(util.inspect(req.files, false, null));
-  // console.log("OOO options:");
-  // console.log(util.inspect(options, false, null));
-  
   var original_metafile  = '';
   try {
     //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
@@ -1595,7 +1604,7 @@ function OriginalMetafileUpload(req, options)
     original_metafile  = '';
   }
   
-  return original_metafile;
+  // return original_metafile;
 }
 
 function CheckFileTypeInfo(req, options)
@@ -1651,7 +1660,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
   console.log('========');
 
-  var original_metafile = OriginalMetafileUpload(req, options);
+  OriginalMetafileUpload(req, options);
   // console.log('MMM Metadata file. options: ');
   // console.log(util.inspect(options, false, null));
   //TODO:
@@ -1688,8 +1697,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   //       res.redirect("/user_data/import_data");
   //       return;
   //   }
-    console.log('MMM CheckFileTypeInfo. options: ');
-    console.log(util.inspect(options, false, null));
+    // console.log('MMM CheckFileTypeInfo. options: ');
+    // console.log(util.inspect(options, false, null));
     // TODO: test
     // MMM CheckFileTypeInfo. options:
     // ...
@@ -1699,6 +1708,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //      'test_gast_dataset' ] }    
 
     options.args = options.args.concat(['-q' ]);   // QUIET
+    console.log('MMM options: ');
+    console.log(util.inspect(options, false, null));
 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log('ensureDir err:', err);} // => null
@@ -1726,7 +1737,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 
                       script_name = 'load_script.sh';
                       var scriptlog = "";
-                      var script_text = ""
+                      var script_text = "";
                       var nodelog = fs.openSync(path.join(data_repository, 'assignment.log'),  'a');
                       if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
                       {
@@ -1781,8 +1792,10 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                                                           'status':'LOADED',
                                                           'msg':'Project is loaded --without tax assignments'
                                             };
-                                          //helpers.update_status(status_params);
-                                          LoadDataFinishRequest(req, res, project);
+                                          helpers.update_status(status_params);
+                                          console.log('LoadDataFinishRequest in upload_data, project:');
+                                          console.log(util.inspect(project, false, null));
+                                          LoadDataFinishRequest(req, res, project, "Import_Success");
                                           console.log('Finished loading ' + project);
                                           // ();
                                      } else {
@@ -1959,24 +1972,6 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
           return;
       }
 
-      //console.log(original_fastafile);
-      //console.log(original_metafile);
-       // move files to user_data/<username>/ and rename
-      var LoadDataFinishRequest = function () {
-          // START STATUS //
-          req.flash('successMessage',  "Upload in Progress");
-
-          // type,  user,  project,  status,  msg
-
-          res.render('success',  {  title   : 'VAMPS: Import Success',
-                          message : req.flash('successMessage'),
-                          display : "TaxBySeq_Import_Success",
-                          user    : req.user,  hostname: req.CONFIG.hostname
-              });
-      };
-
-        //console.log('Moved file '+req.file.filename+ ' to '+path.join(data_dir, 'tax_by_seq.txt'))
-
         console.log(options.scriptPath+'/vamps_load_tax_by_seq.py '+options.args.join(' '));
 
         var log = fs.openSync(path.join(process.env.PWD, 'logs', 'upload_taxbyseq.log'),  'a');
@@ -2066,7 +2061,14 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
       // });  //     END move 1
 
   }
-  LoadDataFinishRequest();
+  
+  console.log('LoadDataFinishRequest in upload_data_tax_by_seq');
+  console.log(util.inspect(req, false, null));
+  console.log('---');
+  console.log(util.inspect(res, false, null));
+  console.log('---');
+  console.log(util.inspect(project, false, null));
+  LoadDataFinishRequest(req, res, project, "TaxBySeq_Import_Success");
 
 
 });
