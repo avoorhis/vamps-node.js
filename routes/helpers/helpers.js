@@ -522,8 +522,9 @@ MakeUpdateStatusQ = function(status_params)
 {
   var statQuery2 = "UPDATE user_project_status";
       statQuery2 += " JOIN project USING(project_id)";
-      statQuery2 += " SET status = '" + status_params.status;
-      statQuery2 += "', message = '"  + status_params.msg + "'";
+      statQuery2 += " SET status = '" + status_params.status + "'";
+      statQuery2 += ", message = '"  + status_params.msg + "'";
+      statQuery2 += ", updated_at = NOW()";
       statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";    
   if ('pid' in status_params && 'project' in status_params) {
       statQuery2 += "' AND project = '"  + status_params.project;
@@ -559,21 +560,28 @@ InsertStatusQ = function(status_params)
       project_id = rows[0].project_id;
       status_params.project_id = project_id
       // console.log('TTT project_id in ProjectQuery: ' + project_id);
-      var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
-          statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
+      var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, created_at, message)";      
+      statQuery1 += " VALUES ('" + status_params.user_id + "', '"
+                  + project_id + "', '"
+                  + status_params.status + "', "
+                  + "NOW(), '"
+                  + status_params.msg + "')";   
+                  
+      console.log('statQuery1: ');
+      console.log(util.inspect(statQuery1, false, null));
+       
       connection.query(statQuery1, function(err, rows){
         if(err) {
           console.log('ERROR1-in status insert: ' + err);
         } else {
-          console.log('status insert query1') + statQuery1;
           console.log(util.inspect(rows, false, null));
         } // statQuery1 else
       }); // connection.query(statQuery1 
     } // connection.query(ProjectQuery else
   }); // connection.query(ProjectQuery
-    console.log('AAA1 status_params insert query1');
-    console.log(util.inspect(status_params, false, null));
-    
+    // console.log('AAA1 status_params insert query1');
+    // console.log(util.inspect(status_params, false, null));
+    //
 };
 
 module.exports.update_status = function(status_params) {
