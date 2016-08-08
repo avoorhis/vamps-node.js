@@ -1498,7 +1498,10 @@ function ProjectNameExists(project, req, res)
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
   if (project in PROJECT_INFORMATION_BY_PNAME) {
-      req.flash('failMessage',  'That project name is already taken.');
+      var project_id = helpers.GetProjectId(project)
+      console.log('BBB from ProjectNameExists: project_id: project_id ');
+      console.log(util.inspect(project_id, false, null));
+      req.flash('failMessage', 'That project name is already taken.');
       res.redirect("/user_data/import_data?import_type="+req.body.type);
     return;
   }
@@ -1551,7 +1554,7 @@ function IsFileCompressed(file)
   return file_compressed
 }
 
-var LoadDataFinishRequest = function (req, res, project) {  
+var LoadDataFinishRequest = function (req, res, project) {
     // START STATUS //
   req.flash('successMessage',  "Upload in Progress: '" + project + "'");
 
@@ -1586,8 +1589,11 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0])
 
-  status_params = {'type':'new',  'user_id':req.user.user_id,
-                  'project':project,  'status':'OK',   'msg':'Upload Started'  };
+  status_params = {'type':'new',
+                   'user_id': req.user.user_id,
+                   'project': project,
+                   'status': 'OK',
+                   'msg': 'Upload Started'};
   //helpers.update_status(status_params);
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
@@ -2229,8 +2235,8 @@ router.post('/download_selected_metadata',  helpers.isLoggedIn,  function (req, 
         } else {
           pname = PROJECT_INFORMATION_BY_PID[PROJECT_ID_BY_DID[did]].project;
           header += pname+'--'+dname+"\t";
-        } 
-        
+        }
+
         if(HDF5_MDATA === ''){
             for (var k in AllMetadata[did]){
               nm = k;
