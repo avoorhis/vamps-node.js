@@ -688,6 +688,7 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
      });
 
 });
+
 //
 // START_ASSIGNMENT
 //
@@ -1561,6 +1562,30 @@ var LoadDataFinishRequest = function (req, res, project) {
             });
 };
 
+function OriginalMetafileUpload(req, options)
+{
+  console.log("In OriginalMetafileUpload. req:");
+  console.log(util.inspect(req.CONFIG.TMP, false, null));
+  console.log(util.inspect(req.files, false, null));
+  console.log("OOO options:");
+  console.log(util.inspect(options, false, null));
+  
+  var original_metafile  = '';
+  try {
+    //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
+    original_metafile   = path.join(req.CONFIG.TMP, req.files[1].filename);
+    options.args        = options.args.concat(['-mdfile',  original_metafile ]);
+    metadata_compressed = IsFileCompressed(req.files[1]);
+
+    if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
+  }
+  catch(err) {
+    console.log('No Metadata file: ' + err + '; Continuing on');
+    original_metafile  = '';
+  }
+  
+  return original_metafile;
+}
 
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
   var exec = require('child_process').exec;
@@ -1583,32 +1608,55 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0]);
 
-  status_params = {'type': 'new',
+  status_params = {'type'   : 'new',
                    'user_id': req.user.user_id,
                    'project': project,
-                   'status': 'OK',
-                   'msg': 'Upload Started'};
-  //helpers.update_status(status_params);
+                   'status' : 'OK',
+                   'msg'    : 'Upload Started'};
+  helpers.update_status(status_params);
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
           };
   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
 
-  var original_metafile  = '';
-  try{
-    //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
-    original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
-    options.args = options.args.concat(['-mdfile',  original_metafile ]);
-    metadata_compressed = IsFileCompressed(req.files[1]);
+  console.log('========');
 
-    if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
+  var original_metafile = OriginalMetafileUpload(req, options);
+  // try {
+  //   //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
+  //   original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
+  //   options.args = options.args.concat(['-mdfile',  original_metafile ]);
+  //   metadata_compressed = IsFileCompressed(req.files[1]);
+  //
+  //   if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
+  //
+  // }
+  // catch(err) {
+  //   console.log('No Metadata file: ' + err + '; Continuing on');
+  //   original_metafile  = '';
+  // }
 
-  }
-  catch(err) {
-    console.log('No Metadata file: ' + err + '; Continuing on');
-    original_metafile  = '';
-  }
-
+  console.log('MMM Metadata file. options: ');
+  console.log(util.inspect(options, false, null));
+  //TODO:
+  // test, should be
+//   MMM Metadata file. options:
+//   { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+//     args:
+//      [ '-project_dir',
+//        '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+//        '-owner',
+//        'admin',
+//        '-p',
+//        'test_gast_project',
+//        '-site',
+//        'local',
+//        '-infile',
+//        '/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee',
+//        '-mdfile',
+//        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
+//
+  
   if (req.body.type == 'simple_fasta') {
       if (req.body.dataset === '' || req.body.dataset === undefined) {
         req.flash('failMessage',  'A dataset name is required.');
