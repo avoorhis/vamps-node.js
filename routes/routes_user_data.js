@@ -1562,13 +1562,24 @@ var LoadDataFinishRequest = function (req, res, project) {
             });
 };
 
+function UploadOptions(req, options)
+{
+    var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+                args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+    };
+            
+    fasta_compressed = IsFileCompressed(req.files[0]);
+    if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
+    return options;
+}
+
 function OriginalMetafileUpload(req, options)
 {
-  console.log("In OriginalMetafileUpload. req:");
-  console.log(util.inspect(req.CONFIG.TMP, false, null));
-  console.log(util.inspect(req.files, false, null));
-  console.log("OOO options:");
-  console.log(util.inspect(options, false, null));
+  // console.log("In OriginalMetafileUpload. req:");
+  // console.log(util.inspect(req.CONFIG.TMP, false, null));
+  // console.log(util.inspect(req.files, false, null));
+  // console.log("OOO options:");
+  // console.log(util.inspect(options, false, null));
   
   var original_metafile  = '';
   try {
@@ -1587,9 +1598,27 @@ function OriginalMetafileUpload(req, options)
   return original_metafile;
 }
 
+function CheckFileTypeInfo(req, options)
+{
+  if (req.body.type == 'simple_fasta') {
+      if (req.body.dataset === '' || req.body.dataset === undefined) {
+        req.flash('failMessage',  'A dataset name is required.');
+        res.redirect("/user_data/import_data");
+        return;
+      }
+      options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
+    } else if (req.body.type == 'multi_fasta') {
+        options.args = options.args.concat(['-upload_type',  'multi' ]);
+    } else {
+        req.flash('failMessage',  'No file type info found');
+        res.redirect("/user_data/import_data");
+        return;
+    }
+}
+
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
-  var exec = require('child_process').exec;
-  var project = helpers.clean_string(req.body.project);
+  var exec     = require('child_process').exec;
+  var project  = helpers.clean_string(req.body.project);
   var username = req.user.username;
   console.log('1-req.body upload_data');
   console.log(req.body);
@@ -1598,15 +1627,11 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   //console.log(project);
 
   //console.log(PROJECT_INFORMATION_BY_PNAME);
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
 
   var fs_old   = require('fs');
 
   ProjectValidation(req, project, data_repository, res);
-
-  var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-  // metadata_compressed = false;
-  fasta_compressed = IsFileCompressed(req.files[0]);
 
   status_params = {'type'   : 'new',
                    'user_id': req.user.user_id,
@@ -1614,9 +1639,14 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                    'status' : 'OK',
                    'msg'    : 'Upload Started'};
   helpers.update_status(status_params);
+
+  var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
+
   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
           };
+
+  fasta_compressed = IsFileCompressed(req.files[0]);
   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
 
   console.log('========');
@@ -1643,20 +1673,30 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
 //
   
-  if (req.body.type == 'simple_fasta') {
-      if (req.body.dataset === '' || req.body.dataset === undefined) {
-        req.flash('failMessage',  'A dataset name is required.');
-        res.redirect("/user_data/import_data");
-        return;
-      }
-      options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
-    } else if (req.body.type == 'multi_fasta') {
-        options.args = options.args.concat(['-upload_type',  'multi' ]);
-    } else {
-        req.flash('failMessage',  'No file type info found');
-        res.redirect("/user_data/import_data");
-        return;
-    }
+  CheckFileTypeInfo(req, options);
+  // if (req.body.type == 'simple_fasta') {
+  //     if (req.body.dataset === '' || req.body.dataset === undefined) {
+  //       req.flash('failMessage',  'A dataset name is required.');
+  //       res.redirect("/user_data/import_data");
+  //       return;
+  //     }
+  //     options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
+  //   } else if (req.body.type == 'multi_fasta') {
+  //       options.args = options.args.concat(['-upload_type',  'multi' ]);
+  //   } else {
+  //       req.flash('failMessage',  'No file type info found');
+  //       res.redirect("/user_data/import_data");
+  //       return;
+  //   }
+    console.log('MMM CheckFileTypeInfo. options: ');
+    console.log(util.inspect(options, false, null));
+    // TODO: test
+    // MMM CheckFileTypeInfo. options:
+    // ...
+    //      '-upload_type',
+    //      'single',
+    //      '-d',
+    //      'test_gast_dataset' ] }    
 
     options.args = options.args.concat(['-q' ]);   // QUIET
 
