@@ -543,10 +543,8 @@ MakeUpdateStatusQ = function(status_params)
 //
 // }
 
-MakeInsertStatusQ = function(status_params)
+InsertStatusQ = function(status_params)
 {
-  console.log("MakeInsertStatusQ WWW");
-  console.log(util.inspect(status_params, false, null));
   var project = status_params.project;
   var ProjectQuery = "SELECT project_id FROM project";
   ProjectQuery    += " WHERE project ='" + project + "' ";
@@ -554,46 +552,28 @@ MakeInsertStatusQ = function(status_params)
   console.log("ProjectQuery XXX");
   console.log(ProjectQuery);
 
-  connection.query(ProjectQuery, function(err, rows, fields) {
+  connection.query(ProjectQuery, function(err, rows) {
     if(err) {
       console.log('ERROR-in ProjectQuery: ' + err);
     } else {
       project_id = rows[0]['project_id'];
-      console.log("WWW1 project_id = ") + project_id;
       var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
           statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
-
-      console.log("WWW2 statQuery1 = ") + statQuery1;
-
-      return statQuery1;
-    }
-  });
-  
-  // if ('project' in status_params) {
-  //   project_id = GetProjectId(status_params.project)
-  //   console.log("WWW0 project_id = ") + project_id;
-  //   console.log(util.inspect(project_id, false, null));
-  // }
-  // else
-  // {
-  //   project_id = status_params.pid
-  // }
-  // console.log("WWW1 project_id = ") + project_id;
-  //
-  // var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
-  //     statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
-  //
-  // console.log("WWW2 statQuery1 = ") + statQuery1;
-  //
-  // return statQuery1;
+      connection.query(statQuery1, function(err, rows){
+        if(err) {
+          console.log('ERROR1-in status insert: ' + err);
+        } else {
+          console.log('status insert query1');
+          console.log(util.inspect(rows, false, null));
+        } // statQuery1 else
+      }); // connection.query(statQuery1 
+    } // connection.query(ProjectQuery else
+  }); // connection.query(ProjectQuery
 };
 
 module.exports.update_status = function(status_params) {
   console.log('in update_status');
   console.log(util.inspect(status_params, false, null));
-  // project_id = GetProjectId(status_params.project)
-  // console.log("WWW111 project_id = ") + project_id;
-  //Doesn't work because asynchronous
   
   if (status_params.type === 'delete') {
     statQuery = MakeDeleteStatusQ(status_params);
@@ -614,42 +594,7 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else {  // Type::New
-    // statQuery1 = MakeInsertStatusQ(status_params);
-    // InsertStatusQ(status_params);
-    var project = status_params.project;
-    var ProjectQuery = "SELECT project_id FROM project";
-    ProjectQuery    += " WHERE project ='" + project + "' ";
-
-    console.log("ProjectQuery XXX");
-    console.log(ProjectQuery);
-
-    connection.query(ProjectQuery, function(err, rows, fields) {
-      if(err) {
-        console.log('ERROR-in ProjectQuery: ' + err);
-      } else {
-        project_id = rows[0]['project_id'];
-        console.log("WWW1 project_id = ") + project_id;
-        var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
-            statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
-
-        console.log("WWW2 statQuery1 = ") + statQuery1;
-        // console.log('statQuery1 111');
-        // console.log(statQuery1);
-        // console.log('query1: ' + statQuery1);
-
-        connection.query(statQuery1, function(err, rows, fields){
-          if(err) {
-            console.log('ERROR1-in status insert: ' + err);
-          } else {
-            console.log('status insert query1');
-            console.log(util.inspect(rows, false, null));
-          } //else
-        }); // connection.query(statQuery1 
-      } // connection.query(ProjectQuery else
-    // console.log('statQuery1 111');
-    // console.log(statQuery1);
-    // console.log('query1: ' + statQuery1);
-    }); // connection.query(ProjectQuery
+    InsertStatusQ(status_params);
   } // Type::New
 };
 
