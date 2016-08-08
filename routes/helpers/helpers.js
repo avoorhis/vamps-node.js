@@ -488,11 +488,7 @@ MakeDeleteStatusQ = function(status_params) {
   }
 };
 
-// GetProjectId = function(project) {
-module.exports.GetProjectId = function(project) {
-  console.log('GetProjectId project: ' + project);
-  console.log(util.inspect(project, false, null));
-  
+GetProjectId = function(project) {
   var ProjectQuery = "SELECT project_id FROM project";
   ProjectQuery += " WHERE project ='" + project + "' ";
   console.log('GetProjectId query: ' + ProjectQuery);
@@ -505,7 +501,7 @@ module.exports.GetProjectId = function(project) {
       // console.log(util.inspect(rows, false, null));
       // console.log(util.inspect(rows[0], false, null));
       console.log(util.inspect(rows[0]['project_id'], false, null));
-      console.log('PPP2: ');
+      console.log('PPP: ');
       project_id = rows[0]['project_id'];
       return project_id;
     }
@@ -787,4 +783,3 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     });
     return project_list;
 };
-

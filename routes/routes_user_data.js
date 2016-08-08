@@ -425,7 +425,7 @@ router.post('/validate_file',  [helpers.isLoggedIn,  upload.single('upload_file'
 router.get('/user_project_info/:id',  helpers.isLoggedIn,  function (req,  res) {
   console.log(req.params.id);
   var project = req.params.id;
-  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project, 'config.ini');
+  var config_file = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project, 'config.ini');
 
   var config = ini.parse(fs.readFileSync(config_file,  'utf-8'));
   console.log(config);
@@ -491,7 +491,6 @@ router.get('/user_project_metadata/:id',  helpers.isLoggedIn,  function (req,  r
   }
 
 });
-
 router.get('/user_project_validation/:id',  helpers.isLoggedIn,  function (req,  res) {
         // THIS IS FOR UNLOADED PROJECTS (After upload and before tax assignment)
         //will only show up if config.ini is present
@@ -689,11 +688,22 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
      });
 
 });
-
 //
 // START_ASSIGNMENT
 //
+function ProjectNameExists(project_name) {
+  if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
+  {
+    console.log('This project name is already taken AAA');
+    return true;
+  }
+  else
+  {
+    console.log('Project name validated');
+    return false;
+  }
 
+}
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -1470,114 +1480,6 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 //
 //  UPLOAD DATA
 //
-
-// function handleResultset (err, result) {
-//     var i, len;
-//     if (err) {
-//         throw err;
-//     }
-//     len = result.length;
-//     for (i = 0; i < len; i += 1) {
-//         console.log("SSS result[i]");
-//         console.log(result[i]);
-//     }
-//     console.log("AFTER AAA");
-// }
-//
-// function ProjectIdIsInDB(project, req, res)
-// {
-//   var ProjectQuery = "SELECT project_id FROM project";
-//   ProjectQuery += " WHERE project ='" + project + "' ";
-//   console.log('GetProjectId query: ' + ProjectQuery);
-//
-//   connection.query(ProjectQuery, handleResultset)
-  // var lock = 1;
-  // var result = {};
-  // result.project_ids_arr = [];
-  // // http://stackoverflow.com/questions/6597493/synchronous-database-queries-with-node-js
-  // // var finishRequest = function() {
-  // //     res.render('home.ejs', {layout: false, locals: { user_name: user_array, title: title_array }});
-  // // }
-  //
-  //   var finishRequest = function() {
-  //     console.log('WWW result = ');
-  //     console.log(util.inspect(result, false, null));
-  //   }
-  //
-  //   var ProjectQuery = "SELECT project_id FROM project";
-  //   ProjectQuery += " WHERE project ='" + project + "' ";
-  //   console.log('GetProjectId query: ' + ProjectQuery);
-  //
-    // db.execute(sql)
-//     .addListener('row', function(r) {
-//         user_array.push( { user_name: r.user_name } );
-//     })
-//     .addListener('result', function(r) {
-//         req.session.user_array = user_array;
-//         lock -= 1;
-//
-//         if (lock === 0) {
-//           finishRequest();
-//         }
-//     });
-    
-    
-    // connection.query(ProjectQuery, function(err, rows, fields) {
-    //   if(err) {
-    //     console.log('ERROR-in ProjectQuery: ' + err);
-    //   } else {
-    //     // console.log('ProjectQuery: ') + ProjectQuery;
-    //     console.log('ProjectQuery rows: ');
-    //     console.log(util.inspect(rows, false, null));
-    //     // console.log(util.inspect(rows[0], false, null));
-    //     // console.log(util.inspect(rows[0]['project_id'], false, null));
-    //     console.log('PPP1: ');
-    //     // project_id = rows[0]['project_id'];
-    //     // return project_id;
-    //   }
-    // }).addListener('row', function(r) {
-    //     project_ids_arr.push( { project_id: r.project_id } );
-    //     console.log('JJJ ProjectQuery project_ids_arr: ');
-    //     console.log(util.inspect(project_ids_arr, false, null));
-    //
-    // }).addListener('result', function(r) {
-    //     console.log('JJJ1 ProjectQuery req: ');
-    //     console.log(util.inspect(req, false, null));
-    //     req.session.project_ids_arr = project_ids_arr;
-    //     lock -= 1;
-    //     console.log('JJJ2 ProjectQuery lock: ');
-    //     console.log(util.inspect(lock, false, null));
-    //
-    //     if (lock === 0) {
-    //       finishRequest();
-    //     }
-    // });
-    //
-    // ;
-  // project_id = helpers.GetProjectId(project);
-  // console.log('WWW project_id = ' + project_id);
-  
-  // if (project === '' || req.body.project === undefined) {
-  //   req.flash('failMessage',  'A project name is required.');
-  //   res.redirect("/user_data/import_data?import_type=" + req.body.type);
-  //   return;
-  // }
-// }
-
-function ProjectIdIsInDB(project, req, res)
-{
-  if (project_id === undefined) {
-    project_id = helpers.GetProjectId(project);
-    console.log('WWW project_id = ' + project_id);
-  }
-  // module.exports.GetProjectId
-  // project_id = helpers.handleResultset(project);
-  // console.log('DDD project_id = ' + project_id);
-  else {
-    console.log('DDD project_id = ' + project_id);
-  }
-}
-
 // TODO: Andy, how to make it fail? For testing?
 function ProjectNameGiven(project, req, res)
 {
@@ -1588,19 +1490,17 @@ function ProjectNameGiven(project, req, res)
   }
 }
 
-// TODO: we should be able to add and process datasets to an existing project!
-function ProjectNameExists(project, req, res) {
-  if (project in PROJECT_INFORMATION_BY_PNAME)
-  {
-    req.flash('failMessage', 'That project name is already taken.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    console.log('This project name is already taken');
-    return true;
-  }
-  else
-  {
-    console.log('Project name validated');
-    return false;
+function ProjectNameExists(project, req, res)
+{
+  // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
+  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  //
+  // console.log('BBB: ProjectNameExists: project: ' + project);
+
+  if (project in PROJECT_INFORMATION_BY_PNAME) {
+      req.flash('failMessage',  'That project name is already taken.');
+      res.redirect("/user_data/import_data?import_type="+req.body.type);
+    return;
   }
 }
 
@@ -1633,7 +1533,6 @@ function MetadataFileExists(req, res)
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  // ProjectIdIsInDB(project);
   ProjectNameGiven(project, req, res);
   ProjectNameExists(project, req, res);
   FastaExists(req, res);
@@ -1671,44 +1570,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var project = helpers.clean_string(req.body.project);
   var username = req.user.username;
   console.log('1-req.body upload_data');
-  console.log("req.body: ");
   console.log(req.body);
-  console.log("req.files: ");
   console.log(req.files);
-
-  var exec = require('child_process').exec;
-  var project = helpers.clean_string(req.body.project);
-  console.log("EEE1 project_id");
-  console.log("req.body.project: ");
-  console.log(req.body.project);
-
-  console.log("project: ");
-  console.log(project);
-  
-  // var project_id = helpers.GetProjectId(project); 
-  var ProjectQuery = "SELECT project_id FROM project";
-  ProjectQuery += " WHERE project ='" + project + "' ";
-  console.log('GetProjectId query: ' + ProjectQuery);
-  var connection.query(ProjectQuery, function(err, rows, fields) {
-    if(err) {
-      console.log('ERROR-in ProjectQuery: ' + err);
-    } else {
-      // console.log('ProjectQuery: ') + ProjectQuery;
-      // console.log('ProjectQuery rows: ');
-      // console.log(util.inspect(rows, false, null));
-      // console.log(util.inspect(rows[0], false, null));
-      console.log(util.inspect(rows[0]['project_id'], false, null));
-      console.log('PPP2: ');
-      project_id = rows[0]['project_id'];
-      return project_id;
-    }
-  });
-  
-  console.log("EEE2 project_id");
-  // console.log(project_id);
-  console.log(util.inspect(project_id, false, null));
-  
-  var username = req.user.username;
   console.log('2-req.body upload_data');
   //console.log(project);
 
@@ -1783,14 +1646,14 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log('ensureDir err:', err);} // => null
           else {
-                  fs.chmod(data_repository,  0775,  function (err) {
+                  fs.chmod(data_repository, 0775, function (err) {
                       if (err) {
                         console.log('chmod err:', err);
                         return;
                       }
 
-                      console.log(options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' '));
-                      var load_cmd = options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' ');
+                      console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' '));
+                      var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' ');
                       var cmd_list = [load_cmd];
                       if (req.body.type == 'multi_fasta') {
                           var new_fasta_file_name = 'infile.fna';
@@ -1818,9 +1681,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                        var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
                       }
 
-
                       var script_path = path.join(data_repository,  script_name);
-
 
                       fs.writeFile(script_path,  script_text,  function (err) {
                           if (err) return console.log(err);
@@ -3064,4 +2925,3 @@ function get_qsub_script_text2(log,  pwd,  site,  name,  cmd_list) {
 //
 
 module.exports = router;
-
