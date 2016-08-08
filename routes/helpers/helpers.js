@@ -488,61 +488,28 @@ MakeDeleteStatusQ = function(status_params) {
   }
 };
 
-module.exports.handleResultset = function(result) {
-    // console.log("err from handleResultset");
-    // console.log(util.inspect(err, false, null));
-    console.log("result from handleResultset");
-    console.log(util.inspect(result, false, null));
-    
-    var i, len;
-    // if (err) {
-    //   console.log('ERROR-in ProjectQuery: ' + err);
-    //   throw err;
-    // }
-    // len = result.length;
-    // for (i = 0; i < len; i += 1) {
-    //     console.log("SSS result[i]");
-    //     console.log(result[i]);
-    // }
-    console.log("AAA AFTER handleResultset");
-    return result;
-}
-
-// function ProjectIdIsInDB(project, req, res)
-// {
-//   var ProjectQuery = "SELECT project_id FROM project";
-//   ProjectQuery += " WHERE project ='" + project + "' ";
-//   console.log('GetProjectId query: ' + ProjectQuery);
-//
-//   connection.query(ProjectQuery, handleResultset)
 // GetProjectId = function(project) {
-  
 module.exports.GetProjectId = function(project) {
+  console.log('GetProjectId project: ' + project);
+  console.log(util.inspect(project, false, null));
+  
   var ProjectQuery = "SELECT project_id FROM project";
   ProjectQuery += " WHERE project ='" + project + "' ";
   console.log('GetProjectId query: ' + ProjectQuery);
-
-  aa = connection.query(ProjectQuery, handleResultset(result));
-  console.log('aa: ');
-  console.log(util.inspect(aa, false, null));
-
-  // var ProjectQuery = "SELECT project_id FROM project";
-  // ProjectQuery += " WHERE project ='" + project + "' ";
-  // console.log('GetProjectId query: ' + ProjectQuery);
-  // connection.query(ProjectQuery, function(err, rows, fields) {
-  //   if(err) {
-  //     console.log('ERROR-in ProjectQuery: ' + err);
-  //   } else {
-  //     // console.log('ProjectQuery: ') + ProjectQuery;
-  //     // console.log('ProjectQuery rows: ');
-  //     // console.log(util.inspect(rows, false, null));
-  //     // console.log(util.inspect(rows[0], false, null));
-  //     console.log(util.inspect(rows[0]['project_id'], false, null));
-  //     console.log('PPP: ');
-  //     project_id = rows[0]['project_id'];
-  //     return project_id;
-  //   }
-  // });
+  connection.query(ProjectQuery, function(err, rows, fields) {
+    if(err) {
+      console.log('ERROR-in ProjectQuery: ' + err);
+    } else {
+      // console.log('ProjectQuery: ') + ProjectQuery;
+      // console.log('ProjectQuery rows: ');
+      // console.log(util.inspect(rows, false, null));
+      // console.log(util.inspect(rows[0], false, null));
+      console.log(util.inspect(rows[0]['project_id'], false, null));
+      console.log('PPP2: ');
+      project_id = rows[0]['project_id'];
+      return project_id;
+    }
+  });
 };
 
 MakeUpdateStatusQ = function(status_params)

@@ -1566,8 +1566,16 @@ router.post('/upload_metadata',  [helpers.isLoggedIn,  upload.single('upload_fil
 
 function ProjectIdIsInDB(project, req, res)
 {
-  project_id = helpers.handleResultset(project);
-  console.log('DDD project_id = ' + project_id);  
+  if (project_id === undefined) {
+    project_id = helpers.GetProjectId(project);
+    console.log('WWW project_id = ' + project_id);
+  }
+  // module.exports.GetProjectId
+  // project_id = helpers.handleResultset(project);
+  // console.log('DDD project_id = ' + project_id);
+  else {
+    console.log('DDD project_id = ' + project_id);
+  }
 }
 
 // TODO: Andy, how to make it fail? For testing?
@@ -1625,7 +1633,7 @@ function MetadataFileExists(req, res)
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  ProjectIdIsInDB(project);
+  // ProjectIdIsInDB(project);
   ProjectNameGiven(project, req, res);
   ProjectNameExists(project, req, res);
   FastaExists(req, res);
@@ -1659,12 +1667,46 @@ var LoadDataFinishRequest = function (req, res, project) {
 
 
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
+  console.log('1-req.body upload_data');
+  console.log("req.body: ");
+  console.log(req.body);
+  console.log("req.files: ");
+  console.log(req.files);
+
   var exec = require('child_process').exec;
   var project = helpers.clean_string(req.body.project);
+  console.log("EEE1 project_id");
+  console.log("req.body.project: ");
+  console.log(req.body.project);
+
+  console.log("project: ");
+  console.log(project);
+  
+  // var project_id = helpers.GetProjectId(project); 
+  var ProjectQuery = "SELECT project_id FROM project";
+  ProjectQuery += " WHERE project ='" + project + "' ";
+  console.log('GetProjectId query: ' + ProjectQuery);
+  var project_id = connection.query(ProjectQuery, function(err, rows, fields) {
+    if(err) {
+      console.log('ERROR-in ProjectQuery: ' + err);
+    } else {
+      // console.log('ProjectQuery: ') + ProjectQuery;
+      // console.log('ProjectQuery rows: ');
+      // console.log(util.inspect(rows, false, null));
+      // console.log(util.inspect(rows[0], false, null));
+      console.log('PPP1: rows[0]["project_id"]');
+      console.log(util.inspect(rows[0]['project_id'], false, null));
+      console.log('PPP2: ');
+      project_id = rows[0]['project_id'];
+      return project_id;
+    }
+  });
+  
+  console.log("EEE2 project_id");
+  // console.log(project_id);
+  console.log(util.inspect(project_id, false, null));
+  
   var username = req.user.username;
-  console.log('1-req.body upload_data');
-  console.log(req.body);
-  console.log(req.files);
   console.log('2-req.body upload_data');
   //console.log(project);
 
