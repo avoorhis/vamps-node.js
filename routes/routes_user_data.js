@@ -1667,6 +1667,9 @@ var LoadDataFinishRequest = function (req, res, project) {
 
 
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
+  var exec = require('child_process').exec;
+  var project = helpers.clean_string(req.body.project);
+  var username = req.user.username;
   console.log('1-req.body upload_data');
   console.log("req.body: ");
   console.log(req.body);
@@ -1686,7 +1689,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var ProjectQuery = "SELECT project_id FROM project";
   ProjectQuery += " WHERE project ='" + project + "' ";
   console.log('GetProjectId query: ' + ProjectQuery);
-  var project_id = connection.query(ProjectQuery, function(err, rows, fields) {
+  var connection.query(ProjectQuery, function(err, rows, fields) {
     if(err) {
       console.log('ERROR-in ProjectQuery: ' + err);
     } else {
@@ -1694,7 +1697,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
       // console.log('ProjectQuery rows: ');
       // console.log(util.inspect(rows, false, null));
       // console.log(util.inspect(rows[0], false, null));
-      console.log('PPP1: rows[0]["project_id"]');
       console.log(util.inspect(rows[0]['project_id'], false, null));
       console.log('PPP2: ');
       project_id = rows[0]['project_id'];
@@ -1781,14 +1783,14 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log('ensureDir err:', err);} // => null
           else {
-                  fs.chmod(data_repository, 0775, function (err) {
+                  fs.chmod(data_repository,  0775,  function (err) {
                       if (err) {
                         console.log('chmod err:', err);
                         return;
                       }
 
-                      console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' '));
-                      var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' ');
+                      console.log(options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' '));
+                      var load_cmd = options.scriptPath+'/vamps_script_load_trimmed_data.py '+options.args.join(' ');
                       var cmd_list = [load_cmd];
                       if (req.body.type == 'multi_fasta') {
                           var new_fasta_file_name = 'infile.fna';
@@ -1816,7 +1818,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                        var script_text = get_local_script_text(scriptlog,  'local',  'vampsupld',  cmd_list);
                       }
 
+
                       var script_path = path.join(data_repository,  script_name);
+
 
                       fs.writeFile(script_path,  script_text,  function (err) {
                           if (err) return console.log(err);
