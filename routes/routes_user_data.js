@@ -691,19 +691,7 @@ router.get('/assign_taxonomy/:project/',  helpers.isLoggedIn,   function (req, r
 //
 // START_ASSIGNMENT
 //
-// function ProjectNameExists(project_name) {
-//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-//   {
-//     console.log('This project name is already taken AAA');
-//     return true;
-//   }
-//   else
-//   {
-//     console.log('Project name validated');
-//     return false;
-//   }
-//
-// }
+
 
 //router.get('/start_assignment/:project/:classifier/:ref_db', helpers.isLoggedIn, function (req, res) {
 router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, function (req, res) {
@@ -736,6 +724,7 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
   status_params = {'type': 'insert', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
+  // status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 

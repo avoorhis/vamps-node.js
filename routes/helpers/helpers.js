@@ -556,8 +556,8 @@ InsertStatusQ = function(status_params)
     if(err) {
       console.log('ERROR-in ProjectQuery: ' + err);
     } else {
-      // project_id = rows[0]['project_id'];
       project_id = rows[0].project_id;
+      status_params.project_id = project_id
       // console.log('TTT project_id in ProjectQuery: ' + project_id);
       var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, message)";
           statQuery1 += " VALUES ('" + status_params.user_id + "', '" + project_id + "', '" + status_params.status + "', '" + status_params.msg + "')";
@@ -565,12 +565,15 @@ InsertStatusQ = function(status_params)
         if(err) {
           console.log('ERROR1-in status insert: ' + err);
         } else {
-          console.log('status insert query1');
+          console.log('status insert query1') + statQuery1;
           console.log(util.inspect(rows, false, null));
         } // statQuery1 else
       }); // connection.query(statQuery1 
     } // connection.query(ProjectQuery else
   }); // connection.query(ProjectQuery
+    console.log('AAA1 status_params insert query1');
+    console.log(util.inspect(status_params, false, null));
+    
 };
 
 module.exports.update_status = function(status_params) {
@@ -602,6 +605,9 @@ module.exports.update_status = function(status_params) {
     });
   } else {  // Type::New
     InsertStatusQ(status_params);
+    console.log('AAA2 status_params insert query1');
+    console.log(util.inspect(status_params, false, null));
+    
   } // Type::New
 };
 
