@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">54.26</p>
+      <p class="stat">54.37</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">2947</p>
+      <p class="stat">2960</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">106.20</p>
+      <p class="stat">106.09</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">41.45</p>
+      <p class="stat">41.66</p>
     </div>
   </div>
 </div>
@@ -671,7 +671,7 @@ router.get(&#039;/delete_project/:project/:kind&#039;,  helpers.isLoggedIn,   fu
           var last_line = ary[ary.length - 1];
           if (code === 0) {
            //console.log(&#039;PID last line: &#039;+last_line)
-              status_params = {&#039;type&#039;:&#039;delete&#039;,  &#039;user_id&#039;:req.user.user_id,
+              status_params = {&#039;type&#039;: &#039;delete&#039;,  &#039;user_id&#039;:req.user.user_id,
                                 &#039;project&#039;:project,  &#039;status&#039;:&#039;delete&#039;,   &#039;msg&#039;:&#039;delete&#039; };
               helpers.update_status(status_params );
           } else {
@@ -779,22 +779,11 @@ router.get(&#039;/assign_taxonomy/:project/&#039;,  helpers.isLoggedIn,   functi
      });
 
 });
+
 //
 // START_ASSIGNMENT
 //
-// function ProjectNameExists(project_name) {
-//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-//   {
-//     console.log(&#039;This project name is already taken AAA&#039;);
-//     return true;
-//   }
-//   else
-//   {
-//     console.log(&#039;Project name validated&#039;);
-//     return false;
-//   }
-//
-// }
+
 
 //router.get(&#039;/start_assignment/:project/:classifier/:ref_db&#039;, helpers.isLoggedIn, function (req, res) {
 router.get(&#039;/start_assignment/:project/:classifier_id&#039;, helpers.isLoggedIn, function (req, res) {
@@ -812,21 +801,11 @@ router.get(&#039;/start_assignment/:project/:classifier_id&#039;, helpers.isLogg
   // /RDP/GG_MAY2013&quot;&gt;Assign Taxonomy - RDP (GreenGenes May2013)&lt;/a&gt;&lt;/li&gt;
   // /RDP/ITS1&quot;
 
-  // if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
-  // {
-  //   console.log(&#039;This project name is already taken&#039;);
-  //   return;
-  // }
-  // else
-  // {
-  //   console.log(&#039;Project name validated&#039;);
-  // }
-  //var classifier = req.params.classifier;
   var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log(&#039;start: &#039; + project + &#039; - &#039; + classifier + &#039; - &#039; + ref_db_dir);
-  status_params = {&#039;type&#039;: &#039;insert&#039;, &#039;user_id&#039;: req.user.user_id, &#039;project&#039;: project, &#039;status&#039;: &#039;&#039;, &#039;msg&#039;: &#039;&#039; };
+  status_params = {&#039;type&#039;: &#039;update&#039;, &#039;user_id&#039;: req.user.user_id, &#039;project&#039;: project, &#039;status&#039;: &#039;&#039;, &#039;msg&#039;: &#039;&#039; };
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, &#039;project-&#039; + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
@@ -1661,67 +1640,41 @@ function IsFileCompressed(file)
   return file_compressed;
 }
 
-var LoadDataFinishRequest = function (req, res, project) {
-    // START STATUS //
+var LoadDataFinishRequest = function (req, res, project, display) {
+  console.log(&#039;display from LoadDataFinishRequest: &#039; + &quot;display&quot;);
+  
+  // START STATUS //
   req.flash(&#039;successMessage&#039;,  &quot;Upload in Progress: &#039;&quot; + project + &quot;&#039;&quot;);
 
   // type,  user,  project,  status,  msg
-
   res.render(&#039;success&#039;,  {  title   : &#039;VAMPS: Import Success&#039;,
                             message : req.flash(&#039;successMessage&#039;),
-                            display : &quot;Import_Success&quot;,
+                            display : display,
                             user    : req.user,  hostname: req.CONFIG.hostname
-            });
+  });
 };
 
-
-router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;upload_files&#039;,  12)],  function (req, res) {
-  var exec = require(&#039;child_process&#039;).exec;
-  var project = helpers.clean_string(req.body.project);
-  var username = req.user.username;
-  console.log(&#039;1-req.body upload_data&#039;);
-  console.log(req.body);
-  console.log(req.files);
-  console.log(&#039;2-req.body upload_data&#039;);
-  //console.log(project);
-
-  //console.log(PROJECT_INFORMATION_BY_PNAME);
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, &#039;project-&#039;+project);
-
-  var fs_old   = require(&#039;fs&#039;);
-
-  ProjectValidation(req, project, data_repository, res);
-
-  var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-  // metadata_compressed = false;
-  fasta_compressed = IsFileCompressed(req.files[0]);
-
-  status_params = {&#039;type&#039;:&#039;new&#039;,
-                   &#039;user_id&#039;: req.user.user_id,
-                   &#039;project&#039;: project,
-                   &#039;status&#039;: &#039;OK&#039;,
-                   &#039;msg&#039;: &#039;Upload Started&#039;};
-  //helpers.update_status(status_params);
-  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-              args : [ &#039;-project_dir&#039;,  data_repository,  &#039;-owner&#039;,  username,  &#039;-p&#039;,  project,  &#039;-site&#039;,  req.CONFIG.site,  &#039;-infile&#039;, original_fastafile]
-          };
-  if (fasta_compressed) options.args = options.args.concat([&#039;-fa_comp&#039; ]);
-
+function OriginalMetafileUpload(req, options)
+{
   var original_metafile  = &#039;&#039;;
-  try{
+  try {
     //original_metafile  = path.join(process.env.PWD,  &#039;tmp&#039;, req.files[1].filename);
-    original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
-    options.args = options.args.concat([&#039;-mdfile&#039;,  original_metafile ]);
+    original_metafile   = path.join(req.CONFIG.TMP, req.files[1].filename);
+    options.args        = options.args.concat([&#039;-mdfile&#039;,  original_metafile ]);
     metadata_compressed = IsFileCompressed(req.files[1]);
 
     if (metadata_compressed) options.args = options.args.concat([&#039;-md_comp&#039; ]);
-
   }
   catch(err) {
     console.log(&#039;No Metadata file: &#039; + err + &#039;; Continuing on&#039;);
     original_metafile  = &#039;&#039;;
   }
+  
+  // return original_metafile;
+}
 
+function CheckFileTypeInfo(req, options)
+{
   if (req.body.type == &#039;simple_fasta&#039;) {
       if (req.body.dataset === &#039;&#039; || req.body.dataset === undefined) {
         req.flash(&#039;failMessage&#039;,  &#039;A dataset name is required.&#039;);
@@ -1736,25 +1689,93 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
         res.redirect(&quot;/user_data/import_data&quot;);
         return;
     }
+}
+
+router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;upload_files&#039;,  12)],  function (req, res) {
+  var exec     = require(&#039;child_process&#039;).exec;
+  var project  = helpers.clean_string(req.body.project);
+  var username = req.user.username;
+  console.log(&#039;1-req.body upload_data&#039;);
+  console.log(req.body);
+  console.log(req.files);
+  console.log(&#039;2-req.body upload_data&#039;);
+  //console.log(project);
+
+  //console.log(PROJECT_INFORMATION_BY_PNAME);
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, &#039;project-&#039; + project);
+
+  var fs_old   = require(&#039;fs&#039;);
+
+  ProjectValidation(req, project, data_repository, res);
+
+  status_params = {&#039;type&#039;   : &#039;new&#039;,
+                   &#039;user_id&#039;: req.user.user_id,
+                   &#039;project&#039;: project,
+                   &#039;status&#039; : &#039;OK&#039;,
+                   &#039;msg&#039;    : &#039;Upload Started&#039;};
+  helpers.update_status(status_params);
+
+  var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
+
+  var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+              args : [ &#039;-project_dir&#039;,  data_repository,  &#039;-owner&#039;,  username,  &#039;-p&#039;,  project,  &#039;-site&#039;,  req.CONFIG.site,  &#039;-infile&#039;, original_fastafile]
+          };
+
+  fasta_compressed = IsFileCompressed(req.files[0]);
+  if (fasta_compressed) options.args = options.args.concat([&#039;-fa_comp&#039; ]);
+
+  console.log(&#039;========&#039;);
+
+  OriginalMetafileUpload(req, options);
+  // console.log(&#039;MMM Metadata file. options: &#039;);
+  // console.log(util.inspect(options, false, null));
+  //TODO:
+  // test, should be
+//   MMM Metadata file. options:
+//   { scriptPath: &#039;/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/&#039;,
+//     args:
+//      [ &#039;-project_dir&#039;,
+//        &#039;/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project&#039;,
+//        &#039;-owner&#039;,
+//        &#039;admin&#039;,
+//        &#039;-p&#039;,
+//        &#039;test_gast_project&#039;,
+//        &#039;-site&#039;,
+//        &#039;local&#039;,
+//        &#039;-infile&#039;,
+//        &#039;/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee&#039;,
+//        &#039;-mdfile&#039;,
+//        &#039;/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613&#039; ] }
+//
+  
+  CheckFileTypeInfo(req, options);
+  // if (req.body.type == &#039;simple_fasta&#039;) {
+  //     if (req.body.dataset === &#039;&#039; || req.body.dataset === undefined) {
+  //       req.flash(&#039;failMessage&#039;,  &#039;A dataset name is required.&#039;);
+  //       res.redirect(&quot;/user_data/import_data&quot;);
+  //       return;
+  //     }
+  //     options.args = options.args.concat([&#039;-upload_type&#039;,  &#039;single&#039;,  &#039;-d&#039;,  req.body.dataset ]);
+  //   } else if (req.body.type == &#039;multi_fasta&#039;) {
+  //       options.args = options.args.concat([&#039;-upload_type&#039;,  &#039;multi&#039; ]);
+  //   } else {
+  //       req.flash(&#039;failMessage&#039;,  &#039;No file type info found&#039;);
+  //       res.redirect(&quot;/user_data/import_data&quot;);
+  //       return;
+  //   }
+    // console.log(&#039;MMM CheckFileTypeInfo. options: &#039;);
+    // console.log(util.inspect(options, false, null));
+    // TODO: test
+    // MMM CheckFileTypeInfo. options:
+    // ...
+    //      &#039;-upload_type&#039;,
+    //      &#039;single&#039;,
+    //      &#039;-d&#039;,
+    //      &#039;test_gast_dataset&#039; ] }    
 
     options.args = options.args.concat([&#039;-q&#039; ]);   // QUIET
-
-    //console.log(original_fastafile);
-    //console.log(original_metafile);
-     // move files to user_data/&lt;username&gt;/ and rename
-    // var LoadDataFinishRequest = function () {
-    //     // START STATUS //
-    //     req.flash(&#039;successMessage&#039;,  &quot;Upload in Progress: &#039;&quot;+ project+&quot;&#039;&quot;);
-    //
-    //     // type,  user,  project,  status,  msg
-    //
-    //     res.render(&#039;success&#039;,  {  title   : &#039;VAMPS: Import Success&#039;,
-    //                       message : req.flash(&#039;successMessage&#039;),
-    //                             display : &quot;Import_Success&quot;,
-    //                           user    : req.user,  hostname: req.CONFIG.hostname
-    //               });
-    // };
-    // MOVE FILES: Using python to move files rather than node.js:::
+    console.log(&#039;MMM options: &#039;);
+    console.log(util.inspect(options, false, null));
 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log(&#039;ensureDir err:&#039;, err);} // =&gt; null
@@ -1781,18 +1802,19 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
 
 
                       script_name = &#039;load_script.sh&#039;;
-                      var scriptlog = &quot;&quot;
+                      var scriptlog = &quot;&quot;;
+                      var script_text = &quot;&quot;;
                       var nodelog = fs.openSync(path.join(data_repository, &#039;assignment.log&#039;),  &#039;a&#039;);
                       if (req.CONFIG.dbhost == &#039;vampsdev&#039; || req.CONFIG.dbhost == &#039;vampsdb&#039;)
                       {
                        scriptlog = path.join(data_repository,  &#039;cluster.log&#039;);
                        //var script_text = get_qsub_script_text(scriptlog,  data_dir,  req.CONFIG.dbhost,  classifier,  cmd_list)
-                       var script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  &#039;vampsupld&#039;,  cmd_list);
+                       script_text = get_qsub_script_text(scriptlog,  data_repository,  req.CONFIG.dbhost,  &#039;vampsupld&#039;,  cmd_list);
                       }
                       else
                       {
                        scriptlog = path.join(data_repository,  &#039;script.log&#039;);
-                       var script_text = get_local_script_text(scriptlog,  &#039;local&#039;,  &#039;vampsupld&#039;,  cmd_list);
+                       script_text = get_local_script_text(scriptlog,  &#039;local&#039;,  &#039;vampsupld&#039;,  cmd_list);
                       }
 
                       var script_path = path.join(data_repository,  script_name);
@@ -1836,8 +1858,10 @@ router.post(&#039;/upload_data&#039;,  [helpers.isLoggedIn,  upload.array(&#039;
                                                           &#039;status&#039;:&#039;LOADED&#039;,
                                                           &#039;msg&#039;:&#039;Project is loaded --without tax assignments&#039;
                                             };
-                                          //helpers.update_status(status_params);
-                                          LoadDataFinishRequest(req, res, project);
+                                          helpers.update_status(status_params);
+                                          console.log(&#039;LoadDataFinishRequest in upload_data, project:&#039;);
+                                          console.log(util.inspect(project, false, null));
+                                          LoadDataFinishRequest(req, res, project, &quot;Import_Success&quot;);
                                           console.log(&#039;Finished loading &#039; + project);
                                           // ();
                                      } else {
@@ -2014,24 +2038,6 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,   [helpers.isLoggedIn,  upload.
           return;
       }
 
-      //console.log(original_fastafile);
-      //console.log(original_metafile);
-       // move files to user_data/&lt;username&gt;/ and rename
-      var LoadDataFinishRequest = function () {
-          // START STATUS //
-          req.flash(&#039;successMessage&#039;,  &quot;Upload in Progress&quot;);
-
-          // type,  user,  project,  status,  msg
-
-          res.render(&#039;success&#039;,  {  title   : &#039;VAMPS: Import Success&#039;,
-                          message : req.flash(&#039;successMessage&#039;),
-                          display : &quot;TaxBySeq_Import_Success&quot;,
-                          user    : req.user,  hostname: req.CONFIG.hostname
-              });
-      };
-
-        //console.log(&#039;Moved file &#039;+req.file.filename+ &#039; to &#039;+path.join(data_dir, &#039;tax_by_seq.txt&#039;))
-
         console.log(options.scriptPath+&#039;/vamps_load_tax_by_seq.py &#039;+options.args.join(&#039; &#039;));
 
         var log = fs.openSync(path.join(process.env.PWD, &#039;logs&#039;, &#039;upload_taxbyseq.log&#039;),  &#039;a&#039;);
@@ -2121,7 +2127,14 @@ router.post(&#039;/upload_data_tax_by_seq&#039;,   [helpers.isLoggedIn,  upload.
       // });  //     END move 1
 
   }
-  LoadDataFinishRequest();
+  
+  console.log(&#039;LoadDataFinishRequest in upload_data_tax_by_seq&#039;);
+  // console.log(util.inspect(req, false, null));
+  // console.log(&#039;---&#039;);
+  // console.log(util.inspect(res, false, null));
+  // console.log(&#039;---&#039;);
+  console.log(util.inspect(project, false, null));
+  LoadDataFinishRequest(req, res, project, &quot;TaxBySeq_Import_Success&quot;);
 
 
 });

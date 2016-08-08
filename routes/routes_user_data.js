@@ -1563,31 +1563,6 @@ var LoadDataFinishRequest = function (req, res, project, display) {
   });
 };
 
-// var LoadDataFinishRequest = function () {
-//     // START STATUS //
-//     req.flash('successMessage',  "Upload in Progress");
-//
-//     // type,  user,  project,  status,  msg
-//
-//     res.render('success',  {  title   : 'VAMPS: Import Success',
-//                               message : req.flash('successMessage'),
-//                               display : "TaxBySeq_Import_Success",
-//                               user    : req.user,  hostname: req.CONFIG.hostname
-//         });
-// };
-//
-
-// function UploadOptions(req, options)
-// {
-//     options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-//                 args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
-//     };
-//
-//     fasta_compressed = IsFileCompressed(req.files[0]);
-//     if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
-//     return options;
-// }
-
 function OriginalMetafileUpload(req, options)
 {
   var original_metafile  = '';
@@ -2063,10 +2038,10 @@ router.post('/upload_data_tax_by_seq',   [helpers.isLoggedIn,  upload.array('upl
   }
   
   console.log('LoadDataFinishRequest in upload_data_tax_by_seq');
-  console.log(util.inspect(req, false, null));
-  console.log('---');
-  console.log(util.inspect(res, false, null));
-  console.log('---');
+  // console.log(util.inspect(req, false, null));
+  // console.log('---');
+  // console.log(util.inspect(res, false, null));
+  // console.log('---');
   console.log(util.inspect(project, false, null));
   LoadDataFinishRequest(req, res, project, "TaxBySeq_Import_Success");
 
