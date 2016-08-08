@@ -580,7 +580,7 @@ router.get('/delete_project/:project/:kind',  helpers.isLoggedIn,   function (re
           var last_line = ary[ary.length - 1];
           if (code === 0) {
            //console.log('PID last line: '+last_line)
-              status_params = {'type':'delete',  'user_id':req.user.user_id,
+              status_params = {'type': 'delete',  'user_id':req.user.user_id,
                                 'project':project,  'status':'delete',   'msg':'delete' };
               helpers.update_status(status_params );
           } else {
@@ -709,22 +709,11 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
   // /RDP/GG_MAY2013">Assign Taxonomy - RDP (GreenGenes May2013)</a></li>
   // /RDP/ITS1"
 
-  // if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project))
-  // {
-  //   console.log('This project name is already taken');
-  //   return;
-  // }
-  // else
-  // {
-  //   console.log('Project name validated');
-  // }
-  //var classifier = req.params.classifier;
   var classifier = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].method;
   //var ref_db_dir = req.params.ref_db;
   var ref_db_dir = req.CONSTS.UNIT_ASSIGNMENT_CHOICES[classifier_id].refdb;
   console.log('start: ' + project + ' - ' + classifier + ' - ' + ref_db_dir);
-  status_params = {'type': 'delete', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
-  // status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
+  status_params = {'type': 'update', 'user_id': req.user.user_id, 'project': project, 'status': '', 'msg': '' };
   var data_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
   var qsub_script_path = req.CONFIG.PATH_TO_NODE_SCRIPTS;
 
@@ -1594,7 +1583,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   // metadata_compressed = false;
   fasta_compressed = IsFileCompressed(req.files[0]);
 
-  status_params = {'type':'new',
+  status_params = {'type': 'new',
                    'user_id': req.user.user_id,
                    'project': project,
                    'status': 'OK',

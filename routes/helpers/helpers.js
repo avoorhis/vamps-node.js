@@ -557,7 +557,8 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else {  // Type::New
-    // InsertStatusQ(status_params);
+      // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
+      // name="A", age=19
     statQuery1 = MakeInsertStatusQ(status_params);
     console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {
@@ -568,9 +569,7 @@ module.exports.update_status = function(status_params) {
         console.log(util.inspect(rows, false, null));
         //TODO: Why doesn't work?
       }
-    console.log('AAA2 status_params insert query1');
-    console.log(util.inspect(status_params, false, null));
-  });
+    });
   } // Type::New
 };
 
