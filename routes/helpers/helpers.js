@@ -479,7 +479,8 @@ module.exports.get_status = function(user, project){
 MakeDeleteStatusQ = function(status_params) {
   console.log('in delete_status');
   if (status_params.type === 'delete') {
-    var statQuery = "DELETE from user_project_status";
+    var statQuery = "DELETE user_project_status";
+        statQuery += " FROM user_project_status";
         statQuery += " JOIN project USING(project_id)";
         statQuery += " WHERE user_id ='" + status_params.user_id + "' ";
         statQuery += " AND   project ='" + status_params.project + "' ";
@@ -487,7 +488,6 @@ MakeDeleteStatusQ = function(status_params) {
     return statQuery;
   }
 };
-
 
 MakeUpdateStatusQ = function(status_params)
 {
@@ -518,7 +518,7 @@ MakeUpdateStatusQ = function(status_params)
 MakeInsertStatusQ = function(status_params)
 {
   var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";      
-  // statQuery1 += "SELECT user_id, project_id, status, message, NOW() ";
+  // "SELECT user_id, project_id, status, message, NOW() ";
   statQuery1 += " SELECT "  + status_params.user_id;
   statQuery1 += ", project_id";
   statQuery1 += ", '"  + status_params.status + "'";
@@ -526,64 +526,8 @@ MakeInsertStatusQ = function(status_params)
   statQuery1 += ", NOW()";  
   statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
   statQuery1 += " WHERE project = " + "'" + status_params.project + "'";
-              
-  // var statQuery2 = "UPDATE user_project_status";
-  //     statQuery2 += " JOIN project USING(project_id)";
-  //     statQuery2 += " SET status = '" + status_params.status + "'";
-  //     statQuery2 += ", message = '"  + status_params.msg + "'";
-  //     statQuery2 += ", updated_at = NOW()";
-  //     statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";
-  // if ('pid' in status_params && 'project' in status_params) {
-  //     statQuery2 += "' AND project = '"  + status_params.project;
-  // }
-  // else if ('pid' in status_params) {
-  //     statQuery1 += "' and project_id = '" + status_params.pid + "'";
-  // }
-  // else {
-  // //ERROR
-  // }
   return statQuery1;
 };
-
-// InsertStatusQ = function(status_params)
-// {
-//   var project = status_params.project;
-//   var ProjectQuery = "SELECT project_id FROM project";
-//   ProjectQuery    += " WHERE project ='" + project + "' ";
-//
-//   console.log("ProjectQuery XXX");
-//   console.log(ProjectQuery);
-//
-//   connection.query(ProjectQuery, function(err, rows) {
-//     if(err) {
-//       console.log('ERROR-in ProjectQuery: ' + err);
-//     } else {
-//       project_id = rows[0].project_id;
-//       status_params.project_id = project_id
-//       // console.log('TTT project_id in ProjectQuery: ' + project_id);
-//       var statQuery1  = "INSERT IGNORE into user_project_status (user_id, project_id, status, created_at, message)";
-//       statQuery1 += " VALUES ('" + status_params.user_id + "', '"
-//                   + project_id + "', '"
-//                   + status_params.status + "', "
-//                   + "NOW(), '"
-//                   + status_params.msg + "')";
-//
-//       console.log('statQuery1: ');
-//       console.log(util.inspect(statQuery1, false, null));
-//
-//       connection.query(statQuery1, function(err, rows){
-//         if(err) {
-//           console.log('ERROR1-in status insert: ' + err);
-//         } else {
-//           console.log(util.inspect(rows, false, null));
-//         } // statQuery1 else
-//       }); // connection.query(statQuery1
-//     } // connection.query(ProjectQuery else
-//   }); // connection.query(ProjectQuery
-//     // console.log('AAA1 status_params insert query1');
-//     // console.log(util.inspect(status_params, false, null));
-//     //
-// };
 
 module.exports.update_status = function(status_params) {
   console.log('in update_status');
