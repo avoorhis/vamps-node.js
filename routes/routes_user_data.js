@@ -1622,22 +1622,8 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   console.log('========');
 
   var original_metafile = OriginalMetafileUpload(req, options);
-  // try {
-  //   //original_metafile  = path.join(process.env.PWD,  'tmp', req.files[1].filename);
-  //   original_metafile  = path.join(req.CONFIG.TMP, req.files[1].filename);
-  //   options.args = options.args.concat(['-mdfile',  original_metafile ]);
-  //   metadata_compressed = IsFileCompressed(req.files[1]);
-  //
-  //   if (metadata_compressed) options.args = options.args.concat(['-md_comp' ]);
-  //
-  // }
-  // catch(err) {
-  //   console.log('No Metadata file: ' + err + '; Continuing on');
-  //   original_metafile  = '';
-  // }
-
-  console.log('MMM Metadata file. options: ');
-  console.log(util.inspect(options, false, null));
+  // console.log('MMM Metadata file. options: ');
+  // console.log(util.inspect(options, false, null));
   //TODO:
   // test, should be
 //   MMM Metadata file. options:
@@ -1673,23 +1659,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     }
 
     options.args = options.args.concat(['-q' ]);   // QUIET
-
-    //console.log(original_fastafile);
-    //console.log(original_metafile);
-     // move files to user_data/<username>/ and rename
-    // var LoadDataFinishRequest = function () {
-    //     // START STATUS //
-    //     req.flash('successMessage',  "Upload in Progress: '"+ project+"'");
-    //
-    //     // type,  user,  project,  status,  msg
-    //
-    //     res.render('success',  {  title   : 'VAMPS: Import Success',
-    //                       message : req.flash('successMessage'),
-    //                             display : "Import_Success",
-    //                           user    : req.user,  hostname: req.CONFIG.hostname
-    //               });
-    // };
-    // MOVE FILES: Using python to move files rather than node.js:::
 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log('ensureDir err:', err);} // => null
