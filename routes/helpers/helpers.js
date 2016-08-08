@@ -488,22 +488,22 @@ MakeDeleteStatusQ = function(status_params) {
   }
 };
 
-module.exports.handleResultset = function(err, result) {
-    console.log("err from handleResultset");
-    console.log(util.inspect(err, false, null));
+module.exports.handleResultset = function(result) {
+    // console.log("err from handleResultset");
+    // console.log(util.inspect(err, false, null));
     console.log("result from handleResultset");
     console.log(util.inspect(result, false, null));
     
     var i, len;
-    if (err) {
-      console.log('ERROR-in ProjectQuery: ' + err);
-      throw err;
-    }
-    len = result.length;
-    for (i = 0; i < len; i += 1) {
-        console.log("SSS result[i]");
-        console.log(result[i]);
-    }
+    // if (err) {
+    //   console.log('ERROR-in ProjectQuery: ' + err);
+    //   throw err;
+    // }
+    // len = result.length;
+    // for (i = 0; i < len; i += 1) {
+    //     console.log("SSS result[i]");
+    //     console.log(result[i]);
+    // }
     console.log("AAA AFTER handleResultset");
     return result;
 }
@@ -522,7 +522,7 @@ module.exports.GetProjectId = function(project) {
   ProjectQuery += " WHERE project ='" + project + "' ";
   console.log('GetProjectId query: ' + ProjectQuery);
 
-  aa = connection.query(ProjectQuery, handleResultset(err, result));
+  aa = connection.query(ProjectQuery, handleResultset(result));
   console.log('aa: ');
   console.log(util.inspect(aa, false, null));
 
