@@ -20,19 +20,19 @@ var request = require('supertest'),
 
 describe('<<< MenuBar functionality >>>', function(){
 	it('link to the VAMPS Home page', function(done){
-
+    done();
 	});
 	it('link to the Overview page', function(done){
-		
+    done();		
 	});
 	it('link to the Visualizations page', function(done){
-		
+    done();
 	});
 	it('link to the Your Data page', function(done){
-		
+    done();		
 	});
 	it('link to the Search page', function(done){
-		
+    done();
 	});
 
 	it('link to the login page', function(done){

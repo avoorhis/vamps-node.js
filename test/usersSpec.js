@@ -28,7 +28,7 @@ var helpers = require('../routes/helpers/helpers');
 describe('<<< Login page functionality >>>', function(){
   before(function (done) {
     connection = require('../config/database-test');
-    
+
     connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
     });
@@ -51,7 +51,7 @@ describe('<<< Login page functionality >>>', function(){
             done();
           });
       }
-    ], done);
+    ], done());
   });
 
   it('Text on login page', function(done){
@@ -67,9 +67,9 @@ describe('<<< Login page functionality >>>', function(){
   });
 
   it('Able to login with user "TEST"', function(done){
-    
-    
-    
+
+
+
     request(app)
       .post('/users/login')
       .send({ username: app.testuser.user, password: app.testuser.pass})
@@ -80,13 +80,13 @@ describe('<<< Login page functionality >>>', function(){
         console.log(res.header.location)
         res.header.location.should.containEql('/users/profile');
         res.header.location.should.not.containEql('login');
-        
+
         connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
           if (err) {throw err;}
         });
         done();
       });
-      
+
     });
 
 
@@ -114,7 +114,7 @@ describe('<<< Login page functionality >>>', function(){
 //         console.log(res);
 //         res.header.location.should.containEql('/');
 //         res.header.location.should.not.containEql('login');
-// 
+//
 //         if (err) return done(err);
 //         // request(app)
 //         //   .get('/')
@@ -131,7 +131,7 @@ describe('<<< Login page functionality >>>', function(){
   it('should log the user out', function (done) {
     var passportStub = require('passport-stub');
     passportStub.install(app);
-    
+
     passportStub.login({
       username: app.testuser.user, password: app.testuser.pass
     });
@@ -143,7 +143,7 @@ describe('<<< Login page functionality >>>', function(){
       // console.log(res);
       // console.log("===22===");
       res.text.should.containEql(app.testuser.user);
-      
+
       request(app)
         .get('/users/logout')
         .expect(302)
@@ -154,7 +154,7 @@ describe('<<< Login page functionality >>>', function(){
           res.header.location.should.not.containEql('login');
 
           if (err) return done(err);
-          
+
           request(app)
             .get('/')
             .end(function (err, res) {
@@ -162,7 +162,7 @@ describe('<<< Login page functionality >>>', function(){
             // console.log(res);
             // console.log("===11===");
             res.text.should.not.containEql(app.testuser.user);
-          
+
           // request(app)
           //   .get('/')
           //   .end(function (err, res) {
@@ -173,9 +173,9 @@ describe('<<< Login page functionality >>>', function(){
             });
         });
         done();
-      
+
     });
-    
+
   });
 
 /**

@@ -13,10 +13,10 @@ describe('visualization functionality:', function(){
 
 		before(function() {
 	    // In our tests we use the test db
-	    //mongoose.connect(config.db.mongodb);              
+	    //mongoose.connect(config.db.mongodb);
 	    this.server = http.createServer(app).listen(3001);
 	    this.browser = new Browser({ debug: true, site: 'http://localhost:3001' });
-	    
+	
 	  });
 	  // load the contact page
 	  beforeEach(function(done) {
@@ -38,7 +38,7 @@ describe('visualization functionality:', function(){
 		 //      // http://zombie.labnotes.org/
 		 //      assert.equal(window.location.pathname, "/visuals/index_visuals");
 		 //      //assert.equal(browser.text('div.alert'), 'Please choose some data');
-		 //    }).then(done,done);
+		 //    }).then(donedone());
 		 //  });
 	  	//
 	  	//

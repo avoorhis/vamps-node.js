@@ -12,11 +12,11 @@ req = request(app);
 // beforeEach
 // before(function(done) {
 //     console.log('Unlog before function');
-//     passportStub.logout();    
+//     passportStub.logout();
 // });
 
 describe('Profile page functionality', function(){
-  
+
   it('redirect to / if not logged in', function(done){
 
     req
@@ -27,10 +27,10 @@ describe('Profile page functionality', function(){
         done();
       });
   });
-  
+
   it('responds with 200 when logged in', function(done) {
     passportStub.login({
-      username: 'TEST', password: 'TEST'    
+      username: 'TEST', password: 'TEST'
     });
 
     req
@@ -44,9 +44,9 @@ describe('Profile page functionality', function(){
         res.text.should.containEql('TEST');
         done();
       });
-    
+
     // passportStub.logout();
   });
-  
-  
+
+
 });

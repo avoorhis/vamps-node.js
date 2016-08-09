@@ -11,12 +11,12 @@ var passportStub = require('passport-stub');
 process.env.NODE_ENV = 'test';
 
 beforeEach(function() {
-  passportStub.logout();    
+  passportStub.logout();
 });
 
 before(function() {
 
-  // passportStub.logout();    
+  // passportStub.logout();
 
   /*jshint multistr: true */
   connection.query("CREATE TABLE IF NOT EXISTS user (\

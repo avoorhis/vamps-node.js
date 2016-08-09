@@ -30,13 +30,13 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
-  
+
     before(function (done) {
         test_name_hash = {}
         test_name_hash.name = []
         test_name_hash.ids  = []
         test_selection_obj  = {}
-        
+
         connection = require('../config/database-test');
         var q = "SELECT dataset, dataset_id from dataset where dataset in ('"+test_datasets.join("','")+"')"
         console.log(q)
@@ -66,16 +66,14 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           username: app.testuser.user, password: app.testuser.pass
         });
         //this.timeout(10000);
-        done()
-                 
-          
+        done();
     });
 
     // VISUALS INDEX (Dataset Selection Page)
     it('should have certain text', function(done){
         //var body = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
         var reqbody_vindex = { chosen_id_name_hash:test_name_hash, selection_obj:test_selection_obj, title:'mytitle' };
-        //this.timeout(5000);     
+        //this.timeout(5000);
         request(app)
           .post('/visuals/visuals_index')
           .send(reqbody_vindex)
@@ -86,7 +84,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           });
     })
 
-      
+
       // UNIT_SELECTION PAGE
     it('should show one or more datasets in selected datasets list as well as certain metadata', function(done){
       var reqbody_uselect = { dataset_ids:JSON.stringify(test_name_hash.ids),retain_data:'1',Next2:'Next: Unit Selection2' };
@@ -106,7 +104,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           res.text.should.containEql('envo_biome');
           res.text.should.containEql('envo_material');
           done();
-        
+
         });
     });
     //
@@ -125,7 +123,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           .end(function (err, res) {
             this.timeout(5000);
             res.text.should.containEql('Taxonomic Depth: family');
-            
+
             //res.text.should.containEql('Taxonomic Depth: species');
             done();
           });
@@ -148,12 +146,11 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           });
     });
 
-  
-});  
+});
 
 
 //describe('visuals_index', function(){
-      
+
 
 //});
 
@@ -196,11 +193,11 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
 //         });
 //           this.timeout(5000);
 //         done()
-        
-              
-          
+
+
+
 //     });
-    
+
 //     it('should show one or more datasets in selected datasets list', function(done){
 //       var body = { chosen_id_name_hash:JSON.stringify(test_name_hash), selection_obj:test_selection_obj, title:'mytitle', constants:'', md_cust:'',md_req:'' };
 //       request(app)
@@ -209,18 +206,18 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
 //       .expect(200)
 //       .end(function (err, res) {
 //         if (err) { throw new Error(err); }
-        
+
 //           body.title.should.containEql('mytitle');
 //           body.chosen_id_name_hash.ids.should.not.equal([]);
 //           res.text.should.containEql(test_name_hash.ids[0]);
 //           res.text.should.containEql(test_name_hash.name[0]);
-          
+
 //           done();
-        
+
 //       });
 //     });
 // });
-    
+
   //   it('The Submit button should return with an alert error if no Display_Output checkboxes are checked', function(done){
   //     var body = { };
   //     request(app)
@@ -232,7 +229,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
   //         throw new Error(err);
   //       }
   //       else {
-          
+
   //         done();
   //       }
   //     });

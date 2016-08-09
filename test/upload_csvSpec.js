@@ -287,7 +287,7 @@ describe('csv_metadata_model', function(){
         results.message.should.equal(res_message);
       }        
       
-      // done();
+      done();
     });
     
     connection.query('SHOW TABLES LIKE "custom_metadata_18"', function(err, results1){
@@ -297,6 +297,7 @@ describe('csv_metadata_model', function(){
         results1[0]['Tables_in_vamps_js_testing (custom_metadata_18)'].should.equal('custom_metadata_18');
         done();
     });      
+    done();
   });
 
 

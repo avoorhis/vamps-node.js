@@ -109,7 +109,7 @@ describe('Form page functionality', function(){
 //             done();
 //           });
 //       }
-//     ], done);
+//     ],done());
 //   });
 //
 //   it('Text on form page', function(done){

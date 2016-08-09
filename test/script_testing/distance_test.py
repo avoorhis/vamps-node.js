@@ -32,24 +32,24 @@ d = [ 0.25973117,  0.51919205,  0.59291318 ]
 
 # dm2:  JSON
     # {
-    #     'ICM_LCY_Bv6--test_ds1': 
-    #         {'ICM_LCY_Bv6--test_ds1': 0.0, 'ICM_LCY_Bv6--test_ds2': 0.25973116774012883, 'ICM_LCY_Bv6--test_ds3': 0.51919205254298817}, 
-    #     'ICM_LCY_Bv6--test_ds2': 
-    #         {'ICM_LCY_Bv6--test_ds1': 0.25973116774012883, 'ICM_LCY_Bv6--test_ds2': 0.0, 'ICM_LCY_Bv6--test_ds3': 0.59291318280599659}, 
-    #     'ICM_LCY_Bv6--test_ds3': 
+    #     'ICM_LCY_Bv6--test_ds1':
+    #         {'ICM_LCY_Bv6--test_ds1': 0.0, 'ICM_LCY_Bv6--test_ds2': 0.25973116774012883, 'ICM_LCY_Bv6--test_ds3': 0.51919205254298817},
+    #     'ICM_LCY_Bv6--test_ds2':
+    #         {'ICM_LCY_Bv6--test_ds1': 0.25973116774012883, 'ICM_LCY_Bv6--test_ds2': 0.0, 'ICM_LCY_Bv6--test_ds3': 0.59291318280599659},
+    #     'ICM_LCY_Bv6--test_ds3':
     #         {'ICM_LCY_Bv6--test_ds1': 0.51919205254298817, 'ICM_LCY_Bv6--test_ds2': 0.59291318280599659, 'ICM_LCY_Bv6--test_ds3': 0.0}
     # }
 
     # # dm3:   NOT good JSON, but works with pycogent
     # {
-    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds2'): 0.59291318280599659, 
-    #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds3'): 0.59291318280599659, 
-    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds3'): 0.0, 
-    #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds2'): 0.0, 
-    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds1'): 0.51919205254298817, 
-    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds1'): 0.0, 
-    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds2'): 0.25973116774012883, 
-    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds3'): 0.51919205254298817, 
+    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds2'): 0.59291318280599659,
+    #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds3'): 0.59291318280599659,
+    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds3'): 0.0,
+    #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds2'): 0.0,
+    #     ('ICM_LCY_Bv6--test_ds3', 'ICM_LCY_Bv6--test_ds1'): 0.51919205254298817,
+    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds1'): 0.0,
+    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds2'): 0.25973116774012883,
+    #     ('ICM_LCY_Bv6--test_ds1', 'ICM_LCY_Bv6--test_ds3'): 0.51919205254298817,
     #     ('ICM_LCY_Bv6--test_ds2', 'ICM_LCY_Bv6--test_ds1'): 0.25973116774012883
     # }
 
@@ -65,7 +65,7 @@ def test_distance_dist1():
 		args = TestArgs1('./test_matrix.biom','bray_curtis','json','./','pfx','dist')
 		( dm1, dist, dm2, dm3, datasets ) = TEST_SCRIPT.go_distance(args)
 		
-		assert( round(dist[0],8) == 0.25973117 ) 
+		assert( round(dist[0],8) == 0.25973117 )
 
 def test_distance_dist2():
 		args = TestArgs1('./test_matrix.biom','bray_curtis','json','./','pfx','dist')
@@ -111,4 +111,4 @@ def test_distance_remove_zero_rows():
 		(mtx, bad_rows) = TEST_SCRIPT.remove_zero_sum_datasets(mtx)
 		assert(len(mtx)    == 3 )
 
-		 
+		

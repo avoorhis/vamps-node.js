@@ -8,7 +8,7 @@ var async = require('async'),
 
     app = require('../app')
 
-    
+
     //connection = require('../config/database-test');
 
 //passportStub.install(app)
@@ -17,7 +17,7 @@ process.env.NODE_ENV = 'test';
 describe('<<< Sessions >>>', function() {
   var login_profile = {  // need test login here
                 username: 'TEST',
-                password: 'TEST',                
+                password: 'TEST',
               };
   var signup_profile = {
                 username: 'username',
@@ -71,7 +71,7 @@ describe('<<< Sessions >>>', function() {
 //           .send(profile)
 //           .end(function(err,res){
 //               if(err)
-//                 {       
+//                 {
 //                   console.log(err);
 //                 }
 //               console.log(res.request._data);
@@ -82,23 +82,23 @@ describe('<<< Sessions >>>', function() {
 //           });
 
 //     });
-    
 
- 
+
+
   // it 'responds with 401 if not logged in', (done) ->
   //   req.get('/admin').expect(401).end done
- 
+
   // it 'responds with 200 when logged in', (done) ->
   //   passportStub.login username: 'john.doe'
   //   req.get('/admin').expect(200).end done
-  
+
   // it('responds with 401 if not logged in', function(done){
   //     request(app)
   //     .get('/admin/admin_index').expect(401)
   //     .end(function (err, res) {
-               
+
   //       done();
-  //     });       
+  //     });
   // });
 
   // it('responds with 200 when logged in', function(done){
@@ -106,9 +106,9 @@ describe('<<< Sessions >>>', function() {
   //     .get('/admin/admin_index')
   //     .end(function (err, res) {
   //       passportStub.login({username: 'john.doe'})
-        
+
   //       done();
-  //     });      
+  //     });
   // });
 
 //});

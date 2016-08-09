@@ -11,7 +11,7 @@ var app = require('../app')
 
 
 describe('<<< Home page functionality >>>', function(){
-  
+
 
   it('Text of home page', function(done){
     request(app)
@@ -23,7 +23,7 @@ describe('<<< Home page functionality >>>', function(){
       });
   });
 
-  
+
 
   it('Link to Learn-more', function(done){
     request(app)
