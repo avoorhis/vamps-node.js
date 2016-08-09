@@ -28,7 +28,7 @@ describe('<<< Sessions >>>', function() {
                 userinstitution: 'institution'
               };
   it('Should create a session', function(done) {
-    agent.post('/users/login')
+    agent.get('/users/login')
     .send(login_profile)
     .end(function(err, res) {
       if (err) console.log('error' + err.message);

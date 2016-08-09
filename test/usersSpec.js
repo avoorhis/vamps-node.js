@@ -7,7 +7,8 @@ var async = require('async'),
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
-
+var passportStub = require('passport-stub');
+var util = require('util');
 
 // describe('Users page functionality', function(){
 
@@ -26,7 +27,10 @@ var helpers = require('../routes/helpers/helpers');
 // });
 
 describe('<<< Login page functionality >>>', function(){
+  
   before(function (done) {
+    passportStub.install(app);
+    
     connection = require('../config/database-test');
 
     connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
@@ -70,13 +74,17 @@ describe('<<< Login page functionality >>>', function(){
   it('Able to login with user "TEST"', function(done){
 
     request(app)
-      .post('/users/login')
+      .get('/users/login')
       .send({ username: app.testuser.user, password: app.testuser.pass})
       .expect(302)
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
-        console.log(res.header.location)
+        // console.log("AAA app.testuser");
+        // console.log(util.inspect(app.testuser, false, null));
+        // console.log(res.header.location);
+        console.log("res.header.location: ");
+        console.log(res.header.location);
         res.header.location.should.containEql('/users/profile');
         res.header.location.should.not.containEql('login');
 
