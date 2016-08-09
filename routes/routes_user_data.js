@@ -563,15 +563,10 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
       var output = '';
       delete_process.stdout.on('data', function (data) {
         //console.log('stdout: ' + data);
-        data = data.toString().replace(/^\s+|\s+$/g, '');
+        // data = data.toString().replace(/^\s+|\s+$/g, '');
+        data = data.toString().trim();
         output += data;
-        var lines = data.split('\n');
-        for (var n in lines) {
-          //console.log('line: ' + lines[n]);
-        if (lines[n].substring(0, 4) == 'PID=') {
-          console.log('pid line '+lines[n]);
-        }
-        }
+        CheckIfPID(data);
       });
 
       delete_process.on('close', function (code) {
@@ -851,17 +846,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
         var output = '';
         run_process.stdout.on('data', function (data) {
           //console.log('stdout: ' + data);
-          data = data.toString().replace(/^\s + |\s + $/g, '');
+          // data = data.toString().replace(/^\s + |\s + $/g, '');
+          data = data.toString().trim();
           output += data;
-          var lines = data.split('\n');
-          for (var n in lines)
-          {
-            //console.log('line: ' + lines[n]);
-            if (lines[n].substring(0, 4) == 'PID=')
-            {
-              console.log('pid line ' + lines[n]);
-            }
-          }
+          CheckIfPID(data);
         });
         run_process.on('close', function (code) {
           console.log('run_process process exited with code ' + code);
@@ -1404,7 +1392,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 					  // for(var n in lines){
 					  // 	//console.log('line: ' + lines[n]);
 							// if(lines[n].substring(0,4) == 'PID='){
-							// 	console.log('pid line '+lines[n]);
+							// 	console.log('pid line ' + lines[n]);
 							// }
 					  // }
 					});
@@ -1711,11 +1699,10 @@ function CheckIfPID(data)
 {
   console.log("FFF In CheckIfPID");
   var lines = data.split('\n');
-  data.split('\n');
   for (var n in lines) {
-    console.log('EEE line: ' + lines[n]);
+  // console.log('line: ' + lines[n]);
     if (lines[n].substring(0, 4) == 'PID=') {
-        console.log('pid line ' + lines[n]);
+    console.log('pid line ' + lines[n]);
     }
   }
 }
@@ -1822,22 +1809,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
                     var output = '';
 
-                    // TODO: Andy, what it is doing? Can we move it to a function?
                     run_process.stdout.on('data', function (data) {
                       data = data.toString().trim();
                       // console.log('SSS2 stdout: _' + data + "_");
                       output += data;
                       CheckIfPID(data);
-                      
-                      // console.log("=======");
-                      // var lines = data.split('\n');
-                      // data.split('\n');
-                      // for (var n in lines) {
-                      //   console.log('NNN line: ' + lines[n]);
-                      //   if (lines[n].substring(0, 4) == 'PID=') {
-                      //       console.log('pid line ' + lines[n]);
-                      //   }
-                      // }
                     });
 
                     run_process.on('close', function (code) {
@@ -2052,15 +2028,10 @@ router.post('/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload
         // use looging in the script to log to a file.
         tax_by_seq_process.stdout.on('data', function (data) {
             //console.log('Processing data');
-            data = data.toString().replace(/^\s+|\s+$/g, '');
+            // data = data.toString().replace(/^\s+|\s+$/g, '');
+            data = data.toString().trim();
             output += data;
-            var lines = data.split('\n');
-            for (var n in lines) {
-              //console.log('line: ' + lines[n]);
-              if (lines[n].substring(0, 4) == 'PID=') {
-                console.log('pid line '+lines[n]);
-              }
-            }
+            CheckIfPID(data);
         });
         tax_by_seq_process.on('close', function (code) {
            console.log('tax_by_seq_process exited with code ' + code);
