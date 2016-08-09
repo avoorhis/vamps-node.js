@@ -1795,21 +1795,6 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
           var script_vars = GetScriptVars(req, data_repository, cmd_list);
           var scriptlog   = script_vars[0];
           var script_text = script_vars[1];
-          
-          // if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-          // {
-          //  scriptlog = path.join(data_repository, 'cluster.log');
-          //  //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-          //  script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list);
-          // }
-          // else
-          // {
-          //  scriptlog = path.join(data_repository, 'script.log');
-          //  script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
-          // }
-          // console.log('111 scriptlog: ' + scriptlog);
-          // console.log('222 script_text: ' + script_text);
-          // console.log('222 =====');
           // TODO: test:
 // 111 scriptlog: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/script.log
 // 222 script_text: #!/bin/sh

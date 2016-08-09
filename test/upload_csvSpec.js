@@ -96,7 +96,7 @@ describe('csv_metadata_model', function(){
         //   });
         });
       }
-    ], done);
+    ], done());
 
     // csv_metadata_db.get_dataset_ids(project, datasets, function work_with_dataset_id(err, results)
     // {
@@ -155,10 +155,9 @@ describe('csv_metadata_model', function(){
           done();
         });
       }
-    ], done);
+    ], done());
 
   });
-
 
   it('insert_required_field_names', function (done) {
     req_fields = [ 'altitude',
@@ -198,7 +197,7 @@ describe('csv_metadata_model', function(){
           done();
         });
       }
-    ], done);
+    ], done());
 
   });
 
@@ -226,7 +225,7 @@ describe('csv_metadata_model', function(){
         //   });
         });
       }
-    ], done);
+    ], done());
   });
 
 
@@ -436,7 +435,7 @@ describe('csv_metadata_model', function(){
           done();
         });
       }
-    ], done);
+    ], done());
 
   });
 

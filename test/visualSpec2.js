@@ -20,7 +20,7 @@ describe('visualization functionality:', function(){
 	  });
 	  // load the contact page
 	  beforeEach(function(done) {
-	    this.browser.visit('/visuals/index_visuals', done);
+	    this.browser.visit('/visuals/index_visuals', done());
 	  });
 	  //
 	  //
@@ -56,13 +56,13 @@ describe('visualization functionality:', function(){
 			      assert.equal('xx', "yy");
 			      console.log('see me2');
 			      //done();
-		    	}).then(done, done);
+		    	}).then(done(), done());
 		  });
 
 	 	});  // END describe index_visuals
 
 	  after(function(done) {
-	    this.server.close(done);
+	    this.server.close(done());
 	  });
 
 });

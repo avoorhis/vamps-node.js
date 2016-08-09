@@ -69,6 +69,9 @@
     "selenium-webdriver": "",
     "should": "",
     "supertest": "",
-    "zombie": ""
+    "zombie": "",
+    "chai": "",
+    "superagent": "",
+    "sinon": ""
   }
 }
