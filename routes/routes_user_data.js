@@ -771,8 +771,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 
     //run_cmd = options.scriptPath + '/vamps_script_gast_run.py ' + options.gast_run_args.join(' '),
     script_name = 'gast_script.sh';
-    status_params.statusOK = 'OK-GAST';status_params.statusSUCCESS = 'GAST-SUCCESS';
-    status_params.msgOK = 'Finished GAST';status_params.msgSUCCESS = 'GAST -Tax assignments';
+    status_params.statusOK = 'OK-GAST';
+    status_params.statusSUCCESS = 'GAST-SUCCESS';
+    status_params.msgOK = 'Finished GAST';
+    status_params.msgSUCCESS = 'GAST -Tax assignments';
     cmd_list = [
         //unique_cmd,
         project_init,
@@ -800,8 +802,10 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
       rdp_cmd4 = options.scriptPath + '/vamps_script_create_json_dataset_files.py -project_dir ' + data_dir + ' -p ' + project + ' -site ' + req.CONFIG.site + ' --jsonfile_dir ' + req.CONFIG.JSON_FILES_BASE;
 
       script_name = 'rdp_script.sh';
-      status_params.statusOK = 'OK-RDP';status_params.statusSUCCESS = 'RDP-SUCCESS';
-      status_params.msgOK = 'Finished RDP';status_params.msgSUCCESS = 'RDP -Tax assignments';
+      status_params.statusOK = 'OK-RDP';
+      status_params.statusSUCCESS = 'RDP-SUCCESS';
+      status_params.msgOK = 'Finished RDP';
+      status_params.msgSUCCESS = 'RDP -Tax assignments';
       cmd_list = [ rdp_cmd1, rdp_cmd2, rdp_cmd3, rdp_cmd4 ];
   }
 
@@ -1600,9 +1604,8 @@ function CheckFileTypeInfo(req, options)
     }
 }
 
-router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
-  var exec     = require('child_process').exec;
-  var project  = helpers.clean_string(req.body.project);
+function CreateUploadOptions(req, res, project)
+{
   var username = req.user.username;
   console.log('1-req.body upload_data');
   console.log(req.body);
@@ -1633,7 +1636,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   fasta_compressed = IsFileCompressed(req.files[0]);
   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
 
-  console.log('========');
+  // console.log('========');
 
   OriginalMetafileUpload(req, options);
   // console.log('MMM Metadata file. options: ');
@@ -1658,20 +1661,6 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
 //
   
   CheckFileTypeInfo(req, options);
-  // if (req.body.type == 'simple_fasta') {
-  //     if (req.body.dataset === '' || req.body.dataset === undefined) {
-  //       req.flash('failMessage',  'A dataset name is required.');
-  //       res.redirect("/user_data/import_data");
-  //       return;
-  //     }
-  //     options.args = options.args.concat(['-upload_type',  'single',  '-d',  req.body.dataset ]);
-  //   } else if (req.body.type == 'multi_fasta') {
-  //       options.args = options.args.concat(['-upload_type',  'multi' ]);
-  //   } else {
-  //       req.flash('failMessage',  'No file type info found');
-  //       res.redirect("/user_data/import_data");
-  //       return;
-  //   }
     // console.log('MMM CheckFileTypeInfo. options: ');
     // console.log(util.inspect(options, false, null));
     // TODO: test
@@ -1683,8 +1672,105 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
     //      'test_gast_dataset' ] }    
 
     options.args = options.args.concat(['-q' ]);   // QUIET
+    return [data_repository, options]
+}
+
+router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
+  var exec    = require('child_process').exec;
+  var project  = helpers.clean_string(req.body.project);
+  
+  var created_options = CreateUploadOptions(req, res, project)
+  var data_repository = created_options[0]
+  var options         = created_options[1]
+//   var project  = helpers.clean_string(req.body.project);
+//   var username = req.user.username;
+//   console.log('1-req.body upload_data');
+//   console.log(req.body);
+//   console.log(req.files);
+//   console.log('2-req.body upload_data');
+//   //console.log(project);
+//
+//   //console.log(PROJECT_INFORMATION_BY_PNAME);
+//   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+//
+//   var fs_old   = require('fs');
+//
+//   ProjectValidation(req, project, data_repository, res);
+//
+//   status_params = {'type'   : 'new',
+//                    'user_id': req.user.user_id,
+//                    'project': project,
+//                    'status' : 'OK',
+//                    'msg'    : 'Upload Started'};
+//   helpers.update_status(status_params);
+//
+//   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
+//
+//   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
+//               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
+//           };
+//
+//   fasta_compressed = IsFileCompressed(req.files[0]);
+//   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
+//
+//   // console.log('========');
+//
+//   OriginalMetafileUpload(req, options);
+//   // console.log('MMM Metadata file. options: ');
+//   // console.log(util.inspect(options, false, null));
+//   //TODO:
+//   // test, should be
+// //   MMM Metadata file. options:
+// //   { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+// //     args:
+// //      [ '-project_dir',
+// //        '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+// //        '-owner',
+// //        'admin',
+// //        '-p',
+// //        'test_gast_project',
+// //        '-site',
+// //        'local',
+// //        '-infile',
+// //        '/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee',
+// //        '-mdfile',
+// //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
+// //
+//
+//   CheckFileTypeInfo(req, options);
+//     // console.log('MMM CheckFileTypeInfo. options: ');
+//     // console.log(util.inspect(options, false, null));
+//     // TODO: test
+//     // MMM CheckFileTypeInfo. options:
+//     // ...
+//     //      '-upload_type',
+//     //      'single',
+//     //      '-d',
+//     //      'test_gast_dataset' ] }
+//
+//     options.args = options.args.concat(['-q' ]);   // QUIET
     console.log('MMM options: ');
     console.log(util.inspect(options, false, null));
+    // MMM options:
+    // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+    //   args:
+    //    [ '-project_dir',
+    //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+    //      '-owner',
+    //      'admin',
+    //      '-p',
+    //      'test_gast_project',
+    //      '-site',
+    //      'local',
+    //      '-infile',
+    //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
+    //      '-mdfile',
+    //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
+    //      '-upload_type',
+    //      'single',
+    //      '-d',
+    //      'test_gast_dataset',
+    //      '-q' ] }
 
     fs.ensureDir(data_repository,  function (err) {
           if (err) {console.log('ensureDir err:', err);} // => null
@@ -1695,15 +1781,15 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                         return;
                       }
 
-                      console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' '));
-                      var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py '+options.args.join(' ');
+                      console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+                      var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
                       var cmd_list = [load_cmd];
                       if (req.body.type == 'multi_fasta') {
                           var new_fasta_file_name = 'infile.fna';
-                          var demultiplex_cmd = options.scriptPath +'/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+                          var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
                           cmd_list.push(demultiplex_cmd);
                       }
-                      var fnaunique_cmd = options.scriptPath +'/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+                      var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
                       cmd_list.push(fnaunique_cmd);
                       //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');
 
@@ -1768,6 +1854,7 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
                                                           'msg':'Project is loaded --without tax assignments'
                                             };
                                           helpers.update_status(status_params);
+                                          
                                           console.log('LoadDataFinishRequest in upload_data, project:');
                                           console.log(util.inspect(project, false, null));
                                           LoadDataFinishRequest(req, res, project, "Import_Success");
@@ -2756,7 +2843,7 @@ function create_fasta_file(req,  user_dir,  ts,  dids) {
     return file_name;
 
     // TODO: Unreachable 'var' after 'return'.
-    var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq,  sequence_id,  seq_count,  project,  dataset from sequence_pdr_info\n";
+     var qSelect = "SELECT UNCOMPRESS(sequence_comp) as seq,  sequence_id,  seq_count,  project,  dataset from sequence_pdr_info\n";
     //var qSelect = "select sequence_comp as seq,  sequence_id,  seq_count,  dataset from sequence_pdr_info\n";
     qSelect += " JOIN sequence using (sequence_id)\n";
     qSelect += " JOIN dataset using (dataset_id)\n";
