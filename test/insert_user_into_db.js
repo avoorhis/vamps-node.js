@@ -45,15 +45,15 @@ before(function() {
     if (err) {throw err;}
 
     // console.log(query.sql);
-    console.log("UUU result INSERT IGNORE INTO ");
-    console.log(util.inspect(result, false, null));
+    // console.log("UUU result INSERT IGNORE INTO ");
+    // console.log(util.inspect(result, false, null));
 
     console.log("result.insertId: " + result.insertId);
     console.log("=========");
   });
 
-  q1 = "SELECT * FROM user WHERE username='TEST' AND email='TEST'";
-  connection.query(q1 , function(err, rows, fields) {
+  q1 = "SELECT * FROM user WHERE username = 'TEST' AND email = 'TEST'";
+  connection.query(q1, function(err, rows, fields) {
     if(err) {
       console.log('OOO ERROR in q1: ' + err);
       throw err;

@@ -8,6 +8,7 @@ var async = require('async'),
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
+var passportStub = require('passport-stub');
 var util = require('util');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -32,6 +33,10 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
   //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
   //      Clicking the submit button when no datasets have been selected should result in an alert box and a
   //      return to the page.
+
+    beforeEach(function() {
+      passportStub.logout();
+    });
 
     before(function (done) {
         test_name_hash = {}
@@ -61,14 +66,21 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
         });
 
         // login with passport-stub
-        var passportStub = require('passport-stub');
         passportStub.install(app);
-        console.log('Logging in with username:',app.testuser.user,' and password:',app.testuser.pass);
+        // console.log("GGG app.testuser res:")
+//         console.log(util.inspect(app.testuser, false, null));
+//       { user: 'TEST',
+//         pass: 'TEST',
+//         first: 'TestTest',
+//         last: 'TestTest',
+//         email: 'test@mbl.edu',
+//         inst: 'MBL' }
+        console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
         passportStub.login({
           username: app.testuser.user, password: app.testuser.pass
         });
         //this.timeout(10000);
-        done();
+        // done();
     });
 
     // VISUALS INDEX (Dataset Selection Page)
@@ -125,7 +137,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           .expect(200)
           .end(function (err, res) {
             this.timeout(5000);
-            console.log("VVV visual. res:")
+            console.log("VVV visual res:")
             console.log(util.inspect(res, false, null));
             res.text.should.containEql('Taxonomic Depth: family');
 
