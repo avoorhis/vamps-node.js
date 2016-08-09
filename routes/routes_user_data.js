@@ -1672,7 +1672,7 @@ function CreateUploadOptions(req, res, project)
     //      'test_gast_dataset' ] }    
 
     options.args = options.args.concat(['-q' ]);   // QUIET
-    return [data_repository, options]
+    return [data_repository, options];
 }
 
 function CreateCmdList(req, options, data_repository)
@@ -1711,9 +1711,9 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var exec    = require('child_process').exec;
   var project  = helpers.clean_string(req.body.project);
   
-  var created_options = CreateUploadOptions(req, res, project)
-  var data_repository = created_options[0]
-  var options         = created_options[1]
+  var created_options = CreateUploadOptions(req, res, project);
+  var data_repository = created_options[0];
+  var options         = created_options[1];
   console.log('MMM options: ');
   console.log(util.inspect(options, false, null));
   // TODO: test
