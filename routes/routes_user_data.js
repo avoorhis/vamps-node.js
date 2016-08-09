@@ -1555,7 +1555,7 @@ function IsFileCompressed(file)
 
 var LoadDataFinishRequest = function (req, res, project, display) {
   console.log('display from LoadDataFinishRequest: ' + "display");
-  
+
   // START STATUS //
   req.flash('successMessage', "Upload in Progress: '" + project + "'");
 
@@ -1582,7 +1582,7 @@ function OriginalMetafileUpload(req, options)
     console.log('No Metadata file: ' + err + '; Continuing on');
     original_metafile  = '';
   }
-  
+
   // return original_metafile;
 }
 
@@ -1659,7 +1659,7 @@ function CreateUploadOptions(req, res, project)
 //        '-mdfile',
 //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
 //
-  
+
   CheckFileTypeInfo(req, options);
     // console.log('MMM CheckFileTypeInfo. options: ');
     // console.log(util.inspect(options, false, null));
@@ -1669,7 +1669,7 @@ function CreateUploadOptions(req, res, project)
     //      '-upload_type',
     //      'single',
     //      '-d',
-    //      'test_gast_dataset' ] }    
+    //      'test_gast_dataset' ] }
 
     options.args = options.args.concat(['-q' ]);   // QUIET
     return [data_repository, options];
@@ -1683,13 +1683,13 @@ function CreateCmdList(req, options, data_repository)
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
 
   var cmd_list = [load_cmd];
-  
+
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = 'infile.fna';
       var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
-  
+
   var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
   console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
 
@@ -1698,19 +1698,53 @@ function CreateCmdList(req, options, data_repository)
   // console.log("CCC1 cmd_list: ");
   // console.log(util.inspect(cmd_list, false, null));
   return cmd_list;
-  
+
   //TODO:
   // test:
   // CCC1 cmd_list:
   // [ '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/... -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/... -upload_type single -d test_gast_dataset -q',
   //   '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project' ]
-  
+
 }
+
+function CheckIfPID(data)
+{
+  console.log("FFF In CheckIfPID");
+  var lines = data.split('\n');
+  data.split('\n');
+  for (var n in lines) {
+    console.log('EEE line: ' + lines[n]);
+    if (lines[n].substring(0, 4) == 'PID=') {
+        console.log('pid line ' + lines[n]);
+    }
+  }
+}
+// TODO:
+// test CheckIfPID
+// SSS2 stdout: _-n Hostname:
+// Annas-MacBook.local
+// -n Current working directory:
+// /Users/ashipunova/BPC/vamps-node.js_
+// GET /user_data/import_data?import_type=simple_fasta 200 14.158 ms - -
+// SSS2 stdout: _reading /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna
+// Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/meta-original.csv
+// Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna_
+// SSS2 stdout: _Single file to unique_
+// SSS2 stdout: _PPPATH\n
+//
+// lines: -n Hostname:
+// lines: Annas-MacBook.local
+// lines: -n Current working directory: ,/Users/ashipunova/BPC/vamps-node.js
+// lines: reading /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna,Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/meta-original.csv,Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fna
+// lines: Single file to unique
+// lines: PPPATH\n,/Users/ashipunova/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin:\n,for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/*.fa; do fastaunique ; done\n
+//
+
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
   var exec    = require('child_process').exec;
   var project  = helpers.clean_string(req.body.project);
-  
+
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
   var options         = created_options[1];
@@ -1740,7 +1774,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
   fs.ensureDir(data_repository, function (err) {
       if (err) {console.log('ensureDir err:', err);} // => null
-      else 
+      else
       {
         fs.chmod(data_repository, 0775, function (err) {
           if (err) {
@@ -1774,8 +1808,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
               child = exec( 'chmod ug+rwx '+script_path, function (error, stdout, stderr) {
                   if (error !== null) {
                     console.log('1exec chmod error: ' + error);
-                  } 
-                  else 
+                  }
+                  else
                   {
                     var run_process = spawn( script_path, [], {
                       // env:{'LD_LIBRARY_PATH':req.CONFIG.LD_LIBRARY_PATH,
@@ -1785,23 +1819,27 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                       // },
                       detached: true, stdio: [ 'ignore', null, nodelog ]
                     });  // stdin, s
-                    
+
                     var output = '';
-                    
+
                     // TODO: Andy, what it is doing? Can we move it to a function?
                     run_process.stdout.on('data', function (data) {
                       data = data.toString().trim();
                       // console.log('SSS2 stdout: _' + data + "_");
                       output += data;
-                      var lines = data.split('\n');
-                      for (var n in lines) {
-                        //console.log('line: ' + lines[n]);
-                            if (lines[n].substring(0, 4) == 'PID=') {
-                                console.log('pid line ' + lines[n]);
-                            }
-                      }
+                      CheckIfPID(data);
+                      
+                      // console.log("=======");
+                      // var lines = data.split('\n');
+                      // data.split('\n');
+                      // for (var n in lines) {
+                      //   console.log('NNN line: ' + lines[n]);
+                      //   if (lines[n].substring(0, 4) == 'PID=') {
+                      //       console.log('pid line ' + lines[n]);
+                      //   }
+                      // }
                     });
-                    
+
                     run_process.on('close', function (code) {
                        console.log('run_process process exited with code ' + code);
                        var ary = output.split("\n");
@@ -1815,14 +1853,14 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                                             'msg':'Project is loaded --without tax assignments'
                               };
                             helpers.update_status(status_params);
-                            
+
                             console.log('LoadDataFinishRequest in upload_data, project:');
                             console.log(util.inspect(project, false, null));
-                            
+
                             LoadDataFinishRequest(req, res, project, "Import_Success");
                             console.log('Finished loading ' + project);
                             // ();
-                       } else 
+                       } else
                        {
                         fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
                             if (err) { console.log(err);  }
@@ -2086,7 +2124,7 @@ router.post('/upload_data_tax_by_seq', [helpers.isLoggedIn, upload.array('upload
       // });  //     END move 1
 
   }
-  
+
   console.log('LoadDataFinishRequest in upload_data_tax_by_seq');
   // console.log(util.inspect(req, false, null));
   // console.log('---');
