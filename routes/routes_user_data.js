@@ -1788,23 +1788,20 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                     
                     var output = '';
                     
+                    // TODO: Andy, what it is doing? Can we move it to a function?
                     run_process.stdout.on('data', function (data) {
-                      console.log('SSS1 stdout: _' + data + "_");
-                      data1 = helpers.trim_all(data.toString())
-                      console.log('SSS3 stdout: _' + data1 + "_");
-                      data2 = data.toString().trim()
-                      console.log('SSS4 stdout: _' + data2 + "_");
-                      data = data.toString().replace(/^\s+|\s+$/g, '');
-                      console.log('SSS2 stdout: _' + data + "_");
+                      data = data.toString().trim();
+                      // console.log('SSS2 stdout: _' + data + "_");
                       output += data;
                       var lines = data.split('\n');
                       for (var n in lines) {
                         //console.log('line: ' + lines[n]);
                             if (lines[n].substring(0, 4) == 'PID=') {
-                                console.log('pid line '+lines[n]);
+                                console.log('pid line ' + lines[n]);
                             }
                       }
                     });
+                    
                     run_process.on('close', function (code) {
                        console.log('run_process process exited with code ' + code);
                        var ary = output.split("\n");
@@ -1821,10 +1818,12 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                             
                             console.log('LoadDataFinishRequest in upload_data, project:');
                             console.log(util.inspect(project, false, null));
+                            
                             LoadDataFinishRequest(req, res, project, "Import_Success");
                             console.log('Finished loading ' + project);
                             // ();
-                       } else {
+                       } else 
+                       {
                         fs.move(data_repository, path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'FAILED-project-'+project), function (err) {
                             if (err) { console.log(err);  }
                             else {

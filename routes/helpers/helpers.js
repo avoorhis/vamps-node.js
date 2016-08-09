@@ -756,13 +756,3 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     });
     return project_list;
 };
-
-if(!String.prototype.trim) {  
-  String.prototype.trim = function () {  
-    return this.replace(/^\s+|\s+$/g,'');  
-  };  
-} 
-
-module.exports.trim_all = function(str) {
-    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-}
