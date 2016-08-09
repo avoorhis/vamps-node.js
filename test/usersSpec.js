@@ -43,6 +43,7 @@ describe('<<< Login page functionality >>>', function(){
       console.log("result.insertId: " + result.insertId);
       console.log("=========");
     });
+    
     this.timeout(5000);
     async.series([
       function (cb) {
@@ -68,8 +69,6 @@ describe('<<< Login page functionality >>>', function(){
 
   it('Able to login with user "TEST"', function(done){
 
-
-
     request(app)
       .post('/users/login')
       .send({ username: app.testuser.user, password: app.testuser.pass})
@@ -86,7 +85,6 @@ describe('<<< Login page functionality >>>', function(){
         });
         done();
       });
-
     });
 
 
@@ -217,6 +215,7 @@ describe('<<< Login page functionality >>>', function(){
       if (!req.user || !req.isAuthenticated()){
         return res.send(403);
       }
+      
       res.status(200).end()
       // res.send(200);
     });

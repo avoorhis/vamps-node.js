@@ -13,13 +13,13 @@ describe('Form page functionality', function(){
 
     before(function (done) {
         this.timeout(5000);
-        connection.query('DELETE FROM vamps_js_testing.user WHERE username = "TEST_new"',
+        connection.query('DELETE FROM vamps_testing.user WHERE username = "TEST_new"',
           function (err, result) {
             if (err) throw err;
             console.log('deleted ' + result.affectedRows + ' rows');
           }
         );
-        connection.query('DELETE FROM vamps_js_development.user WHERE username = "TEST_new"',
+        connection.query('DELETE FROM vamps2.user WHERE username = "TEST_new"',
           function (err, result) {
             if (err) throw err;
             console.log('deleted ' + result.affectedRows + ' rows');

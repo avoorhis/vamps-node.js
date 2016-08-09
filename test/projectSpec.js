@@ -18,14 +18,14 @@ describe('<<< projects pages: >>>', function(){
       .end(function (err, res) {
         res.text.should.containEql('Public Projects Listing');
        // res.text.should.containEql('-- Human Microbiome Pouchitis Project; HMP Pouchitis Project, Healthy Patient 308, V6V4 region')
-        res.text.should.containEql('/projects/531');
+        res.text.should.containEql('/projects/1');
         done();
       });      
     });
     
-    it('Text on projects/531 page', function(done){
+    it('Text on projects/1 page', function(done){
       request(app)
-        .get('/projects/531')
+        .get('/projects/1')
         .expect(200)
         .end(function (err, res) {
           res.text.should.containEql('Project Profile');

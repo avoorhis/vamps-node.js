@@ -8,6 +8,8 @@ var async = require('async'),
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
+var util = require('util');
+
 ////////////////////////////////////////////////////////////////////////////
 // LIST OF REQUIRED TESTS
 // must have functioning buttons: next, saved_datasets, clear_filters
@@ -111,17 +113,20 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
     // VIEW_SELECTION PAGE
     //
     it('should show a certain text: family', function(done){
-        var reqbody_vizselect = { tax_depth:'family',
+        var reqbody_vizselect = { tax_depth: 'family',
                                   unit_choice: 'tax_silva108_simple',
                                   domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
                                   selected_metadata: [ 'latitude', 'longitude' ]
                                 };
         request(app)
-          .post('/visuals/view_selection')
+          // .post('/visuals/view_selection')
+          .post('/visuals/unit_selection')
           .send(reqbody_vizselect)
           .expect(200)
           .end(function (err, res) {
             this.timeout(5000);
+            console.log("VVV visual. res:")
+            console.log(util.inspect(res, false, null));
             res.text.should.containEql('Taxonomic Depth: family');
 
             //res.text.should.containEql('Taxonomic Depth: species');

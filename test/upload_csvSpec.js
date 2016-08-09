@@ -1,5 +1,4 @@
 // jshint multistr: true 
-
 var async = require('async'),
     request = require('supertest'),
     should = require('should')
@@ -10,6 +9,8 @@ connection = require('../config/database-test');
 
 var csvMetadataUpload = require('../models/csv_metadata_upload.js');
 var csv_metadata_db = new csvMetadataUpload();
+var util = require('util');
+
 
 beforeEach(function() {
   passportStub.logout();    
@@ -88,7 +89,7 @@ describe('csv_metadata_model', function(){
             results.length.should.equal(5);
             results[0].project.should.equal("KCK_LSM_Bv6");
           }
-          done();
+          // done();
         // connection.query('SELECT * FROM user WHERE username="TEST"'+
         //       ' AND email="TEST"', function(err,results){
         //     results.length.should.not.equal(0);
@@ -188,11 +189,24 @@ describe('csv_metadata_model', function(){
             throw err; // or return an error message, or something
           else
           {
-            res_message = 2;
+            res_affectedRows = 2;
             results.affectedRows.should.equal(res_message);
             
-            res_message = '&Records: 2  Duplicates: 0  Warnings: 0';
-            results.message.should.equal(res_message);
+            // res_message = '&Records: 2  Duplicates: 0  Warnings: 0';
+            // console.log("results TTT: ");
+            // console.log(util.inspect(results, false, null));
+            // ResultSetHeader {
+            //   fieldCount: 0,
+            //   affectedRows: 2,
+            //   insertId: 1,
+            //   serverStatus: 2,
+            //   warningStatus: 0 }
+            //
+            // results.message.should.equal(res_message);
+
+            res_warningStatus = 0;
+            results.warningStatus.should.equal(res_warningStatus);
+            
           }
           done();
         });

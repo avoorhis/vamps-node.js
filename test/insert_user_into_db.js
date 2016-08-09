@@ -1,5 +1,3 @@
-process.env.NODE_ENV = 'testing'
-
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
@@ -7,7 +5,9 @@ var async = require('async'),
     connection = require('../config/database-test');
 var passportStub = require('passport-stub');
 // passportStub.install(app);
+var util = require('util');
 
+// process.env.NODE_ENV = 'testing'
 process.env.NODE_ENV = 'test';
 
 beforeEach(function() {
@@ -15,7 +15,8 @@ beforeEach(function() {
 });
 
 before(function() {
-
+  connection.query("DELETE from user where username='TEST'");
+  
   // passportStub.logout();
 
   /*jshint multistr: true */
@@ -44,28 +45,36 @@ before(function() {
     if (err) {throw err;}
 
     // console.log(query.sql);
+    console.log("UUU result INSERT IGNORE INTO ");
+    console.log(util.inspect(result, false, null));
 
     console.log("result.insertId: " + result.insertId);
     console.log("=========");
   });
 
-  connection.query('SELECT * FROM user WHERE username="TEST"'+
-        ' AND email="TEST"', function(err, rows, fields) {
-    if (err) {throw err;}
-    // console.log("fields");
-    // console.log(fields[0]);
+  q1 = "SELECT * FROM user WHERE username='TEST' AND email='TEST'";
+  connection.query(q1 , function(err, rows, fields) {
+    if(err) {
+      console.log('OOO ERROR in q1: ' + err);
+      throw err;
+    } else {
+      // console.log('QQQ1 rows');
+      // console.log(util.inspect(rows, false, null));
+      // console.log('QQQ2 fields');
+      // console.log(util.inspect(fields, false, null));
+        
+      rows[0].username.should.equal('TEST');
+      rows[0].username.should.equal('TEST');
+      rows[0].email.should.equal('TEST');
+      rows[0].institution.should.equal('TEST');
+      rows[0].first_name.should.equal('TEST');
+      rows[0].last_name.should.equal('TEST');
+      rows[0].active.should.equal(0);
+      rows[0].security_level.should.equal(50);
+      rows[0].encrypted_password.should.equal('7kT94LYj7y5RnJVb34jrJw==');
 
-    rows[0].username.should.equal('TEST');
-    rows[0].email.should.equal('TEST');
-    rows[0].institution.should.equal('TEST');
-    rows[0].first_name.should.equal('TEST');
-    rows[0].last_name.should.equal('TEST');
-    rows[0].active.should.equal(0);
-    rows[0].security_level.should.equal(50);
-    rows[0].encrypted_password.should.equal('7kT94LYj7y5RnJVb34jrJw==');
-
-    fields[0].table.should.equal('user');
-
+      fields[0].table.should.equal('user');
+    }
   });
   console.log('before every test');
 });
