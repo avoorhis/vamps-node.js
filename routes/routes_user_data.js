@@ -1697,7 +1697,7 @@ function CreateCmdList(req, options, data_repository)
 
 function CheckIfPID(data)
 {
-  console.log("FFF In CheckIfPID");
+  // console.log("FFF In CheckIfPID");
   var lines = data.split('\n');
   for (var n in lines) {
   // console.log('line: ' + lines[n]);
@@ -1706,8 +1706,8 @@ function CheckIfPID(data)
     }
   }
 }
-// TODO:
-// test CheckIfPID
+// TODO: test
+// CheckIfPID
 // SSS2 stdout: _-n Hostname:
 // Annas-MacBook.local
 // -n Current working directory:
@@ -1727,6 +1727,24 @@ function CheckIfPID(data)
 // lines: PPPATH\n,/Users/ashipunova/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin:\n,for file in /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/*.fa; do fastaunique ; done\n
 //
 
+function GetScriptVars(req, data_repository, cmd_list)
+{
+  if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+  {
+   scriptlog   = path.join(data_repository, 'cluster.log');
+   //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
+   script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list);
+  }
+  else
+  {
+   scriptlog   = path.join(data_repository, 'script.log');
+   script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
+  }
+  console.log('111 scriptlog: ' + scriptlog);
+  console.log('222 script_text: ' + script_text);
+  console.log('222 ====='); 
+  return [scriptlog, script_text]
+}
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
   var exec    = require('child_process').exec;
@@ -1773,20 +1791,43 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
           console.log(util.inspect(cmd_list, false, null));
 
           script_name = 'load_script.sh';
-          var scriptlog   = "";
-          var script_text = "";
-          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
-          if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
-          {
-           scriptlog = path.join(data_repository, 'cluster.log');
-           //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
-           script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list);
-          }
-          else
-          {
-           scriptlog = path.join(data_repository, 'script.log');
-           script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
-          }
+          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');          
+          var script_vars = GetScriptVars(req, data_repository, cmd_list);
+          var scriptlog   = script_vars[0];
+          var script_text = script_vars[1];
+          
+          // if (req.CONFIG.dbhost == 'vampsdev' || req.CONFIG.dbhost == 'vampsdb')
+          // {
+          //  scriptlog = path.join(data_repository, 'cluster.log');
+          //  //var script_text = get_qsub_script_text(scriptlog, data_dir, req.CONFIG.dbhost, classifier, cmd_list)
+          //  script_text = get_qsub_script_text(scriptlog, data_repository, req.CONFIG.dbhost, 'vampsupld', cmd_list);
+          // }
+          // else
+          // {
+          //  scriptlog = path.join(data_repository, 'script.log');
+          //  script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
+          // }
+          // console.log('111 scriptlog: ' + scriptlog);
+          // console.log('222 script_text: ' + script_text);
+          // console.log('222 =====');
+          // TODO: test:
+// 111 scriptlog: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/script.log
+// 222 script_text: #!/bin/sh
+//
+// # CODE:  $code
+//
+// TSTAMP=`date "+%Y%m%d%H%M%S"`
+//
+// echo -n "Hostname: "
+// hostname
+// echo -n "Current working directory: "
+// pwd
+//
+// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/0e1cb0aad4ce57b30c6a0002a1ac2527 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/dce2a788f226eb033388f2844a89648e -upload_type single -d test_gast_dataset -q
+// /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project
+//
+// 222 =====
+//
 
           var script_path = path.join(data_repository, script_name);
 
@@ -1811,7 +1852,6 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
                     run_process.stdout.on('data', function (data) {
                       data = data.toString().trim();
-                      // console.log('SSS2 stdout: _' + data + "_");
                       output += data;
                       CheckIfPID(data);
                     });
