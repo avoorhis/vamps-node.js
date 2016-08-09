@@ -1675,6 +1675,29 @@ function CreateUploadOptions(req, res, project)
     return [data_repository, options]
 }
 
+function CreateCmdList(req, options, data_repository)
+{
+  console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+  // console.log("LLL load_cmd: " + load_cmd);
+  // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
+
+  var cmd_list = [load_cmd];
+  if (req.body.type == 'multi_fasta') {
+      var new_fasta_file_name = 'infile.fna';
+      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      cmd_list.push(demultiplex_cmd);
+  }
+  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
+
+  cmd_list.push(fnaunique_cmd);
+
+  console.log("CCC1 cmd_list: ");
+  console.log(util.inspect(cmd_list, false, null));
+  return cmd_list;
+}
+
 router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files',  12)],  function (req, res) {
   var exec    = require('child_process').exec;
   var project  = helpers.clean_string(req.body.project);
@@ -1682,119 +1705,71 @@ router.post('/upload_data',  [helpers.isLoggedIn,  upload.array('upload_files', 
   var created_options = CreateUploadOptions(req, res, project)
   var data_repository = created_options[0]
   var options         = created_options[1]
-//   var project  = helpers.clean_string(req.body.project);
-//   var username = req.user.username;
-//   console.log('1-req.body upload_data');
-//   console.log(req.body);
-//   console.log(req.files);
-//   console.log('2-req.body upload_data');
-//   //console.log(project);
-//
-//   //console.log(PROJECT_INFORMATION_BY_PNAME);
-//   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
-//
-//   var fs_old   = require('fs');
-//
-//   ProjectValidation(req, project, data_repository, res);
-//
-//   status_params = {'type'   : 'new',
-//                    'user_id': req.user.user_id,
-//                    'project': project,
-//                    'status' : 'OK',
-//                    'msg'    : 'Upload Started'};
-//   helpers.update_status(status_params);
-//
-//   var original_fastafile = path.join(req.CONFIG.TMP,  req.files[0].filename);
-//
-//   var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
-//               args : [ '-project_dir',  data_repository,  '-owner',  username,  '-p',  project,  '-site',  req.CONFIG.site,  '-infile', original_fastafile]
-//           };
-//
-//   fasta_compressed = IsFileCompressed(req.files[0]);
-//   if (fasta_compressed) options.args = options.args.concat(['-fa_comp' ]);
-//
-//   // console.log('========');
-//
-//   OriginalMetafileUpload(req, options);
-//   // console.log('MMM Metadata file. options: ');
-//   // console.log(util.inspect(options, false, null));
-//   //TODO:
-//   // test, should be
-// //   MMM Metadata file. options:
-// //   { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
-// //     args:
-// //      [ '-project_dir',
-// //        '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-// //        '-owner',
-// //        'admin',
-// //        '-p',
-// //        'test_gast_project',
-// //        '-site',
-// //        'local',
-// //        '-infile',
-// //        '/Users/ashipunova/BPC/vamps-node.js/tmp/6004582520e0cf5ee0cb8a2a97232bee',
-// //        '-mdfile',
-// //        '/Users/ashipunova/BPC/vamps-node.js/tmp/59b29388a55ab33935d054bd0b4e2613' ] }
-// //
-//
-//   CheckFileTypeInfo(req, options);
-//     // console.log('MMM CheckFileTypeInfo. options: ');
-//     // console.log(util.inspect(options, false, null));
-//     // TODO: test
-//     // MMM CheckFileTypeInfo. options:
-//     // ...
-//     //      '-upload_type',
-//     //      'single',
-//     //      '-d',
-//     //      'test_gast_dataset' ] }
-//
-//     options.args = options.args.concat(['-q' ]);   // QUIET
-    console.log('MMM options: ');
-    console.log(util.inspect(options, false, null));
-    // MMM options:
-    // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
-    //   args:
-    //    [ '-project_dir',
-    //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
-    //      '-owner',
-    //      'admin',
-    //      '-p',
-    //      'test_gast_project',
-    //      '-site',
-    //      'local',
-    //      '-infile',
-    //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
-    //      '-mdfile',
-    //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
-    //      '-upload_type',
-    //      'single',
-    //      '-d',
-    //      'test_gast_dataset',
-    //      '-q' ] }
+  console.log('MMM options: ');
+  console.log(util.inspect(options, false, null));
+  // TODO: test
+  // MMM options:
+  // { scriptPath: '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/',
+  //   args:
+  //    [ '-project_dir',
+  //      '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project',
+  //      '-owner',
+  //      'admin',
+  //      '-p',
+  //      'test_gast_project',
+  //      '-site',
+  //      'local',
+  //      '-infile',
+  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/44d4ec767dca9ccecfe7870b98fb4600',
+  //      '-mdfile',
+  //      '/Users/ashipunova/BPC/vamps-node.js/tmp/7be23488983b4c30ba0e32c4c5692b88',
+  //      '-upload_type',
+  //      'single',
+  //      '-d',
+  //      'test_gast_dataset',
+  //      '-q' ] }
 
-    fs.ensureDir(data_repository,  function (err) {
-          if (err) {console.log('ensureDir err:', err);} // => null
-          else {
-                  fs.chmod(data_repository, 0775, function (err) {
-                      if (err) {
-                        console.log('chmod err:', err);
-                        return;
-                      }
+  fs.ensureDir(data_repository,  function (err) {
+        if (err) {console.log('ensureDir err:', err);} // => null
+        else {
+              fs.chmod(data_repository, 0775, function (err) {
+                if (err) {
+                  console.log('chmod err:', err);
+                  return;
+                }
 
-                      console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
-                      var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
-                      var cmd_list = [load_cmd];
-                      if (req.body.type == 'multi_fasta') {
-                          var new_fasta_file_name = 'infile.fna';
-                          var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
-                          cmd_list.push(demultiplex_cmd);
-                      }
-                      var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
-                      cmd_list.push(fnaunique_cmd);
+//                       console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+//                       var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+//                       // console.log("LLL load_cmd: " + load_cmd);
+// // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
+//
+//                       var cmd_list = [load_cmd];
+//                       if (req.body.type == 'multi_fasta') {
+//                           var new_fasta_file_name = 'infile.fna';
+//                           var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+//                           cmd_list.push(demultiplex_cmd);
+//                       }
+//                       var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+//                       console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
+//
+//                       cmd_list.push(fnaunique_cmd);
+//
+//                       console.log("CCC1 cmd_list: ");
+//                       console.log(util.inspect(cmd_list, false, null));
+//TODO:
+// test:
+// CCC1 cmd_list:
+// [ '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/... -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/... -upload_type single -d test_gast_dataset -q',
+//   '/Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts/vamps_script_fnaunique.sh /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/ncbi/blast/bin:/opt/local/bin:/usr/local/mysql/bin:/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/ashipunova/BPC/vamps-node.js/public/scripts/bin: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project' ]
+
+
                       //var log = fs.openSync(path.join(data_repository, 'upload.log'),  'a');
 
                       //////////////////////////////
 
+                var cmd_list = CreateCmdList(req, options, data_repository);
+                console.log("CCC2 cmd_list: ");
+                console.log(util.inspect(cmd_list, false, null));
 
                       script_name = 'load_script.sh';
                       var scriptlog = "";
