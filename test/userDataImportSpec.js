@@ -99,7 +99,7 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     done();
   });
 
-  
+  it('should say if the file is compressed or not');
   
 
   // it('should return 200 when user is logged in', function(done) {
