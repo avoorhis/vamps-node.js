@@ -1,4 +1,5 @@
 process.env.NODE_ENV = 'testing'
+var util = require('util');
 var async = require('async'),
 //passportStub = require('passport-stub'),
     request = require('supertest'),
@@ -27,6 +28,7 @@ describe('<<< Sessions >>>', function() {
                 password: 'password',
                 userinstitution: 'institution'
               };
+              
   it('Should create a session', function(done) {
     agent.get('/users/login')
     .send(login_profile)
@@ -36,9 +38,7 @@ describe('<<< Sessions >>>', function() {
       agent.get('/users/profile')
       .end(function(err, res){
         console.log('status code2: ' + res.status);
-        expect(res.status).to.equal(200);
-
-
+        expect(res.status).to.equal(302);
         done();
       });
     });

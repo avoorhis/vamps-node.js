@@ -60,7 +60,7 @@ describe('Form page functionality', function(){
   it('The register page successful registration should redirect to users/profile', function(done){
     request(app)
       .get('/users/signup')
-      .expect(302)
+      .expect(200)
       // .send('username="TESTNew"')
       // .send('encrypted_password="Q6LWuhBNy7Fs0CwT/MDy8w=="')
       // .send('first_name="TESTNew"')
