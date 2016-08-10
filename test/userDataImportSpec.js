@@ -11,6 +11,25 @@ var passportStub = require('passport-stub');
 var util = require('util');
 // console.log(util.inspect(app.testuser, false, null));
 
+// var request = require('superagent');
+var expect = require('expect.js');
+
+// describe('Suite one', function(){
+//  it (function(done){
+//    request.post('localhost:8080').end(function(res){
+//     expect(res).to.exist;
+//     expect(res.status).to.equal(200);
+//     expect(res.body).to.contain('world');
+//     done();
+//    });
+//   });
+// });
+// it('throwns a TypeError', function () {
+//     should.throws(target, TypeError);
+// });
+//
+
+
 describe('<<< Data Import Selection page functionality >>>', function(){
     beforeEach(function() {
       passportStub.logout();
@@ -37,14 +56,48 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   
   
+  
+  
   it('should not allow to submitt a project if not logged in', function(done) {
     // Data Administration
+//     var formElem = document.forms[0];
+//     var signupButton = document.getElementByClass('panel-heading');
+// // <a class="btn btn-sm btn-primary" href="/user_data/import_choices">Import Data</a>
+//     console.log("LLL1");
+//     console.log(util.inspect(formElem, false, null));
+//     console.log("LLL2");
+//     console.log(util.inspect(signupButton, false, null));
+//     // <p class="title">Data Administration</p>
+//
+
+// it('should respond with redirect on post', function(done) {
+//     request(app)
+//       .post('/api/members')
+//       .send({"participant":{"nuid":"98ASDF988SDF89SDF89989SDF9898"}})
+//       .expect(200)
+//       .expect('Content-Type', /json/)
+//       .end(function(err, res) {
+//         if (err) done(err);
+//         res.body.should.have.property('participant');
+//         res.body.participant.should.have.property('nuid', '98ASDF988SDF89SDF89989SDF9898');
+//         done();
+//       });
+//   });
+//
     req
     .get('/user_data/your_data')
     .expect(304)
     .end(function (err, res) {
+      console.log("LLL res.text");
+      // console.log(util.inspect(signupButton.innerHTML, false, null));
+      console.log(util.inspect(res.text, false, null));
+      console.log("YYY res");
+      console.log(util.inspect(res, false, null));
+      
+      expect(res.body).to.contain('world111');
+      res.text.should.containEql("UUUUUUUU");
       res.header.location.should.containEql('your_data');
-      // expect(signupButton.innerHTML).to.equal('Signup');
+      // expect(res.text).to.equal("<p class=\'title\'>Data Administration111</p>");
       done();
     });
     done();
