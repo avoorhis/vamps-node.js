@@ -76,7 +76,7 @@ describe('<<< Login page functionality >>>', function(){
     request(app)
       .get('/users/login')
       .send({ username: app.testuser.user, password: app.testuser.pass})
-      .expect(302)
+      .expect(200)
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
