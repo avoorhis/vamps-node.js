@@ -7,38 +7,49 @@ var async = require('async'),
 var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
+var passportStub = require('passport-stub');
+var util = require('util');
+// console.log(util.inspect(app.testuser, false, null));
 
 describe('<<< Data Import Selection page functionality >>>', function(){
-  before(function (done) {
-    connection = require('../config/database-test');
-
-    connection.query("DELETE FROM user WHERE username = '"+app.testuser.user+"' AND first_name = '"+app.testuser.first+"' AND last_name = '"+app.testuser.last+"' AND email = '"+app.testuser.email+"' AND institution = '"+app.testuser.inst+"'", function(err, result) {
-          if (err) {throw err;}
+    beforeEach(function() {
+      passportStub.logout();
     });
 
-    this.timeout(5000);
+    before(function (done) {
+        test_name_hash = {}
+        test_name_hash.name = []
+        test_name_hash.ids  = []
+        test_selection_obj  = {}
 
-    var q = "INSERT IGNORE INTO user (username, encrypted_password, first_name, last_name, email, institution, active) \
-      VALUES ('"+app.testuser.user+"','"+helpers.generateHash(app.testuser.pass)+"','"+app.testuser.first+"','"+app.testuser.last+"','"+app.testuser.email+"','"+app.testuser.inst+"','"+1+"')"
-    connection.query(q, function(err, result) {
-      if (err) {throw err;}
-      console.log(q)
-      console.log("result.insertId: " + result.insertId);
-      console.log("=========");
+        connection = require('../config/database-test');
+
+        // login with passport-stub
+        passportStub.install(app);
+        console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
+        passportStub.login({
+          username: app.testuser.user, password: app.testuser.pass
+        });
+        //this.timeout(10000);
+        req = request(app);
+        
+        done();
     });
-    
-    this.timeout(5000);
-    async.series([
-      function (cb) {
-        connection.query('SELECT * FROM user WHERE username="'+app.testuser.user+'" AND email="'+app.testuser.email+'"',function(err,results){
-            results.length.should.not.equal(0);
-            done();
-          });
-      }
-    ], done());
+  
+  
+  it('should not allow to submitt a project if not logged in', function(done) {
+    // Data Administration
+    req
+    .get('/user_data/your_data')
+    .expect(304)
+    .end(function (err, res) {
+      res.header.location.should.containEql('your_data');
+      // expect(signupButton.innerHTML).to.equal('Signup');
+      done();
+    });
+    done();
   });
-
-  it('should not allow to submitt a project if not logged in');
+  
   it('should not allow to submitt a project if logged in as a gest');
 
   it('should show buttons on GET /user_data/your_data 304', function(done) {
