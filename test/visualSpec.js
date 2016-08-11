@@ -10,6 +10,7 @@ var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 var passportStub = require('passport-stub');
 var util = require('util');
+//         console.log(util.inspect(app.testuser, false, null));
 
 ////////////////////////////////////////////////////////////////////////////
 // LIST OF REQUIRED TESTS

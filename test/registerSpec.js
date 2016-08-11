@@ -1,3 +1,4 @@
+var util = require('util');
 var async = require('async'),
     request = require('supertest'),
     should = require('should'),
@@ -58,17 +59,26 @@ describe('Form page functionality', function(){
 
   it('The register page successful registration should redirect to users/profile', function(done){
     request(app)
-      .post('/users/signup')
-      .expect(302)
-      .send('username=TEST_new')
-      .send('password=TEST_new')
-      .send('userfirstname=TEST_new')
-      .send('userlastname=TEST_new')
-      .send('useremail=TEST_new')
-      .send('userinstitution=TEST_new')
+      .get('/users/signup')
+      .expect(200)
+      // .send('username="TESTNew"')
+      // .send('encrypted_password="Q6LWuhBNy7Fs0CwT/MDy8w=="')
+      // .send('first_name="TESTNew"')
+      // .send('last_name="TESTNew"')
+      // .send('email="TESTNew@gmail.com"')
+      // .send('institution="TESTNew"')
+      .send('username=TESTNew')
+      .send('password=TESTNew')
+      .send('userfirstname=TESTNew')
+      .send('userlastname=TESTNew')
+      .send('useremail=TESTNew@gmail.com')
+      .send('userinstitution=TESTNew')
+    // username, email, institution, first_name, last_name, active, security_level, encrypted_password, sign_in_count,
       .end(function (err, res) {
         should.not.exist(err);
         // confirm the redirect
+        console.log('RRR res.header');
+        console.log(util.inspect(res.header, false, null));        
         res.header.location.should.containEql('profile');
         res.header.location.should.not.containEql('signup');
         done();
