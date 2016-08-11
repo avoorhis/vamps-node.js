@@ -8,14 +8,14 @@ var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 var passportStub = require('passport-stub');
-var util = require('util');
 var supertest = require('supertest');
-
+var util = require('util');
 // console.log(util.inspect(app.testuser, false, null));
 
 // var request = require('superagent');
 var expect = require('expect.js');
 var server = supertest.agent("http://localhost:3000");
+app.use(express.bodyParser()); // need this to see the body in req object
 
 // describe('Suite one', function(){
 //  it (function(done){
@@ -113,19 +113,6 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         test_selection_obj  = {}
 
         connection = require('../config/database-test');
-        // // var q = "SELECT dataset, dataset_id from dataset where dataset in ('"+test_datasets.join("','")+"')"
-        // // console.log(q)
-        //
-        // connection.query(q, function(err, result) {
-        //     if (err) {throw err;}
-        //     for(r in result){
-        //       console.log(result[r].dataset_id)
-        //       test_name_hash.name.push(test_project+'--'+result[r].dataset)
-        //       test_name_hash.ids.push(result[r].dataset_id)
-        //     }
-        // });
-
-        // login with passport-stub
         passportStub.install(app);
         console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
         passportStub.login({
@@ -145,17 +132,26 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         .get('/users/profile')
         .expect(200)
         .end(function (err, res) {
-          // console.log("===2===");
-          // console.log(res);
-          // console.log("===22===");
           res.text.should.containEql('Profile Page');
+          res.status.should.eql(200);
           res.text.should.containEql('TEST');
           done();
         });
 
       // passportStub.logout();
     });
-
+  
+  it('should not allow to submit a project if not logged in', function(done){
+    request(app)
+    .get('/user_data/import_choices')
+    .expect("Content-type", /json/)
+    .end(function(err, res){
+      res.status.should.eql(302);
+      res.text.should.not.containEql('Data Administration');
+      res.text.should.eql('Found. Redirecting to /users/login');
+      done();
+    });
+  });
   
   it("should have a correct title and buttons on your_data",function(done){
     server
@@ -175,34 +171,37 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  it('should not allow to submit a project if not logged in', function(done){
-    request(app)
-    .get('/user_data/import_choices')
-    .expect("Content-type", /json/)
-    .end(function(err, res){
-      // console.log("YYY res");
-      // console.log(util.inspect(res, false, null));
-      // console.log("222 res");
-      // console.log(util.inspect(res.text, false, null));
-      res.status.should.eql(302);
-      res.text.should.not.containEql('Data Administration');
-      res.text.should.eql('Found. Redirecting to /users/login');
-      done();
-    });
-  });
-  
-  
   it("should have a correct title and buttons on import_choices if logged in", function(done){
-    server
-    .get('/user_data/import_choices')
-    .expect("Content-type", /json/)
-    .end(function(err, res){
-      res.status.should.eql(302);
-      console.log("YYY res");
-      console.log(util.inspect(res, false, null));
-      res.text.should.containEql('DDDRRRR');
-      done();
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
     });
+    req = request(app);
+    
+    req
+      .get('/users/profile')
+      .expect(200)
+      .end(function (err, res) {
+        // console.log("===2===");
+        // console.log(res);
+        // console.log("===22===");
+        res.text.should.containEql('Profile Page');
+        res.text.should.containEql('TEST');
+        
+        server
+        .get('/user_data/import_choices')
+        .expect("Content-type", /json/)
+        .end(function(err, res){
+          res.status.should.eql(302);
+          console.log("YYY res");
+          console.log(util.inspect(res, false, null));
+          res.text.should.containEql('DDDRRRR');
+          res.text.should.containEql('Data Import Selection');
+        });
+        
+        // done();
+      });
+      // done();
+
   });
   
   //     passportStub.install(app);
