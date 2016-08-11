@@ -15,7 +15,7 @@ var util = require('util');
 // var request = require('superagent');
 var expect = require('expect.js');
 var server = supertest.agent("http://localhost:3000");
-app.use(express.bodyParser()); // need this to see the body in req object
+// app.use(express.bodyParser()); // need this to see the body in req object
 
 // describe('Suite one', function(){
 //  it (function(done){
