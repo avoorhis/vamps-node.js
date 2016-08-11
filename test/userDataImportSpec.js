@@ -120,22 +120,22 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  it("should logout", function(done){
+  it('should not allow to submitt a project if not logged in', function(done){
     server
     .get('/user_data/import_choices')
     .expect("Content-type", /json/)
-    .expect(400) // THis is HTTP response
     .end(function(err, res){
       console.log("YYY res");
       console.log(util.inspect(res, false, null));
       // console.log("222 res");
       // console.log(util.inspect(res.text, false, null));
-      res.text.should.containEql('Data Administration');
+      res.status.should.eql(302);
+      res.text.should.not.containEql('Data Administration');
+      res.text.should.eql('Found. Redirecting to /users/login');
       done();
     });
   });
 
-  it('should not allow to submitt a project if not logged in');
 
 });
   
