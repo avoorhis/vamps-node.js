@@ -58,32 +58,87 @@ describe("SAMPLE unit test",function(){
     .expect("Content-type", /json/)
     .expect(200) // THis is HTTP response
     .end(function(err, res){
-      console.log("YYY res");
-      console.log(util.inspect(res, false, null));
+      // console.log("YYY res");
+      // console.log(util.inspect(res, false, null));
       // HTTP status should be 200
       // res.status.should.equal(200);
 
-      console.log("222 res");
-      console.log(util.inspect(res.text, false, null));
+      // console.log("222 res");
+      // console.log(util.inspect(res.text, false, null));
       // res.text.should.includes("FFFfalse");
       // res.text.should.match("FFFfalse");
       res.text.should.containEql('Susan Huse');
-      // res.text.should.containEql('FFFfalse');
+      res.text.should.not.containEql('FFFfalse');
 
 
 
       // Error key should be false.
-      console.log("RRR res.body");
-      console.log(util.inspect(res.body, false, null));
+      // console.log("RRR res.body");
+      // console.log(util.inspect(res.body, false, null));
       // res.body.error.should.equal(false);
       done();
     });
   });
 
+
+  // it("should have text",function(done){
+  //   server
+  //   .get("/user_data/your_data")
+  //   .expect("Content-type", /json/)
+  //   .expect(200) // THis is HTTP response
+  //   .end(function(err, res){
+  //     console.log("YYY res");
+  //     console.log(util.inspect(res, false, null));
+  //     // console.log("222 res");
+  //     // console.log(util.inspect(res.text, false, null));
+  //     res.text.should.containEql('Data Administration');
+  //     done();
+  //   });
+  // });
+
+
+
 });
 
 
-// describe('<<< Data Import Selection page functionality >>>', function(){
+describe('<<< Data Import Selection page functionality >>>', function(){
+  
+  it("should have a correct title and buttons",function(done){
+    server
+    .get("/user_data/your_data")
+    .expect("Content-type", /json/)
+    .expect(200) // THis is HTTP response
+    .end(function(err, res){
+      // console.log("YYY res");
+      // console.log(util.inspect(res, false, null));
+      // console.log("222 res");
+      // console.log(util.inspect(res.text, false, null));
+      res.text.should.containEql('Data Administration');
+      res.text.should.containEql('Import Data');
+      res.text.should.containEql('Your Projects');
+      done();
+    });
+  });
+  
+  it("should logout", function(done){
+    server
+    .get('/user_data/import_choices')
+    .expect("Content-type", /json/)
+    .expect(400) // THis is HTTP response
+    .end(function(err, res){
+      console.log("YYY res");
+      console.log(util.inspect(res, false, null));
+      // console.log("222 res");
+      // console.log(util.inspect(res.text, false, null));
+      res.text.should.containEql('Data Administration');
+      done();
+    });
+  });
+
+  it('should not allow to submitt a project if not logged in');
+
+});
+  
 //     beforeEach(function() {
 //       passportStub.logout();
 //     });
