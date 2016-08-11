@@ -251,7 +251,9 @@ if __name__ == '__main__':
     parser.add_argument("-host", "--host",    
                 required=False,  action='store', choices=['vampsdb','vampsdev','localhost'], dest = "dbhost",  default='localhost',
                 help="")
-               
+    parser.add_argument("-db", "--db",    
+                required=False,  action='store',  dest = "db",  default='vamps_development',
+                help="")           
     parser.add_argument("-json_file_path", "--json_file_path",        
                 required=False,  action='store', dest = "json_file_path",  default='../../json', 
                 help="")   
@@ -271,7 +273,7 @@ if __name__ == '__main__':
         args.NODE_DATABASE = 'vamps2'
     else:
         args.json_file_path = '../../json'
-        args.NODE_DATABASE = 'vamps_development'
+        args.NODE_DATABASE = args.db
     
     if os.path.exists(args.json_file_path):
         print 'Validated: json file path'

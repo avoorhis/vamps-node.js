@@ -24,7 +24,7 @@
 <div class='overflow_500'>
 <table class='table table-condensed  sortable'>
 	<thead>
-  <tr><th data-defaultsort='disabled'></th><th>Count</th><th>GAST Distance</th><th>Sequence</th><th>Taxonomy</th></tr>
+  <tr><th data-defaultsort='disabled'></th><th>Count</th><th>GAST<br>Distance</th><th>NCBI<br>BLAST</th><th>Sequence</th><th>Taxonomy</th></tr>
   </thead>
   <tbody>
 <% for (r in seqrows) { %>
@@ -36,6 +36,8 @@
 	   <% }else{ %>
       <td>none</t>
      <% } %>
+     <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
+     <!-- https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=  -->
      <td><%= seqrows[r].seq %></td>
 	   <td><%= seqrows[r].tax %></td>
    </tr>

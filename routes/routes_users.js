@@ -50,11 +50,11 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 router.get('/login', function(req, res) {
     
     //var url = req.session.returnTo || 'user_admin/login'
-    
+    console.log('login',req.body)
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       message: req.flash('loginMessage'), 
-                      user: req.user,hostname: req.CONFIG.hostname });
+                      user: req.user, hostname: req.CONFIG.hostname });
 });
 
 router.post('/login',  passport.authenticate('local-login', { successRedirect: '/users/profile',
