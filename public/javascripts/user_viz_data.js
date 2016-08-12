@@ -197,6 +197,10 @@ function download_data(type, download_type, ts) {
 //
 //
 //
+
+//
+//
+//
 function ncbi_blast(seq){
 
   var ncbi_url = "https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY="

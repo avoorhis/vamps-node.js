@@ -1,5 +1,4 @@
 <% include ../../add_ins/begin_nomenu.ejs %>
-<% //seqrows = JSON.parse(rows) %>
 <% seqrows = JSON.parse(seq_list) %>
 <link rel="stylesheet" href="/stylesheets/bootstrap-sortable.css" >
 <div class='title'><%= title %></div>
@@ -37,8 +36,7 @@
       <td>none</t>
      <% } %>
      <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
-     <!-- https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=  -->
-     <td><%= seqrows[r].seq %></td>
+     <td><pre><%- seqrows[r].prettyseq %></pre></td>
 	   <td><%= seqrows[r].tax %></td>
    </tr>
    
@@ -49,7 +47,9 @@
 
   <% include ../../add_ins/end.ejs %>
 <script type="text/javascript" src="/javascripts/d3.min.js" charset="utf-8"></script>
-<script type="text/javascript" src="/javascripts/user_viz_data.js" charset="utf-8"></script>
+<script type="text/javascript" src="/javascripts/user_viz_data.js" ></script>
 <script type="text/javascript" src="/javascripts/bootstrap-sortable.js"></script>
+
+
 </body>
 </html>

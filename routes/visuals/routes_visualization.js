@@ -1886,7 +1886,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	console.log('in sequences')
 	var myurl = url.parse(req.url, true);
 	var search_tax = myurl.query.taxa;
-    var seqs_filename = myurl.query.filename;
+  var seqs_filename = myurl.query.filename;
 	var pjds = myurl.query.id;
     var seq_list = [];
     var d,p,k,o,f,g,sp,st;
@@ -1961,7 +1961,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
           }
           seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
           if(seq_tax.substring(0, search_tax.length) === search_tax){
-            seq_list.push({seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
+            colorized_seq = helpers.make_color_seq(data.seq)
+            seq_list.push({prettyseq:colorized_seq, seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
           }
       }
       

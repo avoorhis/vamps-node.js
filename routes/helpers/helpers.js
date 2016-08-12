@@ -756,3 +756,36 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     });
     return project_list;
 };
+
+module.exports.make_color_seq = function(seq){ 
+      
+      var return_string = '';
+      for(var i = 0; i < seq.length; i++)
+      {
+        var base = seq.charAt(i);
+        if(base == 'A')
+        {
+          return_string += "<font color='red'>"+base+"</font>";
+        }
+        else if(base == 'C')
+        {
+          return_string += "<font color='blue'>"+base+"</font>";
+        }
+        else if(base == 'G')
+        {
+          return_string += "<font color='black'>"+base+"</font>";
+        }
+        else if(base == 'T')
+        {
+          return_string += "<font color='orange'>"+base+"</font>";
+        }
+        else
+        {
+          return_string += "<font color='darkgrey'>"+base+"</font>";
+        }
+
+      } 
+      
+      return return_string;
+};    //end of function
+
