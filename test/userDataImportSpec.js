@@ -8,14 +8,14 @@ var express = require('express');
 var passport = require('passport');
 var helpers = require('../routes/helpers/helpers');
 var passportStub = require('passport-stub');
-var util = require('util');
 var supertest = require('supertest');
-
+var util = require('util');
 // console.log(util.inspect(app.testuser, false, null));
 
 // var request = require('superagent');
 var expect = require('expect.js');
 var server = supertest.agent("http://localhost:3000");
+// app.use(express.bodyParser()); // need this to see the body in req object
 
 // describe('Suite one', function(){
 //  it (function(done){
@@ -32,78 +32,128 @@ var server = supertest.agent("http://localhost:3000");
 // });
 //
 
-describe("SAMPLE unit test",function(){
-
-  // #1 should return home page
-
-  it("should have text",function(done){
-
-// should  = require('should')
-// request = require('supertest')
-// app     = require('../../app')
+// describe("SAMPLE unit test",function(){
 //
-// describe 'authentication', ->
-//   describe 'POST /sessions', ->
-//     describe 'success', ->
-//       it 'redirects to the right path', (done) ->
-//         request(app)
-//           .post('/sessions')
-//           .send(user: 'username', password: 'password')
-//           .end (err, res) ->
-//             res.header['location'].should.include('/home')
-//             done()
-    // calling home page api
-    server
-    .get("/")
+//   // #1 should return home page
+//
+//   it("should have text",function(done){
+//
+// // should  = require('should')
+// // request = require('supertest')
+// // app     = require('../../app')
+// //
+// // describe 'authentication', ->
+// //   describe 'POST /sessions', ->
+// //     describe 'success', ->
+// //       it 'redirects to the right path', (done) ->
+// //         request(app)
+// //           .post('/sessions')
+// //           .send(user: 'username', password: 'password')
+// //           .end (err, res) ->
+// //             res.header['location'].should.include('/home')
+// //             done()
+//     // calling home page api
+//     server
+//     .get("/")
+//     .expect("Content-type", /json/)
+//     .expect(200) // THis is HTTP response
+//     .end(function(err, res){
+//       // console.log("YYY res");
+//       // console.log(util.inspect(res, false, null));
+//       // HTTP status should be 200
+//       // res.status.should.equal(200);
+//
+//       // console.log("222 res");
+//       // console.log(util.inspect(res.text, false, null));
+//       // res.text.should.includes("FFFfalse");
+//       // res.text.should.match("FFFfalse");
+//       res.text.should.containEql('Susan Huse');
+//       res.text.should.not.containEql('FFFfalse');
+//
+//
+//
+//       // Error key should be false.
+//       // console.log("RRR res.body");
+//       // console.log(util.inspect(res.body, false, null));
+//       // res.body.error.should.equal(false);
+//       done();
+//     });
+//   });
+//
+//
+//   // it("should have text",function(done){
+//   //   server
+//   //   .get("/user_data/your_data")
+//   //   .expect("Content-type", /json/)
+//   //   .expect(200) // THis is HTTP response
+//   //   .end(function(err, res){
+//   //     console.log("YYY res");
+//   //     console.log(util.inspect(res, false, null));
+//   //     // console.log("222 res");
+//   //     // console.log(util.inspect(res.text, false, null));
+//   //     res.text.should.containEql('Data Administration');
+//   //     done();
+//   //   });
+//   // });
+//
+//
+//
+// });
+//
+
+describe('<<< Data Import Selection page functionality >>>', function(){
+    beforeEach(function() {
+      passportStub.logout();
+    });
+
+    before(function () {
+        test_name_hash = {}
+        test_name_hash.name = []
+        test_name_hash.ids  = []
+        test_selection_obj  = {}
+
+        connection = require('../config/database-test');
+        passportStub.install(app);
+        console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
+        passportStub.login({
+          username: app.testuser.user, password: app.testuser.pass
+        });
+        //this.timeout(10000);
+        // done();
+    });
+
+    it('responds with 200 when logged in', function(done) {
+      passportStub.login({
+        username: 'TEST', password: 'TEST'
+      });
+      req = request(app);
+      
+      req
+        .get('/users/profile')
+        .expect(200)
+        .end(function (err, res) {
+          res.text.should.containEql('Profile Page');
+          res.status.should.eql(200);
+          res.text.should.containEql('TEST');
+          done();
+        });
+
+      // passportStub.logout();
+    });
+  
+  it('should not allow to submit a project if not logged in', function(done){
+    request(app)
+    .get('/user_data/import_choices')
     .expect("Content-type", /json/)
-    .expect(200) // THis is HTTP response
     .end(function(err, res){
-      // console.log("YYY res");
-      // console.log(util.inspect(res, false, null));
-      // HTTP status should be 200
-      // res.status.should.equal(200);
-
-      // console.log("222 res");
-      // console.log(util.inspect(res.text, false, null));
-      // res.text.should.includes("FFFfalse");
-      // res.text.should.match("FFFfalse");
-      res.text.should.containEql('Susan Huse');
-      res.text.should.not.containEql('FFFfalse');
-
-
-
-      // Error key should be false.
-      // console.log("RRR res.body");
-      // console.log(util.inspect(res.body, false, null));
-      // res.body.error.should.equal(false);
+      res.status.should.eql(302);
+      res.text.should.not.containEql('Data Administration');
+      res.text.should.eql('Found. Redirecting to /users/login');
       done();
     });
   });
-
-
-  // it("should have text",function(done){
-  //   server
-  //   .get("/user_data/your_data")
-  //   .expect("Content-type", /json/)
-  //   .expect(200) // THis is HTTP response
-  //   .end(function(err, res){
-  //     console.log("YYY res");
-  //     console.log(util.inspect(res, false, null));
-  //     // console.log("222 res");
-  //     // console.log(util.inspect(res.text, false, null));
-  //     res.text.should.containEql('Data Administration');
-  //     done();
-  //   });
-  // });
-
-
-
-});
-
-
-describe('<<< Data Import Selection page functionality >>>', function(){
   
-  it("should have a correct title and buttons",function(done){
+  it("should have a correct title and buttons on your_data",function(done){
     server
     .get("/user_data/your_data")
     .expect("Content-type", /json/)
@@ -113,6 +163,7 @@ describe('<<< Data Import Selection page functionality >>>', function(){
       // console.log(util.inspect(res, false, null));
       // console.log("222 res");
       // console.log(util.inspect(res.text, false, null));
+      res.status.should.eql(200);
       res.text.should.containEql('Data Administration');
       res.text.should.containEql('Import Data');
       res.text.should.containEql('Your Projects');
@@ -120,21 +171,44 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  it('should not allow to submitt a project if not logged in', function(done){
-    server
-    .get('/user_data/import_choices')
-    .expect("Content-type", /json/)
-    .end(function(err, res){
-      console.log("YYY res");
-      console.log(util.inspect(res, false, null));
-      // console.log("222 res");
-      // console.log(util.inspect(res.text, false, null));
-      res.status.should.eql(302);
-      res.text.should.not.containEql('Data Administration');
-      res.text.should.eql('Found. Redirecting to /users/login');
-      done();
+  it("should have a correct title and buttons on import_choices if logged in", function(done){
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
     });
+    req = request(app);
+    
+    req
+      .get('/users/profile')
+      .expect(200)
+      .end(function (err, res) {
+        // console.log("===2===");
+        // console.log(res);
+        // console.log("===22===");
+        res.text.should.containEql('Profile Page');
+        res.text.should.containEql('TEST');
+        
+        server
+        .get('/user_data/import_choices')
+        .expect("Content-type", /json/)
+        .end(function(err, res){
+          res.status.should.eql(302);
+          console.log("YYY res");
+          console.log(util.inspect(res, false, null));
+          res.text.should.containEql('DDDRRRR');
+          res.text.should.containEql('Data Import Selection');
+        });
+        
+        // done();
+      });
+      // done();
+
   });
+  
+  //     passportStub.install(app);
+  //     console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
+  //     passportStub.login({
+  //       username: app.testuser.user, password: app.testuser.pass
+  //     });
 
 
 });
@@ -166,7 +240,7 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //
 //
 //
-//   it('should not allow to submitt a project if not logged in', function(done) {
+//   it('should not allow to submit a project if not logged in', function(done) {
 //     // Data Administration
 // //     var formElem = document.forms[0];
 // //     var signupButton = document.getElementByClass('panel-heading');
@@ -214,7 +288,7 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //     done();
 //   });
 //
-//   it('should not allow to submitt a project if logged in as a gest');
+//   it('should not allow to submit a project if logged in as a gest');
 //
 //   it('should show buttons on GET /user_data/your_data 304', function(done) {
 //     // Data Administration
