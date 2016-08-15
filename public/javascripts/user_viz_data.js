@@ -197,7 +197,48 @@ function download_data(type, download_type, ts) {
 //
 //
 //
+function hide_seqs(id, taxa, fname){
+  checked_seqs = document.getElementById('hide_seqs_cb').checked;
+  checked_taxa = document.getElementById('hide_tax_cb').checked;
 
+  seq_tds = document.getElementsByClassName('hide_class_seq');
+  for(i in seq_tds){
+    if(checked_seqs){
+        seq_tds[i].style.display = 'none'
+
+    }else{
+        seq_tds[i].style.display = 'inline';
+    }
+  }
+  //alert(seq_tds)
+  // url = 'sequences?id='+id+'&taxa='+encodeURIComponent(taxa)+'&filename='+fname+'&hide_seqs='+checked_seqs+'&hide_tax='+checked_taxa;
+  // //alert(url)
+  // var xmlhttp = new XMLHttpRequest(); 
+  // //alert(xmlhttp)
+  // window.open(url, "_self");
+    
+}
+//
+//
+//
+function hide_tax(id, taxa, fname){
+  checked_seqs = document.getElementById('hide_seqs_cb').checked;
+  checked_taxa = document.getElementById('hide_tax_cb').checked;
+  tax_tds = document.getElementsByClassName('hide_class_tax');
+  
+  for(i in tax_tds){
+    if(checked_taxa){
+        tax_tds[i].style.display = 'none'
+    }else{
+        tax_tds[i].style.display = 'inline';
+    }
+  }
+  // url = 'sequences?id='+id+'&taxa='+encodeURIComponent(taxa)+'&filename='+fname+'&hide_seqs='+checked_seqs+'&hide_tax='+checked_taxa;
+  // //alert(url)
+  // var xmlhttp = new XMLHttpRequest(); 
+  // window.open(url, "_self");
+    
+}
 //
 //
 //

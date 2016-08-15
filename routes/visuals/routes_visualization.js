@@ -1887,6 +1887,16 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var search_tax = myurl.query.taxa;
   var seqs_filename = myurl.query.filename;
+  var hide_seqs = myurl.query.hide_seqs;
+  // if(hide_seqs == undefined){
+  //   hide_seqs = 'false'
+  // }
+  // var hide_tax = myurl.query.hide_tax;
+  // if(hide_tax == undefined){
+  //   hide_tax = 'false'
+  // }
+  //console.log('hs',hide_seqs)
+  //console.log('ht',hide_tax)
 	var pjds = myurl.query.id;
     var seq_list = [];
     var d,p,k,o,f,g,sp,st;
@@ -1908,7 +1918,9 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     title: 'Sequences',
                     ds : pjds,
                     tax : search_tax,
-                    //rows : JSON.stringify(rows),
+                    //hideseqs: hide_seqs,
+                    //hidetax: hide_tax,
+                    fname : seqs_filename,
                     seq_list : 'Error Retrieving Sequences',
                     user: req.user, hostname: req.CONFIG.hostname,
         });
@@ -1960,9 +1972,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                 st = 'strain_NA'
           }
           seq_tax = d+';'+p+';'+k+';'+o+';'+f+';'+g+';'+sp+';'+st;
-          if(seq_tax.substring(0, search_tax.length) === search_tax){
-            colorized_seq = helpers.make_color_seq(data.seq)
-            seq_list.push({prettyseq:colorized_seq, seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
+          if(seq_tax.substring(0, search_tax.length) === search_tax){ 
+            seq_list.push({prettyseq:helpers.make_color_seq(data.seq), seq:data.seq, seq_count:data.seq_count, gast_distance:data.gast_distance, classifier:data.classifier, tax:seq_tax});          
           }
       }
       
@@ -1970,11 +1981,25 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     title: 'Sequences',
                     ds : pjds,
                     tax : search_tax,
-                    //rows : JSON.stringify(rows),
+                    fname : seqs_filename,
+                    //hideseqs: hide_seqs,
+                    //hidetax: hide_tax,
                     seq_list : JSON.stringify(seq_list),
                     user: req.user, hostname: req.CONFIG.hostname,
       });
     });
+  }else{
+      res.render('visuals/user_viz_data/sequences', {
+                    title: 'Sequences',
+                    ds : pjds,
+                    tax : search_tax,
+                    fname : '',
+                    //hideseqs: hide_seqs,
+                    //hidetax: hide_tax,
+                    seq_list : 'Error Retrieving Sequences',
+                    user: req.user, hostname: req.CONFIG.hostname,
+        });
+        return
   }
 	// connection.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
 	  

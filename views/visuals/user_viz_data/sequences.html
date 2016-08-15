@@ -19,30 +19,66 @@
 
   	</form>
     <div id='download_confirm_id'></div>
+    <% header_tail_seqs = '' %>
+    <% header_tail_tax = '' %>
+    <div class='pull-right'>
+        <div class="checkbox-inline">
+       
+          <label><input type="checkbox" id='hide_seqs_cb'  onclick="hide_seqs('<%= ds %>', '<%= tax %>', '<%= fname %>')">Hide Sequences</label>
+          
+
+        </div>
+        <div class="checkbox-inline">
+        
+          <label><input type="checkbox" id='hide_tax_cb'  onclick="hide_tax('<%= ds %>', '<%= tax %>', '<%= fname %>')">Hide Taxonomy</label>
+          
+
+
+          
+        </div>
+    </div>
 </div>
 <div class='overflow_500'>
-<table class='table table-condensed  sortable'>
-	<thead>
-  <tr><th data-defaultsort='disabled'></th><th>Count</th><th>GAST<br>Distance</th><th>NCBI<br>BLAST</th><th>Sequence</th><th>Taxonomy</th></tr>
-  </thead>
-  <tbody>
-<% for (r in seqrows) { %>
-   <tr>
-	   <td><%= parseInt(r)+1 %></td>
-	   <td><%= seqrows[r].seq_count %></td>
-	   <% if(seqrows[r].classifier =='GAST') { %>
-      <td><%= seqrows[r].gast_distance %></td>
-	   <% }else{ %>
-      <td>none</t>
-     <% } %>
-     <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
-     <td><pre><%- seqrows[r].prettyseq %></pre></td>
-	   <td><%= seqrows[r].tax %></td>
-   </tr>
-   
-<% } %>
-</tbody>
-</table>
+
+
+  <table class='table table-condensed  sortable'>
+  	<thead>
+
+    <tr><th data-defaultsort='disabled'></th>
+        <th>Count</th>
+        <th>GAST<br>Distance</th>
+        <th>NCBI<br>BLAST</th>
+        <th><span class='hide_class_seq'>Sequence</span></th>
+        <th><span class='hide_class_tax'>Taxonomy</span></th>
+       
+      </tr>
+    
+    </thead>
+    <tbody>
+      <% for (r in seqrows) { %>
+         <tr>
+      	   <td><%= parseInt(r)+1 %></td>
+      	   <td><%= seqrows[r].seq_count %></td>
+      	   <% if(seqrows[r].classifier =='GAST') { %>
+                <td><%= seqrows[r].gast_distance %></td>
+      	   <% }else{ %>
+                <td>none</t>
+           <% } %>
+           <td><input type='radio' id='' name='ncbiblast' value='' onclick="ncbi_blast('<%= seqrows[r].seq %>')" \></td>
+              
+                <td><span class='hide_class_seq'><pre><%- seqrows[r].prettyseq %></pre></span></td>
+              
+                <td><span class='hide_class_tax'><%= seqrows[r].tax %></span></td>
+          
+      	   
+         </tr>
+         
+      <% } %>
+  </tbody>
+  </table>
+
+
+
 </div>
 
   <% include ../../add_ins/end.ejs %>
