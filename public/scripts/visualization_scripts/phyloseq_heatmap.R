@@ -40,7 +40,6 @@ if(dist_metric  == "morisita_horn"){
 library(scales)
 library(phyloseq)
 library(ggplot2)
-
 theme_set(theme_bw())
 TAX1<-as.matrix(read.table(tax_file,header=TRUE, sep = "\t",row.names = 1,as.is=TRUE))
 TAX <- tax_table(TAX1)
@@ -80,9 +79,8 @@ out_file = paste("tmp/",out_file,sep='')
 unlink(out_file)
 #print(physeq)
 #pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-#qpng(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
+png(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
 #svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
-svg(out_file, width=w, pointsize=6, family = "sans", bg = "black")
 #png(out_file, width=w_svg, height=h_svg)
 gpac <- subset_taxa(physeq, Phylum==phy)
 
