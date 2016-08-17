@@ -1160,6 +1160,47 @@ if (typeof phyloseq05_open_btn !== "undefined") {
 //
 // }
 
+//
+//  CYTOSCAPE
+//
+var cytoscape_link = document.getElementById('cytoscape_link_id') || null;
+var cytoscape_btn = document.getElementById('cytoscape_hide_btn');
+var cytoscape_div = document.getElementById('cytoscape_div');
+var cytoscape_download_btn = document.getElementById('cytoscape_download_btn');
+var pre_cytoscape_div = document.getElementById('pre_cytoscape_div');
+if (cytoscape_link !== null) {
+  cytoscape_link.addEventListener('click', function () {
+      
+    if(typeof cytoscape_created == "undefined"){
+        
+        create_viz('cytoscape', pi_local.ts, false);
+        cytoscape_download_btn.disabled = false;
+      }else{
+        if(cytoscape_btn.value == 'hide'){        
+         // toggle_visual_element(geospatial_div,'show',geospatial_btn);
+        }else{
+          toggle_visual_element(cytoscape_div,'hide',cytoscape_btn);
+        }
+      } 
+    $(pre_cytoscape_div).scrollView();     
+  });
+}
+if (typeof cytoscape_btn !== "undefined") {
+  cytoscape_btn.addEventListener('click', function () {
+      //alert('here in tt')
+      if(cytoscape_btn.value == 'hide'){        
+        toggle_visual_element(cytoscape_div,'show',cytoscape_btn);
+      }else{
+        toggle_visual_element(cytoscape_div,'hide',cytoscape_btn);
+      }
+  });
+}
+var cytoscape_open_btn = document.getElementById('cytoscape_open_btn');
+if (typeof cytoscape_open_btn !== "undefined") {
+  cytoscape_open_btn.addEventListener('click', function () {
+      create_viz('cytoscape', pi_local.ts, true);      
+  });
+}
 
 
 function toggle_visual_element(table_div, tog, btn){
@@ -1217,11 +1258,61 @@ function create_viz(visual, ts, new_window) {
       create_phyloseq(ts,'ord', new_window);
     }else if(visual === 'phyloseq05'){
       create_phyloseq(ts,'tree', new_window);
+    }else if(visual === 'cytoscape'){
+      create_cytoscape(ts);
     }else{
 
     }
 }
+function create_cytoscape(ts){
+  //alert(ts)
+  var cydiv = document.getElementById('cytoscape_div');
 
+  // cytoscape_created = true;
+      
+      
+  //     //cydiv.innerHTML = '';
+    
+
+  var cy = cytoscape({
+    container: cydiv,
+    elements: [
+    { data: { id: 'a' } },
+    { data: { id: 'b' } },
+    {
+      data: {
+        id: 'ab',
+        source: 'a',
+        target: 'b'
+      }
+    }]
+  });
+  for (var i = 0; i < 10; i++) {
+      cy.add({
+          data: { id: 'node' + i }
+          }
+      );
+      var source = 'node' + i;
+      cy.add({
+          data: {
+              id: 'edge' + i,
+              source: source,
+              target: (i % 2 == 0 ? 'a' : 'b')
+          }
+      });
+  }
+
+
+
+cydiv.style.border = '1px solid red'
+cydiv.style.height = '200px'
+cydiv.style.width = '100%'
+cydiv.style.display = 'inline-block';
+//cydiv.style.width = '100%';
+
+document.getElementById('pre_cytoscape_div').style.display = 'block';
+
+}
 //
 // TAX TABLE
 //

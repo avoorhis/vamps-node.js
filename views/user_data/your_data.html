@@ -7,13 +7,16 @@
 <% } %>
 	<div id='' class='well col-sm-12'>
 		<div class='row'>
-		  <% // if(user && user.security_level == 1 || hostname.substring(0,6) !== 'bpcweb'){ %>
+		  
 			<%  	var span = 'col-sm-3'; %>
 					  <div class="<%= span %>">
 					            <div class="panel panel-default">
 					              <div class="panel-heading">
-					                <a class="btn btn-sm btn-primary" href='/user_data/import_choices'>Import Data</a>
-									
+			<% if(user && user.security_level == 1 || hostname.substring(0,7) !== 'bpcweb8'){ %>		                
+					   <a class="btn btn-sm btn-primary" href='/user_data/import_choices' >Import Data</a>
+			<% }else{ %>
+							<a class="btn btn-sm btn-primary disabled" href='' >Import Data (TODO)</a>
+			<% } %>						
 					              </div>
 					              <div class="panel-body">
 					                Validate and upload sequence and metadata to the VAMPS database 
@@ -21,9 +24,7 @@
 					              </div>
 					            </div>
 						</div>
-			<% //}else{ %>
-			<%  //	var span = 'col-sm-4'; %>
-			<% //} %>
+			
 			<div class="<%= span %>">
 		            <div class="panel panel-default">
 		              <div class="panel-heading">
@@ -69,19 +70,22 @@
 		            </div>
 		  </div>
 			
-			<% // if(user && user.security_level == 1 || hostname.substring(0,6) !== 'bpcweb'){ %>
+			
 			<div class="<%= span %>">			
 		          <div class="panel panel-default">
 		              <div class="panel-heading">
-		                <a class="btn btn-sm btn-primary" href='/user_data/your_projects'>Your Projects</a>
-						        
+		  <% if(user && user.security_level == 1 || hostname.substring(0,7) !== 'bpcweb8'){ %> 
+		        <a class="btn btn-sm btn-primary" href='/user_data/your_projects'>Your Projects</a>
+			<% }else{ %>
+						<a class="btn btn-sm btn-primary disabled" href='' >Your Projects (TODO)</a>
+			<% } %>			        
 		              </div>
 		              <div class="panel-body">
 		              	Assign taxonomy, view or delete your uploaded project data.
 		              </div>
 		          </div>
 		  </div>
-		  <% //} %>
+		  
 		  
 		</div>	
 	</div>

@@ -260,10 +260,18 @@ router.post('/export_data', helpers.isLoggedIn, function (req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('import_choices');
-   if (req.user.username == 'guest') {
+  if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+      res.render('user_data/your_data', {
+        title: 'VAMPS:Data Administration',
+        user: req.user, hostname: req.CONFIG.hostname,
+        message: req.flash('message','Not coded yet'),
+      });
+      return;
+  }
+  if (req.user.username == 'guest') {
        req.flash('message', "The 'guest' user is not permitted to import data");
        res.redirect('/user_data/your_data');
-   } else {
+  } else {
       res.render('user_data/import_choices', {
           title: 'VAMPS:Import Choices',
           message: req.flash('successMessage'),
@@ -927,6 +935,14 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
 //
 router.get('/your_projects', helpers.isLoggedIn, function (req, res) {
     //console.log(PROJECT_INFORMATION_BY_PNAME);
+    if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
+      res.render('user_data/your_data', {
+        title: 'VAMPS:Data Administration',
+        user: req.user, hostname: req.CONFIG.hostname,
+        message: req.flash('message','Not coded yet'),
+      });
+      return;
+    }
     var user_projects_base_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     // if (req.CONFIG.hostname.substring(0, 7) == 'bpcweb7') {
     //     var user_projects_base_dir = path.join('/groups/vampsweb/vampsdev_user_data/', req.user.username);

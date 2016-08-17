@@ -1887,16 +1887,7 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 	var myurl = url.parse(req.url, true);
 	var search_tax = myurl.query.taxa;
   var seqs_filename = myurl.query.filename;
-  var hide_seqs = myurl.query.hide_seqs;
-  // if(hide_seqs == undefined){
-  //   hide_seqs = 'false'
-  // }
-  // var hide_tax = myurl.query.hide_tax;
-  // if(hide_tax == undefined){
-  //   hide_tax = 'false'
-  // }
-  //console.log('hs',hide_seqs)
-  //console.log('ht',hide_tax)
+    
 	var pjds = myurl.query.id;
     var seq_list = [];
     var d,p,k,o,f,g,sp,st;
@@ -1918,8 +1909,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     title: 'Sequences',
                     ds : pjds,
                     tax : search_tax,
-                    //hideseqs: hide_seqs,
-                    //hidetax: hide_tax,
                     fname : seqs_filename,
                     seq_list : 'Error Retrieving Sequences',
                     user: req.user, hostname: req.CONFIG.hostname,
@@ -1982,8 +1971,6 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     ds : pjds,
                     tax : search_tax,
                     fname : seqs_filename,
-                    //hideseqs: hide_seqs,
-                    //hidetax: hide_tax,
                     seq_list : JSON.stringify(seq_list),
                     user: req.user, hostname: req.CONFIG.hostname,
       });
@@ -1994,49 +1981,12 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
                     ds : pjds,
                     tax : search_tax,
                     fname : '',
-                    //hideseqs: hide_seqs,
-                    //hidetax: hide_tax,
                     seq_list : 'Error Retrieving Sequences',
                     user: req.user, hostname: req.CONFIG.hostname,
         });
         return
   }
-	// connection.query(QUERY.get_sequences_perDID_and_taxa_query(did,tax), function(err, rows, fields){
-	  
-	//       if (err)  {
-	//   		  console.log('Query error: ' + err);
-	//   		  console.log(err.stack);
-	//   		  res.send(err)
-	//       } else {
-		  	
- //    			  for(s in rows){
- //    			  	//var buffer = new Buffer( rows[s].seq, 'binary' );
- //      				//var seqcomp = buffer.toString('base64');
- //      				rows[s].seq = rows[s].seq.toString('utf8')
- //      				rows[s].tax = ''
-
- //      				for(i in req.CONSTS.RANKS){
- //      					id_n_rank = rows[s][req.CONSTS.RANKS[i]+'_id']+'_'+req.CONSTS.RANKS[i];
- //      					//console.log(id_n_rank);
- //      					taxname =  new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[id_n_rank]['taxon'];
- //      					if(taxname.substr(-3) != '_NA'){
- //      						rows[s].tax += taxname+';'
- //      					}
- //      				} 
- //      				rows[s].tax = rows[s].tax.substr(0,rows[s].tax.length-1);  // remove trailing ';'
-			
- //    			  }
-    			
- //    			  res.render('visuals/user_viz_data/sequences', {
- //    		            title: 'Sequences',
- //    		            ds : pjds,
- //    		            tax : tax,
- //    				        rows : JSON.stringify(rows),
- //    		            user: req.user, hostname: req.CONFIG.hostname,
- //    		    });
-
-	//       }
-
+	
 	//   });
 	
 });

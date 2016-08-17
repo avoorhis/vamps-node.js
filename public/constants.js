@@ -316,7 +316,10 @@ constants.VISUAL_THUMBNAILS = { visuals: [
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
     
     {name:'Phyloseq Tree (R/svg)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
-        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'}
+        tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
+
+    {name:'Cytoscape',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/cytoscape', id:'cytoscape_link_id', 
+        tip:''}
    
 ]};
     

@@ -284,6 +284,13 @@ th.rotate > div > span  a:hover, a:active {
     margin-right:20px;
     padding-right:20px;
 }
+/* GeoSpatial */
+#cytoscape_div {
+    margin-right:20px;
+    padding-right:20px;
+    width: 100%;
+        height: 100%;
+}
 /* Frequency Heatmap */
 
 

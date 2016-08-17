@@ -499,6 +499,7 @@
                               </center>              
                             </td>                                
 
+
           <%            }else{ %>                                         
                             <td class='td_top tooltip_viz_help' id='<%= ttip %>'>                       
                             <center>                        
@@ -822,7 +823,23 @@
   </div>
  </nav>
  <center><div id='phyloseq05_div'      class='display_none well'></div></center>
-
+<% if(hostname.substring(0,7) !== 'bpcweb8'){ %> 
+<!-- CYTOSCAPE --EXPERIMENTAL -->
+ <br>
+ <nav id='pre_cytoscape_div' class="navbar navbar-inverse viz_hidden_div display_none">
+  <div class="navbar-header">       
+      <span id='cytoscape_title' class="navbar-brand table_title" >Cytoscape</span> 
+  </div>
+  <div class='button_div pull-right'>
+    <button type='button' id='cytoscape_hide_btn' class='close_open_btn btn btn-sm btn-default' value='hide'>Hide</button>
+    <button type='button' id='cytoscape_open_btn' class='close_open_btn btn btn-sm btn-default' value='open'>Open in a New Window</button>
+    <button type='button' disabled='disabled' id='cytoscape_download_btn' class='visualization_download_btn btn btn-sm btn-default'>Download(disabled)</button>
+    <button type="button" class="btn btn-sm btn-default" onclick='javascript:window.scrollTo(0,0)'><span class="glyphicon glyphicon-arrow-up"></span>Top</button>
+  </div>
+ </nav>
+ 
+ <center><div id='cytoscape_div'      class='display_none' style='border:1px solid red'></div></center>
+<% } %>
 <!-- -------------------------------------------------- -->
 
   <div id='counts_tooltip_div' class=''></div>
@@ -850,7 +867,7 @@
  <script type="text/javascript" src="/javascripts/view_selection.js"></script>
  <script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
  <script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>
- 
+ <script type="text/javascript" src="/javascripts/cytoscape.min.js"></script>
 </body>
 </html>
 

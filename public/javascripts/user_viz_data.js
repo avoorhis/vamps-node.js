@@ -205,18 +205,11 @@ function hide_seqs(id, taxa, fname){
   for(i in seq_tds){
     if(checked_seqs){
         seq_tds[i].style.display = 'none'
-
     }else{
         seq_tds[i].style.display = 'inline';
     }
   }
-  //alert(seq_tds)
-  // url = 'sequences?id='+id+'&taxa='+encodeURIComponent(taxa)+'&filename='+fname+'&hide_seqs='+checked_seqs+'&hide_tax='+checked_taxa;
-  // //alert(url)
-  // var xmlhttp = new XMLHttpRequest(); 
-  // //alert(xmlhttp)
-  // window.open(url, "_self");
-    
+  
 }
 //
 //
@@ -233,11 +226,7 @@ function hide_tax(id, taxa, fname){
         tax_tds[i].style.display = 'inline';
     }
   }
-  // url = 'sequences?id='+id+'&taxa='+encodeURIComponent(taxa)+'&filename='+fname+'&hide_seqs='+checked_seqs+'&hide_tax='+checked_taxa;
-  // //alert(url)
-  // var xmlhttp = new XMLHttpRequest(); 
-  // window.open(url, "_self");
-    
+      
 }
 //
 //
