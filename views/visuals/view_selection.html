@@ -312,7 +312,7 @@
                               <table><tr><td>Choose Phylum:&nbsp;</td>
                                 <td>
                                 <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:100px'>
-                                  
+                                  <option value='0'>Choose Phylum</option>
                                   <% for(var phy in phy_lookup){ %>
                                     <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
                                   <% } %>
@@ -342,7 +342,7 @@
                                       <td>Choose Phylum:</td>
                                       <td>
                                         <select id='<%= phy_id %>' name='<%= phy_id %>' style='width:120px'>
-                                          
+                                          <option value='0'>Choose Phylum</option>
                                           <% for(var phy in phy_lookup){ %>
                                             <option value='<%= phy_lookup[phy] %>'><%= phy %></option>
                                           <% } %>

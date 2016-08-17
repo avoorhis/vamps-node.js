@@ -2434,22 +2434,32 @@ function create_phyloseq(ts,code, new_window) {
       args += "&ts="+ts;
 
       if(code == 'bar'){
+        phy = document.getElementById('phyloseq_bar_phylum').value;
+        if(phy == '0'){
+          alert('You must choose a phylum.')
+          return
+        }
         phylo_div = document.getElementById('phyloseq01_div');
         info_line = create_header('phyloseq01', pi_local);
         document.getElementById('phyloseq01_title').innerHTML = info_line;
         document.getElementById('phyloseq01_title').style.color = 'white';
         document.getElementById('phyloseq01_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq01_div').style.display = 'block';
-        phy = document.getElementById('phyloseq_bar_phylum').value;
+        
         args += "&phy="+phy;
       }else if(code == 'heatmap'){
+        phy = document.getElementById('phyloseq_heatmap_phylum').value;
+        if(phy == '0'){
+          alert('You must choose a phylum.')
+          return
+        }
         phylo_div = document.getElementById('phyloseq02_div');
         info_line = create_header('phyloseq02', pi_local);
         document.getElementById('phyloseq02_title').innerHTML = info_line;
         document.getElementById('phyloseq02_title').style.color = 'white';
         document.getElementById('phyloseq02_title').style['font-size'] = 'small';
         document.getElementById('pre_phyloseq02_div').style.display = 'block';
-        phy = document.getElementById('phyloseq_heatmap_phylum').value;
+        
         ord_types = document.getElementsByName('phyloseq_heatmap_type');
         md1 = document.getElementById('phyloseq_heatmap_md1').value;
         ord_type = 'PCoA';

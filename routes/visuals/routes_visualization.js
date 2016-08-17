@@ -1311,6 +1311,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     console.log('in phyloseq post')
     //console.log(req.body)
+    
     var ts = req.body.ts;
     var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var dist_metric = req.body.metric;
