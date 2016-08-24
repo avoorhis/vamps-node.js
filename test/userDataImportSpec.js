@@ -102,8 +102,6 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         res.text.should.containEql('Data Import Selection');      
         done();
       });
-
-    // passportStub.logout();
   });
   
   it("should raise an error if text is not on the page", function(done) {
@@ -121,124 +119,58 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         
         done();
       });
-
-    // passportStub.logout();
   });
-  
-  
-  
-  // it("should have a correct title and buttons on import_choices if logged in", function(done){
-  //   passportStub.login({
-  //     username: 'TEST', password: 'TEST'
-  //   });
-  //   req = request(app);
-  //   
-  //   req
-  //     .get('/users/profile')
-  //     .expect(200)
-  //     .end(function (err, res) {
-  //       // console.log("===2===");
-  //       // console.log(res);
-  //       // console.log("===22===");
-  //       res.text.should.containEql('Profile Page');
-  //       res.text.should.containEql('TEST');
-  //       
-  //       server
-  //       .get('/user_data/import_choices')
-  //       .expect("Content-type", /json/)
-  //       .end(function(err, res){
-  //         res.status.should.eql(302);
-  //         console.log("YYY res");
-  //         console.log(util.inspect(res, false, null));
-  //         // res.text.should.containEql('DDDRRRR');
-  //         res.text.should.containEql('Data Import Selection');
-  //       });
-  //       
-  //       // done();
-  //     });
-  //     // done();
-  // 
-  // });
-  
-  //     passportStub.install(app);
-  //     console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
-  //     passportStub.login({
-  //       username: app.testuser.user, password: app.testuser.pass
-  //     });
-
-
 });
   
-//     beforeEach(function() {
-//       passportStub.logout();
-//     });
-//
-//     before(function (done) {
-//         test_name_hash = {}
-//         test_name_hash.name = []
-//         test_name_hash.ids  = []
-//         test_selection_obj  = {}
-//
-//         connection = require('../config/database-test');
-//
-//         // login with passport-stub
-//         passportStub.install(app);
-//         console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
-//         passportStub.login({
-//           username: app.testuser.user, password: app.testuser.pass
-//         });
-//         //this.timeout(10000);
-//         req = request(app);
-//
-//         done();
-//     });
-//
-//
-//
-//
-//
-//   it('should not allow to submit a project if logged in as a gest');
-//
+
+  it('should show buttons on GET /user_data/your_data 304');
 //   it('should show buttons on GET /user_data/your_data 304', function(done) {
 //     // Data Administration
 //     done();
 //   });
-//
+
+  it('should show choices on GET /user_data/import_choices 304');
 //   it('should show choices on GET /user_data/import_choices 304', function(done) {
 //     // Data Import Selection
 //     done();
 //   });
-//
+
+  it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302');
 //   it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302', function(done) {
 //     // Import Data
 //     done();
 //   });
-//
+
+  it('should show "That A project name is required." if upload failed in ProjectNameGiven');
 //   it('should show "That A project name is required." if upload failed in ProjectNameGiven', function(done) {
 //     // GET /user_data/your_data 304
 //     // Import Data
 //     //
 //     done();
 //   });
-//
+
+  it('should show "A fasta file is required." if upload failed in FastaExists');
 //   it('should show "A fasta file is required." if upload failed in FastaExists', function(done) {
 //     // Import Data
 //     //  POST /user_data/upload_data 302
 //     done();
 //   });
 //
+  it('should show "A metadata csv file is required." if upload failed in MetadataFileExists');
 //   it('should show "A metadata csv file is required." if upload failed in MetadataFileExists', function(done) {
 //     // Import Data
 //     //  POST /user_data/upload_data 302
 //     done();
 //   });
 //
+  it('should show "That project name is already taken." if upload failed in FilePathExists');
 //   it('should show "That project name is already taken." if upload failed in FilePathExists', function(done) {
 //     // Import Data
 //     //  POST /user_data/upload_data 302
 //     done();
 //   });
 //
+  it('should show "Upload in Progress: \'test_gast_project\'" on POST /user_data/upload_data 200 if success');
 //   it('should show "Upload in Progress: \'test_gast_project\'" on POST /user_data/upload_data 200 if success', function(done) {
 //     // Data Import Selection
 //     done();
