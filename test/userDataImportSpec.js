@@ -123,6 +123,8 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 });
   
 
+  it('should not allow to submit a project if logged in as a gest');
+
   it('should show buttons on GET /user_data/your_data 304');
 //   it('should show buttons on GET /user_data/your_data 304', function(done) {
 //     // Data Administration
