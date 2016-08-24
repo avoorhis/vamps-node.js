@@ -135,6 +135,8 @@ describe('<<< Data Import Selection page functionality >>>', function(){
           res.text.should.containEql('Profile Page');
           res.status.should.eql(200);
           res.text.should.containEql('TEST');
+          // console.log('EEE responds with 200 when logged in', res);
+          
           done();
         });
 
@@ -171,38 +173,61 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  it("should have a correct title and buttons on import_choices if logged in", function(done){
+  
+  it("should have a correct title and buttons on import_choices if logged in", function(done) {
     passportStub.login({
       username: 'TEST', password: 'TEST'
     });
     req = request(app);
     
     req
-      .get('/users/profile')
-      .expect(200)
+      .get('/user_data/import_choices')
+      .expect("Content-type", /json/)
       .end(function (err, res) {
-        // console.log("===2===");
-        // console.log(res);
-        // console.log("===22===");
-        res.text.should.containEql('Profile Page');
-        res.text.should.containEql('TEST');
+        res.status.should.eql(200);
+        console.log("YYY res");
+        console.log(util.inspect(res, false, null));
+        res.text.should.containEql('DDDRRRR');
+        res.text.should.containEql('Data Import Selection');
         
-        server
-        .get('/user_data/import_choices')
-        .expect("Content-type", /json/)
-        .end(function(err, res){
-          res.status.should.eql(302);
-          console.log("YYY res");
-          console.log(util.inspect(res, false, null));
-          res.text.should.containEql('DDDRRRR');
-          res.text.should.containEql('Data Import Selection');
-        });
-        
-        // done();
+        done();
       });
-      // done();
 
+    // passportStub.logout();
   });
+  
+  // it("should have a correct title and buttons on import_choices if logged in", function(done){
+  //   passportStub.login({
+  //     username: 'TEST', password: 'TEST'
+  //   });
+  //   req = request(app);
+  //   
+  //   req
+  //     .get('/users/profile')
+  //     .expect(200)
+  //     .end(function (err, res) {
+  //       // console.log("===2===");
+  //       // console.log(res);
+  //       // console.log("===22===");
+  //       res.text.should.containEql('Profile Page');
+  //       res.text.should.containEql('TEST');
+  //       
+  //       server
+  //       .get('/user_data/import_choices')
+  //       .expect("Content-type", /json/)
+  //       .end(function(err, res){
+  //         res.status.should.eql(302);
+  //         console.log("YYY res");
+  //         console.log(util.inspect(res, false, null));
+  //         // res.text.should.containEql('DDDRRRR');
+  //         res.text.should.containEql('Data Import Selection');
+  //       });
+  //       
+  //       // done();
+  //     });
+  //     // done();
+  // 
+  // });
   
   //     passportStub.install(app);
   //     console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
