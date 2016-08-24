@@ -140,19 +140,33 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         done();
       });
   });
-  
-  
-});
-  
 
-  // it('should not allow to submit a project if logged in as a gest');
+  it('should not allow to submit a project if logged in as a gest');
 
-
-  it('should show choices on GET /user_data/import_choices 304');
-//   it('should show choices on GET /user_data/import_choices 304', function(done) {
-//     // Data Import Selection
-//     done();
-//   });
+  it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302', function(done) {
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
+    });
+    req = request(app);
+    
+    req
+      .get('/user_data/import_data?import_type=simple_fasta')
+      .expect("Content-type", /json/)
+      .end(function (err, res) {
+        // console.log("YYY res");
+        // console.log(util.inspect(res.text, false, null));
+        
+        res.status.should.eql(200);
+        // res.text.should.containEql('DDDRRRR');
+        res.text.should.containEql('<form class="form-horizontal" role="form" method="POST" action="upload_data" enctype="multipart/form-data">');
+        res.text.should.containEql('<p class="title">Import Data</p>');
+        res.text.should.containEql('Project Name:');
+        res.text.should.containEql('Import Simple (single dataset) Form:');
+        res.text.should.containEql('Fasta File');
+        res.text.should.containEql('Metadata File');        
+        done();
+      });
+  });
 
   it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302');
 //   it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302', function(done) {
@@ -211,3 +225,5 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //   });
 //
   it('should say if the file is compressed or not');
+
+});
