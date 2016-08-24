@@ -120,16 +120,33 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         done();
       });
   });
+  
+  it('should show choices on GET /user_data/import_choices 304', function(done) {
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
+    });
+    req = request(app);
+    
+    req
+      .get('/user_data/import_choices')
+      .expect("Content-type", /json/)
+      .end(function (err, res) {
+        res.status.should.eql(200);
+        // res.text.should.containEql('DDDRRRR');
+        res.text.should.containEql('Simple (single dataset) Fasta File');
+        res.text.should.containEql('Multi-Dataset Fasta File');
+        res.text.should.containEql('Add Metadata to a Project');
+        res.text.should.containEql('Data Import Selection');        
+        done();
+      });
+  });
+  
+  
 });
   
 
-  it('should not allow to submit a project if logged in as a gest');
+  // it('should not allow to submit a project if logged in as a gest');
 
-  it('should show buttons on GET /user_data/your_data 304');
-//   it('should show buttons on GET /user_data/your_data 304', function(done) {
-//     // Data Administration
-//     done();
-//   });
 
   it('should show choices on GET /user_data/import_choices 304');
 //   it('should show choices on GET /user_data/import_choices 304', function(done) {
