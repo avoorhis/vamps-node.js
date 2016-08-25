@@ -1,18 +1,14 @@
 <% menu_section='YOURDATA' %>
 <% include ../add_ins/begin.ejs %>
+<% if (message.length > 0) { %>
+      <div class="message alert_flash_message"><%= message %></div>
+  <% } %>
 <div class="title fa fa-anchor">Login</div>
 <div class="row">
     <div class="col-lg-3"></div>
       <div class="col-lg-6">
     <div class="well">
-
-
-  
-  
-  <% if (message.length > 0) { %>
-      <div class="message alert_flash_message"><%= message %></div>
-  <% } %>
-  Due to a change in the database structure the logins from the original VAMPS will not work
+Due to a change in the database structure the logins from the original VAMPS will not work
   with the new site.<br>Please <a href="/users/signup">signup for a new login here.</a><br>
   <br>
       <div id='login_div' class='table' >

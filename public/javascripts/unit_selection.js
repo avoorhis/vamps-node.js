@@ -48,9 +48,9 @@ if (get_graphics_btn !== null)
     //alert(selected_unit_choice+' '+custom_selection)
     if (selected_unit_choice === 'tax_silva119_simple')
     {
-      var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
+      var taxa_checked = check_form(get_graphics_form, msg, "silva119_domains[]");
     }else if (selected_unit_choice === 'tax_rdp_simple'){
-      var taxa_checked = check_form(get_graphics_form, msg, "domains[]");
+      var taxa_checked = check_form(get_graphics_form, msg, "rdp_domains[]");
     }else if (selected_unit_choice === 'tax_silva119_custom')
     {
       if(custom_selection == 'html'){

@@ -102,6 +102,9 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
     });
     
 });
+//
+//  V I E W  S E L E C T I O N
+//
 router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   // This page (view_selection) comes after the datasets and units have been selected
@@ -188,6 +191,7 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     // GLOBAL Variable
     visual_post_items = COMMON.save_post_items(req);
+
     dataset_ids = chosen_id_name_hash.ids;
 
     for(var i in dataset_ids){
@@ -225,14 +229,14 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 
   }
   
-
-  console.log('chosen_id_name_hash:>>');
-  console.log(chosen_id_name_hash);
-  console.log('<<chosen_id_name_hash');
+  
+  //console.log('chosen_id_name_hash:>>');
+  //console.log(chosen_id_name_hash);
+  //console.log('<<chosen_id_name_hash');
     
-  console.log('TAXCOUNTS:>>');
-  console.log(TAXCOUNTS);
-  console.log('<<TAXCOUNTS');
+  //console.log('TAXCOUNTS:>>');
+  //console.log(TAXCOUNTS);
+  //console.log('<<TAXCOUNTS');
   // GLOBAL
   var timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
@@ -242,9 +246,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   visual_post_items.max_ds_count = BIOM_MATRIX.max_dataset_count;
   
 
-  console.log('visual_post_items:>>');
-  console.log(visual_post_items);
-  console.log('<<visual_post_items:');
+  console.log('VS--visual_post_items:>>');
+  //console.log(visual_post_items);
+  console.log('<<VS--visual_post_items:');
  
 
   // GLOBAL
@@ -283,7 +287,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
 });
 
 
-
+//
+// U N I T  S E L E C T I O N
+//
 // use the isLoggedIn function to limit exposure of each page to
 // logged in users only
 router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {

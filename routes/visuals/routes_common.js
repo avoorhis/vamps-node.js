@@ -132,7 +132,8 @@ module.exports = {
   save_post_items: function(req) {
     // GLOBAL Variable
     var post_hash = {};
-
+    console.log('VS--DOMAINS',req.body.domains)
+    console.log('req.body.ds_order',req.body.ds_order)
     if(req.body.ds_order === undefined) {
           
           post_hash.unit_choice                  = req.body.unit_choice;
@@ -142,11 +143,16 @@ module.exports = {
           post_hash.visuals                      = req.body.visuals;
           post_hash.selected_distance            = req.body.selected_distance || 'morisita_horn';
           post_hash.tax_depth                    = req.body.tax_depth    || 'custom';
-          post_hash.domains                      = req.body.domains      || ['NA'];
-          if(typeof post_hash.domains == 'string') {
-            post_hash.domains = post_hash.domains.split(',');
+          if(post_hash.unit_choice === 'tax_silva119_simple'){
+            post_hash.domains                    = req.body.silva119_domains      || ['NA'];
+          }else if( post_hash.unit_choice === 'tax_rdp_simple'){
+            post_hash.domains                    = req.body.rdp_domains      || ['NA'];  
+          }else{
+            post_hash.domains = ['NA']
           }
-
+          if(typeof post_hash.domains == 'string') {
+              post_hash.domains = post_hash.domains.split(',');
+          }
           console.log('TYPEOF CUSTOM')
           console.log(req.body.custom_taxa)
           console.log(typeof req.body.custom_taxa)
@@ -172,7 +178,7 @@ module.exports = {
           // in the unusual event that a single custom checkbox is selected --> must change from string to list:
 
           if(typeof post_hash.custom_taxa !== 'object') {post_hash.custom_taxa = [post_hash.custom_taxa]; }
-          if(post_hash.unit_choice === 'tax_silva108_custom' && post_hash.custom_taxa != ['NA']){
+          if(post_hash.unit_choice === 'tax_silva119_custom' && post_hash.custom_taxa != ['NA']){
             post_hash.custom_taxa = this.clean_custom_tax(post_hash.custom_taxa);
           }
 
