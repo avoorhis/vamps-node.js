@@ -165,8 +165,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
-
-            //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
             TAXCOUNTS[did] = jsonfile['taxcounts'];
@@ -204,8 +202,6 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
             }else{
                 var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             }
-
-            //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
             TAXCOUNTS[did] = jsonfile['taxcounts'];
@@ -344,7 +340,11 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       
         
         if(HDF5_TAXDATA == ''){
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+            }else{
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+            }
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
             //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
