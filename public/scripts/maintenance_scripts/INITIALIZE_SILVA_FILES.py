@@ -18,42 +18,47 @@ today     = str(datetime.date.today())
 
 
 parser = argparse.ArgumentParser(description="") 
+
 query_core = " FROM sequence_pdr_info" 
 query_core += " JOIN sequence_uniq_info USING(sequence_id)"
-query_core += " JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
-query_core += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
+
+query_core_silva119 = query_core+" JOIN silva_taxonomy_info_per_seq USING(silva_taxonomy_info_per_seq_id)"
+query_core_silva119 += " JOIN silva_taxonomy USING(silva_taxonomy_id)" 
+
+#query_core_rdp = query_core+" JOIN rdp_taxonomy_info_per_seq USING(rdp_taxonomy_info_per_seq_id)"
+#query_core_rdp += " JOIN rdp_taxonomy USING(rdp_taxonomy_id)" 
 
 domain_query = "SELECT sum(seq_count), dataset_id, domain_id"
-domain_query += query_core
-domain_query += " GROUP BY dataset_id, domain_id"
+#domain_query += query_core
+domain_query += "%s GROUP BY dataset_id, domain_id"
 
 phylum_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id" 
-phylum_query += query_core
-phylum_query += " GROUP BY dataset_id, domain_id, phylum_id"
+#phylum_query += query_core
+phylum_query += "%s GROUP BY dataset_id, domain_id, phylum_id"
 
 class_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id" 
-class_query += query_core
-class_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id"
+#class_query += query_core
+class_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id"
 
 order_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id" 
-order_query += query_core
-order_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
+#order_query += query_core
+order_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id"
 
 family_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id" 
-family_query += query_core
-family_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
+#family_query += query_core
+family_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id"
 
 genus_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id" 
-genus_query += query_core
-genus_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
+#genus_query += query_core
+genus_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id"
 
 species_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id" 
-species_query += query_core
-species_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
+#species_query += query_core
+species_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id"
 
 strain_query = "SELECT sum(seq_count), dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id" 
-strain_query += query_core
-strain_query += " GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
+#strain_query += query_core
+strain_query += "%s GROUP BY dataset_id, domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id"
 
 # these SHOULD be the same headers as in the NODE_DATABASE table: required_metadata_info (order doesn't matter)
 required_metadata_fields = [ "altitude", "assigned_from_geo", "collection_date", "depth", "country", "elevation", "env_biome", "env_feature", "env_matter", "latitude", "longitude", "public","taxon_id","description","common_name"];
@@ -148,6 +153,7 @@ def check_files(args):
         print "('" + "','".join(missing) + "')"
         pass
     print 'DID presence is NOT Required'
+
 def go(args):
     """
         count_lookup_per_dsid[dsid][tax_id_str] = count     
@@ -166,16 +172,20 @@ def go(args):
     os.mkdir(args.files_prefix)
     logging.debug('Created Dir: '+args.files_prefix)
     for q in queries:
-        print q["query"]
+        #print q["query"]
         dirs = []
+        
+        query = q["query"] % query_core_silva119
         try:
-
+            print
             print "running mysql query for:",q['rank']
             logging.debug("running mysql query for: "+q['rank'])
-            cur.execute(q["query"])
+            
+            print query
+            cur.execute(query)
         except:
-            print "Trying to query with:",q["query"]
-            logging.debug("Failing to query with: "+q["query"])
+            print "Trying to query with:",query
+            logging.debug("Failing to query with: "+query)
             sys.exit("This Database Doesn't Look Right -- Exiting")
         for row in cur.fetchall():
             #print row
@@ -373,6 +383,9 @@ if __name__ == '__main__':
     parser.add_argument("-db", "--db",    
                 required=False,  action='store', dest = "NODE_DATABASE",  default='',
                 help="NODE_DATABASE")
+    # parser.add_argument("-units", "--units",    
+    #             required=False,  action='store', dest = "units",  default='silva119',
+    #             help="UNITS")
     parser.add_argument("-c", "--check_files",    
                 required=False,  action='store_true', dest = "check_files",  default=False,
                 help="If set will look for continuity between database(dataset table) and JSON files")
@@ -449,6 +462,8 @@ if __name__ == '__main__':
         sys.exit(-1)
     
     #args.json_dir = os.path.join("../","json")
+    #permissible_units = ['silva119','rdp']
+    
     args.files_prefix   = os.path.join(args.json_file_path,NODE_DATABASE+"--datasets")
     args.taxcounts_file = os.path.join(args.json_file_path,NODE_DATABASE+"--taxcounts.json")
     args.metadata_file  = os.path.join(args.json_file_path,NODE_DATABASE+"--metadata.json")

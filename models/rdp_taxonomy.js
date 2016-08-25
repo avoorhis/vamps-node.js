@@ -18,21 +18,14 @@ var taxa_query_pt1 = "SELECT DISTINCT domain, phylum, klass, `order`, family, ge
  
 console.log('running dataset_taxa_counts query');
 
-module.exports = silvaTaxonomy;
-//module.exports = rdpTaxonomy;
-function silvaTaxonomy() {
+module.exports = rdpTaxonomy;
+
+function rdpTaxonomy() {
 }
-// function rdpTaxonomy() {
-// }
-silvaTaxonomy.prototype.get_all_taxa = function(callback) 
+
+rdpTaxonomy.prototype.get_all_taxa = function(callback) 
 {
-  connection.query(taxa_query_pt1+'silva_taxonomy'+taxa_query_pt2, function (err, rows, fields) {
+  connection.query(taxa_query_pt1+'rdp_taxonomy'+taxa_query_pt2, function (err, rows, fields) {
     callback(err, rows);
   });
 };
-// rdpTaxonomy.prototype.get_all_taxa = function(callback) 
-// {
-//   connection.query(taxa_query_pt1+'rdp_taxonomy'+taxa_query_pt2, function (err, rows, fields) {
-//     callback(err, rows);
-//   });
-// };

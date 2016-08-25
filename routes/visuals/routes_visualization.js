@@ -59,7 +59,11 @@ router.get('/view_selection/:filename', helpers.isLoggedIn, function(req, res) {
       var did = dataset_ids[i]
       try{
           if(HDF5_TAXDATA == ''){
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+            }else{
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+            }
             var path_to_file = path.join(files_prefix, did +'.json');
             var jsonfile = require(path_to_file);
             TAXCOUNTS[did] = jsonfile['taxcounts'];
@@ -156,12 +160,19 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
        
         
         if(HDF5_TAXDATA == ''){
-            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+            }else{
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+            }
+
+            //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
             TAXCOUNTS[did] = jsonfile['taxcounts'];
             METADATA[did]  = jsonfile['metadata'];
         }else{
+            
             TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
             METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
         }
@@ -179,6 +190,42 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   }else{
     // GLOBAL Variable
     visual_post_items = COMMON.save_post_items(req);
+    dataset_ids = chosen_id_name_hash.ids;
+
+    for(var i in dataset_ids){
+      var did = dataset_ids[i]
+     
+      try{
+       
+        
+        if(HDF5_TAXDATA == ''){
+            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
+            }else{
+                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
+            }
+
+            //var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
+            var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
+            var jsonfile = require(path_to_file);
+            TAXCOUNTS[did] = jsonfile['taxcounts'];
+            METADATA[did]  = jsonfile['metadata'];
+        }else{
+            
+            TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
+            METADATA[did] = helpers.get_attributes_from_hdf5_group(did, 'metadata')
+        }
+        
+      }
+      catch(err){
+        console.log('2-no file '+err.toString()+' Exiting');
+        req.flash('Message', "ERROR \
+          Dataset file not found '"+dataset_ids[i] +".json' (configuration file may be out of date)");
+          //res.redirect('visuals_index');
+          //return;
+      }
+      
+    }
 
   }
   
@@ -187,9 +234,9 @@ router.post('/view_selection', helpers.isLoggedIn, function(req, res) {
   console.log(chosen_id_name_hash);
   console.log('<<chosen_id_name_hash');
     
-  //console.log('TAXCOUNTS:>>');
-  //console.log(TAXCOUNTS);
-  //console.log('<<TAXCOUNTS');
+  console.log('TAXCOUNTS:>>');
+  console.log(TAXCOUNTS);
+  console.log('<<TAXCOUNTS');
   // GLOBAL
   var timestamp = +new Date();  // millisecs since the epoch!
   timestamp = req.user.username + '_' + timestamp;
@@ -259,7 +306,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
   console.log(req.body);
   console.log('req.body: unit_selection');
   if(typeof  unit_choice === 'undefined'){
-    unit_choice = 'tax_silva108_simple';
+    unit_choice = 'tax_silva119_simple';
   }
   console.log(unit_choice);
   var dataset_ids = [];
@@ -300,7 +347,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
             var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets");
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
-            TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
+            //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
             METADATA[dataset_ids[i]]  = jsonfile['metadata'];
         }else{
             TAXCOUNTS[did] = helpers.get_attributes_from_hdf5_group(did, 'taxcounts')
@@ -316,7 +363,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	  //console.log(JSON.stringify(METADATA))
 	  //console.log('49x',JSON.stringify(TAXCOUNTS['49']))
     //console.log(JSON.stringify(TAXCOUNTS2[49]))
-	  console.log('Pulling TAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
+	  console.log('Pulling xTAXCOUNTS and METADATA -- ONLY for datasets selected (from files)');
 	  //console.log('TAXCOUNTS= '+JSON.stringify(TAXCOUNTS));
     //console.log('METADATA= '+JSON.stringify(METADATA));
 	  var available_units = req.CONSTS.AVAILABLE_UNITS; // ['med_node_id','otu_id','taxonomy_gg_id']
@@ -357,7 +404,7 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 	                    constants    : JSON.stringify(req.CONSTS),
 	                    md_cust      : JSON.stringify(custom_metadata_headers),  // should contain all the cust headers that selected datasets have
 		  				        md_req       : JSON.stringify(required_metadata_headers),
-                      unit_choice:unit_choice,
+                      unit_choice : unit_choice,
 		  				        message      : req.flash('Message'),
 	                    user         : req.user,hostname: req.CONFIG.hostname,
 	  });  // end render
@@ -394,7 +441,7 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   SHOW_DATA = ALL_DATASETS;
   TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
   METADATA  = {};
-  unit_choice = 'tax_silva108_simple';
+  unit_choice = 'tax_silva119_simple';
   // GLOBAL
   DATA_TO_OPEN = {};
   if(req.body.data_to_open){
@@ -1311,7 +1358,7 @@ router.post('/alpha_diversity', helpers.isLoggedIn, function(req, res) {
 router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
     console.log('in phyloseq post')
     //console.log(req.body)
-    
+
     var ts = req.body.ts;
     var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var dist_metric = req.body.metric;
@@ -1337,7 +1384,7 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
       options.args = options.args.concat([image_file, phy, fill]);
     }else if(plot_type == 'heatmap'){
       script = 'phyloseq_heatmap.R';
-      image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
+      //image_file = ts+'_phyloseq_'+plot_type+'_'+rando.toString()+'.png';
       phy = req.body.phy;
       md1 = req.body.md1;
       ordtype = req.body.ordtype;
@@ -1402,20 +1449,20 @@ router.post('/phyloseq', helpers.isLoggedIn, function(req, res) {
               // return;
 
                  
-                 // if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
-                 // //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
-                 //      html = "<div id='pdf'>";
-                 //      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
-                 //      html += " <p>ERROR in loading pdf file</p>";
-                 //      html += "</object></div>"; 
-                 // }else{
+                 if(plot_type == 'heatmap'){   // for some unknown reason heatmaps are different: use pdf not svg
+                 //html = "<object  data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf'width='100%' height='700' >Your browser does not support SVG</object>";
+                      html = "<div id='pdf'>";
+                      html += "<object data='/"+image_file+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
+                      html += " <p>ERROR in loading pdf file</p>";
+                      html += "</object></div>"; 
+                 }else{
                       html = "<img src='/"+image_file+"'  >";                    
-                //}              
+                }              
             }
 
           }else{
             console.log('ERROR-2');            
-            html = 'Phyloseq R Script Error: '+stderr;
+            html = "Phyloseq Error: Try selecting more data, deeper taxonomy or excluding 'NA's"
           } 
           console.log(html);
           res.send(html);
@@ -1998,8 +2045,8 @@ router.get('/sequences/', helpers.isLoggedIn, function(req, res) {
 *      and are shown via ajax depending on user selection in combo box
 *       on that page.  AAV
 */
-router.get('/partials/tax_silva108_simple', helpers.isLoggedIn,  function(req, res) {
-    res.render('visuals/partials/tax_silva108_simple', {
+router.get('/partials/tax_silva119_simple', helpers.isLoggedIn,  function(req, res) {
+    res.render('visuals/partials/tax_silva119_simple', {
         doms: req.CONSTS.DOMAINS
     });
 });
@@ -2027,8 +2074,13 @@ router.get('/partials/load_metadata', helpers.isLoggedIn,  function(req, res) {
 //
 //
 //
-router.get('/partials/tax_silva108_custom', helpers.isLoggedIn,  function(req, res) {
-  res.render('visuals/partials/tax_silva108_custom',  { title   : 'Silva(v108) Custom Taxonomy Selection'});
+router.get('/partials/tax_silva119_custom', helpers.isLoggedIn,  function(req, res) {
+  res.render('visuals/partials/tax_silva119_custom',  { title   : 'Silva(v119) Custom Taxonomy Selection'});
+});
+router.get('/partials/tax_rdp_simple', helpers.isLoggedIn,  function(req, res) {
+    res.render('visuals/partials/tax_rdp_simple', {
+        doms: req.CONSTS.DOMAINS
+    });
 });
 router.get('/partials/tax_gg_custom', helpers.isLoggedIn,  function(req, res) {
     res.render('visuals/partials/tax_gg_custom',{});
@@ -2646,7 +2698,7 @@ router.get('/set_units', function(req, res) {
   if(req.query.hasOwnProperty('units')){
     unit_choice = req.query.units
   }else{
-    unit_choice = 'tax_silva108_simple';
+    unit_choice = 'tax_silva119_simple';
   }
   
 });
@@ -2684,7 +2736,7 @@ router.get('/set_units', function(req, res) {
   if(req.query.hasOwnProperty('units')){
     unit_choice = req.query.units
   }else{
-    unit_choice = 'tax_silva108_simple';
+    unit_choice = 'tax_silva119_simple';
   }
   
 });

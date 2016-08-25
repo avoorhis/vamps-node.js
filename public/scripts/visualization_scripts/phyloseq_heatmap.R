@@ -51,12 +51,11 @@ MAP <- import_qiime_sample_data(map_file)
 #print(class(TAX))
 #print(is.recursive(TAX))
 #print(is.atomic(TAX))
-
+print(OTU)
 df <- as.data.frame(TAX)[taxa_label]
 rows <- nrow(df)
 print(df)
-print(ncol(df))
-print(rows)
+
 physeq <- phyloseq(OTU,TAX,MAP)
 
 ds_count<-ncol(OTU)
@@ -79,8 +78,8 @@ out_file = paste("tmp/",out_file,sep='')
 unlink(out_file)
 #print(physeq)
 #pdf(out_file, width=w, height=h, pointsize=6, family = "sans", bg = "black")
-png(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
-#svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans", bg = "black")
+#png(out_file)  # Adding h,w make it difficule to format for web page, width=w_png, height=h_png)
+svg(out_file, width=w_svg, height=h_svg, pointsize=6, family = "sans")
 #png(out_file, width=w_svg, height=h_svg)
 gpac <- subset_taxa(physeq, Phylum==phy)
 
@@ -102,8 +101,8 @@ gpac <- tryCatch({
 print(gpac)
 plot_title = paste('Phylum:',phy, sep=' ')
 #p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title,  sample.label='X.SampleID', taxa.label=taxa_label, na.value = "black")
-p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=taxa_label)
-
+p <- plot_heatmap(gpac, method=ord_type, distance=dist, title=plot_title, sample.label=md1, taxa.label=taxa_label,low="#000033", high="#CCFF66")
+#p<-heatmap(otu_table(gpac), Rowv=NA, Colv=NA, col = heat.colors(256), scale="column", margins=c(5,10))
 print(p$scales)
 print(p)
 # Ordination:  http://joey711.github.io/phyloseq/plot_ordination-examples.html

@@ -198,6 +198,7 @@ In Mysql:
 Applying new database schema from vamps2 (on vampsdev)
   I will record all alterations to the database here:
   
+  
   2015-10-20 AAV Added new table: 
       CREATE TABLE `access` (
         `access_id` int(11) unsigned NOT NULL AUTO_INCREMENT,

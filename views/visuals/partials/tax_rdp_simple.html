@@ -1,4 +1,4 @@
-<span class='lg_font'>Silva(v108) Simple Taxonomy Selection</span>
+<span class='lg_font'>RDP<br>&nbsp;&nbsp;Taxonomy Selection</span>
 <% if (typeof doms === 'undefined') { %>
 <%   var domains = JSON.parse(constants).DOMAINS.domains; %>
 <% } else { %>
@@ -9,14 +9,14 @@
   <ul>
     <li class='bold_font'>Domains to Include:
     <span class='small_font normal_weight' >
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' id='toggle_taxa_btn' name='taxa_ckbx_toggle'  value='all' \> Toggle
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' id='toggle_taxa_rdp_btn' name='taxa_ckbx_toggle'  value='all' \> Toggle
     </span>
     </li>
     <% for (i in domains) { %>
       <% domain = domains[i].name %>
       <li>
       <label class='taxa-select'>
-        <input type='checkbox' class='simple_taxa_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
+        <input type='checkbox' class='simple_taxa_rdp_ckbx' checked='checked' value='<%= domain %>' name='domains[]' \>
         <%= domain %>
       </label>
       </li>
@@ -42,4 +42,3 @@
   </ul>
   </td></tr>
   </table>
-  

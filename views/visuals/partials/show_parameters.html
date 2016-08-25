@@ -1,0 +1,26 @@
+
+
+Selection Parameters:<br>
+	
+	<div id='dataset_names_div' class='small_font'>
+	    <ul>
+	    	
+          <% if(pi.custom_taxa.length == 1 && pi.custom_taxa[0] == 'NA'){ %>
+			        
+			        <li>Units: <b><%= pi.unit_choice %></b></li>
+			        <li>Taxonomic Depth: <b><%= pi.tax_depth %></b></li> 
+			        <li>Included Domains:</li>
+			        <ol>
+			        <% for(i in pi.domains){ %>
+			        		<li><b><%= pi.domains[i] %></b></li>
+			        <% } %>
+			      </ol>
+			    <% }else{ %>
+			        <li>Units: <b><%= pi.unit_choice %></b></li>
+			        <li>Taxonomic Depth: <b>Custom</b></li>
+			    <% } %>
+
+	    </ul>
+	</div>
+
+

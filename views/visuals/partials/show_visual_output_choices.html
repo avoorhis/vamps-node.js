@@ -7,12 +7,12 @@ Screening/Options:<br>
 <form id='' name='' method='POST' action='view_selection'>
 <table class='small_font table table-striped'>
     <tr>
-        <td>Normalization of Counts:
+        <td>Normalization of Counts:<br>
             <% for (i in rows) { %>
             <%    if (rows[i].id === pi.normalization) { %>
-                      <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' checked='checked' \> <%= rows[i].id %>
+                      <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' checked='checked' \> <%= rows[i].id %>&nbsp;&nbsp;
             <%     } else { %>
-                      <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' \> <%= rows[i].id %>
+                      <input type='radio' id='' name='normalization' value='<%= rows[i].id %>' \> <%= rows[i].id %>&nbsp;&nbsp;
             <%     } %>
             <% } %>
             
@@ -34,14 +34,14 @@ Screening/Options:<br>
         </td>
     </tr>
     <tr>
-        <td>Filter Matrix Rows by Frequency:
+        <td>Filter Matrix Rows by Frequency:<br>
 
 		  MIN: <select id='min_range' name='min_range' class='small_font'>
 		    <% for( var n=0; n < pct_range.length-1; n++ ) {  %>
 		    <%    if(pi.min_range.toString() === pct_range[n].toString()) { %>
-		            <option value='<%= pct_range[n]  %>' selected='selected' ><%= pct_range[n] %>%</option> 
+		            <option value='<%= pct_range[n]  %>' selected='selected' ><%= pct_range[n] %>%</option>&nbsp;&nbsp; 
 		    <%    }else{ %>
-		            <option value='<%= pct_range[n]  %>' ><%= pct_range[n]  %>%</option>
+		            <option value='<%= pct_range[n]  %>' ><%= pct_range[n]  %>%</option>&nbsp;&nbsp;
 		    <%    }  %>     
 		    <% }  %>
 		   </select>
@@ -61,12 +61,12 @@ Screening/Options:<br>
     </tr>
 
     <tr>
-        <td>Include NAs:   (taxonomy not available)  
+        <td>Include NAs (taxonomy not available):<br>  
         <%    if(pi.include_nas.toString() === 'yes') { %>
-            <input type='radio' checked='checked' id='' name='include_nas' value='yes'   \> Include NAs         
+            <input type='radio' checked='checked' id='' name='include_nas' value='yes'   \> Include NAs&nbsp;&nbsp;         
             <input type='radio'                   id='' name='include_nas' value='no'    \> Exclude NAs
         <% }else{ %>
-            <input type='radio'                   id='' name='include_nas' value='yes'   \> Include NAs         
+            <input type='radio'                   id='' name='include_nas' value='yes'   \> Include NAs&nbsp;&nbsp;         
             <input type='radio' checked='checked' id='' name='include_nas' value='no'    \> Exclude NAs
         <% } %>            
         </td>

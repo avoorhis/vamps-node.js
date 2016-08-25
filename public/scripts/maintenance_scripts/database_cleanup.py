@@ -97,6 +97,7 @@ def clean(args):
     print q
     cur.execute(q)
     
+    # tables sequence and sequence_uniq_info are not touched
         
     db.commit()
     

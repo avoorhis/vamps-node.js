@@ -68,7 +68,15 @@ module.exports = {
 			var unit_name_lookup_per_dataset = {};
 			var unit_name_counts = {};
 		
-
+			if(post_items.unit_choice === 'tax_rdp_simple') {
+				taxonomy_object = new_rdp_taxonomy
+			}else if(post_items.unit_choice === 'tax_silva119_simple'){
+				taxonomy_object = new_taxonomy
+			}else if(post_items.unit_choice === 'tax_silva119_custom'){
+				taxonomy_object = new_taxonomy
+			}else{
+				taxonomy_object = new_taxonomy
+			}
 			// TESTING
 			// data from DB or JSON_file or HTF5
 			//var read_choices = ['DB','JSON','HTF5'];
@@ -79,62 +87,9 @@ module.exports = {
 				
 				  did = chosen_id_name_hash.ids[n];	
 
-
-				  if(post_items.unit_choice === 'tax_silva108_simple') {
-							rank = post_items.tax_depth;
-							rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;						
-							
-							//console.log('did '+did+' rank: '+rank+' srank_no: '+rank_no);
-							
-							// q =  "SELECT domain_id, phylum_id, klass_id, order_id, family_id, genus_id, species_id, strain_id, count from summed_counts"
-							// q += " JOIN rank using(rank_id)"
-							// q += " WHERE dataset_id='"+did+"' and rank='"+rank+"'"
-							// console.log(q)
-							// connection.db.query(q, function (err, rows) {
-							// 	if(err){ throw err; }
-							// 	for(i in rows){
-							// 		//console.log(rows[i]);
-							// 		cnt = rows[i].count;
-							// 		tax_long_name = '';
-							//
-							// 		for(var n=0;n<=rank_no;n++){
-							// 			var this_rank = C.RANKS[n];
-							// 			var db_id = rows[i][this_rank+'_id'];
-							// 			console.log(db_id);
-							// 			var db_id_n_rank = db_id+'_'+this_rank;
-							// 			var tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
-							// 			tax_long_name += tax_node.taxon+';'
-							// 		}
-							// 		tax_long_name = tax_long_name.slice(0,-1); // remove trailing ';'
-							// 		console.log('long tax_name '+tax_long_name+' - '+cnt.toString());
-							// 		unit_name_lookup[tax_long_name] = 1;
-							// 		unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							// 	}
-							// 	unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
-							//
-							//
-							// 	ukeys = remove_empty_rows(unit_name_counts);
-							// 	ukeys = ukeys.filter(onlyUnique);
-							// 	ukeys.sort();
-							// 	// Bacteria;Bacteroidetes;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides
-							// 	//console.log(unit_name_counts);
-							// 	console.log('POSTx');
-							// 	console.log(post_items);
-							// 	biom_matrix 	= create_biom_matrix( biom_matrix, unit_name_counts, ukeys, chosen_id_name_hash );
-							// 	if(post_items.update_data == true){
-							// 	  biom_matrix = this.get_custom_biom_matrix( post_items, biom_matrix );
-							// 	}else{
-							// 	// nothing here for the time being.....
-							// 	}
-							// 	matrix_file = '../../tmp/'+post_items.ts+'_count_matrix.biom';
-							//
-							// 	//COMMON.write_file( matrix_file, JSON.stringify(biom_matrix) );
-							// 	COMMON.write_file( matrix_file, JSON.stringify(biom_matrix,null,2) );
-							//
-							// 	return biom_matrix;
-							//
-							// })
-
+				  if(post_items.unit_choice === 'tax_silva119_simple' || post_items.unit_choice === 'tax_rdp_simple') {
+				  		rank = post_items.tax_depth;
+							rank_no = parseInt(C.RANKS.indexOf(rank))	+ 1;
 							for(var x in TAXCOUNTS[did]){
 
 								if((x.match(/_/g) || []).length == rank_no){
@@ -149,8 +104,8 @@ module.exports = {
 										var db_id_n_rank = db_id+'_'+this_rank;
 										//console.log('tax_node2 '+JSON.stringify(db_id_n_rank))
 										var tax_node = {};
-										if(db_id_n_rank in new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank) {
-											tax_node = new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
+										if(db_id_n_rank in taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank) {
+											tax_node = taxonomy_object.taxa_tree_dict_map_by_db_id_n_rank[db_id_n_rank];
 									  }
 									  if(this_rank == 'domain'){
 											domain = tax_node.taxon;
@@ -199,9 +154,10 @@ module.exports = {
 								}
 
 							}
+				  
+							
 
-
-					}else if(post_items.unit_choice === 'tax_silva108_custom'){
+					}else if(post_items.unit_choice === 'tax_silva119_custom'){
 								// ie custom_taxa: [ '1', '60', '61', '1184', '2120', '2261' ]  these are node_id(s)
 								db_tax_id_list[did] = {};
 								
@@ -209,9 +165,9 @@ module.exports = {
 									//var name_n_rank = post_items.custom_taxa[t];
 									var selected_node_id = post_items.custom_taxa[t];
 									//console.log('selected_node_id ', selected_node_id)
-									if( new_taxonomy.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
+									if( taxonomy_object.taxa_tree_dict_map_by_id.hasOwnProperty(selected_node_id) ){
 
-										var tax_node = new_taxonomy.taxa_tree_dict_map_by_id[selected_node_id];
+										var tax_node = taxonomy_object.taxa_tree_dict_map_by_id[selected_node_id];
 										//console.log(tax_node)
 										var rank_name = tax_node.rank;
 										var rank_no = parseInt(C.RANKS.indexOf(rank_name));
@@ -254,7 +210,7 @@ module.exports = {
 											db_tax_id_list[did][selected_node_id] = '_' + tax_node.db_id  // add to beginning
 											tax_long_name = tax_node.taxon;
 											while(new_node_id !== 0) {  		
-												new_node = new_taxonomy.taxa_tree_dict_map_by_id[new_node_id];
+												new_node = taxonomy_object.taxa_tree_dict_map_by_id[new_node_id];
 									  		db_id = new_node.db_id;
 									  		db_tax_id_list[did][selected_node_id] =  '_' + db_id + db_tax_id_list[did][selected_node_id];
 									  		new_node_id = new_node.parent_id; 
@@ -298,55 +254,12 @@ module.exports = {
 									  }
 
 								}
-								//console.log(db_tax_id_list) // to match with TAXCOUNTS to get counts
-
-
-							// 	console.log(post_items.custom_taxa[t])
-							// 		var name_and_rank = post_items.custom_taxa[t];
-							// 		var items = name_and_rank.split('_');
-							// 		var tax_short_name = items[0];
-							// 		rank = items[1];
-							// 		db_tax_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].db_id;
-							// 		node_id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[name_and_rank].node_id;
-							// 		// TODO: 'tax_long_name' is already defined.
-							// 		var tax_long_name = create_concatenated_tax_name(node_id);
-							// 		unit_name_lookup[tax_long_name] = 1;
-							// 		cnt = find_count_per_ds_and_rank(did, rank, db_tax_id);
-							// 		unit_name_lookup_per_dataset = fillin_name_lookup_per_ds(unit_name_lookup_per_dataset, did, tax_long_name, cnt);
-							//} // END :: for(t in post_items.custom_taxa) {
+								
 					}
 
 			}
 			
-			// console.log('unit_name_lookup2>>')
-			// console.log(unit_name_lookup)
-			// console.log('<<2unit_name_lookup')
-			// console.log('unit_name_lookup_per_dataset2>>')
-			// console.log(unit_name_lookup_per_dataset)
-			// console.log('<<2unit_name_lookup_per_dataset')
-// 			unit_name_lookup>>
-// { 'Bacteria;Lentisphaerae': 1,
-//   'Bacteria;Planctomycetes': 1,
-//   'Bacteria;Cyanobacteria': 1,
-//   'Bacteria;Op8': 1,
-//   'Bacteria;Spirochaetes': 1,
-//   'Organelle;Chloroplast': 1,
-//   'Bacteria;Verrucomicrobia': 1,
-//    }
-// <<unit_name_lookup
-// unit_name_lookup_per_dataset>>
-// { '1446': 
-//    { 'Bacteria;Lentisphaerae': 48,
-//      'Bacteria;Planctomycetes': 134,
-//      'Bacteria;Cyanobacteria': 813,
-//      'Bacteria;Op8': 4,
-//       },
-//   '1447': 
-//    { 'Bacteria;Lentisphaerae': 326,
-//      'Bacteria;Planctomycetes': 285,
-//      'Bacteria;Od1': 9,
-     
-//     } }
+		
 			unit_name_counts = create_unit_name_counts(unit_name_lookup, chosen_id_name_hash, unit_name_lookup_per_dataset);
 
 
@@ -551,29 +464,29 @@ function fillin_name_lookup_per_ds(lookup, did, tax_name, cnt) {
 //
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //
-function create_concatenated_tax_name(node_id) {		
-		var tax_name = '';					  	
-  	while(node_id !== 0) {  		
-  		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
-  		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;  	
-  	}
-  	return tax_name.replace(/;+$/,'');  // remove trailing ';'
+// function create_concatenated_tax_name(node_id) {		
+// 		var tax_name = '';					  	
+//   	while(node_id !== 0) {  		
+//   		tax_name = new_taxonomy.taxa_tree_dict_map_by_id[node_id].taxon + ';' + tax_name;
+//   		node_id = new_taxonomy.taxa_tree_dict_map_by_id[node_id].parent_id;  	
+//   	}
+//   	return tax_name.replace(/;+$/,'');  // remove trailing ';'
 
-}
+// }
 //
 //  F I N D  C O U N T  P E R  D S  A N D  R A N K
 //
-function find_count_per_ds_and_rank(did, rank, db_tax_id) {
-		cnt = 0;
-  	if(did in TaxaCounts) {
-	  	if(rank in TaxaCounts[did]) {
-		  	if(db_tax_id in TaxaCounts[did][rank]) {
-		  		cnt = TaxaCounts[did][rank][db_tax_id];				  		
-		  	}
-	  	}
-  	}
-  	return cnt;
-}
+// function find_count_per_ds_and_rank(did, rank, db_tax_id) {
+// 		cnt = 0;
+//   	if(did in TaxaCounts) {
+// 	  	if(rank in TaxaCounts[did]) {
+// 		  	if(db_tax_id in TaxaCounts[did][rank]) {
+// 		  		cnt = TaxaCounts[did][rank][db_tax_id];				  		
+// 		  	}
+// 	  	}
+//   	}
+//   	return cnt;
+// }
 //
 //  C R E A T E  C O N C A T E N A T E D  T A X  N A M E
 //

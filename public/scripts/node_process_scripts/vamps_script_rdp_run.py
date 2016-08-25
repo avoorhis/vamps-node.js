@@ -117,7 +117,7 @@ if __name__ == '__main__':
                  help = 'See RDP README: 16srrna, fungallsu, fungalits_warcup, fungalits_unite') 
                  
     parser.add_argument("-path_to_classifier", "--path_to_classifier",    
-                required=True,  action="store",   dest = "path_to_classifier", 
+                required=False,  action="store",   dest = "path_to_classifier", default='/Users/avoorhis/programming/rdp_classifier',
                 help = '') 
     
     args = parser.parse_args() 

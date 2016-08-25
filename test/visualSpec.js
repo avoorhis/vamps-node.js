@@ -68,20 +68,20 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
 
         // login with passport-stub
         passportStub.install(app);
-        // console.log("GGG app.testuser res:")
-//         console.log(util.inspect(app.testuser, false, null));
-//       { user: 'TEST',
-//         pass: 'TEST',
-//         first: 'TestTest',
-//         last: 'TestTest',
-//         email: 'test@mbl.edu',
-//         inst: 'MBL' }
+        console.log("GGG app.testuser res:")
+        console.log(util.inspect(app.testuser, false, null));
+      // { user: 'TEST',
+      //   pass: 'TEST',
+      //   first: 'TestTest',
+      //   last: 'TestTest',
+      //   email: 'test@mbl.edu',
+      //   inst: 'MBL' }
         console.log('Logging in with username:', app.testuser.user, ' and password:', app.testuser.pass);
         passportStub.login({
           username: app.testuser.user, password: app.testuser.pass
         });
-        //this.timeout(10000);
-        // done();
+        this.timeout(10000);
+        done();
     });
 
     // VISUALS INDEX (Dataset Selection Page)
@@ -127,7 +127,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
     //
     it('should show a certain text: family', function(done){
         var reqbody_vizselect = { tax_depth: 'family',
-                                  unit_choice: 'tax_silva108_simple',
+                                  unit_choice: 'tax_silva119_simple',
                                   domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
                                   selected_metadata: [ 'latitude', 'longitude' ]
                                 };
@@ -138,8 +138,8 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
           .expect(200)
           .end(function (err, res) {
             this.timeout(5000);
-            console.log("VVV visual res:")
-            console.log(util.inspect(res, false, null));
+            //console.log("VVV visual res:")
+            //console.log(util.inspect(res, false, null));
             res.text.should.containEql('Taxonomic Depth: family');
 
             //res.text.should.containEql('Taxonomic Depth: species');
@@ -149,7 +149,7 @@ describe('>>> visualization functionality: visuals_index  >>>', function(){
 
     it('should show a heatmap', function(done){
         var body = {tax_depth:'phylum',
-                    unit_choice: 'tax_silva108_simple',
+                    unit_choice: 'tax_silva119_simple',
                     domains: [ 'Archaea', 'Bacteria', 'Eukarya', 'Organelle', 'Unknown' ],
                     selected_metadata: [ 'latitude', 'longitude' ]
                   };

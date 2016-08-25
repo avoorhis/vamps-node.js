@@ -44,13 +44,15 @@ constants.TARGETS = ["Av3","Av6", "Av6v4","Av4v5", "Av3v5","Av5v6",
                      "Bv1v3","Bv3","Bv6", "Bv6v4","Bv4v5", "Bv3v5","Bv5v6",
         "Ev9" ];
 constants.UNITSELECT = { units: [
-        {id : 'tax_silva108_simple',file: 'unit_selectors/taxa_silva108_simple.html', name : "Taxonomy (Silva-108) -Simple", subtext: 'Silva108'},
-        {id : 'tax_silva108_custom',file: 'unit_selectors/taxa_silva108_custom.html', name : "Taxonomy (Silva-108) -Custom", subtext: 'Silva108'},
+        {id : 'tax_silva119_simple',file: 'unit_selectors/taxa_silva119_simple.html', name : "Taxonomy (Silva-119) -Simple", subtext: 'Silva119'},
+        {id : 'tax_silva119_custom',file: 'unit_selectors/taxa_silva119_custom.html', name : "Taxonomy (Silva-119) -Custom", subtext: 'Silva119'},
+        {id : 'tax_rdp_simple',     file: 'unit_selectors/taxa_rdp.html',             name : "Taxonomy RDP",     subtext: 'Release 11'},
+
      //   {id : 'tax_silva108_custom_fancytree',file: 'unit_selectors/taxa_silva108_custom_fancytree.json', name : "Taxonomy -Custom_fancytree", subtext: 'Silva108'},
      //   {id : 'tax_silva108_custom_dhtmlx',file: 'unit_selectors/taxa_silva108_custom_dhtmlx.json', name : "Taxonomy -Custom_dhtmlx", subtext: 'Silva108'},
         {id : 'tax_gg_simple',      file: 'unit_selectors/taxa_gg_simple.html',       name : "TODO-Taxonomy (Greengenes-13.5) -Simple", subtext: 'Greengenes v13.5'},
         {id : 'tax_gg_custom',      file: 'unit_selectors/taxa_gg_cust.html',         name : "TODO-Taxonomy (Greengenes-13.5) -Custom", subtext: 'Greengenes v13.5'},
-        {id : 'tax_rdp',            file: 'unit_selectors/taxa_rdp.html',             name : "TODO-Taxonomy RDP",     subtext: 'Release 11'},
+        
         //{id : 'TODO-otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'ClosedRef GG v13.5'},
         //{id : 'TODO-otus',               file: 'unit_selectors/otus.html',                 name : "OTUs",             subtext: 'UCLUST'},
         {id : 'otus',               file: 'unit_selectors/otus.html',                 name : "TODO-OTUs",             subtext: 'SLP'},

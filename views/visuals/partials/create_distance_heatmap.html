@@ -28,17 +28,18 @@
 		  <% } %>
 	 </tr>
 		 <% n=1 %>
-		<% for(x in name_order) { %>
-			<% x_dname = name_order[x] %>
+		<% for(var x in name_order) { %>
+			<% var x_dname = name_order[x] %>
 	        <tr id='<%= x_dname %>'>
 	        <td  id='<%= x_dname %>' class='dragHandle ds_cell'><%= n.toString() %></td>
 	        <td class='dragHandle ds_cell' ><input type='hidden' name='ds_order[]' value="<%= id_order[x] %>" ><%= x_dname %></td>
-		    <%    for(y in name_order) { %>
-		    <%        y_dname = name_order[y] %>
+		    <%    for(var y in name_order) { %>
+		    <%        var y_dname = name_order[y] %>
+		    <%				var dist = dm[x_dname][y_dname].toFixed(5);  %>
 		    <%        if(x_dname === y_dname){ %>
 		        	    <td id='' class='heat_map_td' bgcolor='#000'></td>
 		    <%        }else{ %>
-		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dm[x_dname][y_dname].toFixed(5); %>
+		    <%      	var id = 'dheatmap-|-'+x_dname+'-|-'+y_dname+'-|-'+dist; %>
 		    <%      	var svalue = Math.round( dm[x_dname][y_dname] * 15 ); %>
 		     	
 	                    <td id='<%= id %>' class='heat_map_td tooltip_viz' bgcolor='#<%= colors[svalue] %>' 

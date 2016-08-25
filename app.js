@@ -266,6 +266,10 @@ fs.ensureDir(config.USER_FILES_BASE, function (err) {
 
 var silvaTaxonomy = require('./models/silva_taxonomy');
 var all_silva_taxonomy = new silvaTaxonomy();
+
+var rdpTaxonomy = require('./models/rdp_taxonomy');
+var all_rdp_taxonomy = new rdpTaxonomy();
+
 var CustomTaxa  = require('./routes/helpers/custom_taxa_class');
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_json');   // for fancytree:  https://github.com/mar10/fancytree
 //var CustomTaxa  = require('./routes/helpers/custom_taxa_class_dhtmlx');   // for dhtmlx:  http://dhtmlx.com/docs/products/dhtmlxTree/
@@ -303,8 +307,8 @@ try{
     // var h5ds = require('hdf5').h5ds; // scale
     var h5g  = require('hdf5/lib/globals');
     // GLOBAL:
-    HDF5_MDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5' ),  h5g.Access.ACC_RDONLY);
-    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.h5' ), h5g.Access.ACC_RDONLY);
+    HDF5_MDATA  = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.h5XX' ),  h5g.Access.ACC_RDONLY);
+    HDF5_TAXDATA = new hdf5.File(path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.h5XX' ), h5g.Access.ACC_RDONLY);
     //var groupTest = HDF5test_data.openGroup('test');
     //var group51 = HDF5_data.openGroup("86");
     var did_list = HDF5_MDATA.getMemberNamesByCreationOrder(); // retreives all the 'groups' ie dids
@@ -383,20 +387,22 @@ try{
     ////////// END hdf5 Code ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 }catch(err){
+    // If we're here we don't have HDF5
     console.log(err)
     HDF5_MDATA  = ''
     HDF5_TAXDATA = ''
-    var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
+    //var taxcounts_file = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--taxcounts.json' );
     var meta_file      = path.join( config.JSON_FILES_BASE, NODE_DATABASE+'--metadata.json' );
+    AllTaxCounts = {}
+    
     try {
         AllTaxCounts   = require(taxcounts_file);
+        console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
     }
     catch (e) {
-      console.log(e);
-      AllTaxCounts = {}
+      console.log(e);      
     }
-    console.log('Loading TAXCOUNTS as AllTaxCounts from: '+taxcounts_file);
-
+    
     try {
         AllMetadata        = require(meta_file);
     }
@@ -406,7 +412,11 @@ try{
     }
     console.log('Loading METADATA as AllMetadata from: '+meta_file);
 }
-
+try{
+    var sizeof = require('object-sizeof');
+}catch(e){
+    console.log(e);
+}
 //see file models/silva_taxonomy.js
 all_silva_taxonomy.get_all_taxa(function(err, results) {
   if (err)
@@ -422,6 +432,9 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
     // uncomment when we want all data:
     //SEE require('./routes/helpers/custom_taxa_class');
     new_taxonomy = new CustomTaxa(results);
+    try{
+        console.log('SIZE (silva-taxonomy object):',sizeof(new_taxonomy));
+    }catch(e){}
     // uncomment to print out the object:
     //console.log('000 new_taxonomy = ' + JSON.stringify(new_taxonomy));
     //
@@ -438,7 +451,7 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
 //console.log(new_taxonomy.taxa_tree_dict_map_by_rank["domain"])
 //console.log('taxa_tree_dict_map_by_db_id_n_rank["3_domain"] = '+JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3_domain"]));
 
-    //console.log('taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["3446_domain"]));
+    console.log('1(silva)-taxa_tree_dict_map_by_db_id_n_rank["140108_domain"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
     //console.log('taxa_tree_dict_map_by_rank["phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_rank['phylum']));
     //console.log('taxa_tree_dict_map_by_name_n_rank = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank));
     //console.log('taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"] = ' + JSON.stringify(new_taxonomy.taxa_tree_dict_map_by_name_n_rank["Acidobacteria_phylum"]));
@@ -450,6 +463,18 @@ all_silva_taxonomy.get_all_taxa(function(err, results) {
   }
 });
 
+all_rdp_taxonomy.get_all_taxa(function(err, results) {
+  if (err)
+    throw err; // or return an error message, or something
+  else
+  {
+    new_rdp_taxonomy = new CustomTaxa(results);
+    try{
+        console.log('SIZE (rdp-taxonomy object):',sizeof(new_rdp_taxonomy));
+    }catch(e){}
+    console.log('2(rdp)-taxa_tree_dict_map_by_db_id_n_rank["3446_domain"] = ' + JSON.stringify(new_rdp_taxonomy.taxa_tree_dict_map_by_db_id_n_rank["140108_domain"]));
+  }
+});
 
 //var taxCounts = require('./routes/helpers/create_taxcounts_class');
 //new taxCounts();

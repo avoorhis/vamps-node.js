@@ -416,7 +416,7 @@ if (typeof metadata_btn !=="undefined") {
 var metadata_open_btn = document.getElementById('metadata_table_open_btn') || null;
 if (metadata_open_btn !== null) {
   metadata_open_btn.addEventListener('click', function () {
-      alert('click')
+      
       create_viz('metadata_table', pi_local.ts, true);      
   });
 }
@@ -2694,7 +2694,27 @@ function new_window_skeleton(html){
   txt +='<link href="/stylesheets/bootstrap-responsive.css" rel="stylesheet" \>'+"\n"
   txt +="</HEAD>"+"\n"
   txt +="<BODY>"+"\n"
+  txt +="<div style='border:1px solid grey;padding:5px;background:lightgreen;'>"
+  txt +="<table border='0'>"
+  var n = 0;
+  var cols = 2;
+  for(item in pi_local){
+    if(item !== 'metadata' && item !== 'ts'){
+      txt += "<td align='right' style='padding-left:3px;'>"+item+":</td><td>&nbsp;"+pi_local[item]+"</td>"
+      if( n % cols === (cols - 1) ) {  
+          txt += "</tr><tr>"
+      }
+      n += 1;
+    }
+  }
+  txt +="</table>" +"\n";
+  txt +="</div>" +"\n";
   txt +=html+"\n"
+  txt +="<div id='counts_tooltip_div' class=''></div>" +"\n";
+  txt +="<div id='piebarcharts_tooltip_div' class=''></div>" +"\n";
+  txt +="<script type='text/javascript' src='/javascripts/jquery-2.1.1.min.js'></script>" +"\n";
+  txt +="<script type='text/javascript' src='/javascripts/jquery-ui.min.js'></script>"+"\n"
+  txt +="<script type='text/javascript' src='/javascripts/bootstrap.min.js'></script>"+"\n"
   txt +='<script type="text/javascript" src="/javascripts/tablesort.min.js"></script>'+"\n"
   txt +='<script type="text/javascript" src="/javascripts/jquery.scrollTo.min.js"></script>'+"\n"
   txt +='<script type="text/javascript" src="/javascripts/jquery.tablednd.js"></script>'+"\n"
@@ -2711,8 +2731,14 @@ function new_window_skeleton(html){
   txt +='<script type="text/javascript" src="/javascripts/jquery.flot.min.js"></script>'+"\n"
   txt +="</BODY>"+"\n"
   txt +="</HTML>"+"\n"
+  // code for tooltips
+  txt +="<script>"
+  txt +="var $liveTip = $('<div id='livetip_chart'></div>').hide().appendTo('body'),$win = $(window),showTip;"+"\n"
+  txt +="var tip = {title: '', offset: 12,delay: 50,position: function(event) {var positions = {x: event.pageX, y: event.pageY};var dimensions = {x: [$win.width(),$liveTip.outerWidth()], y: [$win.scrollTop() + $win.height(),$liveTip.outerHeight()]};for ( var axis in dimensions ) {if (dimensions[axis][0] <dimensions[axis][1] + positions[axis] + this.offset) {positions[axis] -= dimensions[axis][1] + this.offset;} else {positions[axis] += this.offset;}}$liveTip.css({top: positions.y,left: positions.x});}};"+"\n"
+  txt +="$('body').delegate('.tooltip_viz', 'mouseover mouseout mousemove', function (event) {var link = this,html = '';$link = $(this);if (event.type == 'mouseover') {tip.id = link.id;link.id = '';id_items = tip.id.split('-|-');html = '<table><tr>';if(id_items[0] == 'dheatmap') {html += '<td>'+id_items[1]+'</td>';html += '</tr><tr>';html += '<td>'+id_items[2]+'</td>';html += '</tr><tr>';html += '<td>Distance: '+id_items[3]+'</td>';}else if(id_items[0] == 'frequencies'){html += '<td>'+id_items[1]+'</td>';html += '</tr><tr>';html += '<td>'+id_items[2]+'</td>';html += '</tr><tr>';html += '<td>Count: '+id_items[3]+' ('+id_items[4]+'%)</td>';}else{ html += '<td>'+id_items[1]+'</td>';    html += '</tr><tr>';html += '<td>Count: '+id_items[2]+' ('+id_items[3]+'%)</td>';}html += '</tr><table>';showTip = setTimeout(function() {$link.data('tipActive', true);tip.position(event);$liveTip.html('<div>' + html  + '</div>').fadeOut(0).fadeIn(200);}, tip.delay);}if (event.type == 'mouseout') {link.id = tip.id || link.id;if ($link.data('tipActive')) {$link.removeData('tipActive');$liveTip.hide();} else {clearTimeout(showTip); }}if (event.type == 'mousemove' && $link.data('tipActive')) { tip.position(event);}});"+"\n"
+  txt +="$('body').delegate('.tooltip_viz_help', 'mouseover mouseout mousemove', function (event) {var link = this,html = '';$link = $(this);if (event.type == 'mouseover') {tip.id = link.id;link.id = '';if(tip.id==''){return;}id_items = tip.id.split('-|-');html = '<table>';html += '<tr><td>Requirements:</td></tr>';for(var i=0;i<=id_items.length-1;i++){html += '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;'+id_items[i]+'</td></tr>';}html += '<table>';showTip = setTimeout(function() {$link.data('tipActive', true);tip.position(event);$liveTip.html('<div>' + html  + '</div>').fadeOut(0).fadeIn(200); }, tip.delay);}if (event.type == 'mouseout') {link.id = tip.id || link.id;if ($link.data('tipActive')) {$link.removeData('tipActive');$liveTip.hide();} else {clearTimeout(showTip);}}if (event.type == 'mousemove' && $link.data('tipActive')) {tip.position(event);}});"+"\n"
+  txt +="</script>"
   return txt
-
 }
 
 

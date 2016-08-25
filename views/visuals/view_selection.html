@@ -55,12 +55,7 @@
     </div>
 
     <div id='viz_info'>
-    <% if(pi.custom_taxa.length == 1 && pi.custom_taxa[0] == 'NA'){ %>
-        Taxonomic Depth: <%= pi.tax_depth %> --- 
-        Included Domains: <%= pi.domains %>
-    <% }else{ %>
-        Taxonomic Depth: Custom
-    <% } %>
+    data
     </div>
   </small>
 </div>
@@ -104,21 +99,26 @@
 
 <div class="container">
   <div class="row">
-      <div  id='show_selected_datasets_div'  class="col-md-4">
+      <div  id='show_selected_datasets_div'  class="col-md-3">
         <div class='well'>
               <% include partials/show_selected_datasets.html %>
         </div> <!-- End  show_selected_datasets_div -->
       </div>
     
-      <div id='show_selected_metadata_div'  class="col-md-4">
+      <div id='show_selected_metadata_div'  class="col-md-3">
         <div class='well'>
               <% include partials/show_selected_metadata.html %>
         </div> <!-- End  show_selected_metadata_div -->
       </div>
     
-      <div  id='show_select_items_div' class="col-md-4">
+      <div  id='show_select_items_div' class="col-md-3">
         <div class='well'>
               <% include partials/show_visual_output_choices.html %>
+        </div> <!-- End  show_select_items_div -->  
+      </div>
+      <div  id='show_other_items_div' class="col-md-3">
+        <div class='well'>
+          <% include partials/show_parameters.html %>
         </div> <!-- End  show_select_items_div -->  
       </div>
   </div>
@@ -355,7 +355,7 @@
                                       <td><strong><%= pi.tax_depth %></strong></td>
                                     </tr>
                                     <tr>
-                                      <td>(metadata) Variable:&nbsp;</td>
+                                      <td>(x-axis) Variable:&nbsp;</td>
                                       <td>
                                         <select id='<%= id1 %>' name='<%= id1 %>' style='width:120px'>
                                           <option value='Project' selected >Project</option>

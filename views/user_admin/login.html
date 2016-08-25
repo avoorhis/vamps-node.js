@@ -11,7 +11,10 @@
   
   <% if (message.length > 0) { %>
       <div class="message alert_flash_message"><%= message %></div>
-  <% } %><br>
+  <% } %>
+  Due to a change in the database structure the logins from the original VAMPS will not work
+  with the new site.<br>Please <a href="/users/signup">signup for a new login here.</a><br>
+  <br>
       <div id='login_div' class='table' >
       <form action="/users/login" method="POST">
           <div>

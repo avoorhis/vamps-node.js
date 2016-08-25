@@ -387,7 +387,7 @@ def push_sequences(args):
             cur.execute(q)
             mysql_conn.commit()
             silva_tax_seq_id = cur.lastrowid
-            if seqid == 0:
+            if silva_tax_seq_id == 0:
                 q3 = "select silva_taxonomy_info_per_seq_id from silva_taxonomy_info_per_seq"
                 q3 += " where sequence_id = '"+seqid+"'"
                 q3 += " and silva_taxonomy_id = '"+silva_tax_id+"'"
