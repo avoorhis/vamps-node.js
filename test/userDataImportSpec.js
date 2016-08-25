@@ -67,22 +67,42 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  it("should have a correct title and buttons on your_data",function(done){
-    server
-    .get("/user_data/your_data")
-    .expect("Content-type", /json/)
-    .expect(200) // THis is HTTP response
-    .end(function(err, res){
-      // console.log("YYY res");
-      // console.log(util.inspect(res, false, null));
-      // console.log("222 res");
-      // console.log(util.inspect(res.text, false, null));
-      res.status.should.eql(200);
-      res.text.should.containEql('Data Administration');
-      res.text.should.containEql('Import Data');
-      res.text.should.containEql('Your Projects');
-      done();
+  // it("should have a correct title and buttons on your_data",function(done){
+  //   server
+  //   .get("/user_data/your_data")
+  //   .expect("Content-type", /json/)
+  //   .expect(200) // THis is HTTP response
+  //   .end(function(err, res){
+  //     // console.log("YYY res");
+  //     // console.log(util.inspect(res, false, null));
+  //     // console.log("222 res");
+  //     // console.log(util.inspect(res, false, null));
+  //     res.status.should.eql(200);
+  //     res.text.should.containEql('Data Administration');
+  //     res.text.should.containEql('Import Data');
+  //     res.text.should.containEql('Your Projects');
+  //     done();
+  //   });
+  // });
+  
+  it("should have a correct title and buttons on your_data 2",function(done){
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
     });
+    req = request(app);
+    
+    req
+      .get("/user_data/your_data")
+      .expect("Content-type", /json/)
+      .end(function (err, res) {
+        res.status.should.eql(200);
+        // console.log("YYY res");
+        // console.log(util.inspect(res, false, null));
+        res.text.should.containEql('Data Administration');
+        res.text.should.containEql('Import Data');
+        res.text.should.containEql('Your Projects');
+        done();
+      });
   });
   
   
