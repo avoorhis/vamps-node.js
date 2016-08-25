@@ -340,11 +340,8 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
       
         
         if(HDF5_TAXDATA == ''){
-            if(visual_post_items.unit_choice == 'tax_rdp_simple'){
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_rdp");
-            }else{
-                var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
-            }
+            // use default taxonomy here (may choose other on this page)
+            var files_prefix = path.join(req.CONFIG.JSON_FILES_BASE, NODE_DATABASE+"--datasets_silva119");
             var path_to_file = path.join(files_prefix, dataset_ids[i] +'.json');
             var jsonfile = require(path_to_file);
             //TAXCOUNTS[dataset_ids[i]] = jsonfile['taxcounts'];
