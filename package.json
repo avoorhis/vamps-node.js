@@ -60,7 +60,9 @@
     "ya-csv": ""
   },
   "devDependencies": {
+    "chai": "",
     "debug": "2.1.0",
+    "expect.js": "",
     "istanbul": "",
     "jshint": "^2.8.0",
     "mocha": "",
@@ -68,11 +70,10 @@
     "plato": "",
     "selenium-webdriver": "",
     "should": "",
-    "supertest": "",
-    "zombie": "",
-    "object-sizeof":"",
-    "chai": "",
+    "should-http": "",
+    "sinon": "",
     "superagent": "",
-    "sinon": ""
+    "supertest": "",
+    "zombie": ""
   }
 }

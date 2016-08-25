@@ -31,16 +31,13 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     async.series([
       function (cb) {
         connection.query('SELECT * FROM user WHERE username="'+app.testuser.user+'" AND email="'+app.testuser.email+'"',function(err,results){
+            console.log("results.length");
+            console.log(results.length);
             results.length.should.not.equal(0);
             done();
           });
       }
     ], done());
-  });
-
-  it('should show button Your projects on GET /user_data/your_data', function(done) {
-    // Data Administration
-    done();
   });
 
   it('should show button Your projects on GET /user_data/your_data', function(done) {
