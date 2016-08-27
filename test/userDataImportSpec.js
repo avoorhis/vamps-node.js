@@ -169,9 +169,31 @@ describe('<<< Data Import Selection page functionality >>>', function(){
         done();
       });
   });
+//   test here also:
+// 1-req.body upload_data
+// { project: 'test_gast_project',
+//   dataset: 'test_gast_dataset',
+//   type: 'simple_fasta' }
+// [ { fieldname: 'upload_files',
+//     originalname: 'fasta10.fa',
+//     encoding: '7bit',
+//     mimetype: 'application/octet-stream',
+//     destination: '/Users/ashipunova/BPC/vamps-node.js/tmp',
+//     filename: '01887c1234de7e532bf0b3c8d9fd5e7b',
+//     path: '/Users/ashipunova/BPC/vamps-node.js/tmp/01887c1234de7e532bf0b3c8d9fd5e7b',
+//     size: 620 },
+//   { fieldname: 'upload_files',
+//     originalname: 'ds1_meta.csv',
+//     encoding: '7bit',
+//     mimetype: 'text/csv',
+//     destination: '/Users/ashipunova/BPC/vamps-node.js/tmp',
+//     filename: 'ed6f2ee67ef687fd74a8734df20dd3d3',
+//     path: '/Users/ashipunova/BPC/vamps-node.js/tmp/ed6f2ee67ef687fd74a8734df20dd3d3',
+//     size: 338 } ]
+//
 
 
-  it('should show show "Import Data", "The next step is to assign taxonomy via gast or rdp see: Your Projects" and "Upload in Progress: \'1test\'" if submitted fa and csv on POST /user_data/upload_data 200');
+  it('should show "Import Data", "The next step is to assign taxonomy via gast or rdp see: Your Projects" and "Upload in Progress: \'1test\'" if submitted fa and csv on POST /user_data/upload_data 200');
 
   it('should show "Project name: 1test ( 1 datasets )" and "Project name: 1test ( 1 datasets )" GET /user_data/your_projects 200');
   //see your_projects.png
@@ -252,7 +274,54 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //     //  POST /user_data/upload_data 302
 //     done();
 //   });
-//
+// http://www.hugeinc.com/ideas/perspective/test-based-coding-in-node-js-with-mocha
+// https://github.com/skandamohan/Blog-Code-Node-JS-With-Mocha
+  it('should show "A fasta file is required." if upload failed in FastaExists', function(done) {
+    passportStub.login({
+      username: 'TEST', password: 'TEST'
+    });
+    req = request(app);
+  
+    req
+      .get('/user_data/import_data?import_type=simple_fasta')
+      // .post('/user_data/upload_data')
+      // .type('form')
+      .send({project: "test222", dset: "test222", fasta: "/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/fasta10.fa", meta: "/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/ds1_meta.csv"})
+      .end(function(err, res) {
+          if (err) {
+              throw err;
+          }
+          console.log("YYY res");
+          console.log(util.inspect(res, false, null));
+          res.status.should.eql(200);
+          
+          // assert.ok(res);
+          // assert.ok(res.body);
+          // assert.equal(res.status, 200);
+          res.body.should.have.property('trial');
+          done();
+      });
+    
+      // .expect("Content-type", /json/)
+      // .end(function (err, res) {
+      //   // console.log("YYY res");
+      //   // console.log(util.inspect(res.text, false, null));
+      //
+      //   res.status.should.eql(200);
+      //   // res.text.should.containEql('DDDRRRR');
+      //   res.text.should.containEql('<form class="form-horizontal" role="form" method="POST" action="upload_data" enctype="multipart/form-data">');
+      //   res.text.should.containEql('<p class="title">Import Data</p>');
+      //   res.text.should.containEql('Project Name:');
+      //   res.text.should.containEql('Import Simple (single dataset) Form:');
+      //   res.text.should.containEql('Fasta File');
+      //   res.text.should.containEql('Metadata File');
+      //   done();
+      // });
+  });
+  // and see fill_import_form_log.txt for sucesfull upload
+
+
+
   it('should show "A metadata csv file is required." if upload failed in MetadataFileExists');
 //   it('should show "A metadata csv file is required." if upload failed in MetadataFileExists', function(done) {
 //     // Import Data
