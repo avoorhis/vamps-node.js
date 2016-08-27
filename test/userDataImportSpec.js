@@ -67,24 +67,6 @@ describe('<<< Data Import Selection page functionality >>>', function(){
     });
   });
   
-  // it("should have a correct title and buttons on your_data",function(done){
-  //   server
-  //   .get("/user_data/your_data")
-  //   .expect("Content-type", /json/)
-  //   .expect(200) // THis is HTTP response
-  //   .end(function(err, res){
-  //     // console.log("YYY res");
-  //     // console.log(util.inspect(res, false, null));
-  //     // console.log("222 res");
-  //     // console.log(util.inspect(res, false, null));
-  //     res.status.should.eql(200);
-  //     res.text.should.containEql('Data Administration');
-  //     res.text.should.containEql('Import Data');
-  //     res.text.should.containEql('Your Projects');
-  //     done();
-  //   });
-  // });
-  
   it("should have a correct title and buttons on your_data 2",function(done){
     passportStub.login({
       username: 'TEST', password: 'TEST'
@@ -163,7 +145,7 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 
   it('should not allow to submit a project if logged in as a gest');
 
-  it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302', function(done) {
+  it('should show Import Simple (single dataset) Form on GET user_data/import_data?import_type=simple_fasta', function(done) {
     passportStub.login({
       username: 'TEST', password: 'TEST'
     });
@@ -188,11 +170,73 @@ describe('<<< Data Import Selection page functionality >>>', function(){
       });
   });
 
-  it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302');
-//   it('should show Import Simple (single dataset) Form on POST /user_data/upload_data 302', function(done) {
-//     // Import Data
-//     done();
-//   });
+
+  it('should show show "Import Data", "The next step is to assign taxonomy via gast or rdp see: Your Projects" and "Upload in Progress: \'1test\'" if submitted fa and csv on POST /user_data/upload_data 200');
+
+  it('should show "Project name: 1test ( 1 datasets )" and "Project name: 1test ( 1 datasets )" GET /user_data/your_projects 200');
+  //see your_projects.png
+  
+  it('should show "Project name: 1test ( 1 datasets )" and "Project name: 1test ( 1 datasets )" GET /user_data/assign_taxonomy/1test 200');
+  // see assign_taxonomy_for_test.html and png
+  
+  it('should redirect to  GET /user_data/start_assignment/1test/refssu 302 if hit start with refssu');
+  // if hit start with refssu, but before redirect: check db 
+  //in start_assignment--->
+  // { project: '1test', classifier_id: 'refssu' }
+  // <--- in start_assignment
+  // start: 1test - GAST - refssu
+  // project_config { GENERAL:
+  //    { project: '1test',
+  //      project_title: '',
+  //      project_description: '',
+  //      baseoutputdir: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-1test',
+  //      configPath: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-1test/config.ini',
+  //      fasta_file: '/Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-1test/1test-original.fna',
+  //      platform: 'new_vamps',
+  //      owner: 'admin',
+  //      config_file_type: 'ini',
+  //      public: 'False',
+  //      fasta_type: 'single',
+  //      dna_region: 'v6',
+  //      project_sequence_count: '10',
+  //      sequence_counts: 'NOT_UNIQUED',
+  //      domain: 'bacteria',
+  //      number_of_datasets: '1',
+  //      env_source_id: '100',
+  //      has_tax: '0' },
+  //   DATASETS: { '1test': '10' } }
+  // project_config2 single
+  // in update_status
+  // { type: 'update',
+  //   user_id: 4,
+  //   project: '1test',
+  //   status: 'GAST-SUCCESS',
+  //   msg: 'GAST -Tax assignments',
+  //   statusOK: 'OK-GAST',
+  //   statusSUCCESS: 'GAST-SUCCESS',
+  //   msgOK: 'Finished GAST',
+  //   msgSUCCESS: 'GAST -Tax assignments' }
+  // statQuery2: UPDATE user_project_status JOIN project USING(project_id) SET status = 'GAST-SUCCESS', message = 'GAST -Tax assignments', updated_at = NOW() WHERE user_id = '4'
+
+  // after refssu 302
+  // status update2
+ //  ResultSetHeader {
+ //    fieldCount: 0,
+ //    affectedRows: 1,
+ //    insertId: 0,
+ //    serverStatus: 2,
+ //    warningStatus: 0 }
+ //  Hurray! isLoggedIn.req.isAuthenticated
+ //  1stdout:
+ //  1stderr:
+ //  RUNNING: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-1test/gast_script.sh
+ //  {"1test":{"validation":{"metadata_clean.csv":true,"1test.fa.unique":true},"pid":0,"tax_status":"No Taxonomic Assignments Yet","classified_by":"none","directory":"project-1test","mtime":"2016-08-26T23:53:24.000Z","project":"1test","number_of_datasets":"1","project_sequence_count":"10","public":"False","env_source_id":"100","DATASETS":{"1test":"10"}},"test_gast_project":{"validation":{"metadata_clean.csv":true,"test_gast_dataset.fa.unique":true},"pid":0,"tax_status":"No Taxonomic Assignments Yet","classified_by":"none","directory":"project-test_gast_project","mtime":"2016-08-10T18:39:52.000Z","project":"test_gast_project","number_of_datasets":"1","project_sequence_count":"10","public":"False","env_source_id":"100","DATASETS":{"test_gast_dataset":"10"}}}
+ //  run_process process exited with code 127
+ //  last_line: /Users/ashipunova/BPC/vamps-node.js
+ //  ERROR last line: /Users/ashipunova/BPC/vamps-node.js
+ //
+  it('should show "Project name: 1test ( 1 datasets )" and "Project name: 1test ( 1 datasets )" on GET /user_data/your_projects');
+  // see your_projects_after_assignment.htm and png
 
   it('should show "That A project name is required." if upload failed in ProjectNameGiven');
 //   it('should show "That A project name is required." if upload failed in ProjectNameGiven', function(done) {
