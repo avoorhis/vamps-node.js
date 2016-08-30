@@ -1941,7 +1941,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('in add_project');
   console.log('UUU ---');
-  console.log(util.inspect(req, false, null));
+  // console.log(util.inspect(req, false, null));
   console.log('---');
 
   // todo: redirect back after login
@@ -1949,9 +1949,19 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     title: 'VAMPS: Add a new project',
     user: req.user, hostname: req.CONFIG.hostname,
     message: req.flash('message'),
+    env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
+    
   });
 });
 
+// res.render('user_data/edit_project', {
+//       title       : 'Edit Project',
+//       project     : project_name,
+//       pinfo       : JSON.stringify(project_info),
+//       env_sources : JSON.stringify(req.CONSTS.ENV_SOURCE),
+//       message     : req.flash('message'),
+//       user: req.user, hostname: req.CONFIG.hostname,
+//   });
 
 
 //

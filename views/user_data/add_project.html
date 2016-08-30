@@ -10,36 +10,64 @@
 
 <br>
 
+<%  project = ""; 
+     project_info = {};
+%>
+<% var env_hash = JSON.parse(env_sources) %>
+
 <form name='add_project_form' method='POST' action='/user_data/add_project'>
   <!-- todo: back to from where was called -->
   <a href='/user_data/your_projects'>&lt;&lt;--back</a>
   <fieldset>
     <table class='table table-condensed'>
-    <tr><td></td><th>Values</th></tr>
-    <tr><td><label for="name">Project Name (max length 50 chars):</label></td><td><input type='text' name='new_project_name' maxlength="50" size='50' value='<%= project %>'></td></tr>
-    <tr><td><label for="env_source">ENV Source:</label></td>
-    <td>
-          <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="100">
+    <tr>
+      <th></th><th>Values</th>
+    </tr>
+    <tr>
+      <td>
+        <label for="name">Project Name (max length 50 chars):</label>
+      </td>
+      <td>
+        <input type='text' name='new_project_name' maxlength="50" size='50' value='<%= project %>'>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="env_source">ENV Source:
+        </label>
+      </td>
+      <td>
+        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="100">
           <% for(id in env_hash) { %>
-          <%    if (env_source_id === id) { %>
-                    <option value='<%= id %>' selected='selected' ><%= env_hash[id] %></option>
-          <%    } else { %>
-                    <option value='<%= id %>' ><%= env_hash[id] %></option>
-          <%    } %>
+              <option value='<%= id %>' ><%= env_hash[id] %></option>
           <% } %>
-          </select>
-    </td></tr>
+        </select>
+      </td>
+    </tr>
 
-    <tr><td><label for="public">Public:</label></td>
+    <tr>
+      <td><label for="public">Public:</label>
+      </td>
       <td>
         <input type='radio' checked='checked' name='new_privacy' value='True' > public
   &nbsp;<input type='radio'                   name='new_privacy' value='False'> private
-    </td></tr>
-    <tr><td><label for="title">Title (max length 100 chars):</label></td>
-      <td><input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.title %>'></td>
+      </td>
     </tr>
-    <tr><td><label for="description">Description (max length 255 chars):</label></td>
-      <td><textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.pdesc %></textarea></td>
+    <tr>
+      <td>
+        <label for="title">Title (max length 100 chars):</label>
+      </td>
+      <td>
+        <input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.title %>'>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="description">Description (max length 255 chars):</label>
+      </td>
+      <td>
+        <textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.pdesc %></textarea>
+      </td>
     </tr>
     </fieldset>
     
