@@ -5,13 +5,14 @@
  <div class='subtitle'></div>
 
 <% if (message) { %>
-  <div class="alert_flash_message"><%= message %></div>
+  <div class='alert_flash_message'><%= message %></div>
 <% } %>
 
 <br>
 
-<%  project = ""; 
-     project_info = {};
+<% // TODO: change to real!!! (from routes)  
+  project = ''; 
+  project_info = {};
 %>
 <% var env_hash = JSON.parse(env_sources) %>
 
@@ -25,19 +26,19 @@
     </tr>
     <tr>
       <td>
-        <label for="name">Project Name (max length 50 chars):</label>
+        <label for='name'>Project Name (max length 50 chars):</label>
       </td>
       <td>
-        <input type='text' name='new_project_name' maxlength="50" size='50' value='<%= project %>'>
+        <input type='text' name='new_project_name' maxlength='50' size='50' value='<%= project %>'>
       </td>
     </tr>
     <tr>
       <td>
-        <label for="env_source">ENV Source:
+        <label for='env_source'>ENV Source:
         </label>
       </td>
       <td>
-        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style="btn btn-xs btn-info"  data-size="100">
+        <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style='btn btn-xs btn-info'  data-size='100'>
           <% for(id in env_hash) { %>
               <option value='<%= id %>' ><%= env_hash[id] %></option>
           <% } %>
@@ -46,7 +47,7 @@
     </tr>
 
     <tr>
-      <td><label for="public">Public:</label>
+      <td><label for='public'>Public:</label>
       </td>
       <td>
         <input type='radio' checked='checked' name='new_privacy' value='True' > public
@@ -55,18 +56,26 @@
     </tr>
     <tr>
       <td>
-        <label for="title">Title (max length 100 chars):</label>
+        <label for='title'>Title (max length 100 chars):</label>
       </td>
       <td>
-        <input type='text' name='new_project_title' maxlength="100" size='50' value='<%= project_info.title %>'>
+        <input type='text' name='new_project_title' maxlength='100' size='50' value='<%= project_info.title %>'>
       </td>
     </tr>
     <tr>
       <td>
-        <label for="description">Description (max length 255 chars):</label>
+        <label for='description'>Description (max length 255 chars):</label>
       </td>
       <td>
-        <textarea name='new_project_description' maxlength="255" rows='1' cols='50'><%= project_info.pdesc %></textarea>
+        <textarea name='new_project_description' maxlength='255' rows='1' cols='50'><%= project_info.pdesc %></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for='description'>Funding:</label>
+      </td>
+      <td>
+        <input type='text' name='funding' maxlength='50' size='50' value=''>        
       </td>
     </tr>
     </fieldset>
@@ -74,24 +83,24 @@
     <fieldset>
       <!-- 
       1) add select if first, last and email are giving ?
-      2) maxlength="100" size='50' - to css!!!
+      2) maxlength='100' size='50' - to css!!!
       3) validation for each
       -->
       <tr><td></td><th>Owner (if different from the current user)</th></tr>
       <tr>
-        <td><label for="first_name">First Name:</label></td>
-        <td><input type='text' name='first_name' maxlength="100" size='50' value='<%= project_info.first_name %>'></td>
+        <td><label for='first_name'>First Name:</label></td>
+        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= project_info.first_name %>'></td>
       </tr>
       <tr>
-        <td><label for="last_name">Last Name:</label></td>
-        <td><input type='text' name='last_name' maxlength="100" size='50' value='<%= project_info.last_name %>'></td>
+        <td><label for='last_name'>Last Name:</label></td>
+        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= project_info.last_name %>'></td>
       </tr>
       <tr>
-        <td><label for="email">Email:</label></td>
-        <td><input type='text' name='email' maxlength="100" size='50' value='<%= project_info.email %>'></td>
+        <td><label for='email'>Email:</label></td>
+        <td><input type='text' name='email' maxlength='100' size='50' value='<%= project_info.email %>'></td>
       </tr>
       <tr>
-        <td><label for="institution">Institution:</label></td><td> <!-- select istitution --></td>
+        <td><label for='institution'>Institution:</label></td><td> <!-- select istitution --></td>
       </tr>
     </fieldset>
     
@@ -100,15 +109,16 @@
 
   <input type='hidden' name='old_project_name' value='<%= project %>'>
   <input type='hidden' name='project_pid' value='<%= project_info.pid %>'>
-
-  <button class='pull-right btn btn-sm btn-primary' type='submit'>Submit</button>
+  
+  <!-- center -->
+  <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
 
 </form>
 
 
 <% include ../add_ins/end.ejs %>
-<script type="text/javascript" src="/javascripts/global.js"></script>
-<script type="text/javascript" src="/javascripts/bootstrap-select.js"></script>
+<script type='text/javascript' src='/javascripts/global.js'></script>
+<script type='text/javascript' src='/javascripts/bootstrap-select.js'></script>
 <script>
   $(document).ready(function(){
     $('.selectpicker').selectpicker({showSubtext:true, tickIcon: '',});
