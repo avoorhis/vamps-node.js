@@ -1473,27 +1473,16 @@ function ProjectNameGiven(project, req, res)
   if (project === '' || req.body.project === undefined) {
     req.flash('failMessage', 'A project name is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
+    return false;
   }
+  else
+  { return true; }
 }
 
-// function ProjectNameExists(project_name) {
-//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-//   {
-//     console.log('This project name is already taken AAA');
-//     return true;
-//   }
-//   else
-//   {
-//     console.log('Project name validated');
-//     return false;
-//   }
-//
-// }
 function ProjectNameExists(project, req, res)
 {
-  // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
-  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
+  console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
   //
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
@@ -1515,17 +1504,25 @@ function FastaExists(req, res)
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage', 'A fasta file is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
+    return false;
+  }
+  else
+  {
+    return true;
   }
 }
 
 function FilePathExists(req, data_repository, res)
 {
   if (helpers.fileExists(data_repository)) {
-    req.flash('failMessage', 'That project name is already taken.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
-  }
+      return true;
+    }
+    else
+    {
+      req.flash('failMessage', 'There is no such file');
+      res.redirect("/user_data/import_data?import_type=" + req.body.type);
+      return false;
+    }
 }
 
 function MetadataFileExists(req, res)
@@ -1533,17 +1530,32 @@ function MetadataFileExists(req, res)
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage', 'A metadata csv file is required.');
     res.redirect("/user_data/import_data");
-    return;
-  }
+      return false;
+    }
+    else
+    {
+      return true;
+    }
 }
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  ProjectNameGiven(project, req, res);
-  ProjectNameExists(project, req, res);
-  FastaExists(req, res);
-  FilePathExists(req, data_repository, res);
-  MetadataFileExists(req, res);
+  console.log("running ProjectNameGiven");
+  project_name_given = ProjectNameGiven(project, req, res);
+  console.log("project_name_given = " + project_name_given);
+  console.log("running ProjectNameExists");
+  project_name_exists = ProjectNameExists(project, req, res);
+  console.log("project_name_exists = " + project_name_exists);
+  console.log("running FastaExists");
+  fasta_exists = FastaExists(req, res);
+  console.log("fasta_exists = " +fasta_exists);
+  console.log("running FilePathExists");
+  console.log("data_repository = " + data_repository);
+  file_path_exists = FilePathExists(req, data_repository, res);
+  console.log("file_path_exists = " +file_path_exists);
+  console.log("running MetadataFileExists");
+  metadata_file_exists = MetadataFileExists(req, res);
+  console.log("metadata_file_exists = " +metadata_file_exists);
 }
 
 // TODO: move to helpers
@@ -1622,7 +1634,7 @@ function CreateUploadOptions(req, res, project)
 
   var fs_old   = require('fs');
 
-  ProjectValidation(req, project, data_repository, res);
+  is_valid = ProjectValidation(req, project, data_repository, res);
 
   status_params = {'type'   : 'new',
                    'user_id': req.user.user_id,
