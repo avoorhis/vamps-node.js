@@ -144,7 +144,7 @@ module.exports.mkdirSync = function (path) {
 
 module.exports.fileExists = function (path) {
     try
-    {         
+    {
         return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
     }
     catch (err)
@@ -152,8 +152,6 @@ module.exports.fileExists = function (path) {
         return false;
     }
 };
-
-
 
 module.exports.send_mail = function(mail_info) {
   var to_addr = mail_info.addr;
@@ -301,7 +299,7 @@ module.exports.run_select_datasets_query = function(rows){
             mdgroup.refresh();
             // TODO: "This function's cyclomatic complexity is too high. (8)"
             // TODO: "Don't make functions within a loop."
-            
+
             Object.getOwnPropertyNames(mdgroup).forEach(function(mdname, idx, array) {
                 if(mdname != 'id'){
                   //console.log(mdname, group[mdname])
@@ -496,10 +494,10 @@ MakeUpdateStatusQ = function(status_params)
       statQuery2 += " SET status = '" + status_params.status + "'";
       statQuery2 += ", message = '"  + status_params.msg + "'";
       statQuery2 += ", updated_at = NOW()";
-      statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";    
+      statQuery2 += " WHERE user_id = '" + status_params.user_id + "'";
   if ('pid' in status_params && 'project' in status_params) {
       statQuery2 += "' AND project = '"  + status_params.project;
-  } 
+  }
   else if ('pid' in status_params) {
       statQuery2 += "' and project_id = '" + status_params.pid + "'";
   }
@@ -509,21 +507,28 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
-// TODO:
-// MakeInsertProjectQ = function(project)
-// {
-//
-// }
+MakeSelectOwnerQ = function(username)
+{
+  var SelectOwnerQ = "SELECT user_id FROM user WHERE username = " + username;
+      // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
+      return SelectOwnerQ
+}
+
+MakeInsertProjectQ = function(project, title)
+{
+  var owner_user_id = MakeSelectOwnerQ()
+  var InsertProjectQ = "INSERT IGNORE into user_project_status (project, title, project_description, rev_project_name, funding, " + owner_user_id + ", public)";
+}
 
 MakeInsertStatusQ = function(status_params)
 {
-  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";      
+  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
   // "SELECT user_id, project_id, status, message, NOW() ";
   statQuery1 += " SELECT "  + status_params.user_id;
   statQuery1 += ", project_id";
   statQuery1 += ", '"  + status_params.status + "'";
   statQuery1 += ", '"  + status_params.msg + "'";
-  statQuery1 += ", NOW()";  
+  statQuery1 += ", NOW()";
   statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
   statQuery1 += " WHERE project = " + "'" + status_params.project + "'";
   return statQuery1;
@@ -532,12 +537,12 @@ MakeInsertStatusQ = function(status_params)
 module.exports.update_status = function(status_params) {
   console.log('in update_status');
   console.log(util.inspect(status_params, false, null));
-  
+
   if (status_params.type === 'delete') {
     statQuery = MakeDeleteStatusQ(status_params);
     console.log('in update_status, after delete_status');
-    connection.query(statQuery , function(err, rows) {
-      if(err) { console.log('ERROR1-in status update: ' + err); 
+    connection.query(statQuery, function(err, rows) {
+      if(err) { console.log('ERROR1-in status update: ' + err);
       }
       else {
         console.log('in statQuery');
@@ -547,7 +552,7 @@ module.exports.update_status = function(status_params) {
   } else if(status_params.type == 'update') {
     statQuery2 = MakeUpdateStatusQ(status_params);
     console.log('statQuery2: ' + statQuery2);
-    connection.query(statQuery2 , function(err, rows) {
+    connection.query(statQuery2, function(err, rows) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
@@ -565,7 +570,7 @@ module.exports.update_status = function(status_params) {
       if(err) {
         console.log('ERROR2-in status update: ' + err);
       } else {
-        console.log('status update2');
+        console.log('status update1');
         console.log(util.inspect(rows, false, null));
         //TODO: Why doesn't work?
       }
@@ -757,8 +762,8 @@ module.exports.get_PTREE_metadata = function(OBJ, q) {
     return project_list;
 };
 
-module.exports.make_color_seq = function(seq){ 
-      
+module.exports.make_color_seq = function(seq){
+
       var return_string = '';
       for(var i = 0; i < seq.length; i++)
       {
@@ -784,8 +789,8 @@ module.exports.make_color_seq = function(seq){
           return_string += "<font color='darkgrey'>"+base+"</font>";
         }
 
-      } 
-      
+      }
+
       return return_string;
 };    //end of function
 
