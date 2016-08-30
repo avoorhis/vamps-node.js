@@ -585,7 +585,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
            //console.log('PID last line: '+last_line)
               status_params = {'type': 'delete', 'user_id':req.user.user_id,
                                 'project':project, 'status':'delete', 'msg':'delete' };
-              helpers.update_status(status_params );
+              helpers.update_status(status_params);
           } else {
              // python script error
           }
@@ -758,16 +758,16 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
     }
     // try: check project name and enter empty project (just to create pid)
-    project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
+    project_init = options.scriptPath + '/project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
 
     // metadata must go in after the projects and datasets:
     // Should go into db after we have project and datasets in the db
     // Should go in as entire project (w all datasets) -- not dataset by dataset
     // PROBLEM: Here we dont have datasets yet in db
-    metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
+    metadata_cmd = options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
 
     // Command is split to run once for each dataset on the cluster:
-    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+    run_gast_cmd = options.scriptPath + '/2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
     //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
     //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
@@ -1467,6 +1467,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 //  UPLOAD DATA
 //
+// ASh Aug 2016
 // TODO: Andy, how to make it fail? For testing?
 function ProjectNameGiven(project, req, res)
 {
@@ -1693,8 +1694,8 @@ function CreateUploadOptions(req, res, project)
 
 function CreateCmdList(req, options, data_repository)
 {
-  console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
-  var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+  console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
   // console.log("LLL load_cmd: " + load_cmd);
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
 
@@ -1702,12 +1703,15 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = 'infile.fna';
-      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
 
-  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
+  console.log("LLL2 data_repository: " + data_repository);
+  console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
 
   cmd_list.push(fnaunique_cmd);
 
