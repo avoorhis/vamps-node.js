@@ -499,6 +499,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
   }
 
 });
+
 router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, res) {
         // THIS IS FOR UNLOADED PROJECTS (After upload and before tax assignment)
         //will only show up if config.ini is present
@@ -1540,24 +1541,37 @@ function MetadataFileExists(req, res)
     }
 }
 
+function ProjectExistsInDB(project, req, res)
+{
+  
+}
+
 function ProjectValidation(req, project, data_repository, res)
 {
+  console.log("running ProjectExistsInDB");
+  project_exists_in_db = ProjectExistsInDB(project, req, res);
+  console.log("project_name_given = " + project_name_given);
+
   console.log("running ProjectNameGiven");
   project_name_given = ProjectNameGiven(project, req, res);
   console.log("project_name_given = " + project_name_given);
+
   console.log("running ProjectNameExists");
   project_name_exists = ProjectNameExists(project, req, res);
   console.log("project_name_exists = " + project_name_exists);
+
   console.log("running FastaExists");
   fasta_exists = FastaExists(req, res);
   console.log("fasta_exists = " +fasta_exists);
+
   // console.log("running ResFilePathExists");
   // console.log("data_repository = " + data_repository);
   // file_path_exists = ResFilePathExists(req, data_repository, res);
-  // console.log("file_path_exists = " +file_path_exists);
+  // console.log("file_path_exists = " + file_path_exists);
+
   console.log("running MetadataFileExists");
   metadata_file_exists = MetadataFileExists(req, res);
-  console.log("metadata_file_exists = " +metadata_file_exists);
+  console.log("metadata_file_exists = " + metadata_file_exists);
 }
 
 // TODO: move to helpers
@@ -1774,9 +1788,9 @@ function GetScriptVars(req, data_repository, cmd_list)
    scriptlog   = path.join(data_repository, 'script.log');
    script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
   }
-  console.log('111 scriptlog: ' + scriptlog);
-  console.log('222 script_text: ' + script_text);
-  console.log('222 ====='); 
+  // console.log('111 scriptlog: ' + scriptlog);
+  // console.log('222 script_text: ' + script_text);
+  // console.log('222 ====='); 
   return [scriptlog, script_text]
 }
 
@@ -1847,7 +1861,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 //
 // 222 =====
 //
-
+// TODO: split the part below into smaller functions
           var script_path = path.join(data_repository, script_name);
 
           fs.writeFile(script_path, script_text, function (err) {
@@ -1922,6 +1936,23 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 //      });  //     END move 1
 
 });
+
+
+router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
+  console.log('in add_project');
+  console.log('UUU ---');
+  console.log(util.inspect(req, false, null));
+  console.log('---');
+
+  // todo: redirect back after login
+  res.render('user_data/add_project', {
+    title: 'VAMPS: Add a new project',
+    user: req.user, hostname: req.CONFIG.hostname,
+    message: req.flash('message'),
+  });
+});
+
+
 
 //
 // UPLOAD DATA TAX-BY-SEQ
