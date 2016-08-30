@@ -1385,7 +1385,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   }
 
   var timestamp = +new Date();  // millisecs since the epoch!
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
 					var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
@@ -1513,14 +1513,15 @@ function FastaExists(req, res)
   }
 }
 
-function FilePathExists(req, data_repository, res)
+function ResFilePathExists(req, data_repository, res)
 {
   if (helpers.fileExists(data_repository)) {
       return true;
     }
     else
     {
-      req.flash('failMessage', 'There is no such file');
+      req.flash('failMessage', 'There is no such file: ' + data_repository);
+      console.log("AAA data_repository: " + data_repository)
       res.redirect("/user_data/import_data?import_type=" + req.body.type);
       return false;
     }
@@ -1550,10 +1551,10 @@ function ProjectValidation(req, project, data_repository, res)
   console.log("running FastaExists");
   fasta_exists = FastaExists(req, res);
   console.log("fasta_exists = " +fasta_exists);
-  console.log("running FilePathExists");
-  console.log("data_repository = " + data_repository);
-  file_path_exists = FilePathExists(req, data_repository, res);
-  console.log("file_path_exists = " +file_path_exists);
+  // console.log("running ResFilePathExists");
+  // console.log("data_repository = " + data_repository);
+  // file_path_exists = ResFilePathExists(req, data_repository, res);
+  // console.log("file_path_exists = " +file_path_exists);
   console.log("running MetadataFileExists");
   metadata_file_exists = MetadataFileExists(req, res);
   console.log("metadata_file_exists = " +metadata_file_exists);
@@ -1632,6 +1633,7 @@ function CreateUploadOptions(req, res, project)
 
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  console.log("data_repository DDD: " + data_repository);
 
   var fs_old   = require('fs');
 

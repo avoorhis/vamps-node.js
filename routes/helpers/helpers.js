@@ -144,7 +144,7 @@ module.exports.mkdirSync = function (path) {
 
 module.exports.fileExists = function (path) {
     try
-    {
+    {         
         return fs.statSync(path).isFile() || fs.statSync(path).isDirectory();
     }
     catch (err)
