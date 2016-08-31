@@ -1953,26 +1953,15 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
-  
 });
 
-// res.render('user_data/your_projects',
-//     { title: 'User Projects',
-//       pinfo: JSON.stringify(project_info),
-//       pnames: pnames,
-//       env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
-//       failmessage : req.flash('failMessage'),
-//       successmessage : req.flash('successMessage'),
-//       user: req.user, hostname: req.CONFIG.hostname
-//   });
-// res.render('user_data/edit_project', {
-//       title       : 'Edit Project',
-//       project     : project_name,
-//       pinfo       : JSON.stringify(project_info),
-//       env_sources : JSON.stringify(req.CONSTS.ENV_SOURCE),
-//       message     : req.flash('message'),
-//       user: req.user, hostname: req.CONFIG.hostname,
-//   });
+router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
+  console.log('1-req add_project');
+  console.log(util.inspect(req, false, null));
+  console.log('2-req add_project');
+  res.redirect("/user_data/your_projects");
+  return;
+});
 
 
 //
