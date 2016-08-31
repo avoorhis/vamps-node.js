@@ -1998,6 +1998,7 @@ router.post('/add_project',
   console.log(util.inspect(req.body, false, null));
   console.log('2-req add_project');
   console.log(util.inspect(req.form, false, null));
+  backURL=req.header('Referer') || '/';
   
   if (!req.form.isValid) {
     console.log("req.form.errors");
@@ -2011,12 +2012,15 @@ router.post('/add_project',
   {
     console.log("req.header: aaa")
     console.log(req.header('Referer'))
+    // http://localhost:3000/user_data/add_project
     // backURL=req.header('Referer') || '/';
     //   // do your thang
     //   res.redirect(backURL);
     // });
     // You might also want to store backURL in req.session, if you need it to persist across multiple routes. Remember to test for the existence of that variable, something like: res.redirect(req.session.backURL || '/')
-    res.redirect("/user_data/import_choices");    
+    // res.redirect("/user_data/import_choices");    
+    res.redirect(backURL);
+    
   }
   
   return;

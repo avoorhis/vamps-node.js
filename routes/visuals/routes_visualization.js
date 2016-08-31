@@ -421,6 +421,60 @@ router.post('/unit_selection', helpers.isLoggedIn, function(req, res) {
 /*
  * GET visualization page.
  */
+router.get('/visuals_index', helpers.isLoggedIn, function(req, res) {
+   // This page is arrived at using GET from the Main Menu
+    // It will be protected usind the helpers.isLoggedIn function
+    // TESTING:
+    //      Should show the closed project list on initialize
+    //      The javascript functions (load_project_select, set_check_project, open_datasets, toggle_selected_datasets)
+    //        should work to open the project (show and check the datasets) when either the plus image is clicked or the
+    //        checkbox is selected. Clicking the minus image should deselect the datasets and close the dataset list.
+    //        While the project is open clicking on the project checkbox should toggle all the datasets under it.
+    //      Clicking the submit button when no datasets have been selected should result in an alert box and a
+    //      return to the page.
+    //console.log(PROJECT_INFORMATION_BY_PID);
+    console.log('req.body index')
+    //console.log(req.body)
+
+    //console.log(ALL_DATASETS);
+    // GLOBAL
+    SHOW_DATA = ALL_DATASETS;
+    TAXCOUNTS = {}; // empty out this global variable: fill it in unit_selection
+    METADATA  = {};
+    unit_choice = 'tax_silva119_simple';
+    // GLOBAL
+    DATA_TO_OPEN = {};
+    if(req.body.data_to_open){
+      // open many projects
+      obj = JSON.parse(req.body.data_to_open)
+      for(pj in obj){
+        pid = PROJECT_INFORMATION_BY_PNAME[pj].pid
+        DATA_TO_OPEN[pid] = obj[pj]
+      }
+      //console.log('got data to open '+data_to_open)
+    }else if(req.body.project){
+      // open whole project
+      DATA_TO_OPEN[req.body.project_id] = DATASET_IDS_BY_PID[req.body.project_id];
+    }
+    console.log('DATA_TO_OPEN');
+    console.log(DATA_TO_OPEN);
+
+
+    res.render('visuals/visuals_index', {
+                                  title       : 'VAMPS: Select Datasets',
+                                  subtitle    : 'Dataset Selection Page',
+                                  proj_info   : JSON.stringify(PROJECT_INFORMATION_BY_PID),
+                                  constants   : JSON.stringify(req.CONSTS),
+                                  md_names    : AllMetadataNames,
+                                  filtering   : 0,
+                                  portal_to_show : '',
+                                  data_to_open: JSON.stringify(DATA_TO_OPEN),	  							              
+                                  user        : req.user,
+                                  hostname    : req.CONFIG.hostname,
+                                  message     : req.flash('nodataMessage'),
+                              });
+  });
+
 router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   // This page is arrived at using GET from the Main Menu
   // It will be protected usind the helpers.isLoggedIn function
@@ -435,9 +489,6 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
   //console.log(PROJECT_INFORMATION_BY_PID);
   console.log('req.body index')
   //console.log(req.body)
-
-
-
 
   //console.log(ALL_DATASETS);
   // GLOBAL
@@ -472,7 +523,8 @@ router.post('/visuals_index', helpers.isLoggedIn, function(req, res) {
                                 filtering   : 0,
                                 portal_to_show : '',
                                 data_to_open: JSON.stringify(DATA_TO_OPEN),	  							              
-                                user        : req.user,hostname: req.CONFIG.hostname,
+                                user        : req.user,
+                                hostname    : req.CONFIG.hostname,
                                 message     : req.flash('nodataMessage'),
                             });
 });

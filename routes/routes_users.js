@@ -54,12 +54,21 @@ router.get('/login', function(req, res) {
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       message: req.flash('loginMessage'), 
-                      user: req.user, hostname: req.CONFIG.hostname });
+                      user: req.user, 
+                      hostname: req.CONFIG.hostname,
+                      return_to_url: req.session.returnTo });
 });
 
-router.post('/login',  passport.authenticate('local-login', { successRedirect: '/users/profile',
-                                   failureRedirect: 'login',
-                                   failureFlash: true })
+// var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/users/profile';
+
+router.post('/login',  passport.authenticate('local-login', { 
+  // successRedirect: '/users/profile',
+  failureRedirect: 'login',
+  failureFlash: true }), function (req, res) {  
+          console.log("=====: req.body.return_to_url");
+          console.log(req.body.return_to_url);
+          res.redirect(req.body.return_to_url);    
+  	}
 );
 
 
