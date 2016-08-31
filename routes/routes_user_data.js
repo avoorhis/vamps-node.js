@@ -1977,6 +1977,46 @@ router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
   return;
 });
 
+function ValidateAddProjectForm(req, project, data_repository, res)
+{
+  // console.log("running1 ProjectExistsInDB");
+  // project_exists_in_db = ProjectExistsInDB(project, req, res);
+  // console.log("project_exists_in_db = " + project_exists_in_db);
+
+  //  1) all fields should be not empty
+  //  2) project name
+  //  3) project title and description length
+  //  4) funding - numbers
+  //  Owner:
+  //  5) email format
+  
+  if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
+    req.flash('failMessage', 'A project name is required.');
+    res.redirect("/user_data/import_data");
+    return;  
+}
+
+function ProjectNameField(req, res)
+{
+  // TODO: Check PROJECT_INFORMATION_BY_PNAME instead of db?
+  console.log("running ProjectExistsInDB");
+  q = helpers.MakeSelectProjectId(project);
+  console.log("q = " + q);
+  result = helpers.RunQuery(q);
+  console.log(util.inspect(result, false, null));
+  if (result === '' || result === undefined) 
+  {
+    req.flash('failMessage', 'There is no such project');
+    res.redirect("/user_data/import_data");
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+
 
 //
 // UPLOAD DATA TAX-BY-SEQ
