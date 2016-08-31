@@ -21,25 +21,10 @@ module.exports = {
       // if they aren't redirect them to the home page
       console.log("Oops! NOT isLoggedIn.req.isAuthenticated");
       // save the url in the session
-      // a = req.headers.host + req.originalUrl
-      // baseUrl
-      // .toString()
-      a = req.originalUrl
-      console.log('URL Requested: a');
-      console.log(util.inspect(a, false, null));
-      
-      req.session.returnTo = a;
-      // console.log('URL Requested: req');
-      // console.log(util.inspect(req, false, null));
+      req.session.returnTo = req.originalUrl;
       req.flash('loginMessage', 'Please login or register before continuing.');
       res.redirect('/users/login');
       return;
-      // res.render('user_admin/login', {
-      //                 title: 'VAMPS: Login',
-      //                 message      : req.flash(),
-      //                 user         : req.user
-      // });  // end render
-
   },
 
   // route middleware to make sure a user is an aministrator
