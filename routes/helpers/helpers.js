@@ -511,8 +511,14 @@ module.exports.MakeSelectUser_idByUserQ = function(username)
 {
   var SelectUser_idByUserQ = "SELECT user_id FROM user WHERE username = " + username;
       // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
-      return SelectUser_idByUserQ
+      return SelectUser_idByUserQ;
 }
+
+module.exports.MakeSelectProjectId = function(project)
+{
+  return "SELECT project_id FROM project WHERE project = '" + project + "'";
+}
+
 
 module.exports.RunQuery = function(my_query)
 {

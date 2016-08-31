@@ -1543,22 +1543,36 @@ function MetadataFileExists(req, res)
 
 function ProjectExistsInDB(project, req, res)
 {
-  
+  console.log("running ProjectExistsInDB");
+  q = helpers.MakeSelectProjectId(project);
+  console.log("q = " + q);
+  result = helpers.RunQuery(q);
+  console.log(util.inspect(result, false, null));
+  if (result === '' || result === undefined) 
+  {
+    req.flash('failMessage', 'There is no such project');
+    res.redirect("/user_data/import_data");
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 }
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  console.log("running ProjectExistsInDB");
+  console.log("running1 ProjectExistsInDB");
   project_exists_in_db = ProjectExistsInDB(project, req, res);
-  console.log("project_name_given = " + project_name_given);
+  console.log("project_exists_in_db = " + project_exists_in_db);
 
   console.log("running ProjectNameGiven");
   project_name_given = ProjectNameGiven(project, req, res);
   console.log("project_name_given = " + project_name_given);
 
-  console.log("running ProjectNameExists");
-  project_name_exists = ProjectNameExists(project, req, res);
-  console.log("project_name_exists = " + project_name_exists);
+  // console.log("running ProjectNameExists");
+  // project_name_exists = ProjectNameExists(project, req, res);
+  // console.log("project_name_exists = " + project_name_exists);
 
   console.log("running FastaExists");
   fasta_exists = FastaExists(req, res);
@@ -1957,8 +1971,8 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 
 router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('1-req add_project');
-  console.log(util.inspect(req, false, null));
-  console.log('2-req add_project');
+  // console.log(util.inspect(req, false, null));
+  // console.log('2-req add_project');
   res.redirect("/user_data/your_projects");
   return;
 });
