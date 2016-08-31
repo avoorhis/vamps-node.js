@@ -1958,64 +1958,53 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('UUU ---');
   // console.log(util.inspect(req, false, null));
   console.log('---');
-  project_info = {};
+  // project_info = {};
 
   // todo: redirect back after login
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user, hostname: req.CONFIG.hostname,
     message: req.flash('message'),
-    project_info: JSON.stringify(project_info),
+    // project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 });
 
 router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('1-req add_project');
-  if (req.body)
-  {
-    ValidateAddProjectForm(req.body, res)
-  }
+  // if (req.body)
+  // {
+  //   ValidateAddProjectForm(req, res)
+  // }
   res.redirect("/user_data/your_projects");
   return;
 });
 
-function ValidateAddProjectForm(req_body, res)
-{
-  console.log(util.inspect(req_body, false, null));
-  console.log('2-req add_project');
-  
-  var html = escape(req_body.new_project_name);
-  console.log("HHH html = " + html);
-  console.log(util.inspect(req_body, false, null));
-  
-  Object.keys(req_body).forEach(function(key) {
-    var val = req_body[key];
-    // logic();
-    console.log("EEE key = " + key); 
-    console.log("EEE val = " + val); 
-    
-  });
-  
-  // [ 'new_project_name',
-  //   'new_env_source_id',
-  //   'new_privacy',
-  //   'new_project_title',
-  //   'new_project_description',
-  //   'new_funding',
-  //   'first_name',
-  //   'last_name',
-  //   'email' ]
-  // 
-  // if Object.keys(req_body) 
-  // if req_body.hasOwnProperty
-  // {
-  //   for (key_name in req_body)   
-  //   {
-  //     console.log("EEE key_name = " + key_name); 
-  //   }     
-  // }
-  
+// function ValidateAddProjectForm(req, res)
+// {
+//   console.log(util.inspect(req.body, false, null));
+//   console.log('2-req add_project');
+//   
+//   var html = escape(req.body.new_project_name);
+//   console.log("HHH html = " + html);
+//   console.log(util.inspect(req.body, false, null));
+//   
+//   project_info = req.body;
+//   
+//   Object.keys(req.body).forEach(function(key) {
+//     var val = req.body[key];
+//     // logic();
+//     console.log("EEE key = " + key); 
+//     console.log("EEE val = " + val); 
+//     aa = FieldNotEmpty(val);
+//     console.log(aa)
+//     if (aa)
+//     {
+//       req.flash('failMessage', 'All fields are required, please add value for ' + key);
+//       res.redirect("/user_data/add_project");      
+//     }
+//     
+//   });
   // body: 
   //  { new_project_name: 'new_name',
   //    new_env_source_id: '10',
@@ -2044,7 +2033,23 @@ function ValidateAddProjectForm(req_body, res)
   //   return;  
   // }
   
-}
+// }
+
+// function FieldNotEmpty(val)
+// {
+//   console.log("running1 FieldNotEmpty, val");
+//   console.log(val)
+//   // console.log(val.length)
+//   if (val === '' || val === undefined) 
+//   {
+//     return false;
+//   }
+//   else
+//   {
+//     return true;
+//   }
+//   
+// }
 
 function ProjectNameField(req, res)
 {

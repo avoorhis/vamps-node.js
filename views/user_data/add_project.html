@@ -91,24 +91,23 @@
       <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
       <tr>
         <td><label for='first_name'>First Name:</label></td>
-        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= project_info.first_name %>'></td>
+        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= user.first_name %>'></td>
       </tr>
       <tr>
         <td><label for='last_name'>Last Name:</label></td>
-        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= project_info.last_name %>'></td>
+        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= user.last_name %>'></td>
       </tr>
       <tr>
         <td><label for='email'>Email:</label></td>
-        <td><input type='text' name='email' maxlength='100' size='50' value='<%= project_info.email %>'></td>
+        <td><input type='text' name='email' maxlength='100' size='50' value='<%= user.email %>'></td>
       </tr>
       <tr>
-        <td><label for='institution'>Institution:</label></td><td> <!-- select istitution --></td>
+        <td><label for='institution'>Institution:</label></td><td> <!-- select institution --><%= user.institution %></td>
       </tr>
     </fieldset>
     
   </table>
   <br>
-
   
   <!-- center -->
   <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
