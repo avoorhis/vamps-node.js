@@ -29,8 +29,8 @@ module.exports = {
       console.log(util.inspect(a, false, null));
       
       req.session.returnTo = a;
-      console.log('URL Requested: req');
-      console.log(util.inspect(req, false, null));
+      // console.log('URL Requested: req');
+      // console.log(util.inspect(req, false, null));
       req.flash('loginMessage', 'Please login or register before continuing.');
       res.redirect('/users/login');
       return;
