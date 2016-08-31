@@ -39,6 +39,7 @@
     "express-flash": "",
     "express-session": "",
     "fs-extra": "",
+    "escape-html": "",
     "ini": "",
     "iniparser": "",
     "istanbul": "",

@@ -16,6 +16,7 @@ var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
 var util = require('util');
+var escape = require('escape-html');
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -1971,39 +1972,82 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 
 router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('1-req add_project');
-  // console.log(util.inspect(req, false, null));
-  // console.log('2-req add_project');
+  if (req.body)
+  {
+    ValidateAddProjectForm(req.body, res)
+  }
   res.redirect("/user_data/your_projects");
   return;
 });
 
-function ValidateAddProjectForm(req, project, data_repository, res)
+function ValidateAddProjectForm(req_body, res)
 {
+  console.log(util.inspect(req_body, false, null));
+  console.log('2-req add_project');
+  
+  var html = escape(req_body.new_project_name);
+  console.log("HHH html = " + html);
+  console.log(util.inspect(req_body, false, null));
+  
+  Object.keys(req_body).forEach(function(key) {
+    var val = req_body[key];
+    // logic();
+    console.log("EEE key = " + key); 
+    console.log("EEE val = " + val); 
+    
+  });
+  
+  // [ 'new_project_name',
+  //   'new_env_source_id',
+  //   'new_privacy',
+  //   'new_project_title',
+  //   'new_project_description',
+  //   'new_funding',
+  //   'first_name',
+  //   'last_name',
+  //   'email' ]
+  // 
+  // if Object.keys(req_body) 
+  // if req_body.hasOwnProperty
+  // {
+  //   for (key_name in req_body)   
+  //   {
+  //     console.log("EEE key_name = " + key_name); 
+  //   }     
+  // }
+  
+  // body: 
+  //  { new_project_name: 'new_name',
+  //    new_env_source_id: '10',
+  //    new_privacy: 'True',
+  //    new_project_title: 'new title',
+  //    new_project_description: 'new description',
+  //    funding: '000',
+  //    first_name: '',
+  //    last_name: '',
+  //    email: '' },
+  
   // console.log("running1 ProjectExistsInDB");
   // project_exists_in_db = ProjectExistsInDB(project, req, res);
   // console.log("project_exists_in_db = " + project_exists_in_db);
 
   //  1) all fields should be not empty
-  //  2) project name
-  //  3) project title and description length
+  //  2) project name (length < 20, >3, no spaces, just latteres, numbers, undescores)
+  //  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
   //  4) funding - numbers
   //  Owner:
   //  5) email format
+
+  // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
+  //   req.flash('failMessage', 'A project name is required.');
+  //   res.redirect("/user_data/import_data");
+  //   return;  
+  // }
   
-  if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
-    req.flash('failMessage', 'A project name is required.');
-    res.redirect("/user_data/import_data");
-    return;  
 }
 
 function ProjectNameField(req, res)
 {
-  // TODO: Check PROJECT_INFORMATION_BY_PNAME instead of db?
-  console.log("running ProjectExistsInDB");
-  q = helpers.MakeSelectProjectId(project);
-  console.log("q = " + q);
-  result = helpers.RunQuery(q);
-  console.log(util.inspect(result, false, null));
   if (result === '' || result === undefined) 
   {
     req.flash('failMessage', 'There is no such project');
