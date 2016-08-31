@@ -1522,7 +1522,7 @@ function ResFilePathExists(req, data_repository, res)
     else
     {
       req.flash('failMessage', 'There is no such file: ' + data_repository);
-      console.log("AAA data_repository: " + data_repository)
+      console.log("AAA data_repository: " + data_repository);
       res.redirect("/user_data/import_data?import_type=" + req.body.type);
       return false;
     }
@@ -1805,7 +1805,7 @@ function GetScriptVars(req, data_repository, cmd_list)
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
   // console.log('222 ====='); 
-  return [scriptlog, script_text]
+  return [scriptlog, script_text];
 }
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
