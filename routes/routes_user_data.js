@@ -1971,13 +1971,27 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+//  1) all fields should be not empty
+//  2) project name (length < 20, >3, no spaces, just latteres, numbers, undescores)
+//  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
+//  4) funding - numbers
+//  Owner:
+//  5) email format
+
 router.post('/add_project', 
             [helpers.isLoggedIn], 
             form(
-              form.field("new_project_name").trim().required().is(/^[A-z]_$/),
-              form.field("new_project_title").trim().required().is(/^[A-z]_$/),
+              form.field("new_project_name", "Project Name").trim().required().is(/^[a-z_]+$/).minLength(3).maxLength(20),
+              form.field("new_env_source_id", "ENV Source").trim().required().is(/^[a-z_]+$/),
+              form.field("new_privacy", "Public").trim().required().is(/^[A-z_]+$/),
+              form.field("new_project_title", "Title").trim().required().is(/^[A-z_]+$/),
+              form.field("new_project_description", "Description").trim().required().is(/^[A-z_]+$/),
+              form.field("new_funding", "Funding").trim().required().isInt(),
               
-              form.field("email").trim().isEmail()
+              form.field("first_name", "First Name").trim(),
+              form.field("last_name", "Last Name").trim(),
+              form.field("email", "email").trim().isEmail(),
+              form.field("institution", "Institution").trim()
              ),
             function (req, res) {
   console.log('1-req add_project');
@@ -1985,12 +1999,6 @@ router.post('/add_project',
   console.log('2-req add_project');
   console.log(util.inspect(req.form, false, null));
   
-  // form(form.validate("new_project_name").required());
-  // new_name
-  // if (req.body)
-  // {
-  //   ValidateAddProjectForm(req, res)
-  // }
   if (!req.form.isValid) {
     console.log("req.form.errors");
     console.log(req.form.errors);
@@ -2000,58 +2008,12 @@ router.post('/add_project',
   }
   else
   {
-    res.redirect("/user_data/your_projects");    
+    res.redirect("/user_data/import_choices");    
   }
   
   return;
 });
 
-// function ValidateAddProjectForm(req, res)
-// {
-//   console.log(util.inspect(req.body, false, null));
-//   console.log('2-req add_project');
-//   
-//   var html = escape(req.body.new_project_name);
-//   console.log("HHH html = " + html);
-//   console.log(util.inspect(req.body, false, null));
-//   
-//   project_info = req.body;
-//   
-//   Object.keys(req.body).forEach(function(key) {
-//     var val = req.body[key];
-//     // logic();
-//     console.log("EEE key = " + key); 
-//     console.log("EEE val = " + val); 
-//     aa = FieldNotEmpty(val);
-//     console.log(aa)
-//     if (aa)
-//     {
-//       req.flash('failMessage', 'All fields are required, please add value for ' + key);
-//       res.redirect("/user_data/add_project");      
-//     }
-//     
-//   });
-  // body: 
-  //  { new_project_name: 'new_name',
-  //    new_env_source_id: '10',
-  //    new_privacy: 'True',
-  //    new_project_title: 'new title',
-  //    new_project_description: 'new description',
-  //    funding: '000',
-  //    first_name: '',
-  //    last_name: '',
-  //    email: '' },
-  
-  // console.log("running1 ProjectExistsInDB");
-  // project_exists_in_db = ProjectExistsInDB(project, req, res);
-  // console.log("project_exists_in_db = " + project_exists_in_db);
-
-  //  1) all fields should be not empty
-  //  2) project name (length < 20, >3, no spaces, just latteres, numbers, undescores)
-  //  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
-  //  4) funding - numbers
-  //  Owner:
-  //  5) email format
 
   // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
   //   req.flash('failMessage', 'A project name is required.');
