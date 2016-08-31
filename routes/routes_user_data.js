@@ -1943,17 +1943,28 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('UUU ---');
   // console.log(util.inspect(req, false, null));
   console.log('---');
+  project_info = {};
 
   // todo: redirect back after login
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user, hostname: req.CONFIG.hostname,
     message: req.flash('message'),
+    project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
-    
   });
+  
 });
 
+// res.render('user_data/your_projects',
+//     { title: 'User Projects',
+//       pinfo: JSON.stringify(project_info),
+//       pnames: pnames,
+//       env_sources :   JSON.stringify(req.CONSTS.ENV_SOURCE),
+//       failmessage : req.flash('failMessage'),
+//       successmessage : req.flash('successMessage'),
+//       user: req.user, hostname: req.CONFIG.hostname
+//   });
 // res.render('user_data/edit_project', {
 //       title       : 'Edit Project',
 //       project     : project_name,

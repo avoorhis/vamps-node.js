@@ -11,8 +11,8 @@
 <br>
 
 <% // TODO: change to real!!! (from routes)  
-  project = ''; 
-  project_info = {};
+  console.log("PPP user.user_id");
+  console.log(user.user_id);
 %>
 <% var env_hash = JSON.parse(env_sources) %>
 
@@ -21,15 +21,17 @@
   <a href='/user_data/your_projects'>&lt;&lt;--back</a>
   <fieldset>
     <table class='table table-condensed'>
+    <!--
     <tr>
       <th></th><th>Values</th>
     </tr>
     <tr>
+    -->
       <td>
         <label for='name'>Project Name (max length 50 chars):</label>
       </td>
       <td>
-        <input type='text' name='new_project_name' maxlength='50' size='50' value='<%= project %>'>
+        <input type='text' name='new_project_name' maxlength='50' size='50' value=''>
       </td>
     </tr>
     <tr>
@@ -59,7 +61,7 @@
         <label for='title'>Title (max length 100 chars):</label>
       </td>
       <td>
-        <input type='text' name='new_project_title' maxlength='100' size='50' value='<%= project_info.title %>'>
+        <input type='text' name='new_project_title' maxlength='100' size='50' value=''>
       </td>
     </tr>
     <tr>
@@ -67,7 +69,7 @@
         <label for='description'>Description (max length 255 chars):</label>
       </td>
       <td>
-        <textarea name='new_project_description' maxlength='255' rows='1' cols='50'><%= project_info.pdesc %></textarea>
+        <textarea name='new_project_description' maxlength='255' rows='1' cols='50'></textarea>
       </td>
     </tr>
     <tr>
@@ -83,10 +85,10 @@
     <fieldset>
       <!-- 
       1) add select if first, last and email are giving ?
-      2) maxlength='100' size='50' - to css!!!
-      3) validation for each
+      2) validation for each
       -->
-      <tr><td></td><th>Owner (if different from the current user)</th></tr>
+      <!-- center -->
+      <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
       <tr>
         <td><label for='first_name'>First Name:</label></td>
         <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= project_info.first_name %>'></td>
@@ -107,8 +109,6 @@
   </table>
   <br>
 
-  <input type='hidden' name='old_project_name' value='<%= project %>'>
-  <input type='hidden' name='project_pid' value='<%= project_info.pid %>'>
   
   <!-- center -->
   <button class='btn btn-sm btn-primary' type='submit'>Submit</button>

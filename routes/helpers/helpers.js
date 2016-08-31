@@ -507,14 +507,27 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
-MakeSelectOwnerQ = function(username)
+module.exports.MakeSelectUser_idByUserQ = function(username)
 {
-  var SelectOwnerQ = "SELECT user_id FROM user WHERE username = " + username;
+  var SelectUser_idByUserQ = "SELECT user_id FROM user WHERE username = " + username;
       // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
-      return SelectOwnerQ
+      return SelectUser_idByUserQ
 }
 
-MakeInsertProjectQ = function(project, title)
+module.exports.RunQuery = function(my_query)
+{
+  console.log('my_query from RunQuery: ' + my_query);
+  connection.query(my_query, function(err, rows) {
+    if(err) {
+      console.log('ERROR in query: ' + err);
+    } else {
+      console.log(util.inspect(rows, false, null));
+      return rows;
+    }
+  });
+}
+
+MakeInsertProjectQ = function(project, title, project_description, funding)
 {
   var owner_user_id = MakeSelectOwnerQ()
   var InsertProjectQ = "INSERT IGNORE into user_project_status (project, title, project_description, rev_project_name, funding, " + owner_user_id + ", public)";

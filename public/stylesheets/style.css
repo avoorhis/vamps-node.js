@@ -84,7 +84,7 @@ a {
     border-collapse:collapse;
 }
 .td_top {
-vertical-align:top;
+ vertical-align:top;
 
 }
 .center {
@@ -273,6 +273,11 @@ td.left_justify {
 .link_black{
   color:black;
 }
+
+.hr_cell {
+    text-align:center;    
+}
+
 /*  Custom top nav-bar color scheme */
 
 .navbar-custom {
