@@ -17,6 +17,7 @@ var config = require('../config/config');
 var multer = require('multer');
 var util = require('util');
 var escape = require('escape-html');
+var form = require("express-form");
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -1970,13 +1971,38 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
-router.post('/add_project', [helpers.isLoggedIn], function (req, res) {
+router.post('/add_project', 
+            [helpers.isLoggedIn], 
+            form(
+              form.field("new_project_name").trim().required().is(/^[A-z]_$/),
+              form.field("new_project_title").trim().required().is(/^[A-z]_$/),
+              
+              form.field("email").trim().isEmail()
+             ),
+            function (req, res) {
   console.log('1-req add_project');
+  console.log(util.inspect(req.body, false, null));
+  console.log('2-req add_project');
+  console.log(util.inspect(req.form, false, null));
+  
+  // form(form.validate("new_project_name").required());
+  // new_name
   // if (req.body)
   // {
   //   ValidateAddProjectForm(req, res)
   // }
-  res.redirect("/user_data/your_projects");
+  if (!req.form.isValid) {
+    console.log("req.form.errors");
+    console.log(req.form.errors);
+    console.log(req.form.getErrors("new_project_name"));
+    console.log(req.form.getErrors());
+    res.redirect("/user_data/add_project");
+  }
+  else
+  {
+    res.redirect("/user_data/your_projects");    
+  }
+  
   return;
 });
 
