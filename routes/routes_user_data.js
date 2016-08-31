@@ -1972,7 +1972,7 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 });
 
 //  1) all fields should be not empty
-//  2) project name (length < 20, >3, no spaces, just latteres, numbers, undescores)
+//  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
 //  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
 //  4) funding - numbers
 //  Owner:
@@ -1981,17 +1981,17 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 router.post('/add_project', 
             [helpers.isLoggedIn], 
             form(
-              form.field("new_project_name", "Project Name").trim().required().is(/^[a-z_]+$/).minLength(3).maxLength(20),
-              form.field("new_env_source_id", "ENV Source").trim().required().is(/^[a-z_]+$/),
-              form.field("new_privacy", "Public").trim().required().is(/^[A-z_]+$/),
-              form.field("new_project_title", "Title").trim().required().is(/^[A-z_]+$/),
-              form.field("new_project_description", "Description").trim().required().is(/^[A-z_]+$/),
-              form.field("new_funding", "Funding").trim().required().isInt(),
-              
-              form.field("first_name", "First Name").trim(),
-              form.field("last_name", "Last Name").trim(),
-              form.field("email", "email").trim().isEmail(),
-              form.field("institution", "Institution").trim()
+              form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+              form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
+              form.field("new_privacy", "Public").trim().required().is(/False|True/),
+              form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
+              form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
+              form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
+                            // post.super.nested.property
+              form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
+              form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+              form.field("email", "email").trim().isEmail().required().entityEncode(),
+              form.field("institution", "Institution").trim().required().entityEncode()
              ),
             function (req, res) {
   console.log('1-req add_project');
@@ -2002,7 +2002,8 @@ router.post('/add_project',
   if (!req.form.isValid) {
     console.log("req.form.errors");
     console.log(req.form.errors);
-    console.log(req.form.getErrors("new_project_name"));
+    console.log("get errors:")
+    // console.log(req.form.getErrors("new_project_name"));
     console.log(req.form.getErrors());
     res.redirect("/user_data/add_project");
   }

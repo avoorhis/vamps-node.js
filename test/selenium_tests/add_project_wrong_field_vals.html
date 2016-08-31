@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:3000/" />
-<title>import_data</title>
+<title>add_project_wrong_field_vals</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">add_project</td></tr>
+<tr><td rowspan="1" colspan="3">add_project_wrong_field_vals</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -44,28 +44,44 @@
 <tr>
 	<td>type</td>
 	<td>name=new_project_name</td>
-	<td>new_Name</td>
+	<td>new Name</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>name=new_project_title</td>
-	<td>new Title</td>
+	<td>new Title &lt; % &amp; ! &quot; ' <br />&nbsp;&nbsp;find packages Search sign up or log in log in Notorious Public Menace npm Enterprise features pricing documentation</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>name=new_project_description</td>
-	<td>new description</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=email</td>
+	<td>admin@ad@bb</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=first_name</td>
+	<td>Ad dsf gd f</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>name=last_name</td>
+	<td></td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>name=new_funding</td>
-	<td>000</td>
+	<td>000A</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
 	<td>xpath=(//button[@type='submit'])[3]</td>
 	<td></td>
 </tr>
+
 </tbody></table>
 </body>
 </html>
