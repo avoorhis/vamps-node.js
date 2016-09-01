@@ -1988,11 +1988,16 @@ function saveToDb(req, res){
       else
         { new_privacy = 0 }
 
+
+      a = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
+      console.log("AAA insert_project_q a = " + a);
+      
+
       var insert_project_q = 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
                            + '("'  + req.form.new_project_name + '"'
                            + ', "' + req.form.new_project_title + '"'
                            + ', "' + req.form.new_project_description + '"'
-                           + ', REVERSE("' + req.form.new_project_title + '")'
+                           + ', REVERSE("' + req.form.new_project_name + '")'
                            + ', "' + req.form.new_funding + '"'
                            + ', ' + owner_user_id + ''
                            // + ', "' + req.form.owner_user_id + '"'
@@ -2008,9 +2013,10 @@ function saveToDb(req, res){
            console.log(util.inspect(rows, false, null));
            // console.log('TTTT2 --- rows.insertId');
            // console.log(util.inspect(rows.insertId, false, null));
-           req.body.project_pid = rows.insertId;
-           console.log('TTTT3 --- req.body');
-           console.log(util.inspect(req.body, false, null));
+           req.body.project_pid = rows.insertId; 
+           // TODO: save in session?
+           // console.log('TTTT3 --- req.body');
+           // console.log(util.inspect(req.body, false, null));
          }
       });
     }

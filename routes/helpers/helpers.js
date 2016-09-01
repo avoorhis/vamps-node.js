@@ -519,10 +519,17 @@ module.exports.RunQuery = function(my_query)
   });
 }
 
-MakeInsertProjectQ = function(project, title, project_description, funding)
+module.exports.MakeInsertProjectQ = function(project, title, project_description, funding, owner_user_id, privacy)
 {
-  var owner_user_id = MakeSelectOwnerQ()
-  var InsertProjectQ = "INSERT IGNORE into user_project_status (project, title, project_description, rev_project_name, funding, " + owner_user_id + ", public)";
+  return 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
+                     + '("'  + project + '"'
+                     + ', "' + title + '"'
+                     + ', "' + project_description + '"'
+                     + ', REVERSE("' + project + '")'
+                     + ', "' + funding + '"'
+                     + ', ' + owner_user_id + ''
+                     // + ', "' + req.form.owner_user_id + '"'
+                     + ', "' + privacy + '");';
 }
 
 MakeInsertStatusQ = function(status_params)
