@@ -2005,10 +2005,15 @@ function saveToDb(req, res){
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
-          var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
+          project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_project_name, req.form.new_funding, owner_user_id, new_privacy];
+
+          // var insert_project_q = helpers.MakeInsertProjectQ();
+          var insert_project_q = 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);', project_info;
           console.log("AAA insert_project_q a = " + insert_project_q);
-  
-          connection.query(insert_project_q, function (err, rows) {
+          
+          connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);', 
+          project_info, 
+          function (err, rows) {
            if (err) {
              console.log('ERROR-in project insert: ' + err);
              return;
