@@ -1969,18 +1969,15 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 });
 
 function fetchID(data, callback) {
-  qq = 'SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name)
-                 + ' AND last_name = ' + mysql.escape(data.last_name)
-                 + ' AND email = ' + mysql.escape(data.email)
-  + ' AND institution = ' + mysql.escape(data.new_institution);
-  console.log('--- mysql.escape(qq) ---');
-  console.log(util.inspect(qq, false, null));
+  user_info = [data.first_name, data.last_name, data.email, data.new_institution];
   
   
-  connection.query('SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name) + ''
-                 + ' AND last_name = ' + mysql.escape(data.last_name)  + ''
-                 + ' AND email = ' + mysql.escape(data.email)  + ''
-                 + ' AND institution = ' + mysql.escape(data.new_institution) +'', function(err, rows) {
+  // connection.query('SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name) + ''
+  //                + ' AND last_name = ' + mysql.escape(data.last_name)  + ''
+  //                + ' AND email = ' + mysql.escape(data.email)  + ''
+  //                + ' AND institution = ' + mysql.escape(data.new_institution) +'', function(err, rows) {
+    connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
+
       if (err) {
           callback(err, null);
       } else 
