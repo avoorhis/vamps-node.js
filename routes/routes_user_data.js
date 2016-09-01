@@ -1994,7 +1994,7 @@ function saveToDb(req, res){
                            + ', "' + req.form.new_project_description + '"'
                            + ', REVERSE("' + req.form.new_project_title + '")'
                            + ', "' + req.form.new_funding + '"'
-                           + ', "' + owner_user_id + '"'
+                           + ', ' + owner_user_id + ''
                            // + ', "' + req.form.owner_user_id + '"'
                            + ', "' + new_privacy + '");';
         console.log("III insert_project_q = " + insert_project_q);
@@ -2006,8 +2006,11 @@ function saveToDb(req, res){
            // console.log('OK- project info updated: ' + req.body.project_pid);
            console.log('TTTT --- rows');
            console.log(util.inspect(rows, false, null));
-           console.log('TTTT2 --- rows.insertId');
-           console.log(util.inspect(rows.insertId, false, null));
+           // console.log('TTTT2 --- rows.insertId');
+           // console.log(util.inspect(rows.insertId, false, null));
+           req.body.project_pid = rows.insertId;
+           console.log('TTTT3 --- req.body');
+           console.log(util.inspect(req.body, false, null));
          }
       });
     }
