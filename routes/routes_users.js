@@ -64,13 +64,13 @@ router.post('/login',  passport.authenticate('local-login', {
   // successRedirect: '/users/profile',
   failureRedirect: 'login',
   failureFlash: true }), function (req, res) {  
-        var url = req.body.return_to_url || '/'
-        console.log("=====: req.body.return_to_url");
-        console.log(url);
-        res.redirect(url);    
-        delete req.session.returnTo;
-        req.body.return_to_url = "";
-  	}
+    var url = req.body.return_to_url || '/';
+    console.log("=====: req.body.return_to_url");
+    console.log(url);
+    res.redirect(url);    
+    delete req.session.returnTo;
+    req.body.return_to_url = "";
+	}
 );
 
 

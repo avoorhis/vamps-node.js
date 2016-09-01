@@ -1550,7 +1550,7 @@ function ProjectExistsInDB(project, req, res)
   console.log("q = " + q);
   result = helpers.RunQuery(q);
   console.log(util.inspect(result, false, null));
-  if (result === '' || result === undefined) 
+  if (result === '' || result === undefined)
   {
     req.flash('failMessage', 'There is no such project');
     res.redirect("/user_data/import_data");
@@ -1806,7 +1806,7 @@ function GetScriptVars(req, data_repository, cmd_list)
   }
   // console.log('111 scriptlog: ' + scriptlog);
   // console.log('222 script_text: ' + script_text);
-  // console.log('222 ====='); 
+  // console.log('222 =====');
   return [scriptlog, script_text];
 }
 
@@ -1855,7 +1855,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
           console.log(util.inspect(cmd_list, false, null));
 
           script_name = 'load_script.sh';
-          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');          
+          var nodelog     = fs.openSync(path.join(data_repository, 'assignment.log'), 'a');
           var script_vars = GetScriptVars(req, data_repository, cmd_list);
           var scriptlog   = script_vars[0];
           var script_text = script_vars[1];
@@ -1958,19 +1958,35 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   console.log('in add_project');
   console.log('UUU ---');
   // console.log(util.inspect(req, false, null));
-  console.log('---');
+  // console.log('---');
   // project_info = {};
 
-  // todo: redirect back after login
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
-    user: req.user, hostname: req.CONFIG.hostname,
+    user: req.user,
+    hostname: req.CONFIG.hostname,
     message: req.flash('message'),
     // project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 });
 
+function editAddProject(req, res){
+  console.log('in editAddProject');
+  console.log('UUU ---');
+  // console.log(util.inspect(req, false, null));
+  // console.log('---');
+  // project_info = {};
+
+  res.render('user_data/add_project', {
+    title: 'VAMPS: Add a new project',
+    user: req.user,
+    hostname: req.CONFIG.hostname,
+    message: req.flash('message'),
+    project_info: JSON.stringify(req.add_project_info),
+    env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
+  });
+}
 //  1) all fields should be not empty
 //  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
 //  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
@@ -1978,8 +1994,8 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 //  Owner:
 //  5) email format
 
-router.post('/add_project', 
-            [helpers.isLoggedIn], 
+router.post('/add_project',
+            [helpers.isLoggedIn],
             form(
               form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
               form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
@@ -1998,8 +2014,8 @@ router.post('/add_project',
   console.log(util.inspect(req.body, false, null));
   console.log('2-req add_project');
   console.log(util.inspect(req.form, false, null));
-  backURL=req.header('Referer') || '/';
-  
+  // backURL=req.header('Referer') || '/';
+
   if (!req.form.isValid) {
     console.log("req.form.errors");
     console.log(req.form.errors);
@@ -2018,11 +2034,10 @@ router.post('/add_project',
     //   res.redirect(backURL);
     // });
     // You might also want to store backURL in req.session, if you need it to persist across multiple routes. Remember to test for the existence of that variable, something like: res.redirect(req.session.backURL || '/')
-    // res.redirect("/user_data/import_choices");    
-    res.redirect(backURL);
-    
+    res.redirect("/user_data/import_choices");
+    // res.redirect(backURL);
   }
-  
+
   return;
 });
 
@@ -2030,9 +2045,9 @@ router.post('/add_project',
   // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
   //   req.flash('failMessage', 'A project name is required.');
   //   res.redirect("/user_data/import_data");
-  //   return;  
+  //   return;
   // }
-  
+
 // }
 
 // function FieldNotEmpty(val)
@@ -2040,7 +2055,7 @@ router.post('/add_project',
 //   console.log("running1 FieldNotEmpty, val");
 //   console.log(val)
 //   // console.log(val.length)
-//   if (val === '' || val === undefined) 
+//   if (val === '' || val === undefined)
 //   {
 //     return false;
 //   }
@@ -2048,12 +2063,12 @@ router.post('/add_project',
 //   {
 //     return true;
 //   }
-//   
+//
 // }
 
 function ProjectNameField(req, res)
 {
-  if (result === '' || result === undefined) 
+  if (result === '' || result === undefined)
   {
     req.flash('failMessage', 'There is no such project');
     res.redirect("/user_data/import_data");
@@ -2716,7 +2731,7 @@ router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     }
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-    helpers.mkdirSync(user_dir);  // create dir if not exists 
+    helpers.mkdirSync(user_dir);  // create dir if not exists
     var destination = path.join( user_dir, new_file_name );
     console.log(old_file_path, destination)
     fs.copy(old_file_path, destination, function (err) {
