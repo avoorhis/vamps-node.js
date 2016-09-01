@@ -18,6 +18,7 @@ var multer = require('multer');
 var util = require('util');
 var escape = require('escape-html');
 var form = require("express-form");
+var mysql = require('mysql2');
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -1967,38 +1968,29 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
-// function getOwnerId(req, res){
-//   console.log('In getOwnerId');
-//   // console.log('RRR --- req.form');
-//   // console.log(util.inspect(req.form, false, null));
-//   // var SelectUser_idByUserInfoQ = helpers.MakeSelectUser_idByUserInfoQ(req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution);
-//   // console.log("LLL SelectUser_idByUserInfoQ: ");
-//   // console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
-//
-//   var SelectUser_idByUserInfoQ = 'SELECT user_id FROM user WHERE first_name = "' + req.form.first_name + '"'
-//                              + ' AND last_name = "' + req.form.last_name  + '"'
-//                              + ' AND email = "' + req.form.email  + '"'
-//                              + ' AND institution = "' + req.form.new_institution +'"';
-//
-//   console.log("LLL SelectUser_idByUserInfoQ: ");
-//   console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
-//
-//   res_query = helpers.RunQuery(SelectUser_idByUserInfoQ);
-//   console.log("NNN res_query: ");
-//   console.log(util.inspect(res_query, false, null));
-//   return owner_user_id;
-// }
-
 function fetchID(data, callback) {
-        connection.query('SELECT user_id FROM user WHERE first_name = "' + data.first_name + '"'
-                       + ' AND last_name = "' + data.last_name  + '"'
-                       + ' AND email = "' + data.email  + '"'
-                       + ' AND institution = "' + data.new_institution +'"', function(err, rows) {
-            if (err) {
-                callback(err, null);
-            } else 
-                callback(null, rows[0].user_id);
-        });
+  qq = 'SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name)
+                 + ' AND last_name = ' + mysql.escape(data.last_name)
+                 + ' AND email = ' + mysql.escape(data.email)
+  + ' AND institution = ' + mysql.escape(data.new_institution);
+  console.log('--- mysql.escape(qq) ---');
+  console.log(util.inspect(qq, false, null));
+  
+  
+  connection.query('SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name) + ''
+                 + ' AND last_name = ' + mysql.escape(data.last_name)  + ''
+                 + ' AND email = ' + mysql.escape(data.email)  + ''
+                 + ' AND institution = ' + mysql.escape(data.new_institution) +'', function(err, rows) {
+      if (err) {
+          callback(err, null);
+      } else 
+      {
+        console.log('--- rows ---');
+        console.log(util.inspect(rows, false, null));
+  
+        callback(null, rows[0].user_id);
+      }
+  });
 }
 
 function get_privacy_code(privacy_bulean){
@@ -2014,24 +2006,12 @@ function saveToDb(req, res){
   fetchID(req.form, function(err, content) {
       if (err) {
           console.log(err);
-          // Do something with your error...
+          // TODO: Do something with your error...
       } else {
           owner_user_id = content;
-          // console.log('DDD --- owner_user_id');
-          // console.log(util.inspect(owner_user_id, false, null));
-
-  
-          // TODO: separate
           var new_privacy = 1
           new_privacy = get_privacy_code(req.form.new_privacy);
-          console.log('DDD --- new_privacy');
-          console.log(util.inspect(new_privacy, false, null));
-          //TODO test connection insert 1 vs. 0 for privacy
-          // if (req.form.new_privacy === 'True')
-          //   { new_privacy = 1 }
-          // else
-          //   { new_privacy = 0 }
-
+          //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
           var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
           console.log("AAA insert_project_q a = " + insert_project_q);
