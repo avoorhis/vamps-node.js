@@ -1967,14 +1967,64 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+// function getOwnerId(req, res){
+//   console.log('In getOwnerId');
+//   // console.log('RRR --- req.form');
+//   // console.log(util.inspect(req.form, false, null));
+//   // var SelectUser_idByUserInfoQ = helpers.MakeSelectUser_idByUserInfoQ(req.form.first_name, req.form.last_name, req.form.email, req.form.new_institution);
+//   // console.log("LLL SelectUser_idByUserInfoQ: ");
+//   // console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
+//
+//   var SelectUser_idByUserInfoQ = 'SELECT user_id FROM user WHERE first_name = "' + req.form.first_name + '"'
+//                              + ' AND last_name = "' + req.form.last_name  + '"'
+//                              + ' AND email = "' + req.form.email  + '"'
+//                              + ' AND institution = "' + req.form.new_institution +'"';
+//
+//   console.log("LLL SelectUser_idByUserInfoQ: ");
+//   console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
+//
+//   res_query = helpers.RunQuery(SelectUser_idByUserInfoQ);
+//   console.log("NNN res_query: ");
+//   console.log(util.inspect(res_query, false, null));
+//   return owner_user_id;
+// }
+
+function fetchID(data, callback) {
+        connection.query('SELECT user_id FROM user WHERE first_name = "' + data.first_name + '"'
+                       + ' AND last_name = "' + data.last_name  + '"'
+                       + ' AND email = "' + data.email  + '"'
+                       + ' AND institution = "' + data.new_institution +'"', function(err, rows) {
+            if (err) {
+                callback(err, null);
+            } else 
+                callback(null, rows[0].user_id);
+        });
+}
+
 function saveToDb(req, res){ 
     if(!req.form.isValid){ 
         editAddProject(req, res);
     } else {
       
+
+      
+      var user_id;
+
+      fetchID(req.form, function(err, content) {
+          if (err) {
+              console.log(err);
+              // Do something with your error...
+          } else {
+              user_id = content;
+              console.log('DDD --- user_id');
+              console.log(util.inspect(user_id, false, null));
+          }
+      });
+
+      
       
       // TODO get real:
-      owner_user_id = 1
+      owner_user_id = 1;
       // TODO: separate
       var new_privacy = 1
       if (req.form.new_privacy === 'True')
@@ -1990,16 +2040,16 @@ function saveToDb(req, res){
        if (err) {
          console.log('ERROR-in project insert: ' + err);
          
-         req.messages = req.err;
+         // req.messages = req.err;
          //TODO: What to do if err?
         // POST /user_data/add_project 302 16.221 ms - 94
         // ERROR-in project update: Error: Duplicate entry 'new_Name' for key 'project'
          
          
-         console.log('RRR --- err');
-         console.log(util.inspect(err, false, null));
+         // console.log('RRR --- err');
+         // console.log(util.inspect(err, false, null));
       
-         req.flash('failMessage', err);
+         // req.flash('failMessage', err);
          // console.log('TTTT --- req');
          // console.log(util.inspect(req, false, null));
          
@@ -2039,6 +2089,7 @@ function editAddProject(req, res){
   });
 }
 
+// TODO: if user info didn't change use user_id from req.user
 router.post('/add_project',
   [helpers.isLoggedIn],
   form(

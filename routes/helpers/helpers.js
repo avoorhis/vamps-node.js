@@ -756,16 +756,19 @@ MakeUpdateStatusQ = function(status_params)
 
 module.exports.MakeSelectUser_idByUserQ = function(username)
 {
-  var SelectUser_idByUserQ = "SELECT user_id FROM user WHERE username = " + username;
-      // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
-      return SelectUser_idByUserQ;
+   return "SELECT user_id FROM user WHERE username = " + username;
 }
 
-module.exports.MakeSelectUser_idByUserQ = function(username)
+module.exports.MakeSelectUser_idByUserInfoQ = function(first_name, last_name, email, institution)
 {
-  var SelectUser_idByUserQ = "SELECT user_id FROM user WHERE username = " + username;
-      // InsertSelectOwnerQ += "OR (first_name = " + first_name + "AND last_name = " + first_name + "AND email = " + email + "AND institution = " +institution +")";
-      return SelectUser_idByUserQ;
+  var SelectUser_idByUserInfoQ = 'SELECT user_id FROM user WHERE first_name = "' + first_name + '"'
+                               + ' AND last_name = "' + last_name  + '"'
+                               + ' AND email = "' + email  + '"'
+                               + ' AND institution = "' +institution +'"';
+ // console.log('RRR --- SelectUser_idByUserInfoQ from helpers');
+ // console.log(util.inspect(SelectUser_idByUserInfoQ, false, null));
+
+  return SelectUser_idByUserQ;
 }
 
 module.exports.MakeSelectProjectId = function(project)
