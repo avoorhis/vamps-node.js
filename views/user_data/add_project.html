@@ -4,16 +4,35 @@
  <div class='title'>Add Project</div>
  <div class='subtitle'></div>
 
-<% if (message) { %>
-  <div class='alert_flash_message'><%= message %></div>
+<% if (messages) { %>
+   <div class='alert_flash_message'>
+  <%=  messages.length %>
+    <br>
+  <% for(var i=0; i < messages.length; i++) { %>
+   <%= messages[i] %>
+    <br>
+  <% } %>
+  </div>
 <% } %>
-
 <br>
 
-<% // TODO: change to real!!! (from routes)  
+<% 
   console.log("PPP user.user_id");
   console.log(user.user_id);
 %>
+
+<!-- { new_project_name: 'new Name',
+  new_env_source_id: '10',
+  new_privacy: 'True',
+  new_project_title: 'new Title &lt; % &amp; ! &quot; &#39;   find packages Search sign up or log in log in Notorious Public Menace npm E',
+  new_project_description: '',
+  new_funding: '000A',
+  first_name: 'Ad dsf gd f',
+  last_name: '',
+  email: 'admin@ad@bb',
+  new_institution: 'MBL' } -->
+
+
 <% var env_hash = JSON.parse(env_sources) %>
 
 <form name='add_project_form' method='POST' action='/user_data/add_project'>

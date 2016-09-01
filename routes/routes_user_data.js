@@ -1973,20 +1973,26 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 
 function editAddProject(req, res){
   console.log('in editAddProject');
-  console.log('UUU ---');
-  // console.log(util.inspect(req, false, null));
-  // console.log('---');
+  console.log('TTTT ---');
+  console.log(util.inspect(req.add_project_info, false, null));
+  console.log('---');
+  console.log(util.inspect(req.messages, false, null));
   // project_info = {};
 
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user,
     hostname: req.CONFIG.hostname,
+    // messages: JSON.stringify(req.messages),
+    messages: req.messages,
     message: req.flash('message'),
     project_info: JSON.stringify(req.add_project_info),
     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 }
+
+// <!-- <%= project_info %>
+// <%= messages %> -->
 //  1) all fields should be not empty
 //  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
 //  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
@@ -2014,7 +2020,8 @@ router.post('/add_project',
   console.log(util.inspect(req.body, false, null));
   console.log('2-req add_project');
   console.log(util.inspect(req.form, false, null));
-  // backURL=req.header('Referer') || '/';
+
+  // req.add_project_info = {}
 
   if (!req.form.isValid) {
     console.log("req.form.errors");
@@ -2022,20 +2029,14 @@ router.post('/add_project',
     console.log("get errors:")
     // console.log(req.form.getErrors("new_project_name"));
     console.log(req.form.getErrors());
-    res.redirect("/user_data/add_project");
+    req.add_project_info = req.form;
+    req.messages = req.form.errors;
+    editAddProject(req, res);
+    // res.redirect("/user_data/add_project");
   }
   else
   {
-    console.log("req.header: aaa")
-    console.log(req.header('Referer'))
-    // http://localhost:3000/user_data/add_project
-    // backURL=req.header('Referer') || '/';
-    //   // do your thang
-    //   res.redirect(backURL);
-    // });
-    // You might also want to store backURL in req.session, if you need it to persist across multiple routes. Remember to test for the existence of that variable, something like: res.redirect(req.session.backURL || '/')
     res.redirect("/user_data/import_choices");
-    // res.redirect(backURL);
   }
 
   return;
