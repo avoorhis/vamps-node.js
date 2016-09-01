@@ -2001,6 +2001,13 @@ function fetchID(data, callback) {
         });
 }
 
+function get_privacy_code(privacy_bulean){
+  if (privacy_bulean === 'True')
+    { return 1 }
+  else
+    { return 0 }
+}
+
 function saveToDb(req, res){ 
   var user_id;
 
@@ -2010,18 +2017,20 @@ function saveToDb(req, res){
           // Do something with your error...
       } else {
           owner_user_id = content;
-          console.log('DDD --- owner_user_id');
-          console.log(util.inspect(owner_user_id, false, null));
+          // console.log('DDD --- owner_user_id');
+          // console.log(util.inspect(owner_user_id, false, null));
 
   
-          // // TODO get real:
-          // owner_user_id = 1;
           // TODO: separate
           var new_privacy = 1
-          if (req.form.new_privacy === 'True')
-            { new_privacy = 1 }
-          else
-            { new_privacy = 0 }
+          new_privacy = get_privacy_code(req.form.new_privacy);
+          console.log('DDD --- new_privacy');
+          console.log(util.inspect(new_privacy, false, null));
+          //TODO test connection insert 1 vs. 0 for privacy
+          // if (req.form.new_privacy === 'True')
+          //   { new_privacy = 1 }
+          // else
+          //   { new_privacy = 0 }
 
 
           var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
