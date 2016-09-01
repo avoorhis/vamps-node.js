@@ -14,19 +14,25 @@
 <% } %>
 <br>
 
-<% 
+<%
   console.log("PPP user.user_id");
   console.log(user.user_id);
 %>
 
-<% if (add_project_info) { %>
-  <% var add_project_info = JSON.parse(add_project_info) %>
-<% } else { 
+<% var env_hash = JSON.parse(env_sources) %>
+
+<% if (add_project_info) {
+  var add_project_info = JSON.parse(add_project_info)
+  var owner_hash = add_project_info
+} else {
   var add_project_info = {}
+  var owner_hash = user
 }%>
 ttt
-  <%= add_project_info %>
+  <%= owner_hash %>
 ttt
+
+
 <!-- { new_project_name: 'new Name',
   new_env_source_id: '10',
   new_privacy: 'True',
@@ -39,7 +45,6 @@ ttt
   new_institution: 'MBL' } -->
 
 
-<% var env_hash = JSON.parse(env_sources) %>
 
 <form name='add_project_form' method='POST' action='/user_data/add_project'>
   <!-- todo: back to from where was called -->
@@ -67,7 +72,7 @@ ttt
       <td>
         <select id='env_source' name='new_env_source_id' class='selectpicker'  data-style='btn btn-xs btn-info'  data-size='100'>
           <% for(id in env_hash) { %>
-              <option value='<%= add_project_info.new_env_source_id %>' ><%= env_hash[id] %></option>
+              <option value='<%= id %>' ><%= env_hash[id] %></option>
           <% } %>
         </select>
       </td>
@@ -102,38 +107,40 @@ ttt
         <label for='description'>Funding:</label>
       </td>
       <td>
-        <input type='text' name='new_funding' maxlength='50' size='50' value='<%= add_project_info.new_funding %>'>        
+        <input type='text' name='new_funding' maxlength='50' size='50' value='<%= add_project_info.new_funding %>'>
       </td>
     </tr>
     </fieldset>
-    
+
     <fieldset>
-      <!-- 
+      <!--
+        todo:
       1) add select if first, last and email are giving ?
-      2) validation for each
+      2) first time - from user, after re-render - from form
+
       -->
       <!-- center -->
       <tr><th colspan='2' class='hr_cell'>Owner (if different from the current user)</th></tr>
       <tr>
         <td><label for='first_name'>First Name:</label></td>
-        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= user.first_name %>'></td>
+        <td><input type='text' name='first_name' maxlength='100' size='50' value='<%= owner_hash.first_name %>'></td>
       </tr>
       <tr>
         <td><label for='last_name'>Last Name:</label></td>
-        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= user.last_name %>'></td>
+        <td><input type='text' name='last_name' maxlength='100' size='50' value='<%= owner_hash.last_name %>'></td>
       </tr>
       <tr>
         <td><label for='email'>Email:</label></td>
-        <td><input type='text' name='email' maxlength='100' size='50' value='<%= user.email %>'></td>
+        <td><input type='text' name='email' maxlength='100' size='50' value='<%= owner_hash.email %>'></td>
       </tr>
       <tr>
         <td><label for='institution'>Institution:</label></td><td> <!-- select institution --><input type='text' name='new_institution' maxlength='100' size='50' value='MBL'></td>
       </tr>
     </fieldset>
-    
+
   </table>
   <br>
-  
+
   <!-- center -->
   <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
 

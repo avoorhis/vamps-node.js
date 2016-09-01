@@ -1976,7 +1976,8 @@ function editAddProject(req, res){
   console.log('TTTT ---');
   console.log(util.inspect(req.add_project_info, false, null));
   console.log('---');
-  console.log(util.inspect(req.messages, false, null));
+  // console.log(util.inspect(req.CONSTS.ENV_SOURCE, false, null));
+  // TODO: keep choosen ENV_SOURCE
   // project_info = {};
 
   res.render('user_data/add_project', {
