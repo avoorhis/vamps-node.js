@@ -1973,9 +1973,9 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
 
 function editAddProject(req, res){
   console.log('in editAddProject');
-  console.log('TTTT ---');
-  console.log(util.inspect(req.add_project_info, false, null));
-  console.log('---');
+  // console.log('TTTT ---');
+  // console.log(util.inspect(req.add_project_info, false, null));
+  // console.log('---');
   // console.log(util.inspect(req.CONSTS.ENV_SOURCE, false, null));
   // TODO: keep choosen ENV_SOURCE
   // project_info = {};
@@ -1984,10 +1984,9 @@ function editAddProject(req, res){
     title: 'VAMPS: Add a new project',
     user: req.user,
     hostname: req.CONFIG.hostname,
-    // messages: JSON.stringify(req.messages),
     messages: req.messages,
     message: req.flash('message'),
-    add_project_info: JSON.stringify(req.add_project_info),
+    add_project_info: req.add_project_info,
     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 }

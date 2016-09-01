@@ -22,15 +22,11 @@
 <% var env_hash = JSON.parse(env_sources) %>
 
 <% if (add_project_info) {
-  var add_project_info = JSON.parse(add_project_info)
   var owner_hash = add_project_info
 } else {
   var add_project_info = {}
   var owner_hash = user
 }%>
-ttt
-  <%= owner_hash %>
-ttt
 
 
 <!-- { new_project_name: 'new Name',
@@ -43,7 +39,6 @@ ttt
   last_name: '',
   email: 'admin@ad@bb',
   new_institution: 'MBL' } -->
-
 
 
 <form name='add_project_form' method='POST' action='/user_data/add_project'>
