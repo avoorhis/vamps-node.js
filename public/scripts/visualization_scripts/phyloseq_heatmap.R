@@ -38,6 +38,7 @@ if(dist_metric  == "morisita_horn"){
 #tax_file <- "andy_1443630794574_taxonomy.txt"
 #map_file <- "andy_1443630794574_metadata.txt"
 library(scales)
+library(vegan)
 library(phyloseq)
 library(ggplot2)
 theme_set(theme_bw())
@@ -47,6 +48,14 @@ OTU <- import_biom(biom_file)
 OTU <- otu_table(OTU)
 MAP <- import_qiime_sample_data(map_file)
 
+###################################################
+# WRITE DISTANCE TABLE
+biods <- OTU
+stand <- decostand(data.matrix(biods),"total")
+d <- vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
+distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d), file=distance_file)
+####################################################
 #print(colnames(TAX))
 #print(class(TAX))
 #print(is.recursive(TAX))

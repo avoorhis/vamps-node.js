@@ -9,7 +9,7 @@ var constants = {};
 ///////////////////////////////////////////
 
 constants.blast_db      = 'ALL_SEQS';
-constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq'];
+constants.download_file_formats = ['metadata','fasta','taxbytax','taxbyref','taxbyseq','biom','matrix','phyloseq','distance','emperor','pdf','tree'];
 constants.ENV_SOURCE = { 
         10: "air",
          20: "extreme habitat",
@@ -279,7 +279,7 @@ constants.VISUAL_THUMBNAILS = { visuals: [
     
     {name:'Data Browser (Krona)',       thumb:'/images/visuals/krona.png',  		link:'user_viz_data/dbrowser',       id:'dbrowser_link_id', 
         tip:''     },
-	
+
     {name:'Dendrogram (d3/phylogram)',  thumb:'/images/visuals/dendrogram.png',		link:'user_viz_data/dendrogram',     id:'dendrogram1_link_id', 
         tip:'Python2.7-|-scipy (python library)-|-numpy (python library)-|-cogent (python library)'   },
 	
@@ -320,8 +320,10 @@ constants.VISUAL_THUMBNAILS = { visuals: [
     {name:'Phyloseq Tree (R/svg)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/phyloseq05', id:'phyloseq05_link_id', 
         tip:'R (https://www.r-project.org/)-|-phyloseq (R-package)'},
 
-    {name:'Cytoscape',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/cytoscape', id:'cytoscape_link_id', 
-        tip:''}
+    {name:'Cytoscape (TESTING)',      thumb:'/images/visuals/phyloseq_tree.png',     link:'user_viz_data/cytoscape', id:'cytoscape_link_id', 
+        tip:''},
+    {name:'Dendrogram (TESTING)',  thumb:'/images/visuals/dendrogram.png',     link:'user_viz_data/dendrogramR',     id:'dendrogram0_link_id', 
+        tip:'R (https://www.r-project.org/)-|-phyloseq & ape (R-packages);' }
    
 ]};
     

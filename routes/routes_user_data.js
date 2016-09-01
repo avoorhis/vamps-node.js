@@ -2509,29 +2509,55 @@ router.post('/download_file', helpers.isLoggedIn, function (req, res) {
 //
 // DOWNLOAD PHYLOSEQ FILES
 //
-router.post('/download_phyloseq_file', helpers.isLoggedIn, function (req, res) {
+router.post('/copy_file_for_download', helpers.isLoggedIn, function (req, res) {
     console.log('phyloseq req.body-->>');
 
     console.log(req.body);
     old_ts = req.body.ts;
     file_type = req.body.file_type;
     var timestamp = +new Date();
+    var old_file_name
+    var new_file_name = file_type+'_'+timestamp+'.txt';
     if (file_type == 'phyloseq-biom') {
       old_file_name = old_ts+'_count_matrix.biom';
-      file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      new_file_name = file_type+'_'+timestamp+'.biom';
     } else if (file_type == 'phyloseq-tax') {
       old_file_name = old_ts+'_taxonomy.txt';
-      file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
     } else if (file_type == 'phyloseq-meta') {
       old_file_name = old_ts+'_metadata.txt';
-      file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    } else if (file_type == 'phyloseq-tree') {
+      old_file_name = old_ts+'_outtree.tre';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      new_file_name = file_type+'_'+timestamp+'.tre';
+    }else if (file_type == 'distance-R') {
+      old_file_name = old_ts+'_distance.R';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    }else if (file_type == 'distance-py') {
+      old_file_name = old_ts+'_distance.csv';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      new_file_name = file_type+'_'+timestamp+'.csv';
+    }else if (file_type == 'emperor-pc') {
+      old_file_name = old_ts+'.pc';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+    }else if (file_type == 'pdf-fheatmap') {
+      old_file_name = old_ts+'_fheatmap.pdf';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      new_file_name = file_type+'_'+timestamp+'.pdf';
+    }else if (file_type == 'pdf-pcoa') {
+      old_file_name = old_ts+'_pcoa.pdf';
+      old_file_path = path.join(process.env.PWD, 'tmp', old_file_name);
+      new_file_name = file_type+'_'+timestamp+'.pdf';
+
     }
     var user_dir = path.join(req.CONFIG.USER_FILES_BASE, req.user.username);
     helpers.mkdirSync(req.CONFIG.USER_FILES_BASE);
-  helpers.mkdirSync(user_dir);  // create dir if not exists
-    var new_file_name = file_type+'_'+timestamp+'.txt';
+    helpers.mkdirSync(user_dir);  // create dir if not exists 
     var destination = path.join( user_dir, new_file_name );
-    fs.copy(file_path, destination, function (err) {
+    console.log(old_file_path, destination)
+    fs.copy(old_file_path, destination, function (err) {
         if (err) return console.error(err);
         console.log("copy success!");
     });

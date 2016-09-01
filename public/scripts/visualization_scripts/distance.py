@@ -193,6 +193,10 @@ def dendrogram_svg(args, dm):
     #print json.dumps(dm)
     mycluster = construct_cluster(args, dm)
     newick = mycluster.getNewick(with_distances=True) 
+    newick_file = os.path.join(args.outdir,args.prefix+'_newick.tre')
+    fp = open(newick_file,'w')
+    fp.write(newick)
+    fp.close()
     return newick
 
 def cluster_datasets(args, dm):
@@ -513,6 +517,7 @@ if __name__ == '__main__':
 
     if args.function == 'dendrogram-svg':
         newick = dendrogram_svg(args, dm3)
+
         # print newick
         # from ete2 import Tree
         # unrooted_tree = Tree( newick )

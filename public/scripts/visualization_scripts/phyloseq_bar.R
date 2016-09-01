@@ -27,6 +27,8 @@ OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
+
+
 ds_count<-ncol(OTU)
 w = floor(ds_count/5)
 print(w)

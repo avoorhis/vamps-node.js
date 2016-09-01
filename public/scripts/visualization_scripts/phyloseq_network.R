@@ -14,22 +14,22 @@ biom_file 	<- paste(tmp_path, '/', prefix, '_count_matrix.biom', sep='')
 tax_file 		<- paste(tmp_path, '/', prefix, '_taxonomy.txt', sep='')
 map_file 		<- paste(tmp_path, '/', prefix, '_metadata.txt', sep='')
 
-distance     <-  'bray'
+dist     <-  'bray'
 
 if(dist_metric  == "morisita_horn"){
-	distance = 'horn'
+	dist = 'horn'
 	disp = "Morisita-Horn"
 }else if(dist_metric == "jaccard"){
-	distance = 'jaccard'
+	dist = 'jaccard'
 	disp = "Jaccard"
 }else if(dist_metric == "kulczynski"){
-	distance = 'kulczynski'
+	dist = 'kulczynski'
 	disp = "Kulczynski"
 }else if(dist_metric == "canberra"){
-	distance = 'canberra'
+	dist = 'canberra'
 	disp = "Canberra"
 }else if(dist_metric == "bray_curtis"){
-	distance = 'bray'
+	dist = 'bray'
 	disp = "Bray_Curtis"
 }
 
@@ -39,6 +39,7 @@ if(dist_metric  == "morisita_horn"){
 
 library(phyloseq)
 library(ggplot2)
+library(vegan)
 TAX<-as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
 OTU <- import_biom(biom_file)
 MAP <- import_qiime_sample_data(map_file)
@@ -47,6 +48,14 @@ OTU <- otu_table(OTU)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
+###################################################
+# WRITE DISTANCE TABLE
+biods <- OTU
+stand <- decostand(data.matrix(biods),"total")
+d <- vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
+distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d), file=distance_file)
+####################################################
 
 w = 10
 h = 8
@@ -74,7 +83,7 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 
 	out_file = paste("tmp/",out_file,sep='')
 	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
-	ig <- make_network(physeq, dist.fun=distance, max.dist=max_dist)
+	ig <- make_network(physeq, dist.fun=dist, max.dist=max_dist)
 	p = plot_network(ig, physeq, line_weight=0.4, color = md2, shape = md1)
 	p = p + scale_color_manual(values = cols)
 	#p = p + geom_point(size = 3, alpha = 0.75)

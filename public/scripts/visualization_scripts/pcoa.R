@@ -44,6 +44,7 @@ row.names(tmp_matrix) <- NULL
 
 stand <-decostand(tmp_matrix,"total");
 
+
 if(metric=="horn" || metric=="morisita_horn")
 {
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
@@ -73,7 +74,8 @@ if(metric=="horn" || metric=="morisita_horn")
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
     metric_text<-"Morisita-Horn"
 }
-
+distance_file = paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d),file=distance_file)
 #print(d)
 #q()
 

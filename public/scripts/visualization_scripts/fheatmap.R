@@ -3,13 +3,23 @@
 args <- commandArgs(TRUE)
 print(args)
 
-biom_file <- args[1]
-method <- args[2]   # distance
-depth <- args[3]
-prefix <- args[4]
+tmp_path    <- args[1]
+prefix      <- args[2]
+metric      <- args[3]
+depth       <- args[4]
+
+biom_file <- paste(tmp_path,'/',prefix,'_count_matrix.biom',sep='')
+
+
+#biom_file <- args[1]
+#method <- args[2]   # distance
+
+#prefix <- args[4]
+
+
 #pdf_file = paste("/Users/avoorhis/node_projects/vamps-node.js/public/tmp_images/",prefix,"_heatmap.pdf",sep='')
 #pdf_file = paste("public/tmp_images/",prefix,"_heatmap.pdf",sep='')
-out_file = paste("tmp/",prefix,"_heatmap.pdf",sep='')
+out_file = paste("tmp/",prefix,"_fheatmap.pdf",sep='')
 
 # /groups/vampsweb/vamps/seqinfobin/bin/Rscript --no-save --slave --no-restore 
 # fheatmap.R /usr/local/www/vamps/docs/tmp/avoorhis_1784983_normalized.mtx avoorhis_1784983 Phylum horn yes
@@ -27,55 +37,13 @@ colnames(data_matrix)<-myjson$columns$id
 print(colnames(data_matrix))
 x<-data_matrix
 
-#biods = t(data_matrix);
-#data_matrix<-read.delim(biom_file);
-#print(biods)
-
-
-#t<-"[[0.0, 0.009861597266620836, 8.902864390669674e-05], [0.009861597266620836, 0.0, 0.011373159462720328], [8.902864390669674e-05, 0.011373159462720328, 0.0]]"
-#u<-[[0.0, 0.009861597266620836, 8.902864390669674e-05], [0.009861597266620836, 0.0, 0.011373159462720328], [8.902864390669674e-05, 0.011373159462720328, 0.0]]
-#print(matrix_in)
-#string_in<-substring(string_in, 2)
-#string_in<-substring(string_in, 0, nchar(string_in)-1)
-
-#print(matrix_in)
-#x<-strsplit(string_in, "], [", fixed=TRUE)
-#print(class(unlist(x)))
-#y<-strsplit(unlist(x), ", ", fixed=TRUE)
-#print(y)
-#cc <- unlist(lapply(y, as.numeric))
-#print(cc)
-#print(class(cc))
-#z<-c(0.009861597266620836, 8.902864390669674e-05, 0.011373159462720328)
-#print(z)
-#print(class(z))
-#x<-squareform(cc)
 
 
 #  x remove empty columns (datasets)
 x<-x[,colSums(x) > 0]
 
-
-
-
 ncols<-ncol(x)
 nrows<-nrow(x)
-
-#last_name = row.names(x)[nrows]
-#if(last_name == 'ORIGINAL_SUMS'){
-    # remove it -- it screws up the dist calculation    
-#    x <- x[1:nrows-1,]
-#}
-
-
-# columns are datasets
-# need to get the sum of each column
-#print(colSums(x))
-#print(x/colSums(x))
-print(nrow(x))
-#print(colSums(x))
-# this divides each count by the col sum
-#x = x/colSums(x)
 
 # rows (taxa)
 if (nrow(x) <= 30 ){
@@ -108,47 +76,13 @@ if (nrow(x) <= 30 ){
     
     h<-(nrow(x)*.1)
 }
-# cols (datasets)
-# if (ncol(x) <= 5){
-#     w<-10
-# }else if(ncol(x) > 5 && ncol(x) <= 15){
-#     w<-14
-# }else if(ncol(x) > 15 && ncol(x) <= 30){
-#     w<-20
-# }else if(ncol(x) > 30 && ncol(x) <= 50){
-#     w<-23
-# }else if(ncol(x) > 50 && ncol(x) <= 70){
-#     w<-26
-# }else if(ncol(x) > 70 && ncol(x) <= 90){
-#     w<-29
-# }else if(ncol(x) > 90 && ncol(x) <= 110){
-#     w<-32
-# }else{
-#     w<-35
-# }
-
-
 
 w<-(ncol(x)*0.2)+10
 
 
-#
-#[1] "rows: 128 h: 20 rmarg: 20"
-#[1] "cols: 284 w: 35"
-
-
-
-#k=x
-#dimnames(k) <- NULL 
-#annotation = data.frame(factor(1:ncol(x) %% 2 == 0, labels = c("Even", "Odd")))
-#print(data_matrix)
-#head(x)
 pdf_title="VAMPS Frequency Heatmap"
 
-#print(pdf_file)
-#print(h)
-#print(w)
-#pdf(out_file, width=w, height=h, title=pdf_title)
+
 pdf(out_file, width=w, height=h, title=pdf_title)
 #pdf(out_file)
 #svg(out_file)
@@ -168,42 +102,43 @@ print(paste("cols:",ncol(x),"w:",w))
 fontsize_row = 8
 
 # clustering methods
-if(method=='horn'){ 
-    meth <- 'horn'
+if(metric=='horn'){ 
+    dist <- 'horn'
     text <- "Morisita-Horn"
-}else if(method=='bray' || method=='bray_curtis'){
-    meth <- 'bray'
+}else if(metric=='bray' || metric=='bray_curtis'){
+    dist <- 'bray'
     text <- "Bray-Curtis"
-}else if(method=='jaccard'){
-    meth <- 'jaccard'
+}else if(metric=='jaccard'){
+    dist <- 'jaccard'
     text <- "Jaccard"
-}else if(method=='manhattan'){
-    meth <- 'manhattan'
+}else if(metric=='manhattan'){
+    dist <- 'manhattan'
     text <- "Manhattan"
-}else if(method=='gower'){
-    meth <- 'gower'
+}else if(metric=='gower'){
+    dist <- 'gower'
     text <- "Gower"
-}else if(method=='euclidean'){
-    meth <- 'euclidean'
+}else if(metric=='euclidean'){
+    dist <- 'euclidean'
     text <- "Euclidean"
-}else if(method=='canberra'){
-    meth <- 'canberra'
+}else if(metric=='canberra'){
+    dist <- 'canberra'
     text <- "Canberra"
-}else if(method=='kulczynski'){
-    meth <- 'kulczynski'
+}else if(metric=='kulczynski'){
+    dist <- 'kulczynski'
     text <- "Kulczynski"
-}else if(method=='mountford'){
-    meth <- 'mountford'
+}else if(metric=='mountford'){
+    dist <- 'mountford'
     text <- "Mountford"
 }else{
-    meth <- 'horn'
+    dist <- 'horn'
     text <- "Morisita-Horn"
 }
 main_label=paste("VAMPS Frequency Heatmap\n--Taxonomic Level:",depth,"\n--Clustering: ",text)
-drows<-vegdist(x, method=meth)
-dcols<-vegdist(t(x), method=meth, na.rm=TRUE)
+dtaxa<-vegdist(x, method=dist)  # drows
+d<-vegdist(t(x), method=dist, na.rm=TRUE)  # dcols
+distance_file = paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d),file=distance_file)
 
-#print('drows')
 #print(drows)
 #print(x)
 #v=function(x) vegdist(x, method=meth)
@@ -243,57 +178,9 @@ x1<-scale(x, center=FALSE, scale=colSums(x))
 
 
 pheatmap(x1,  scale="none", color=mypalette6,
-			clustering_distance_rows=drows,
-			clustering_distance_cols=dcols, margins=c(15,r_margin),
+			clustering_distance_rows=dtaxa,
+			clustering_distance_cols=d, margins=c(15,r_margin),
 		   fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
-
-
-
-
-#20130619
-#if(scale=='yes'){
-# 	#x3<-t(scale(t(x), scale=TRUE))
-# 	#x3<-scale(x)
-# 	pheatmap(x,  scale="column", 
-# 			clustering_distance_rows=drows,
-# 			clustering_distance_cols=dcols, margins=c(15,r_margin),
-# 		   fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
-# }else{       
-# 	
-# 	# WORKS Scale by columns AFTER grab distance above
-# 	#x1<-scale(x, center=FALSE, scale=colSums(x))
-# 	pheatmap(x,  scale="none", 
-# 			clustering_distance_rows=drows,
-# 			clustering_distance_cols=dcols, margins=c(15,r_margin),
-# 		   fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
-# }
-#x2<-t(scale(t(x), scale=rowSums(x)))
-#pheatmap(x2,  scale="none", 
-#        clustering_distance_rows=drows,
-#        clustering_distance_cols=dcols, margins=c(15,r_margin),
-#       fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main=main_label)
-#x1<-scale(x, center=FALSE, scale=colSums(x))
-	
-#pheatmap(x, col=mypalette1, scale="row", legend=FALSE,
-#        clustering_distance_rows=vegdist(x, method=meth),
-#        clustering_distance_cols=vegdist(t(x), method=meth), margins=c(15,r_margin),
-#       fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main="pheatmap1")
-#pheatmap(x, col=mypalette9, scale="row", legend=FALSE,
-#        clustering_distance_rows=vegdist(x, method=meth),
-#        clustering_distance_cols=vegdist(t(x), method=meth), margins=c(15,r_margin),
-#      fontsize_row=fontsize_row, cellwidth=12, cellheight=6, main="pheatmap9")
-
-#heatmap(x, col=mypalette3, scale="row",
-#        main="regular heatmap-3",  distfun = function(d) vegdist(d, method=meth), margins=c(15,r_margin) )
-#heatmap(x, col=mypalette7, scale="none",
-#        main="regular heatmap-7",  distfun = function(d) vegdist(d, method=meth), margins=c(15,r_margin) )
-#heatmap(x, col=mypalette1, scale="row",
-#        main="regular heatmap-1",  distfun = function(d) vegdist(d, method=meth), margins=c(15,r_margin) )
-#heatmap(x, col=mypalette9, scale="row",
-#        main="regular heatmap-9",  distfun = function(d) vegdist(d, method=meth), margins=c(15,r_margin) )
-        
-#legend(0,-4, legend=c("one", "two")) 
-#title(main=main_label)
 
 
 #print(warnings())

@@ -628,20 +628,15 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
 
   var distmtx_file_name = ts+'_distance.csv';
   var distmtx_file = path.join(pwd,'tmp',distmtx_file_name);
-  
+  var metric = visual_post_items.selected_distance
+  var tmp_path = path.join(process.env.PWD,'tmp'); 
+  var tax_depth = visual_post_items.tax_depth
 
-  var fheatmap_script_file = path.resolve(pwd, 'public','scripts','fheatmap.R');
-
-  shell_command = [req.CONSTS.RSCRIPT_CMD, fheatmap_script_file, biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts ].join(' ');
-
-  //COMMON.run_script_cmd(req, res, ts, shell_command, 'fheatmap');
   var options = {
-     scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
-       args :       [  biom_file, visual_post_items.selected_distance, visual_post_items.tax_depth, ts],
-  };
-  // RScript --no-restore --no-save /usr/local/www/vampsdev/projects/vamps-node.js/public/scripts/fheatmap.R 
-  //    /usr/local/www/vampsdev/projects/vamps-node.js/tmp/avoorhis_1443031027846_count_matrix.biom morisita_horn phylum avoorhis_1443031027846    
-  
+        scriptPath : req.CONFIG.PATH_TO_VIZ_SCRIPTS,
+        args :       [ tmp_path, ts, metric, tax_depth],
+      };
+
   var log = fs.openSync(path.join(pwd,'logs','visualization.log'), 'a');
   
   
@@ -676,7 +671,7 @@ router.post('/frequency_heatmap', helpers.isLoggedIn, function(req, res) {
               
               //var viz_width = 1200;
               //var viz_height = (visual_post_items.no_of_datasets*12)+100;
-              var image = '/'+ts+'_heatmap.pdf';
+              var image = '/'+ts+'_fheatmap.pdf';
               //console.log(image)
               html = "<div id='pdf'>";
               html += "<object data='"+image+"?zoom=100&scrollbar=0&toolbar=0&navpanes=0' type='application/pdf' width='100%' height='700' />";
@@ -815,7 +810,8 @@ router.post('/pcoa', helpers.isLoggedIn, function(req, res) {
     var rando = Math.floor((Math.random() * 100000) + 1);  // required to prevent image caching
     var metric = req.body.metric;
     var image_type = req.body.image_type;
-    var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
+    //var image_file = ts+'_'+metric+'_pcoaR'+rando.toString()+'.pdf';
+    var image_file = ts+'_pcoa.pdf';
     var biom_file_name = ts+'_count_matrix.biom';
     var biom_file = path.join(process.env.PWD,'tmp', biom_file_name);
     var pwd = process.env.PWD || req.CONFIG.PROCESS_DIR;
@@ -895,8 +891,8 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
   var mapping_file = path.join(pwd,'tmp', mapping_file_name);        
   var pc_file_name = ts+'.pc';
   var pc_file = path.join(pwd,'tmp', pc_file_name);
-  var tax_file_name = ts+'_taxonomy.txt';
-  var tax_file = path.join(pwd,'tmp', tax_file_name);
+  //var tax_file_name = ts+'_taxonomy.txt';
+  //var tax_file = path.join(pwd,'tmp', tax_file_name);
   var dist_file_name = ts+'_distance.csv';
   var dist_file = path.join(pwd,'tmp', dist_file_name);
 
@@ -970,27 +966,19 @@ router.post('/pcoa_3d', helpers.isLoggedIn, function(req, res) {
 
                         console.log('exec error-POST: ' + error);
                         var html = stderr
-
                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                        html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";
                         html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                        html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                        html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
                         res.send(html); 
                         return; 
 
                       }else{
-                        //res.sendFile('tmp/'+dir_name+'/index.html', {root:pwd});
-                        //open('file://'+html_path);
-                        //res.send("Done - <a href='https://github.com/biocore/emperor' target='_blank'>Emperor</a> will open a new window in your default browser."); 
-                        //res.send("Done - <a href='/tmp/"+dir_name+"/index.html' target='_blank'>Emperor</a> will open a new window in your default browser."); 
-                        //html = "<a href='../tmp/andy_1450362333240_pcoa_3d/index' target='_blank'>Emperor1</a>"
-                        var html = " <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a>"
-
+                       
+                        var html = "** <a href='/tmp/"+dir_name+"/index' target='_blank'>Open Emperor</a> **"
                         html += "<br>Principal Components File: <a href='/"+pc_file_name+"'>"+pc_file_name+"</a>";
-                        html += "<br>Taxonomy File: <a href='/"+tax_file_name+"'>"+tax_file_name+"</a>";
                         html += "<br>Biom File: <a href='/"+biom_file_name+"'>"+biom_file_name+"</a>";
-                        html += "<br>Metadata File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
+                        html += "<br>Mapping (metadata) File: <a href='/"+mapping_file_name+"'>"+mapping_file_name+"</a>";
                         html += "<br>Distance File: <a href='/"+dist_file_name+"'>"+dist_file_name+"</a>";
                         //html += " <a href='../tmp/"+dir_name+"/index' target='_blank'>Emperor5</a>"
 

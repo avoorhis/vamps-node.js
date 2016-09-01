@@ -39,6 +39,7 @@ if(dist_metric  == "morisita_horn"){
 
 library(phyloseq)
 library(ggplot2)
+library(vegan)
 TAX<-as.matrix(read.table(tax_file, header=TRUE, sep = "\t", row.names = 1, as.is=TRUE))
 TAX <- tax_table(TAX)
 OTU <- import_biom(biom_file)
@@ -47,6 +48,14 @@ MAP <- import_qiime_sample_data(map_file)
 physeq <- phyloseq(OTU,TAX,MAP)
 #TopNOTUs <- names(sort(taxa_sums(physeq), TRUE)[1:10])
 
+###################################################
+# WRITE DISTANCE TABLE
+biods <- OTU
+stand <- decostand(data.matrix(biods),"total")
+d <- vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
+distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d), file=distance_file)
+####################################################
 #w = 14
 #h = 11
 w = 10
@@ -79,6 +88,7 @@ cols = colorRampPalette(brewer.pal(9, "Set1"))(colourCount)
 	out_file = paste("tmp/",out_file,sep='')
 	svg(out_file, width=w, height=h, pointsize=4, family = "sans", bg = "black")
 	ordu = ordinate(physeq, ord_type, dist)
+	#ordu = ordinate(physeq, "PCoA", "unifrac", weighted=TRUE)
 	p = plot_ordination(physeq, ordu, color = md2, shape = md1)
 	p = p + geom_point(size = 3, alpha = 0.75)
 	#p = p + scale_colour_brewer(cols)

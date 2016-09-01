@@ -52,10 +52,19 @@ OTU <- otu_table(OTU)
 #biods=t(OTU)
 biods=OTU
 stand=decostand(data.matrix(biods),"total")
-dis=vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
-hc<-hclust(dis)
+d=vegdist(stand, method=dist,upper=FALSE,binary=FALSE)
+
+###################################################
+# WRITE DISTANCE TABLE
+distance_file <- paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d), file=distance_file)
+####################################################
+hc<-hclust(d)
 phylo<-as.phylo(hc);
 physeq <- phyloseq(OTU,TAX,MAP,phylo)
+
+tree_file<-paste(tmp_path,'/',prefix,'_outtree.tre',sep='')
+write.tree(phylo, file=tree_file)
 #dend <- as.dendrogram(hc)
 #physeq1 = merge_phyloseq(physeq, phylo)
 # get rid of datasets with zero sum over all the taxa:

@@ -535,3 +535,6 @@ i.icon-minus-sign {
     overflow:auto;
     height:400px;
 }
+.dropdown_btn {
+    color:black !important;
+}

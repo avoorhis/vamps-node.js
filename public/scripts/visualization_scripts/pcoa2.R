@@ -44,6 +44,7 @@ meta_table<-meta_table[rownames(abund_table),]
 #print (abund_table)
 
 stand <-decostand(abund_table,"total");
+
 if(metric=="horn" || metric=="morisita_horn")
 {
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
@@ -73,6 +74,8 @@ if(metric=="horn" || metric=="morisita_horn")
     d<-vegdist(stand, method="horn",upper=FALSE,binary=FALSE);
     metric_text<-"Morisita-Horn"
 }
+distance_file = paste(tmp_path,'/',prefix,'_distance.R',sep='')
+write.table(as.matrix(d),file=distance_file)
 
 #meta_table<-meta_table[is.na(meta_table)]<-0
 #print (meta_table)
