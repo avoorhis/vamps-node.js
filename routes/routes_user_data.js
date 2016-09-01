@@ -2005,15 +2005,15 @@ function saveToDb(req, res){
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
-          var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
-          var project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, "REVERSE(" + req.form.new_project_name + ")", req.form.new_funding, owner_user_id, new_privacy];
-          var inserts = [project_columns, project_info];
-          var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
-          
-          
-          sql_a = mysql.format(insert_project_q, inserts);
-          sql_a = sql_a.replace(/\'REVERSE\((\w+)\)\'/g, 'REVERSE(\'$1\')'); 
-          
+          // var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+          // var project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, "REVERSE(" + req.form.new_project_name + ")", req.form.new_funding, owner_user_id, new_privacy];
+          // var inserts = [project_columns, project_info];
+          // var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
+          //
+          //
+          // sql_a = mysql.format(insert_project_q, inserts);
+          // sql_a = sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
+          var sql_a = helpers.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
           console.log("AAA sql_a = " + sql_a);
           // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
           

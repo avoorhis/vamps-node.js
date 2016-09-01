@@ -8,6 +8,7 @@ var queries = require('../queries');
 var util = require('util');
 var path  = require('path');
 var crypto = require('crypto');
+var mysql = require('mysql2');
 
 module.exports = {
   // route middleware to make sure a user is logged in
@@ -790,17 +791,24 @@ module.exports.RunQuery = function(my_query)
   });
 }
 
-module.exports.MakeInsertProjectQ = function(project, title, project_description, funding, owner_user_id, privacy)
+module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privacy)
 {
-  return 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
-                     + '("'  + project + '"'
-                     + ', "' + title + '"'
-                     + ', "' + project_description + '"'
-                     + ', REVERSE("' + project + '")'
-                     + ', "' + funding + '"'
-                     + ', ' + owner_user_id + ''
-                     // + ', "' + req.form.owner_user_id + '"'
-                     + ', "' + privacy + '");';
+  var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+  var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
+  var inserts = [project_columns, project_info];
+  var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
+  
+  var sql_a = mysql.format(insert_project_q, inserts);
+  return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')'); 
+  // return 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
+  //                    + '("'  + project + '"'
+  //                    + ', "' + title + '"'
+  //                    + ', "' + project_description + '"'
+  //                    + ', REVERSE("' + project + '")'
+  //                    + ', "' + funding + '"'
+  //                    + ', ' + owner_user_id + ''
+  //                    // + ', "' + req.form.owner_user_id + '"'
+  //                    + ', "' + privacy + '");';
 }
 
 MakeInsertStatusQ = function(status_params)
