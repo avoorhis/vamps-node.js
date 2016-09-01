@@ -774,7 +774,7 @@ module.exports.MakeSelectUser_idByUserInfoQ = function(first_name, last_name, em
 
 module.exports.MakeSelectProjectId = function(project)
 {
-  return "SELECT project_id FROM project WHERE project = '" + project + "'";
+  return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
 }
 
 
@@ -796,19 +796,10 @@ module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privac
   var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
   var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
   var inserts = [project_columns, project_info];
-  var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
+  var insert_project_q = 'INSERT INTO project (??) VALUES (?);';
   
   var sql_a = mysql.format(insert_project_q, inserts);
-  return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')'); 
-  // return 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
-  //                    + '("'  + project + '"'
-  //                    + ', "' + title + '"'
-  //                    + ', "' + project_description + '"'
-  //                    + ', REVERSE("' + project + '")'
-  //                    + ', "' + funding + '"'
-  //                    + ', ' + owner_user_id + ''
-  //                    // + ', "' + req.form.owner_user_id + '"'
-  //                    + ', "' + privacy + '");';
+  return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
 }
 
 MakeInsertStatusQ = function(status_params)
