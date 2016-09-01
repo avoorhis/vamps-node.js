@@ -16,6 +16,8 @@ var zlib = require('zlib');
 var config = require('../config/config');
 var multer = require('multer');
 var util = require('util');
+var escape = require('escape-html');
+var form = require("express-form");
 
 //var progress = require('progress-stream');
 var upload = multer({ dest: config.TMP, limits: { fileSize: config.UPLOAD_FILE_SIZE.bytes }  });
@@ -499,6 +501,7 @@ router.get('/user_project_metadata/:id', helpers.isLoggedIn, function (req, res)
   }
 
 });
+
 router.get('/user_project_validation/:id', helpers.isLoggedIn, function (req, res) {
         // THIS IS FOR UNLOADED PROJECTS (After upload and before tax assignment)
         //will only show up if config.ini is present
@@ -585,7 +588,7 @@ router.get('/delete_project/:project/:kind', helpers.isLoggedIn, function (req, 
            //console.log('PID last line: '+last_line)
               status_params = {'type': 'delete', 'user_id':req.user.user_id,
                                 'project':project, 'status':'delete', 'msg':'delete' };
-              helpers.update_status(status_params );
+              helpers.update_status(status_params);
           } else {
              // python script error
           }
@@ -758,16 +761,16 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     //unique_cmd = options.scriptPath + '1-single_fna.sh ' + data_dir + ' infile.fna ' + single_dataset_name
     }
     // try: check project name and enter empty project (just to create pid)
-    project_init = options.scriptPath + 'project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
+    project_init = options.scriptPath + '/project_initialization.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project + ' -uid ' + req.user.user_id;
 
     // metadata must go in after the projects and datasets:
     // Should go into db after we have project and datasets in the db
     // Should go in as entire project (w all datasets) -- not dataset by dataset
     // PROBLEM: Here we dont have datasets yet in db
-    metadata_cmd = options.scriptPath + 'metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
+    metadata_cmd = options.scriptPath + '/metadata_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -p ' + project;
 
     // Command is split to run once for each dataset on the cluster:
-    run_gast_cmd = options.scriptPath + '2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
+    run_gast_cmd = options.scriptPath + '/2-vamps_nodejs_gast.sh -x ' + data_dir + ' -s ' + project + ' -d gast -v -e fa.unique -r ' + classifier_id + ' -f -p both -w ' + req.CONFIG.site;
     //run_cmd2 = "/bioware/seqinfo/bin/gast_ill -saveuc -nodup -full -ignoregaps -in " + data_dir + "/fasta.fa.unique -db /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".fa -rtax /groups/g454/blastdbs/gast_distributions/" + classifier_id + ".tax -out " + data_dir + "/gast/fasta_out.gast -uc " + data_dir + "/gast/fasta_out.uc -threads 0 -strand both"
 
     //run_cmd3 = options.scriptPath + '3-vamps_nodejs_database_loader.py -site ' + req.CONFIG.site + ' -indir ' + data_dir + ' -ds ' + single_dataset_name
@@ -1385,7 +1388,7 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
   }
 
   var timestamp = +new Date();  // millisecs since the epoch!
-  var data_repository = path.join(req.CONFIG.USER_FILES_BASE,req.user.username,'project-'+project);
+  var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-'+project);
 
 					var options = { scriptPath : req.CONFIG.PATH_TO_NODE_SCRIPTS,
 		        			args : [ '-i', original_metafile, '-t',file_format,'-o', username, '-p', project, '-db', NODE_DATABASE, '-add','-pdir',process.env.PWD,]
@@ -1467,33 +1470,23 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 //  UPLOAD DATA
 //
+// ASh Aug 2016
 // TODO: Andy, how to make it fail? For testing?
 function ProjectNameGiven(project, req, res)
 {
   if (project === '' || req.body.project === undefined) {
     req.flash('failMessage', 'A project name is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
+    return false;
   }
+  else
+  { return true; }
 }
 
-// function ProjectNameExists(project_name) {
-//   if (PROJECT_INFORMATION_BY_PNAME.hasOwnProperty(project_name))
-//   {
-//     console.log('This project name is already taken AAA');
-//     return true;
-//   }
-//   else
-//   {
-//     console.log('Project name validated');
-//     return false;
-//   }
-//
-// }
 function ProjectNameExists(project, req, res)
 {
-  // console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
-  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  console.log('BBB: ProjectNameExists: PROJECT_INFORMATION_BY_PNAME ');
+  console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
   //
   // console.log('BBB: ProjectNameExists: project: ' + project);
 
@@ -1515,17 +1508,26 @@ function FastaExists(req, res)
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage', 'A fasta file is required.');
     res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
+    return false;
+  }
+  else
+  {
+    return true;
   }
 }
 
-function FilePathExists(req, data_repository, res)
+function ResFilePathExists(req, data_repository, res)
 {
   if (helpers.fileExists(data_repository)) {
-    req.flash('failMessage', 'That project name is already taken.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return;
-  }
+      return true;
+    }
+    else
+    {
+      req.flash('failMessage', 'There is no such file: ' + data_repository);
+      console.log("AAA data_repository: " + data_repository);
+      res.redirect("/user_data/import_data?import_type=" + req.body.type);
+      return false;
+    }
 }
 
 function MetadataFileExists(req, res)
@@ -1533,17 +1535,59 @@ function MetadataFileExists(req, res)
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage', 'A metadata csv file is required.');
     res.redirect("/user_data/import_data");
-    return;
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+}
+
+function ProjectExistsInDB(project, req, res)
+{
+  console.log("running ProjectExistsInDB");
+  q = helpers.MakeSelectProjectId(project);
+  console.log("q = " + q);
+  result = helpers.RunQuery(q);
+  console.log(util.inspect(result, false, null));
+  if (result === '' || result === undefined) 
+  {
+    req.flash('failMessage', 'There is no such project');
+    res.redirect("/user_data/import_data");
+    return false;
+  }
+  else
+  {
+    return true;
   }
 }
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  ProjectNameGiven(project, req, res);
-  ProjectNameExists(project, req, res);
-  FastaExists(req, res);
-  FilePathExists(req, data_repository, res);
-  MetadataFileExists(req, res);
+  console.log("running1 ProjectExistsInDB");
+  project_exists_in_db = ProjectExistsInDB(project, req, res);
+  console.log("project_exists_in_db = " + project_exists_in_db);
+
+  console.log("running ProjectNameGiven");
+  project_name_given = ProjectNameGiven(project, req, res);
+  console.log("project_name_given = " + project_name_given);
+
+  // console.log("running ProjectNameExists");
+  // project_name_exists = ProjectNameExists(project, req, res);
+  // console.log("project_name_exists = " + project_name_exists);
+
+  console.log("running FastaExists");
+  fasta_exists = FastaExists(req, res);
+  console.log("fasta_exists = " +fasta_exists);
+
+  // console.log("running ResFilePathExists");
+  // console.log("data_repository = " + data_repository);
+  // file_path_exists = ResFilePathExists(req, data_repository, res);
+  // console.log("file_path_exists = " + file_path_exists);
+
+  console.log("running MetadataFileExists");
+  metadata_file_exists = MetadataFileExists(req, res);
+  console.log("metadata_file_exists = " + metadata_file_exists);
 }
 
 // TODO: move to helpers
@@ -1619,10 +1663,11 @@ function CreateUploadOptions(req, res, project)
 
   //console.log(PROJECT_INFORMATION_BY_PNAME);
   var data_repository = path.join(req.CONFIG.USER_FILES_BASE, req.user.username, 'project-' + project);
+  console.log("data_repository DDD: " + data_repository);
 
   var fs_old   = require('fs');
 
-  ProjectValidation(req, project, data_repository, res);
+  is_valid = ProjectValidation(req, project, data_repository, res);
 
   status_params = {'type'   : 'new',
                    'user_id': req.user.user_id,
@@ -1681,8 +1726,8 @@ function CreateUploadOptions(req, res, project)
 
 function CreateCmdList(req, options, data_repository)
 {
-  console.log(options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' '));
-  var load_cmd = options.scriptPath + 'vamps_script_load_trimmed_data.py ' + options.args.join(' ');
+  console.log(options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' '));
+  var load_cmd = options.scriptPath + '/vamps_script_load_trimmed_data.py ' + options.args.join(' ');
   // console.log("LLL load_cmd: " + load_cmd);
   // /Users/ashipunova/BPC/vamps-node.js/public/scripts/node_process_scripts//vamps_script_load_trimmed_data.py -project_dir /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project -owner admin -p test_gast_project -site local -infile /Users/ashipunova/BPC/vamps-node.js/tmp/b3a0c4ca3964f701e8ea6ef5d5fe2c56 -mdfile /Users/ashipunova/BPC/vamps-node.js/tmp/a9825a22a87f9b6600e7bf44dd13be48 -upload_type single -d test_gast_dataset -q
 
@@ -1690,12 +1735,15 @@ function CreateCmdList(req, options, data_repository)
 
   if (req.body.type == 'multi_fasta') {
       var new_fasta_file_name = 'infile.fna';
-      var demultiplex_cmd = options.scriptPath + 'vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
+      var demultiplex_cmd = options.scriptPath + '/vamps_script_demultiplex.sh ' + data_repository + ' ' + new_fasta_file_name;
       cmd_list.push(demultiplex_cmd);
   }
 
-  var fnaunique_cmd = options.scriptPath + 'vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  var fnaunique_cmd = options.scriptPath + '/vamps_script_fnaunique.sh ' + req.CONFIG.PATH + " " + data_repository;
+  console.log("LLL1 options.scriptPath: " + options.scriptPath);
   console.log("LLL fnaunique_cmd: " + fnaunique_cmd);
+  console.log("LLL2 data_repository: " + data_repository);
+  console.log("LLL3 req.CONFIG.PATH: " + req.CONFIG.PATH);
 
   cmd_list.push(fnaunique_cmd);
 
@@ -1756,10 +1804,10 @@ function GetScriptVars(req, data_repository, cmd_list)
    scriptlog   = path.join(data_repository, 'script.log');
    script_text = get_local_script_text(scriptlog, 'local', 'vampsupld', cmd_list);
   }
-  console.log('111 scriptlog: ' + scriptlog);
-  console.log('222 script_text: ' + script_text);
-  console.log('222 ====='); 
-  return [scriptlog, script_text]
+  // console.log('111 scriptlog: ' + scriptlog);
+  // console.log('222 script_text: ' + script_text);
+  // console.log('222 ====='); 
+  return [scriptlog, script_text];
 }
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
@@ -1829,7 +1877,7 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 //
 // 222 =====
 //
-
+// TODO: split the part below into smaller functions
           var script_path = path.join(data_repository, script_name);
 
           fs.writeFile(script_path, script_text, function (err) {
@@ -1904,6 +1952,120 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 //      });  //     END move 1
 
 });
+
+
+router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
+  console.log('in add_project');
+  console.log('UUU ---');
+  // console.log(util.inspect(req, false, null));
+  console.log('---');
+  // project_info = {};
+
+  // todo: redirect back after login
+  res.render('user_data/add_project', {
+    title: 'VAMPS: Add a new project',
+    user: req.user, hostname: req.CONFIG.hostname,
+    message: req.flash('message'),
+    // project_info: JSON.stringify(project_info),
+    env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
+  });
+});
+
+//  1) all fields should be not empty
+//  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
+//  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
+//  4) funding - numbers
+//  Owner:
+//  5) email format
+
+router.post('/add_project', 
+            [helpers.isLoggedIn], 
+            form(
+              form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+              form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
+              form.field("new_privacy", "Public").trim().required().is(/False|True/),
+              form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
+              form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
+              form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
+                            // post.super.nested.property
+              form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
+              form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+              form.field("email", "email").trim().isEmail().required().entityEncode(),
+              form.field("new_institution", "Institution").trim().required().entityEncode()
+             ),
+            function (req, res) {
+  console.log('1-req add_project');
+  console.log(util.inspect(req.body, false, null));
+  console.log('2-req add_project');
+  console.log(util.inspect(req.form, false, null));
+  backURL=req.header('Referer') || '/';
+  
+  if (!req.form.isValid) {
+    console.log("req.form.errors");
+    console.log(req.form.errors);
+    console.log("get errors:")
+    // console.log(req.form.getErrors("new_project_name"));
+    console.log(req.form.getErrors());
+    res.redirect("/user_data/add_project");
+  }
+  else
+  {
+    console.log("req.header: aaa")
+    console.log(req.header('Referer'))
+    // http://localhost:3000/user_data/add_project
+    // backURL=req.header('Referer') || '/';
+    //   // do your thang
+    //   res.redirect(backURL);
+    // });
+    // You might also want to store backURL in req.session, if you need it to persist across multiple routes. Remember to test for the existence of that variable, something like: res.redirect(req.session.backURL || '/')
+    // res.redirect("/user_data/import_choices");    
+    res.redirect(backURL);
+    
+  }
+  
+  return;
+});
+
+
+  // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
+  //   req.flash('failMessage', 'A project name is required.');
+  //   res.redirect("/user_data/import_data");
+  //   return;  
+  // }
+  
+// }
+
+// function FieldNotEmpty(val)
+// {
+//   console.log("running1 FieldNotEmpty, val");
+//   console.log(val)
+//   // console.log(val.length)
+//   if (val === '' || val === undefined) 
+//   {
+//     return false;
+//   }
+//   else
+//   {
+//     return true;
+//   }
+//   
+// }
+
+function ProjectNameField(req, res)
+{
+  if (result === '' || result === undefined) 
+  {
+    req.flash('failMessage', 'There is no such project');
+    res.redirect("/user_data/import_data");
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+
 
 //
 // UPLOAD DATA TAX-BY-SEQ

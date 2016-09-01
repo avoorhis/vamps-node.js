@@ -49,17 +49,28 @@ router.get('/users_index', [helpers.isLoggedIn, helpers.isAdmin], function(req, 
 // show the login form
 router.get('/login', function(req, res) {
     
-    //var url = req.session.returnTo || 'user_admin/login'
-    console.log('login',req.body)
+    console.log('login', req.body)
     res.render('user_admin/login', { 
                       title: 'VAMPS:login',
                       message: req.flash('loginMessage'), 
-                      user: req.user, hostname: req.CONFIG.hostname });
+                      user: req.user, 
+                      hostname: req.CONFIG.hostname,
+                      return_to_url: req.session.returnTo });
 });
 
-router.post('/login',  passport.authenticate('local-login', { successRedirect: '/users/profile',
-                                   failureRedirect: 'login',
-                                   failureFlash: true })
+// var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/users/profile';
+
+router.post('/login',  passport.authenticate('local-login', { 
+  // successRedirect: '/users/profile',
+  failureRedirect: 'login',
+  failureFlash: true }), function (req, res) {  
+        var url = req.body.return_to_url || '/'
+        console.log("=====: req.body.return_to_url");
+        console.log(url);
+        res.redirect(url);    
+        delete req.session.returnTo;
+        req.body.return_to_url = "";
+  	}
 );
 
 

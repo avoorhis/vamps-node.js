@@ -268,6 +268,19 @@ describe('<<< Data Import Selection page functionality >>>', function(){
 //     done();
 //   });
 
+
+  it('should refuse empty submissions', function(done) {
+    var browser = this.browser;
+    browser.pressButton('Submit', function(error) {
+      if (error) return done(error);
+      assert.ok(browser.success);
+      assert.equal(browser.text('h1'), 'Contact');
+      assert.equal(browser.text('div.alert'), 'Please fill in all the fields');
+      done();
+    });
+  });
+
+
   it('should show "A fasta file is required." if upload failed in FastaExists');
 //   it('should show "A fasta file is required." if upload failed in FastaExists', function(done) {
 //     // Import Data
