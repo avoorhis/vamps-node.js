@@ -2002,75 +2002,44 @@ function fetchID(data, callback) {
 }
 
 function saveToDb(req, res){ 
-    if(!req.form.isValid){ 
-        editAddProject(req, res);
-    } else {
-      
+  var user_id;
 
-      
-      var user_id;
+  fetchID(req.form, function(err, content) {
+      if (err) {
+          console.log(err);
+          // Do something with your error...
+      } else {
+          owner_user_id = content;
+          console.log('DDD --- owner_user_id');
+          console.log(util.inspect(owner_user_id, false, null));
 
-      fetchID(req.form, function(err, content) {
-          if (err) {
-              console.log(err);
-              // Do something with your error...
-          } else {
-              user_id = content;
-              console.log('DDD --- user_id');
-              console.log(util.inspect(user_id, false, null));
-          }
-      });
-
-      
-      
-      // TODO get real:
-      owner_user_id = 1;
-      // TODO: separate
-      var new_privacy = 1
-      if (req.form.new_privacy === 'True')
-        { new_privacy = 1 }
-      else
-        { new_privacy = 0 }
+  
+          // // TODO get real:
+          // owner_user_id = 1;
+          // TODO: separate
+          var new_privacy = 1
+          if (req.form.new_privacy === 'True')
+            { new_privacy = 1 }
+          else
+            { new_privacy = 0 }
 
 
-      var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
-      console.log("AAA insert_project_q a = " + insert_project_q);
-      
-      connection.query(insert_project_q, function (err, rows) {
-       if (err) {
-         console.log('ERROR-in project insert: ' + err);
-         
-         // req.messages = req.err;
-         //TODO: What to do if err?
-        // POST /user_data/add_project 302 16.221 ms - 94
-        // ERROR-in project update: Error: Duplicate entry 'new_Name' for key 'project'
-         
-         
-         // console.log('RRR --- err');
-         // console.log(util.inspect(err, false, null));
-      
-         // req.flash('failMessage', err);
-         // console.log('TTTT --- req');
-         // console.log(util.inspect(req, false, null));
-         
-         // editAddProject(req, res); - doesn't work: Error: Can't set headers after they are sent.
-         
-         // res.redirect("/user_data/add_project"); - works, but with now typed info
-         return;
-         
-       } else {
-         // console.log('TTTT --- rows');
-         // console.log(util.inspect(rows, false, null));
-         // console.log('TTTT2 --- rows.insertId');
-         // console.log(util.inspect(rows.insertId, false, null));
-         req.body.project_pid = rows.insertId; 
-         // TODO: save in session?
-         // console.log('TTTT3 --- req.body');
-         // console.log(util.inspect(req.body, false, null));
-         return rows.insertId;
-       }
-    });
-  }
+          var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
+          console.log("AAA insert_project_q a = " + insert_project_q);
+  
+          connection.query(insert_project_q, function (err, rows) {
+           if (err) {
+             console.log('ERROR-in project insert: ' + err);
+             return;
+     
+           } else {
+
+             req.body.project_pid = rows.insertId; 
+             return rows.insertId;
+           }
+        });
+      }
+  });
 }
 
 
