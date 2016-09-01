@@ -1955,8 +1955,8 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
-  console.log('in add_project');
-  console.log('UUU ---');
+  // console.log('in add_project');
+  // console.log('UUU ---');
   // console.log(util.inspect(req, false, null));
   // console.log('---');
   // project_info = {};
@@ -1970,6 +1970,62 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 });
+
+function saveToDb(req, res){ 
+    if(!req.form.isValid){ 
+        editAddProject(req, res);
+    } else {
+      
+      // console.log('WWW --- req');
+      // console.log(util.inspect(req, false, null));
+      
+      // TODO get real:
+      owner_user_id = 1
+      // TODO: separate
+      var new_privacy = 1
+      if (req.form.new_privacy === 'True')
+        { new_privacy = 1 }
+      else
+        { new_privacy = 0 }
+
+      var insert_project_q = 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
+                           + '("'  + req.form.new_project_name + '"'
+                           + ', "' + req.form.new_project_title + '"'
+                           + ', "' + req.form.new_project_description + '"'
+                           + ', REVERSE("' + req.form.new_project_title + '")'
+                           + ', "' + req.form.new_funding + '"'
+                           + ', "' + owner_user_id + '"'
+                           // + ', "' + req.form.owner_user_id + '"'
+                           + ', "' + new_privacy + '");';
+        console.log("III insert_project_q = " + insert_project_q);
+        
+        connection.query(insert_project_q, function (err, rows) {
+         if (err) {
+           console.log('ERROR-in project update: ' + err);
+         } else {
+           // console.log('OK- project info updated: ' + req.body.project_pid);
+           console.log('TTTT --- rows');
+           console.log(util.inspect(rows, false, null));
+           console.log('TTTT2 --- rows.insertId');
+           console.log(util.inspect(rows.insertId, false, null));
+         }
+      });
+    }
+}
+
+
+//
+// new_project_name: 'new Name',
+//   new_env_source_id: '10',
+//   new_privacy: 'True',
+//   new_project_title: 'new Title &lt; % &amp; ! &quot; &#39;   find packages Search sign up or log in log in Notorious Public Menace npm E',
+//   new_project_description: '',
+//   new_funding: '000A',
+//   first_name: 'Ad dsf gd f',
+//   last_name: '',
+//   email: 'admin@ad@bb',
+//   new_institution: 'MBL' } -->
+
 
 function editAddProject(req, res){
   console.log('in editAddProject');
@@ -1985,20 +2041,10 @@ function editAddProject(req, res){
     user: req.user,
     hostname: req.CONFIG.hostname,
     messages: req.messages,
-    message: req.flash('message'),
     add_project_info: req.add_project_info,
     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 }
-
-// <!-- <%= project_info %>
-// <%= messages %> -->
-//  1) all fields should be not empty
-//  2) project name (length < 20, >3, no spaces, just letteres, numbers, undescores)
-//  3) project title and description length, no quotes, no html sings (", ', &, <, >.)
-//  4) funding - numbers
-//  Owner:
-//  5) email format
 
 router.post('/add_project',
             [helpers.isLoggedIn],
@@ -2009,26 +2055,26 @@ router.post('/add_project',
               form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
               form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
               form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
-                            // post.super.nested.property
+              // post.super.nested.property
               form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
               form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
               form.field("email", "Email").trim().isEmail().required().entityEncode(),
               form.field("new_institution", "Institution").trim().required().entityEncode()
              ),
             function (req, res) {
-  console.log('1-req add_project');
-  console.log(util.inspect(req.body, false, null));
-  console.log('2-req add_project');
-  console.log(util.inspect(req.form, false, null));
+  // console.log('1-req add_project');
+  // console.log(util.inspect(req.body, false, null));
+  // console.log('2-req add_project');
+  // console.log(util.inspect(req.form, false, null));
 
   // req.add_project_info = {}
 
   if (!req.form.isValid) {
-    console.log("req.form.errors");
-    console.log(req.form.errors);
-    console.log("get errors:")
+    // console.log("req.form.errors");
+    // console.log(req.form.errors);
+    // console.log("get errors:")
     // console.log(req.form.getErrors("new_project_name"));
-    console.log(req.form.getErrors());
+    // console.log(req.form.getErrors());
     req.add_project_info = req.form;
     req.messages = req.form.errors;
     editAddProject(req, res);
@@ -2036,50 +2082,13 @@ router.post('/add_project',
   }
   else
   {
+    saveToDb(req, res);
     res.redirect("/user_data/import_choices");
   }
 
   return;
 });
 
-
-  // if ((project === '' || req.body.project === undefined) && req.body.use_original_names != 'on') {
-  //   req.flash('failMessage', 'A project name is required.');
-  //   res.redirect("/user_data/import_data");
-  //   return;
-  // }
-
-// }
-
-// function FieldNotEmpty(val)
-// {
-//   console.log("running1 FieldNotEmpty, val");
-//   console.log(val)
-//   // console.log(val.length)
-//   if (val === '' || val === undefined)
-//   {
-//     return false;
-//   }
-//   else
-//   {
-//     return true;
-//   }
-//
-// }
-
-function ProjectNameField(req, res)
-{
-  if (result === '' || result === undefined)
-  {
-    req.flash('failMessage', 'There is no such project');
-    res.redirect("/user_data/import_data");
-    return false;
-  }
-  else
-  {
-    return true;
-  }
-}
 
 
 
