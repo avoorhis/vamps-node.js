@@ -262,6 +262,7 @@ router.post('/export_data', helpers.isLoggedIn, function (req, res) {
 /* GET Import Choices page. */
 router.get('/import_choices', helpers.isLoggedIn, function (req, res) {
   console.log('import_choices');
+  
   if(req.CONFIG.hostname.substring(0,7) == 'bpcweb8'){
       res.render('user_data/your_data', {
         title: 'VAMPS:Data Administration',
@@ -1955,18 +1956,13 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
 
 
 router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
-  // console.log('in add_project');
-  // console.log('UUU ---');
-  // console.log(util.inspect(req, false, null));
-  // console.log('---');
-  // project_info = {};
+  console.log('in add_project');
 
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
     user: req.user,
     hostname: req.CONFIG.hostname,
     message: req.flash('message'),
-    // project_info: JSON.stringify(project_info),
     env_sources: JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 });
@@ -1976,8 +1972,6 @@ function saveToDb(req, res){
         editAddProject(req, res);
     } else {
       
-      // console.log('WWW --- req');
-      // console.log(util.inspect(req, false, null));
       
       // TODO get real:
       owner_user_id = 1
@@ -1989,61 +1983,51 @@ function saveToDb(req, res){
         { new_privacy = 0 }
 
 
-      a = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
-      console.log("AAA insert_project_q a = " + a);
+      var insert_project_q = helpers.MakeInsertProjectQ(req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, req.form.new_funding, owner_user_id, new_privacy);
+      console.log("AAA insert_project_q a = " + insert_project_q);
       
-
-      var insert_project_q = 'INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES '
-                           + '("'  + req.form.new_project_name + '"'
-                           + ', "' + req.form.new_project_title + '"'
-                           + ', "' + req.form.new_project_description + '"'
-                           + ', REVERSE("' + req.form.new_project_name + '")'
-                           + ', "' + req.form.new_funding + '"'
-                           + ', ' + owner_user_id + ''
-                           // + ', "' + req.form.owner_user_id + '"'
-                           + ', "' + new_privacy + '");';
-        console.log("III insert_project_q = " + insert_project_q);
-        
-        connection.query(insert_project_q, function (err, rows) {
-         if (err) {
-           console.log('ERROR-in project update: ' + err);
-         } else {
-           // console.log('OK- project info updated: ' + req.body.project_pid);
-           console.log('TTTT --- rows');
-           console.log(util.inspect(rows, false, null));
-           // console.log('TTTT2 --- rows.insertId');
-           // console.log(util.inspect(rows.insertId, false, null));
-           req.body.project_pid = rows.insertId; 
-           // TODO: save in session?
-           // console.log('TTTT3 --- req.body');
-           // console.log(util.inspect(req.body, false, null));
-         }
-      });
-    }
+      connection.query(insert_project_q, function (err, rows) {
+       if (err) {
+         console.log('ERROR-in project insert: ' + err);
+         
+         req.messages = req.err;
+         //TODO: What to do if err?
+        // POST /user_data/add_project 302 16.221 ms - 94
+        // ERROR-in project update: Error: Duplicate entry 'new_Name' for key 'project'
+         
+         
+         console.log('RRR --- err');
+         console.log(util.inspect(err, false, null));
+      
+         req.flash('failMessage', err);
+         // console.log('TTTT --- req');
+         // console.log(util.inspect(req, false, null));
+         
+         // editAddProject(req, res); - doesn't work: Error: Can't set headers after they are sent.
+         
+         // res.redirect("/user_data/add_project"); - works, but with now typed info
+         return;
+         
+       } else {
+         // console.log('TTTT --- rows');
+         // console.log(util.inspect(rows, false, null));
+         // console.log('TTTT2 --- rows.insertId');
+         // console.log(util.inspect(rows.insertId, false, null));
+         req.body.project_pid = rows.insertId; 
+         // TODO: save in session?
+         // console.log('TTTT3 --- req.body');
+         // console.log(util.inspect(req.body, false, null));
+         return rows.insertId;
+       }
+    });
+  }
 }
-
-
-//
-// new_project_name: 'new Name',
-//   new_env_source_id: '10',
-//   new_privacy: 'True',
-//   new_project_title: 'new Title &lt; % &amp; ! &quot; &#39;   find packages Search sign up or log in log in Notorious Public Menace npm E',
-//   new_project_description: '',
-//   new_funding: '000A',
-//   first_name: 'Ad dsf gd f',
-//   last_name: '',
-//   email: 'admin@ad@bb',
-//   new_institution: 'MBL' } -->
 
 
 function editAddProject(req, res){
   console.log('in editAddProject');
-  // console.log('TTTT ---');
-  // console.log(util.inspect(req.add_project_info, false, null));
-  // console.log('---');
-  // console.log(util.inspect(req.CONSTS.ENV_SOURCE, false, null));
+
   // TODO: keep choosen ENV_SOURCE
-  // project_info = {};
 
   res.render('user_data/add_project', {
     title: 'VAMPS: Add a new project',
@@ -2056,47 +2040,36 @@ function editAddProject(req, res){
 }
 
 router.post('/add_project',
-            [helpers.isLoggedIn],
-            form(
-              form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-              form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
-              form.field("new_privacy", "Public").trim().required().is(/False|True/),
-              form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
-              form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
-              form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
-              // post.super.nested.property
-              form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
-              form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
-              form.field("email", "Email").trim().isEmail().required().entityEncode(),
-              form.field("new_institution", "Institution").trim().required().entityEncode()
-             ),
-            function (req, res) {
-  // console.log('1-req add_project');
-  // console.log(util.inspect(req.body, false, null));
-  // console.log('2-req add_project');
-  // console.log(util.inspect(req.form, false, null));
+  [helpers.isLoggedIn],
+  form(
+    form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+    form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
+    form.field("new_privacy", "Public").trim().required().is(/False|True/),
+    form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
+    form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
+    form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
+    // post.super.nested.property
+    form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
+    form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+    form.field("email", "Email").trim().isEmail().required().entityEncode(),
+    form.field("new_institution", "Institution").trim().required().entityEncode()
+   ),
+  function (req, res) {
 
-  // req.add_project_info = {}
+    if (!req.form.isValid) {
+      req.add_project_info = req.form;
+      req.messages = req.form.errors;
+      editAddProject(req, res);
+    }
+    else
+    {
+      saveToDb(req, res);      
+      res.redirect("/user_data/import_choices");
+    }
 
-  if (!req.form.isValid) {
-    // console.log("req.form.errors");
-    // console.log(req.form.errors);
-    // console.log("get errors:")
-    // console.log(req.form.getErrors("new_project_name"));
-    // console.log(req.form.getErrors());
-    req.add_project_info = req.form;
-    req.messages = req.form.errors;
-    editAddProject(req, res);
-    // res.redirect("/user_data/add_project");
+    return;
   }
-  else
-  {
-    saveToDb(req, res);
-    res.redirect("/user_data/import_choices");
-  }
-
-  return;
-});
+);
 
 
 
