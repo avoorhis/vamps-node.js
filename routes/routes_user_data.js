@@ -1972,21 +1972,16 @@ function fetchID(data, callback) {
   user_info = [data.first_name, data.last_name, data.email, data.new_institution];
   
   
-  // connection.query('SELECT user_id FROM user WHERE first_name = ' + mysql.escape(data.first_name) + ''
-  //                + ' AND last_name = ' + mysql.escape(data.last_name)  + ''
-  //                + ' AND email = ' + mysql.escape(data.email)  + ''
-  //                + ' AND institution = ' + mysql.escape(data.new_institution) +'', function(err, rows) {
-    connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
+  connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
+    if (err) {
+        callback(err, null);
+    } else 
+    {
+      console.log('--- rows ---');
+      console.log(util.inspect(rows, false, null));
 
-      if (err) {
-          callback(err, null);
-      } else 
-      {
-        console.log('--- rows ---');
-        console.log(util.inspect(rows, false, null));
-  
-        callback(null, rows[0].user_id);
-      }
+      callback(null, rows[0].user_id);
+    }
   });
 }
 
