@@ -777,6 +777,12 @@ module.exports.MakeSelectProjectId = function(project)
   return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
 }
 
+module.exports.prepareQuery = function(inserts)
+{
+  // inserts = ['users', 'id', userId];
+  var sql = "SELECT * FROM ?? WHERE ?? = ?";
+  return mysql.format(sql, inserts);  
+}
 
 module.exports.RunQuery = function(my_query)
 {
@@ -802,16 +808,17 @@ module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privac
   return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
 }
 
+// TODO: escape and bulk
 MakeInsertStatusQ = function(status_params)
 {
   var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
   // "SELECT user_id, project_id, status, message, NOW() ";
-  statQuery1 += " SELECT "  + status_params.user_id;
+  statQuery1 += " SELECT "  + connection.escape(status_params.user_id);
   statQuery1 += ", project_id";
-  statQuery1 += ", '"  + status_params.status + "'";
-  statQuery1 += ", '"  + status_params.msg + "'";
+  statQuery1 += ", "  + connection.escape(status_params.status);
+  statQuery1 += ", "  + connection.escape(status_params.msg);
   statQuery1 += ", NOW()";
   statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
-  statQuery1 += " WHERE project = " + "'" + status_params.project + "'";
+  statQuery1 += " WHERE project = " + connection.escape(status_params.project);
   return statQuery1;
 };
