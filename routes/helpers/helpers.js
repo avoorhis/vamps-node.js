@@ -811,6 +811,9 @@ module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privac
 // TODO: escape and bulk
 MakeInsertStatusQ = function(status_params)
 {
+  //TODO: finish
+  params = [status_params.user_id, status_params.status, status_params.msg, status_params.project];
+  
   var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
   // "SELECT user_id, project_id, status, message, NOW() ";
   statQuery1 += " SELECT "  + connection.escape(status_params.user_id);
