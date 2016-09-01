@@ -1986,7 +1986,7 @@ function editAddProject(req, res){
     // messages: JSON.stringify(req.messages),
     messages: req.messages,
     message: req.flash('message'),
-    project_info: JSON.stringify(req.add_project_info),
+    add_project_info: JSON.stringify(req.add_project_info),
     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
   });
 }
