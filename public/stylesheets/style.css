@@ -180,14 +180,16 @@ td.left_justify {
 .alert {
   visibility:hidden;
 }
+
 .alert_flash_message {
 	font: bold 12px Arial;
-	color:orange;
-  position:absolute;
-  left:30px;
+	color: orange;
+  position: absolute;
+  left: 3em;
   /* top:65px; */
-  top:25px;
+  top: 2.5em;
 }
+
 #project_profile_div ul{
   list-style-type: none;
   text-decoration: none;

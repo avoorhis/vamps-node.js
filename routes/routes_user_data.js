@@ -2012,7 +2012,7 @@ router.post('/add_project',
                             // post.super.nested.property
               form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
               form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
-              form.field("email", "email").trim().isEmail().required().entityEncode(),
+              form.field("email", "Email").trim().isEmail().required().entityEncode(),
               form.field("new_institution", "Institution").trim().required().entityEncode()
              ),
             function (req, res) {

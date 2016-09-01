@@ -5,13 +5,11 @@
  <div class='subtitle'></div>
 
 <% if (messages) { %>
-   <div class='alert_flash_message'>
-  <%=  messages.length %>
-    <br>
-  <% for(var i=0; i < messages.length; i++) { %>
-   <%= messages[i] %>
-    <br>
-  <% } %>
+  <div class='alert_flash_message'>
+    <% for(var i=0; i < messages.length; i++) { %>
+      <%= messages[i] %>
+      <br>
+    <% } %>
   </div>
 <% } %>
 <br>
