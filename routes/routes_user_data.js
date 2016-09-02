@@ -349,11 +349,11 @@ router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
   res.render('user_data/validate_format', {
     title: 'VAMPS:Import Data',
     message: req.flash('successMessage'),
-      file_type: file_type,
-      file_style:'',
-      result:'',
-      original_fname:'',
-      user: req.user, hostname: req.CONFIG.hostname
+    file_type: file_type,
+    file_style:'',
+    result:'',
+    original_fname:'',
+    user: req.user, hostname: req.CONFIG.hostname
                         });
 });
 //
@@ -1852,8 +1852,48 @@ function GetScriptVars(req, data_repository, cmd_list)
 //
   // form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
   // form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/).maxLength(64).entityEncode(),
+// function editAddProject(req, res){
+//   console.log('in editAddProject');
+//
+//
+//   res.render('user_data/add_project', {
+//     title: 'VAMPS: Add a new project',
+//     user: req.user,
+//     hostname: req.CONFIG.hostname,
+//     messages: req.messages,
+//     add_project_info: req.add_project_info,
+//     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
+//   });
+// }
+// res.render('user_data/import_data', {
+//   title: 'VAMPS:Import Data',
+//   messages: req.flash('messages'),
+//   message: req.flash('successMessage'),
+//   failmessage: req.flash('failMessage'),
+//   import_type: import_type,
+//   my_projects: my_projects,
+//   user: req.user,
+//   form_data: form_data || {},
+//   hostname: req.CONFIG.hostname
+// });
 
 // ---
+// TODO: remove repetion, see title: 'VAMPS:Import Data'
+editUploadData= function(req, res)
+{
+  console.log("EEE editUploadData: req.form");
+  console.log(util.inspect(req.form, false, null));
+  res.render('user_data/import_data', {
+    title: 'VAMPS:Import Data',
+    message: req.flash('successMessage'),
+    failmessage: req.flash('failMessage'),
+    messages: req.flash('messages'),
+    import_type: req.body.type,
+    user: req.user,
+    form_data: req.form,
+    hostname: req.CONFIG.hostname
+  });
+}
 
 router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], 
   form(
@@ -1864,7 +1904,17 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
     if (!req.form.isValid) {
       console.log('PPP upload_data !req.form.isValid: ');
       console.log(util.inspect(req.form.errors, false, null));
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      return;
+      
     }
+    // else {the rest}
+    
+    //TODO:
+    //check all
+    // req.flash('failMessage', 'A tax_by_seq file is required.');
+    // res.redirect("/user_data/import_data");
 
   // ---
     // if (!req.form.isValid) {
@@ -2001,8 +2051,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                             if (err) { console.log(err);  }
                             else {
                                 req.flash('failMessage', 'Script Failure: '+last_line);
-                                status_params = {'type':'update', 'user_id':req.user.user_id,
-                                    'project':project, 'status':'Script Failure', 'msg':'Script Failure'
+                                status_params = {'type': 'update', 
+                                                 'user_id': req.user.user_id,
+                                                  'project':project, 
+                                                  'status':'Script Failure', 
+                                                  'msg':'Script Failure'
                                 };
                                     //helpers.update_status(status_params);
                                 res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
