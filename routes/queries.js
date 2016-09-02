@@ -363,5 +363,16 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
     return statQuery2;
   },
   
-
+  MakeDeleteStatusQ: function() {
+    console.log('in delete_status');
+    if (status_params.type === 'delete') {
+      var statQuery = "DELETE user_project_status"
+          + " FROM user_project_status"
+          + " JOIN project USING(project_id)"
+          + " WHERE user_id = ?"
+          + " AND   project = ?";
+      console.log('DELETE query: ' + statQuery);
+      return statQuery;
+    }
+  },
 } // end of module.exports

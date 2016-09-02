@@ -1197,7 +1197,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
     }
 
     //console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
-
+    //TODO: proper escape and move to queries
     for (var d in req.body.new_dataset_names) {
       var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"', \n";
       d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"', \n";

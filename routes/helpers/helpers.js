@@ -667,7 +667,7 @@ module.exports.update_status = function(status_params) {
 
   if (status_params.type === 'delete') {
     delete_status_params = [status_params.user_id, status_params.project]
-    statQuery = MakeDeleteStatusQ();
+    statQuery = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
     connection.query(statQuery, delete_status_params, function(err, rows) {
       if(err) { console.log('ERROR1-in status update: ' + err);
@@ -706,18 +706,18 @@ module.exports.update_status = function(status_params) {
   } // Type::New
 };
 
-MakeDeleteStatusQ = function() {
-  console.log('in delete_status');
-  if (status_params.type === 'delete') {
-    var statQuery = "DELETE user_project_status"
-        + " FROM user_project_status"
-        + " JOIN project USING(project_id)"
-        + " WHERE user_id = ?"
-        + " AND   project = ?";
-    console.log('DELETE query: ' + statQuery);
-    return statQuery;
-  }
-};
+// MakeDeleteStatusQ = function() {
+//   console.log('in delete_status');
+//   if (status_params.type === 'delete') {
+//     var statQuery = "DELETE user_project_status"
+//         + " FROM user_project_status"
+//         + " JOIN project USING(project_id)"
+//         + " WHERE user_id = ?"
+//         + " AND   project = ?";
+//     console.log('DELETE query: ' + statQuery);
+//     return statQuery;
+//   }
+// };
 
 module.exports.prepareQuery = function(inserts)
 {
