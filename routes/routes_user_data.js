@@ -1480,16 +1480,6 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 // ASh Aug 2016
 // TODO: Andy, how to make it fail? For testing?
-function ProjectNameGiven(project, req, res)
-{
-  if (project === '' || req.body.project === undefined) {
-    req.flash('failMessage', 'A project name is required.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return false;
-  }
-  else
-  { return true; }
-}
 
 function ProjectNameExists(project, req, res)
 {
@@ -1576,22 +1566,9 @@ function ProjectValidation(req, project, data_repository, res)
   project_exists_in_db = ProjectExistsInDB(project, req, res);
   console.log("project_exists_in_db = " + project_exists_in_db);
 
-  console.log("running ProjectNameGiven");
-  project_name_given = ProjectNameGiven(project, req, res);
-  console.log("project_name_given = " + project_name_given);
-
-  // console.log("running ProjectNameExists");
-  // project_name_exists = ProjectNameExists(project, req, res);
-  // console.log("project_name_exists = " + project_name_exists);
-
   console.log("running FastaExists");
   fasta_exists = FastaExists(req, res);
   console.log("fasta_exists = " +fasta_exists);
-
-  // console.log("running ResFilePathExists");
-  // console.log("data_repository = " + data_repository);
-  // file_path_exists = ResFilePathExists(req, data_repository, res);
-  // console.log("file_path_exists = " + file_path_exists);
 
   console.log("running MetadataFileExists");
   metadata_file_exists = MetadataFileExists(req, res);
@@ -1821,8 +1798,8 @@ function GetScriptVars(req, data_repository, cmd_list)
 // TODO: remove repetitions, see title: 'VAMPS:Import Data'
 editUploadData= function(req, res)
 {
-  // console.log("EEE editUploadData: req.form");
-  // console.log(util.inspect(req.form, false, null));
+  console.log("EEE editUploadData: req.form");
+  console.log(util.inspect(req.form, false, null));
   res.render('user_data/import_data', {
     title: 'VAMPS:Import Data',
     message: req.flash('successMessage'),
@@ -1846,14 +1823,13 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
       console.log(util.inspect(req.form.errors, false, null));
       req.flash('messages', req.form.errors);
       editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
       return;
-      
     }
     // else {the rest}
     
     //TODO:
     //check all
-    // req.flash('failMessage', 'A tax_by_seq file is required.');
     // res.redirect("/user_data/import_data");
 
   // ---
