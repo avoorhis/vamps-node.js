@@ -42,6 +42,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>open</td>
+	<td>user_data/add_project</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
 	<td>link=Your Data</td>
 	<td></td>

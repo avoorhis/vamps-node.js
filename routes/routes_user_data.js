@@ -1861,11 +1861,17 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
     form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
   ),
   function (req, res) {
+    if (!req.form.isValid) {
+      console.log('PPP upload_data !req.form.isValid: ');
+      console.log(util.inspect(req.form.errors, false, null));
+    }
+
   // ---
     // if (!req.form.isValid) {
     //   req.add_project_info = req.form;
     //   req.messages = req.form.errors;
     //   editAddProject(req, res);
+  // }
     // else
     // {
     //   saveToDb(req, res);
