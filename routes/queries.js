@@ -28,7 +28,7 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
 		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
-		qSelectDatasets += " WHERE project_id='"+pid+"'";
+		qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
 		qSelectDatasets += " ORDER BY project, dataset";
 		//console.log(qSelectDatasets);
     return qSelectDatasets;	
@@ -51,7 +51,7 @@ get_all_user_query: function(){
 insert_access_table: function(uid,pid){
     
     var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
-    qInsertAccess += " VALUES('"+uid+"','"+pid+"')"; 
+    qInsertAccess += " VALUES(" + connection.escape(uid) + ", " + connection.escape(pid) + ")"; 
     console.log(qInsertAccess);
     return qInsertAccess; 
      
@@ -70,7 +70,7 @@ get_select_sequences_queryPID: function(pid){
 		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
 		qSequenceCounts += " JOIN dataset using(dataset_id)";
-		qSequenceCounts += " WHERE project_id='"+pid+"'";
+		qSequenceCounts += " WHERE project_id = " + connection.escape(pid);
 		qSequenceCounts += " GROUP BY project_id, dataset_id";
 		return qSequenceCounts;
 	
@@ -119,6 +119,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         tmp_tax_id_in += " OR "+rank+"_id in ("+idarray[rank]+")\n";
       }
       // need all the ranks up to max rank for _id and joins
+      //TODO: proper escape!!! See https://github.com/mysqljs/mysql
       for (var n in C.RANKS.slice(0,max_rank_num+1)) {
         taxids.push(C.RANKS[n] + '_id');
         custom_joins += " JOIN `"+ C.RANKS[n] + "` USING("+C.RANKS[n]+"_id)\n";
@@ -257,6 +258,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   get_sequences_perDID: function( sql_dids ) {
+    //TODO: proper escape!!! See https://github.com/mysqljs/mysql
       
       //var sql_dids = dids.join(',')
       console.log(sql_dids)
@@ -284,14 +286,14 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
       seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
       seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
-      seqQuery += " WHERE dataset_id='"+did+"'";
+      seqQuery += " WHERE dataset_id = " + connection.escape(did);
 
       for(t=0;t<  tax_items.length;t++){
         var name = tax_items[t]
         var val = name+'_'+C.RANKS[t];
         //console.log(val)
         var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
-        seqQuery += " and "+C.RANKS[t]+"_id='"+id+"'"
+        seqQuery += " and "+C.RANKS[t]+"_id = " + connection.escape(id);
       }
       seqQuery += "\nORDER BY seq_count DESC";
       seqQuery += " LIMIT 100";
