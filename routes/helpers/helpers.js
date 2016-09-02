@@ -686,7 +686,6 @@ module.exports.update_status = function(status_params) {
       } else {
         console.log('status update2');
         console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
       }
     });
   } else {  // Type::New
@@ -700,24 +699,10 @@ module.exports.update_status = function(status_params) {
       } else {
         console.log('status update1');
         console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
       }
     });
   } // Type::New
 };
-
-// MakeDeleteStatusQ = function() {
-//   console.log('in delete_status');
-//   if (status_params.type === 'delete') {
-//     var statQuery = "DELETE user_project_status"
-//         + " FROM user_project_status"
-//         + " JOIN project USING(project_id)"
-//         + " WHERE user_id = ?"
-//         + " AND   project = ?";
-//     console.log('DELETE query: ' + statQuery);
-//     return statQuery;
-//   }
-// };
 
 module.exports.prepareQuery = function(inserts)
 {
