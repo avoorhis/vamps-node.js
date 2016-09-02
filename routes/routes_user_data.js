@@ -1818,9 +1818,65 @@ function GetScriptVars(req, data_repository, cmd_list)
   return [scriptlog, script_text];
 }
 
-router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
+// ---
+//   [helpers.isLoggedIn],
+//   form(
+//     form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+//     form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
+//     form.field("new_privacy", "Public").trim().required().is(/False|True/),
+//     form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
+//     form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
+//     form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
+//     // post.super.nested.property
+//     form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
+//     form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
+//     form.field("email", "Email").trim().isEmail().required().entityEncode(),
+//     form.field("new_institution", "Institution").trim().required().entityEncode()
+//    ),
+//   function (req, res) {
+//
+//     if (!req.form.isValid) {
+//       req.add_project_info = req.form;
+//       req.messages = req.form.errors;
+//       editAddProject(req, res);
+//     }
+//     else
+//     {
+//       saveToDb(req, res);
+//       res.redirect("/user_data/import_choices");
+//     }
+//
+//     return;
+//   }
+// );
+//
+  // form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+  // form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/).maxLength(64).entityEncode(),
+
+// ---
+
+router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], 
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
+  ),
+  function (req, res) {
+  // ---
+    // if (!req.form.isValid) {
+    //   req.add_project_info = req.form;
+    //   req.messages = req.form.errors;
+    //   editAddProject(req, res);
+    // else
+    // {
+    //   saveToDb(req, res);
+    //   res.redirect("/user_data/import_choices");
+    // }
+    //
+    // return;
+  // ---
+    
   var exec    = require('child_process').exec;
-  var project  = helpers.clean_string(req.body.project);
+  var project = helpers.clean_string(req.body.project);
 
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
@@ -1974,10 +2030,16 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+
+function get_privacy_code(privacy_bulean){
+  if (privacy_bulean === 'True')
+    { return 1 }
+  else
+    { return 0 }
+}
+
 function fetchID(data, callback) {
   user_info = [data.first_name, data.last_name, data.email, data.new_institution];
-  
-  
   connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
     if (err) {
         callback(err, null);
@@ -1989,13 +2051,6 @@ function fetchID(data, callback) {
       callback(null, rows[0].user_id);
     }
   });
-}
-
-function get_privacy_code(privacy_bulean){
-  if (privacy_bulean === 'True')
-    { return 1 }
-  else
-    { return 0 }
 }
 
 function saveToDb(req, res){ 
@@ -2011,16 +2066,8 @@ function saveToDb(req, res){
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
-          // var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
-          // var project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, "REVERSE(" + req.form.new_project_name + ")", req.form.new_funding, owner_user_id, new_privacy];
-          // var inserts = [project_columns, project_info];
-          // var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
-          //
-          //
-          // sql_a = mysql.format(insert_project_q, inserts);
-          // sql_a = sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
           var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          console.log("AAA sql_a = " + sql_a);
+          // console.log("AAA sql_a = " + sql_a);
           // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
           
           connection.query(sql_a, 

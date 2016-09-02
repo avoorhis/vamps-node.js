@@ -344,10 +344,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         + ", message = "  + connection.escape(status_params.msg)
         + ", updated_at = NOW()"
         + " WHERE user_id = " + connection.escape(status_params.user_id);
-        
-        console.log("UUU");
-        console.log(util.inspect(status_params, false, null));
-        
+                
     if ('project' in status_params) {
         statQuery2 += " AND project = "  + connection.escape(status_params.project);
         console.log("statQuery2 project: " + statQuery2);        
