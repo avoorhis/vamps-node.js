@@ -1818,71 +1818,11 @@ function GetScriptVars(req, data_repository, cmd_list)
   return [scriptlog, script_text];
 }
 
-// ---
-//   [helpers.isLoggedIn],
-//   form(
-//     form.field("new_project_name", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-//     form.field("new_env_source_id", "ENV Source").trim().required().isInt(),
-//     form.field("new_privacy", "Public").trim().required().is(/False|True/),
-//     form.field("new_project_title", "Title").trim().required().entityEncode().maxLength(100),
-//     form.field("new_project_description", "Description").trim().required().entityEncode().maxLength(255),
-//     form.field("new_funding", "Funding").trim().required().is(/[0-9]/),
-//     // post.super.nested.property
-//     form.field("first_name", "First Name").trim().required().entityEncode().isAlphanumeric(),
-//     form.field("last_name", "Last Name").trim().required().entityEncode().isAlphanumeric(),
-//     form.field("email", "Email").trim().isEmail().required().entityEncode(),
-//     form.field("new_institution", "Institution").trim().required().entityEncode()
-//    ),
-//   function (req, res) {
-//
-//     if (!req.form.isValid) {
-//       req.add_project_info = req.form;
-//       req.messages = req.form.errors;
-//       editAddProject(req, res);
-//     }
-//     else
-//     {
-//       saveToDb(req, res);
-//       res.redirect("/user_data/import_choices");
-//     }
-//
-//     return;
-//   }
-// );
-//
-  // form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
-  // form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/).maxLength(64).entityEncode(),
-// function editAddProject(req, res){
-//   console.log('in editAddProject');
-//
-//
-//   res.render('user_data/add_project', {
-//     title: 'VAMPS: Add a new project',
-//     user: req.user,
-//     hostname: req.CONFIG.hostname,
-//     messages: req.messages,
-//     add_project_info: req.add_project_info,
-//     env_sources:  JSON.stringify(req.CONSTS.ENV_SOURCE),
-//   });
-// }
-// res.render('user_data/import_data', {
-//   title: 'VAMPS:Import Data',
-//   messages: req.flash('messages'),
-//   message: req.flash('successMessage'),
-//   failmessage: req.flash('failMessage'),
-//   import_type: import_type,
-//   my_projects: my_projects,
-//   user: req.user,
-//   form_data: form_data || {},
-//   hostname: req.CONFIG.hostname
-// });
-
-// ---
-// TODO: remove repetion, see title: 'VAMPS:Import Data'
+// TODO: remove repetitions, see title: 'VAMPS:Import Data'
 editUploadData= function(req, res)
 {
-  console.log("EEE editUploadData: req.form");
-  console.log(util.inspect(req.form, false, null));
+  // console.log("EEE editUploadData: req.form");
+  // console.log(util.inspect(req.form, false, null));
   res.render('user_data/import_data', {
     title: 'VAMPS:Import Data',
     message: req.flash('successMessage'),
