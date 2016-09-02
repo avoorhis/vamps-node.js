@@ -705,23 +705,6 @@ module.exports.update_status = function(status_params) {
   } // Type::New
 };
 
-
-
-module.exports.get_status = function(user, project){
-  var statQuery = "SELECT status, message from user_project_status";
-  statQuery += " join user USING(user_id)";
-  statQuery += " join project USING(project_id)";
-  statQuery += " WHERE user = '" + user + "' and project ='" + project + "' ";
-  console.log('get_status query: ' + statQuery);
-  connection.query(statQuery, function(err, rows) {
-    if(err) {
-      console.log('ERROR-in status query: ' + err);
-    } else {
-      return rows;
-    }
-  });
-};
-
 MakeDeleteStatusQ = function(status_params) {
   console.log('in delete_status');
   if (status_params.type === 'delete') {
@@ -808,20 +791,16 @@ module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privac
   return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
 }
 
-// TODO: escape and bulk
 MakeInsertStatusQ = function(status_params)
 {
-  //TODO: finish
-  params = [status_params.user_id, status_params.status, status_params.msg, status_params.project];
-  
-  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)";
   // "SELECT user_id, project_id, status, message, NOW() ";
-  statQuery1 += " SELECT "  + connection.escape(status_params.user_id);
-  statQuery1 += ", project_id";
-  statQuery1 += ", "  + connection.escape(status_params.status);
-  statQuery1 += ", "  + connection.escape(status_params.msg);
-  statQuery1 += ", NOW()";
-  statQuery1 += " FROM user_project_status RIGHT JOIN project using(project_id)";
-  statQuery1 += " WHERE project = " + connection.escape(status_params.project);
+  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
+  + " SELECT "  + connection.escape(status_params.user_id)
+  + ", project_id"
+  + ", "  + connection.escape(status_params.status)
+  + ", "  + connection.escape(status_params.msg)
+  + ", NOW()"
+  + " FROM user_project_status RIGHT JOIN project using(project_id)"
+  + " WHERE project = " + connection.escape(status_params.project)
   return statQuery1;
 };
