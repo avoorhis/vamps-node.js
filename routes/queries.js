@@ -2,6 +2,8 @@
 var express = require('express');
 var router = express.Router();
 var C = require('../public/constants');
+var mysql = require('mysql2');
+var util = require('util');
 
 module.exports = {
 
@@ -28,7 +30,7 @@ get_select_datasets_queryPID: function(pid){
 		qSelectDatasets += " JOIN project USING(project_id)";
 		qSelectDatasets += " JOIN user on(project.owner_user_id=user.user_id)";  // this will need to be changed when table user_project in incorporated
 		qSelectDatasets += " JOIN env_sample_source USING(env_sample_source_id)";
-		qSelectDatasets += " WHERE project_id='"+pid+"'";
+		qSelectDatasets += " WHERE project_id = " + connection.escape(pid);
 		qSelectDatasets += " ORDER BY project, dataset";
 		//console.log(qSelectDatasets);
     return qSelectDatasets;	
@@ -51,7 +53,7 @@ get_all_user_query: function(){
 insert_access_table: function(uid,pid){
     
     var qInsertAccess = "INSERT ignore into `access` (user_id, project_id)";
-    qInsertAccess += " VALUES('"+uid+"','"+pid+"')"; 
+    qInsertAccess += " VALUES(" + connection.escape(uid) + ", " + connection.escape(pid) + ")"; 
     console.log(qInsertAccess);
     return qInsertAccess; 
      
@@ -70,7 +72,7 @@ get_select_sequences_queryPID: function(pid){
 		var qSequenceCounts = "SELECT project_id, dataset_id, SUM(seq_count) as seq_count"; 
 		qSequenceCounts += " FROM sequence_pdr_info";
 		qSequenceCounts += " JOIN dataset using(dataset_id)";
-		qSequenceCounts += " WHERE project_id='"+pid+"'";
+		qSequenceCounts += " WHERE project_id = " + connection.escape(pid);
 		qSequenceCounts += " GROUP BY project_id, dataset_id";
 		return qSequenceCounts;
 	
@@ -119,6 +121,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
         tmp_tax_id_in += " OR "+rank+"_id in ("+idarray[rank]+")\n";
       }
       // need all the ranks up to max rank for _id and joins
+      //TODO: proper escape!!! See https://github.com/mysqljs/mysql
       for (var n in C.RANKS.slice(0,max_rank_num+1)) {
         taxids.push(C.RANKS[n] + '_id');
         custom_joins += " JOIN `"+ C.RANKS[n] + "` USING("+C.RANKS[n]+"_id)\n";
@@ -257,6 +260,7 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   get_sequences_perDID: function( sql_dids ) {
+    //TODO: proper escape!!! See https://github.com/mysqljs/mysql
       
       //var sql_dids = dids.join(',')
       console.log(sql_dids)
@@ -284,14 +288,14 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
       seqQuery += " JOIN silva_taxonomy_info_per_seq as t3 USING (silva_taxonomy_info_per_seq_id)\n"
       seqQuery += " JOIN silva_taxonomy as t4 USING(silva_taxonomy_id)\n"
       seqQuery += " JOIN classifier as t5 USING(classifier_id)\n"
-      seqQuery += " WHERE dataset_id='"+did+"'";
+      seqQuery += " WHERE dataset_id = " + connection.escape(did);
 
       for(t=0;t<  tax_items.length;t++){
         var name = tax_items[t]
         var val = name+'_'+C.RANKS[t];
         //console.log(val)
         var id = new_taxonomy.taxa_tree_dict_map_by_name_n_rank[val].db_id;
-        seqQuery += " and "+C.RANKS[t]+"_id='"+id+"'"
+        seqQuery += " and "+C.RANKS[t]+"_id = " + connection.escape(id);
       }
       seqQuery += "\nORDER BY seq_count DESC";
       seqQuery += " LIMIT 100";
@@ -302,7 +306,70 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
   //
   //
   
+  MakeInsertProjectQ: function(req_form, owner_user_id, new_privacy)
+  {
+    var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
+    var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
+    var inserts = [project_columns, project_info];
+    var insert_project_q = 'INSERT INTO project (??) VALUES (?);';
+  
+    var sql_a = mysql.format(insert_project_q, inserts);
+    return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
+  },
+
+  MakeInsertStatusQ: function(status_params)
+  {
+    // "SELECT user_id, project_id, status, message, NOW() ";
+    var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
+                  + " SELECT "  + connection.escape(status_params.user_id)
+                  + ", project_id"
+                  + ", "  + connection.escape(status_params.status)
+                  + ", "  + connection.escape(status_params.msg)
+                  + ", NOW()"
+                  + " FROM user_project_status RIGHT JOIN project using(project_id)"
+                  + " WHERE project = " + connection.escape(status_params.project)
+    return statQuery1;
+  },
+
+  MakeSelectProjectId: function(project)
+  {
+    return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
+  },
+  
+  MakeUpdateStatusQ: function(status_params)
+  {
+    var statQuery2 = "UPDATE user_project_status"
+        + " JOIN project USING(project_id)"
+        + " SET status = " + connection.escape(status_params.status)
+        + ", message = "  + connection.escape(status_params.msg)
+        + ", updated_at = NOW()"
+        + " WHERE user_id = " + connection.escape(status_params.user_id);
+                
+    if ('project' in status_params) {
+        statQuery2 += " AND project = "  + connection.escape(status_params.project);
+        console.log("statQuery2 project: " + statQuery2);        
+    }
+    else if ('pid' in status_params) {
+        statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
+        console.log("statQuery2 pid: " + statQuery2);
+    }
+    else {
+    //ERROR
+      console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
+    }
+    return statQuery2;
+  },
+  
+  MakeDeleteStatusQ: function() {
+    console.log('in delete_status');
+    if (status_params.type === 'delete') {
+      var statQuery = "DELETE user_project_status"
+          + " FROM user_project_status"
+          + " JOIN project USING(project_id)"
+          + " WHERE user_id = ?"
+          + " AND   project = ?";
+      console.log('DELETE query: ' + statQuery);
+      return statQuery;
+    }
+  },
 } // end of module.exports
-
-
-

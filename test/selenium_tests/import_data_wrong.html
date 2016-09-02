@@ -9,16 +9,16 @@
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">import_data</td></tr>
+<tr><td rowspan="1" colspan="3">import_data_wrong</td></tr>
 </thead><tbody>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=logout</td>
-	<td></td>
-</tr>
 <tr>
 	<td>open</td>
 	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=logout</td>
 	<td></td>
 </tr>
 <tr>
@@ -64,12 +64,12 @@
 <tr>
 	<td>type</td>
 	<td>id=project</td>
-	<td>test_gast_project</td>
+	<td>test_gast_project 1 # </td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>id=dset</td>
-	<td>test_gast_dataset</td>
+	<td></td>
 </tr>
 <tr>
 	<td>type</td>
@@ -79,7 +79,7 @@
 <tr>
 	<td>type</td>
 	<td>id=meta</td>
-	<td>/Users/ashipunova/BPC/vamps-node.js/test/selenium_tests/ds1_meta.csv</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -87,29 +87,29 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyNotText</td>
-	<td>//div/div[2]</td>
-	<td>exact:Script Failure: Deleting: /Users/ashipunova/BPC/vamps-node.js/user_data/vamps2/admin/project-test_gast_project/test_gast_dataset-original.fnaSingle file to uniquefor file in *.fa; do fastaunique ; done</td>
+	<td>assertText</td>
+	<td>//div[3]</td>
+	<td>Only letters, numbers and underscores are valid in Project Name <br /> Project Name is too long <br /> Dataset Name is required <br /> Only letters, numbers and underscores are valid in Dataset Name</td>
 </tr>
 <tr>
-	<td>verifyNotText</td>
-	<td>//div/div[2]</td>
-	<td>exact:Script Failure: for file in *.fa; do undefined/fastaunique ; done</td>
+	<td>type</td>
+	<td>id=dset</td>
+	<td>&lt;&gt;&amp; dsff</td>
 </tr>
 <tr>
-	<td>verifyNotText</td>
-	<td>//div/div[2]</td>
-	<td>That project name is already taken.</td>
+	<td>type</td>
+	<td>id=project</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyNotText</td>
-	<td>//div/div[2]</td>
-	<td>A fasta file is required.</td>
+	<td>clickAndWait</td>
+	<td>css=button.btn.btn-default</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>css=div.alert_flash_message</td>
-	<td>Upload in Progress: 'test_gast_project'</td>
+	<td>//div[3]</td>
+	<td>Project Name is required <br /> Only letters, numbers and underscores are valid in Project Name <br /> Project Name is too short <br /> Only letters, numbers and underscores are valid in Dataset Name</td>
 </tr>
 </tbody></table>
 </body>

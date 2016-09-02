@@ -666,9 +666,10 @@ module.exports.update_status = function(status_params) {
   console.log(util.inspect(status_params, false, null));
 
   if (status_params.type === 'delete') {
-    statQuery = MakeDeleteStatusQ(status_params);
+    delete_status_params = [status_params.user_id, status_params.project]
+    statQuery = queries.MakeDeleteStatusQ();
     console.log('in update_status, after delete_status');
-    connection.query(statQuery, function(err, rows) {
+    connection.query(statQuery, delete_status_params, function(err, rows) {
       if(err) { console.log('ERROR1-in status update: ' + err);
       }
       else {
@@ -677,7 +678,7 @@ module.exports.update_status = function(status_params) {
       }
     });
   } else if(status_params.type == 'update') {
-    statQuery2 = MakeUpdateStatusQ(status_params);
+    statQuery2 = queries.MakeUpdateStatusQ(status_params);
     console.log('statQuery2: ' + statQuery2);
     connection.query(statQuery2, function(err, rows) {
       if(err) {
@@ -685,13 +686,12 @@ module.exports.update_status = function(status_params) {
       } else {
         console.log('status update2');
         console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
       }
     });
   } else {  // Type::New
       // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
       // name="A", age=19
-    statQuery1 = MakeInsertStatusQ(status_params);
+    statQuery1 = queries.MakeInsertStatusQ(status_params);
     console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {
       if(err) {
@@ -699,50 +699,10 @@ module.exports.update_status = function(status_params) {
       } else {
         console.log('status update1');
         console.log(util.inspect(rows, false, null));
-        //TODO: Why doesn't work?
       }
     });
   } // Type::New
 };
-
-MakeDeleteStatusQ = function(status_params) {
-  console.log('in delete_status');
-  if (status_params.type === 'delete') {
-    var statQuery = "DELETE user_project_status";
-        statQuery += " FROM user_project_status";
-        statQuery += " JOIN project USING(project_id)";
-        statQuery += " WHERE user_id ='" + status_params.user_id + "' ";
-        statQuery += " AND   project ='" + status_params.project + "' ";
-    console.log('DELETE query: ' + statQuery);
-    return statQuery;
-  }
-};
-
-MakeUpdateStatusQ = function(status_params)
-{
-  var statQuery2 = "UPDATE user_project_status"
-      + " JOIN project USING(project_id)"
-      + " SET status = " + connection.escape(status_params.status)
-      + ", message = "  + connection.escape(status_params.msg)
-      + ", updated_at = NOW()"
-      + " WHERE user_id = " + connection.escape(status_params.user_id);
-  if ('pid' in status_params && 'project' in status_params) {
-      statQuery2 += " AND project = "  + connection.escape(status_params.project);
-  }
-  else if ('pid' in status_params) {
-      statQuery2 += " AND project_id = " + connection.escape(status_params.pid);
-  }
-  else {
-  //ERROR
-    console.log("ERROR in statQuery2 for Update Status: project or project_id is needed. " + statQuery2);
-  }
-  return statQuery2;
-};
-
-module.exports.MakeSelectProjectId = function(project)
-{
-  return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
-}
 
 module.exports.prepareQuery = function(inserts)
 {
@@ -763,28 +723,3 @@ module.exports.RunQuery = function(my_query)
     }
   });
 }
-
-module.exports.MakeInsertProjectQ = function(req_form, owner_user_id, new_privacy)
-{
-  var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
-  var project_info = [req_form.new_project_name, req_form.new_project_title, req_form.new_project_description, "REVERSE(" + req_form.new_project_name + ")", req_form.new_funding, owner_user_id, new_privacy];
-  var inserts = [project_columns, project_info];
-  var insert_project_q = 'INSERT INTO project (??) VALUES (?);';
-  
-  var sql_a = mysql.format(insert_project_q, inserts);
-  return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
-}
-
-MakeInsertStatusQ = function(status_params)
-{
-  // "SELECT user_id, project_id, status, message, NOW() ";
-  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
-                + " SELECT "  + connection.escape(status_params.user_id)
-                + ", project_id"
-                + ", "  + connection.escape(status_params.status)
-                + ", "  + connection.escape(status_params.msg)
-                + ", NOW()"
-                + " FROM user_project_status RIGHT JOIN project using(project_id)"
-                + " WHERE project = " + connection.escape(status_params.project)
-  return statQuery1;
-};

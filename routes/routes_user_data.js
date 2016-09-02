@@ -349,11 +349,11 @@ router.get('/validate_format', helpers.isLoggedIn, function (req, res) {
   res.render('user_data/validate_format', {
     title: 'VAMPS:Import Data',
     message: req.flash('successMessage'),
-      file_type: file_type,
-      file_style:'',
-      result:'',
-      original_fname:'',
-      user: req.user, hostname: req.CONFIG.hostname
+    file_type: file_type,
+    file_style:'',
+    result:'',
+    original_fname:'',
+    user: req.user, hostname: req.CONFIG.hostname
                         });
 });
 //
@@ -784,6 +784,11 @@ router.get('/start_assignment/:project/:classifier_id', helpers.isLoggedIn, func
     status_params.statusSUCCESS = 'GAST-SUCCESS';
     status_params.msgOK = 'Finished GAST';
     status_params.msgSUCCESS = 'GAST -Tax assignments';
+    
+    // TODO:
+    // test
+    // user_project_status_id  user_id  project_id  status  message  created_at  updated_at
+    // 34  4  4  GAST-SUCCESS  GAST -Tax assignments  2016-09-02 12:26:21  2016-09-02 12:31:12
     cmd_list = [
         //unique_cmd,
         project_init,
@@ -1192,7 +1197,7 @@ router.post('/edit_project', helpers.isLoggedIn, function (req, res) {
     }
 
     //console.log(PROJECT_INFORMATION_BY_PID[req.body.project_pid]);
-
+    //TODO: proper escape and move to queries
     for (var d in req.body.new_dataset_names) {
       var d_sql = "UPDATE dataset set dataset='"+req.body.new_dataset_names[d]+"', \n";
       d_sql += " env_sample_source_id='"+req.body.new_env_source_id+"', \n";
@@ -1475,16 +1480,6 @@ router.post('/upload_metadata', [helpers.isLoggedIn, upload.single('upload_file'
 //
 // ASh Aug 2016
 // TODO: Andy, how to make it fail? For testing?
-function ProjectNameGiven(project, req, res)
-{
-  if (project === '' || req.body.project === undefined) {
-    req.flash('failMessage', 'A project name is required.');
-    res.redirect("/user_data/import_data?import_type=" + req.body.type);
-    return false;
-  }
-  else
-  { return true; }
-}
 
 function ProjectNameExists(project, req, res)
 {
@@ -1506,7 +1501,7 @@ function ProjectNameExists(project, req, res)
   }
 }
 
-function FastaExists(req, res)
+function FastaProvided(req, res)
 {
   if (req.files[0].filename === undefined || req.files[0].size === 0) {
     req.flash('failMessage', 'A fasta file is required.');
@@ -1519,6 +1514,7 @@ function FastaExists(req, res)
   }
 }
 
+// ??? TODO: check?
 function ResFilePathExists(req, data_repository, res)
 {
   if (helpers.fileExists(data_repository)) {
@@ -1533,7 +1529,7 @@ function ResFilePathExists(req, data_repository, res)
     }
 }
 
-function MetadataFileExists(req, res)
+function MetadataFileProvided(req, res)
 {
   if (req.files[1].filename === undefined || req.files[1].size === 0) {
     req.flash('failMessage', 'A metadata csv file is required.');
@@ -1546,10 +1542,11 @@ function MetadataFileExists(req, res)
     }
 }
 
+// todo: change to callback
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
-  q = helpers.MakeSelectProjectId(project);
+  q = queries.MakeSelectProjectId(project);
   console.log("q = " + q);
   result = helpers.RunQuery(q);
   console.log(util.inspect(result, false, null));
@@ -1567,29 +1564,32 @@ function ProjectExistsInDB(project, req, res)
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  console.log("running1 ProjectExistsInDB");
-  project_exists_in_db = ProjectExistsInDB(project, req, res);
-  console.log("project_exists_in_db = " + project_exists_in_db);
+  // console.log('MMM PROJECT_INFORMATION_BY_PNAME: ');
+  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  
+  // TODO: check if added but not in PROJECT_INFORMATION_BY_PNAME? or update PROJECT_INFORMATION_BY_PNAME after add_project?
+  // see 
+  // routes/helpers/helpers.js:251:    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+  // routes/helpers/helpers.js:258:    delete PROJECT_INFORMATION_BY_PNAME[pname];
+  // routes/helpers/helpers.js:274:        console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
+  // routes/helpers/helpers.js:521:          PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+  // routes/load_all_datasets.js:18:  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
+  // routes/load_all_datasets.js:45:      console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
+  // routes/routes_admin.js:372:          delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
+  // routes/routes_admin.js:373:          PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
+  //
+  if (!(project in PROJECT_INFORMATION_BY_PNAME)) {
+    console.log("running1 ProjectExistsInDB");
+    project_exists_in_db = ProjectExistsInDB(project, req, res);
+    console.log("project_exists_in_db = " + project_exists_in_db);
+  }
+  
+  console.log("running FastaProvided");
+  fasta_exists = FastaProvided(req, res);
+  console.log("fasta_exists = " + fasta_exists);
 
-  console.log("running ProjectNameGiven");
-  project_name_given = ProjectNameGiven(project, req, res);
-  console.log("project_name_given = " + project_name_given);
-
-  // console.log("running ProjectNameExists");
-  // project_name_exists = ProjectNameExists(project, req, res);
-  // console.log("project_name_exists = " + project_name_exists);
-
-  console.log("running FastaExists");
-  fasta_exists = FastaExists(req, res);
-  console.log("fasta_exists = " +fasta_exists);
-
-  // console.log("running ResFilePathExists");
-  // console.log("data_repository = " + data_repository);
-  // file_path_exists = ResFilePathExists(req, data_repository, res);
-  // console.log("file_path_exists = " + file_path_exists);
-
-  console.log("running MetadataFileExists");
-  metadata_file_exists = MetadataFileExists(req, res);
+  console.log("running MetadataFileProvided");
+  metadata_file_exists = MetadataFileProvided(req, res);
   console.log("metadata_file_exists = " + metadata_file_exists);
 }
 
@@ -1813,9 +1813,60 @@ function GetScriptVars(req, data_repository, cmd_list)
   return [scriptlog, script_text];
 }
 
-router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], function (req, res) {
+// TODO: remove repetitions, see title: 'VAMPS:Import Data'
+editUploadData= function(req, res)
+{
+  console.log("EEE editUploadData: req.form");
+  console.log(util.inspect(req.form, false, null));
+  res.render('user_data/import_data', {
+    title: 'VAMPS:Import Data',
+    message: req.flash('successMessage'),
+    failmessage: req.flash('failMessage'),
+    messages: req.flash('messages'),
+    import_type: req.body.type,
+    user: req.user,
+    form_data: req.form,
+    hostname: req.CONFIG.hostname
+  });
+}
+
+router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12)], 
+  form(
+    form.field("project", "Project Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").minLength(3).maxLength(20).entityEncode(),
+    form.field("dataset", "Dataset Name").trim().required().is(/^[a-zA-Z_0-9]+$/, "Only letters, numbers and underscores are valid in %s").maxLength(64).entityEncode()
+  ),
+  function (req, res) {
+    if (!req.form.isValid) {
+      console.log('PPP upload_data !req.form.isValid: ');
+      console.log(util.inspect(req.form.errors, false, null));
+      req.flash('messages', req.form.errors);
+      editUploadData(req, res);
+      //TODO: check if the project name is in db, if not - redirect to add_project
+      return;
+    }
+    // else {the rest}
+    
+    //TODO:
+    //check all
+    // res.redirect("/user_data/import_data");
+
+  // ---
+    // if (!req.form.isValid) {
+    //   req.add_project_info = req.form;
+    //   req.messages = req.form.errors;
+    //   editAddProject(req, res);
+  // }
+    // else
+    // {
+    //   saveToDb(req, res);
+    //   res.redirect("/user_data/import_choices");
+    // }
+    //
+    // return;
+  // ---
+    
   var exec    = require('child_process').exec;
-  var project  = helpers.clean_string(req.body.project);
+  var project = helpers.clean_string(req.body.project);
 
   var created_options = CreateUploadOptions(req, res, project);
   var data_repository = created_options[0];
@@ -1934,8 +1985,11 @@ router.post('/upload_data', [helpers.isLoggedIn, upload.array('upload_files', 12
                             if (err) { console.log(err);  }
                             else {
                                 req.flash('failMessage', 'Script Failure: '+last_line);
-                                status_params = {'type':'update', 'user_id':req.user.user_id,
-                                    'project':project, 'status':'Script Failure', 'msg':'Script Failure'
+                                status_params = {'type': 'update', 
+                                                 'user_id': req.user.user_id,
+                                                  'project':project, 
+                                                  'status':'Script Failure', 
+                                                  'msg':'Script Failure'
                                 };
                                     //helpers.update_status(status_params);
                                 res.redirect("/user_data/import_data?import_type="+req.body.type);  // for now we'll send errors to the browser
@@ -1969,10 +2023,16 @@ router.get('/add_project', [helpers.isLoggedIn], function (req, res) {
   });
 });
 
+
+function get_privacy_code(privacy_bulean){
+  if (privacy_bulean === 'True')
+    { return 1 }
+  else
+    { return 0 }
+}
+
 function fetchID(data, callback) {
   user_info = [data.first_name, data.last_name, data.email, data.new_institution];
-  
-  
   connection.query('SELECT user_id FROM user WHERE first_name = ? AND last_name = ? AND email = ? AND institution = ?;', user_info, function(err, rows) {
     if (err) {
         callback(err, null);
@@ -1984,13 +2044,6 @@ function fetchID(data, callback) {
       callback(null, rows[0].user_id);
     }
   });
-}
-
-function get_privacy_code(privacy_bulean){
-  if (privacy_bulean === 'True')
-    { return 1 }
-  else
-    { return 0 }
 }
 
 function saveToDb(req, res){ 
@@ -2006,16 +2059,8 @@ function saveToDb(req, res){
           new_privacy = get_privacy_code(req.form.new_privacy);
           //TODO wrire a test for connection insert 1 vs. 0 for privacy
 
-          // var project_columns = ['project', 'title', 'project_description', 'rev_project_name', 'funding', 'owner_user_id', 'public'];
-          // var project_info = [req.form.new_project_name, req.form.new_project_title, req.form.new_project_description, "REVERSE(" + req.form.new_project_name + ")", req.form.new_funding, owner_user_id, new_privacy];
-          // var inserts = [project_columns, project_info];
-          // var insert_project_q = 'INSERT INTO project (??) VALUES (?);'
-          //
-          //
-          // sql_a = mysql.format(insert_project_q, inserts);
-          // sql_a = sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
-          var sql_a = helpers.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
-          console.log("AAA sql_a = " + sql_a);
+          var sql_a = queries.MakeInsertProjectQ(req.form, owner_user_id, new_privacy);
+          // console.log("AAA sql_a = " + sql_a);
           // connection.query('INSERT INTO project (project, title, project_description, rev_project_name, funding, owner_user_id, public) VALUES (?, ?, ?, REVERSE(?), ?, ?, ?);',
           
           connection.query(sql_a, 

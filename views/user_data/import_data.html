@@ -7,7 +7,20 @@
 <% if (failmessage) { %>
 	<div class="alert_flash_message"><%= failmessage %></div>
 <% } %>
-	
+
+<% if (messages) { %>
+  <div class='alert_flash_message'>
+    <% for(var i=0; i < messages.length; i++) { %>
+      <%= messages[i] %>
+      <br>
+    <% } %>
+  </div>
+<% } %>
+<br>
+<% if (!form_data) {
+  var form_data = {}
+}%>
+
 	
 	
 	
@@ -32,14 +45,14 @@
 	<div class="form-group">
       <label class="control-label col-sm-3" for="project">Project Name:</label>
 	  <div class="col-sm-3">
-        <input type="text" name="project" class="form-control" id="project" placeholder="Enter a New Project Name">
+        <input type="text" name="project" class="form-control" id="project" placeholder="Enter a New Project Name" value="<%=form_data.project%>">
       </div>
 	  <a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-3" for="meta">Dataset Name:</label>
       <div class="col-sm-3">          
-        <input type="text" name="dataset" class="form-control" id="dset" placeholder="Enter a Dataset Name">
+        <input type="text" name="dataset" class="form-control" id="dset" placeholder="Enter a Dataset Name" value="<%=form_data.dataset%>">
       </div>
 	  <a href="/help/faq#formats" target="_blank" title="formats"><span class="glyphicon glyphicon-question-sign"></span></a>
     This will overwrite dataset name in metadata file
