@@ -1549,7 +1549,7 @@ function MetadataFileExists(req, res)
 function ProjectExistsInDB(project, req, res)
 {
   console.log("running ProjectExistsInDB");
-  q = helpers.MakeSelectProjectId(project);
+  q = queries.MakeSelectProjectId(project);
   console.log("q = " + q);
   result = helpers.RunQuery(q);
   console.log(util.inspect(result, false, null));

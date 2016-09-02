@@ -315,6 +315,26 @@ get_taxonomy_queryX: function( db, uitems, chosen_id_name_hash, post_items) {
     var sql_a = mysql.format(insert_project_q, inserts);
     return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
   },
+
+  MakeInsertStatusQ: function(status_params)
+  {
+    // "SELECT user_id, project_id, status, message, NOW() ";
+    var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
+                  + " SELECT "  + connection.escape(status_params.user_id)
+                  + ", project_id"
+                  + ", "  + connection.escape(status_params.status)
+                  + ", "  + connection.escape(status_params.msg)
+                  + ", NOW()"
+                  + " FROM user_project_status RIGHT JOIN project using(project_id)"
+                  + " WHERE project = " + connection.escape(status_params.project)
+    return statQuery1;
+  },
+
+  MakeSelectProjectId: function(project)
+  {
+    return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
+  },
+
 } // end of module.exports
 
 

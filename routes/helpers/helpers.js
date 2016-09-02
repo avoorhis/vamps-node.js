@@ -692,7 +692,7 @@ module.exports.update_status = function(status_params) {
   } else {  // Type::New
       // TODO? INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE
       // name="A", age=19
-    statQuery1 = MakeInsertStatusQ(status_params);
+    statQuery1 = queries.MakeInsertStatusQ(status_params);
     console.log('statQuery1: ' + statQuery1);
     connection.query(statQuery1 , function(err, rows) {
       if(err) {
@@ -753,10 +753,6 @@ MakeUpdateStatusQ = function(status_params)
   return statQuery2;
 };
 
-module.exports.MakeSelectProjectId = function(project)
-{
-  return "SELECT project_id FROM project WHERE project = " + connection.escape(project);
-}
 
 module.exports.prepareQuery = function(inserts)
 {
@@ -789,16 +785,16 @@ module.exports.RunQuery = function(my_query)
 //   return sql_a.replace(/'REVERSE\((\w+)\)'/g, 'REVERSE(\'$1\')');
 // }
 
-MakeInsertStatusQ = function(status_params)
-{
-  // "SELECT user_id, project_id, status, message, NOW() ";
-  var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
-                + " SELECT "  + connection.escape(status_params.user_id)
-                + ", project_id"
-                + ", "  + connection.escape(status_params.status)
-                + ", "  + connection.escape(status_params.msg)
-                + ", NOW()"
-                + " FROM user_project_status RIGHT JOIN project using(project_id)"
-                + " WHERE project = " + connection.escape(status_params.project)
-  return statQuery1;
-};
+// MakeInsertStatusQ = function(status_params)
+// {
+//   // "SELECT user_id, project_id, status, message, NOW() ";
+//   var statQuery1 = "INSERT IGNORE into user_project_status (user_id, project_id, status, message, created_at)"
+//                 + " SELECT "  + connection.escape(status_params.user_id)
+//                 + ", project_id"
+//                 + ", "  + connection.escape(status_params.status)
+//                 + ", "  + connection.escape(status_params.msg)
+//                 + ", NOW()"
+//                 + " FROM user_project_status RIGHT JOIN project using(project_id)"
+//                 + " WHERE project = " + connection.escape(status_params.project)
+//   return statQuery1;
+// };
