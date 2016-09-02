@@ -1564,10 +1564,26 @@ function ProjectExistsInDB(project, req, res)
 
 function ProjectValidation(req, project, data_repository, res)
 {
-  console.log("running1 ProjectExistsInDB");
-  project_exists_in_db = ProjectExistsInDB(project, req, res);
-  console.log("project_exists_in_db = " + project_exists_in_db);
-
+  // console.log('MMM PROJECT_INFORMATION_BY_PNAME: ');
+  // console.log(util.inspect(PROJECT_INFORMATION_BY_PNAME, false, null));
+  
+  // TODO: check if added but not in PROJECT_INFORMATION_BY_PNAME? or update PROJECT_INFORMATION_BY_PNAME after add_project?
+  // see 
+  // routes/helpers/helpers.js:251:    console.log('RE-INTIALIZING PROJECT_INFORMATION_BY_PNAME');
+  // routes/helpers/helpers.js:258:    delete PROJECT_INFORMATION_BY_PNAME[pname];
+  // routes/helpers/helpers.js:274:        console.log(' UPDATING PROJECT_INFORMATION_BY_PNAME');
+  // routes/helpers/helpers.js:521:          PROJECT_INFORMATION_BY_PNAME[project] =  PROJECT_INFORMATION_BY_PID[pid];
+  // routes/load_all_datasets.js:18:  PROJECT_INFORMATION_BY_PNAME= {};  // 0 if public otherwise == user id
+  // routes/load_all_datasets.js:45:      console.log(' INITIALIZING PROJECT_INFORMATION_BY_PNAME');
+  // routes/routes_admin.js:372:          delete PROJECT_INFORMATION_BY_PNAME[old_project_name];
+  // routes/routes_admin.js:373:          PROJECT_INFORMATION_BY_PNAME[new_project_name] = PROJECT_INFORMATION_BY_PID[pid];
+  //
+  if (!(project in PROJECT_INFORMATION_BY_PNAME)) {
+    console.log("running1 ProjectExistsInDB");
+    project_exists_in_db = ProjectExistsInDB(project, req, res);
+    console.log("project_exists_in_db = " + project_exists_in_db);
+  }
+  
   console.log("running FastaProvided");
   fasta_exists = FastaProvided(req, res);
   console.log("fasta_exists = " + fasta_exists);
